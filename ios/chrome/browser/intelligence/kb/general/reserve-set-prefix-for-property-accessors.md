@@ -1,7 +1,12 @@
 ---
 name: ios/reserve-set-prefix-for-property-accessors
+description: 'In Objective-C, use -set<Name>: (or @property) for state assignment and consumer push methods; do not name delegate or observer event callbacks -set...:, and do not use -inject...: or -update...: for assignment'
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** In Objective-C, `-set<Name>:` denotes the assignment of state: a

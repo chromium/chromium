@@ -1,7 +1,15 @@
 ---
 name: ios/observe-model-via-scoped-observation-bridges
+description: When bridging C++ models to Objective-C++, reuse standard shared `<Type>ObserverBridge` classes with `base::ScopedObservation` and weak delegates instead of declaring private bridges or callbacks
 rubric: readability
 severity: should_fix
+citations:
+  - path: components/signin/public/identity_manager/objc/README.md
+    heading: Interface
+    quote: C++ bridge class implementing `signin::IdentityManager::Observer`. Observes a `signin::IdentityManager` instance via `base::ScopedObservation` and forwards dispatched events to an `id<IdentityManagerObserving>` target.
+  - path: ios/architecture/mediators.md
+    heading: Observing Model Objects
+    quote: Because the mediator is an Objective-C object and the model observer interface is usually a C++ pure virtual class, mediators commonly use a C++ observer bridge (frequently managed with base::ScopedObservation) that forwards callbacks.
 ---
 
 **Rule.** When bridging C++ observer events to Objective-C consumers, follow the

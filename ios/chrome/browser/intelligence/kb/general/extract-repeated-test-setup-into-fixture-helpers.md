@@ -1,5 +1,6 @@
 ---
 name: ios/extract-repeated-test-setup-into-fixture-helpers
+description: In unit tests, centralize invariant initialization in fixture SetUp() or constructors and encapsulate repetitive or scenario-specific setup in dedicated fixture helper methods
 rubric: design
 severity: should_fix
 ---

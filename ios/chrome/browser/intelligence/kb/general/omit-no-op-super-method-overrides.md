@@ -1,5 +1,6 @@
 ---
 name: ios/omit-no-op-super-method-overrides
+description: In Objective-C subclasses, coordinators, and tests, omit redundant overrides forwarding to super, trivial init implementations or declarations, empty lifecycle methods, and default appConfigurationForTestCase
 rubric: readability
 severity: should_fix
 ---

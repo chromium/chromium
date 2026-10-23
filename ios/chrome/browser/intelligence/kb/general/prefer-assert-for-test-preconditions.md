@@ -1,5 +1,6 @@
 ---
 name: ios/prefer-assert-for-test-preconditions
+description: In tests, use fatal ASSERT_* for preconditions, async waits, and non-null guards before dependent execution, and prefer non-fatal EXPECT_* for verifying outcomes
 rubric: correctness
 severity: should_fix
 ---

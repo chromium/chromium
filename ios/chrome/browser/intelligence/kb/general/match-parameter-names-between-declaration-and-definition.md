@@ -1,7 +1,15 @@
 ---
 name: ios/match-parameter-names-between-declaration-and-definition
+description: When declaring functions, virtual overrides, Objective-C methods, or forwarding blocks, keep parameter names consistent with declarations, base classes, and selector keywords
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium C++ style
+    quote: Where appropriate, the [Chromium C++ style](../c++/c++.md) style guide applies to Chromium Objective-C and (especially) Objective-C++
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
 ---
 
 **Rule.** Ensure parameter names remain consistent across declarations,

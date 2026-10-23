@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-mixing-ivar-and-property-access
+description: In Objective-C++, access plain implementation ivars directly as _ivar everywhere, and access @property-backed state via self.property outside -init, -dealloc, and custom accessors without mixing styles
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** This rule applies only to instance variables that back a declared

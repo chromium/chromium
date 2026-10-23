@@ -1,5 +1,6 @@
 ---
 name: ios/clear-container-adapters-by-reassignment
+description: When clearing container adapters like std::queue, base::queue, or std::stack, reassign a default-constructed instance or empty braces instead of popping in a loop
 rubric: readability
 severity: nit
 ---

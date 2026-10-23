@@ -1,7 +1,12 @@
 ---
 name: ios/mediator-observes-web-state-list-for-active-tab
+description: When mediators track active tabs, inject WebStateList directly to observe transitions; when mediators do not observe WebStateList, inject specific sub-dependencies directly
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: Observing Model Objects
+    quote: When a mediator cares about the active WebState in a Browser's WebStateList, it should receive the WebStateList* at initialization and observe it directly, rather than having the active WebState repeatedly injected.
 ---
 
 **Rule.** When a mediator needs to observe or track active tab transitions,

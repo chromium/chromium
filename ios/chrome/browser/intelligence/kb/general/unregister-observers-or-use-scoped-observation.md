@@ -1,7 +1,24 @@
 ---
 name: ios/unregister-observers-or-use-scoped-observation
+description: Manage observer lifecycles with ScopedObservation, guard shutdown unregistration, reset observations or bridge ivars before clearing service pointers, and omit redundant KeyedService shutdown overrides
 rubric: safety
 severity: blocking
+citations:
+  - path: docs/ui/learn/bestpractices/ownership.md
+    heading: Prefer scoping objects
+    quote: Prefer scoping objects to paired Add/Remove-type calls. For example, use a base::ScopedObservation<> instead of directly calling View::AddObserver() and RemoveObserver(). Such objects reduce the likelihood of use-after-free.
+  - path: docs/dangling_ptr_guide.md
+    heading: Observer callback
+    quote: It is important to clear the pointer when the object is about to be deleted. Chrome uses the observer pattern heavily. In some cases, the observer does not clear its pointer toward the observed class when notified of its destruction.
+  - path: components/signin/public/identity_manager/README.md
+    heading: KeyedService Lifecycle
+    quote: Observers must detach prior to destruction or during `OnIdentityManagerShutdown()`.
+  - path: components/signin/public/identity_manager/objc/README.md
+    heading: Invariants
+    quote: During `OnIdentityManagerShutdown`, the bridge resets its observation and clears its `IdentityManager` pointer before notifying the delegate via `identityManagerDidShutdown:`, safely tolerating immediate deallocation of the bridge by its owner inside the callback.
+  - path: components/signin/public/identity_manager/README.md
+    heading: Invariants
+    quote: 'KeyedService Lifecycle: `IdentityManager` is tied to the lifecycle of its associated `Profile` / `BrowserState`. Observers must detach prior to destruction or during `OnIdentityManagerShutdown()`.'
 ---
 
 **Rule.** Prefer managing observer lifetimes with `base::ScopedObservation`,

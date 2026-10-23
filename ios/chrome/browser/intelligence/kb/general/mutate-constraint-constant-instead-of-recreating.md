@@ -1,5 +1,6 @@
 ---
 name: ios/mutate-constraint-constant-instead-of-recreating
+description: When updating layout constraints where target views and anchors remain unchanged, mutate NSLayoutConstraint.constant in place instead of recreating constraint instances
 rubric: readability
 severity: should_fix
 ---

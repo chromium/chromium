@@ -1,7 +1,24 @@
 ---
 name: ios/prefix-and-number-histogram-enums
+description: When defining or modifying UMA histogram enums, add the persistence comment and logged histogram name, number entries sequentially from 0 with kMaxValue, update enums.xml in the same CL, and link LINT.IfChange/ThenChange guards
 rubric: correctness
 severity: blocking
+citations:
+  - path: tools/metrics/histograms/README.md
+    heading: Requirements
+    quote: 'Enums logged in histograms must: - be prefixed with the comment: ```c++ // These values are persisted to logs. Entries should not be renumbered and // numeric values should never be reused. ``` - be numbered starting from `0`. Note this bullet point does *not* apply for enums logged with sparse histograms. - have enumerators with explicit values (`= 0`, `= 1`, `= 2`) to make it clear that the actual values are important. This also makes it easy to match the values between the C++/Java definition and [histograms.xml](./histograms.xml). - not renumber or reuse enumerator values. When adding a new enumerator, append the new enumerator to the end. When removing an unused enumerator, comment it out, making it clear the value was previously used. If your enum histogram has a catch-all / miscellaneous bucket, put that bucket first (`= 0`). This makes the bucket easy to find on the dashboard if additional buckets are added later.'
+  - path: tools/metrics/histograms/review_guidelines.md
+    heading: Histogram is setup correctly.
+    quote: Verify that for an enum histogram, the enum described in enums.xml and the enum defined in the client code matches. Furthermore, the enum in the code should have a comment mentioning that the values must not be changes and also that additions to the enum should be synced to enums.xml.
+  - path: tools/metrics/histograms/README.md
+    heading: Provide Clear Units or Enum Labels
+    quote: For enumerated histograms, including boolean and sparse histograms, provide an enum= attribute mapping enum values to semantically contentful labels. Define the <enum> in enums.xml if none of the existing enums are a good fit.
+  - path: tools/metrics/histograms/README.md
+    heading: Usage
+    quote: The `LINT.*` comments point between the code and XML definitions of the enum, to encourage them to be kept in sync.
+  - path: tools/metrics/histograms/README.md
+    heading: Enum Histograms > Requirements
+    quote: This also makes it easy to match the values between the C++/Java definition and histograms.xml.
 ---
 
 **Rule.** When defining or extending an enum persisted to histograms or logs

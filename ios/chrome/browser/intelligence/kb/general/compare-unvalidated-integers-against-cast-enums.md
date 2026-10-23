@@ -1,7 +1,15 @@
 ---
 name: ios/compare-unvalidated-integers-against-cast-enums
+description: When handling untrusted integers from IPC or web messaging, validate via `<Enum>_IsValid()` before casting to enums, or compare raw integers against integer-cast enums
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/security/compromised-renderers.md
+    heading: Threat Model And Defenses Against Compromised Renderers
+    quote: A compromised renderer can forge malicious IPC messages, impersonate a Chrome Extension content script, or use other techniques to trick more privileged parts of the browser.
+  - path: styleguide/c++/checks.md
+    heading: Failures beyond Chromium's control
+    quote: 'Data across security boundaries: A compromised renderer should not be able to bring down the browser process (higher privilege). Bad IPC messages should be safely rejected by Chromium without the use of base::ImmediateCrash() or CHECK() etc. as part of normal control flow.'
 ---
 
 **Rule.** Do not cast an unvalidated or arbitrary integer (such as from IPC,

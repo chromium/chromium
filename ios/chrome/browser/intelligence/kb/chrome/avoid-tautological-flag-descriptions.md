@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-tautological-flag-descriptions
+description: When authoring chrome://flags descriptions in flag_descriptions files, describe concrete user-visible behavior and prerequisites without tautology or internal jargon, ending with a period
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/configuration.md
+    heading: Flags
+    quote: Flags have a name and description, and show up in chrome://flags.
 ---
 
 **Rule.** When authoring flag descriptions for `chrome://flags` in flag

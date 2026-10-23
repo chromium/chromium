@@ -1,7 +1,33 @@
 ---
 name: ios/document-file-scope-helpers-returning-abstract-types
+description: Document implementation-file helpers, anonymous-namespace functions, private interfaces, and test fixtures with their purpose, parameter nullability, concrete return types, and fallback contracts.
 rubric: readability
 severity: nit
+citations:
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: Code should be as self documenting as possible, but sometimes that isn't enough. Maybe there's a tricky bit of implementation that isn't obvious. Maybe there's a clever algorithm that has a good reason it needs to be clever. A good rule of thumb is that if a code reviewer had a clarifying question about something during review and the code couldn't be simplified to answer the question then a comment is probably appropriate.
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: Remember that any method which isn't declared in an interface needs a full method comment.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Disambiguating Symbols
+    quote: Where needed to avoid ambiguity, use backticks to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
+  - path: docs/documentation_guidelines.md
+    heading: Interface / class documentation
+    quote: Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For C functions and constants defined in a namespace, use C++ style, even if most of the file is Objective-C.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Nullability annotations in the `ios/` directory
+    quote: Nullability annotations, such as `nonnull` and `nullable`, may not be used in the `ios/` directory. This differs from the Google Objective-C Style Guide, which permits these annotations.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** Precede anonymous-namespace free functions and test fixture helpers

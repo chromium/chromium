@@ -1,5 +1,6 @@
 ---
 name: ios/guard-enclosing-pointer-before-member-access
+description: When accessing member fields on a nullable pointer, guard the enclosing pointer against null rather than checking embedded non-pointer value members
 rubric: correctness
 severity: should_fix
 ---

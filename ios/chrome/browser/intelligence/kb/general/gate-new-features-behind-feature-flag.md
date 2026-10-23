@@ -1,7 +1,27 @@
 ---
 name: ios/gate-new-features-behind-feature-flag
+description: When introducing or modifying features, UI components, migrations, or shared flows, gate behavior behind FeatureList::IsEnabled or Is*Enabled() helpers, preserving exact baseline functionality when disabled
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/flag_guarding_guidelines.md
+    heading: When is a flag required?
+    quote: Regardless of whether it is a new feature, refactoring, or bug fix, there is no minimum size that dictates whether a flag is required (either for isolated CLs or for many CLs that form a project/feature). A one line change with potential to impact stability, performance, usability is just as required to use a flag as a multi-thousand line feature.
+  - path: docs/flag_guarding_guidelines.md
+    heading: Chromium Flag Guarding Guidelines
+    quote: This document describes using base::Feature flags which can be remotely set via a server. This applies to both A/B experiments ... (disabled by default) and to kill switches ... (enabled by default).
+  - path: docs/configuration.md
+    heading: Features
+    quote: Features are the best way to add runtime conditional behavior.
+  - path: docs/ui/starter_guide.md
+    heading: Building Your UI
+    quote: Add a [feature flag](/docs/how_to_add_your_feature_flag.md) to gate your UI, and implement it locally.
+  - path: docs/release_branch_guidance.md
+    heading: Guidelines for Considering Branch Date in Project Planning
+    quote: Pay more attention to complexity and structure of CLs around branch points, in case fixes need to be merged back after branch is created.
+  - path: docs/ui/starter_guide.md
+    heading: Add a feature flag to gate your UI
+    quote: Add a feature flag to gate your UI, and implement it locally.
 ---
 
 **Rule.** Gate newly introduced or experimental behavior—new features,

@@ -1,7 +1,12 @@
 ---
 name: ios/header-declaration-order-properties-methods-inits
+description: In Objective-C header files, order interface declarations with properties first, followed by class methods, initializers, and instance methods
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Headers, Imports, and Declaration Order
+    quote: 'Inside every `@interface` in a header file, order declarations as mandated by the Google Objective-C Style Guide: 1. `@property` declarations 2. Class methods (convenience constructors first) 3. Initializers (`-init...`) 4. Instance methods.'
 ---
 
 **Rule.** In Objective-C and Objective-C++ header files (@interface

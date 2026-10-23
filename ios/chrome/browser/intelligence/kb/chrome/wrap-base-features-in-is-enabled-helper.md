@@ -1,7 +1,18 @@
 ---
 name: ios/wrap-base-features-in-is-enabled-helper
+description: When declaring or checking a base::Feature in iOS Chrome, define an accompanying Is<Feature>Enabled() helper matching the flag name and invoke it over raw IsEnabled
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/chrome_browser_design_principles.md
+    heading: Global functions should not access non-global state.
+    quote: Global functions that wrap global state are allowed, e.g. `IsFooFeatureEnabled()` wraps the global variable `BASE_FEATURE(kFooFeature,...)`
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 02. Remove C++ flag enablement checks
+    quote: Find C++ callsites where the feature enablement is checked. This usually takes the form of `base::FeatureList::IsEnabled(kFeature)` calls or a free `Is<X>Enabled()` helper function that wraps the former.
+  - path: components/viz/README.md
+    heading: Runtime Features
+    quote: When adding a new feature `kMyFeature`, it's recommended that you add a helper function `IsMyFeatureEnabled()` to check if the feature is enabled. Code should then use `IsMyFeatureEnabled()` instead of checking base::FeatureList::IsEnabled(kMyFeature)`.
 ---
 
 **Rule.** When declaring a new `base::Feature` flag (`BASE_DECLARE_FEATURE`) in

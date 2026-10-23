@@ -1,7 +1,12 @@
 ---
 name: ios/match-pragma-mark-to-interface-name
+description: In Objective-C and Objective-C++, group implementations using `#pragma mark - <InterfaceName>`, match method definitions to header declaration order, and consolidate helpers under `#pragma mark - Private`
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: To keep implementation files organized and navigable, method implementations should be clearly grouped by the interfaces they implement, and each such group should be marked with a `#pragma mark -`, followed by the interface name (see examples below). This kind of grouping should happen for the implementations's public methods, superclass methods, private methods, and each protocol the implementation conforms to. In each group, methods should appear in the same order they are defined in the corresponding interface declaration.
 ---
 
 **Rule.** In Objective-C and Objective-C++ files (`.h`, `.mm`), delineate method

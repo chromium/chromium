@@ -1,7 +1,12 @@
 ---
 name: ios/import-header-over-casting-forward-declared-type
+description: When assigning or passing Objective-C objects to protocol types, omit redundant casts and temporary variables; rely on implicit conversion, header imports, or compound conformances
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: Use ObjCCast<T> and ObjCCastStrict<T>
+    quote: As the C++ style guide tells you, we never use C casts and prefer `static_cast<T>` and `dynamic_cast<T>`.
 ---
 
 **Rule.** Do not use explicit inline casts (such as `(id<Protocol>)`,

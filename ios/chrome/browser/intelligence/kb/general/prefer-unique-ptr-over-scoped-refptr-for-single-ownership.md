@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-unique-ptr-over-scoped-refptr-for-single-ownership
+description: When managing service or state objects with exclusive single ownership, use std::unique_ptr instead of scoped_refptr and ensure member types match std::make_unique instantiation
 rubric: design
 severity: should_fix
+citations:
+  - path: base/memory/README.md
+    heading: scoped_refptr<T>
+    quote: Use when you want manually managed strong refcounting. Use carefully! It’s an owning smart pointer, so it owns a pointer to something allocated in the heap and gives shared ownership of the underlying object, since it can be copied.
 ---
 
 **Rule.** Use `std::unique_ptr<T>` rather than `scoped_refptr<T>` for

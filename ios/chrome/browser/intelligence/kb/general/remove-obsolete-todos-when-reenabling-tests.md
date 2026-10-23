@@ -1,7 +1,15 @@
 ---
 name: ios/remove-obsolete-todos-when-reenabling-tests
+description: When fixing bugs or deflaking code covered by suppressed tests, re-enable the tests and remove obsolete test_expectations.txt entries, DISABLED_ prefixes, EARL_GREY_TEST_SKIPPED guards, and tracking TODOs
 rubric: testing
 severity: should_fix
+citations:
+  - path: agents/skills/disable-test/SKILL.md
+    heading: 'Step 2: Obtain Bug Reference'
+    quote: Every disabled test MUST be tracked by a bug to ensure it eventually gets fixed and re-enabled.
+  - path: agents/skills/disable-test/SKILL.md
+    heading: 'Step 4: Documentation Requirement'
+    quote: '**ALWAYS** include a `TODO` comment with a link to the Buganizer issue obtained in Step 2.'
 ---
 
 **Rule.** When fixing bugs, modifying features, or deflaking code covered by

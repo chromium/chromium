@@ -1,7 +1,15 @@
 ---
 name: ios/delegate-properties-and-ivars-must-be-weak
+description: When declaring Objective-C delegate, provider, observer, or command handler properties and ivars under ARC, qualify them with __weak or weak to prevent retain cycles
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Protocol Naming and Design Conventions
+    quote: Delegates must be held weakly by the delegating object.
+  - path: https://google.github.io/styleguide/objcguide.html
+    heading: Maintain Weak References to Avoid Retain Cycles
+    quote: Delegate properties should be declared `weak` to avoid retain cycles.
 ---
 
 **Rule.** In Objective-C and Objective-C++ classes under ARC, declare instance

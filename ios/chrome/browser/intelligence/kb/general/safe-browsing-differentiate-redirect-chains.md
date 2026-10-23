@@ -1,7 +1,12 @@
 ---
 name: ios/safe-browsing-differentiate-redirect-chains
+description: When processing SafeBrowsing redirect chains, evaluate pending_main_frame_query_ only on pending chains, verify overall decisions before downstream promotion, and clear destination containers before transfer loops
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/navigation_concepts.md
+    heading: Rules for Canceling Navigations
+    quote: Keep in mind that it is **not safe to simulate a redirect by canceling a navigation and starting a new one**, since this may lose relevant context from the original navigation (e.g., ReloadType, CSP state, Sec-Fetch-Metadata state, redirect chain, etc)
 ---
 
 **Rule.** In `SafeBrowsingTabHelper::PolicyDecider`, properly isolate and manage

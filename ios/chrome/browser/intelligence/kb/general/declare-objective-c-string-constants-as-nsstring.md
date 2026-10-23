@@ -1,7 +1,15 @@
 ---
 name: ios/declare-objective-c-string-constants-as-nsstring
+description: When defining Objective-C string constants, use static or extern NSString* const rather than raw literals, mutable pointers, or C-style char arrays requiring SysUTF8ToNSString
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For C functions and constants defined in a namespace, use C++ style, even if most of the file is Objective-C.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** When defining string constants used with Cocoa, Foundation, or UIKit

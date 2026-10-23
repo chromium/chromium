@@ -1,5 +1,6 @@
 ---
 name: ios/inspect-headers-via-nsurlsession-data-delegate
+description: When inspecting HTTP headers or resource metadata with NSURLSession, implement NSURLSessionDataDelegate didReceiveResponse to cancel the task early instead of dataTaskWithRequest completionHandler
 rubric: safety
 severity: should_fix
 ---

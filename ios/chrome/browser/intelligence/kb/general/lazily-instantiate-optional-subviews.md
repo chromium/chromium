@@ -1,5 +1,6 @@
 ---
 name: ios/lazily-instantiate-optional-subviews
+description: When configuring optional or state-dependent subviews in UIKit views or cells, instantiate and add subviews lazily on demand rather than unconditionally in initializers
 rubric: design
 severity: nit
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/name-accessibility-identifiers-by-role
+description: When defining iOS accessibility identifiers and string constants, reuse shared constants, prefix feature scopes, name semantic roles, and mirror symbols in literals without 'k'
 rubric: readability
 severity: should_fix
 ---

@@ -1,7 +1,12 @@
 ---
 name: ios/comment-empty-method-bodies-with-noop
+description: Document intentional no-ops with `// No-op.` instead of empty bodies or logging macros, but use `NOTREACHED()` for uncallable stubs and required subclass overrides
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: NOTIMPLEMENTED and NOTREACHED logging macros
+    quote: "`NOTREACHED`: This function should not be called. If it is, we have a problem somewhere else. `NOTIMPLEMENTED`: This isn't implemented because we don't use it yet. If it's called, then we need to figure out what it should do. When something is called but doesn't need an implementation, just add a comment indicating this instead of using a logging macro."
 ---
 
 **Rule.** When defining an intentionally empty function or method body—such as

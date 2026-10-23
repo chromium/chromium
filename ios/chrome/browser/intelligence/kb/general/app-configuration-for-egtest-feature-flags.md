@@ -1,7 +1,12 @@
 ---
 name: ios/app-configuration-for-egtest-feature-flags
+description: In EarlGrey tests, configure feature flags via AppLaunchConfiguration features_enabled instead of ScopedFeatureList, additional_args, or test-runner FeatureList checks
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/ios/testing.md
+    heading: Relaunch app with different flags
+    quote: In EG2 tests, the test process launches the host app process at the beginning, then runs UI actions/assertions in the app. To pass args or feature flags to the app at initial launching, or relaunch the app in the middle of your test, see [this AppLaunchManager API].
 ---
 
 **Rule.** In EarlGrey integration tests (`*_egtest.mm`), configure feature flags

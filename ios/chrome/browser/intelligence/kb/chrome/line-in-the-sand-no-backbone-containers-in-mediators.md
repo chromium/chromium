@@ -1,7 +1,15 @@
 ---
 name: ios/line-in-the-sand-no-backbone-containers-in-mediators
+description: Do not pass backbone containers or query GetApplicationContext or factories in mediators; inject leaf model services and protocol command handlers from coordinators
 rubric: design
 severity: blocking
+citations:
+  - path: ios/architecture/mediators.md
+    heading: The "Line in the Sand" for Dependencies
+    quote: Notice that in the example above, the coordinator passes the specific `ReadingListService*` into the mediator rather than passing the `ProfileIOS*` (or `Browser*`) from which the `ReadingListService` was retrieved.
+  - path: ios/best_practices.md
+    heading: Architecture Pattern Best Practices
+    quote: 'Enforce the "line in the sand" for backbone containers: Never pass `Browser`, `ProfileIOS`, `CommandDispatcher`, `SceneState`, `ProfileState`, `AppState`, or `ApplicationContext` into mediators, view controllers, or views, and never call `GetApplicationContext()` inside a mediator.'
 ---
 
 **Rule.** Mediators must never receive, store, or query backbone container

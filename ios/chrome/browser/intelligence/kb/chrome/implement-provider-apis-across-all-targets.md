@@ -1,7 +1,11 @@
 ---
 name: ios/implement-provider-apis-across-all-targets
+description: When adding or modifying provider APIs in ios/public/provider/, implement Chromium and test stubs, and split call sites into follow-up CLs
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/public/provider/README.md
+    quote: This directory exists to allow Chromium code to call iOS code that is not yet upstreamed. The main entry point from Chromium into this directory is via global Provider objects.
 ---
 
 **Rule.** When adding or modifying provider API declarations in

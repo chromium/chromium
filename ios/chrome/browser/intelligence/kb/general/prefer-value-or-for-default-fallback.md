@@ -1,5 +1,6 @@
 ---
 name: ios/prefer-value-or-for-default-fallback
+description: When extracting or moving values from an std::optional with a default fallback, prefer opt.value_or(...) or std::move(opt).value_or(...) over ternary checks or if-blocks
 rubric: readability
 severity: nit
 ---

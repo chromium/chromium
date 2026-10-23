@@ -1,7 +1,18 @@
 ---
 name: ios/extract-nested-conditionals-to-helpers
+description: When orchestrators or UIKit and gesture delegates contain complex conditionals, telemetry, or coordinate algorithms, extract dedicated helpers or standalone testable units
 rubric: design
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Unnamed namespaces
+    quote: Items local to a .cc file should be wrapped in an unnamed namespace.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: Private methods can be grouped differently if it helps make the code more readable; for example, private methods that are just helpers for methods in specific protocols could be grouped under a `#pragma mark - <Protocol> helpers`, directly after the protocol methods, instead of with the other private methods.
+  - path: docs/ios/testing.md
+    heading: Before you start
+    quote: Just write a unit test if the purpose of your test does not involve UI.
 ---
 
 **Rule.** Extract multi-step subtasks, nested conditionals, complex switch

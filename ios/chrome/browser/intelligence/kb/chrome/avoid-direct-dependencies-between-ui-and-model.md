@@ -1,7 +1,18 @@
 ---
 name: ios/avoid-direct-dependencies-between-ui-and-model
+description: In ios/chrome/browser, do not allow direct dependencies between UI/coordinator and model layers; relocate shared constants to public/model and define delegates in consumer layer
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/chrome/browser/shared/README.md
+    heading: Shared folder
+    quote: Note that coordinators/mediators have access to all sub-folders, so if you are adding code related to the UI but that coordinators/mediators will also use, the correct folder is ui/.
+  - path: ios/chrome/browser/shared/public/README.md
+    heading: Shared public folder
+    quote: 'This is code that is used by all layers of our architecture or "public" API of a layer (for example: commands as public API of the UI, flags as it is shared by all layers...).'
+  - path: docs/dependencies.md
+    heading: Diagnosing and Fixing checkdeps Violations
+    quote: Can you achieve your goal without adding this new dependency? Reusing existing abstractions is always preferred. ... Ensure this new dependency makes architectural sense and get approval from the code owners of the DEPS file.
 ---
 
 **Rule.** In `ios/chrome/browser/`, do not allow direct dependencies between the

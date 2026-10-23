@@ -1,7 +1,21 @@
 ---
 name: ios/consolidate-repeated-constants-in-anonymous-namespace
+description: Extract magic numbers, UI layout dimensions, durations, thresholds, and repeated test parameters into named constexpr constants in an anonymous namespace, using distinct constants per semantic role
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/defining_compile_time_const.md
+    heading: Guidelines
+    quote: Use `constexpr` inside an anonymous namespace for file-scope constants in `.cc` files.
+  - path: docs/ui/learn/bestpractices/layout.md
+    heading: Obtain layout values from provider objects
+    quote: Code should not have any magic numbers for sizes, positions, elevations, and the like; this includes transformations like scaling values up or down by a fraction, or tweaking a provided value by a few DIPs.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For C functions and constants defined in a namespace, use C++ style, even if most of the file is Objective-C.
+  - path: ios/best_practices.md
+    heading: Language Choice
+    quote: In `//ios/`, "Objective-C" always means Objective-C++ (`.mm`), which allows freely mixing Objective-C and C++. Plain Objective-C (`.m`) is not used outside `//ios/third_party/`.
 ---
 
 **Rule.** Do not embed raw magic numbers, fractional multipliers, or inline

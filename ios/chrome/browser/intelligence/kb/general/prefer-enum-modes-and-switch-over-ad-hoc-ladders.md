@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-enum-modes-and-switch-over-ad-hoc-ladders
+description: When branching on enum values or operational modes, prefer exhaustive switch statements over if-else ladders or inequality checks, but use direct equality for single enumerators
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/checks.md
+    heading: Examples
+    quote: 'This switch handles all cases, but enums can technically hold any integer value (even if all enum members are enumerated), so the compiler must try to handle other cases too. We can avoid dealing with values outside enums by using NOTREACHED() while also making sure we hear about it. switch (my_enum) { case A: return 1; case B: return 5; case C: return 3; } NOTREACHED();'
 ---
 
 **Rule.** When branching across multiple variants or discrete operational modes

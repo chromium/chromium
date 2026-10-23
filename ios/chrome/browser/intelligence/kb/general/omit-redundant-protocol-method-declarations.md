@@ -1,7 +1,12 @@
 ---
 name: ios/omit-redundant-protocol-method-declarations
+description: In Objective-C interfaces and implementations, omit redundant method declarations or protocol conformances inherited from superclasses or headers, and consolidate duplicate methods when adopting protocols
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** In Objective-C class interfaces (`@interface`), class extensions

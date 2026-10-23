@@ -1,7 +1,12 @@
 ---
 name: ios/use-semantic-colors-never-hardcoded-hex
+description: In iOS UI code and BUILD.gn asset catalogs, use shared semantic colors from semantic_color_names.h and //ios/chrome/common/ui/colors instead of hardcoded RGB/hex values, UIKit system colors, or duplicate .colorset assets
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: UI and Assets Best Practices
+    quote: Never use standard UIKit system colors (such as `UIColor.redColor` or `UIColor.systemBlueColor`; only `whiteColor`, `blackColor`, and `clearColor` are permitted) or hardcoded RGB values. Always use semantic color names from `//ios/chrome/common/ui/colors/semantic_color_names.h` via `[UIColor colorNamed:k...]`.
 ---
 
 **Rule.** In iOS UI views, view controllers, and controls, use semantic color

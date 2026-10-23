@@ -1,7 +1,21 @@
 ---
 name: ios/keyed-service-inject-dependencies-over-profile
+description: When designing KeyedServices, WebUI handlers, classes, or methods, inject narrow dependencies or attributes directly rather than passing or retaining broad Browser or ProfileIOS containers
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/chrome_browser_design_principles.md
+    heading: Modularity
+    quote: All features should be logically grouped in the directory structure with well-defined API surfaces. Dependencies should be injected during construction.
+  - path: docs/chrome_browser_design_principles.md
+    heading: 'Simple Tab Feature: `JsOptimizationsPageActionController`'
+    quote: It avoids global state and `Browser*` by taking exactly what it needs in its constructor
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: A special case of base::SupportsUserData::Data is the KeyedService. They are managed by the ProfileKeyedServiceFactoryIOS infrastructure. This infrastructure allows to declare dependencies between services and ensure that they are created and destroyed in an order compatible with those dependencies.
+  - path: docs/ios/objects.md
+    heading: BrowserList
+    quote: BrowserList is a container owning Browser instances. It is owned by the ProfileIOS and each ProfileIOS has one associated BrowserList.
 ---
 
 **Rule.** In objects below the line in the sand—mediators, view controllers,

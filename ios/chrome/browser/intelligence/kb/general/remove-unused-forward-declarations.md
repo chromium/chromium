@@ -1,7 +1,21 @@
 ---
 name: ios/remove-unused-forward-declarations
+description: In header files, remove unused forward declarations and redundant declarations of imported types, but retain declarations for types still used in private or overridden methods
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++-dos-and-donts.md
+    heading: Minimize Code in Headers
+    quote: "Remove #includes you don't use. Unfortunately, Chromium lacks include-what-you-use (\"IWYU\") support, so there's no tooling to do this automatically. Look carefully when refactoring."
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 09. **Delete unused imports and build deps**
+    quote: Remove `#include`s, `#import`s, and forward declarations that are no longer needed.
+  - path: styleguide/c++/c++.md
+    heading: 'Forward declarations vs. #includes'
+    quote: Unlike the Google style guide, Chromium style prefers forward declarations to `#includes` where possible. This can reduce compile times and result in fewer files needing recompilation when a header changes.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: '09. **Delete unused imports and build deps**:'
+    quote: Remove `#include`s, `#import`s, and forward declarations that are no longer needed.
 ---
 
 **Rule.** Do not add or retain unneeded or redundant forward declarations

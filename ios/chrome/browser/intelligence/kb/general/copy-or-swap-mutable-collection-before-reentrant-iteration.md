@@ -1,5 +1,6 @@
 ---
 name: ios/copy-or-swap-mutable-collection-before-reentrant-iteration
+description: When iterating or draining mutable collections where callbacks or tasks can cause re-entrant mutation, snapshot the collection with -copy or drain it upfront with std::exchange instead of aliasing to NSArray*
 rubric: correctness
 severity: should_fix
 ---

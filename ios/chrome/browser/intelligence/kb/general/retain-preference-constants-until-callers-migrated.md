@@ -1,7 +1,15 @@
 ---
 name: ios/retain-preference-constants-until-callers-migrated
+description: When removing or renaming a shared constant, preference name, or API still referenced by external or cross-repo callers, retain the old declaration with a tracking TODO until all callers migrate
 rubric: change_scope
 severity: nit
+citations:
+  - path: agents/skills/preference-deprecation/SKILL.md
+    heading: 'Step 2: Code Cleanup in Feature Code'
+    quote: 1. Delete call sites that read/write the obsolete pref from feature logic and UI code (including Android Java callsites such as Pref.java, PrefNames.java, or ChromePreferenceKeys where applicable). 2. Remove pref name declarations/definitions from their original locations
+  - path: chrome/browser/prefs/README.md
+    heading: Deleting an old pref
+    quote: 1. Move the pref name declaration to the anonymous namespace of [chrome/browser/prefs/browser_prefs.cc] ... 5. Delete the old code.
 ---
 
 **Rule.** When removing or renaming a shared constant, preference name, or API

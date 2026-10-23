@@ -1,7 +1,12 @@
 ---
 name: ios/use-chromium-task-runner-not-grand-central-dispatch
+description: When dispatching asynchronous work, prefer Chromium TaskRunners over Grand Central Dispatch, document extension GCD usage, and avoid high-priority queues for non-urgent tasks
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Concurrency Best Practices
+    quote: Prefer `base::SequencedTaskRunner` and `PostTask` / `PostDelayedTask` over `dispatch_async` unless an iOS system API requires a `dispatch_queue_t`.
 ---
 
 **Rule.** Post asynchronous and background tasks using Chromium task runners

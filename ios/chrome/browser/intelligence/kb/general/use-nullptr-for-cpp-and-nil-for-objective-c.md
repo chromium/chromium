@@ -1,7 +1,12 @@
 ---
 name: ios/use-nullptr-for-cpp-and-nil-for-objective-c
+description: In Objective-C, Objective-C++, and C++ code and comments, use nil for Objective-C objects, nullptr for C++ pointers and raw_ptr members, and nullopt for std::optional
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Code Formatting
+    quote: Use `nil` for null pointers to Objective-C objects, and `nullptr` for C++ objects.
 ---
 
 **Rule.** In Objective-C, Objective-C++ (.mm), and C++ code and comments, use

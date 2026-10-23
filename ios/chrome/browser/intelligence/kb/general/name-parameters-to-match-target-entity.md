@@ -1,5 +1,6 @@
 ---
 name: ios/name-parameters-to-match-target-entity
+description: When declaring function parameters, properties, or selectors, name them after the specific target entity, component, or state rather than generic terms like active or value
 rubric: readability
 severity: should_fix
 ---

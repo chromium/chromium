@@ -1,7 +1,12 @@
 ---
 name: ios/verify-embedder-support-before-removing-feature-overrides
+description: When removing explicit feature flag disablements or runtime overrides in embedders, verify why it was disabled and implement required platform dependencies first
 rubric: correctness
 severity: should_fix
+citations:
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 01. **Determine flag's default state**
+    quote: If the flag has a uniform default state but is explicitly overridden (e.g., force-disabled) for specific platforms via runtime overrides, bring this discrepancy to the user's attention before cleaning it up.
 ---
 
 **Rule.** Do not remove explicit feature flag disablements or runtime overrides

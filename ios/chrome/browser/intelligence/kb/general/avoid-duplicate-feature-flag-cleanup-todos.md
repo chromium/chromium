@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-duplicate-feature-flag-cleanup-todos
+description: When tracking feature flag cleanups or deprecations, place removal TODOs on header declarations rather than call sites, but annotate retained legacy methods, flows, and variables
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: TODO comments
+    quote: '* **Every TODO must have a bug** * Bug should be labeled with **Hotlist-TODO-iOS** * Always list bug in parentheses following "TODO" * `// TODO(crbug.com/######): Something that needs doing.`'
 ---
 
 **Rule.** When tracking cleanup or removal for temporary feature flags, kill

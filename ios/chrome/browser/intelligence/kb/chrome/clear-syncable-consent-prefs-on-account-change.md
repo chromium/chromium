@@ -1,7 +1,12 @@
 ---
 name: ios/clear-syncable-consent-prefs-on-account-change
+description: When adding account-scoped consent or session preferences to a service or agent with an account-change or sign-out cleanup path (such as OnPrimaryAccountChanged), clear the new preferences alongside existing ones
 rubric: correctness
 severity: should_fix
+citations:
+  - path: components/sync_preferences/README.md
+    heading: For reviewers
+    quote: Adding syncable prefs may have privacy impact. It's the **responsibility of the code reviewer** to ensure that new syncable prefs don't have undue privacy impact.
 ---
 
 **Rule.** When a service or agent maintains an account-change cleanup path (such

@@ -1,5 +1,6 @@
 ---
 name: ios/reset-scoped-ui-blocker-on-ui-teardown
+description: When managing std::unique_ptr<ScopedUIBlocker>, bind it directly into asynchronous completion callbacks via base::BindOnce, or explicitly call .reset() during UI teardown before scene deallocation
 rubric: safety
 severity: should_fix
 ---

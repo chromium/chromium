@@ -1,7 +1,12 @@
 ---
 name: ios/coordinator-view-controller-property-for-containment-only
+description: When coordinating UI flows, encapsulate view controller creation in coordinators; do not instantiate duplicate child controllers, expose mutable view controllers, or configure properties through coordinator.viewController
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/coordinators.md
+    heading: Subclassing ChromeCoordinator
+    quote: When a coordinator's view controller is contained as a child view controller inside a parent view hierarchy rather than presented modally, the coordinator may also expose a read-only viewController property.
 ---
 
 **Rule.** When presenting a UI flow or child feature, encapsulate view

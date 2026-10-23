@@ -1,5 +1,6 @@
 ---
 name: ios/verify-signin-enabled-before-account-menu
+description: When presenting account menus or triggering account-switching flows, verify AuthenticationService::SigninEnabled() alongside sign-in state to avoid crashing during asynchronous sign-out
 rubric: correctness
 severity: should_fix
 ---

@@ -1,7 +1,18 @@
 ---
 name: ios/align-api-comment-terminology-with-declarations
+description: When documenting function declarations, integrate backtick-wrapped parameters into complete sentences, omit redundant parameter types, prune obsolete parameters, and qualify enclosing members
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_best_practices.md
+    heading: Method and class comments
+    quote: This documentation details what arguments the method takes, what it returns, any "gotchas" or restrictions, and what exceptions it can throw or errors it can return.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Disambiguating Symbols
+    quote: Where needed to avoid ambiguity, use backticks to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
 ---
 
 **Rule.** When documenting function or method declarations or updating

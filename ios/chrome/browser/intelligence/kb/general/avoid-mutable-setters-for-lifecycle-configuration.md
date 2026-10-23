@@ -1,7 +1,21 @@
 ---
 name: ios/avoid-mutable-setters-for-lifecycle-configuration
+description: Inject lifecycle configuration and mandatory dependencies via designated initializers with CHECK, mark unconfigured initializers NS_UNAVAILABLE, and specify properties readonly instead of exposing mutable setters
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/patterns/builder-and-parameter-bundle.md
+    heading: The Builder & Parameter Bundle Patterns
+    quote: The builder and parameter bundle patterns allow for giving a class a lot of configuration options at compile time, while leaving the runtime API small and the runtime constraints clear.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Nullability annotations in the `ios/` directory
+    quote: Nullability annotations, such as `nonnull` and `nullable`, may not be used in the `ios/` directory. This differs from the Google Objective-C Style Guide, which permits these annotations.
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: CHECK(), DCHECK() and NOTREACHED() are all used to ensure that invariants hold. They document (and verify) programmer expectations that either some statement *always* holds true at the point of (D)CHECKing or that a piece of code is unreachable (for NOTREACHED).
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** Do not expose public C++ setters (`SetFooEnabled(bool)`), readwrite

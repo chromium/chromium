@@ -1,5 +1,6 @@
 ---
 name: ios/deactivate-constraints-before-reinstalling
+description: When replacing or toggling Auto Layout constraints, reparenting controllers, or re-adding reused views, deactivate existing constraints or call removeFromSuperview before activating replacements
 rubric: correctness
 severity: should_fix
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/verify-isolation-info-origin-before-dereference
+description: Do not unconditionally dereference a std::optional<T> returned by an accessor (such as net::IsolationInfo::top_frame_origin() or frame_origin()) with operator-> or operator* without checking has_value() or value_or()
 rubric: correctness
 severity: should_fix
 ---

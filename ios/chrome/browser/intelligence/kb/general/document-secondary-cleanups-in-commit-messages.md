@@ -1,7 +1,15 @@
 ---
 name: ios/document-secondary-cleanups-in-commit-messages
+description: When a CL includes secondary cleanups or adjustments, or defers related type cleanups to follow-up CLs, document those modifications or scope boundaries in the commit description
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/contributing.md
+    heading: Uploading a change for review
+    quote: Uploading a change for review
+  - path: docs/cl_tips.md
+    heading: Share context for the CL
+    quote: Your CL description should always document what you are changing and why.
 ---
 
 **Rule.** When a CL includes secondary cleanups, redundant code deletions, or

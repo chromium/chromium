@@ -1,5 +1,6 @@
 ---
 name: ios/guard-ui-updates-with-change-checks
+description: In Objective-C UI update methods, property setters, and consumer methods, return early when state is unchanged before mutating ivars or triggering UI side effects
 rubric: readability
 severity: should_fix
 ---

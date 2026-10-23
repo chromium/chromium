@@ -1,5 +1,6 @@
 ---
 name: ios/no-redundant-nsstring-defensive-copy
+description: When receiving or inspecting NSString or immutable object parameters synchronously without storing them, avoid redundant defensive copies via copy, initWithString, or stringWithString
 rubric: readability
 severity: nit
 ---

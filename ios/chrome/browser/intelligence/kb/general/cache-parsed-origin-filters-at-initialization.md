@@ -1,7 +1,12 @@
 ---
 name: ios/cache-parsed-origin-filters-at-initialization
+description: When filtering messages or events by URL or origin, cache parsed url::Origin objects during initialization instead of converting strings on each callback
 rubric: design
 severity: nit
+citations:
+  - path: docs/security/origin-vs-url.md
+    heading: Don't use the GURL type to store origins.
+    quote: 'Use the following datatypes to represent origins: - C++: url::Origin or blink::SecurityOrigin (instead of GURL or blink::KURL).'
 ---
 
 **Rule.** Do not parse strings into `GURL` or `url::Origin` instances repeatedly

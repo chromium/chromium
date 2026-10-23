@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-on-prefix-for-objective-c-methods
+description: When naming Objective-C methods, delegate protocols, or observer bridges, avoid on... prefixes, noun-participles, inverted phrasing, and did with past-tense verbs; follow Cocoa verb-object conventions
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For code in an `@implementation` block, use the Objective-C naming rules.
 ---
 
 **Rule.** In Objective-C and Objective-C++ methods, delegate protocols, and

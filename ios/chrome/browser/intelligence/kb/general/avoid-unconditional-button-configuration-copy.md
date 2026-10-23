@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-unconditional-button-configuration-copy
+description: When updating UIKit button configurations or implementing configurationUpdateHandler blocks, verify whether properties changed before calling copy and reassigning button.configuration
 rubric: readability
 severity: nit
 ---

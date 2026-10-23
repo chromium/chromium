@@ -1,5 +1,6 @@
 ---
 name: ios/consolidate-duplicate-conditionals-into-if-else
+description: When multiple statements or fragmented checks evaluate the same condition or mode, consolidate into a single conditional block or delegate to mode-specific helpers
 rubric: readability
 severity: should_fix
 ---

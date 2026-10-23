@@ -1,7 +1,12 @@
 ---
 name: ios/null-check-get-active-web-state
+description: When querying or operating on the active WebState in WebStateList, verify GetActiveWebState() is non-null and active_index() is not kInvalidIndex before dereferencing or branching
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: WebStateList
+    quote: WebStateList represents a list of WebStates. It maintains a notion of an active WebState and opener-opened relationship between WebStates.
 ---
 
 **Rule.** When accessing the active tab in a `WebStateList`, verify that

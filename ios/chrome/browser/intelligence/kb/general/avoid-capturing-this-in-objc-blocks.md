@@ -1,7 +1,18 @@
 ---
 name: ios/avoid-capturing-this-in-objc-blocks
+description: In Objective-C blocks or asynchronous callbacks, do not capture raw C++ pointers, this, or dereference C++ members on weakSelf; use base::WeakPtr, CallbackToBlock, or strongSelf
 rubric: safety
 severity: blocking
+citations:
+  - path: docs/mac/arc.md
+    heading: Blocks {#examples-blocks}
+    quote: For blocks used in C++ functions, a retain cycle is not a concern, though the use of a `base::WeakPtr<>` might be needed to avoid stale pointers.
+  - path: docs/callback.md
+    heading: Binding A Class Method With Weak Pointers
+    quote: A callback bound using a weak pointer receiver will be automatically cancelled (calling `Run()` becomes a no-op) if the weak pointer is invalidated, e.g. its associated class instance is destroyed.
+  - path: docs/mac/arc.md
+    heading: Blocks
+    quote: For blocks used in C++ functions, a retain cycle is not a concern, though the use of a `base::WeakPtr<>` might be needed to avoid stale pointers.
 ---
 
 **Rule.** In Objective-C++ code, do not capture raw C++ pointers (such as

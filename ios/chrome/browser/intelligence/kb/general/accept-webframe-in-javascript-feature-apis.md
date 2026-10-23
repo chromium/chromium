@@ -1,7 +1,12 @@
 ---
 name: ios/accept-webframe-in-javascript-feature-apis
+description: When designing execution or action APIs in JavaScriptFeature subclasses, accept web::WebFrame* instead of web::WebState* to enforce origin validation and frame binding
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/web/public/js_messaging/README.md
+    heading: Be aware of the subtleties of value types returned by WKWebView
+    quote: Using functions on the `WebFrame` to execute JavaScript ensures that the message will only be sent to the expected webpage. Sending JavaScript to the WKWebView directly is not bound to any particular webpage or domain and may execute on a different page than expected if a navigation occurs between the sending and execution of the message. However, messages sent to a WebFrame will be bound to that webpage and be dropped if the webpage goes away before the JavaScript is executed.
 ---
 
 **Rule.** In `web::JavaScriptFeature` subclasses, design public execution and

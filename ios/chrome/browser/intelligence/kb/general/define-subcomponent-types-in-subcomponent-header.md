@@ -1,5 +1,6 @@
 ---
 name: ios/define-subcomponent-types-in-subcomponent-header
+description: When declaring shared enums, structs, or configuration types, place them in dedicated type, constants, or subcomponent headers rather than container, protocol, class, or view headers
 rubric: design
 severity: should_fix
 ---

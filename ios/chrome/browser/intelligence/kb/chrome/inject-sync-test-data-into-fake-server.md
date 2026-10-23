@@ -1,7 +1,12 @@
 ---
 name: ios/inject-sync-test-data-into-fake-server
+description: In sync integration tests, seed entities via FakeServer rather than mutating client models, and omit redundant waitForSyncServerEntities calls after injection
 rubric: testing
 severity: should_fix
+citations:
+  - path: components/sync/README.md
+    heading: Remote Change (Update)
+    quote: 3. New data is received by the `DataTypeWorker` and forwarded to the `DataTypeSyncBridge`. 4. The bridge merges the remote changes into the local data model via `ApplyIncrementalSyncChanges()`.
 ---
 
 **Rule.** In sync integration, UI, and EarlGrey tests, do not populate

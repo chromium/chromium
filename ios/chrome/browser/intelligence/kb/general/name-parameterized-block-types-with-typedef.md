@@ -1,7 +1,15 @@
 ---
 name: ios/name-parameterized-block-types-with-typedef
+description: Define named type aliases for parameterized or nested Objective-C blocks, and prefer ProceduralBlock or ConditionBlock over raw signatures, custom typedefs, or auto
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: docs/ios/style.md
+    heading: Blocks
+    quote: We follow Google style for blocks, except that historically we have used 2-space indentation for blocks that are parameters, rather than 4.
 ---
 
 **Rule.** When declaring Objective-C and Objective-C++ block callbacks with

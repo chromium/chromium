@@ -1,7 +1,18 @@
 ---
 name: ios/remove-unused-grd-resources-and-assets
+description: When removing code or feature flags referencing IDR_ resources or IDS_ strings, delete definitions from all .grd/.grdp files (including branded variants) and delete orphaned screenshots
 rubric: correctness
 severity: should_fix
+citations:
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 12. Delete unused strings or resources
+    quote: 'If any string or resource has no more users in either C++ or Java: - Delete its definition in a `.grd(p)` file. - Delete orphaned resource files. - For an orphaned string `IDS_FOO`, delete its corresponding `IDS_FOO.png.sha1` file, which references a screenshot to help translators.'
+  - path: agents/projects/code-health/accessibility-cleanup/references/automated_review.md
+    heading: Automated Review
+    quote: Are there any strings that are now unused in the code? If so, ensure that the strings have been removed along with their corresponding png sha1 files if such files exist.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 12. **Delete unused strings or resources**
+    quote: 'If any string or resource has no more users in either C++ or Java: - Delete its definition in a `.grd(p)` file. - Delete orphaned resource files. - For an orphaned string `IDS_FOO`, delete its corresponding `IDS_FOO.png.sha1` file, which references a screenshot to help translators.'
 ---
 
 **Rule.** When removing dead code, retiring feature flags, or refactoring logic

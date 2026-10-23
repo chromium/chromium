@@ -1,7 +1,12 @@
 ---
 name: ios/choose-smallest-crash-key-buffer-size
+description: When declaring or logging crash keys with SCOPED_CRASH_KEY_STRING or CrashKeyString, choose the smallest buffer size variant accommodating expected values
 rubric: safety
 severity: nit
+citations:
+  - path: docs/debugging_with_crash_keys.md
+    heading: High-Level Overview
+    quote: Every crash key has an associated value maximum length and a string name to identify it. The maximum length is specified as a template parameter in order to allocate that amount of space for the value up-front.
 ---
 
 **Rule.** When declaring or logging crash keys (e.g., using

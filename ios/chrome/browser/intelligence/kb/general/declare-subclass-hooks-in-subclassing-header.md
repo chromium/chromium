@@ -1,5 +1,6 @@
 ---
 name: ios/declare-subclass-hooks-in-subclassing-header
+description: When exposing Objective-C subclass hooks or base properties, isolate them in a (Subclassing) category or +subclassing.h header instead of public headers or private extensions
 rubric: readability
 severity: should_fix
 ---

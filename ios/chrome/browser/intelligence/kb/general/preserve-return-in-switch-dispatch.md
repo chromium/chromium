@@ -1,7 +1,12 @@
 ---
 name: ios/preserve-return-in-switch-dispatch
+description: When dispatching terminal actions in a switch followed by downstream logic or NOTREACHED(), exit cases with return rather than break
 rubric: correctness
 severity: should_fix
+citations:
+  - path: styleguide/c++/checks.md
+    heading: Examples
+    quote: 'switch (my_enum) { case A: return 1; case B: return 5; case C: return 3; } NOTREACHED();'
 ---
 
 **Rule.** When refactoring early-return branches into a switch statement or

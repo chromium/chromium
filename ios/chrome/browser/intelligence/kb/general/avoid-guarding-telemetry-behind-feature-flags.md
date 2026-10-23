@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-guarding-telemetry-behind-feature-flags
+description: When instrumenting telemetry for experiments or rollouts, record baseline and outcome metrics unconditionally across treatment and control paths rather than gating behind feature flags
 rubric: testing
 severity: should_fix
+citations:
+  - path: docs/flag_guarding_guidelines.md
+    heading: What type of flag rollout to use?
+    quote: If a change has the potential to affect performance or memory, or you want to analyze the impact of the launch on feature-specific metrics, use a disabled-by-default base::Feature flag and run an A/B experiment.
+  - path: tools/metrics/histograms/README.md
+    heading: Enum Histograms
+    quote: Enumerated histogram are most appropriate when you have a list of connected / related states that should be analyzed jointly.
 ---
 
 **Rule.** When instrumenting telemetry for feature experiments, migrations, or

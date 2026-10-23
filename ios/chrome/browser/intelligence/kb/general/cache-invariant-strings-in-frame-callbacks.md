@@ -1,5 +1,6 @@
 ---
 name: ios/cache-invariant-strings-in-frame-callbacks
+description: When implementing per-frame display link or high-frequency callbacks, cache invariant string conversions like SysNSStringToUTF8 and NSStringFromClass in ivars instead of recomputing on every frame
 rubric: safety
 severity: nit
 ---

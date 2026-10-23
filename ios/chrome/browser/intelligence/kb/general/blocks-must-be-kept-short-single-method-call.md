@@ -1,7 +1,15 @@
 ---
 name: ios/blocks-must-be-kept-short-single-method-call
+description: In Objective-C blocks, keep implementations minimal by delegating to helper methods via weakSelf, avoiding ivar arrow dereferences, and verifying strongSelf non-nil when re-retention is required
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Blocks
+    quote: Moving the body into a private method avoids `weakSelf`/`strongSelf` dance bugs, prevents accidental ivar capture, and produces clear stack traces.
+  - path: ios/best_practices.md
+    heading: Properties and Instance Variables
+    quote: Referencing `self` or `_ivar` inside a block strongly retains `self`. Always capture `__weak __typeof(self) weakSelf = self;`.
 ---
 
 **Rule.** Keep Objective-C and Objective-C++ blocks concise by delegating

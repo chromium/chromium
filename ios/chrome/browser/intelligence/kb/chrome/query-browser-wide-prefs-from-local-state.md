@@ -1,7 +1,15 @@
 ---
 name: ios/query-browser-wide-prefs-from-local-state
+description: When accessing preferences, query browser-wide settings from GetApplicationContext()->GetLocalState() and user settings from ProfileIOS::GetPrefs(), injecting local-state PrefService in KeyedService factories
 rubric: correctness
 severity: should_fix
+citations:
+  - path: chrome/browser/prefs/README.md
+    heading: Prefs
+    quote: Browser-wide prefs are stored in Local State (`g_browser_process->local_state()`) and per-profile prefs are stored in Preferences (`Profile::GetPrefs()`). The `PrefService` API is used to read/write registered prefs.
+  - path: docs/ios/objects.md
+    heading: ApplicationContext
+    quote: ApplicationContext is a global singleton. It gives access to other global objects and settings that are shared by all user sessions. Those settings are called "local settings" as they are not synchronised and only affect the current device (as the settings are shared by all sessions there is no account to sync them to).
 ---
 
 **Rule.** Do not query browser-wide (local state) preferences on a

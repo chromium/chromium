@@ -1,7 +1,12 @@
 ---
 name: ios/no-browser-command-dispatcher-in-scene-components
+description: Do not bind or dispatch via a Browser CommandDispatcher in scene-level components; store cross-browser layout and UI state on SceneState
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: Browser
+    quote: Browser is the model for a container of tabs for use by the UI. Each window can have multiple Browser associated (regular tabs, incognito tabs, inactive tabs)... The Browser owns a WebStateList and樁 indirectly owns all the tabs (aka WebState and their associated tab helpers). The Browser also owns the CommandDispatcher and ChromeBroadcaster used for dispatching UI commands and property synchronisation.
 ---
 
 **Rule.** Do not inject, store, or bind a single `Browser`'s `CommandDispatcher`

@@ -1,5 +1,6 @@
 ---
 name: ios/name-test-methods-after-outcome-and-condition
+description: When naming or commenting test methods, describe the verified outcome, observable contract, and functional condition rather than internal counters, tracking mechanics, or implementation side effects
 rubric: readability
 severity: should_fix
 ---

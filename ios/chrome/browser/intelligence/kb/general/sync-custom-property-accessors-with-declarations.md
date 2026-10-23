@@ -1,5 +1,6 @@
 ---
 name: ios/sync-custom-property-accessors-with-declarations
+description: In Objective-C, ensure initializer backing ivar assignments (_<property>) and custom accessor methods (-getter/-setter) exactly match declared property names
 rubric: correctness
 severity: should_fix
 ---

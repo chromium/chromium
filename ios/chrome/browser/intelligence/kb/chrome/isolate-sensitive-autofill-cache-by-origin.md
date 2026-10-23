@@ -1,5 +1,6 @@
 ---
 name: ios/isolate-sensitive-autofill-cache-by-origin
+description: When caching sensitive autofill data across frames, isolate and validate entries by security origin (url::Origin) rather than clearing the cache on frame changes
 rubric: safety
 severity: should_fix
 ---

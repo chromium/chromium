@@ -1,5 +1,6 @@
 ---
 name: ios/defer-startup-policy-and-capability-checks
+description: When initializing KeyedServices or handling startup in profile-scoped components, do not eagerly prefetch policy or capability checks; defer them until UI presentation
 rubric: design
 severity: should_fix
 ---

@@ -1,7 +1,15 @@
 ---
 name: ios/scope-deps-include-rules-to-innermost-directory
+description: When defining in-tree DEPS include rules, place DEPS in layer subdirectories, allow directory paths over individual headers, and use specific_include_rules for single-file exceptions
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/dependencies.md
+    heading: Understanding In-Tree `DEPS` Files
+    quote: "include_rules: This is the most important variable. It's a list of strings that define which directories are allowed to be included by files within the current directory (and its subdirectories)."
+  - path: agents/skills/gn-deps-debugging/references/dependency-patterns.md
+    heading: DEPS include rules
+    quote: '- Prefer the narrowest `specific_include_rules` entry. - Match existing patterns in the nearest `DEPS` file. - Do not add broad directory-wide allow rules for a single file.'
 ---
 
 **Rule.** When defining dependencies in in-tree `DEPS` files, place dedicated

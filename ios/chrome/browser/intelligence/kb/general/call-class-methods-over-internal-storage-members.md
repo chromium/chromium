@@ -1,5 +1,6 @@
 ---
 name: ios/call-class-methods-over-internal-storage-members
+description: When accessing state or resources from wrapped objects, WebStateList, delegates, or child components, call the class's own accessors rather than reaching into internal members
 rubric: readability
 severity: should_fix
 ---

@@ -1,7 +1,15 @@
 ---
 name: ios/mediator-deterministic-cleanup-in-disconnect
+description: In iOS mediators (-disconnect) and coordinators (-stop), sever UI delegates, reset subscriptions and observer bridges before dependency pointers, and null held raw_ptrs
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: Teardown and -disconnect
+    quote: Inside -disconnect, the mediator unregisters all active observations, cancels pending callbacks, and clears its pointers to C++ services and model objects.
+  - path: docs/dangling_ptr_guide.md
+    heading: Incorrect destruction order
+    quote: In the majority of cases, this happens when dependent objects are destroyed in the wrong order in a class, causing the dependency to be released first, thus creating a dangling pointer in the other.
 ---
 
 **Rule.** In Chrome iOS mediators and coordinators, perform deterministic

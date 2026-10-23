@@ -1,7 +1,18 @@
 ---
 name: ios/document-delegate-invocation-context-and-callback-obligation
+description: When declaring Objective-C delegate or observer protocols, document component roles, trigger conditions, obligations, and completion contracts, and name callbacks after component properties
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_guidelines.md
+    heading: Interface / class documentation
+    quote: Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: agents/prompts/common.minimal.md
+    heading: Coding
+    quote: 'Add code comments sparingly: Focus on *why* something is done, not *what* is done.'
 ---
 
 **Rule.** When declaring Objective-C delegate or observer protocols in header

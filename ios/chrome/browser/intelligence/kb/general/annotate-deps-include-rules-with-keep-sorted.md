@@ -1,7 +1,15 @@
 ---
 name: ios/annotate-deps-include-rules-with-keep-sorted
+description: When modifying lists bounded by keep-sorted directives (such as DEPS include_rules), insert unique entries inside the block in alphabetical order, keeping baseline exclusions outside
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/projects/code-health/keep-sorted/SKILL.md
+    heading: 3. Inject Directives & Sort
+    quote: Sort the block alphabetically. If available, you can run the local `keep-sorted` formatter over the file; otherwise, sort the items manually in your script or output.
+  - path: buildtools/checkdeps/README.md
+    heading: Directory structure
+    quote: The rules are processed in order. This means you can explicitly allow a higher directory and then take away permissions from sub-parts, or the reverse.
 ---
 
 **Rule.** When adding or modifying entries in lists, arrays, or configuration

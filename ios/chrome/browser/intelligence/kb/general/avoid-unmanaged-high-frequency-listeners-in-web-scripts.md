@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-unmanaged-high-frequency-listeners-in-web-scripts
+description: When injecting web scripts via JavaScriptFeature, avoid permanent top-level listeners for high-frequency events like pointermove, mousemove, or scroll; scope their lifecycle
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/web/public/js_messaging/README.md
+    heading: JavaScript Injection
+    quote: JavaScript is considered to be "injected" when it is added to every webpage by WebKit. JavaScript injection is configured at the BrowserState level. That is, it is injected unconditionally for every WebState associated with that BrowserState.
 ---
 
 **Rule.** Do not register permanent, top-level event listeners on `window` or

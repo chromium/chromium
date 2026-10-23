@@ -1,5 +1,6 @@
 ---
 name: ios/guard-weak-let-with-swift-version
+description: 'When declaring weak let variables in Swift, guard with #if swift(>=6.2.3) and fall back to weak var under #else on older compilers'
 rubric: correctness
 severity: should_fix
 ---

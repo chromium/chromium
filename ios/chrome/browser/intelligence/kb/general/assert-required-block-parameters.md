@@ -1,7 +1,15 @@
 ---
 name: ios/assert-required-block-parameters
+description: When handling Objective-C blocks, assert required callbacks with CHECK at entry, guard optional invocations with if (block) before direct execution, and handle nil defaults
 rubric: correctness
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Nullability annotations in the `ios/` directory
+    quote: Nullability annotations, such as `nonnull` and `nullable`, may not be used in the `ios/` directory. This differs from the Google Objective-C Style Guide, which permits these annotations.
+  - path: styleguide/c++/checks.md
+    heading: Invariant-verification mechanisms
+    quote: Prefer `CHECK()` and `NOTREACHED()` over `DCHECK()`s as they ensure that if an invariant fails, the program does not continue in an unexpected state, and we hear about the failure either through a test failure or a crash report.
 ---
 
 **Rule.** When implementing Objective-C methods that accept required block

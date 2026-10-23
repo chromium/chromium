@@ -1,5 +1,6 @@
 ---
 name: ios/dispatch-and-cleanup-before-overlay-ui-did-finish-dismissal
+description: When invoking a delegate or completion callback that can synchronously deallocate the caller (such as OverlayUIDidFinishDismissal in OverlayRequestCoordinator subclasses), finish all command dispatches, state updates, and ivar accesses first
 rubric: safety
 severity: should_fix
 ---

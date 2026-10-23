@@ -1,7 +1,14 @@
 ---
 name: ios/declare-keyed-service-factory-dependencies-with-depends-on
+description: When implementing KeyedService factory constructors whose service depends on other KeyedServices, declare each dependency using DependsOn(OtherFactory::GetInstance()) to ensure correct destruction ordering
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: This infrastructure allows to declare dependencies between services and ensure that they are created and destroyed in an order compatible with those dependencies.
+  - path: components/keyed_service/README.md
+    quote: KeyedService and KeyedServiceFactory together support building a dependency tree of services that are all keyed off the same object (typically, content::BrowserContext or web::BrowserState), and whose teardown order is managed according to the expressed dependency order.
 ---
 
 **Rule.** In `KeyedService` factory constructors (subclasses of

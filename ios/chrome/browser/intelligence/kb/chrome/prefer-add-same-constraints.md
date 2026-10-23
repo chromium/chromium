@@ -1,5 +1,6 @@
 ---
 name: ios/prefer-add-same-constraints
+description: When pinning, matching, or centering views or layout guides in iOS Chrome, use constraints_ui_util helpers like AddSameConstraints instead of manual NSLayoutConstraint arrays
 rubric: readability
 severity: should_fix
 ---

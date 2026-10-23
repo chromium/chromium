@@ -1,7 +1,15 @@
 ---
 name: ios/suppress-failing-tests-in-test-expectations
+description: When suppressing failing or flaky iOS tests for specific devices, OS versions, or simulators, add EarlGrey entries to //ios/testing/test_expectations.txt and use DISABLED_ with a tracking TODO in unit tests instead of in-test runtime checks
 rubric: testing
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Testing Best Practices
+    quote: Do not use `DISABLED_` or `FLAKY_` method prefixes or hard-coded runtime/compile-time skips in test code to suppress failing or flaky tests. Instead, add an entry to `//ios/testing/test_expectations.txt` linking the `crbug.com/123456` issue.
+  - path: docs/testing/on_disabling_tests.md
+    heading: On disabling tests
+    quote: A third way is to take advantage of features in your testing framework to skip over tests. Examples include involve adding `DISABLED_` to the test method name for GTest-based tests
 ---
 
 **Rule.** When an iOS test fails or is flaky only on a specific device form

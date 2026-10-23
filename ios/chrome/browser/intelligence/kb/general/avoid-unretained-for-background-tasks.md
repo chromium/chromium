@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-unretained-for-background-tasks
+description: When offloading tasks to background runners, pass value copies to static or free functions without base::Unretained, WeakPtr, or self, and avoid secondary detached SEQUENCE_CHECKERs
 rubric: safety
 severity: blocking
+citations:
+  - path: ios/best_practices.md
+    heading: Concurrency Best Practices
+    quote: When running background work, pass owned/copied inputs into a stateless callback that touches no sequence-bound objects (`self` or `this`), and deliver outputs back to the originating sequence via `PostTaskAndReply` or `PostTaskAndReplyWithResult`.
+  - path: docs/threading_and_tasks.md
+    heading: Posting a Parallel Task
+    quote: base::ThreadPool::PostTaskAndReplyWithResult(FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE}, base::BindOnce(&ReadFromDisk, path), base::BindOnce(&OnReadFromDisk, weak_ptr_factory_.GetWeakPtr()));
 ---
 
 **Rule.** Do not pass `base::Unretained(this)`, dereference `base::WeakPtr`, or

@@ -1,7 +1,12 @@
 ---
 name: ios/decouple-model-objects-from-application-context
+description: In shared model classes and core model build targets, do not query or depend on ApplicationContext or owning managers; extract helpers to separate utils targets
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: The ProfileIOS objects are owned by the ProfileManagerIOS that can be accessed via the ApplicationContext.
 ---
 
 **Rule.** Do not make lower-scoped model classes (such as tab-, browser-, or

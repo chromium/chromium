@@ -1,7 +1,12 @@
 ---
 name: ios/bundle-complex-command-parameters-into-command-objects
+description: When a UI command takes more than three parameters or has multiple variants, encapsulate them into a Command object payload.
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/commands.md
+    heading: Characteristics of a UI Command
+    quote: When a command requires more than three parameters, or has multiple variants taking different combinations of model-layer parameters, bundle those parameters into a command object and pass that object as the sole parameter.
 ---
 
 **Rule.** When a command takes more than three parameters or has multiple

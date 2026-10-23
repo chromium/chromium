@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-static-cast-between-optional-types
+description: When converting between distinct std::optional template instantiations, unwrap and construct the target type explicitly instead of using static_cast on the optional
 rubric: readability
 severity: nit
 ---

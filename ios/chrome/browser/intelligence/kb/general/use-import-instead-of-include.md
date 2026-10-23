@@ -1,7 +1,15 @@
 ---
 name: ios/use-import-instead-of-include
+description: 'In Objective-C++ (.mm) files under ios/ and headers consumed only by Objective-C++ translation units, use #import instead of #include for all headers, with angle brackets for system headers and quotes for repo headers'
 rubric: readability
 severity: blocking
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: '#import and #include in the `ios/` directory'
+    quote: '#import directive can be used to import C++ and Objective-C headers for all source code in the `ios/` directory. This differs from the Google Objective-C Style Guide, which requires using #include directive for C++ headers.'
+  - path: styleguide/c++/c++.md
+    heading: Platform-specific code
+    quote: 'Repeat the standard `#include` order within this section: ```c++ #include "foo/foo.h" #include <stdint.h> #include <algorithm> #include "base/strings/utf_string_conversions.h" ```'
 ---
 
 **Rule.** In Objective-C++ (`.mm`) files under `ios/`, and in headers that are

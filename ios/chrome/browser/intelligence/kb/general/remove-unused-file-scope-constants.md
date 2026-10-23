@@ -1,7 +1,18 @@
 ---
 name: ios/remove-unused-file-scope-constants
+description: When refactoring, inlining, or removing feature code, delete unreferenced constants, accessibility identifiers, metrics, and keys from headers and file scope, avoiding speculative declarations without consumers.
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 08. **Remove dead code**
+    quote: In all removed lines, check for functions, classes, and constants that are no longer referenced and delete their declarations and definitions. You may need to delete entire source files.
+  - path: styleguide/c++/defining_compile_time_const.md
+    heading: Guidelines
+    quote: Define constants in the narrowest scope possible, just like with other variables. This minimizes name conflicts, symbol duplication, and dead code. Don’t put things at namespace scope or in headers unless you actually need to refer to them from multiple places.
+  - path: agents/projects/code-health/histogram-cleanup/references/automated_review.md
+    heading: Review Prompt
+    quote: Verify that there are no leftover references to the removed histogram in code or comments. Use rg or cs to verify.
 ---
 
 **Rule.** Do not declare speculative constants, identifiers, or helper symbols

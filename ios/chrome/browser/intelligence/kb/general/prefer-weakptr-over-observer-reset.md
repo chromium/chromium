@@ -1,7 +1,21 @@
 ---
 name: ios/prefer-weakptr-over-observer-reset
+description: When referencing dynamic objects like web::WebState, prefer WeakPtr over raw pointers or observer boilerplate, but use cleared raw_ptr when actively observing
 rubric: safety
 severity: should_fix
+citations:
+  - path: base/memory/README.md
+    heading: base::WeakPtr<T>
+    quote: Use when a reference to an object might outlive the object itself. ... When the associated factory (usually owned by T) is destroyed, all `WeakPtr<T>` are invalidated (becomes null) rather than becoming use-after-frees.
+  - path: docs/dangling_ptr_guide.md
+    heading: Observer callback
+    quote: It is important to clear the pointer when the object is about to be deleted. Chrome uses the observer pattern heavily. In some cases, the observer does not clear its pointer toward the observed class when notified of its destruction.
+  - path: docs/dangling_ptr_guide.md
+    heading: Challenging lifespan
+    quote: "It can be challenging to deal with an object's lifespan. Sometimes, the lifetime of two objects are completely different. Removing the pointer may be a good thing to do. Sometimes, it can be replaced by: ... A WeakPtr"
+  - path: styleguide/c++/c++.md
+    heading: Non-owning pointers in class fields
+    quote: Class and struct fields that are not garbage-collected should be written `const raw_ref<T>` or `raw_ptr<T>` rather than `T&` or `T*` whenever possible.
 ---
 
 **Rule.** When holding non-owning references to objects with dynamic lifecycles

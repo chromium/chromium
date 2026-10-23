@@ -1,5 +1,6 @@
 ---
 name: ios/check-non-nil-before-collection-insert
+description: When inserting objects into Foundation collections like NSMutableArray or NSMutableSet, verify that the object is non-nil to prevent NSInvalidArgumentException crashes
 rubric: correctness
 severity: should_fix
 ---

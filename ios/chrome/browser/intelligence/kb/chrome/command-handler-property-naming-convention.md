@@ -1,7 +1,15 @@
 ---
 name: ios/command-handler-property-naming-convention
+description: When managing command protocols (`id<*Commands>`), name properties, ivars, test mocks, and accessors `<feature>Handler` or `mock_<feature>_handler`, omitting redundant 'command', generic 'handler', or 'dispatcher'.
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/architecture/commands.md
+    heading: Naming Command Handlers
+    quote: Name handler properties and instance variables `<name>Handler`, where `<name>` is the command protocol name *without* the trailing `Commands` suffix
+  - path: ios/best_practices.md
+    heading: Architecture Pattern Best Practices
+    quote: Name handler properties and ivars `<name>Handler` (dropping the `Commands` suffix, e.g., `id<PageInfoCommands> pageInfoHandler`), declare them `weak`, never name them `dispatcher` or bare `handler`, and never combine multiple protocols into one property (`id<FooCommands, BarCommands>`).
 ---
 
 **Rule.** When working with command protocols (`id<*Commands>`) and command

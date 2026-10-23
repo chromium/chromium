@@ -1,7 +1,15 @@
 ---
 name: ios/enumerate-all-enum-cases-in-switch
+description: When switching over enums, omit default to preserve exhaustiveness warnings, handle all enumerators explicitly, use NOTREACHED() or NOTIMPLEMENTED(), and document intentional no-ops
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: NOTIMPLEMENTED and NOTREACHED logging macros
+    quote: "`NOTIMPLEMENTED`: This isn't implemented because we don't use it yet. If it's called, then we need to figure out what it should do."
+  - path: styleguide/c++/checks.md
+    heading: Examples
+    quote: This switch handles all cases, but enums can technically hold any integer value (even if all enum members are enumerated), so the compiler must try to handle other cases too. We can avoid dealing with values outside enums by using NOTREACHED() while also making sure we hear about it.
 ---
 
 **Rule.** When writing `switch` statements over enums or enum classes, omit the

@@ -1,7 +1,15 @@
 ---
 name: ios/prefix-boolean-objective-c-methods-with-assertive-verbs
+description: When declaring Objective-C BOOL methods, properties, or ivars, use assertive query prefixes rather than bare adjectives, nouns, trailing verbs, or lifecycle prefixes, and specify getter=is...
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For code in an `@implementation` block, use the Objective-C naming rules. For code in a method of a C++ class, use the C++ naming rules.
 ---
 
 **Rule.** When declaring or implementing Objective-C and Objective-C++ methods,

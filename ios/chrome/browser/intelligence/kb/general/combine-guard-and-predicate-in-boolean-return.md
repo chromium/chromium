@@ -1,5 +1,6 @@
 ---
 name: ios/combine-guard-and-predicate-in-boolean-return
+description: When returning boolean results, return boolean expressions directly or combine guards with short-circuit && instead of branching with if or ternary statements
 rubric: readability
 severity: nit
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/synthesize-base-navigation-controller-in-coordinators
+description: In ChromeCoordinator subclasses, synthesize baseNavigationController when pushing to navigation stacks instead of downcasting or declaring duplicate ivars; omit for modal coordinators
 rubric: readability
 severity: should_fix
 ---

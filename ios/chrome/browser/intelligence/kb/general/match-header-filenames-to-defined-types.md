@@ -1,7 +1,18 @@
 ---
 name: ios/match-header-filenames-to-defined-types
+description: When defining or refactoring classes, interfaces, and headers, match snake_case filenames to primary type names in UpperCamelCase, avoiding truncated, stale, or misleading names
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: File names
+    quote: Files should always be named using C++ style (`snake_case.mm`, not `CamelCase.mm`), even if they contain Objective-C++.
+  - path: docs/ios/working_with_files.md
+    heading: Moving and renaming files.
+    quote: 'Renaming a file involves updating the filename in all of the places where it exists: the file names in the filesystem, the file names in git, header guards in files, import declarations in files, listings in BUILD.gn files, and internally in the Xcode project.'
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
 ---
 
 **Rule.** Ensure source and header filenames correspond 1:1 with the primary

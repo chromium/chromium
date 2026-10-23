@@ -1,7 +1,18 @@
 ---
 name: ios/preserve-existing-comments-on-unchanged-declarations
+description: When refactoring, restructuring, or extracting logic and declarations, preserve explanatory comments on active logic and invariants, but update comments contradicting refactored semantics or lifecycles
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_best_practices.md
+    heading: Inline comments
+    quote: The primary purpose of inline comments is to provide information that the code itself cannot contain, such as why the code is there.
+  - path: docs/documentation_best_practices.md
+    heading: Delete dead documentation
+    quote: First delete what you're certain is wrong, ignore what's unclear.
+  - path: agents/prompts/common.minimal.md
+    heading: Coding
+    quote: 'Add code comments sparingly: Focus on *why* something is done, not *what* is done.'
 ---
 
 **Rule.** Do not remove existing explanatory comments on active logic (such as

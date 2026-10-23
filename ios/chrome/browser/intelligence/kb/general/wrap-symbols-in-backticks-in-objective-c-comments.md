@@ -1,7 +1,12 @@
 ---
 name: ios/wrap-symbols-in-backticks-in-objective-c-comments
+description: In comments and test matchers, wrap exact code symbols and parameterized selectors in backticks, and quote user-facing UI labels and controls using canonical capitalization
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Disambiguating Symbols
+    quote: Where needed to avoid ambiguity, use backticks to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
 ---
 
 **Rule.** In code comments and test matcher descriptions, format code symbols

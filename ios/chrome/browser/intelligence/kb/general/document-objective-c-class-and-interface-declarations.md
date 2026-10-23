@@ -1,7 +1,33 @@
 ---
 name: ios/document-objective-c-class-and-interface-declarations
+description: When declaring Objective-C classes, category extensions, protocols, or methods, document purpose, contracts, nil fallbacks, and testing roles quoting symbols in backticks; avoid tautologies and placeholders
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_guidelines.md
+    heading: Interface / class documentation
+    quote: Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.
+  - path: docs/documentation_best_practices.md
+    heading: Method and class comments
+    quote: 'Class / Module API documentation: The header / Javadoc / docstring comments for a class or a whole file. This documentation gives a brief overview of what the class / file does'
+  - path: styleguide/objective-c/objective-c.md
+    heading: Disambiguating Symbols
+    quote: Where needed to avoid ambiguity, use backticks to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Nullability annotations in the `ios/` directory
+    quote: Nullability annotations, such as `nonnull` and `nullable`, may not be used in the `ios/` directory. This differs from the Google Objective-C Style Guide, which permits these annotations.
+  - path: docs/ios/style.md
+    heading: TODO comments
+    quote: Every TODO must have a bug
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: To keep implementation files organized and navigable, method implementations should be clearly grouped by the interfaces they implement, and each such group should be marked with a `#pragma mark -`, followed by the interface name
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: Code should be as self documenting as possible, but sometimes that isn't enough. Maybe there's a tricky bit of implementation that isn't obvious.
 ---
 
 **Rule.** Precede Objective-C class, class extension, category, protocol

@@ -1,5 +1,6 @@
 ---
 name: ios/match-api-available-to-minimum-required-sdk-version
+description: When gating iOS code with @available or API_AVAILABLE, annotate declarations but not symbol-free types, guard call sites, match SDK versions, and document bounded ranges
 rubric: correctness
 severity: should_fix
 ---

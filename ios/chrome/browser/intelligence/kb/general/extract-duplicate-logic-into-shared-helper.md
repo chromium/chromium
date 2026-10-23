@@ -1,5 +1,6 @@
 ---
 name: ios/extract-duplicate-logic-into-shared-helper
+description: When methods, sibling classes, view controllers, mediators, or tests duplicate logic, formatting, or enums, extract shared helpers into utility files or components
 rubric: design
 severity: should_fix
 ---

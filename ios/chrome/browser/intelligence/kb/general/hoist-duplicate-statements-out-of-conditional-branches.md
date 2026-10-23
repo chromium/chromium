@@ -1,5 +1,6 @@
 ---
 name: ios/hoist-duplicate-statements-out-of-conditional-branches
+description: When conditional branches or switch cases duplicate statements, fallback values, or single active cases, hoist shared logic, simplify to early-return guards, or use [[fallthrough]];
 rubric: readability
 severity: should_fix
 ---

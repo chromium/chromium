@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-legacy-ui-bundled-directories
+description: In ios/chrome/browser GN files, separate coordinator orchestration and UI presentation into distinct targets, avoid legacy ui_bundled directories, and reject hybrid coordinator_ui targets
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/chrome/browser/shared/README.md
+    heading: Shared folder
+    quote: 'This folder contains the code shared by several features. Please add code to one of subfolder: * `coordinator/` if the code is *only* shared by coordinators/mediators * `model/` if the code is *only* shared by model objects * `ui/` if the code is *only* shared by ui elements * `public/` if the code is shared by all'
 ---
 
 **Rule.** In `ios/chrome/browser/`, decouple coordinator orchestration from UI

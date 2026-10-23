@@ -1,5 +1,6 @@
 ---
 name: ios/extract-repeated-condition-checks-into-helper
+description: When evaluating compound boolean conditions, member readiness, category membership, or complementary branches, extract or reuse named predicate helpers instead of duplicating inline logic
 rubric: design
 severity: should_fix
 ---

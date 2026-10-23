@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-weakptr-as-lazy-initialization-cache
+description: When implementing lazy initialization or caching dependencies, do not use base::WeakPtr as an uninitialized sentinel; query directly or use an explicit boolean flag
 rubric: correctness
 severity: should_fix
+citations:
+  - path: base/memory/README.md
+    heading: base::WeakPtr<T>
+    quote: When the associated factory (usually owned by T) is destroyed, all `WeakPtr<T>` are invalidated (becomes null) rather than becoming use-after-frees.
 ---
 
 **Rule.** Do not use `base::WeakPtr` as a lazy-initialization sentinel or cached

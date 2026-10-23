@@ -1,5 +1,6 @@
 ---
 name: ios/prefer-last-or-first-object-over-boundary-subscript
+description: When accessing boundary elements of an NSArray, prefer .lastObject or .firstObject over subscripting array[count - 1] or array[0] to avoid out-of-bounds crashes on empty containers
 rubric: correctness
 severity: should_fix
 ---

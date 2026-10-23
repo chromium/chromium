@@ -1,7 +1,21 @@
 ---
 name: ios/prefer-forward-declarations-over-imports-in-headers
+description: In headers and source/test files, forward-declare types referenced by pointer or signature instead of including headers, reserving imports for complete types and avoiding unnecessary BUILD.gn dependencies
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Headers, Imports, and Declaration Order
+    quote: Forward-declare classes (`class Foo;`, `@class Bar;`) and protocols (`@protocol Baz;`) in headers instead of `#import`ing their headers whenever the full definition is not needed (i.e., when the header does not inherit from the type, conform to the protocol, or embed a C++ value/smart-pointer member requiring the complete type).
+  - path: styleguide/c++/c++.md
+    heading: 'Forward declarations vs. #includes'
+    quote: Unlike the Google style guide, Chromium style prefers forward declarations to `#includes` where possible. This can reduce compile times and result in fewer files needing recompilation when a header changes.
+  - path: styleguide/c++/c++-dos-and-donts.md
+    heading: Minimize Code in Headers
+    quote: "You can't use forward declarations when: * Creating an instance of the type (e.g. `MyClass obj;`). The compiler needs to know the type's size to allocate memory."
+  - path: ios/tools/forward_declarations/README.md
+    heading: Overview
+    quote: 'By replacing full header imports with lightweight C++ forward declarations (`class` / `struct`) and Objective-C forward declarations (`@class` / `@protocol`), we: 1. **Decouple Interface Dependencies** — Reducing downstream build breaks. 2. **Speed up Compilation** — Siso/Ninja spend less time parsing redundant AST nodes. 3. **Maintain Clean Scope** — Move implementation imports directly to `.mm` and `.cc` files where they belong.'
 ---
 
 **Rule.** In C++ and Objective-C/Objective-C++ headers and implementation/test

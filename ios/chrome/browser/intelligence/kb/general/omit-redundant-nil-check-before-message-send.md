@@ -1,7 +1,18 @@
 ---
 name: ios/omit-redundant-nil-check-before-message-send
+description: When sending Objective-C messages, querying properties, or referencing weakSelf in blocks, omit redundant nil checks, compound guards, and single-call strongSelf promotions
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/mac/arc.md
+    heading: Blocks {#examples-blocks}
+    quote: 'Note: Blocks retain all objects referenced in them. This example is of a block used in an Objective-C method that uses the “weak `self`” idiom to avoid a retain cycle.'
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: docs/mac/arc.md
+    heading: Blocks
+    quote: This example is of a block used in an Objective-C method that uses the “weak self” idiom to avoid a retain cycle.
 ---
 
 **Rule.** In Objective-C and Objective-C++, do not wrap method calls, property

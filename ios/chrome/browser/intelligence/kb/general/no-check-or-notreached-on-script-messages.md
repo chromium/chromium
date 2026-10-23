@@ -1,7 +1,15 @@
 ---
 name: ios/no-check-or-notreached-on-script-messages
+description: When validating untrusted JavaScript messages in ScriptMessageReceived, do not use value_or defaults or CHECK/NOTREACHED; drop bad input gracefully
 rubric: safety
 severity: blocking
+citations:
+  - path: ios/web/public/js_messaging/README.md
+    heading: Sanitize and validate messages
+    quote: Do not assume that any part of the message is formatted in a particular way or is of a particular type. Instead, validate the format of each part of the message.
+  - path: ios/web/public/js_messaging/README.md
+    heading: Safely handle known-bad input
+    quote: When validating a message, don’t use CHECK. We do not want the input validation mechanism to become an easy way for malicious JavaScript to kill the browser process. It is usually better to ignore the bad input, or when possible, to immediately destroy and re-create the WKWebView that sent invalid input.
 ---
 
 **Rule.** Do not use `.value_or(...)` default fallbacks for required message

@@ -1,7 +1,12 @@
 ---
 name: ios/use-repeating-callback-for-multiple-invocations
+description: When declaring, storing, or binding callbacks that may execute multiple times (such as timeout fallbacks and async completion), use base::RepeatingCallback and base::BindRepeating
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/callback.md
+    heading: OnceCallback<> And RepeatingCallback<>
+    quote: base::OnceCallback<> is created by base::BindOnce(). This is a callback variant that is a move-only type and can be run only once. ... base::RepeatingCallback<> is created by base::BindRepeating(). This is a callback variant that is copyable that can be run multiple times.
 ---
 
 **Rule.** Use `base::RepeatingCallback` (or `base::RepeatingClosure`) and

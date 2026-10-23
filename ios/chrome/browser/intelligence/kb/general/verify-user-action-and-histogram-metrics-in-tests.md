@@ -1,7 +1,15 @@
 ---
 name: ios/verify-user-action-and-histogram-metrics-in-tests
+description: When testing workflows that emit metrics, assert functional state directly rather than relying solely on telemetry, and verify specific bucket counts across all execution paths
 rubric: testing
 severity: should_fix
+citations:
+  - path: tools/metrics/histograms/README.md
+    heading: Don't Use Histograms to Prove Main Logic Correctness
+    quote: Do not rely upon using histograms in tests as a way to prove correctness of your main program logic. If a unit or browser test uses a histogram count as a way to validate logic then that test coverage would be lost if the histogram is deleted after it has expired. That situation would prevent cleanup of the histogram. Construct your tests using other means to validate your general logic, and only use HistogramTester to verify that the histogram values are being generated as you would expect.
+  - path: tools/metrics/histograms/README.md
+    heading: Testing
+    quote: In addition to testing interactively, you can have unit tests examine the values emitted to histograms. See histogram_tester.h for details.
 ---
 
 **Rule.** When testing component workflows, user actions, or lifecycle events

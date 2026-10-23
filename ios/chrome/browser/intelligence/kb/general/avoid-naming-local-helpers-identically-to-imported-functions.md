@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-naming-local-helpers-identically-to-imported-functions
+description: When defining file-local helper functions in implementation files, avoid reusing names of imported header functions; give helpers distinct names or convert directly at call sites
 rubric: readability
 severity: should_fix
 ---

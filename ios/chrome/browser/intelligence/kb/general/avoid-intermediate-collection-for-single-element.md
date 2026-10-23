@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-intermediate-collection-for-single-element
+description: When searching, selecting, or passing a single element, accept and track the item directly instead of allocating or accepting an intermediate container
 rubric: readability
 severity: nit
 ---

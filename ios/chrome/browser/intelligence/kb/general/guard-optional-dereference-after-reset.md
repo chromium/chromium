@@ -1,5 +1,6 @@
 ---
 name: ios/guard-optional-dereference-after-reset
+description: When modifying code to reset or disengage an optional member variable, verify that all sibling methods accessing the member check it before dereferencing
 rubric: correctness
 severity: should_fix
 ---

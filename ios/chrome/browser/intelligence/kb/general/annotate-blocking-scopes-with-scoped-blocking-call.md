@@ -1,7 +1,12 @@
 ---
 name: ios/annotate-blocking-scopes-with-scoped-blocking-call
+description: When executing synchronous or blocking operations outside //base, instantiate base::ScopedBlockingCall to enforce thread restrictions and coordinate with the thread pool scheduler
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/threading_and_tasks_faq.md
+    heading: How to make a blocking call without preventing other tasks from being scheduled?
+    quote: Annotate the scope that may block with `ScopedBlockingCall(BlockingType::MAY_BLOCK/WILL_BLOCK)`.
 ---
 
 **Rule.** Annotate scopes that perform synchronous or blocking OS operations

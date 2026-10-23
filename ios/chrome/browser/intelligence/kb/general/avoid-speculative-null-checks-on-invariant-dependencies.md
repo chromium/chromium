@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-speculative-null-checks-on-invariant-dependencies
+description: When accessing member variables, smart pointers, subviews, delegate properties, or invariant dependencies, omit speculative defensive null checks, ternary guards, and fallback branches
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: '`CHECK()`, `DCHECK()` and `NOTREACHED()` are all used to ensure that invariants hold. They document (and verify) programmer expectations that either some statement *always* holds true at the point of `(D)CHECK`ing or that a piece of code is unreachable (for `NOTREACHED`). `CHECK` failures and reachable `NOTREACHED`s result in an application crash (generating a crash report).'
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: ProfileIOS objects correspond to a user browsing session. Each regular ProfileIOS also owns an incognito ProfileIOS. There can be more than one regular ProfileIOS loaded at the same time.
 ---
 
 **Rule.** Do not add speculative defensive null/nil checks (`if (member_)` or

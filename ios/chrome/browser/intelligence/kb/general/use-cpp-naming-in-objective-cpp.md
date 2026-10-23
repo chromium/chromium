@@ -1,7 +1,18 @@
 ---
 name: ios/use-cpp-naming-in-objective-cpp
+description: In Objective-C++ (.h, .mm), match identifier naming and boolean types (BOOL with YES/NO vs. bool with true/false) to the enclosing Objective-C or C++ construct rather than the types being manipulated
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: Within an Objective-C++ source file, follow the style for the language of the function or method you're implementing. In order to minimize clashes between the differing naming styles when mixing Cocoa/Objective-C and C++, follow the style of the method being implemented. For code in an `@implementation` block, use the Objective-C naming rules. For code in a method of a C++ class, use the C++ naming rules. For C functions and constants defined in a namespace, use C++ style, even if most of the file is Objective-C. `TEST` and `TEST_F` macros expand to C++ methods, so even if a unit test is mostly testing Objective-C objects and methods, the test should be written using C++ style.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/c++/c++.md
+    heading: Unnamed namespaces
+    quote: Items local to a .cc file should be wrapped in an unnamed namespace.
 ---
 
 **Rule.** Within Objective-C++ files (`.h`, `.mm`), follow the naming

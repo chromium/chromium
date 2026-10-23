@@ -1,5 +1,6 @@
 ---
 name: ios/name-ui-interaction-handlers-after-user-actions
+description: 'When declaring UI interaction handlers, action selectors, or delegate callbacks, use semantic actions, didTap..., or ...Tapped: rather than handle..., tapped..., didPress..., or state verbs'
 rubric: readability
 severity: should_fix
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/guard-high-frequency-state-updates-with-early-return
+description: In high-frequency callbacks like scroll or fullscreen progress updates, return early if transient UI overlays are uninvoked, inactive, or already match target state
 rubric: design
 severity: should_fix
 ---

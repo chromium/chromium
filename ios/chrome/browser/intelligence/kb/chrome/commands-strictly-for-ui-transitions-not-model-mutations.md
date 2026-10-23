@@ -1,7 +1,12 @@
 ---
 name: ios/commands-strictly-for-ui-transitions-not-model-mutations
+description: When using UI commands, use them exclusively to trigger UI transitions; never use commands to mutate model data or navigate tabs.
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/commands.md
+    heading: Characteristics of a UI Command
+    quote: Commands are exclusively for inducing UI changes (typically presenting or dismissing a UI feature). Operations that mutate model state—including core web navigation actions such as loading a URL—must not use UI commands.
 ---
 
 **Rule.** UI commands must be used exclusively to request UI changes (presenting

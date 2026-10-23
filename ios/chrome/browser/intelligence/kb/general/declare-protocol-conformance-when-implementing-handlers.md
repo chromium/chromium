@@ -1,7 +1,18 @@
 ---
 name: ios/declare-protocol-conformance-when-implementing-handlers
+description: Declare internal Objective-C protocol conformance in private extensions under `#pragma mark`, implement or stub methods, and remove obsolete conformances, callbacks, and `#import`s
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: This kind of grouping should happen for the implementations's public methods, superclass methods, private methods, and each protocol the implementation conforms to.
+  - path: agents/prompts/common.md
+    heading: Include Hygiene & IWYU
+    quote: 'Cleanup Unused Includes: Remove unused includes when refactoring.'
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 09. Delete unused imports and build deps
+    quote: Remove `#include`s, `#import`s, and forward declarations that are no longer needed.
 ---
 
 **Rule.** When an Objective-C/Objective-C++ class adopts internal protocols not

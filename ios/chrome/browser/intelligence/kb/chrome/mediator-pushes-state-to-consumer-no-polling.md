@@ -1,7 +1,15 @@
 ---
 name: ios/mediator-pushes-state-to-consumer-no-polling
+description: In iOS Coordinator-Mediator architectures, push state to view controllers via consumer protocols instead of pulling via delegate getters/providers or passing via initializers/properties
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: The Mutation-Observation Cycle
+    quote: When the view controller invokes a mutator method, the mediator updates the underlying model, observes the resulting model change notification, and pushes a corresponding update back to the view controller over the consumer protocol. The view controller updates its views only in response to that consumer call.
+  - path: ios/architecture/mediators.md
+    heading: Interaction-Time Queries
+    quote: 'Sometimes the UI needs an answer from the model only at the moment of a user interaction, and only for a decision that is used immediately and then discarded: which actions to show in a context menu, whether a drag can be dropped on a given target, or which options to offer in a just-presented action sheet.'
 ---
 
 **Rule.** In Chrome iOS Coordinator-Mediator-Consumer architectures, push

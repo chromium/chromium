@@ -1,7 +1,15 @@
 ---
 name: ios/use-objc-cast-strict-for-objective-c-downcasting
+description: When casting Objective-C objects, use ObjCCastStrict for invariant-governed collections or trait stores, and ObjCCast for conditional checks, avoiding raw casts and redundant isKindOfClass
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: Use ObjCCast<T> and ObjCCastStrict<T>
+    quote: 'for Objective-C casts we have two specific casts: `base::apple::ObjCCast<T>arg` is similar to `dynamic_cast<T>`, and `ObjCCastStrict` `DCHECKs` against that class.'
+  - path: base/apple/foundation_util.h
+    heading: ObjCCast<>() and ObjCCastStrict<>()
+    quote: ObjCCast<>() and ObjCCastStrict<>() cast a basic id to a more specific type, ObjCCast<>() returns nil and ObjCCastStrict<>() will CHECK.
 ---
 
 **Rule.** When downcasting or converting Objective-C object pointers in

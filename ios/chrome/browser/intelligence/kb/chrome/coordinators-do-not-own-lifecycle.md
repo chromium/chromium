@@ -1,7 +1,15 @@
 ---
 name: ios/coordinators-do-not-own-lifecycle
+description: When managing coordinator lifecycles or workflow exits, drive teardown through parent coordinators, signal completion across exit branches, and encapsulate child teardown within dedicated cleanup helpers
 rubric: correctness
 severity: should_fix
+citations:
+  - path: ios/architecture/coordinators.md
+    heading: Parent Ownership of Lifecycle
+    quote: Because a coordinator is started once and destroyed after -stop, a coordinator must never call -start or -stop on itself, and -start and -stop must not be called repeatedly on the same instance.
+  - path: ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h
+    heading: The basic lifecycle methods for coordinators are -start and -stop
+    quote: The basic lifecycle methods for coordinators are -start and -stop. These are blank template methods; child classes are expected to implement them and do not need to invoke the superclass methods.
 ---
 
 **Rule.** Drive coordinator lifecycles and dismissals strictly through parent

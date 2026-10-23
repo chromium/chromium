@@ -1,7 +1,12 @@
 ---
 name: ios/consumer-protocol-no-mediator-sender-parameter
+description: When declaring consumer protocol methods, pass pure values and do not pass the mediator as a sender parameter.
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: Consumer Protocols
+    quote: Unlike UIKit delegate and data source protocols, a consumer protocol is a decoupled interface. Consumer methods must never take the mediator as a UIKit-style sender parameter (for example, -readingListMediator:updateItems:).
 ---
 
 **Rule.** Methods in consumer protocols must not take the mediator as a sender

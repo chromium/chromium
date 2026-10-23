@@ -1,7 +1,12 @@
 ---
 name: ios/wire-test-targets-into-test-aggregators
+description: In BUILD.gn, define leaf test targets in their own subfolders and wire directly into root aggregators rather than nesting unit_tests; use test_support for utilities
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/testing.md
+    heading: Interacting with the app in a test > Accessing app internals
+    quote: See `eg_test_support+eg2` (test side utilities) and `eg_app_support+eg2` (app side utilities) targets in `BUILD.gn` files to learn how test utilities are organized in targets.
 ---
 
 **Rule.** In GN build files (`BUILD.gn`), define unit test targets for test

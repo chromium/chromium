@@ -1,5 +1,6 @@
 ---
 name: ios/pass-sink-parameters-by-value-and-move
+description: When functions, constructors, or initializers unconditionally store, mutate, or sink an argument, pass parameters by value and std::move rather than const references
 rubric: safety
 severity: should_fix
 ---

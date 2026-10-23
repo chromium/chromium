@@ -1,7 +1,17 @@
 ---
 name: ios/place-model-components-in-model-subdirectory
+description: When defining model components, business logic wrappers, data models, or service factories, place them in <feature>/model/ rather than coordinator/, ui/, feature root, public/, or ios/public/provider/
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/chrome/browser/shared/README.md
+    heading: Shared folder
+    quote: 'Please add code to one of subfolder: * `coordinator/` if the code is *only* shared by coordinators/mediators * `model/` if the code is *only* shared by model objects * `ui/` if the code is *only* shared by ui elements * `public/` if the code is shared by all Note that coordinators/mediators have access to all sub-folders'
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: A special case of base::SupportsUserData::Data is the KeyedService. They are managed by the ProfileKeyedServiceFactoryIOS infrastructure.
+  - path: ios/public/provider/README.md
+    quote: This directory exists to allow Chromium code to call iOS code that is not yet upstreamed. The main entry point from Chromium into this directory is via global Provider objects.
 ---
 
 **Rule.** In iOS Chrome architecture, place model-layer components—keyed

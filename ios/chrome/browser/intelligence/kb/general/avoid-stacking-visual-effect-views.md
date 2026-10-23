@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-stacking-visual-effect-views
+description: When increasing blur opacity or density in UIKit views, configure a single UIVisualEffectView with thick material styles instead of stacking multiple visual effect views
 rubric: design
 severity: nit
 ---

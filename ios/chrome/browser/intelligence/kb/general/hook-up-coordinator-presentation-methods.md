@@ -1,7 +1,18 @@
 ---
 name: ios/hook-up-coordinator-presentation-methods
+description: When introducing, updating, or refactoring methods, accessors, coordinator routines, helpers, stub handlers, or test utilities, wire them to active callers or delete uncalled code
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/cl_tips.md
+    heading: Encapsulate complexity, but don’t over-abstract
+    quote: However, do not over-design abstractions for an unknown future. Allowing for extensibility when it’s not necessary, creating abstractions where something concrete would suffice, or reaching for a design pattern when something simpler would work equally well adds unnecessary complexity to the codebase.
+  - path: agents/projects/code-health/hub/references/automated_review.md
+    heading: Shared Automated Review Protocol > Step by Step Instructions > Functionality & Verification (CRITICAL)
+    quote: Ensure any unused methods, variables, or imports resulting from the change are also removed. Check callers, headers, and tests for completeness.
+  - path: agents/projects/code-health/hub/references/automated_review.md
+    heading: Review Prompt
+    quote: Ensure any unused methods, variables, or imports resulting from the change are also removed.
 ---
 
 **Rule.** When introducing, updating, or refactoring methods, accessors,

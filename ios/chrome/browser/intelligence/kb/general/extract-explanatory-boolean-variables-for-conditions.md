@@ -1,7 +1,12 @@
 ---
 name: ios/extract-explanatory-boolean-variables-for-conditions
+description: When conditionals or ternary expressions contain nested sub-expressions, container searches, verbose queries, or non-obvious checks, extract them into descriptively named intermediate boolean variables
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: Code should be as self documenting as possible, but sometimes that isn't enough.
 ---
 
 **Rule.** Extract complex, verbose, or non-obvious conditional logic from

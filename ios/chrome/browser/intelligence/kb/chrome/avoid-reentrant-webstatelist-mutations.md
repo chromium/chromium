@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-reentrant-webstatelist-mutations
+description: When handling WebStateListObserver callbacks or tab gestures, avoid re-entrant WebStateList mutations and do not revert tabs using cached integer indices
 rubric: correctness
 severity: blocking
+citations:
+  - path: docs/ios/objects.md
+    heading: WebStateList
+    quote: WebStateList represents a list of WebStates. It maintains a notion of an active WebState and opener-opened relationship between WebStates. The WebStateList exposes an API to observe modification to the list of WebStates (additions, moves, removals, replacements).
 ---
 
 **Rule.** Do not mutate `WebStateList` (such as activating, inserting, moving,

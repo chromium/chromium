@@ -1,5 +1,6 @@
 ---
 name: ios/evaluate-cheap-checks-before-computed-style
+description: When evaluating conditions or classifier predicates in DOM scripts, check cheap precomputed arguments and in-memory flags before performing expensive DOM queries or style computations
 rubric: readability
 severity: nit
 ---

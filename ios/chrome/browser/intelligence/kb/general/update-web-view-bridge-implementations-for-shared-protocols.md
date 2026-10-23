@@ -1,7 +1,11 @@
 ---
 name: ios/update-web-view-bridge-implementations-for-shared-protocols
+description: When modifying or extending shared iOS component bridge protocols, update all conforming embedder classes across both ios/chrome and ios/web_view
 rubric: correctness
 severity: should_fix
+citations:
+  - path: ios/web_view/README.md
+    quote: 'NOTE: This code is not used by Chrome for iOS (`//ios/chrome`), but is rather a separate product/embedder of the `//ios/web` rendering layer.'
 ---
 
 **Rule.** When modifying or adding methods to shared iOS component bridge

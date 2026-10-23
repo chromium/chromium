@@ -1,7 +1,21 @@
 ---
 name: ios/document-non-obvious-function-parameters
+description: When declaring functions, constructors, methods, protocols, or callbacks with non-obvious or formatted parameters, document purpose, expected values, conditions, effects, units, and formats
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_best_practices.md
+    heading: Method and class comments
+    quote: This documentation is **the contract of how your code must behave**. The intended audience is future programmers who will use and modify your code. It is often reasonable to say that any behavior documented here should have a test verifying it. This documentation details what arguments the method takes, what it returns, any "gotchas" or restrictions, and what exceptions it can throw or errors it can return.
+  - path: docs/documentation_guidelines.md
+    heading: Interface / class documentation
+    quote: Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Disambiguating Symbols
+    quote: Where needed to avoid ambiguity, use backticks to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
 ---
 
 **Rule.** In declarations for functions, constructors, methods, callbacks,

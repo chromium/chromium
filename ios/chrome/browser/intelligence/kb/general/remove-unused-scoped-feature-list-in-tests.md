@@ -1,7 +1,15 @@
 ---
 name: ios/remove-unused-scoped-feature-list-in-tests
+description: When authoring or cleaning up test fixtures, remove unused member variables, RAII helpers, unneeded TaskEnvironments, testing factories, and ScopedFeatureList overrides
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 04. **Remove obsolete C++ test coverage**
+    quote: Remove `base::test::ScopedFeatureList`s that explicitly set the feature in the default state.
+  - path: docs/threading_and_tasks_testing.md
+    heading: Task Environments
+    quote: In order to **unit test** a component which post tasks, you'll need to bring up the task environment in the scope of your test (or test fixture).
 ---
 
 **Rule.** When authoring, refactoring, or cleaning up tests and test fixtures,

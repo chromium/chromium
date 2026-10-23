@@ -1,7 +1,14 @@
 ---
 name: ios/document-enums-and-enumerator-values
+description: When documenting enums, enumerators, or state/event constants, describe behaviors and trigger mappings without tautology, qualify transition directions, and cite mirrored upstream or schema origins
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
+  - path: ios/web_view/README.md
+    quote: Contains code to build an Objective-C framework which renders web content with `[CWVWebView]`. See the exposed API in `//ios/web_view/public/*` for more details.
 ---
 
 **Rule.** Document enum declarations with comments describing what the type

@@ -1,7 +1,15 @@
 ---
 name: ios/todo-comments-must-include-crbug-and-ios-label
+description: When documenting pending work or writing TODO comments in iOS code, use scheme-less TODO(crbug.com/<id>) without spaces, followed by a capitalized, period-terminated action description
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Comments, `TODO`s, and Bug Hygiene
+    quote: 'Every `TODO` comment must reference an open issue using `TODO(crbug.com/123456): Description`. Do not reference umbrella tracking bugs in `TODO`s; file and reference a specific blocking bug instead.'
+  - path: docs/ios/style.md
+    heading: TODO comments
+    quote: Every TODO must have a bug
 ---
 
 **Rule.** When documenting pending work, temporary workarounds, compiler

@@ -1,5 +1,6 @@
 ---
 name: ios/use-subsystem-presentation-helpers
+description: When determining UI layout, presentation, sizing, or preconditions, inspect trait collections and presentation helpers instead of asserting or querying physical hardware form factors
 rubric: correctness
 severity: blocking
 ---

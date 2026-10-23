@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-naive-xor-in-hash
+description: When implementing -hash or hash functions combining small integers or enums, avoid raw XOR; shift fields into separate bit positions or use base::HashCombine
 rubric: correctness
 severity: should_fix
 ---

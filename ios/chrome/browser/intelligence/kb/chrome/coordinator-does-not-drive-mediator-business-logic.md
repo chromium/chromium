@@ -1,7 +1,15 @@
 ---
 name: ios/coordinator-does-not-drive-mediator-business-logic
+description: In iOS coordinators, delegate business logic, state tracking, service queries, and notifications to mediators rather than storing state or driving logic in coordinators
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/coordinators.md
+    heading: Core Guidelines and Boundaries
+    quote: 'Keep coordinators focused on coordination. Do not allow coordinators to become catch-all controllers: Push business logic and model observation/mutation into mediators.'
+  - path: ios/architecture/coordinators.md
+    heading: Between Start and Stop
+    quote: 'Once started, a feature mostly runs itself: the view controller and mediator communicate through consumer and mutator protocols, and reach the rest of the app through commands.'
 ---
 
 **Rule.** In iOS coordinators, delegate business logic, model state tracking,

@@ -1,5 +1,6 @@
 ---
 name: ios/prefer-sys-utf8-to-nsstring
+description: When converting between NSString* and C++ string types in Objective-C++, use base::Sys* helpers instead of stringWithUTF8String:, UTF8String, format strings, or manual buffer casting
 rubric: readability
 severity: should_fix
 ---

@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-optional-or-value-over-unique-ptr
+description: Prefer stack allocation, direct value members, or std::optional over std::unique_ptr for local objects, test fixtures, and lazily initialized members without polymorphism or ownership transfer
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/transcripts/wuwt-e01-pointers.md
+    heading: 06:10 DANA
+    quote: std::optional and absl::optional hold an object inside of it by value instead of by pointer. This means that the object is held in that space allocated for the optional. ... And it doesn't require a heap allocation, the way unique_ptr does because it's storing the memory in place. So if you have an optional on the stack, the object inside is also right there on the stack.
 ---
 
 **Rule.** Prefer value semantics—allocating objects directly on the stack for

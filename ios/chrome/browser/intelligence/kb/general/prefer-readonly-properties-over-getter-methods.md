@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-readonly-properties-over-getter-methods
+description: When exposing or mutating object state in Objective-C interfaces, declare @property accessors instead of standalone getter/setter methods and rely on compiler synthesis
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** In Objective-C and Objective-C++ class interfaces, categories, and

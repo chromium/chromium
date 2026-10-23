@@ -1,7 +1,15 @@
 ---
 name: ios/size-symbols-with-point-size-helpers
+description: When creating or sizing vector symbols in iOS Chrome, use standard SymbolWithPointSize helpers instead of systemImageNamed, UIGraphicsImageRenderer, or custom scale configurations
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: UI and Assets Best Practices
+    quote: Use the [`Symbol`](/ios/chrome/browser/shared/ui/symbols/symbols.h) enum and symbol helpers in `//ios/chrome/browser/shared/ui/symbols/symbols.h` (`SymbolWithPointSize()`, `SymbolTemplateWithPointSize()`, `SymbolWithConfiguration()`) for icons whenever possible.
+  - path: ios/chrome/browser/shared/ui/symbols/README.md
+    heading: Symbol folder
+    quote: This folder is supposed to contain the custom symbols, the definition of custom and system symbols and the code that is used to work with the symbols.
 ---
 
 **Rule.** Size and configure SF Symbols and custom symbols through the standard

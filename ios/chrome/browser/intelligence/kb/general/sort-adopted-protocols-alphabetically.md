@@ -1,5 +1,6 @@
 ---
 name: ios/sort-adopted-protocols-alphabetically
+description: In Objective-C and Objective-C++ interface, category, and class extension declarations, sort adopted protocol conformance lists (`<...>`) alphabetically.
 rubric: readability
 severity: nit
 ---

@@ -1,7 +1,12 @@
 ---
 name: ios/depend-on-granular-feature-targets-in-earlgrey-tests
+description: In EarlGrey 2 test targets (eg2_tests), depend on granular feature targets rather than monolithic browser or component implementation libraries when referencing feature flags
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/testing.md
+    heading: Accessing app internals
+    quote: EG2 test targets are built with test-related code but without app code.
 ---
 
 **Rule.** In EarlGrey 2 test targets (`source_set("eg2_tests")`), depend on

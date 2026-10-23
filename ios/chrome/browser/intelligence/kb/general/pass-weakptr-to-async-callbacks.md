@@ -1,7 +1,21 @@
 ---
 name: ios/pass-weakptr-to-async-callbacks
+description: When binding async callbacks, pass base::WeakPtr (or owner WeakPtr for WebStateList) or IDs instead of raw pointers, and validate before dereferencing
 rubric: safety
 severity: blocking
+citations:
+  - path: base/memory/README.md
+    heading: base::WeakPtr<T>
+    quote: If an async task references other objects or state, and it's possible for that state to be destroyed before the task runs, those references should be held in a `WeakPtr<T>`. Each `WeakPtr<T>` is associated with a `WeakPtrFactory<T>`. When the associated factory (usually owned by T) is destroyed, all `WeakPtr<T>` are invalidated (becomes null) rather than becoming use-after-frees.
+  - path: docs/ios/objects.md
+    heading: Browser
+    quote: The Browser owns a WebStateList and thus indirectly owns all the tabs (aka WebState and their associated tab helpers).
+  - path: docs/unretained_dangling_ptr_guide.md
+    heading: Fixing the Unretained Dangling Pointer
+    quote: Opt for unique identifiers (e.g., `base::IdType`) instead of pointers when the object is known to be freed. Unique identified are better than pointer, as addresses might be reused.
+  - path: docs/threading_and_tasks.md
+    heading: Quick start guide
+    quote: If you need to orchestrate multiple objects that live on different sequences, be careful about object lifetimes.
 ---
 
 **Rule.** When binding arguments to asynchronous callbacks (e.g., via

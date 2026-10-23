@@ -1,7 +1,12 @@
 ---
 name: ios/exit-fullscreen-and-clear-forced-triggers-on-navigation
+description: When handling completed web navigations in fullscreen observers, mediators, or browser agents, exit fullscreen mode and clear forced fullscreen state on cross-document navigations (!navigationContext->IsSameDocument())
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/security/fullscreen.md
+    heading: Overview
+    quote: Specifically, we will prioritize improvements to the fullscreen toast UI and ensure the trusted browser UI is shown in sensitive security scenarios to help users make more informed decisions.
 ---
 
 **Rule.** When handling completed web navigations in fullscreen observers,

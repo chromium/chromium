@@ -1,5 +1,6 @@
 ---
 name: ios/centralize-once-guard-in-shared-handler
+description: When racing asynchronous callbacks or timeouts to invoke a shared handler, guard via an instance variable in the handler instead of local __block flags
 rubric: safety
 severity: should_fix
 ---

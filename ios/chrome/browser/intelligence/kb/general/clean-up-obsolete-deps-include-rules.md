@@ -1,7 +1,18 @@
 ---
 name: ios/clean-up-obsolete-deps-include-rules
+description: When modifying in-tree DEPS include rules, prune obsolete or unused entries and omit redundant child subdirectory paths when an ancestor directory is already permitted
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/dependencies.md
+    heading: Understanding In-Tree `DEPS` Files
+    quote: It's a list of strings that define which directories are allowed to be included by files within the current directory (and its subdirectories).
+  - path: buildtools/checkdeps/README.md
+    heading: DEPS Files
+    quote: DEPS files specify which files the sources in a directory tree may include.
+  - path: agents/skills/gn-deps-debugging/references/dependency-patterns.md
+    heading: DEPS include rules
+    quote: DEPS rules enforce source-level layering. A BUILD.gn dep does not override a blocked include path.
 ---
 
 **Rule.** In in-tree `DEPS` files, only permit directory paths (in

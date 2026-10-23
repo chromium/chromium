@@ -1,7 +1,12 @@
 ---
 name: ios/omit-redundant-unavailable-initializers
+description: Annotate custom Objective-C designated initializers with NS_DESIGNATED_INITIALIZER and disable unsuited superclass initializers with NS_UNAVAILABLE, omitting initializers already inherited or disabled by superclasses
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** When defining Objective-C classes with custom designated initializers,

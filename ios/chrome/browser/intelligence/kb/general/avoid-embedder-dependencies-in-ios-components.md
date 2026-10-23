@@ -1,7 +1,14 @@
 ---
 name: ios/avoid-embedder-dependencies-in-ios-components
+description: When configuring DEPS, build targets, or sources in ios/web or ios/components, do not add dependencies on embedders or Chrome provider APIs
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/web/README.md
+    heading: ios/web vs ios/components vs components/
+    quote: 'ios/web: The renderer-equivalent on iOS. It does not depend on higher-level features found in ios/chrome or ios/web_view.'
+  - path: ios/components/README.md
+    quote: This means that components must not depend on either ios/web_view or ios/chrome.
 ---
 
 **Rule.** Do not add dependencies on embedders (such as `ios/chrome` or

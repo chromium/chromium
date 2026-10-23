@@ -1,5 +1,6 @@
 ---
 name: ios/capture-weak-delegate-in-completion-blocks
+description: When executing commands or notifying delegates in coordinator dismissal or completion blocks, capture the command handler or weak delegate beforehand instead of weakSelf
 rubric: safety
 severity: should_fix
 ---

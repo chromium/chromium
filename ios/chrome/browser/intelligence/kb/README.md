@@ -59,9 +59,14 @@ for the schema.
 ````
 ---
 name: ios/<slug>              # cited in findings; the file is <slug>.md
+description: <one-sentence summary of when and how the rule applies>
 rubric: design                # correctness | safety | security | design |
                               # readability | testing | perf | change_scope
 severity: should_fix          # blocking | should_fix | nit
+citations:                    # optional governing doc/header references
+- path: ios/best_practices.md
+  heading: <Section Heading>
+  quote: <Verbatim excerpt supporting the rule>
 ---
 
 **Rule.** What to do or not do, precisely enough to be checked.

@@ -1,7 +1,12 @@
 ---
 name: ios/split-large-changes-or-bypass-presubmit-warning
+description: When authoring CLs adding more than ~300 lines of production code, split them into smaller changes or document reviewer-approved bypass with BYPASS_LARGE_CHANGE_WARNING
 rubric: design
 severity: nit
+citations:
+  - path: docs/cl_tips.md
+    heading: Keep changes under 500 LoC
+    quote: Large changes take longer to review than smaller changes. Reviewers generally need to familiarize themselves with the content of a CL after each round of review, so the larger a CL is, the longer that process takes... If your CL is larger than that, seriously consider splitting it into smaller, reviewable units.
 ---
 
 **Rule.** Keep CLs small and split changes adding more than ~300 lines of

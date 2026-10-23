@@ -1,7 +1,15 @@
 ---
 name: ios/omit-empty-objective-c-class-extensions
+description: In Objective-C implementation files, declare ivars in @implementation, omit empty class extensions and empty ivar braces, and avoid declaring private methods in extensions
 rubric: readability
 severity: nit
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: Remember that any method which isn't declared in an interface needs a full method comment.
 ---
 
 **Rule.** In Objective-C and Objective-C++ implementation files (`.mm`),

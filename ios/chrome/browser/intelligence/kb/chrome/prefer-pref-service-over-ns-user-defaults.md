@@ -1,7 +1,15 @@
 ---
 name: ios/prefer-pref-service-over-ns-user-defaults
+description: When persisting settings on iOS, prefer PrefService over NSUserDefaults, and migrate existing NSUserDefaults data in browser_prefs to prevent data loss
 rubric: correctness
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: 'Storing State: Use `PrefService`, Not `NSUserDefaults`'
+    quote: New feature code must store persistent state in `PrefService` (profile prefs or application `localState`), not `[NSUserDefaults standardUserDefaults]` (reserve `NSUserDefaults` for App Group / extension communication or reading legacy keys during migration).
+  - path: chrome/browser/prefs/README.md
+    heading: Prefs
+    quote: Prefs is meant to store lightweight state that reflects user preferences (e.g. chrome://settings, position of windows on last exit, etc.). Browser-wide prefs are stored in Local State (`g_browser_process->local_state()`) and per-profile prefs are stored in Preferences (`Profile::GetPrefs()`).
 ---
 
 **Rule.** Persist application and feature state via `PrefService` (profile prefs

@@ -1,7 +1,15 @@
 ---
 name: ios/coordinator-teardown-disconnects-mediator-in-stop
+description: In coordinator -stop methods, disconnect mediators, clear delegates and consumers before niling ivars, stop child coordinators in independent if blocks, and reset blocks
 rubric: safety
 severity: blocking
+citations:
+  - path: ios/architecture/coordinators.md
+    heading: Deterministic Teardown in `-stop`
+    quote: "Every coordinator's `-stop` implementation must deterministically tear down the feature: 1. **Stop child coordinators**: Call `-stop` on any active child coordinators and set their instance variables to `nil`. 2. **Disconnect the mediator**: Call `[_mediator disconnect]` and set `_mediator = nil`."
+  - path: ios/best_practices.md
+    heading: Deallocation and Deterministic Cleanup
+    quote: 'Objective-C object deallocation timing (`-dealloc`) is non-deterministic: UIKit animations, presentation controllers, blocks, and autorelease pools often keep objects alive after a feature is dismissed. Never rely on `-dealloc` for cleanup required for correctness (such as removing C++ observers or stopping command dispatch).'
 ---
 
 **Rule.** In a coordinator's `-stop`, deterministically tear down all owned

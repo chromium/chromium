@@ -1,7 +1,15 @@
 ---
 name: ios/defer-branch-specific-instantiation
+description: When declaring variables, instantiating objects, or evaluating method calls conditionally, defer computation into consuming branches, inline checks, or place after early-return guards
 rubric: safety
 severity: should_fix
+citations:
+  - path: styleguide/c++/defining_compile_time_const.md
+    heading: Guidelines
+    quote: 1. **Define constants [in the narrowest scope possible](https://google.github.io/styleguide/cppguide.html#Local_Variables)**, just like with other variables.
+  - path: base/memory/README.md
+    heading: base::WeakPtr<T>
+    quote: When the associated factory (usually owned by T) is destroyed, all `WeakPtr<T>` are invalidated (becomes null) rather than becoming use-after-frees.
 ---
 
 **Rule.** Do not declare local variables, read timestamps, instantiate objects,

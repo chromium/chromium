@@ -1,7 +1,12 @@
 ---
 name: ios/unregister-command-dispatch-in-stop
+description: When a coordinator registers as a command dispatcher target in start, unregister it using stopDispatchingToTarget in stop.
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/architecture/commands.md
+    heading: Configuring and Stopping Dispatch
+    quote: When the handling coordinator stops, unregister it from the dispatcher.
 ---
 
 **Rule.** When a coordinator registers a target for command protocols on its

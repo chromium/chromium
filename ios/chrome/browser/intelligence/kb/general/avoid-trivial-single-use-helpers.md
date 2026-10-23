@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-trivial-single-use-helpers
+description: When writing private or anonymous-namespace helpers, inline single-caller logic, isolated branches, 1-to-1 forwarding wrappers, property forwarding, or binary mappings directly instead of adding indirection
 rubric: design
 severity: should_fix
 ---

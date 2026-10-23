@@ -1,7 +1,12 @@
 ---
 name: ios/retain-incomplete-todos-with-followup-bugs
+description: When refactoring or implementing code touching TODOs, remove obsolete comments once resolved, but retain, relocate, or update descriptions for incomplete or partially addressed tasks
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: TODO comments
+    quote: "Sometimes we include TODO comments in code. Generally we follow [C++ style](https://google.github.io/styleguide/cppguide.html#TODO_Comments), but here are some more specific practices we've agreed upon as a team: * **Every TODO must have a bug**"
 ---
 
 **Rule.** When completing tracked work, updating build dependencies, or adapting

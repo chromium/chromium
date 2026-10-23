@@ -1,7 +1,12 @@
 ---
 name: ios/assert-injected-dependencies-in-constructors
+description: When constructors or initializers receive required or feature-gated injected dependencies, assert non-nullness with CHECK upfront rather than deferring to member methods or redundantly re-checking.
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: CHECK(), DCHECK() and NOTREACHED() are all used to ensure that invariants hold. They document (and verify) programmer expectations that either some statement always holds true at the point of (D)CHECKing or that a piece of code is unreachable (for NOTREACHED).
 ---
 
 **Rule.** When a class constructor or initializer receives injected

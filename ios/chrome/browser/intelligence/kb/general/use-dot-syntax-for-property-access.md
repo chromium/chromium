@@ -1,7 +1,12 @@
 ---
 name: ios/use-dot-syntax-for-property-access
+description: In Objective-C and Objective-C++, use dot syntax for accessing and mutating declared properties, reserving bracket syntax for method calls, -copy, and custom getters.
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** In Objective-C and Objective-C++, access and mutate declared instance

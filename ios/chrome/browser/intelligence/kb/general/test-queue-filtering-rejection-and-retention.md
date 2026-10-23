@@ -1,5 +1,6 @@
 ---
 name: ios/test-queue-filtering-rejection-and-retention
+description: When introducing or modifying queue or collection admission, filtering, or eviction logic, write unit tests covering both incompatible-item rejection and multi-item retention
 rubric: testing
 severity: should_fix
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/do-not-post-tasks-solely-to-record-histograms
+description: When recording UMA metrics in background tasks or asynchronous callbacks, invoke base::UmaHistogram* directly instead of posting tasks solely for telemetry emission
 rubric: readability
 severity: nit
 ---

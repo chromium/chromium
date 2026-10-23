@@ -1,5 +1,6 @@
 ---
 name: ios/audit-callers-when-relaxing-contract-to-nullptr
+description: When relaxing an accessor or method to return nullptr instead of guaranteeing non-null, audit and update all callers to handle null before dereferencing
 rubric: correctness
 severity: should_fix
 ---

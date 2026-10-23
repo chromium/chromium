@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-dual-ownership-when-transferring-unique-ptr
+description: When transferring ownership of an object held in std::unique_ptr, use std::move rather than constructing a new std::unique_ptr or base::WrapUnique from .get()
 rubric: safety
 severity: blocking
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Object ownership and calling conventions
+    quote: If the function takes ownership of a non-refcounted object, declare the param as `std::unique_ptr<T>`.
 ---
 
 **Rule.** When transferring ownership of an object managed by a

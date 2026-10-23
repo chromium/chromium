@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-repurposing-properties-with-different-semantics
+description: When storing or exposing data with distinct semantics (such as navigation timestamps), do not repurpose existing properties like last_active_time; introduce separate accessors
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/unrealized_web_state.md
+    heading: Unrealized WebState
+    quote: When in the unrealized state, a WebState will not be connected to any WebView. In fact, they will only store their identifier, their creation time, their last active time, the title and URL of the visible page, and the number of navigation item.
+  - path: ios/web/README.md
+    heading: Overview
+    quote: ios/web performs a similar role on iOS as what content/ does on other platforms.
 ---
 
 **Rule.** Do not repurpose an existing property, getter, or serialized field to

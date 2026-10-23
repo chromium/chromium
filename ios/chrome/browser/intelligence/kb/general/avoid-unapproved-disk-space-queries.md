@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-unapproved-disk-space-queries
+description: When querying free or total disk space on iOS, declare an approved reason in PrivacyInfo.xcprivacy and never transmit measurements off-device
 rubric: safety
 severity: should_fix
 ---

@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-dangling-untriaged-on-raw-ptr
+description: When declaring new raw_ptr member fields, do not annotate them with DanglingUntriaged; manage object lifetimes or reset pointers on teardown instead
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/dangling_ptr.md
+    heading: Dangling Pointer Detector
+    quote: "The DanglingUntriaged option has been used to annotate pre-existing dangling pointers in Chrome: ... Contrary to DisableDanglingPtrDetection, we don't know yet why it dangles. It is meant to be either refactored to avoid dangling, or turned into \"DisableDanglingPtrDetection\" with a comment explaining what happens."
+  - path: base/memory/raw_ptr.md
+    heading: Dangling Pointer Detection (kMayDangle)
+    quote: '- **DanglingUntriaged**: Technical debt; identified but not yet triaged.'
 ---
 
 **Rule.** Do not annotate new `raw_ptr` members with `DanglingUntriaged` (or

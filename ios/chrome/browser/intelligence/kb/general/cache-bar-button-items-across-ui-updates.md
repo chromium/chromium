@@ -1,5 +1,6 @@
 ---
 name: ios/cache-bar-button-items-across-ui-updates
+description: When updating navigation bars or toolbars during view controller state transitions, cache UIBarButtonItem instances in lazy getters or properties rather than recreating them
 rubric: readability
 severity: nit
 ---

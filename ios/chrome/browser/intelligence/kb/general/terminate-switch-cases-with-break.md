@@ -1,7 +1,12 @@
 ---
 name: ios/terminate-switch-cases-with-break
+description: When writing switch statement case or default blocks, terminate each non-empty branch with break, return, or [[fallthrough]], including braced and final cases
 rubric: readability
 severity: nit
+citations:
+  - path: https://google.github.io/styleguide/cppguide.html#Switch_Statements
+    heading: Switch Statements
+    quote: Terminate each non-empty case block with a break, return, [[fallthrough]], or other control flow statement, even the last one. (The last one needs it so that subsequent additions of case blocks don't fall through accidentally.)
 ---
 
 **Rule.** In `switch` statements, terminate every non-empty `case` and `default`

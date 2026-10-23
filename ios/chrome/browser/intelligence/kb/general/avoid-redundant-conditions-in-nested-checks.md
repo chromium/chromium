@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-redundant-conditions-in-nested-checks
+description: When writing nested conditionals, else-if chains, or intermediate booleans, omit checks already guaranteed, ruled out, or contradictory; factor logic into distinct primitive checks
 rubric: readability
 severity: should_fix
 ---

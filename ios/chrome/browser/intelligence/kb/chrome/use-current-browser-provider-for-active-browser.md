@@ -1,7 +1,15 @@
 ---
 name: ios/use-current-browser-provider-for-active-browser
+description: When accessing the active Browser or dispatching browser-scoped commands in scene coordinators and agents, query currentBrowserProvider.browser and guard regular-only operations against incognito
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: Browser
+    quote: Browser is the model for a container of tabs for use by the UI. Each window can have multiple Browser associated (regular tabs, incognito tabs, inactive tabs). Additionally, iPads supports an arbitrary number of windows active at the same time. The Browser owns a WebStateList and thus indirectly owns all the tabs (aka WebState and their associated tab helpers). The Browser also owns the CommandDispatcher and ChromeBroadcaster used for dispatching UI commands and property synchronisation.
+  - path: ios/chrome/browser/shared/model/browser/browser_provider_interface.h
+    heading: '@protocol BrowserProviderInterface'
+    quote: '@property(nonatomic, weak, readonly) id<BrowserProvider> currentBrowserProvider;'
 ---
 
 **Rule.** When interacting with the active Browser from a SceneState (in

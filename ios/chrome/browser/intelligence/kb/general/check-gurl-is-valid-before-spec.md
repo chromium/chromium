@@ -1,5 +1,6 @@
 ---
 name: ios/check-gurl-is-valid-before-spec
+description: When accessing or serializing a GURL's string representation, verify is_valid() before calling spec() to prevent assertion crashes on invalid URLs
 rubric: correctness
 severity: should_fix
 ---

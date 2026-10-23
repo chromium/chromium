@@ -1,7 +1,12 @@
 ---
 name: ios/assert-invariants-with-check-over-comments
+description: Assert preconditions, non-null invariants, and prerequisite feature flags upfront with CHECK (or CHECK with base::NotFatalUntil::M<n> and a safe fallback) rather than comments, DCHECK, or unverified fallbacks
 rubric: correctness
 severity: should_fix
+citations:
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: '`CHECK()`, `DCHECK()` and `NOTREACHED()` are all used to ensure that invariants hold. They document (and verify) programmer expectations that either some statement *always* holds true at the point of `(D)CHECK`ing or that a piece of code is unreachable (for `NOTREACHED`).'
 ---
 
 **Rule.** When relying on preconditions, required dependencies, API contract

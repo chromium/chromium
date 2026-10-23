@@ -1,7 +1,24 @@
 ---
 name: ios/clean-up-feature-declarations-on-flag-removal
+description: When removing feature flags or enabling features permanently, delete flag declarations, parameters, metadata, and about_flags entries, inline checks, and prune unreferenced downstream classes and tests
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/flag_expiry.md
+    heading: Removing A Flag
+    quote: If a flag is no longer used (for instance, it was used to control a feature that has since launched), the flag should be removed. Delete the entry in [`//chrome/browser/about_flags.cc`](../chrome/browser/about_flags.cc) or [`//ios/chrome/browser/flags/about_flags.mm`](../ios/chrome/browser/flags/about_flags.mm) for iOS (and any corresponding entries for the flag description), and remove any references in [`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json).
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 02. **Remove C++ flag enablement checks**
+    quote: Find C++ callsites where the feature enablement is checked. This usually takes the form of `base::FeatureList::IsEnabled(kFeature)` calls or a free `Is<X>Enabled()` helper function that wraps the former. Simplify each enablement check as if the default state were inlined.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 07. **Simplify APIs and expressions**
+    quote: 'Inline trivial local variable assignments. For example, `const auto x = base::FeatureList::IsEnabled(kFoo) ? Enum::A : Enum::B; Bar(x);` ... will become ... `Bar(Enum::A);`'
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 08. **Remove dead code**
+    quote: Remove declarations and definitions for the obsolete flag and its parameters. In all removed lines, check for functions, classes, and constants that are no longer referenced and delete their declarations and definitions. You may need to delete entire source files. - Continue this process for all code that becomes unreferenced.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 14. **Update comments**
+    quote: Check immediately above each modified code block for obsolete comments. If a comment still partially applies, reword it. Otherwise, delete it. Search the codebase for references to the feature flag name in other comments (e.g., both the C++ constant `kMyFeature` and the user-facing name `MyFeature`) to clean up obsolete discussions, TODOs, or design notes.
 ---
 
 **Rule.** When removing an obsolete feature flag, field trial, or enabling a

@@ -1,7 +1,15 @@
 ---
 name: ios/phrase-declaration-comments-in-third-person-indicative
+description: When writing comments, use third-person indicative phrasing for declarations and protocol methods, and imperative mood for inline implementation or test steps
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium C++ style
+    quote: Where appropriate, the [Chromium C++ style](../c++/c++.md) style guide applies to Chromium Objective-C and (especially) Objective-C++
 ---
 
 **Rule.** When documenting functions, methods, properties, interfaces,

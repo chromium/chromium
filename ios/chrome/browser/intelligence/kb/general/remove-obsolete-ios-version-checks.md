@@ -1,7 +1,12 @@
 ---
 name: ios/remove-obsolete-ios-version-checks
+description: When writing iOS code at or below the minimum deployment target, omit redundant @available, API_AVAILABLE, and IsRunningOnIOS checks, except in shared embedder libraries
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/supported_platforms.md
+    heading: iOS
+    quote: The minimum supported operating system version changes roughly once a year.
 ---
 
 **Rule.** In Chrome-specific iOS code and tests (`ios/chrome/...`), do not

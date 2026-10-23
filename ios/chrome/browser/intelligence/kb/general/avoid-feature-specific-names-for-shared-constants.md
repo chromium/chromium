@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-feature-specific-names-for-shared-constants
+description: When declaring or generalizing functions, parameters, constants, enums, or properties in shared utilities or reusable components, name them after intrinsic roles rather than specific features
 rubric: readability
 severity: should_fix
 ---

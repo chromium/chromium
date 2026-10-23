@@ -1,7 +1,18 @@
 ---
 name: ios/document-test-case-purpose
+description: When documenting GoogleTest or EarlGrey test methods, precede each with a third-person explanatory comment stating the scenario, preconditions, and verified behavior
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: Code should be as self documenting as possible, but sometimes that isn't enough. Maybe there's a tricky bit of implementation that isn't obvious. ... A good rule of thumb is that if a code reviewer had a clarifying question about something during review and the code couldn't be simplified to answer the question then a comment is probably appropriate.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: TEST and TEST_F macros expand to C++ methods, so even if a unit test is mostly testing Objective-C objects and methods, the test should be written using C++ style.
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
 ---
 
 **Rule.** Precede each test definition (GoogleTest `TEST`, `TEST_F`, `TEST_P`,

@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-redundant-std-string-to-nsstring-conversion
+description: 'Avoid redundant conversions between C++ strings and NSString: operate in C++, accept C++ string parameters, and convert tested strings once before branching'
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Language Choice
+    quote: In `//ios/`, "Objective-C" always means Objective-C++ (`.mm`), which allows freely mixing Objective-C and C++. Plain Objective-C (`.m`) is not used outside `//ios/third_party/`.
+  - path: ui/base/README.md
+    heading: //ui/base
+    quote: '[l10n](l10n): localization APIs used throughout all of chromium, especially the widely-used `l10n_util::GetString*` functions'
 ---
 
 **Rule.** In Objective-C++ code, do not convert std::string or std::u16string to

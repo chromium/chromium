@@ -1,7 +1,21 @@
 ---
 name: ios/omit-unused-gn-dependencies
+description: When declaring GN targets or removing unneeded imports, omit unreferenced entries from deps, public_deps, frameworks, ts_deps, and associated DEPS include rules
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 09. **Delete unused imports and build deps**
+    quote: Remove `#include`s, `#import`s, and forward declarations that are no longer needed. - Remove `BUILD.gn` deps that are no longer needed.
+  - path: docs/webui/webui_build_configuration.md
+    heading: Arguments
+    quote: 'ts_deps: List of ts_library() dependencies to generate path mappings for.'
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: '09. **Delete unused imports and build deps**:'
+    quote: Remove `#include`s, `#import`s, and forward declarations that are no longer needed. - Remove `BUILD.gn` deps that are no longer needed.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 09. Delete unused imports and build deps
+    quote: Remove BUILD.gn deps that are no longer needed.
 ---
 
 **Rule.** In GN build files (`BUILD.gn` and `*.gni`), do not include or retain

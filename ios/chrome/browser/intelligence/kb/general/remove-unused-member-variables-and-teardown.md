@@ -1,7 +1,15 @@
 ---
 name: ios/remove-unused-member-variables-and-teardown
+description: When authoring or refactoring classes, view controllers, or coordinators, remove unused member variables, ivars, properties, obsolete initializer parameters, member initializers, and leftover teardown calls
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/projects/code-health/hub/references/automated_review.md
+    heading: Shared Automated Review Protocol > Step by Step Instructions > Functionality & Verification (CRITICAL)
+    quote: Ensure any unused methods, variables, or imports resulting from the change are also removed. Check callers, headers, and tests for completeness.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 08. **Remove dead code**
+    quote: In all removed lines, check for functions, classes, and constants that are no longer referenced and delete their declarations and definitions.
 ---
 
 **Rule.** Do not retain unused member variables, ivars, or unbacked properties

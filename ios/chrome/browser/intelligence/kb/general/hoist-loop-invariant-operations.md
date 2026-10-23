@@ -1,5 +1,6 @@
 ---
 name: ios/hoist-loop-invariant-operations
+description: When executing loops or polling condition blocks like WaitUntilConditionOrTimeout, hoist loop-invariant lookups, conditions, and state updates outside rather than re-evaluating or re-setting them per iteration
 rubric: readability
 severity: nit
 ---

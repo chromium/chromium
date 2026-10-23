@@ -1,7 +1,15 @@
 ---
 name: ios/format-lint-directives-on-dedicated-lines-with-repo-paths
+description: When adding LINT synchronization guards, format directives on dedicated lines with repo-relative paths, explicit labels, remote companion files, comma-separated targets, and no redundant comments
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/projects/code-health/lint-sync/references/patterns.md
+    heading: Syntax Rules
+    quote: The linter links files by cross-referencing labels. Follow these syntax rules to format your `LINT.IfChange` and `LINT.ThenChange` guards correctly.
+  - path: tools/metrics/histograms/README.md
+    heading: Usage
+    quote: The `LINT.*` comments point between the code and XML definitions of the enum, to encourage them to be kept in sync.
 ---
 
 **Rule.** When adding or modifying LINT.IfChange and LINT.ThenChange

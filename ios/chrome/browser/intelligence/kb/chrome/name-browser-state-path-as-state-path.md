@@ -1,7 +1,15 @@
 ---
 name: ios/name-browser-state-path-as-state-path
+description: Name web::BrowserState instances and derived paths browser_state and state_path, and name ProfileIOS instances and derived paths profile and profile_path, using ProfileIOS::FromBrowserState at the ios/web boundary
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/web/README.md
+    heading: Overview
+    quote: "BrowserState: Represents a user's session (analogous to content::BrowserContext)."
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: ProfileIOS objects correspond to a user browsing session. Each regular ProfileIOS also owns an incognito ProfileIOS. There can be more than one regular ProfileIOS loaded at the same time.
 ---
 
 **Rule.** Across all iOS code, when naming `web::BrowserState` or

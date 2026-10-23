@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-runtime-string-splitting-for-static-lists
+description: When initializing containers or collections from known string constants, use a constexpr array of std::string_view instead of splitting delimited strings at runtime with base::SplitString
 rubric: readability
 severity: nit
 ---

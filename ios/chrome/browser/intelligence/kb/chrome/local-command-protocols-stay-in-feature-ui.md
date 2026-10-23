@@ -1,7 +1,12 @@
 ---
 name: ios/local-command-protocols-stay-in-feature-ui
+description: Place cross-feature command protocols in shared/public/commands/ dispatched via CommandDispatcher, but keep feature-local protocols in feature UI packages passed directly via handler properties
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/commands.md
+    heading: Shared vs. Local Command Protocols
+    quote: If no other feature needs to call these methods, define a local command protocol inside the feature's ui/ subdirectory rather than shared/public/commands/. Local command protocols are not registered with CommandDispatcher.
 ---
 
 **Rule.** Any command protocol invoked across features must be defined in its

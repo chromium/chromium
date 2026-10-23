@@ -1,5 +1,6 @@
 ---
 name: ios/use-consistent-domain-terminology
+description: When defining types, methods, parameters, variables, configuration fields, or test cases, use consistent domain and specification terminology rather than ad-hoc descriptions or synonyms
 rubric: readability
 severity: should_fix
 ---

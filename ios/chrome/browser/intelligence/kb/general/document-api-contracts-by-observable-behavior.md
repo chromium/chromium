@@ -1,7 +1,24 @@
 ---
 name: ios/document-api-contracts-by-observable-behavior
+description: When documenting header declarations, describe caller-facing contracts, actions, and observable behavior rather than internal implementation mechanics, helper calls, or caller trigger context
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/documentation_guidelines.md
+    heading: Interface / class documentation
+    quote: Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.
+  - path: docs/documentation_best_practices.md
+    heading: Method and class comments
+    quote: 'Method API documentation: The header / Javadoc / docstring comments that say what methods do and how to use them. This documentation is the contract of how your code must behave. The intended audience is future programmers who will use and modify your code.'
+  - path: docs/documentation_guidelines.md
+    heading: Guidelines
+    quote: 'Interface / class documentation: This is documentation most often found in header files near class definitions. This may describe what a class or small set of classes are for and how they are intended to be used... Implementation documentation: This type of documentation is found next to implementations. In C++, this will tend to be embedded in .cc files. It is meant to help a reader understand *how the code works* or explain an implementation path that might not be obvious from the code itself.'
+  - path: docs/ios/objects.md
+    heading: WebState
+    quote: WebState wraps a WKWebView and allows navigation. A WebState can have many tab helpers attached.
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: A good rule of thumb is that if a code reviewer had a clarifying question about something during review and the code couldn't be simplified to answer the question then a comment is probably appropriate.
 ---
 
 **Rule.** In header and interface doc comments for functions, methods,

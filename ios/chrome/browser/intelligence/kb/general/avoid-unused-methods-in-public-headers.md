@@ -1,7 +1,21 @@
 ---
 name: ios/avoid-unused-methods-in-public-headers
+description: When declaring or refactoring C++ or Objective-C header interfaces, keep implementation helpers private, omit unused or speculative @property, method, or category declarations, and bundle definitions
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/cl_tips.md
+    heading: Encapsulate complexity, but don’t over-abstract
+    quote: Allowing for extensibility when it’s not necessary, creating abstractions where something concrete would suffice, or reaching for a design pattern when something simpler would work equally well adds unnecessary complexity to the codebase. The codebase is inherently mutable and additional abstractions can be added _if and when_ they are needed.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: This kind of grouping should happen for the implementations's public methods, superclass methods, private methods, and each protocol the implementation conforms to.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 08. **Remove dead code**
+    quote: In all removed lines, check for functions, classes, and constants that are no longer referenced and delete their declarations and definitions. You may need to delete entire source files.
 ---
 
 **Rule.** Do not declare or retain speculative, unused, or internal helper

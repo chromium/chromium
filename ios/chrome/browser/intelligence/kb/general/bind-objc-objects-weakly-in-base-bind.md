@@ -1,7 +1,18 @@
 ---
 name: ios/bind-objc-objects-weakly-in-base-bind
+description: In Objective-C++, bind captureless C++ lambdas or free functions with base::Bind instead of blocks; bind weak references explicitly and move move-only types directly
 rubric: safety
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++-features.md
+    heading: std::shared_ptr
+    quote: Unlike `base::RefCounted`, uses extrinsic rather than intrinsic reference counting. Could plausibly be used in Chromium, but would require significant migration.
+  - path: docs/mac/arc.md
+    heading: Blocks
+    quote: Blocks retain all objects referenced in them. This example is of a block used in an Objective-C method that uses the “weak self” idiom to avoid a retain cycle.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: Within an Objective-C++ source file, follow the style for the language of the function or method you're implementing.
 ---
 
 **Rule.** In Objective-C++ (`.mm`) code, when writing a new callback for

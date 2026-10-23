@@ -1,7 +1,12 @@
 ---
 name: ios/all-ios-source-files-must-be-objective-cpp
+description: In iOS source files, use the .mm extension rather than plain .m, and compile C++ files accessing Objective-C headers or ApplicationContext as .mm
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Language Choice
+    quote: In `//ios/`, "Objective-C" always means Objective-C++ (`.mm`), which allows freely mixing Objective-C and C++. Plain Objective-C (`.m`) is not used outside `//ios/third_party/`.
 ---
 
 **Rule.** In `ios/`, author Objective-C source files with the `.mm` extension

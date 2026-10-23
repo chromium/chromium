@@ -1,7 +1,14 @@
 ---
 name: ios/evaluate-earl-grey-skip-guards-before-setup
+description: In EarlGrey integration tests requiring a runtime capability skip that test_expectations.txt cannot express, evaluate EARL_GREY_TEST_SKIPPED (never XCTSkip or EARL_GREY_TEST_DISABLED) at the start of the test using device idiom helpers
 rubric: testing
 severity: should_fix
+citations:
+  - path: ios/testing/earl_grey/disabled_test_macros.h
+    quote: '#define EARL_GREY_TEST_SKIPPED(message)'
+  - path: ios/best_practices.md
+    heading: Testing Best Practices
+    quote: Do not use `DISABLED_` or `FLAKY_` method prefixes or hard-coded runtime/compile-time skips in test code to suppress failing or flaky tests. Instead, add an entry to `//ios/testing/test_expectations.txt` linking the `crbug.com/123456` issue.
 ---
 
 **Rule.** In EarlGrey integration tests (`*_egtest.mm`), an in-test runtime skip

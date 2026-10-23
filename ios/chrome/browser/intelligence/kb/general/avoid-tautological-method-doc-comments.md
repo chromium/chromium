@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-tautological-method-doc-comments
+description: When documenting methods, protocols, or helpers, describe purpose directly with active verbs; avoid tautological restatements, meta prefixes, concrete class coupling, or redundant parameter types
 rubric: readability
 severity: nit
+citations:
+  - path: docs/documentation_best_practices.md
+    heading: Method and class comments
+    quote: The header / Javadoc / docstring comments that say what methods do and how to use them. This documentation is the contract of how your code must behave.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: This kind of grouping should happen for the implementations's public methods, superclass methods, private methods, and each protocol the implementation conforms to.
 ---
 
 **Rule.** When documenting methods, Objective-C protocols (such as consumers,

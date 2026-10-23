@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-notreached-in-ui-action-handlers
+description: When implementing UI interaction handlers for displayable states or error types, do not use NOTREACHED(); handle the state gracefully or suppress the UI element
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/ios/style.md
+    heading: NOTIMPLEMENTED and NOTREACHED logging macros
+    quote: "`NOTREACHED`: This function should not be called. If it is, we have a problem somewhere else. `NOTIMPLEMENTED`: This isn't implemented because we don't use it yet. If it's called, then we need to figure out what it should do."
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: reachable `NOTREACHED`s result in an application crash (generating a crash report).
 ---
 
 **Rule.** Do not mark states, error codes, or enum branches with `NOTREACHED()`

@@ -1,7 +1,15 @@
 ---
 name: ios/propagate-public-header-dependencies-via-public-deps
+description: In GN targets, declare dependencies (including generated mojom or proto targets) in public_deps only when exposed by public headers, keeping implementation references in deps
 rubric: design
 severity: should_fix
+citations:
+  - path: agents/skills/gn-deps-debugging/references/dependency-patterns.md
+    heading: deps vs public_deps
+    quote: "Use `public_deps` only when consumers of this target's public headers also need the dependency to compile: ... `public_deps` is transitive. Every downstream target inherits it, so adding entries there widens the dependency graph. Treat `public_deps` as part of the API contract."
+  - path: agents/skills/gn-deps-debugging/SKILL.md
+    heading: Core principles
+    quote: 6. **Use `public_deps` only for public API exposure.** If a public header exposes a type from another target in its declarations or inline code, downstream consumers may need that dependency transitively.
 ---
 
 **Rule.** In GN build files (`BUILD.gn` and `*.gni`), place dependencies in

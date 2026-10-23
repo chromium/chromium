@@ -1,7 +1,15 @@
 ---
 name: ios/rely-on-keyed-service-factory-default-incognito-behavior
+description: When defining KeyedService factories in iOS Chrome, inherit from ProfileKeyedServiceFactoryIOS, configure traits in the constructor while omitting redundant defaults (NoServiceInIncognito), and do not expose URL/history services in incognito
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: A special case of base::SupportsUserData::Data is the KeyedService. They are managed by the ProfileKeyedServiceFactoryIOS infrastructure.
+  - path: chrome/browser/profiles/profile_keyed_service_factory.md
+    heading: ProfileSelections
+    quote: '* `kOriginalOnly`: Only return the profile if it is an Original Profile, OTR profiles are filtered out (returning nullptr).'
 ---
 
 **Rule.** When defining KeyedService factories in ios/chrome/browser, inherit

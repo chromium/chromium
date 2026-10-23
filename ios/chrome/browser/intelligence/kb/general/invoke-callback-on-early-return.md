@@ -1,7 +1,12 @@
 ---
 name: ios/invoke-callback-on-early-return
+description: When accepting or retaining completion callbacks or Objective-C blocks, invoke (checking nil) or forward them along all early returns, switch cases, and teardowns
 rubric: correctness
 severity: blocking
+citations:
+  - path: docs/callback.md
+    heading: OnceCallback<> And RepeatingCallback<>
+    quote: base::OnceCallback<> is created by base::BindOnce(). This is a callback variant that is a move-only type and can be run only once.
 ---
 
 **Rule.** When implementing a function, coordinator, mediator, delegate handler

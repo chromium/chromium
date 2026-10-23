@@ -1,7 +1,18 @@
 ---
 name: ios/document-reasons-for-asynchronous-workaround-dispatches
+description: When deferring execution asynchronously via PostTask, dispatch_async, or completion blocks, document the reentrancy, timing, or race-prevention rationale and avoid delay terminology unless using PostDelayedTask
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/threading_and_tasks.md
+    heading: Posting a Task with a Delay
+    quote: To post a task that must run once after a delay expires, use base::ThreadPool::PostDelayedTask*() or base::TaskRunner::PostDelayedTask().
+  - path: codelabs/cpp101/README.md
+    heading: 'Part 3: Threads and task runners'
+    quote: '- `PostDelayedTask()` if you want to add a delay.'
+  - path: codelabs/cpp101/README.md
+    heading: Threading
+    quote: '- PostDelayedTask() if you want to add a delay.'
 ---
 
 **Rule.** When deferring execution asynchronously on the current sequence,

@@ -1,7 +1,15 @@
 ---
 name: ios/earl-grey-tests-must-subclass-chrome-test-case
+description: When writing EarlGrey integration tests in *_egtest.mm, inherit from ChromeTestCase and prefix test methods with lowercase test.
 rubric: testing
 severity: should_fix
+citations:
+  - path: docs/ios/testing.md
+    heading: Writing EarlGrey tests
+    quote: Create `SomeGreatTestCase` as a subclass of `ChromeTestCase`. Create test methods, eg `-(void)testMyGreatUIFeature {...}`, and put UI actions within the test methods.
+  - path: ios/best_practices.md
+    heading: Testing Best Practices
+    quote: 'EarlGrey tests (`*_egtest.mm`): Use for end-to-end integration and user journeys across UI and model layers.'
 ---
 
 **Rule.** EarlGrey test classes in `*_egtest.mm` files must inherit from

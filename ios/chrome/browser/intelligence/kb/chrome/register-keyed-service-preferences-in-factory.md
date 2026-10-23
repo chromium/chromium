@@ -1,7 +1,18 @@
 ---
 name: ios/register-keyed-service-preferences-in-factory
+description: When registering KeyedService preferences, override RegisterProfilePrefs (or RegisterBrowserStatePrefs in BrowserStateKeyedServiceFactory) matching the base factory, rather than registering directly in browser_prefs
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/patterns/associated-data.md
+    heading: KeyedService & BrowserContextKeyedServiceFactory
+    quote: 'A third note: on iOS, use [BrowserStateKeyedServiceFactory] instead, which attaches a KeyedService to a [BrowserState].'
+  - path: ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h
+    heading: ProfileKeyedServiceFactoryIOS
+    quote: Registers any user preferences on this service. This should be overridden by any service that wants to register profile-specific preferences.
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: A special case of base::SupportsUserData::Data is the KeyedService. They are managed by the ProfileKeyedServiceFactoryIOS infrastructure. This infrastructure allows to declare dependencies between services and ensure that they are created and destroyed in an order compatible with those dependencies.
 ---
 
 **Rule.** When registering profile-scoped preferences for a `KeyedService`,

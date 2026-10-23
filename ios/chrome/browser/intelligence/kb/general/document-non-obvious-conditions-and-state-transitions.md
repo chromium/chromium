@@ -1,7 +1,24 @@
 ---
 name: ios/document-non-obvious-conditions-and-state-transitions
+description: When writing non-obvious branch conditions, sentinel guards, early-return bypasses, or complex traversal heuristics, document underlying invariants, delegation or bailout rationale, and concrete walkthrough scenarios
 rubric: readability
 severity: nit
+citations:
+  - path: docs/documentation_best_practices.md
+    heading: Documentation is the story of your code
+    quote: The primary purpose of inline comments is to provide information that the code itself cannot contain, such as why the code is there.
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: A good rule of thumb is that if a code reviewer had a clarifying question about something during review and the code couldn't be simplified to answer the question then a comment is probably appropriate.
+  - path: agents/prompts/common.minimal.md
+    heading: Coding
+    quote: 'Add code comments sparingly: Focus on *why* something is done, not *what* is done.'
+  - path: docs/documentation_best_practices.md
+    heading: Inline comments
+    quote: The primary purpose of inline comments is to provide information that the code itself cannot contain, such as why the code is there.
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: CHECK(), DCHECK() and NOTREACHED() are all used to ensure that invariants hold. They document (and verify) programmer expectations that either some statement always holds true at the point of (D)CHECKing or that a piece of code is unreachable (for NOTREACHED).
 ---
 
 **Rule.** Add an explanatory inline comment directly above non-obvious boolean

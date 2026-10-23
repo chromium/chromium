@@ -1,5 +1,6 @@
 ---
 name: ios/disconnect-mediator-in-test-teardown
+description: When tearing down test fixtures instantiating iOS Chrome mediators, invoke [mediator disconnect] in TearDown before nil'ing references to clear observers
 rubric: safety
 severity: should_fix
 ---

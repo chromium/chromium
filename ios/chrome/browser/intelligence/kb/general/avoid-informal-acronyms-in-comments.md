@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-informal-acronyms-in-comments
+description: When writing comments, documentation, or identifiers, spell out terms completely; avoid colloquial shorthand ('aka', 'w/o'), non-standard abbreviations ('VC'), and obscure feature acronyms ('PAM', 'DB').
 rubric: readability
 severity: nit
 ---

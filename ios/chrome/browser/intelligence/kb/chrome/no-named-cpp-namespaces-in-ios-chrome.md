@@ -1,7 +1,12 @@
 ---
 name: ios/no-named-cpp-namespaces-in-ios-chrome
+description: When declaring C++ classes, enums, functions, or feature flags in //ios/chrome/, keep declarations in the global namespace rather than wrapping in named namespaces
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Namespaces and Symbol Prefixes
+    quote: Because `//ios/chrome/` is the top-level application layer and is not linked as a library into other products, do **not** prefix Objective-C classes/protocols and do **not** put C++ code in named namespaces (use anonymous namespaces in `.mm`/`.cc` files for file-local helpers and constants).
 ---
 
 **Rule.** In `//ios/chrome/`, place embedder declarations—including classes,

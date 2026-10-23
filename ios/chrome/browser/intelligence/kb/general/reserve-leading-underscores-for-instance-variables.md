@@ -1,7 +1,18 @@
 ---
 name: ios/reserve-leading-underscores-for-instance-variables
+description: When declaring or referencing methods, properties, or local variables in C++ or Objective-C code and comments, reserve leading and trailing underscores strictly for members
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Disambiguating Symbols
+    quote: Where needed to avoid ambiguity, use backticks to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
 ---
 
 **Rule.** In C++, Objective-C, and Objective-C++, do not name methods, selector

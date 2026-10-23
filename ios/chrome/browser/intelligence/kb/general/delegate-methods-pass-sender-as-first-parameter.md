@@ -1,7 +1,12 @@
 ---
 name: ios/delegate-methods-pass-sender-as-first-parameter
+description: When declaring Objective-C delegate/observer protocols or coordinator callbacks, conform to NSObject, qualify selectors with class names and event verbs, and pass the sender or coordinator first
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: Within an Objective-C++ source file, follow the style for the language of the function or method you're implementing.
 ---
 
 **Rule.** When declaring Objective-C delegate or observer protocols (including

@@ -1,5 +1,6 @@
 ---
 name: ios/combine-consecutive-early-return-guards
+description: Combine consecutive early-return guards sharing identical bailout values using logical OR (||), ordering cheaper checks first, but keep prerequisite checks separate when setting error flags
 rubric: readability
 severity: nit
 ---

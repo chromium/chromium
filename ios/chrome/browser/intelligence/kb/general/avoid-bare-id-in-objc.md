@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-bare-id-in-objc
+description: When declaring Objective-C variables or parameters, use concrete class pointers or protocol-qualified types instead of bare id, and pass validated downcast variables
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Type Deduction (`auto`), `id`, and Literals
+    quote: Unlike `auto`, `id` disables static type checking. Reserve `id` for protocol-qualified references (`id<FooConsumer>`, `id<FooCommands>`). Always write the concrete class type when known.
 ---
 
 **Rule.** Do not use bare, untyped `id` declarations for local variables,

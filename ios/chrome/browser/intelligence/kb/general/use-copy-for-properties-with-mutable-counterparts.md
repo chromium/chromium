@@ -1,7 +1,15 @@
 ---
 name: ios/use-copy-for-properties-with-mutable-counterparts
+description: Specify copy for Objective-C properties with mutable counterparts and explicitly assign [param copy] to backing ivars in custom accessors and initializers
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: docs/mac/arc.md
+    heading: Objective-C Classes
+    quote: '@property(nonatomic, copy) NSArray* childCats;'
 ---
 
 **Rule.** When declaring Objective-C properties for types with mutable

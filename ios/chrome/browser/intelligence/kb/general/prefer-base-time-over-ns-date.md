@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-base-time-over-ns-date
+description: When measuring time intervals, durations, or timestamps, prefer base::Time, base::TimeTicks, and base::TimeDelta over NSDate.
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: 'Measuring Time: Use `base::Time`, `base::TimeTicks`, and `base::TimeDelta`'
+    quote: Use `base::TimeDelta` constants and constructors (`base::Seconds(5)`, `base::Minutes(10)`, `base::Days(7)`) instead of raw `NSTimeInterval` or integer constants.
 ---
 
 **Rule.** Use Chromium time primitives (`base::Time`, `base::TimeTicks`,

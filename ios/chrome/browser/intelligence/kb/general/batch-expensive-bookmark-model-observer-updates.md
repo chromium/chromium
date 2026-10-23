@@ -1,5 +1,6 @@
 ---
 name: ios/batch-expensive-bookmark-model-observer-updates
+description: When implementing model observers that perform expensive recomputations or reloads on models with batch-operation callbacks (such as BookmarkModelObserver::ExtensiveBookmarkChangesBeginning/Ended), suspend updates during batch operations and reload once on completion
 rubric: design
 severity: should_fix
 ---

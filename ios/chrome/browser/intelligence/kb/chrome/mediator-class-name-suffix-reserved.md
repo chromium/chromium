@@ -1,7 +1,12 @@
 ---
 name: ios/mediator-class-name-suffix-reserved
+description: When creating mediator classes, use the Mediator suffix exclusively for classes that mediate between the model layer and the UI layer.
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: Architectural Overview
+    quote: The class name suffix *Mediator is reserved exclusively for classes that mediate between the model layer and the UI layer as described in this document; it must not be used for general coordinator helpers or model-layer classes.
 ---
 
 **Rule.** The class name suffix `*Mediator` is reserved exclusively for classes

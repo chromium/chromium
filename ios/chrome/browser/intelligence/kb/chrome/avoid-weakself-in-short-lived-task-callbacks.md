@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-weakself-in-short-lived-task-callbacks
+description: In asynchronous callbacks dispatched by short-lived task or command objects, avoid capturing weakSelf or strong self; use standalone helpers capturing weak context objects
 rubric: safety
 severity: should_fix
 ---

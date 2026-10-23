@@ -1,7 +1,12 @@
 ---
 name: ios/inject-security-feature-scripts-at-document-start
+description: When configuring FeatureScript instances that expose private JavaScript APIs or perform security checks, inject at FeatureScript::InjectionTime::kDocumentStart rather than kDocumentEnd
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/web/public/js_messaging/README.md
+    heading: FeatureScript::InjectionTime
+    quote: Scripts configured with `kDocumentStart` can expose functions, but the DOM will not yet be available. Overrides of functions in the page content world which the webpage may call should be done at this time.
 ---
 
 **Rule.** When configuring `FeatureScript` instances (via `CreateWithFilename`

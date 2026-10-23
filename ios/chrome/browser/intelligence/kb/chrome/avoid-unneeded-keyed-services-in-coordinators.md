@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-unneeded-keyed-services-in-coordinators
+description: When instantiating mediators or injecting dependencies in coordinators, do not retrieve unneeded services via `*Factory::GetForProfile`; pass `nullptr` instead to avoid eager service initialization
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: A special case of base::SupportsUserData::Data is the KeyedService. They are managed by the ProfileKeyedServiceFactoryIOS infrastructure. This infrastructure allows to declare dependencies between services and ensure that they are created and destroyed in an order compatible with those dependencies.
 ---
 
 **Rule.** Do not retrieve profile keyed services from service factories (such as

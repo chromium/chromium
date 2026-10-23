@@ -1,7 +1,21 @@
 ---
 name: ios/document-member-declaration-order-for-destruction-safety
+description: When declaring class members or iOS test fixtures with destruction dependencies (WebTaskEnvironment, profiles, Mojo endpoints, observers), declare dependent members last and document ordering
 rubric: safety
 severity: blocking
+citations:
+  - path: docs/dangling_ptr_guide.md
+    heading: Incorrect destruction order
+    quote: Recall that destructors destroy class members in the inverse order of their appearance. It is usually possible to resolve destruction order issues by re-ordering member declarations so that members which need to live longer come first. It is important to order members correctly to prevent pre-existing and future UAF in destructors.
+  - path: mojo/public/cpp/bindings/README.md
+    heading: A Note About Endpoint Lifetime and Callbacks
+    quote: Once a `mojo::Remote<T>` is destroyed, it is guaranteed that pending callbacks as well as the connection error handler (if registered) won't be called.
+  - path: docs/threading_and_tasks_testing.md
+    heading: Task Environments
+    quote: There are a rare exceptions, like `base::test::ScopedFeatureList`, that need to outlive the task environment.
+  - path: components/viz/README.md
+    heading: Testing Viz Features
+    quote: As a general rule `base::ScopedFeatureList` should be the first thing initialized in a test fixture to avoid data races and incorrect feature values.
 ---
 
 **Rule.** When declaring class member variables or Objective-C ivars with

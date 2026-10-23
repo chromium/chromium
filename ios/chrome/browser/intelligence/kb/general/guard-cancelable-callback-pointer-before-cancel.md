@@ -1,5 +1,6 @@
 ---
 name: ios/guard-cancelable-callback-pointer-before-cancel
+description: When cancelling asynchronous tasks via a pointer or smart pointer to a cancelable callback, verify the pointer is non-null before calling Cancel()
 rubric: safety
 severity: should_fix
 ---

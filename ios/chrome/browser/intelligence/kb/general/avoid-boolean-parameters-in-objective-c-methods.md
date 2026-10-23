@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-boolean-parameters-in-objective-c-methods
+description: Avoid bare bool, BOOL, or std::optional<bool> parameters and fields that multiplex behaviors or modes across Objective-C and C++ APIs; prefer dedicated methods, two-valued/tri-state enums, or base::StrongAlias
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/patterns/prefer-enums.md
+    heading: Prefer enums over bools for parameters
+    quote: When you want to add a bool parameter to a function, consider giving the function a two-value enum parameter instead.
+  - path: styleguide/c++/blink-c++.md
+    heading: Prefer enums or StrongAliases to bare bools for function parameters
+    quote: Prefer enums to bools for function parameters if callers are likely to be passing constants, since named constants are easier to read at the call site. Alternatively, you can use `base::StrongAlias<Tag, bool>`. An exception to this rule is a setter function, where the name of the function already makes clear what the boolean is.
 ---
 
 **Rule.** Avoid bare boolean (`BOOL`/`bool`) parameters on Objective-C or C++

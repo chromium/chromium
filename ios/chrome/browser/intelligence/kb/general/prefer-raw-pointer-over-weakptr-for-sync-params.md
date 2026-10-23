@@ -1,7 +1,15 @@
 ---
 name: ios/prefer-raw-pointer-over-weakptr-for-sync-params
+description: When passing, returning, or storing non-owning objects in synchronous functions or accessors, use raw pointers or references instead of base::WeakPtr
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Object ownership and calling conventions
+    quote: Return `T*` if-and-only-if the caller does not take ownership.
+  - path: base/memory/README.md
+    heading: base::WeakPtr<T>
+    quote: Use when a reference to an object might outlive the object itself.
 ---
 
 **Rule.** When passing or returning non-owning objects in synchronous functions

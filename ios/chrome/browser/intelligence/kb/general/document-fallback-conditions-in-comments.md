@@ -1,5 +1,6 @@
 ---
 name: ios/document-fallback-conditions-in-comments
+description: When commenting conditional branches, compound guards, or boolean properties and returns, accurately describe all prerequisite conditions rather than omitting criteria or inverting logic
 rubric: readability
 severity: should_fix
 ---

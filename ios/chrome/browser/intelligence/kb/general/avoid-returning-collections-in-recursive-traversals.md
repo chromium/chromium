@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-returning-collections-in-recursive-traversals
+description: When collecting items during recursive tree or graph traversals, avoid returning and concatenating collections by value; accumulate in place via a reference or visitor
 rubric: readability
 severity: nit
 ---

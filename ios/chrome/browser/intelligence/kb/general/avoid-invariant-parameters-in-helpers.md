@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-invariant-parameters-in-helpers
+description: Avoid passing derivable, invariant, or speculative parameters to constructors, initializers, and helpers; hardcode constants and query container or receiver state internally.
 rubric: design
 severity: should_fix
 ---

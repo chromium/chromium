@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-block-suffix-for-direct-action-methods
+description: Name Objective-C direct actions with imperative verbs and callbacks with past-tense, on<Event>:, or handle<Action>Result:, avoiding closure tokens and unused forwarded parameters
 rubric: readability
 severity: should_fix
 ---

@@ -1,7 +1,12 @@
 ---
 name: ios/avoid-blocking-main-thread-with-file-io
+description: When performing disk I/O, file reachability, or image loading on the main thread, offload them to base::ThreadPool with base::MayBlock() or background queues
 rubric: safety
 severity: should_fix
+citations:
+  - path: docs/threading_and_tasks.md
+    heading: Keeping the Browser Responsive
+    quote: Do not perform expensive work on the main thread, the IO thread or any sequence that is expected to run tasks with a low latency. Instead, perform expensive work asynchronously using `base::ThreadPool::PostTaskAndReply*()` or `base::SequencedTaskRunner::PostTaskAndReply()`.
 ---
 
 **Rule.** Do not perform synchronous disk I/O, file reachability checks, or

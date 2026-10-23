@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-enum-class-over-ns-enum
+description: In Objective-C++ code, prefer C++ enum class with kCamelCase enumerators over NS_ENUM macros unless Objective-C/Swift interop is required
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Enumerations (`enum class` vs. `NS_ENUM`)
+    quote: Because all Objective-C code in `//ios/` is Objective-C++ (`.mm`), prefer C++ scoped enums (`enum class`) over `NS_ENUM`.
 ---
 
 **Rule.** In iOS Objective-C++ code (`.h`, `.mm`), prefer scoped C++

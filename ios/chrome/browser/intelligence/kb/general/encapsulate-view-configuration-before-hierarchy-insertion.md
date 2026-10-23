@@ -1,5 +1,6 @@
 ---
 name: ios/encapsulate-view-configuration-before-hierarchy-insertion
+description: When configuring UIKit views, set translatesAutoresizingMaskIntoConstraints to NO before addSubview:, encapsulate creation in dedicated helpers without container attachment, and avoid post-assembly mutations
 rubric: design
 severity: should_fix
 ---

@@ -1,7 +1,15 @@
 ---
 name: ios/inject-command-handlers-over-pass-through-delegates
+description: When routing UI commands, dismissal, or teardown across coordinators, view controllers, or mediators, dispatch directly via HandlerForProtocol instead of pass-through or ad-hoc delegates
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/coordinators.md
+    heading: Coordinator Delegates
+    quote: A child coordinator requests its own teardown by invoking a command handled by its parent (see Standard Start and Stop Flow).
+  - path: docs/ios/objects.md
+    heading: Browser
+    quote: The Browser also owns the CommandDispatcher and ChromeBroadcaster used for dispatching UI commands and property synchronisation.
 ---
 
 **Rule.** Do not route UI commands, dismissal events, or teardown actions

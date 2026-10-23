@@ -1,7 +1,18 @@
 ---
 name: ios/prefer-unnamed-namespace-helpers-over-private-methods
+description: In Objective-C++ (.mm) files, define stateless helpers, UI/data transformers, and C++ service queries in an unnamed namespace rather than private methods
 rubric: design
 severity: nit
+citations:
+  - path: ios/best_practices.md
+    heading: Language Choice
+    quote: In `//ios/`, "Objective-C" always means Objective-C++ (`.mm`), which allows freely mixing Objective-C and C++. Plain Objective-C (`.m`) is not used outside `//ios/third_party/`.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For C functions and constants defined in a namespace, use C++ style, even if most of the file is Objective-C.
+  - path: styleguide/c++/c++.md
+    heading: Unnamed namespaces
+    quote: Items local to a .cc file should be wrapped in an unnamed namespace. While some such items are already file-scope by default in C++, not all are; also, shared objects on Linux builds export all symbols, so unnamed namespaces (which restrict these symbols to the compilation unit) improve function call cost and reduce the size of entry point tables.
 ---
 
 **Rule.** In Objective-C++ (`.mm`) files, prefer implementing file-local helper

@@ -1,7 +1,15 @@
 ---
 name: ios/capitalize-all-words-in-pascal-case-names
+description: When naming GoogleTest tests or PascalCase C++ functions, methods, and classes, capitalize each constituent word, treat acronyms as words, and avoid all-caps tokens
 rubric: readability
 severity: nit
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For code in an `@implementation` block, use the Objective-C naming rules. For code in a method of a C++ class, use the C++ naming rules.
 ---
 
 **Rule.** In GoogleTest test definitions (e.g., `TEST`, `TEST_F`, `TEST_P`),

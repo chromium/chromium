@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-redundant-table-view-begin-end-updates
+description: When updating table view edit state or layout transitions, avoid calling beginUpdates and endUpdates to refresh cell heights unless cells dynamically change height.
 rubric: readability
 severity: nit
 ---

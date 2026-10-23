@@ -1,5 +1,6 @@
 ---
 name: ios/use-delegating-constructor-syntax
+description: 'When delegating initialization between C++ constructors, use member initializer list syntax (`: ClassName(...)`) instead of invoking the constructor inside the constructor body'
 rubric: correctness
 severity: should_fix
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/no-internal-codenames-in-public-code
+description: When writing identifiers, command handlers, action selectors, tests, UI text, or comments, use public canonical feature names instead of internal team names or legacy codenames
 rubric: readability
 severity: should_fix
 ---

@@ -1,5 +1,6 @@
 ---
 name: ios/prefer-positive-condition-in-if-else
+description: In two-branch if/else blocks or ternary expressions, prefer positive conditions over negated expressions by swapping branches; use early returns for guards.
 rubric: readability
 severity: nit
 ---

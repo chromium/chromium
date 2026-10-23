@@ -1,7 +1,21 @@
 ---
 name: ios/define-dedicated-entrypoint-enum-values
+description: When instrumenting feature entry points, sign-in (signin_metrics::AccessPoint), or AccountMenuAccessPoint, define dedicated, surface-named enum values in enums.xml instead of reusing existing values
 rubric: testing
 severity: should_fix
+citations:
+  - path: tools/metrics/histograms/review_guidelines.md
+    heading: Histogram is setup correctly.
+    quote: When modifying enums it is better to add new values to the enum instead of re-purposing existing enum values.
+  - path: tools/metrics/histograms/README.md
+    heading: Directly Measure What You Want
+    quote: Usually it's best to measure exactly what you want.
+  - path: agents/skills/histograms/SKILL.md
+    heading: Workflow
+    quote: If the histogram uses an enum, ensure the corresponding <enum> and its <int> values are defined in enums.xml.
+  - path: docs/supported_platforms.md
+    heading: iOS WebView
+    quote: It bundles select Chromium features to enhance the web browsing experience beyond what WKWebView provides out of the box.
 ---
 
 **Rule.** When triggering, presenting, or instrumenting a feature, sign-in flow,

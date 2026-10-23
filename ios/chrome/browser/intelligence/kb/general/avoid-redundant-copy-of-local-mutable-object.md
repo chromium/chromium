@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-redundant-copy-of-local-mutable-object
+description: When returning or assigning a locally constructed mutable Objective-C object or collection to an immutable destination, use it directly without calling [object copy]
 rubric: readability
 severity: nit
 ---

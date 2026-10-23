@@ -1,7 +1,12 @@
 ---
 name: ios/state-mandatory-restrictions-definitively-in-comments
+description: When documenting constraints, preconditions, or control flow in comments, state strict invariants definitively while avoiding absolute negative assertions or ambiguous 'may not' for conditional behavior
 rubric: readability
 severity: nit
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Nullability annotations in the `ios/` directory
+    quote: Nullability annotations, such as `nonnull` and `nullable`, may not be used in the `ios/` directory. This differs from the Google Objective-C Style Guide, which permits these annotations.
 ---
 
 **Rule.** When documenting platform constraints, preconditions, or unconditional

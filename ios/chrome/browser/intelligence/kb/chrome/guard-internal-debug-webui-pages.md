@@ -1,7 +1,12 @@
 ---
 name: ios/guard-internal-debug-webui-pages
+description: When registering internal debug or diagnostic WebUI pages in iOS Chrome, guard them behind InternalDebugPagesEnabled() returning NewWebUIIOS<InternalDebugPagesDisabledUI> when disabled
 rubric: safety
 severity: should_fix
+citations:
+  - path: chrome/browser/ui/webui/indigo_internals/README.md
+    heading: Access
+    quote: As a debug UI, this page is placed behind the `kInternalOnlyUisEnabled` preference.
 ---
 
 **Rule.** When registering internal debug or diagnostic WebUI pages in

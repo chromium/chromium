@@ -1,7 +1,18 @@
 ---
 name: ios/document-non-obvious-execution-order-and-side-effects
+description: When operations, state updates, or teardowns have load-bearing execution order, document the sequencing rationale, explicitly stating lifecycle invariants in cleanup, and avoid gratuitous reordering
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/ui/learn/bestpractices/ownership.md
+    heading: Keep lifetimes fully nested
+    quote: For objects you own, **destroy in the reverse order you created,** so lifetimes are nested rather than partially-overlapping. This can also reduce the likelihood of use-after-free
+  - path: docs/documentation_best_practices.md
+    heading: Documentation is the story of your code
+    quote: The primary purpose of inline comments is to provide information that the code itself cannot contain, such as why the code is there.
+  - path: docs/documentation_guidelines.md
+    heading: Implementation documentation
+    quote: A good rule of thumb is that if a code reviewer had a clarifying question about something during review and the code couldn't be simplified to answer the question then a comment is probably appropriate.
 ---
 
 **Rule.** When the execution, initialization, traversal, state mutation, or

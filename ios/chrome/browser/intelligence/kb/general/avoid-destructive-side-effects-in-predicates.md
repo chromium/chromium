@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-destructive-side-effects-in-predicates
+description: When implementing boolean predicate or query methods, do not drain, reset, or mutate collections using std::exchange or clear; inspect containers in-place
 rubric: correctness
 severity: should_fix
 ---

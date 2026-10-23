@@ -1,7 +1,15 @@
 ---
 name: ios/omit-redundant-target-label-in-gn-deps
+description: When declaring GN dependencies, omit redundant directory-matching target names and reference canonical public targets rather than internal generation, grit, or header subtargets
 rubric: design
 severity: should_fix
+citations:
+  - path: build/docs/writing_gn_templates.md
+    heading: Style Guide
+    quote: Chromium GN files follow [GN's Style Guide](https://gn.googlesource.com/gn/+/main/docs/style_guide.md) with a few additions.
+  - path: docs/imported/gn/style_guide.md
+    heading: Deps
+    quote: Prefer to omit the colon and name when possible. See the [GN implicit names](reference.md#implicit-names).
 ---
 
 **Rule.** In GN build files (`BUILD.gn`, `*.gni`), do not include the colon and

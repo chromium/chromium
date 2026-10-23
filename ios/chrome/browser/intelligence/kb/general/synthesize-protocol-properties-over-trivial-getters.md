@@ -1,7 +1,12 @@
 ---
 name: ios/synthesize-protocol-properties-over-trivial-getters
+description: Omit redundant @synthesize directives and manual ivars for class properties, use @synthesize or class-extension redeclaration for protocol properties, and write explicit accessors only when bridging C++ smart-pointer ivars
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** Do not write explicit `@synthesize` directives or manually declare

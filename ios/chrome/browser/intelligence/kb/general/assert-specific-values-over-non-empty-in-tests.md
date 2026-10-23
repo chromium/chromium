@@ -1,5 +1,6 @@
 ---
 name: ios/assert-specific-values-over-non-empty-in-tests
+description: When verifying test data or collection contents, assert exact values and container sizes with EXPECT_EQ or ASSERT_EQ rather than loose relational bounds or non-empty checks
 rubric: testing
 severity: should_fix
 ---

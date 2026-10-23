@@ -1,5 +1,6 @@
 ---
 name: ios/name-condition-enums-as-state-not-availability
+description: Suffix enums and state properties representing conditions, lifecycles, or operation outcomes with State, Status, Result, or Outcome rather than bare nouns or Availability
 rubric: readability
 severity: should_fix
 ---

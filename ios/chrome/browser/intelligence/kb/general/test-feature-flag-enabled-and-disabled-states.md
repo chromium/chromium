@@ -1,7 +1,12 @@
 ---
 name: ios/test-feature-flag-enabled-and-disabled-states
+description: When testing feature-flagged code, verify both enabled and disabled states using separate tests, parameterized suites, or EarlGrey subclasses rather than testing sequentially or branching dynamically
 rubric: testing
 severity: should_fix
+citations:
+  - path: net/docs/code-reviews.md
+    heading: New features and behavior changes
+    quote: Code whose behavior is influenced by the feature flag should be tested both with and without the flag enabled, using [INSTANTIATE_TEST_SUITE_P](https://google.github.io/googletest/reference/testing.html#INSTANTIATE_TEST_SUITE_P).
 ---
 
 **Rule.** When introducing or modifying code influenced by a feature flag (such

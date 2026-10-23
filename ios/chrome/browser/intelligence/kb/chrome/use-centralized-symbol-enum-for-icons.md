@@ -1,7 +1,15 @@
 ---
 name: ios/use-centralized-symbol-enum-for-icons
+description: When referencing SF Symbols or custom symbols in iOS UI code, use centralized symbols.h and typed Symbol enums instead of string literals, local constants, or systemImageNamed
 rubric: readability
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: UI and Assets Best Practices
+    quote: Use the [`Symbol`](/ios/chrome/browser/shared/ui/symbols/symbols.h) enum and symbol helpers in `//ios/chrome/browser/shared/ui/symbols/symbols.h` (`SymbolWithPointSize()`, `SymbolTemplateWithPointSize()`, `SymbolWithConfiguration()`) for icons whenever possible.
+  - path: ios/chrome/browser/shared/ui/symbols/README.md
+    heading: Symbol folder
+    quote: This folder is supposed to contain the custom symbols, the definition of custom and system symbols and the code that is used to work with the symbols.
 ---
 
 **Rule.** In iOS Chrome UI code, do not hardcode SF Symbol or custom symbol

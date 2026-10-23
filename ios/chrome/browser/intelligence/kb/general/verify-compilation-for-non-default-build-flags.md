@@ -1,7 +1,12 @@
 ---
 name: ios/verify-compilation-for-non-default-build-flags
+description: When modifying code guarded by non-default build flags or internal configurations, verify compilation via specialized trybots or temporary GN flag overrides before landing
 rubric: correctness
 severity: should_fix
+citations:
+  - path: docs/contributing.md
+    heading: 'Cq-Include-Trybots:'
+    quote: A comma-separated list of trybots which should be triggered and checked by the CQ in addition to the normal set.
 ---
 
 **Rule.** When refactoring APIs or modifying code, source sets, or dependencies

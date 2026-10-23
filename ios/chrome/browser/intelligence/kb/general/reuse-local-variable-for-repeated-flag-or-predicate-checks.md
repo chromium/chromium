@@ -1,7 +1,18 @@
 ---
 name: ios/reuse-local-variable-for-repeated-flag-or-predicate-checks
+description: When repeatedly querying feature flags, service factories, properties, dictionary lookups, or chained accessors, cache in a local variable or helper
 rubric: design
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Unnamed namespaces
+    quote: Items local to a .cc file should be wrapped in an unnamed namespace.
+  - path: docs/mac/arc.md
+    heading: The basics of ARC
+    quote: Objective-C objects are accessed via pointer. The most straightforward way of thinking about ARC is that, while in classic manual reference counting, those pointers are raw pointers and the programmer is in charge of writing the appropriate retain and release messages, with ARC, all pointers to Objective-C objects are smart pointers
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
 ---
 
 **Rule.** Do not evaluate duplicate condition expressions or repeatedly query

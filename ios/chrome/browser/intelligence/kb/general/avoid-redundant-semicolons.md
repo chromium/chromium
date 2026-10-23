@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-redundant-semicolons
+description: When writing or modifying C++, C, or Objective-C code, omit redundant semicolons after control-flow compound blocks, standalone semicolons, or duplicate double semicolons
 rubric: readability
 severity: should_fix
 ---

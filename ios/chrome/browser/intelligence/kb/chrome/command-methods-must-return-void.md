@@ -1,7 +1,12 @@
 ---
 name: ios/command-methods-must-return-void
+description: When declaring UI command protocol methods, return void; command methods are one-way dispatch instructions, not queries or synchronous RPCs.
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/commands.md
+    heading: Characteristics of a UI Command
+    quote: Command methods must always return void. Commands are one-way requests, not queries.
 ---
 
 **Rule.** All methods in command protocols must return `void`. UI commands are

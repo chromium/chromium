@@ -1,7 +1,12 @@
 ---
 name: ios/extract-complex-inline-callbacks-to-methods
+description: When binding callbacks or structuring function subroutines, extract complex lambdas, local blocks, or multi-step logic into dedicated member methods or anonymous-namespace functions
 rubric: design
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
 ---
 
 **Rule.** Extract multi-step, multi-line, or branching logic (such as loops,

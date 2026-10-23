@@ -1,7 +1,12 @@
 ---
 name: ios/consumer-protocols-pass-simple-value-types-not-model-objects
+description: When declaring UI layer protocols (including consumer, mutator, and handler protocols), pass simple value types or Objective-C info wrappers instead of raw C++ model objects
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: Data Types Passed Over Consumer Protocols
+    quote: Consumer protocols must never pass model-layer objects or structs. Doing so leaks the model layer into the UI layer and couples the view controller to the model.
 ---
 
 **Rule.** UI layer protocols (such as consumer, mutator, handler, and delegate

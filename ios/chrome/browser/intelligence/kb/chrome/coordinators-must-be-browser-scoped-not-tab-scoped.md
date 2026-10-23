@@ -1,7 +1,12 @@
 ---
 name: ios/coordinators-must-be-browser-scoped-not-tab-scoped
+description: When managing tab or web page UI, do not instantiate coordinators per tab; coordinators must be browser-scoped and observe WebStateList.
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/coordinators.md
+    heading: Coordinator Scope
+    quote: 'Almost all coordinators are browser-scoped: each is tied to a specific Browser instance and manages UI for that browser. Coordinators are never instantiated per tab; per-tab model state is managed in the model layer.'
 ---
 
 **Rule.** Coordinators must be browser-scoped rather than tab-scoped: a

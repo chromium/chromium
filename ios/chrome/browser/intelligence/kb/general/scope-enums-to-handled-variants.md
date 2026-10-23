@@ -1,7 +1,15 @@
 ---
 name: ios/scope-enums-to-handled-variants
+description: When defining or extending enums, scope enumerators to actively handled states, avoid premature additions without switch handling, and omit unreachable NOTREACHED() cases
 rubric: design
 severity: should_fix
+citations:
+  - path: docs/chrome_browser_design_principles.md
+    heading: General
+    quote: Avoid tight coupling of unrelated features.
+  - path: styleguide/c++/checks.md
+    heading: Examples
+    quote: This switch handles all cases, but enums can technically hold any integer value (even if all enum members are enumerated), so the compiler must try to handle other cases too.
 ---
 
 **Rule.** When defining or extending a feature-local enum, scope enumerators

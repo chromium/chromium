@@ -1,7 +1,15 @@
 ---
 name: ios/blocks-must-not-capture-strong-self
+description: In Objective-C escaping blocks, capture weakSelf, ivars, and subviews via __weak to prevent retain cycles; in synchronous execution or transient animations, use self directly
 rubric: safety
 severity: should_fix
+citations:
+  - path: ios/best_practices.md
+    heading: Blocks
+    quote: Referencing `self` or `_ivar` inside a block strongly retains `self`. Always capture `__weak __typeof(self) weakSelf = self;`.
+  - path: docs/mac/arc.md
+    heading: Blocks {#examples-blocks}
+    quote: Blocks retain all objects referenced in them. If an object has a property holding a block and that block references `self`, a retain cycle is created.
 ---
 
 **Rule.** Do not capture `self`, instance variables, UI views, subviews, or

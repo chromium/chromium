@@ -1,5 +1,6 @@
 ---
 name: ios/avoid-duplicate-invocations-for-conditional-arguments
+description: When function calls, methods, or object instantiations are duplicated across conditional branches with differing receivers or arguments, resolve target or parameters and invoke once
 rubric: design
 severity: should_fix
 ---

@@ -1,7 +1,15 @@
 ---
 name: ios/spell-out-objective-c-parameter-names
+description: In Objective-C, Objective-C++, and iOS code, spell out identifiers in descriptive lowerCamelCase reflecting type or role instead of ad-hoc abbreviations, generic suffixes, or truncated names
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Objective-C++ style matches the language
+    quote: For code in an @implementation block, use the Objective-C naming rules.
 ---
 
 **Rule.** In Objective-C, Objective-C++, and iOS C++ code, spell out identifiers

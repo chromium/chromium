@@ -1,7 +1,15 @@
 ---
 name: ios/avoid-placeholder-variables-for-unimplemented-features
+description: When authoring feature or preparatory CLs, avoid speculative branching, placeholder variables, uncalled helpers, and unready UI models; implement only supported behavior directly
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/cl_tips.md
+    heading: Encapsulate complexity, but don’t over-abstract
+    quote: However, do not over-design abstractions for an unknown future. Allowing for extensibility when it’s not necessary, creating abstractions where something concrete would suffice, or reaching for a design pattern when something simpler would work equally well adds unnecessary complexity to the codebase. The codebase is inherently mutable and additional abstractions can be added _if and when_ they are needed.
+  - path: docs/ios/style.md
+    heading: TODO comments
+    quote: Every TODO must have a bug
 ---
 
 **Rule.** Do not introduce speculative or anticipatory code—such as unused

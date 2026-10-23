@@ -1,7 +1,12 @@
 ---
 name: ios/sort-forward-declarations-alphabetically
+description: In C++ and Objective-C headers, place imports before forward declarations, declare @class before @protocol on separate lines, and sort declarations and namespaces alphabetically
 rubric: readability
 severity: should_fix
+citations:
+  - path: agents/skills/browser-window-feature-refactor/references/bwf-ordering.md
+    heading: Public Header
+    quote: Keep top-level forward declarations sorted alphabetically within their existing unconditional group.
 ---
 
 **Rule.** In C++ and Objective-C header and source files, place all #include and

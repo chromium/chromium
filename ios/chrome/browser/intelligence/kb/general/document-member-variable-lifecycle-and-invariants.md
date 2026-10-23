@@ -1,7 +1,36 @@
 ---
 name: ios/document-member-variable-lifecycle-and-invariants
+description: When declaring member variables, ivars, or properties, document their role, lifecycle, units, and non-nil invariants using concise noun phrases rather than tautological or accessor phrasing
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
+  - path: https://google.github.io/styleguide/cppguide.html#Variable_Comments
+    heading: Variable Comments > Class Data Members
+    quote: Each class data member (also called an instance variable or member variable) should have a comment describing its purpose.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium Objective-C and Objective-C++ style guide
+    quote: Chromium follows the Google Objective-C style guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Nullability annotations in the `ios/` directory
+    quote: Nullability annotations, such as `nonnull` and `nullable`, may not be used in the `ios/` directory. This differs from the Google Objective-C Style Guide, which permits these annotations.
+  - path: docs/documentation_guidelines.md
+    heading: Interface / class documentation
+    quote: Class and function declarations in header files describe to the world how a piece of code should be used.
+  - path: base/memory/raw_ptr.md
+    heading: What is |raw_ptr<T>|
+    quote: raw_ptr<T> is a non-owning smart pointer that has improved memory-safety over raw pointers.
+  - path: docs/documentation_guidelines.md
+    heading: Guidelines
+    quote: It is meant to help a reader understand *how the code works* or explain an implementation path that might not be obvious from the code itself.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium C++ style
+    quote: Where appropriate, the [Chromium C++ style](../c++/c++.md) style guide applies to Chromium Objective-C and (especially) Objective-C++
+  - path: styleguide/objective-c/objective-c.md
+    heading: Delineate interface implementations with `#pragma mark -`
+    quote: To keep implementation files organized and navigable, method implementations should be clearly grouped by the interfaces they implement, and each such group should be marked with a `#pragma mark -`, followed by the interface name (see examples below).
 ---
 
 **Rule.** Precede struct or class data members, Objective-C instance variables

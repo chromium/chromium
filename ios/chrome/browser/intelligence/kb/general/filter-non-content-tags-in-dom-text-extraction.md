@@ -1,5 +1,6 @@
 ---
 name: ios/filter-non-content-tags-in-dom-text-extraction
+description: When extracting DOM text where innerText is unsupported, traverse nodes directly to filter non-content tags rather than calling cloneNode(true)
 rubric: correctness
 severity: should_fix
 ---

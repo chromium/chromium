@@ -1,7 +1,12 @@
 ---
 name: ios/prefer-spin-run-loop-over-dummy-grey-condition
+description: In iOS tests, poll explicit conditions using WaitUntilConditionOrTimeout or ChromeEarlGrey helpers instead of fixed delays like SpinRunLoopWithMinDelay or dummy GREYConditions
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/testing/web_tests_tips.md
+    heading: Fast
+    quote: Tests should be as **fast** as possible, without compromising on the principles below. Blink has several thousand web tests that are run in parallel, and avoiding unnecessary delays is crucial to keeping our Commit Queue in good shape.
 ---
 
 **Rule.** In iOS unit and integration tests (including EarlGrey tests), do not

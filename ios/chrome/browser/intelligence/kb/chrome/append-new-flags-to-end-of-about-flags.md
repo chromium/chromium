@@ -1,7 +1,12 @@
 ---
 name: ios/append-new-flags-to-end-of-about-flags
+description: When adding feature flags to `kFeatureEntries` in `about_flags`, append new entries to the end of the array rather than grouping or alphabetizing.
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/how_to_add_your_feature_flag.md
+    heading: 'Step 2: Adding the feature flag to the chrome://flags UI.'
+    quote: Add your changes at the bottom of the list, search for "Add new entries above this line."
 ---
 
 **Rule.** When adding a new feature flag, experiment entry, or switch to

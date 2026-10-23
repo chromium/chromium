@@ -1,7 +1,12 @@
 ---
 name: ios/coordinator-use-self-profile
+description: Reuse held ProfileIOS properties or ivars instead of dereferencing browser->GetProfile(), retrieve services directly in ChromeCoordinator without initializer injection, and cache lookups
 rubric: design
 severity: nit
+citations:
+  - path: docs/ios/objects.md
+    heading: ProfileIOS
+    quote: A special case of base::SupportsUserData::Data is the KeyedService. They are managed by the ProfileKeyedServiceFactoryIOS infrastructure.
 ---
 
 **Rule.** When accessing a dependency that is already stored as an ivar or

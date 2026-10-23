@@ -1,7 +1,21 @@
 ---
 name: ios/guard-unsupported-legacy-methods-under-feature-flags
+description: When implementing feature-gated methods, callee branches, or legacy paths, assert expected feature flag preconditions with CHECK instead of DCHECK, redundant runtime branching, or silent early returns
 rubric: correctness
 severity: should_fix
+citations:
+  - path: styleguide/c++/checks.md
+    heading: Invariant-verification mechanisms
+    quote: Prefer `CHECK()` and `NOTREACHED()` over `DCHECK()`s as they ensure that if an invariant fails, the program does not continue in an unexpected state, and we hear about the failure either through a test failure or a crash report.
+  - path: styleguide/c++/checks.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: '`CHECK()`, `DCHECK()` and `NOTREACHED()` are all used to ensure that invariants hold. They document (and verify) programmer expectations that either some statement *always* holds true at the point of `(D)CHECK`ing or that a piece of code is unreachable (for `NOTREACHED`).'
+  - path: agents/skills/feature-flag-removal/SKILL.md
+    heading: 02. **Remove C++ flag enablement checks**
+    quote: Find C++ callsites where the feature enablement is checked. This usually takes the form of `base::FeatureList::IsEnabled(kFeature)` calls or a free `Is<X>Enabled()` helper function that wraps the former.
+  - path: styleguide/c++/c++.md
+    heading: CHECK(), DCHECK() and NOTREACHED()
+    quote: Use the `CHECK()` family of macros to both document and verify invariants.
 ---
 
 **Rule.** When implementing feature-gated services, factory entry points,

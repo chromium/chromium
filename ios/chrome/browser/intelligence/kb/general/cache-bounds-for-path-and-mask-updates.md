@@ -1,5 +1,6 @@
 ---
 name: ios/cache-bounds-for-path-and-mask-updates
+description: When updating paths, shape layers, or layer masks during view layout passes, cache previous bounds and return early if CGRectEqualToRect indicates bounds are unchanged
 rubric: readability
 severity: nit
 ---

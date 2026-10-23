@@ -1,7 +1,12 @@
 ---
 name: ios/consumer-protocols-no-cpp-strings
+description: When passing text over consumer protocols, pass localized NSString instead of std::string or std::u16string.
 rubric: design
 severity: should_fix
+citations:
+  - path: ios/architecture/mediators.md
+    heading: Data Types Passed Over Consumer Protocols
+    quote: 'C++ strings (std::string, std::u16string) should not be passed to a consumer: if a string is meant to be displayed, the mediator should convert it to NSString*, and if it represents a state used to control the UI, it should be an enum class instead.'
 ---
 
 **Rule.** Do not pass `std::string` or `std::u16string` across consumer

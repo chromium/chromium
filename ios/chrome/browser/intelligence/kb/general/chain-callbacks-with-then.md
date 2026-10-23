@@ -1,7 +1,12 @@
 ---
 name: ios/chain-callbacks-with-then
+description: When sequencing callbacks, chain completion steps using base::OnceCallback::Then() instead of member closures, trampoline methods, or ScopedClosureRunner, reserving ScopedClosureRunner for cancellation-safe cleanup
 rubric: readability
 severity: should_fix
+citations:
+  - path: docs/callback.md
+    heading: Chaining callbacks
+    quote: When you have 2 callbacks that you wish to run in sequence, they can be joined together into a single callback through the use of Then().
 ---
 
 **Rule.** When sequencing callbacks, running completion closures, or adapting

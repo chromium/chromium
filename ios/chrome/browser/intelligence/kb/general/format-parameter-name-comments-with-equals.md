@@ -1,7 +1,18 @@
 ---
 name: ios/format-parameter-name-comments-with-equals
+description: When annotating function arguments at call sites, format inline comments as /*param_name=*/value synchronized with declarations, and omit them for self-describing expressions
 rubric: readability
 severity: should_fix
+citations:
+  - path: styleguide/c++/c++.md
+    heading: Chromium C++ style guide
+    quote: Chromium follows the Google C++ Style Guide unless an exception is listed below.
+  - path: styleguide/objective-c/objective-c.md
+    heading: Chromium C++ style
+    quote: Where appropriate, the Chromium C++ style style guide applies to Chromium Objective-C and (especially) Objective-C++
+  - path: https://google.github.io/styleguide/cppguide.html#Function_Argument_Comments
+    heading: Implementation Comments > Function Argument Comments
+    quote: Do not use parameter name comments when the argument is already self-describing (e.g., when the argument is a variable whose name matches the parameter, or when the expression makes the purpose clear).
 ---
 
 **Rule.** When annotating function arguments at call sites, format inline
