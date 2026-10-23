@@ -21,7 +21,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
@@ -44,7 +45,7 @@ class OobeUI;
 // View used to render a WebUI supporting Widget. This widget is used for the
 // WebUI based start up. It contains a WebView.
 class WebUILoginView : public views::View,
-                       public content::WebContentsDelegate,
+                       public views::WebContentsDelegateViews<WebUILoginView>,
                        public session_manager::SessionManagerObserver,
                        public ash::SessionTerminationManager::Observer,
                        public ChromeWebModalDialogManagerDelegate,
@@ -164,9 +165,6 @@ class WebUILoginView : public views::View,
 
   // WebView for rendering a webpage as a webui login.
   raw_ptr<views::WebView> web_view_ = nullptr;
-
-  // Converts keyboard events on the WebContents to accelerators.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Maps installed accelerators to OOBE webui accelerator identifiers.
   AccelMap accel_map_;

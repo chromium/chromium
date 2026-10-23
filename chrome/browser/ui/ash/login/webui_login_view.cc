@@ -156,13 +156,13 @@ void WebUILoginView::Init() {
   WebContents* web_contents = web_view->GetWebContents();
 
   InitializeWebView(web_view.get());
-  web_view->set_allow_accelerators_deprecated(true);
 
   web_view_ = AddChildView(std::move(web_view));
 
   WebContentsModalDialogManager::FromWebContents(web_contents)
       ->SetDelegate(this);
   web_contents->SetDelegate(this);
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
   content::WebContentsObserver::Observe(web_contents);
 }
 
@@ -314,9 +314,7 @@ bool WebUILoginView::HandleKeyboardEvent(content::WebContents* source,
     // Disable arrow key traversal because arrow keys are handled via
     // accelerator when this view has focus.
     ScopedArrowKeyTraversalDisabler disabler;
-
-    handled = unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, GetFocusManager());
+    handled = WebContentsDelegateViews::HandleKeyboardEvent(source, event);
   }
 
   return handled;
