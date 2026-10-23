@@ -919,7 +919,8 @@ ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
 }
 
 bool IsMhtmlMimeType(const std::string& mime_type) {
-  return mime_type == "multipart/related" || mime_type == "message/rfc822";
+  return base::EqualsCaseInsensitiveASCII(mime_type, "multipart/related") ||
+         base::EqualsCaseInsensitiveASCII(mime_type, "message/rfc822");
 }
 
 std::optional<base::SafeRef<RenderFrameHostImpl>>

@@ -166,8 +166,12 @@ public class IntentHandlerRobolectricTest {
         {"file://foo.mht", "application/octet-stream"},
         {"file://foo", "multipart/related"},
         {"file://foo", "message/rfc822"},
+        {"file://foo", "Multipart/Related"},
+        {"file://foo", "Message/RFC822"},
         {"content://example.com/1", "multipart/related"},
         {"content://example.com/1", "message/rfc822"},
+        {"content://example.com/1", "Multipart/Related"},
+        {"content://example.com/1", "Message/RFC822"},
     };
 
     private static final String[][] INTENT_URLS_AND_TYPES_NOT_FOR_MHTML = {
@@ -442,6 +446,17 @@ public class IntentHandlerRobolectricTest {
         Assert.assertEquals(
                 "Foo: bar\nX-Chrome-intent-type: message/rfc822",
                 IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, "Foo: bar"));
+
+        // Mixed-case MHTML types.
+        intent.setType("Multipart/Related");
+        Assert.assertEquals(
+                "X-Chrome-intent-type: Multipart/Related",
+                IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
+
+        intent.setType("Message/RFC822");
+        Assert.assertEquals(
+                "X-Chrome-intent-type: Message/RFC822",
+                IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
     }
 
     @Test

@@ -1460,7 +1460,8 @@ public class IntentHandler {
 
     /** Return true if the type is one of the Mime types used for MHTML */
     static boolean isMhtmlMimeType(String type) {
-        return type.equals("multipart/related") || type.equals("message/rfc822");
+        return type.equalsIgnoreCase("multipart/related")
+                || type.equalsIgnoreCase("message/rfc822");
     }
 
     /**

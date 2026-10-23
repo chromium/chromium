@@ -22,6 +22,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/download_utils.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -39,7 +40,10 @@
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/filename_util.h"
+#include "net/base/mime_util.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -1169,6 +1173,93 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlImprovementsBrowserTest,
   injector.Activate();
   ExecuteScriptAsync(sub_document, "window.location = 'about:blank';");
   EXPECT_EQ(bad_message::INVALID_INITIATOR_ORIGIN, kill_waiter.Wait());
+}
+
+// Verifies that MHTML archives served with mixed-case MIME types (such as
+// "Multipart/Related" or "Message/RFC822") are recognized as MHTML documents
+// by the browser process, enforcing MHTML sandboxing and opaque origins on the
+// main frame and subframes.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, MixedCaseMimeType) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  const GURL iframe_url =
+      embedded_test_server()->GetURL("example.com", "/cachetime");
+
+  auto default_mhtml_sandbox =
+      ~network::mojom::WebSandboxFlags::kPopups &
+      ~network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
+  if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+    default_mhtml_sandbox &= ~network::mojom::WebSandboxFlags::kScripts;
+  }
+
+  for (const char* mime_type : {"Multipart/Related", "Message/RFC822"}) {
+    SCOPED_TRACE(mime_type);
+    MhtmlArchive mhtml_archive;
+    mhtml_archive.AddHtmlDocument(
+        GURL("http://example.com"),
+        base::StringPrintf("<iframe src=\"%s\"></iframe>",
+                           iframe_url.spec().c_str()));
+    mhtml_archive.AddHtmlDocument(iframe_url, "<iframe></iframe>");
+    GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+    net::ScopedOverrideGetMimeTypeForTesting mime_override(mime_type);
+    NavigationHandleObserver iframe_navigation(web_contents(), iframe_url);
+    EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+    RenderFrameHostImpl* main_document = main_frame_host();
+    EXPECT_TRUE(main_document->is_mhtml_document());
+    EXPECT_TRUE(main_document->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(default_mhtml_sandbox, main_document->active_sandbox_flags());
+
+    ASSERT_EQ(1u, main_document->child_count());
+    RenderFrameHostImpl* sub_document =
+        main_document->child_at(0)->current_frame_host();
+    EXPECT_TRUE(sub_document->is_mhtml_document());
+    EXPECT_TRUE(sub_document->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(default_mhtml_sandbox, sub_document->active_sandbox_flags());
+    EXPECT_EQ(iframe_url, sub_document->GetLastCommittedURL());
+    EXPECT_TRUE(iframe_navigation.has_committed());
+    EXPECT_FALSE(iframe_navigation.is_error());
+    EXPECT_EQ(1u, sub_document->child_count());
+  }
+}
+
+// Verifies that navigating a subframe to an MHTML archive with a mixed-case
+// MIME type ("Multipart/Related" or "Message/RFC822") is blocked by the
+// browser with net::ERR_BLOCKED_BY_RESPONSE rather than committing in the
+// renderer and hitting CHECK(frame_->IsMainFrame()).
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
+                       SubframeMixedCaseMimeTypeBlocked) {
+  for (const char* mime_type : {"Multipart/Related", "Message/RFC822"}) {
+    SCOPED_TRACE(mime_type);
+    EXPECT_TRUE(
+        NavigateToURL(shell(), GetTestUrl("", "page_with_blank_iframe.html")));
+
+    MhtmlArchive mhtml_archive;
+    mhtml_archive.AddHtmlDocument(GURL("http://example.com"), "MHTML content");
+    GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+    auto headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    EXPECT_TRUE(download_utils::MustDownload(
+        web_contents()->GetBrowserContext(), GURL("http://example.com/a.mhtml"),
+        headers.get(), mime_type));
+    EXPECT_FALSE(
+        download_utils::MustDownload(web_contents()->GetBrowserContext(),
+                                     mhtml_url, headers.get(), mime_type));
+
+    net::ScopedOverrideGetMimeTypeForTesting mime_override(mime_type);
+    NavigationHandleObserver subframe_navigation(web_contents(), mhtml_url);
+    EXPECT_TRUE(NavigateIframeToURL(web_contents(), "test_iframe", mhtml_url));
+    EXPECT_TRUE(subframe_navigation.has_committed());
+    EXPECT_TRUE(subframe_navigation.is_error());
+    EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+              subframe_navigation.net_error_code());
+    ASSERT_EQ(1u, main_frame_host()->child_count());
+    EXPECT_TRUE(main_frame_host()
+                    ->child_at(0)
+                    ->current_frame_host()
+                    ->IsErrorDocument());
+  }
 }
 
 }  // namespace content
