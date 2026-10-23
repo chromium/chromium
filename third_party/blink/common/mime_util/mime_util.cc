@@ -12,16 +12,11 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
+#include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
-
-#if !BUILDFLAG(IS_IOS)
-// iOS doesn't use and must not depend on //media
-#include "media/base/mime_util.h"
-#endif
 
 namespace blink {
 
@@ -133,9 +128,7 @@ bool IsSupportedNonImageMimeType(std::string_view mime_type) {
   std::string mime_lower = base::ToLowerASCII(mime_type);
   return kSupportedNonImageTypes.contains(mime_lower) ||
          kSupportedJavascriptTypes.contains(mime_lower) ||
-#if !BUILDFLAG(IS_IOS)
          media::IsSupportedMediaMimeType(mime_lower) ||
-#endif
          (mime_lower.starts_with("text/") &&
           !kUnsupportedTextTypes.contains(mime_lower)) ||
          (mime_lower.starts_with("application/") &&
