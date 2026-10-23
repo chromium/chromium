@@ -155,9 +155,6 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       in_resize_mode_(false),
       scrolls_overflow_(false),
       needs_scroll_offset_clamp_(false),
-      needs_relayout_(false),
-      had_horizontal_scrollbar_before_relayout_(false),
-      had_vertical_scrollbar_before_relayout_(false),
       had_resizer_before_relayout_(false),
       scroll_origin_changed_(false),
       is_scrollbar_freeze_root_(false),
@@ -1396,18 +1393,8 @@ bool PaintLayerScrollableArea::IsGlobalRootNonOverlayScroller() const {
 }
 
 bool PaintLayerScrollableArea::HasHorizontalOverflow() const {
-  // TODO(szager): Make the algorithm for adding/subtracting overflow:auto
-  // scrollbars memoryless (crbug.com/625300).  This client_width hack will
-  // prevent the spurious horizontal scrollbar, but it can cause a converse
-  // problem: it can leave a sliver of horizontal overflow hidden behind the
-  // vertical scrollbar without creating a horizontal scrollbar.  This
-  // converse problem seems to happen much less frequently in practice, so we
-  // bias the logic towards preventing unwanted horizontal scrollbars, which
-  // are more common and annoying.
   LayoutUnit client_width = LayoutContentRect(kIncludeScrollbars).Width() -
                             VerticalScrollbarWidth(kIgnoreOverlayScrollbarSize);
-  if (NeedsRelayout() && !HadVerticalScrollbarBeforeRelayout())
-    client_width += VerticalScrollbarWidth();
   return ScrollWidth().Round() > client_width.Round();
 }
 
