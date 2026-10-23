@@ -20,6 +20,8 @@ static_library("renderer") {
 
   sources = [
     "internal_plugin_renderer_helpers.cc",
+    "pdf_accessibility_table_detector.cc",
+    "pdf_accessibility_table_detector.h",
     "pdf_accessibility_tree.cc",
     "pdf_accessibility_tree_builder.cc",
     "pdf_accessibility_tree_builder.h",
@@ -78,6 +80,7 @@ static_library("renderer") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "pdf_accessibility_table_detector_unittest.cc",
     "pdf_accessibility_tree_builder_structure_unittest.cc",
     "pdf_accessibility_tree_unittest.cc",
   ]
@@ -88,6 +91,7 @@ source_set("unit_tests") {
     "//pdf:accessibility",
     "//pdf:pdf_accessibility_constants_helper",
     "//pdf/mojom",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/geometry",
 
