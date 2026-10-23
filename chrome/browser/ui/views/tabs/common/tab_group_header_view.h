@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_HEADER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_HEADER_VIEW_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -62,6 +65,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
     virtual void HideHoverCard(int update_type) const = 0;
     virtual bool IsFocusInTabStrip() = 0;
     virtual std::unique_ptr<ExpandOnHoverLock> AcquireExpandOnHoverLock() = 0;
+    virtual std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
+    AcquireHoverCardHideLock() = 0;
 
     virtual void ShiftGroupUp() = 0;
     virtual void ShiftGroupDown() = 0;
@@ -129,12 +134,10 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   views::Label* title_label_for_testing() { return group_header_label_; }
 
  private:
-  void UpdateEditorBubbleButtonVisibility();
+  void UpdateEditorBubbleButtonVisibility(
+      std::optional<bool> hovered = std::nullopt);
   void OnBubbleOpened();
   void OnBubbleClosed();
-  // Bypasses the synchronous IsMouseHovered() check which can be stale on Linux
-  // Wayland/X11 due to asynchronous cursor updates during mouse exit events.
-  void SetEditorBubbleButtonVisibilityOnHover(bool is_hovered);
   void ShowEditorBubble();
   void UpdateAccessibleName();
   void UpdateIsCollapsed();
@@ -149,6 +152,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   SkColor GetForegroundColor() const;
   void UpdateColors();
 
+  const raw_ref<Delegate> delegate_;
+  const TabStripOrientation orientation_;
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   bool needs_attention_ = false;
   bool is_shared_ = false;
@@ -156,24 +161,21 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   // The sync icon that is displayed in the tab group header of saved groups in
   // the tabstrip.
   const raw_ptr<views::ImageView> sync_icon_ = nullptr;
-
   const raw_ptr<views::Label> group_header_label_ = nullptr;
-
   // The circle indicator rendered after the title when a tab group needs
   // attention.
   const raw_ptr<views::ImageView> attention_indicator_ = nullptr;
-
   const raw_ptr<views::LabelButton> editor_bubble_button_ = nullptr;
-
   const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
-  const raw_ref<Delegate> delegate_;
-  const TabStripOrientation orientation_;
 
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
+  std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
+      hover_card_hide_lock_;
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
   base::CallbackListSubscription editor_bubble_closed_subscription_;
   base::CallbackListSubscription tab_group_data_changed_subscription_;
+
   base::WeakPtrFactory<TabGroupHeaderView> weak_ptr_factory_{this};
 };
 

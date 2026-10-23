@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 
+#include <numeric>
+#include <vector>
+
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
@@ -40,6 +44,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -424,7 +429,10 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
   for (size_t i = 0; i < n_tabs; ++i) {
     AppendTab();
   }
-  chrome::GroupAllUngroupedTabs(browser());
+  TabStripModel* model = browser()->GetTabStripModel();
+  std::vector<int> indices(model->count());
+  std::iota(indices.begin(), indices.end(), 0);
+  model->AddToNewGroup(indices);
 
   // Get the TabGroupHeaderView.
   TabCollectionNode* group_node =
@@ -443,12 +451,60 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
   ASSERT_TRUE(bubble);
 
   // There should be 2 excess tabs. Note that the group has `n_tabs + 1` tabs
-  // because of the initial tab made in the browser, and the call to
-  // `GroupAllUngroupedTabs`.
+  // because of the initial tab made in the browser.
   std::u16string expected_footer = l10n_util::GetStringFUTF16(
       IDS_TAB_GROUPS_HOVER_CARD_FOOTER, base::NumberToString16(2));
   EXPECT_EQ(bubble->GetGroupFooterViewForTesting()->GetText(), expected_footer);
   EXPECT_TRUE(bubble->GetGroupFooterViewForTesting()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
+                       HoverCardNotShownWhenEditorBubbleOpen) {
+  AppendTab();
+  TabStripModel* model = browser()->GetTabStripModel();
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+  RunScheduledLayouts();
+
+  TabCollectionNode* group_node =
+      unpinned_collection_node()->GetChildNodeOfType(
+          TabCollectionNode::Type::GROUP);
+  ASSERT_TRUE(group_node);
+  TabGroupView* group_view =
+      views::AsViewClass<TabGroupView>(group_node->view());
+  TabGroupHeaderView* header_view = group_view->group_header();
+  TabView* tab_view =
+      views::AsViewClass<TabView>(group_node->children()[0]->view());
+  ASSERT_TRUE(tab_view);
+
+  // Trigger the hover card before opening the editor bubble.
+  hover_card_controller()->UpdateHoverCard(
+      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_TRUE(hover_card_controller()->IsHoverCardVisible());
+
+  // Opening the editor bubble should hide the hover card and prevent new hover
+  // cards from showing for both group headers and tabs.
+  model->OpenTabGroupEditor(group_id);
+  EXPECT_FALSE(hover_card_controller()->IsHoverCardVisible());
+
+  hover_card_controller()->UpdateHoverCard(
+      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_FALSE(hover_card_controller()->IsHoverCardVisible());
+
+  hover_card_controller()->UpdateHoverCard(
+      tab_view, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_FALSE(hover_card_controller()->IsHoverCardVisible());
+
+  // Closing the editor bubble should allow hover cards to be shown again.
+  auto bubble_views =
+      views::ElementTrackerViews::GetInstance()
+          ->GetAllMatchingViewsInAnyContext(
+              TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId);
+  ASSERT_FALSE(bubble_views.empty());
+  bubble_views[0]->GetWidget()->Close();
+
+  hover_card_controller()->UpdateHoverCard(
+      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_TRUE(hover_card_controller()->IsHoverCardVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(

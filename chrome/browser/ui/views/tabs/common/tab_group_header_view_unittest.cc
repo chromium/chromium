@@ -26,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/text_elider.h"
@@ -65,6 +66,10 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
   MOCK_METHOD(bool, IsFocusInTabStrip, (), (override));
   MOCK_METHOD(std::unique_ptr<ExpandOnHoverLock>,
               AcquireExpandOnHoverLock,
+              (),
+              (override));
+  MOCK_METHOD(std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>,
+              AcquireHoverCardHideLock,
               (),
               (override));
   MOCK_METHOD(void, ShiftGroupUp, (), (override));
@@ -816,6 +821,30 @@ TEST_F(TabGroupHeaderViewTest, HideHoverCardOnMouseExitInFocusMode) {
               HideHoverCard(TabSlotController::HoverCardUpdateType::kHover))
       .Times(1);
   MoveMouseTo(generator, header, false);
+}
+
+TEST_F(TabGroupHeaderViewTest, AcquiresHoverCardHideLockWhenEditorBubbleOpens) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data));
+  widget->Show();
+
+  EXPECT_CALL(delegate, AcquireExpandOnHoverLock()).WillOnce([]() {
+    return std::make_unique<ExpandOnHoverLock>();
+  });
+  EXPECT_CALL(delegate, AcquireHoverCardHideLock()).Times(1);
+  EXPECT_CALL(delegate, ShowGroupEditorBubble(testing::_))
+      .WillOnce([this](bool) {
+        return CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+      });
+
+  header->ShowContextMenuForViewImpl(header, gfx::Point(),
+                                     ui::mojom::MenuSourceType::kNone);
 }
 
 TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedState) {

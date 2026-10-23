@@ -556,6 +556,19 @@ std::unique_ptr<ExpandOnHoverLock> TabGroupView::AcquireExpandOnHoverLock() {
       ExpandOnHoverLockType::kKeepCurrentState);
 }
 
+std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
+TabGroupView::AcquireHoverCardHideLock() {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return nullptr;
+  }
+
+  if (TabHoverCardController* hover_card_controller =
+          collection_node_->GetController()->GetHoverCardController()) {
+    return hover_card_controller->GetHoverCardHideLock();
+  }
+  return nullptr;
+}
+
 void TabGroupView::ShiftGroupUp() {
   if (!collection_node_) {
     return;

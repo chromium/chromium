@@ -139,7 +139,6 @@ source_set("impl") {
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/tabs/groups",
     "//chrome/browser/ui/views/tabs/horizontal",
-    "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/tab",
     "//chrome/browser/ui/views/tabs/vertical",
@@ -181,6 +180,7 @@ source_set("impl") {
     ":common",
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/browser/ui/views/tabs/hovercard",
     "//components/sessions",
   ]
 }
@@ -221,6 +221,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/frame:horizontal_tab_strip_region_view",
     "//chrome/browser/ui/views/tabs:tab_strip",
     "//chrome/browser/ui/views/tabs:tab_style_views",
+    "//chrome/browser/ui/views/tabs/groups",
     "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers",
     "//chrome/browser/ui/views/tabs/shared",
@@ -252,11 +253,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/tabs:test_support",
     "//testing/gtest",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
     "//ui/views",
   ]
