@@ -73,6 +73,9 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     if (GetNativePixmapSupportType() == NativePixmapSupportType::kNone) {
       return false;
     }
+    if (is_swiftshader_) {
+      return false;
+    }
 
     switch (GetNativePixmapSupportType()) {
       case NativePixmapSupportType::kDMABuf: {

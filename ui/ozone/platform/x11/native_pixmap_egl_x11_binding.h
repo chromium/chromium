@@ -37,7 +37,7 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
   static bool CanImportNativeGLXPixmap();
 
  private:
-  bool Initialize(x11::Pixmap pixmap);
+  bool Initialize(x11::Pixmap pixmap, viz::SharedImageFormat format);
 
   // Binds image to texture currently bound to |target|. Returns true on
   // success.
