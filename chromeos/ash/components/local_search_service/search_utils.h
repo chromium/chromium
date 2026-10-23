@@ -28,7 +28,7 @@ float RelevanceCoefficient(const std::u16string& query,
                            float prefix_threshold,
                            float block_threshold);
 
-// Returns whether |r1| score is higher than |r2|'s.
+// Returns whether |r1| score is higher than |r2|'s, breaking ties by id.
 bool CompareResults(const Result& r1, const Result& r2);
 
 }  // namespace ash::local_search_service

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
@@ -38,26 +39,24 @@ std::vector<Token> ExtractDocumentTokens(const Data& data) {
   for (const Content& content : data.contents) {
     DCHECK_GE(content.weight, 0);
     DCHECK_LE(content.weight, 1);
-    const std::vector<Token> content_tokens =
-        ExtractContent(content.id, content.content, content.weight, locale);
-    document_tokens.insert(document_tokens.end(), content_tokens.begin(),
-                           content_tokens.end());
+    base::Extend(document_tokens, ExtractContent(content.id, content.content,
+                                                 content.weight, locale));
   }
   return ConsolidateToken(document_tokens);
 }
 
 ExtractedContent ExtractDocumentsContent(const std::vector<Data>& data) {
   ExtractedContent documents;
+  documents.reserve(data.size());
   for (const Data& d : data) {
-    const std::vector<Token> document_tokens = ExtractDocumentTokens(d);
-    documents.push_back({d.id, document_tokens});
+    std::vector<Token> document_tokens = ExtractDocumentTokens(d);
+    documents.emplace_back(d.id, std::move(document_tokens));
   }
 
   return documents;
 }
 
-std::unordered_set<std::u16string> GetTokenizedQuery(
-    const std::u16string& query) {
+TermSet GetTokenizedQuery(const std::u16string& query) {
   // TODO(jiameng): actual input query may not be the same as default locale.
   // Need another way to determine actual language of the query.
   const TokenizedString::Mode mode =
@@ -66,7 +65,8 @@ std::unordered_set<std::u16string> GetTokenizedQuery(
           : TokenizedString::Mode::kWords;
 
   const TokenizedString tokenized_query(query, mode);
-  std::unordered_set<std::u16string> tokens;
+  TermSet tokens;
+  tokens.reserve(tokenized_query.tokens().size());
   for (const auto& token : tokenized_query.tokens()) {
     // TODO(jiameng): we are not removing stopword because they shouldn't exist
     // in the index. However, for performance reason, it may be worth to be
@@ -159,13 +159,14 @@ void InvertedIndexSearch::Find(const std::u16string& query,
           GetTokenizedQuery(query), search_params_.prefix_threshold,
           search_params_.fuzzy_threshold);
 
-  if (results.size() > max_results && max_results > 0u)
+  if (results.size() > max_results && max_results > 0u) {
     results.resize(max_results);
+  }
 
   const ResponseStatus status = ResponseStatus::kSuccess;
   const base::TimeTicks end = base::TimeTicks::Now();
   MaybeLogSearchResultsStats(status, results.size(), end - start);
-  std::move(callback).Run(status, results);
+  std::move(callback).Run(status, std::move(results));
 }
 
 void InvertedIndexSearch::ClearIndex(ClearIndexCallback callback) {
@@ -183,18 +184,18 @@ InvertedIndexSearch::FindTermForTesting(const std::u16string& term) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const PostingList posting_list = inverted_index_->FindTerm(term);
   std::vector<std::pair<std::string, uint32_t>> doc_with_freq;
+  doc_with_freq.reserve(posting_list.size());
   for (const auto& kv : posting_list) {
-    doc_with_freq.push_back({kv.first, kv.second.size()});
+    doc_with_freq.emplace_back(kv.first, kv.second.size());
   }
   std::sort(doc_with_freq.begin(), doc_with_freq.end());
   return doc_with_freq;
 }
 
-void InvertedIndexSearch::FinalizeAddOrUpdate(
-    AddOrUpdateCallback callback,
-    const ExtractedContent& documents) {
+void InvertedIndexSearch::FinalizeAddOrUpdate(AddOrUpdateCallback callback,
+                                              ExtractedContent documents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  inverted_index_->AddDocuments(documents, std::move(callback));
+  inverted_index_->AddDocuments(std::move(documents), std::move(callback));
 }
 
 void InvertedIndexSearch::FinalizeDelete(DeleteCallback callback,
@@ -205,9 +206,9 @@ void InvertedIndexSearch::FinalizeDelete(DeleteCallback callback,
 
 void InvertedIndexSearch::FinalizeUpdateDocuments(
     UpdateDocumentsCallback callback,
-    const ExtractedContent& documents) {
+    ExtractedContent documents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  inverted_index_->UpdateDocuments(documents, std::move(callback));
+  inverted_index_->UpdateDocuments(std::move(documents), std::move(callback));
 }
 
 }  // namespace ash::local_search_service

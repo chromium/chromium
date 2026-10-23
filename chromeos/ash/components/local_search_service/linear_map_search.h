@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_LINEAR_MAP_SEARCH_H_
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_LINEAR_MAP_SEARCH_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "chromeos/ash/components/local_search_service/index.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash::string_matching {
 class TokenizedString;
@@ -20,7 +20,7 @@ class TokenizedString;
 namespace ash::local_search_service {
 
 // A map from key to a vector of (tag-id, tokenized tag).
-typedef std::map<
+typedef absl::flat_hash_map<
     std::string,
     std::vector<std::pair<std::string,
                           std::unique_ptr<string_matching::TokenizedString>>>>
