@@ -13,10 +13,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.style.ClickableSpan;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -41,13 +47,16 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.multiwindow.SessionStartupPref;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -57,7 +66,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Instrumentation tests for {@link OnStartupSettingsFragment}. */
@@ -128,6 +140,52 @@ public class OnStartupSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> pref.getUrlsPrefForTesting().performClick());
         assertEquals(View.VISIBLE, pref.getStartupPagesSectionForTesting().getVisibility());
         assertEquals(SessionStartupPref.URLS, getRestoreOnStartupPref());
+    }
+
+    @Test
+    @SmallTest
+    public void testNewTabPref_displaysSummaryWithHomepageSettingsLink() {
+        // Setup fragment and mock SettingsNavigation.
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+        SettingsNavigation settingsNavigation = mock(SettingsNavigation.class);
+        SettingsNavigationFactory.setInstanceForTesting(settingsNavigation);
+        TextViewWithClickableSpans descriptionView =
+                pref.getNewTabPrefForTesting().findViewById(R.id.description);
+
+        // Act: Collect keyboard-focusable views in forward TAB order, focus the description view,
+        // and press Enter on the focused span.
+        ArrayList<View> focusables = new ArrayList<>();
+        boolean handled =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            pref.getNewTabPrefForTesting()
+                                    .addFocusables(
+                                            focusables, View.FOCUS_FORWARD, View.FOCUSABLES_ALL);
+                            descriptionView
+                                    .getOnFocusChangeListener()
+                                    .onFocusChange(descriptionView, /* hasFocus= */ true);
+                            descriptionView.dispatchKeyEvent(
+                                    new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+                            return descriptionView.dispatchKeyEvent(
+                                    new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
+                        });
+
+        // Verify summary text, keyboard TAB focusability, clickable span, and navigation to
+        // HomepageSettings.
+        assertNotNull(descriptionView);
+        assertEquals(View.VISIBLE, descriptionView.getVisibility());
+        assertTrue(descriptionView.isFocusable());
+        assertEquals(List.of(pref.getNewTabPrefForTesting(), descriptionView), focusables);
+        assertEquals(
+                "You can customize your Homepage in settings. Defaults to the New Tab page if none"
+                        + " is set.",
+                pref.getNewTabPrefForTesting().getDescriptionText().toString());
+        ClickableSpan[] spans = descriptionView.getClickableSpans();
+        assertNotNull(spans);
+        assertEquals(1, spans.length);
+        assertTrue(spans[0] instanceof ChromeClickableSpan);
+        assertTrue(handled);
+        verify(settingsNavigation).startSettings(any(), eq(HomepageSettings.class));
     }
 
     @Test

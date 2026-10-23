@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,9 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.Arrays;
 import java.util.List;
@@ -418,6 +422,42 @@ public class RadioButtonWithDescriptionLayoutTest {
         } catch (NullPointerException e) {
             throw new AssertionError("No exception should be thrown when the observer is null", e);
         }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testDescriptionWithClickableSpan() {
+        // Setup radio button with plain text description.
+        RadioButtonWithDescription button =
+                createRadioButtonWithDescription("primary", "plain_desc", /* tag= */ null);
+        TextView descriptionView = button.getDescriptionTextView();
+        Assert.assertNull(descriptionView.getMovementMethod());
+        Assert.assertFalse(descriptionView.isFocusable());
+        Assert.assertFalse(descriptionView.isClickable());
+        Assert.assertFalse(descriptionView.isLongClickable());
+
+        // Act: Set description text containing a ClickableSpan.
+        button.setDescriptionText(
+                SpanApplier.applySpans(
+                        "Customize in <link>settings</link>.",
+                        new SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(mContext, view -> {}))));
+
+        // Verify LinkMovementMethod and keyboard focusability are enabled.
+        Assert.assertEquals(LinkMovementMethod.getInstance(), descriptionView.getMovementMethod());
+        Assert.assertTrue(descriptionView.isFocusable());
+
+        // Act: Replace description text with plain text.
+        button.setDescriptionText("plain_desc_again");
+
+        // Verify movement method and focusable/clickable/longClickable flags are reset.
+        Assert.assertNull(descriptionView.getMovementMethod());
+        Assert.assertFalse(descriptionView.isFocusable());
+        Assert.assertFalse(descriptionView.isClickable());
+        Assert.assertFalse(descriptionView.isLongClickable());
     }
 
     private RadioButtonWithDescription createRadioButtonWithDescription(

@@ -1047,6 +1047,11 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ON_STARTUP_PREF_NEW_TAB" desc="Label for the option to open the Homepage on startup.">
         Open the Homepage
       </message>
+      <!-- LINT.IfChange(HomepageDefaultToNtp) -->
+      <message name="IDS_ON_STARTUP_PREF_NEW_TAB_SUMMARY" desc="Summary text for the option to open the Homepage on startup, with a link to the Homepage settings page.">
+        You can customize your Homepage in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>. Defaults to the New Tab page if none is set.
+      </message>
+      <!-- LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/homepage/HomepageManager.java:HomepageDefaultToNtp) -->
       <message name="IDS_ON_STARTUP_PREF_LAST" desc="Label for the option to continue where the user left off on startup.">
         Continue where you left off
       </message>

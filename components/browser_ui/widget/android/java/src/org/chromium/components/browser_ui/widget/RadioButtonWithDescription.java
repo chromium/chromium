@@ -170,6 +170,10 @@ public class RadioButtonWithDescription extends RelativeLayout
         mIcon = getIcon();
         mPrimary = getPrimaryTextView();
         mDescription = getDescriptionTextView();
+        // TextViewWithClickableSpans sets a long-click listener in its constructor, which marks the
+        // view long-clickable. Reset it here so plain-text descriptions (e.g. set via XML) are not
+        // treated as separate interactive accessibility nodes unless LinkMovementMethod is applied.
+        mDescription.setLongClickable(false);
 
         int endStubLayoutResourceId = getEndStubLayoutResourceId();
         if (endStubLayoutResourceId != NO_LAYOUT_ID) {
@@ -309,15 +313,23 @@ public class RadioButtonWithDescription extends RelativeLayout
         return mPrimary.getText();
     }
 
-    /** Sets the text shown in the description section. */
+    /**
+     * Sets the text shown in the description section. If {@code text} contains clickable spans,
+     * sets a link movement method on the description view so the links are clickable and
+     * keyboard-focusable.
+     */
     public void setDescriptionText(CharSequence text) {
         mDescription.setText(text);
+        // Clear any existing LinkMovementMethod (and reset focusable/clickable/longClickable)
+        // before re-evaluating whether the updated text contains a ClickableSpan.
+        mDescription.setMovementMethod(null);
 
         if (TextUtils.isEmpty(text)) {
             ((LayoutParams) mPrimary.getLayoutParams()).addRule(RelativeLayout.CENTER_VERTICAL);
             mDescription.setVisibility(View.GONE);
         } else {
             ((LayoutParams) mPrimary.getLayoutParams()).removeRule(RelativeLayout.CENTER_VERTICAL);
+            UiUtils.maybeSetLinkMovementMethod(mDescription);
             mDescription.setVisibility(View.VISIBLE);
         }
     }

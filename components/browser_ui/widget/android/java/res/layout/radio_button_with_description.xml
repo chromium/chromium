@@ -46,7 +46,7 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <!-- This TextView is hidden if it has no text, so the initial visibility should be "gone". -->
-        <TextView
+        <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

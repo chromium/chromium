@@ -296,7 +296,9 @@ public class HomepageManager
             }
         }
 
+        // LINT.IfChange(HomepageDefaultToNtp)
         return getNtpUrl(isIncognito);
+        // LINT.ThenChange(/chrome/browser/ui/android/strings/android_chrome_strings.grd:HomepageDefaultToNtp)
     }
 
     /**
