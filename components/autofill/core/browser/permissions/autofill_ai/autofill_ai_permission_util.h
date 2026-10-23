@@ -207,8 +207,8 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
 // `kAutofillAiAvailableByDefault` is enabled.
 [[nodiscard]] bool IsAutofillAiDefaultAvailabilityEnabled();
 
-// Returns the set of supported entity types configured by the feature parameter
-// for Ambient Autofill.
+// Returns the set of supported entity types configured by feature flags and
+// parameters for Ambient Autofill.
 DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes();
 
 }  // namespace autofill

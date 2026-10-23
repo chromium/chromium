@@ -909,6 +909,14 @@ DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {
       supported_types.insert(*type);
     }
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillPassport)) {
+    supported_types.insert(EntityType(EntityTypeName::kPassport));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillDriversLicense)) {
+    supported_types.insert(EntityType(EntityTypeName::kDriversLicense));
+  }
   return supported_types;
 }
 

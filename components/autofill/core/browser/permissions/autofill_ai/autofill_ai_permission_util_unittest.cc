@@ -115,8 +115,9 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
          {features::kAutofillAiWalletFlightReservation, {}},
          {features::kAutofillAmbientAutofill,
           {{"ambient_autofill_supported_entity_types",
-            "Passport,Driver's license,Vehicle,National Id Card,Flight "
-            "Reservation,Order,Shipment"}}},
+            "Vehicle,National Id Card,Flight Reservation,Order,Shipment"}}},
+         {features::kAutofillAmbientAutofillDriversLicense, {}},
+         {features::kAutofillAmbientAutofillPassport, {}},
          {features::kAutofillAiServerModel,
           {{"autofill_ai_model_use_cache_results", "true"}}}},
         // TODO(crbug.com/477163013): Once this feature launches, kLogToMqls can
@@ -607,13 +608,15 @@ TEST_F(AutofillAiPermissionUtilsTest,
   client().set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState::kEligible);
 
-  // Overriding supported types using string names.
+  // Overriding supported types using string names and dedicated feature flags.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_supported_entity_types",
-          "Passport,Driver's license,Flight Reservation"}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kAutofillAmbientAutofill,
+          {{"ambient_autofill_supported_entity_types", "Flight Reservation"}}},
+         {features::kAutofillAmbientAutofillPassport, {}},
+         {features::kAutofillAmbientAutofillDriversLicense, {}}},
+        {});
 
     EXPECT_TRUE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
@@ -656,12 +659,14 @@ TEST_F(AutofillAiPermissionUtilsTest,
                             EntityType(kFlightReservation), EntityType(kOrder),
                             EntityType(kShipment)}));
 
-  // Empty configuration returns an empty set.
+  // Empty configuration with dedicated flags disabled returns an empty set.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kAutofillAmbientAutofill,
-        {{features::kAutofillAmbientAutofillSupportedEntityTypes.name, ""}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kAutofillAmbientAutofill,
+          {{features::kAutofillAmbientAutofillSupportedEntityTypes.name, ""}}}},
+        {features::kAutofillAmbientAutofillPassport,
+         features::kAutofillAmbientAutofillDriversLicense});
     EXPECT_TRUE(GetAutofillAmbientAutofillSupportedEntityTypes().empty());
   }
 
@@ -669,14 +674,39 @@ TEST_F(AutofillAiPermissionUtilsTest,
   // tokens.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kAutofillAmbientAutofill,
-        {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
-          " Passport , UnknownType,  Driver's license ,, Vehicle "}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kAutofillAmbientAutofill,
+          {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
+            " Passport , UnknownType,  Driver's license ,, Vehicle "}}}},
+        {features::kAutofillAmbientAutofillPassport,
+         features::kAutofillAmbientAutofillDriversLicense});
     EXPECT_EQ(GetAutofillAmbientAutofillSupportedEntityTypes(),
               (DenseSet<EntityType>{EntityType(kPassport),
                                     EntityType(kDriversLicense),
                                     EntityType(kVehicle)}));
+  }
+
+  // Dedicated flags separately control support for Passport and Driver's
+  // license.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kAutofillAmbientAutofill,
+          {{features::kAutofillAmbientAutofillSupportedEntityTypes.name, ""}}},
+         {features::kAutofillAmbientAutofillPassport, {}}},
+        {features::kAutofillAmbientAutofillDriversLicense});
+    EXPECT_EQ(GetAutofillAmbientAutofillSupportedEntityTypes(),
+              DenseSet<EntityType>{EntityType(kPassport)});
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kAutofillAmbientAutofill,
+          {{features::kAutofillAmbientAutofillSupportedEntityTypes.name, ""}}},
+         {features::kAutofillAmbientAutofillDriversLicense, {}}},
+        {features::kAutofillAmbientAutofillPassport});
+    EXPECT_EQ(GetAutofillAmbientAutofillSupportedEntityTypes(),
+              DenseSet<EntityType>{EntityType(kDriversLicense)});
   }
 }
 

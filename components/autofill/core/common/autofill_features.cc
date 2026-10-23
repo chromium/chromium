@@ -439,7 +439,8 @@ BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
 BASE_FEATURE(kAutofillAmbientAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 // A comma-separated list of EntityType string names (e.g. "Passport,Driver's
 // license,Vehicle") supported for Ambient Autofill. If empty, no entity types
-// are supported.
+// are supported (unless enabled via `kAutofillAmbientAutofillPassport` or
+// `kAutofillAmbientAutofillDriversLicense`).
 BASE_FEATURE_PARAM(std::string,
                    kAutofillAmbientAutofillSupportedEntityTypes,
                    &kAutofillAmbientAutofill,
@@ -458,9 +459,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "ambient_autofill_unmasked_spii_cache_ttl",
                    base::Minutes(1));
 
+// Controls whether Driver's license entities are supported in Ambient Autofill.
+BASE_FEATURE(kAutofillAmbientAutofillDriversLicense,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether Personal Context entities without attached sources are
 // filtered out during Ambient Autofill prefetch validation.
 BASE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether Passport entities are supported in Ambient Autofill.
+BASE_FEATURE(kAutofillAmbientAutofillPassport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Personal Context Autofill AI suggestions display detailed
