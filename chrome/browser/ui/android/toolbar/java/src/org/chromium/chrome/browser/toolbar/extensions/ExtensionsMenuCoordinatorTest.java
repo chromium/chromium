@@ -31,6 +31,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.jni_zero.JniPtr;
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -128,8 +129,8 @@ public class ExtensionsMenuCoordinatorTest {
 
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
         when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
-                .thenReturn(10000L);
-        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
+                .thenAnswer(invocation -> JniUniquePtr.createForTesting(10000L));
+        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(any()))
                 .thenReturn(mActionContextMenuModelBridge);
         when(mActionContextMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 

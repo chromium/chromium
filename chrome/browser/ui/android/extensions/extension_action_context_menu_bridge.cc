@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionContextMenuBridge_jni.h"
@@ -59,21 +60,15 @@ ExtensionActionContextMenuBridge::GetMenuModelBridge(JNIEnv* env) {
   return menu_model_bridge_->GetJavaObject().AsLocalRef(env);
 }
 
-void ExtensionActionContextMenuBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_ExtensionActionContextMenuBridge_Init(
+static jni_zero::JniUniquePtr<ExtensionActionContextMenuBridge>
+JNI_ExtensionActionContextMenuBridge_Init(
     JNIEnv* env,
     BrowserWindowInterface* browser,
     const ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
     ExtensionContextMenuModel::ContextMenuSource context_menu_source) {
-  auto* bridge = new ExtensionActionContextMenuBridge(
+  return jni_zero::MakeUnique<ExtensionActionContextMenuBridge>(
       browser, action_id, web_contents, context_menu_source);
-  // The bridge is owned by the Java object and will be destroyed when
-  // ExtensionActionContextMenuBridge.destroy() is called.
-  return reinterpret_cast<int64_t>(bridge);
 }
 
 }  // namespace extensions

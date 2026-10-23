@@ -11,7 +11,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -35,6 +34,7 @@ import android.view.ViewConfiguration;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.jni_zero.JniPtr;
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -169,8 +169,10 @@ public class ExtensionActionListMediatorTest {
         // Mock JNI for Context Menu Bridge.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
         when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
-                .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
-        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
+                .thenAnswer(
+                        invocation ->
+                                JniUniquePtr.createForTesting(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
+        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(any()))
                 .thenReturn(mMenuModelBridge);
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 

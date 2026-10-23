@@ -26,6 +26,7 @@ import android.widget.CompoundButton;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.jni_zero.JniPtr;
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,7 +78,6 @@ import java.util.List;
 public class ExtensionsMenuMediatorTest {
     // Constants identifying elements used in the test environment.
     private static final int TAB_ID = 111;
-    private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
     private static final long EXTENSIONS_MENU_BRIDGE_POINTER = 10001L;
     private static final long BROWSER_WINDOW_POINTER = 1000L;
     private static final Bitmap ICON_RED = ExtensionTestUtils.createSimpleIcon(Color.RED);
@@ -96,6 +96,11 @@ public class ExtensionsMenuMediatorTest {
     @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
     @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
+
+    @Mock
+    private JniUniquePtr<ExtensionActionContextMenuBridge.NativeExtensionActionContextMenuBridge>
+            mActionContextMenuNative;
+
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
     @Mock private MenuModelBridge mActionContextMenuModelBridge;
     @Mock private PropertyModel mMenuPropertyModel;
@@ -130,8 +135,8 @@ public class ExtensionsMenuMediatorTest {
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
         when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
-                .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
-        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
+                .thenReturn(mActionContextMenuNative);
+        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(any()))
                 .thenReturn(mActionContextMenuModelBridge);
         when(mActionContextMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
@@ -641,7 +646,7 @@ public class ExtensionsMenuMediatorTest {
                 .onDismissForTesting(/* byInsideTouch= */ false);
 
         // Verify context menu button is no longer selected after dismissal.
-        verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
+        verify(mActionContextMenuNative).destroy();
     }
 
     /** Tests that the context menu button's accessible name is correctly updated in the model. */

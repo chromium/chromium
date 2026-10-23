@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.extensions;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -31,8 +33,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionActionContextMenuBridge implements Destroyable {
+    @JniType("::extensions::ExtensionActionContextMenuBridge")
+    public interface NativeExtensionActionContextMenuBridge extends JniTypeToken {}
 
-    private long mNativeExtensionActionContextMenuBridge;
+    private final JniUniquePtr<NativeExtensionActionContextMenuBridge> mNative;
+    private boolean mDestroyed;
 
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
@@ -42,7 +47,7 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
             String actionId,
             WebContents webContents,
             @ContextMenuSource int contextMenuSource) {
-        mNativeExtensionActionContextMenuBridge =
+        mNative =
                 ExtensionActionContextMenuBridgeJni.get()
                         .init(
                                 task.getOrCreateNativeBrowserWindow(profile),
@@ -54,8 +59,7 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
     /** Returns the {@link ModelList} of the content of the toolbar action's context menu. */
     public ModelList getModelList() {
         MenuModelBridge menuModelBridge =
-                ExtensionActionContextMenuBridgeJni.get()
-                        .getMenuModelBridge(mNativeExtensionActionContextMenuBridge);
+                ExtensionActionContextMenuBridgeJni.get().getMenuModelBridge(mNative);
         return menuModelBridge.populateModelList();
     }
 
@@ -66,24 +70,20 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
      */
     @Override
     public void destroy() {
-        if (mNativeExtensionActionContextMenuBridge != 0) {
-            ExtensionActionContextMenuBridgeJni.get()
-                    .destroy(mNativeExtensionActionContextMenuBridge);
-            mNativeExtensionActionContextMenuBridge = 0;
-            LifetimeAssert.destroy(mLifetimeAssert);
-        }
+        if (mDestroyed) return;
+        mDestroyed = true;
+        mNative.destroy();
+        LifetimeAssert.destroy(mLifetimeAssert);
     }
 
     @NativeMethods
     public interface Native {
-        long init(
+        JniUniquePtr<NativeExtensionActionContextMenuBridge> init(
                 JniPtr<NativeBrowserWindowInterface> browserWindow,
                 @JniType("std::string") String actionId,
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("ExtensionContextMenuModel::ContextMenuSource") int contextMenuSource);
 
-        MenuModelBridge getMenuModelBridge(long nativeExtensionActionContextMenuBridge);
-
-        void destroy(long nativeExtensionActionContextMenuBridge);
+        MenuModelBridge getMenuModelBridge(JniPtr<NativeExtensionActionContextMenuBridge> self);
     }
 }

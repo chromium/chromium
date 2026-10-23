@@ -24,9 +24,8 @@ namespace extensions {
 // Lifetime management:
 // An instance of this C++ class is created when its Java counterpart
 // (ExtensionActionContextMenuBridge.java) requests it via a JNI call. The C++
-// object's lifetime is tied to its Java peer, and when the Java object is no
-// longer needed, its `destroy()` method is called, which in turn calls the
-// native `Destroy()` method on this C++ object, which then calls `delete this`.
+// object is owned by its Java peer via `JniUniquePtr` and is deleted when the
+// Java peer's `destroy()` is called.
 class ExtensionActionContextMenuBridge {
  public:
   // Constructs a bridge for creating an Android context menu for an extension
@@ -47,8 +46,6 @@ class ExtensionActionContextMenuBridge {
   ~ExtensionActionContextMenuBridge();
 
   jni_zero::ScopedJavaLocalRef<jobject> GetMenuModelBridge(JNIEnv* env);
-
-  void Destroy(JNIEnv* env);
 
   ExtensionContextMenuModel* extension_context_menu_model_for_testing() {
     return static_cast<ExtensionContextMenuModel*>(context_menu_model_.get());
