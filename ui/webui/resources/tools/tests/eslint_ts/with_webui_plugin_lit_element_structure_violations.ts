@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, css} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CSSResultGroup} from '//resources/lit/v3_0/lit.rollup.js';
 
 // Test file for @webui-eslint/lit-element-structure
 
@@ -272,6 +273,13 @@ declare global {
 
 customElements.define(TestError14ElementFoo.is, TestError14ElementFoo);
 
+// Case1.15: Re-exporting (directly or indirectly) from a file containing
+// CrLitElement subclass definitions.
+export {nothing} from '//resources/lit/v3_0/lit.rollup.js';
+export type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+export {css};
+export type {CSSResultGroup};
+
 
 /* Cases with no violations below. */
 
@@ -359,3 +367,9 @@ declare global {
 }
 
 customElements.define(TestNoError4ElementFoo.is, TestNoError4ElementFoo);
+
+// Case2.5: Exporting local declarations via 'export {...}' is allowed.
+const localConst = 1;
+interface LocalInterface {}
+export {localConst};
+export type {LocalInterface};

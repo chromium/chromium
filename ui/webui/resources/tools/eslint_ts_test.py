@@ -325,6 +325,7 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR = "Tag/class name pair registration to HTMLElementTagNameMap interface missing for %(domName)s ↔ %(className)s"
     _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s '%(name)s' (use CustomEvent<void> or CustomEvent<SomeType>)"
     _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR = "Optional or nullable property '%(propertyName)s' is not allowed on the '$' interface of '%(className)s'. Elements accessed via '$' are expected to always exist in the DOM"
+    _EXPECTED_NO_RE_EXPORT_ERROR = "Re-exporting '%(exportName)s' from a file containing a CrLitElement subclass/mixin definition is not allowed. Import directly from the original source file instead"
 
     super_call_required_methods = [
       'connectedCallback',
@@ -448,6 +449,11 @@ class EslintTsTest(unittest.TestCase):
       % {
         'className': 'TestError14ElementFoo',
       },
+      # Case 1.15
+      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'nothing'},
+      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'PropertyValues'},
+      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'css'},
+      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'CSSResultGroup'},
     ]
     for e in errors:
       self.assertTrue(
@@ -553,6 +559,9 @@ class EslintTsTest(unittest.TestCase):
       % {
         'className': 'TestNoError4Element',
       },
+      # Case 2.5
+      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'localConst'},
+      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'LocalInterface'},
     ]
     for e in non_errors:
       self.assertFalse(

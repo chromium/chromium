@@ -35,7 +35,7 @@ type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
     'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
     'invalidDollarSignProperty'|'missingCustomElementRegistration'|
     'missingCustomEventTypeParameter'|'missingStaticIsGetter'|
-    'missingSuperCalls'|'missingTagNameRegistration';
+    'missingSuperCalls'|'missingTagNameRegistration'|'noReExport';
 
 // Necessary info to track about each CrLitElement subclass definition
 // encountered in the current file.
@@ -457,6 +457,8 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           'Missing CustomEvent type parameter for {{type}} \'{{name}}\' (use CustomEvent<void> or CustomEvent<SomeType>).',
       invalidDollarSignProperty:
           'Optional or nullable property \'{{propertyName}}\' is not allowed on the \'$\' interface of \'{{className}}\'. Elements accessed via \'$\' are expected to always exist in the DOM.',
+      noReExport:
+          'Re-exporting \'{{exportName}}\' from a file containing a CrLitElement subclass/mixin definition is not allowed. Import directly from the original source file instead.',
     },
     schema: [],
   },
@@ -464,6 +466,8 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
   create(context) {
     let importsRender = false;
     let htmlImportNode: TSESTree.Node|null = null;
+    const importedNames = new Set<string>();
+    const exportSpecifiers: TSESTree.ExportSpecifier[] = [];
 
     // Dollar sign property signatures in this file, keyed by interface name.
     const dollarProperties = new Map<string, TSESTree.TSPropertySignature>();
@@ -605,7 +609,18 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         assert.ok(isType(node.parent.parent, Node.TSInterfaceDeclaration));
         dollarProperties.set(node.parent.parent.id.name, node);
       },
+      'ImportDeclaration > ImportSpecifier'(node: TSESTree.ImportSpecifier) {
+        importedNames.add(node.local.name);
+      },
+      'ExportNamedDeclaration > ExportSpecifier'(
+          node: TSESTree.ExportSpecifier) {
+        exportSpecifiers.push(node);
+      },
       'Program:exit'(_node: TSESTree.Program) {
+        if (classInfos.size === 0) {
+          return;
+        }
+
         for (const classInfo of classInfos.values()) {
           classInfo.runMissingTagNameRegistrationCheck();
           classInfo.runMissingCustomElementRegistrationCheck();
@@ -618,12 +633,27 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           }
         }
 
-        if (htmlImportNode && classInfos.size > 0 &&
-            !canImportHtml(context.filename, importsRender)) {
+        if (htmlImportNode && !canImportHtml(context.filename, importsRender)) {
           context.report({
             node: htmlImportNode,
             messageId: 'htmlImportInTsFile',
           });
+        }
+
+        for (const node of exportSpecifiers) {
+          assert.ok(isType(node.parent, Node.ExportNamedDeclaration));
+          assert.ok(isIdentifier(node.local));
+          assert.ok(isIdentifier(node.exported));
+          if (node.parent.source !== null ||
+              importedNames.has(node.local.name)) {
+            context.report({
+              node,
+              messageId: 'noReExport',
+              data: {
+                exportName: node.exported.name,
+              },
+            });
+          }
         }
       },
     };
