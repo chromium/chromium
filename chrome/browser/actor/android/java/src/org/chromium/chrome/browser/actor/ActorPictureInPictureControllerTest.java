@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 import android.app.PictureInPictureParams;
 import android.app.RemoteAction;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.util.Size;
 import android.widget.FrameLayout;
 
@@ -39,8 +41,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
@@ -99,6 +103,9 @@ public class ActorPictureInPictureControllerTest {
         ActorKeyedServiceFactoryJni.setInstanceForTesting(mActorKeyedServiceFactoryJni);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
+
+        Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
 
         mActivityController = Robolectric.buildActivity(TestActivity.class).create();
         mActivity = mActivityController.get();
@@ -475,7 +482,9 @@ public class ActorPictureInPictureControllerTest {
     public void testUpdatePausePlayActions_ShowingPause() {
         createMockActorTask(101, "Task", ActorTaskState.ACTING);
         mController.updatePipState();
+        RobolectricUtil.runAllBackgroundAndUi();
 
+        assertNotNull(mActivity.mPictureInPictureParams);
         List<RemoteAction> actions = mActivity.mPictureInPictureParams.getActions();
         assertEquals(1, actions.size());
         assertEquals(
@@ -487,7 +496,9 @@ public class ActorPictureInPictureControllerTest {
         createMockActorTask(101, "Task", ActorTaskState.PAUSED_BY_USER);
 
         mController.updatePipState();
+        RobolectricUtil.runAllBackgroundAndUi();
 
+        assertNotNull(mActivity.mPictureInPictureParams);
         List<RemoteAction> actions = mActivity.mPictureInPictureParams.getActions();
         assertEquals(1, actions.size());
         assertEquals(
@@ -499,9 +510,42 @@ public class ActorPictureInPictureControllerTest {
         createMockActorTask(101, "Task", ActorTaskState.WAITING_ON_USER);
 
         mController.updatePipState();
+        RobolectricUtil.runAllBackgroundAndUi();
 
+        assertNotNull(mActivity.mPictureInPictureParams);
         List<RemoteAction> actions = mActivity.mPictureInPictureParams.getActions();
         assertTrue(actions.isEmpty());
+    }
+
+    @Test
+    public void testUpdatePausePlayActions_TaskFinished_ClearsPauseAction() {
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        mController.updatePipState();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNotNull(mActivity.mPictureInPictureParams);
+        assertEquals(1, mActivity.mPictureInPictureParams.getActions().size());
+
+        when(mActorService.getActiveTasksCount()).thenReturn(0);
+        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+        mController.onTaskStateChanged(101, ActorTaskState.FINISHED);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNotNull(mActivity.mPictureInPictureParams);
+        assertTrue(mActivity.mPictureInPictureParams.getActions().isEmpty());
+    }
+
+    @Test
+    public void testDestroy_LeavesEmptyActions() {
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        mController.updatePipState();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNotNull(mActivity.mPictureInPictureParams);
+        assertEquals(1, mActivity.mPictureInPictureParams.getActions().size());
+
+        mController.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNotNull(mActivity.mPictureInPictureParams);
+        assertTrue(mActivity.mPictureInPictureParams.getActions().isEmpty());
     }
 
     @Test

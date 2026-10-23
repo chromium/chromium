@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.actor;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.PendingIntent;
-import android.app.PictureInPictureParams;
 import android.app.RemoteAction;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -43,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -197,8 +197,8 @@ public class ActorPictureInPictureController
             mPipDelegate.setEnabled(active);
             if (active) {
                 mPipDelegate.setAspectRatio(new Rational(16, 9));
-                updatePausePlayActions();
             }
+            updatePausePlayActions();
             mPipDelegate.commit();
         } catch (IllegalStateException | IllegalArgumentException e) {
             Log.e(TAG, "Failed to update PiP state", e);
@@ -294,19 +294,9 @@ public class ActorPictureInPictureController
             if (action != null) {
                 actions.add(action);
             }
-        } else {
-            mActivity.setPictureInPictureParams(
-                    new PictureInPictureParams.Builder().setActions(new ArrayList<>()).build());
-            return;
         }
 
-        updatePipActions(actions);
-    }
-
-    private void updatePipActions(List<RemoteAction> actions) {
-        PictureInPictureParams params =
-                new PictureInPictureParams.Builder().setActions(actions).build();
-        mActivity.setPictureInPictureParams(params);
+        mPipDelegate.setActions(actions);
     }
 
     private @Nullable RemoteAction createPauseResumeActionForState(
@@ -491,7 +481,7 @@ public class ActorPictureInPictureController
         // If the activity is finishing/destroyed, the OS will sweep up PiP parameters
         // automatically.
         if (!mActivity.isFinishing() && !mActivity.isDestroyed()) {
-            mPipDelegate.setEnabled(false).commit();
+            mPipDelegate.setEnabled(false).setActions(Collections.emptyList()).commit();
         }
         OffscreenRenderingManager.getInstance().destroy();
     }
