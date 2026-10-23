@@ -6,6 +6,8 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
@@ -49,8 +51,10 @@ void AsyncFindBuffer::Run(RangeInFlatTree* search_range,
     std::move(completeCallback).Run(EphemeralRangeInFlatTree());
     return;
   }
-  search_range->StartPosition().GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
+  Document* document = search_range->StartPosition().GetDocument();
+  auto forced_lock_scope =
+      document->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
 
   EphemeralRangeInFlatTree range =
       FindBuffer::FindMatchInRange(search_range->ToEphemeralRange(),

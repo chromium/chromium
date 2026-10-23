@@ -113,6 +113,12 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
         GetDocument().GetFrame());
   }
 
+  void SetDidFindMatchCallbackForTesting(
+      TextFragmentSelectorGenerator* generator,
+      base::OnceCallback<void(bool is_unique)> callback) {
+    generator->did_find_match_callback_for_testing_ = std::move(callback);
+  }
+
  protected:
   ukm::TestUkmRecorder* ukm_recorder() {
     return scoped_ukm_recorder_.recorder();
@@ -1851,6 +1857,85 @@ TEST_F(TextFragmentSelectorGeneratorTest, RemoveLayoutObjectAsync) {
   // Pump tasks to continue generator operation now.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(finished);
+}
+
+// Verify that dirty style/layout inside `hidden="until-found"` subtrees does
+// not trigger a DCHECK in `Element::EnsureComputedStyle` during
+// `StartGeneration()`, `AsyncFindBuffer::Run()`, or `DidFindMatch()`.
+TEST_F(TextFragmentSelectorGeneratorTest, HiddenUntilFoundDirtyLayout) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id='prefix'>Prefixfirst prefixsecond prefixthird<span hidden='until-found'><span id='dirty_start'></span></span></p>
+    <p id='target'>First target paragraph with more than twenty chars</p>
+    <div id='hidden_between' hidden='until-found'>
+      <span id='dirty_async'></span>
+    </div>
+    <p id='suffix'>Suffixfirst <span hidden='until-found'><span id='dirty_match'></span></span>suffixsecond suffixthird</p>
+    <p id='duplicate'>First target paragraph with more than twenty chars</p>
+  )HTML");
+
+  Element* dirty_start = GetElementById("dirty_start");
+  Element* dirty_async = GetElementById("dirty_async");
+  Element* dirty_match = GetElementById("dirty_match");
+
+  // Dirty `dirty_start` inside `hidden="until-found"` before `StartGeneration`.
+  // Selection starts at the end of `#prefix`, so `AdjustSelection()` calls
+  // `FirstNonEmptyVisibleTextNode()` across `dirty_start`.
+  dirty_start->setAttribute(html_names::kStyleAttr, AtomicString("color: red"));
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Node* prefix_text = GetElementById("prefix")->firstChild();
+  Node* target_text = GetElementById("target")->firstChild();
+  const auto& selected_start = Position(prefix_text, 36);
+  const auto& selected_end = Position(target_text, 50);
+
+  String selector;
+  bool finished = false;
+  auto callback = BindOnce(
+      [](bool& callback_called, String& selector,
+         const TextFragmentSelector& generated_selector,
+         shared_highlighting::LinkGenerationError error) {
+        selector = generated_selector.ToString();
+        callback_called = true;
+      },
+      std::ref(finished), std::ref(selector));
+
+  TextFragmentSelectorGenerator* generator = CreateGenerator();
+  generator->Generate(*MakeGarbageCollected<RangeInFlatTree>(
+                          ToPositionInFlatTree(selected_start),
+                          ToPositionInFlatTree(selected_end)),
+                      std::move(callback));
+  ASSERT_FALSE(finished);
+
+  // Dirty `dirty_async` while the async find task is pending so
+  // `AsyncFindBuffer::Run()` traverses it during the exact-match search.
+  dirty_async->setAttribute(html_names::kStyleAttr,
+                            AtomicString("color: green"));
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  // Because the 50-char target text is duplicated, the first `DidFindMatch()`
+  // has `is_unique == false` and transitions `kExact` -> `kContext`. Dirty
+  // `dirty_match` inside the callback so `DidFindMatch()`'s `ExtendContext()`
+  // steps from "Suffixfirst " into `dirty_match` via `SameBlockWordIterator`.
+  SetDidFindMatchCallbackForTesting(
+      generator, BindOnce(
+                     [](Element* dirty_match, bool is_unique) {
+                       EXPECT_FALSE(is_unique);
+                       dirty_match->setAttribute(html_names::kStyleAttr,
+                                                 AtomicString("color: blue"));
+                       dirty_match->GetDocument().UpdateStyleAndLayoutTree();
+                     },
+                     WrapWeakPersistent(dirty_match)));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(finished);
+  EXPECT_EQ(
+      "Prefixfirst%20prefixsecond%20prefixthird-,First%20target%20paragraph%20"
+      "with%20more%20than%20twenty%20chars,-Suffixfirst%20suffixsecond%20"
+      "suffixthird",
+      selector);
 }
 
 }  // namespace blink

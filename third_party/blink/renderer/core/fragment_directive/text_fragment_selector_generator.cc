@@ -11,6 +11,8 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
@@ -189,6 +191,15 @@ void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
   if (did_find_match_callback_for_testing_)
     std::move(did_find_match_callback_for_testing_).Run(is_unique);
 
+  DCHECK(range_);
+  DCHECK(!range_->IsNull());
+  DCHECK(range_->IsConnected());
+
+  Document* document = range_->StartPosition().GetDocument();
+  auto forced_lock_scope =
+      document->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
+
   if (is_unique &&
       PlainText(match.ToEphemeralRange()).LengthWithStrippedWhiteSpace() ==
           PlainText(range_->ToEphemeralRange())
@@ -303,9 +314,13 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
 
 void TextFragmentSelectorGenerator::StartGeneration() {
   DCHECK(range_);
+  DCHECK(!range_->IsNull());
+  DCHECK(range_->IsConnected());
 
-  range_->StartPosition().GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
+  Document* document = range_->StartPosition().GetDocument();
+  auto forced_lock_scope =
+      document->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
 
   // TODO(bokan): This can sometimes occur from a selection. Avoid crashing from
   // this case but this can come from a seemingly correct range so we should
