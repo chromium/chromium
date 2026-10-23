@@ -502,8 +502,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)closeButton {
-  return
-      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CLOSE)];
+  return grey_allOf(grey_anyOf([ChromeMatchersAppInterface
+                                   buttonWithAccessibilityLabelID:(IDS_CLOSE)],
+                               [ChromeMatchersAppInterface
+                                   buttonWithAccessibilityLabel:@"close"],
+                               nil),
+                    grey_userInteractionEnabled(), nil);
 }
 
 + (id<GREYMatcher>)navigationBarCancelButton {
@@ -880,8 +884,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)navigationBarCloseButton {
-  return grey_allOf(grey_accessibilityLabel(@"Close"),
-                    grey_sufficientlyVisible(), nil);
+  return grey_allOf([self closeButton], grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)navigationBarDoneButton {
