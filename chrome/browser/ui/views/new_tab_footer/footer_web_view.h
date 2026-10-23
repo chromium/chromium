@@ -9,9 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace ui {
@@ -67,8 +67,6 @@ class NewTabFooterWebView : public views::WebView,
   base::WeakPtr<content::WebContents> attached_tab_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
-  // Processes keyboard events not handled by the renderer.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   raw_ptr<BrowserWindowInterface> browser_;
   std::unique_ptr<WebUIContentsWrapperT<NewTabFooterUI>> contents_wrapper_;
 

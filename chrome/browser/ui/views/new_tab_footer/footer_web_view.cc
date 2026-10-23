@@ -28,6 +28,7 @@ NewTabFooterWebView::NewTabFooterWebView(BrowserWindowInterface* browser)
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetBackground(views::CreateLayerBasedSolidBackground(kColorToolbar));
   SetProperty(views::kElementIdentifierKey, kNtpFooterViewElementId);
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 }
 
 NewTabFooterWebView::~NewTabFooterWebView() {
@@ -114,8 +115,7 @@ void NewTabFooterWebView::HideCustomContextMenu() {
 bool NewTabFooterWebView::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
+  return WebView::HandleKeyboardEvent(source, event);
 }
 
 content::WebContents* NewTabFooterWebView::OpenURLFromTab(

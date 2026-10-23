@@ -27,6 +27,7 @@ source_set("new_tab_footer") {
     "//chrome/browser/ui/webui/new_tab_footer",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
+    "//components/input",
     "//components/tabs:public",
     "//content/public/browser",
     "//ui/base",

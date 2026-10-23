@@ -107,7 +107,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
@@ -180,6 +179,7 @@ class WebUIToolbarInternalWebView : public views::WebView {
       : views::WebView(browser_context),
         webui_toolbar_web_view_(webui_toolbar_web_view) {
     SetBackground(nullptr);
+    SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 #if BUILDFLAG(IS_MAC)
     forwarder_ = std::make_unique<WebUIToolbarEventForwarder>(
         *webui_toolbar_web_view, *this);
@@ -268,15 +268,6 @@ class WebUIToolbarInternalWebView : public views::WebView {
                                          std::move(hang_monitor_restarter));
   }
 
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const input::NativeWebKeyboardEvent& event) override {
-    // Used to handle the focus event triggered by keyboard (e.g. cmd+L to focus
-    // on the omnibox from macOS). See crbug.com/491963415.
-    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, GetFocusManager());
-  }
-
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     gfx::Point point(params.x, params.y);
@@ -337,9 +328,6 @@ class WebUIToolbarInternalWebView : public views::WebView {
 #endif
   // owns `this` as a child view.
   raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
-  // A handler to handle unhandled keyboard messages coming back from the
-  // renderer process.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   std::optional<base::FilePath> cached_dragged_file_path_;
   std::optional<gfx::PointF> cached_dragged_file_position_;
 };
