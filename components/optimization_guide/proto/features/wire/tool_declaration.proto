@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package optimization_guide.proto;
+
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+// Metadata and parameter schema for a browser tool exposed to a model.
+message ToolDeclaration {
+  // Unique name identifying the tool.
+  string name = 1;
+
+  // Natural language description of the tool's purpose and functionality.
+  string description = 2;
+
+  // JSON Schema specifying the arguments accepted by the tool.
+  string parameters_json_schema = 3;
+}
