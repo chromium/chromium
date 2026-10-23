@@ -828,6 +828,39 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
   EXPECT_EQ("stopped", GetCaptureState());
 }
 
+// Tests that navigating a captured tab to a chrome:// URL aborts the active
+// capture session, while normal cross-origin web navigations maintain capture.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
+                       ChromeUrlNavigationAbortsCapture) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // 1. Direct navigation from a tab with an activeTab grant (b.test) to a
+  // chrome:// URL should abort capture.
+  content::WebContents* const web_contents1 =
+      OpenNewTabAndGrantActiveTab("b.test");
+
+  StartCapture();
+  EXPECT_EQ("active", GetCaptureState());
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents1, GURL(kValidChromeURL)));
+  EXPECT_EQ("stopped", GetCaptureState());
+
+  // 2. Navigating cross-origin to another web host (a.test) should maintain
+  // capture, and subsequently navigating to a chrome:// URL should abort it.
+  content::WebContents* const web_contents2 =
+      OpenNewTabAndGrantActiveTab("b.test");
+
+  StartCapture();
+  EXPECT_EQ("active", GetCaptureState());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents2, embedded_test_server()->GetURL("a.test", "/simple.html")));
+  EXPECT_EQ("active", GetCaptureState());
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents2, GURL(kValidChromeURL)));
+  EXPECT_EQ("stopped", GetCaptureState());
+}
+
 // Tests the interaction between tab capture and hosts on which the user has
 // blocked all extensions.
 class TabCaptureApiUserHostRestrictionsTest : public TabCaptureApiPolicyTest {

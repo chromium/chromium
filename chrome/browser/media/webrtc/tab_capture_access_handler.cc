@@ -124,7 +124,8 @@ class TabCaptureExtensionPolicyUI : public MediaStreamUI,
     std::string error;
     content::WebContents* contents = web_contents();
     if (!extensions::TabCaptureRegistry::CanCaptureWebContents(
-            *extension, *contents->GetBrowserContext(), *contents, error)) {
+            *extension, *contents->GetBrowserContext(), *contents, error,
+            /*is_navigation=*/true)) {
       StopCapture();
       capture_policy::ShowCaptureTerminatedDialog(contents);
     }

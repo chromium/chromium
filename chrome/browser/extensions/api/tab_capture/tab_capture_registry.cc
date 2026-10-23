@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
@@ -27,6 +29,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -342,7 +345,8 @@ bool TabCaptureRegistry::CanCaptureWebContents(
     const Extension& extension,
     content::BrowserContext& browser_context,
     content::WebContents& target_contents,
-    std::string& error) {
+    std::string& error,
+    bool is_navigation) {
   const url::Origin& origin =
       target_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin();
   const GURL origin_url =
@@ -361,6 +365,25 @@ bool TabCaptureRegistry::CanCaptureWebContents(
   // nice defense-in-depth).
   if (Manifest::IsComponentLocation(extension.location())) {
     return true;
+  }
+
+  // Non-component extensions may only capture chrome:// URLs if they have been
+  // explicitly granted activeTab permission for the current page view (or are
+  // allowlisted via command line). ActiveTab grants on chrome:// pages are
+  // ephemeral and do not persist across navigations (see
+  // ActiveTabPermissionGranter::DidFinishNavigation); note that
+  // PrimaryPageChanged fires before DidFinishNavigation clears the previous
+  // page's grant, so `is_navigation` unconditionally disallows chrome:// URLs
+  // unless allowlisted.
+  if (origin_url.SchemeIs(content::kChromeUIScheme) &&
+      (is_navigation ||
+       !extension.permissions_data()->HasAPIPermissionForTab(
+           sessions::SessionTabHelper::IdForTab(&target_contents).id(),
+           mojom::APIPermissionID::kTabCaptureForTab)) &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kAllowlistedExtensionID) != extension.id()) {
+    error = tab_capture_errors::kCannotCapturePage;
+    return false;
   }
 
   if (extension.permissions_data()->IsPolicyBlockedHost(origin_url)) {

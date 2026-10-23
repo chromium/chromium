@@ -99,13 +99,16 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
 
   // Returns whether `extension` is permitted to capture `target_contents`.
   // Disallows capturing hosts blocked by enterprise policy, hosts restricted by
-  // the user, and file URLs when file access is not enabled. Also resolves
-  // precursor origins for opaque URLs (such as about:blank). Populates `error`
-  // if not null and capture is disallowed.
+  // the user, file URLs when file access is not enabled, and chrome:// URLs
+  // without an active tab grant for the current page view (or on navigation,
+  // since activeTab grants on chrome:// pages do not persist across
+  // navigations). Also resolves precursor origins for opaque URLs (such as
+  // about:blank). Populates `error` if not null and capture is disallowed.
   static bool CanCaptureWebContents(const Extension& extension,
                                     content::BrowserContext& browser_context,
                                     content::WebContents& target_contents,
-                                    std::string& error);
+                                    std::string& error,
+                                    bool is_navigation = false);
 
   // Looks up the extension ID for a pending request by its render frame ID.
   std::string GetExtensionIdForRequest(int render_process_id,
