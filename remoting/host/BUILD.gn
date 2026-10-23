@@ -958,7 +958,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (use_ozone || is_chromeos) {
+  if ((use_ozone && !remoting_use_x11) || is_chromeos) {
     sources -= [ "input_monitor/local_input_monitor_unittest.cc" ]
   }
 
