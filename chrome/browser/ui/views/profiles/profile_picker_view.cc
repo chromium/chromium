@@ -508,15 +508,6 @@ bool ProfilePickerView::CanNavigateBack() const {
   return flow_controller_ && flow_controller_->CanNavigateBack();
 }
 
-bool ProfilePickerView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  // Forward the keyboard event to AcceleratorPressed() through the
-  // FocusManager.
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
-}
-
 bool ProfilePickerView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
@@ -645,6 +636,8 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(picker_profile));
   contents_->SetDelegate(this);
+  SetAcceleratorHandling(
+      views::WebContentsAcceleratorHandling::kProcessBeforeRenderer);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       contents_.get());
   web_modal::WebContentsModalDialogManager::FromWebContents(contents_.get())
@@ -903,7 +896,6 @@ void ProfilePickerView::BuildLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>();
-  web_view->set_allow_accelerators_deprecated(true);
   web_view_ = AddChildView(std::move(web_view));
 
   web_contents_attached_subscription_ =

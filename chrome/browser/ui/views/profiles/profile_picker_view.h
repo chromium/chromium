@@ -21,7 +21,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -43,12 +42,13 @@ class WebContents;
 }  // namespace content
 
 // Dialog widget that contains the Desktop Profile picker webui.
-class ProfilePickerView : public views::WidgetDelegateView,
-                          public ProfilePickerWebContentsHost,
-                          public content::WebContentsDelegate,
-                          public web_modal::WebContentsModalDialogHost,
-                          public ui::AcceleratorProvider,
-                          public ChromeWebModalDialogManagerDelegate {
+class ProfilePickerView
+    : public views::WidgetDelegateView,
+      public ProfilePickerWebContentsHost,
+      public views::WebContentsDelegateViews<ProfilePickerView>,
+      public web_modal::WebContentsModalDialogHost,
+      public ui::AcceleratorProvider,
+      public ChromeWebModalDialogManagerDelegate {
   METADATA_HEADER(ProfilePickerView, views::WidgetDelegateView)
 
  public:
@@ -85,8 +85,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   SkColor GetPreferredBackgroundColor() const override;
 
   // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   content::WebContents* AddNewContents(
@@ -266,9 +264,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
-
-  // Handler for unhandled key events from renderer.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Owned by the view hierarchy.
   raw_ptr<views::WebView> web_view_ = nullptr;

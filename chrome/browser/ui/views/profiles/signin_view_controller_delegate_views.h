@@ -18,7 +18,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -42,7 +42,7 @@ class WebView;
 class SigninViewControllerDelegateViews
     : public views::DialogDelegateView,
       public SigninViewControllerDelegate,
-      public content::WebContentsDelegate,
+      public views::WebContentsDelegateViews<SigninViewControllerDelegateViews>,
       public content::WebContentsObserver,
       public ChromeWebModalDialogManagerDelegate,
       public views::ViewObserver {
@@ -105,8 +105,6 @@ class SigninViewControllerDelegateViews
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
   content::WebContents* AddNewContents(
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
@@ -175,12 +173,10 @@ class SigninViewControllerDelegateViews
 
   const raw_ptr<views::WebView> content_view_;
   const raw_ptr<BrowserWindowInterface> browser_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
   base::ScopedClosureRunner on_closed_callback_;
   base::ScopedObservation<views::View, views::ViewObserver>
       content_view_observation_{this};
-  bool allow_closing_by_pressing_escape_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_

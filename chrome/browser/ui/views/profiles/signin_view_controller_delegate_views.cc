@@ -336,22 +336,6 @@ bool SigninViewControllerDelegateViews::HandleContextMenu(
   return true;
 }
 
-bool SigninViewControllerDelegateViews::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  if (!allow_closing_by_pressing_escape_ &&
-      event.windows_key_code == ui::VKEY_ESCAPE) {
-    return true;
-  }
-  // If this is a ModalType::kChild, then GetFocusManager() will return the
-  // focus manager of the parent window, which has registered accelerators, and
-  // the accelerators will fire. If this is a ModalType::kWindow, then this will
-  // have no effect, since no accelerators have been registered for this
-  // standalone window.
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
-}
-
 content::WebContents* SigninViewControllerDelegateViews::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
@@ -404,8 +388,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     : content_view_(content_view.get()),
       browser_(browser),
       should_show_close_button_(should_show_close_button),
-      on_closed_callback_(std::move(on_closed_callback)),
-      allow_closing_by_pressing_escape_(allow_closing_by_pressing_escape) {
+      on_closed_callback_(std::move(on_closed_callback)) {
   DCHECK(content_view_->GetWebContents());
   DCHECK(browser_);
   DCHECK(browser_->GetTabStripModel()->GetActiveWebContents())
@@ -449,6 +432,13 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
         base::Unretained(this)));
   }
 #endif
+
+  // Configure required accelerator handling.
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
+  if (!allow_closing_by_pressing_escape) {
+    // Swallow ESC keypresses.
+    SetOnEscCallback(base::ReturnValueRepeating(true));
+  }
 
   AttachToWebContents(content_view_->GetWebContents());
 
@@ -538,6 +528,7 @@ void SigninViewControllerDelegateViews::AttachToWebContents(
   DCHECK(web_contents);
   content::WebContentsObserver::Observe(web_contents);
   web_contents->SetDelegate(this);
+
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
   web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
       ->SetDelegate(this);

@@ -24,7 +24,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/page.h"
@@ -38,7 +37,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -61,6 +59,7 @@ class CrossDeviceSigninQrWebView : public views::WebView,
             IdentityManagerFactory::GetForProfile(profile_)) {
       identity_manager_observation_.Observe(identity_manager);
     }
+    SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
   }
 
   ~CrossDeviceSigninQrWebView() override = default;
@@ -71,13 +70,6 @@ class CrossDeviceSigninQrWebView : public views::WebView,
     // Suppresses the context menu because some features, such as inspecting
     // elements, are not appropriate in a bubble.
     return true;
-  }
-
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const input::NativeWebKeyboardEvent& event) override {
-    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, GetFocusManager());
   }
 
   void ResizeDueToAutoResize(content::WebContents* source,
