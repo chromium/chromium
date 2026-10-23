@@ -4,7 +4,10 @@
 
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -42,6 +45,8 @@ inline constexpr char kChromeUIOmniboxPopupAimURL[] =
     "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html";
 inline constexpr char kChromeUIOmniboxPopupURL[] =
     "chrome://omnibox-popup.top-chrome/";
+
+// Search warmup page loaded in the background by the omnibox.
 inline constexpr char kWarmupURL[] =
     "https://www.google.com/search/warmup.html";
 
@@ -242,12 +247,19 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
 
 bool ChromeEnterpriseRealTimeUrlLookupService::
     ShouldOverrideKnownSafeUrlDecision(const GURL& url) const {
-  // No need to check new tab to reduce number of rpc calls
-  bool new_tab = url == kChromeUINewTabPageURL || url == kChromeUINewTabURL;
-  bool omnibox_popup = url == kChromeUIOmniboxPopupURL ||
-                       url == kChromeUIOmniboxPopupAimURL;
-  bool warmup = url == kWarmupURL;
-  return url.SchemeIs(kChromeUIScheme) && !new_tab && !omnibox_popup && !warmup;
+  static constexpr auto kSkippedUrls =
+      base::MakeFixedFlatSet<std::string_view>({
+          kChromeUINewTabPageURL,
+          kChromeUINewTabURL,
+          kChromeUIOmniboxPopupAimURL,
+          kChromeUIOmniboxPopupURL,
+          kWarmupURL,
+      });
+
+  // Override safe chrome:// scheme decisions unless url is on skiplist.
+  // `GURL::spec()` must not be called on invalid URLs.
+  return url.is_valid() && url.SchemeIs(kChromeUIScheme) &&
+         !kSkippedUrls.contains(url.spec());
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
