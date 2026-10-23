@@ -245,6 +245,8 @@ void DomDistillerViewerSource::StartDataRequest(
       dom_distiller_service_->GetDistilledPagePrefs()->SetUserPrefFontScaling(
           scale);
     }
+    std::move(callback).Run(nullptr);
+    return;
   }
 
   // We need the host part to validate the parameter, but it's not available
