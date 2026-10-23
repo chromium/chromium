@@ -1180,4 +1180,27 @@ IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
   [window_a_ setOccludedForTesting:NO];
 }
 
+// Tests that a window marked occluded is reset to unoccluded once it no longer
+// contains a webcontents, so that its occlusion state can't get stuck.
+IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
+                       OcclusionClearedWhenWebContentsRemoved) {
+  InitWindowA();
+
+  [window_a_ setOccludedForTesting:YES];
+  PostNotification(NSWindowDidChangeOcclusionStateNotification, window_a_);
+  ASSERT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+  EXPECT_TRUE([window_a_ isOccluded]);
+
+  RemoveViewFromSuperview(window_a_web_contents_view_cocoa_);
+  EXPECT_FALSE([window_a_ isOccluded]);
+
+  // A webcontents added back after the window becomes unoccluded starts out
+  // visible.
+  [window_a_ setOccludedForTesting:NO];
+  AddSubviewOfView(window_a_web_contents_view_cocoa_, window_a_.contentView);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+}
+
 }  // namespace content

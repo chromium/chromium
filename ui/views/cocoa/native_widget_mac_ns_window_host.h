@@ -14,6 +14,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/browser/application_host.h"
@@ -274,6 +275,12 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // space.
   bool IsVisibleOnScreen() const { return is_visible_ && is_on_active_space_; }
 
+  // Exposes the timer that debounces becoming occluded, so tests can check
+  // whether a hide is pending and fire it without waiting.
+  base::OneShotTimer& occlusion_hide_timer_for_testing() {
+    return occlusion_hide_timer_;
+  }
+
   void SetVisibilityState(remote_cocoa::mojom::WindowVisibilityState new_state);
 
   // Add a NSEvent local event monitor, which will send events to `client`
@@ -347,6 +354,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // remote_cocoa::mojom::NativeWidgetNSWindowHost:
   void OnVisibilityChanged(bool visible) override;
   void OnSpaceActivationChanged(bool is_on_active_space) override;
+  void OnWindowOcclusionChanged(bool occluded) override;
   void OnWindowNativeThemeChanged() override;
   void OnViewSizeChanged(const gfx::Size& new_size) override;
   bool GetSheetOffsetY(int32_t* offset_y) override;
@@ -606,8 +614,23 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void UpdateCompositorVisibility();
   void OnVideoCaptureLockDestroyed();
 
+  // Applies a pending occlusion once `occlusion_hide_timer_` fires.
+  void ApplyOcclusion();
+  // Clears the occlusion state (applied or pending). Updates compositor
+  // visibility if `update_compositor` is true and the applied state changed.
+  void ResetOcclusion(bool update_compositor);
+
   // Number of active video capture locks.
   uint32_t video_capture_count_ = 0;
+
+  // Debounced occlusion state, as reported by WebContentsOcclusionCheckerMac.
+  // Only affects compositor visibility (behind
+  // `features::kNotifyCompositorOfWindowOcclusionOnMacOs`), not
+  // IsVisibleOnScreen().
+  bool is_occluded_ = false;
+  // Delays applying `is_occluded_ = true`, to avoid compositor churn on brief
+  // occlusions. Becoming unoccluded is applied immediately.
+  base::OneShotTimer occlusion_hide_timer_;
 
   base::ScopedObservation<View, ViewObserver> root_view_observation_{this};
 

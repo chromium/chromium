@@ -1584,6 +1584,10 @@ void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
   host_->OnSpaceActivationChanged(is_visible_on_screen);
 }
 
+void NativeWidgetNSWindowBridge::OnWindowOcclusionChanged(bool occluded) {
+  host_->OnWindowOcclusionChanged(occluded);
+}
+
 void NativeWidgetNSWindowBridge::OnSystemColorsChanged() {
   host_->OnWindowNativeThemeChanged();
 }

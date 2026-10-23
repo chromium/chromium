@@ -74,6 +74,14 @@ BASE_FEATURE(kMacActivateWidgetOnFocusRequest,
 BASE_FEATURE(kNotifyCompositorOfSpaceVisibilityOnMacOs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, tell the browser compositor when the window is fully occluded
+// (covered by other windows), to allow it to reclaim resources. The occlusion
+// state comes from `WebContentsOcclusionCheckerMac`, so this only applies to
+// top-level windows that contain web contents. Becoming occluded is debounced;
+// becoming visible again takes effect immediately.
+BASE_FEATURE(kNotifyCompositorOfWindowOcclusionOnMacOs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, tell the browser compositor when the window is hidden, to allow
 // it to reclaim resources.
 BASE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs,

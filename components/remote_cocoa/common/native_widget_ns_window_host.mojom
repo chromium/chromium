@@ -65,6 +65,16 @@ interface NativeWidgetNSWindowHost {
   // Called when -[NSWindow isOnActiveSpace] changes.
   OnSpaceActivationChanged(bool is_space_active);
 
+  // Called with the window's occlusion state, as computed by Chrome's window
+  // occlusion checker (WebContentsOcclusionCheckerMac). Only top-level windows
+  // containing web contents can be reported as occluded. Sent on every update
+  // pass while the window is occluded (and once when it becomes unoccluded),
+  // so `occluded = true` may repeat the current state. The host only uses it
+  // for compositor visibility, and debounces becoming occluded. The checker
+  // only runs in the browser process, so this is not currently sent for
+  // windows hosted in an app shim.
+  OnWindowOcclusionChanged(bool occluded);
+
   // Called when the window's native theme changes.
   OnWindowNativeThemeChanged();
 

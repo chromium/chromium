@@ -301,8 +301,14 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // so they can update their visibility state. Therefore, we ignore windows
   // that don't have a web contents (they essentially don't exist for our manual
   // occlusion calculations).
-  if (![window containsWebContentsViewCocoa])
+  if (![window containsWebContentsViewCocoa]) {
+    // As with child windows below, `window` may have been marked occluded while
+    // it still contained a web contents. Clear that state before ignoring the
+    // notification so it cannot get stuck if no other window triggers an update
+    // pass.
+    [window setOccluded:NO];
     return NO;
+  }
 
   // The checker cycles through the window list when performing its manual
   // occlusion checks. Child windows don't appear in this list, so don't
@@ -462,11 +468,21 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 
   for (NSWindow* window in windowsFromFrontToBack) {
     // The fullscreen transition causes spurious occlusion notifications.
-    // See https://crbug.com/1081229 . Also, ignore windows that don't have
-    // web contentses.
-    if (window == _windowReceivingFullscreenTransitionNotifications ||
-        ![window containsWebContentsViewCocoa])
+    // See https://crbug.com/1081229 .
+    if (window == _windowReceivingFullscreenTransitionNotifications) {
       continue;
+    }
+
+    // Ignore windows that don't have web contentses. If such a window was
+    // marked occluded while it had one (e.g. a closing window whose
+    // webcontents was removed, https://crbug.com/1356622), clear the stale
+    // state so that observers (e.g. the browser compositor) are not left
+    // thinking it is occluded. The window has no webcontents to update; one
+    // added back later starts out visible until the next update pass.
+    if (![window containsWebContentsViewCocoa]) {
+      [window setOccluded:NO];
+      continue;
+    }
 
     // `WebContentsViewCocoa` handles hidden windows. Clear their occlusion
     // state to avoid stale results if they are shown before the next AppKit
@@ -622,17 +638,31 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 }
 
 - (void)setOccluded:(BOOL)flag {
-  if (flag == [self isOccluded])
+  const BOOL wasOccluded = [self isOccluded];
+  if (!flag && !wasOccluded) {
     return;
+  }
+  if (flag != wasOccluded) {
+    objc_setAssociatedObject(self, kWindowIsOccludedKey, flag ? @YES : nil,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-  objc_setAssociatedObject(self, kWindowIsOccludedKey, flag ? @YES : nil,
-                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    NSString* occlusionCheckerKey = [WebContentsOcclusionCheckerMac className];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                      object:self
+                    userInfo:@{occlusionCheckerKey : @YES}];
+  }
 
-  NSString* occlusionCheckerKey = [WebContentsOcclusionCheckerMac className];
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidChangeOcclusionStateNotification
-                    object:self
-                  userInfo:@{occlusionCheckerKey : @YES}];
+  // Let the views browser compositor know, after the synthetic notification
+  // above has been dispatched. An occluded report is forwarded even if
+  // `wasOccluded` was already true: the host may have reset its own state (e.g.
+  // when the window is shown again), and it ignores redundant updates. Calling
+  // this on every pass is cheap since the checker only runs in the browser
+  // process, where this is a direct call to the host (no IPC).
+  if (auto* bridge =
+          remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(self)) {
+    bridge->OnWindowOcclusionChanged(flag);
+  }
 }
 
 @end

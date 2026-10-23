@@ -137,6 +137,7 @@ class DummyNativeWidgetNSWindowHost
  private:
   void OnVisibilityChanged(bool visible) override {}
   void OnSpaceActivationChanged(bool is_space_active) override {}
+  void OnWindowOcclusionChanged(bool occluded) override {}
   void OnWindowNativeThemeChanged() override {}
   void OnViewSizeChanged(const gfx::Size& new_size) override {}
   void SetKeyboardAccessible(bool enabled) override {}
