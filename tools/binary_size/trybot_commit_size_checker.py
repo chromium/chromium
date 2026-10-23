@@ -27,6 +27,7 @@ tools/binary_size/trybot_commit_size_checker.py \
 
 import argparse
 import collections
+import gc
 import json
 import logging
 import os
@@ -490,6 +491,10 @@ def main():
     help='List of changed files in the commit',
   )
   args = parser.parse_args()
+
+  # Loading and diffing .size files creates millions of long-lived objects,
+  # which makes cyclic GC passes expensive. Saves ~15% of runtime.
+  gc.disable()
 
   logging.basicConfig(
     level=logging.INFO,
