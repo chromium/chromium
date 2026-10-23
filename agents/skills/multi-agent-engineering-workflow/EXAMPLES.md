@@ -26,7 +26,7 @@ Engineering Workflow protocol.
     "vcs": "JJ",
     "harness": "JETSKI",
     "orchestration_pattern": "CENTRALIZED",
-    "use_reclient": true,
+    "use_remoteexec": true,
     "is_debug_build": true,
     "output_directory": "out/Default",
     "temp_directory":

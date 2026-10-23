@@ -79,9 +79,9 @@
           ],
           "description": "CENTRALIZED for Simulated MAS (JetSki), DECENTRALIZED for True MAS (Gemini CLI)."
         },
-        "use_reclient": {
+        "use_remoteexec": {
           "type": "boolean",
-          "description": "True if reclient (remote execution) is configured for builds."
+          "description": "True if remote execution (use_remoteexec=true) is configured for builds."
         },
         "is_debug_build": {
           "type": "boolean",

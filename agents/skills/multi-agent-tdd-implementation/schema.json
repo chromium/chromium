@@ -31,7 +31,7 @@
         "vcs": { "type": "string", "enum": ["GIT", "JJ"] },
         "harness": { "type": "string", "enum": ["JETSKI", "GENERIC_CLI"] },
         "orchestration_pattern": { "type": "string", "enum": ["CENTRALIZED", "DECENTRALIZED"] },
-        "use_reclient": { "type": "boolean" },
+        "use_remoteexec": { "type": "boolean" },
         "is_debug_build": { "type": "boolean" },
         "repo_type": { "type": "string", "enum": ["CHROMIUM", "GOOGLE_INTERNAL"] },
         "output_directory": { "type": "string" },

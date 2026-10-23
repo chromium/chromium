@@ -18,7 +18,7 @@
     "build_config_discovered": [
       "Discover the build environment. Prefer Debug builds over Release; ",
       "fallback to Release only if no Debug configuration is found. Detect ",
-      "if reclient (use_remoteexec=true) is active in args.gn."
+      "if remote execution (use_remoteexec=true) is active in args.gn."
     ],
     "context_successfully_retrieved": [
       "Read all external URLs/bugs. Halt and ask the human if you encounter a ",

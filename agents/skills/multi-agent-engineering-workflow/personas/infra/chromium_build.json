@@ -13,7 +13,7 @@
     ],
     "autoninja_usage": [
       "Use `autoninja` instead of raw `ninja`. Ensure the command aligns ",
-      "with the environment's `use_reclient` and `output_directory` settings."
+      "with the environment's `use_remoteexec` and `output_directory` settings."
     ]
   }
 }
