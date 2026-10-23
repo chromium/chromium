@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/installer/win/setup/setup_work_items.h"
+#include "remoting/host/installer/win/setup/registry_work_items.h"
 
 #include <windows.h>
 
@@ -20,7 +20,7 @@
 
 namespace remoting::installer {
 
-class SetupWorkItemsTest : public testing::Test {
+class RegistryWorkItemsTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(
@@ -34,7 +34,7 @@ class SetupWorkItemsTest : public testing::Test {
   base::FilePath install_dir_;
 };
 
-TEST_F(SetupWorkItemsTest, HostRegistryWorkItem_SuccessAndRollback) {
+TEST_F(RegistryWorkItemsTest, HostRegistryWorkItem_SuccessAndRollback) {
   HostRegistryWorkItem item(install_dir_);
 
   EXPECT_TRUE(item.Do());
@@ -58,7 +58,7 @@ TEST_F(SetupWorkItemsTest, HostRegistryWorkItem_SuccessAndRollback) {
   }
 }
 
-TEST_F(SetupWorkItemsTest,
+TEST_F(RegistryWorkItemsTest,
        HostRegistryWorkItem_UpdateModePreservesRegistryOnRollback) {
   HostRegistryWorkItem item(install_dir_, /*is_update=*/true);
 
@@ -83,7 +83,7 @@ TEST_F(SetupWorkItemsTest,
   }
 }
 
-TEST_F(SetupWorkItemsTest,
+TEST_F(RegistryWorkItemsTest,
        HostRegistryWorkItem_AutoDetectsExistingInstallAndPreservesOnRollback) {
   std::wstring chromoting_key =
       base::StrCat({L"SOFTWARE\\", kChromotingKeyPath});
@@ -108,7 +108,7 @@ TEST_F(SetupWorkItemsTest,
   }
 }
 
-TEST_F(SetupWorkItemsTest, UnregisterRegistryWorkItem_RemovesEntries) {
+TEST_F(RegistryWorkItemsTest, UnregisterRegistryWorkItem_RemovesEntries) {
   HostRegistryWorkItem register_item(install_dir_);
   ASSERT_TRUE(register_item.Do());
 

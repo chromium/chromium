@@ -96,14 +96,16 @@ source_set("setup_lib") {
   sources = [
     "file_util.cc",
     "file_util.h",
+    "file_work_items.cc",
+    "file_work_items.h",
     "installer_constants.cc",
     "installer_constants.h",
     "registry_util.cc",
     "registry_util.h",
+    "registry_work_items.cc",
+    "registry_work_items.h",
     "service_util.cc",
     "service_util.h",
-    "setup_work_items.cc",
-    "setup_work_items.h",
   ]
 
   public_deps = [
@@ -127,10 +129,11 @@ source_set("unit_tests") {
 
   sources = [
     "file_util_unittest.cc",
+    "file_work_items_unittest.cc",
     "installer_constants_unittest.cc",
     "registry_util_unittest.cc",
+    "registry_work_items_unittest.cc",
     "service_util_unittest.cc",
-    "setup_work_items_unittest.cc",
   ]
 
   deps = [

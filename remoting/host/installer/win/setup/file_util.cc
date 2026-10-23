@@ -42,6 +42,24 @@ MoveFileExCallback& GetMoveFileExCallback() {
   return *callback;
 }
 
+}  // namespace
+
+bool CopyFileForSetup(const base::FilePath& from, const base::FilePath& to) {
+  return GetCopyFileCallback().Run(from, to);
+}
+
+bool DeleteFileForSetup(const base::FilePath& path) {
+  return GetDeleteFileCallback().Run(path);
+}
+
+bool MoveFileForSetup(const base::FilePath& from,
+                      const base::FilePath& to,
+                      DWORD flags) {
+  return GetMoveFileExCallback().Run(from.value().c_str(),
+                                     to.empty() ? nullptr : to.value().c_str(),
+                                     flags) != FALSE;
+}
+
 void ScheduleDeleteOnReboot(const base::FilePath& path) {
   if (!GetMoveFileExCallback().Run(path.value().c_str(), nullptr,
                                    MOVEFILE_DELAY_UNTIL_REBOOT)) {
@@ -50,9 +68,6 @@ void ScheduleDeleteOnReboot(const base::FilePath& path) {
   }
 }
 
-// Finds an available "<dest_file>.old" (or "<dest_file>.<N>.old") path and
-// moves `dest_file` to it. Supports multiple updates while earlier ".old"
-// binaries remain locked by long-running sessions.
 bool MoveLockedFileToOldPath(const base::FilePath& dest_file,
                              base::FilePath* out_old_file) {
   constexpr int kMaxOldFileAttempts = 100;
@@ -86,8 +101,6 @@ bool MoveLockedFileToOldPath(const base::FilePath& dest_file,
   LOG(ERROR) << "Exhausted candidate .old paths for " << dest_file.value();
   return false;
 }
-
-}  // namespace
 
 void SetCopyFileCallbackForTesting(CopyFileCallback callback) {
   if (callback.is_null()) {

@@ -28,6 +28,23 @@ void SetCopyFileCallbackForTesting(CopyFileCallback callback);
 void SetDeleteFileCallbackForTesting(DeleteFileCallback callback);
 void SetMoveFileExCallbackForTesting(MoveFileExCallback callback);
 
+// Wrappers that invoke the mock callbacks if set, or fall back to system APIs.
+bool CopyFileForSetup(const base::FilePath& from, const base::FilePath& to);
+bool DeleteFileForSetup(const base::FilePath& path);
+bool MoveFileForSetup(const base::FilePath& from,
+                      const base::FilePath& to,
+                      DWORD flags);
+
+// Schedules `path` for deletion on the next reboot using
+// MOVEFILE_DELAY_UNTIL_REBOOT via MoveFileExW.
+void ScheduleDeleteOnReboot(const base::FilePath& path);
+
+// Finds an available "<dest_file>.old" (or "<dest_file>.<N>.old") path and
+// moves `dest_file` to it. Supports multiple updates while earlier ".old"
+// binaries remain locked by long-running sessions.
+bool MoveLockedFileToOldPath(const base::FilePath& dest_file,
+                             base::FilePath* out_old_file);
+
 // Deletes any stale "*.old" files in `install_dir` that are no longer locked
 // by a running process.
 void CleanupOldFiles(const base::FilePath& install_dir);

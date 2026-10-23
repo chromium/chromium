@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/installer/win/setup/setup_work_items.h"
+#include "remoting/host/installer/win/setup/registry_work_items.h"
 
 #include <windows.h>
 
@@ -14,8 +14,6 @@
 #include "remoting/host/installer/win/setup/registry_util.h"
 
 namespace remoting::installer {
-
-// HostRegistryWorkItem --------------------------------------------------------
 
 HostRegistryWorkItem::HostRegistryWorkItem(const base::FilePath& install_dir,
                                            bool is_update)
@@ -50,8 +48,6 @@ void HostRegistryWorkItem::RollbackImpl() {
   }
   UnregisterHostRegistryEntries();
 }
-
-// UnregisterRegistryWorkItem --------------------------------------------------
 
 UnregisterRegistryWorkItem::UnregisterRegistryWorkItem() = default;
 

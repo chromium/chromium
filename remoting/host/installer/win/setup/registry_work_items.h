@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_INSTALLER_WIN_SETUP_SETUP_WORK_ITEMS_H_
-#define REMOTING_HOST_INSTALLER_WIN_SETUP_SETUP_WORK_ITEMS_H_
+#ifndef REMOTING_HOST_INSTALLER_WIN_SETUP_REGISTRY_WORK_ITEMS_H_
+#define REMOTING_HOST_INSTALLER_WIN_SETUP_REGISTRY_WORK_ITEMS_H_
 
 #include "base/files/file_path.h"
 #include "chrome/installer/util/work_item.h"
@@ -54,4 +54,4 @@ class UnregisterRegistryWorkItem : public WorkItem {
 
 }  // namespace remoting::installer
 
-#endif  // REMOTING_HOST_INSTALLER_WIN_SETUP_SETUP_WORK_ITEMS_H_
+#endif  // REMOTING_HOST_INSTALLER_WIN_SETUP_REGISTRY_WORK_ITEMS_H_
