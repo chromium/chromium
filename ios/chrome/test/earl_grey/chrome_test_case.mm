@@ -534,21 +534,23 @@ void ResetAuthentication() {
   [ChromeEarlGrey setPopupPrefValue:CONTENT_SETTING_DEFAULT];
 
   // Enforce the assumption that the tests are running in portrait.
-  if ([ChromeEarlGrey isDuoSimulator]) {
-    // Reset the Duo simulator to Closed/Portrait via its virtual HID service.
-    [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
-    if (@available(iOS 27.1, *)) {
-      [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
+  if (![ChromeTestCase isStartupTest]) {
+    if ([ChromeEarlGrey isDuoSimulator]) {
+      // Reset the Duo simulator to Closed/Portrait via its virtual HID service.
+      [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
+      if (@available(iOS 27.1, *)) {
+        [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
+      }
+      [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
+    } else if ([ChromeEarlGrey interfaceOrientation] !=
+               UIInterfaceOrientationPortrait) {
+      // Only rotate if needed. On a physical device with the orientation lock
+      // on, an XCUITest rotation releases the lock, and the OS then re-applies
+      // the physical orientation (e.g. a device resting in landscape), undoing
+      // the rotation and failing EarlGrey's orientation check.
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                       error:nil];
     }
-    [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
-  } else if ([ChromeEarlGrey interfaceOrientation] !=
-             UIInterfaceOrientationPortrait) {
-    // Only rotate if needed. On a physical device with the orientation lock on,
-    // an XCUITest rotation releases the lock, and the OS then re-applies the
-    // physical orientation (e.g. a device resting in landscape), undoing the
-    // rotation and failing EarlGrey's orientation check.
-    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
-                                     error:nil];
   }
 
   // Clear multiwindow root and any extra windows. Once in `setUpForTestCase`
