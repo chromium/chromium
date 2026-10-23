@@ -275,8 +275,10 @@ bool ClientSideDetectionServiceBase::AtPhishingReportLimit() {
   }
 
   // prefs_ can be null in unit tests.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit) &&
-      prefs_ && IsEnhancedProtectionEnabled(*prefs_)) {
+  // Check feature flag after ESB check so that the Finch experiment
+  // groups only include eligible clients.
+  if (prefs_ && IsEnhancedProtectionEnabled(*prefs_) &&
+      base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit)) {
     return GetPhishingNumReports() >=
            kSafeBrowsingDailyPhishingReportsLimitESB.Get();
   }

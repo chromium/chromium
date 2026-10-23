@@ -133,11 +133,13 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
   // changes can receive them correctly.
+  // Check feature flag after ESB check so that the Finch experiment
+  // groups only include clients that can send sample pings.
   bool only_background_lookup_eligible =
-      base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing) &&
       safe_browsing::GetSafeBrowsingState(*prefs) ==
           SafeBrowsingState::ENHANCED_PROTECTION &&
-      are_background_lookups_allowed;
+      are_background_lookups_allowed &&
+      base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing);
 
   struct Requirement {
     std::string failed_requirement_histogram_suffix;
