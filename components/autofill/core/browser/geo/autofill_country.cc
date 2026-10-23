@@ -12,10 +12,8 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -138,7 +136,7 @@ base::span<const AutofillCountry::AddressFormatExtension>
 AutofillCountry::address_format_extensions() const {
   // TODO(crbug.com/40216312): Extend more countries. FR and GB already have
   // overwrites, because libaddressinput already provides string literals.
-  static constexpr std::array<AddressFormatExtension, 2> fr_extensions{
+  static constexpr std::array<AddressFormatExtension, 2> kFrExtensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_PROVINCE,
         .placed_after = FieldType::ADDRESS_HOME_CITY,
@@ -149,51 +147,48 @@ AutofillCountry::address_format_extensions() const {
         .placed_after = FieldType::ADDRESS_HOME_STREET_ADDRESS,
         .separator_before_label = "\n",
         .large_sized = true}}};
-  static constexpr std::array<AddressFormatExtension, 1> gb_extensions{
+  static constexpr std::array<AddressFormatExtension, 1> kGbExtensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_COUNTY,
         .placed_after = FieldType::ADDRESS_HOME_ZIP,
         .separator_before_label = "\n",
         .large_sized = true}}};
-  static constexpr std::array<AddressFormatExtension, 1> mx_extensions{
+  static constexpr std::array<AddressFormatExtension, 1> kMxExtensions{
       {{.type = FieldType::ADDRESS_HOME_ADMIN_LEVEL2,
         .label_id = IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_HISPANIC_MUNICIPIO,
         .placed_after = FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
         .separator_before_label = "\n",
         .large_sized = true}}};
-  static constexpr std::array<AddressFormatExtension, 1> de_extensions{
+  static constexpr std::array<AddressFormatExtension, 1> kDeExtensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_STATE,
         .placed_after = FieldType::ADDRESS_HOME_CITY,
         .separator_before_label = " "}}};
-  static constexpr std::array<AddressFormatExtension, 1> pl_extensions{
+  static constexpr std::array<AddressFormatExtension, 1> kPlExtensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_STATE,
         .placed_after = FieldType::ADDRESS_HOME_CITY,
         .separator_before_label = "\n",
         .large_sized = true}}};
-  static constexpr std::array<AddressFormatExtension, 1> jp_extensions{
+  static constexpr std::array<AddressFormatExtension, 1> kJpExtensions{
       {{.type = FieldType::ALTERNATIVE_FULL_NAME,
         .label_id = IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_JAPANESE_ALTERNATIVE_NAME,
         .placed_after = FieldType::NAME_FULL,
         .separator_before_label = "\n",
         .large_sized = true}}};
 
-  std::vector<std::pair<std::string, base::span<const AddressFormatExtension>>>
-      overrides = {{"DE", de_extensions},
-                   {"FR", fr_extensions},
-                   {"GB", gb_extensions},
-                   {"MX", mx_extensions},
-                   {"PL", pl_extensions}};
+  static constexpr auto kExtensions =
+      base::MakeFixedFlatMap<std::string_view,
+                             base::span<const AddressFormatExtension>>(
+          {{"DE", kDeExtensions},
+           {"FR", kFrExtensions},
+           {"GB", kGbExtensions},
+           {"JP", kJpExtensions},
+           {"MX", kMxExtensions},
+           {"PL", kPlExtensions}});
 
-  overrides.emplace_back("JP", jp_extensions);
-
-  auto extensions =
-      base::flat_map<std::string, base::span<const AddressFormatExtension>>(
-          std::move(overrides));
-
-  if (const auto* country_extensions =
-          base::FindOrNull(extensions, country_code_)) {
+  if (const base::span<const AddressFormatExtension>* country_extensions =
+          base::FindOrNull(kExtensions, country_code_)) {
     return *country_extensions;
   }
   return {};
