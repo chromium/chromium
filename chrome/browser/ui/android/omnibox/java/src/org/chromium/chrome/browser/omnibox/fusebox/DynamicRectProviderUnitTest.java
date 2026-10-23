@@ -35,6 +35,7 @@ public class DynamicRectProviderUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private RectProvider mFloatingDelegate;
+    @Mock private RectProvider mAlternateFloatingDelegate;
     @Mock private RectProvider mBottomDelegate;
     @Mock private RectProvider.Observer mObserver;
     @Mock private Resources mResources;
@@ -119,5 +120,21 @@ public class DynamicRectProviderUnitTest {
     public void testGetRect_nullDelegate_returnsEmptyRect() {
         Rect rect = mDynamicRectProvider.getRect();
         assertTrue(rect.isEmpty());
+    }
+
+    @Test
+    public void testSetPopupState_floatingSupplier_switchesFloatingDelegates() {
+        RectProvider[] activeFloating = new RectProvider[] {mFloatingDelegate};
+        DynamicRectProvider provider =
+                new DynamicRectProvider(() -> activeFloating[0], mBottomDelegate);
+        provider.startObserving(mObserver);
+
+        provider.setPopupState(PopupState.FLOATING);
+        verify(mFloatingDelegate).startObserving(any());
+
+        activeFloating[0] = mAlternateFloatingDelegate;
+        provider.setPopupState(PopupState.FLOATING);
+        verify(mFloatingDelegate).stopObserving();
+        verify(mAlternateFloatingDelegate).startObserving(any());
     }
 }

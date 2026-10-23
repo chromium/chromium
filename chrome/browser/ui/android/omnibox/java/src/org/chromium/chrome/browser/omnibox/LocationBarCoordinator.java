@@ -322,6 +322,7 @@ public class LocationBarCoordinator
                                 mAutocompleteCoordinator != null
                                         ? mAutocompleteCoordinator.getSuggestionsDropdown()
                                         : null,
+                        () -> locationBarDataProvider.getNewTabPageDelegate().getSearchBoxView(),
                         backPressManager,
                         uiOverrides.isForcedPhoneStyleOmnibox());
         NonNullObservableSupplier<Integer> fuseboxStateSupplier =

@@ -13,10 +13,12 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.function.Supplier;
+
 /** A {@link RectProvider} that can switch between different delegates. */
 @NullMarked
 class DynamicRectProvider extends RectProvider implements RectProvider.Observer {
-    private final RectProvider mFloatingDelegate;
+    private final Supplier<RectProvider> mFloatingDelegateSupplier;
     private final RectProvider mBottomDelegate;
     private @Nullable RectProvider mCurrentDelegate;
     private boolean mIsObserved;
@@ -26,7 +28,16 @@ class DynamicRectProvider extends RectProvider implements RectProvider.Observer 
      * @param bottomDelegate The {@link RectProvider} for the bottom sheet popup.
      */
     public DynamicRectProvider(RectProvider floatingDelegate, RectProvider bottomDelegate) {
-        mFloatingDelegate = floatingDelegate;
+        this(() -> floatingDelegate, bottomDelegate);
+    }
+
+    /**
+     * @param floatingDelegateSupplier Supplies the {@link RectProvider} for the floating popup.
+     * @param bottomDelegate The {@link RectProvider} for the bottom sheet popup.
+     */
+    public DynamicRectProvider(
+            Supplier<RectProvider> floatingDelegateSupplier, RectProvider bottomDelegate) {
+        mFloatingDelegateSupplier = floatingDelegateSupplier;
         mBottomDelegate = bottomDelegate;
     }
 
@@ -38,7 +49,7 @@ class DynamicRectProvider extends RectProvider implements RectProvider.Observer 
     public void setPopupState(@PopupState int state) {
         RectProvider nextDelegate =
                 switch (state) {
-                    case PopupState.FLOATING -> mFloatingDelegate;
+                    case PopupState.FLOATING -> mFloatingDelegateSupplier.get();
                     case PopupState.BOTTOM -> mBottomDelegate;
                     default -> null;
                 };

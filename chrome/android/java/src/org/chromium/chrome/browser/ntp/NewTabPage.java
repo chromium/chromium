@@ -954,6 +954,11 @@ public class NewTabPage
         mNewTabPageCoordinator.getSearchBoxBounds(bounds, translation, getView());
     }
 
+    /** Returns the fake search box view. */
+    public View getSearchBoxView() {
+        return mNewTabPageCoordinator.getSearchBoxView();
+    }
+
     /**
      * Get the vertical inset applied to the search box bounds.
      *

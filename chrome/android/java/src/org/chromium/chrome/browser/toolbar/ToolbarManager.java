@@ -2435,6 +2435,12 @@ public class ToolbarManager
         }
 
         @Override
+        public @Nullable View getSearchBoxView() {
+            NewTabPage ntp = getNewTabPageForCurrentTab();
+            return ntp != null ? ntp.getSearchBoxView() : null;
+        }
+
+        @Override
         public int getSearchBoxBoundsVerticalInset() {
             NewTabPage ntp = getNewTabPageForCurrentTab();
             return ntp != null ? ntp.getSearchBoxBoundsVerticalInset() : 0;

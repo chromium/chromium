@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.omnibox;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Delegate that provides the toolbar with the info of the NTP for the current tab.
@@ -78,6 +80,11 @@ public interface NewTabPageDelegate {
      *     to the NewTabPage view.
      */
     default void getSearchBoxBounds(Rect bounds, Point translation) {}
+
+    /** Returns the fake search box view on the NewTabPage, or null if not available. */
+    default @Nullable View getSearchBoxView() {
+        return null;
+    }
 
     /**
      * Get the vertical inset applied to the search box bounds. This is used to adjust the search

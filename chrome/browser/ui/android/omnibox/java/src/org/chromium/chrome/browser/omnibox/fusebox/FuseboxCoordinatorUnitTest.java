@@ -75,6 +75,7 @@ import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -119,6 +120,7 @@ public class FuseboxCoordinatorUnitTest {
     private AutocompleteInput mAutocompleteInput;
     private ActivityController<TestActivity> mActivityController;
     private ConstraintLayout mParent;
+    private @Nullable View mNtpSearchBoxView;
     private FuseboxCoordinator mCoordinator;
     private OmniboxResourceProvider mResourceProvider;
     private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -198,6 +200,7 @@ public class FuseboxCoordinatorUnitTest {
                         mTemplateUrlServiceSupplier,
                         mSnackbarManager,
                         /* scrimAnchorViewSupplier= */ SupplierUtils.ofNull(),
+                        /* ntpSearchBoxViewSupplier= */ () -> mNtpSearchBoxView,
                         mBackPressManager,
                         isForcedPhoneStyleOmnibox);
         coordinator.setUrlTextWrappingSupplier(mUrlTextWrappingSupplier);
@@ -540,5 +543,35 @@ public class FuseboxCoordinatorUnitTest {
         assertEquals(
                 FuseboxLayoutMode.TOOLBAR,
                 forcedCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testResolveFloatingRectProvider_standbyNoFocusWithVisibleNtpSearchBox() {
+        View ntpSearchBoxView = new View(mActivityController.get());
+        mActivityController.get().setContentView(ntpSearchBoxView);
+        mNtpSearchBoxView = ntpSearchBoxView;
+        mAutocompleteInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
+
+        mCoordinator.beginInput(mSession);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        var ntpRectProvider = mCoordinator.resolveFloatingRectProvider();
+        assertNotNull(ntpRectProvider);
+
+        // When transitioning to ENABLED, it should switch back to the toolbar rect provider.
+        mAutocompleteInput.setAutocompleteState(AutocompleteState.ENABLED);
+        var toolbarRectProvider = mCoordinator.resolveFloatingRectProvider();
+        assertNotEquals(ntpRectProvider, toolbarRectProvider);
+
+        // When back in STANDBY_NO_FOCUS, if NTP search box is invisible (alpha 0), use toolbar.
+        mAutocompleteInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
+        ntpSearchBoxView.setAlpha(0f);
+        assertEquals(toolbarRectProvider, mCoordinator.resolveFloatingRectProvider());
+
+        // If the NTP search box is not shown, use toolbar.
+        ntpSearchBoxView.setAlpha(1f);
+        ntpSearchBoxView.setVisibility(View.GONE);
+        assertEquals(toolbarRectProvider, mCoordinator.resolveFloatingRectProvider());
     }
 }

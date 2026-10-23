@@ -60,6 +60,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.function.Supplier;
@@ -92,8 +93,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
     private @Nullable FuseboxAttachmentModelList mModelList;
+    private @Nullable ViewRectProvider mFloatingViewRectProvider;
     private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
+    private final Supplier<@Nullable View> mNtpSearchBoxViewSupplier;
     private final ScrimManager mScrimManager;
     private final BackPressManager mBackPressManager;
 
@@ -119,6 +122,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param templateUrlServiceSupplier The supplier of the template URL service.
      * @param snackbarManager The snackbar manager to show messages.
      * @param scrimAnchorViewSupplier Supplier for the view to anchor the scrim to.
+     * @param ntpSearchBoxViewSupplier Supplier for the NTP fake search box view.
      * @param backPressManager The back press manager to register the back press handler.
      * @param isForcedPhoneStyleOmnibox Whether to force phone-style Omnibox layout.
      */
@@ -131,6 +135,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SnackbarManager snackbarManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
+            Supplier<@Nullable View> ntpSearchBoxViewSupplier,
             BackPressManager backPressManager,
             boolean isForcedPhoneStyleOmnibox) {
         mActivity = assumeNonNull(ContextUtils.activityFromContext(context));
@@ -143,6 +148,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
+        mNtpSearchBoxViewSupplier = ntpSearchBoxViewSupplier;
         mIsForcedPhoneStyleOmnibox = isForcedPhoneStyleOmnibox;
         mFuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
         mBackPressManager = backPressManager;
@@ -192,26 +198,20 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private void finishDeferredInitialization(View popupView) {
         if (mDestroyed) return;
 
-        ViewRectProvider floatingViewRectProvider;
         if (getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
             // Popover never uses StatusView to show plus button, so this is safe here.
             View plusButton = mParent.findViewById(R.id.fusebox_plus_button);
-            floatingViewRectProvider = new ViewRectProvider(plusButton);
+            mFloatingViewRectProvider = new ViewRectProvider(plusButton);
         } else {
             // Instead of anchoring on the plus button or status view, anchor on the parent and then
             // shift down slightly. This gives better behavior on small screens.
-            Resources res = mActivity.getResources();
-            floatingViewRectProvider = new ViewRectProvider(mParent);
-            floatingViewRectProvider.setInsetPx(
-                    /* left= */ 0,
-                    res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup),
-                    /* right= */ 0,
-                    /* bottom= */ 0);
+            mFloatingViewRectProvider = createToolbarViewRectProvider(mParent);
         }
         mBottomSheetRectProvider = new BottomSheetRectProvider(mActivity, mParent);
 
         DynamicRectProvider dynamicRectProvider =
-                new DynamicRectProvider(floatingViewRectProvider, mBottomSheetRectProvider);
+                new DynamicRectProvider(
+                        this::resolveFloatingRectProvider, mBottomSheetRectProvider);
         mViewportRectProvider =
                 new ViewportRectProvider(mActivity, mWindowAndroid.getInsetObserver(), mParent);
 
@@ -293,6 +293,34 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private View getScrimAnchorView() {
         View anchor = mScrimAnchorViewSupplier.get();
         return anchor != null ? anchor : mParent;
+    }
+
+    @VisibleForTesting
+    RectProvider resolveFloatingRectProvider() {
+        View ntpSearchBoxView = getVisibleNtpSearchBoxView();
+        return ntpSearchBoxView != null
+                ? createToolbarViewRectProvider(ntpSearchBoxView)
+                : assumeNonNull(mFloatingViewRectProvider);
+    }
+
+    private @Nullable View getVisibleNtpSearchBoxView() {
+        if (mInput == null) return null;
+        if (mInput.getAutocompleteState() != AutocompleteState.STANDBY_NO_FOCUS) return null;
+
+        View view = mNtpSearchBoxViewSupplier.get();
+        if (view == null || !view.isShown() || view.getAlpha() == 0f) return null;
+        return view;
+    }
+
+    private ViewRectProvider createToolbarViewRectProvider(View anchorView) {
+        Resources res = mActivity.getResources();
+        ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
+        rectProvider.setInsetPx(
+                /* left= */ 0,
+                res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup),
+                /* right= */ 0,
+                /* bottom= */ 0);
+        return rectProvider;
     }
 
     public void destroy() {
