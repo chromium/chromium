@@ -193,8 +193,6 @@ size_t AutocompleteResult::GetDynamicMaxMatches() {
 
 AutocompleteResult::AutocompleteResult()
     : max_url_matches_(is_android_mobile || is_ios ? 5 : 7) {
-  matches_.reserve(kMaxAutocompletePositionValue);
-
   static uint32_t next_sequence_id = 1;
   sequence_id_ = next_sequence_id;
   next_sequence_id++;
@@ -310,6 +308,16 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
 }
 
 void AutocompleteResult::AppendMatches(const ACMatches& matches) {
+  if (matches.empty()) {
+    return;
+  }
+
+  // Reserve at least `kMaxAutocompletePositionValue` to avoid reallocating
+  // across `AppendMatches()` calls.
+  if (matches_.capacity() < kMaxAutocompletePositionValue) {
+    matches_.reserve(kMaxAutocompletePositionValue);
+  }
+
   for (const auto& match : matches) {
     std::stringstream debug_stream;
     debug_stream << "Contents: " << match.contents;
