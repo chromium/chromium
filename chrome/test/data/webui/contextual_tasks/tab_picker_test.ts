@@ -89,6 +89,15 @@ suite('TabPickerTest', () => {
   const mockTabs: TabInfo[] = [tab0, tab1, tab2];
 
   suiteSetup(() => {
+    // tab-picker-app opens and closes its menu on hover, and cr-action-menu
+    // focuses items on mouseover. The bot's real mouse cursor can rest over
+    // the test window (seen on win-rel), so Blink dispatches trusted hover
+    // events whenever the trigger or menu is laid out under it. These race
+    // with the synthetic events the tests dispatch and flip the menu state.
+    // Disable hit testing for the page so the real cursor never targets it.
+    // dispatchEvent() and click() are not affected by `pointer-events`.
+    document.body.style.pointerEvents = 'none';
+
     (window as any).chrome = (window as any).chrome || {};
     (window as any).chrome.histograms = (window as any).chrome.histograms || {};
     originalRecordEnumerationValue =
@@ -120,6 +129,8 @@ suite('TabPickerTest', () => {
   });
 
   suiteTeardown(() => {
+    document.body.style.pointerEvents = '';
+
     if ((window as any).chrome && (window as any).chrome.histograms) {
       (window as any).chrome.histograms.recordEnumerationValue =
           originalRecordEnumerationValue;
