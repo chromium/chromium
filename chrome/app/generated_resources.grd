@@ -19854,6 +19854,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DICTATION_REVIEWING_PAGE" desc="Status label shown in the dictation bubble UI while page context is being reviewed." translateable="false">
         Reviewing page
       </message>
+      <message name="IDS_DICTATION_IPH_TITLE" desc="Title of the in-product help bubble shown next to a focused text field, introducing the dictation feature." translateable="false">
+        Use your voice to type
+      </message>
+      <message name="IDS_DICTATION_IPH_BODY" desc="Body text of the in-product help bubble shown next to a focused text field, introducing the dictation feature. The placeholder is the name of the dictation item in the right-click context menu." translateable="false">
+        Right click and select “<ph name="MENU_ITEM_NAME">$1<ex>Talk to type</ex></ph>” to turn your spoken thoughts into polished text.
+      </message>
     </if>
 
     <if expr="is_android">

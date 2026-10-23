@@ -127,6 +127,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/autofill/popup:popup_view_views",
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/contextual_tasks",
+    "//chrome/browser/ui/views/dictation:iph",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/browser/ui/views/frame:custom_corners_background",

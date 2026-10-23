@@ -57,6 +57,16 @@ source_set("dictation") {
   ]
 }
 
+# Identifiers for the dictation IPH.
+source_set("iph") {
+  public = [ "dictation_iph.h" ]
+  sources = [ "dictation_iph.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base/interaction",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

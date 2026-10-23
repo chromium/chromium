@@ -434,6 +434,8 @@ should be able to be added at any place in this file.
   <variant name="_DesktopSnoozeFeature"
       summary="For DesktopSnoozeFeature feature."/>
   <variant name="_DesktopTabGroupsNewGroup" summary="For desktop Tab Groups."/>
+  <variant name="_Dictation"
+      summary="For Dictation IPH shown next to a focused text field."/>
   <variant name="_DiscardRing" summary="For new tab discard ring."/>
   <variant name="_DiscoverFeedHeaderMenu"
       summary="For DiscoverFeedHeaderMenu feature."/>
