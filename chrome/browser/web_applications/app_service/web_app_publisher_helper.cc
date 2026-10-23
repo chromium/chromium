@@ -2379,6 +2379,10 @@ void WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences() {
 }
 
 void WebAppPublisherHelper::OnPreferredAppsListInitialized() {
+  // Do not call `MaybeMigrateLinkCapturingPreferences()` synchronously. This
+  // observer runs inside `PreferredAppsList::Init()`, before
+  // `PreferredAppsImpl::ReadCompleted()` flushes its queued preference changes,
+  // so a synchronous migration would apply ahead of those earlier changes.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
