@@ -25,6 +25,7 @@ build_webui("build") {
     "browser_proxy.ts",
     "glic_app_controller.ts",
     "glic_overlay.ts",
+    "glic_overlay_app.ts",
     "glic.ts",
     "icons.html.ts",
     "internals.ts",
