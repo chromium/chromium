@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.PopupWindow;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.WindowInsetsCompat;
@@ -44,6 +43,10 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.CurrentTabPlacement;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -69,57 +72,11 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.function.Supplier;
 
 /** Coordinator for the Fusebox component. */
 @NullMarked
 public class FuseboxCoordinator implements TemplateUrlServiceObserver {
-
-    @IntDef({FuseboxState.DISABLED, FuseboxState.COMPACT, FuseboxState.EXPANDED})
-    @Retention(RetentionPolicy.SOURCE)
-    @Target(ElementType.TYPE_USE)
-    public @interface FuseboxState {
-        int DISABLED = 0;
-        int COMPACT = 1;
-        int EXPANDED = 2;
-    }
-
-    @IntDef({FuseboxLayoutMode.TOOLBAR, FuseboxLayoutMode.SUGGESTIONS_POPOVER})
-    @Retention(RetentionPolicy.SOURCE)
-    @Target(ElementType.TYPE_USE)
-    public @interface FuseboxLayoutMode {
-        // The Fusebox UI is embedded in the toolbar, separate from associated suggestions.
-        int TOOLBAR = 1;
-        // The Fusebox UI is intermingled with associated suggestions in a single popover window.
-        int SUGGESTIONS_POPOVER = 2;
-    }
-
-    @IntDef({PopupState.HIDDEN, PopupState.FLOATING, PopupState.BOTTOM})
-    @Retention(RetentionPolicy.SOURCE)
-    @Target({ElementType.TYPE_USE})
-    public @interface PopupState {
-        int HIDDEN = 0;
-        int FLOATING = 1;
-        int BOTTOM = 2;
-    }
-
-    /** Where the "Add current tab" button is placed within the popup. */
-    @IntDef({
-        CurrentTabPlacement.ABOVE_ATTACHMENTS,
-        CurrentTabPlacement.WITH_ATTACHMENTS,
-        CurrentTabPlacement.BELOW_ATTACHMENTS,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @Target(ElementType.TYPE_USE)
-    @interface CurrentTabPlacement {
-        int ABOVE_ATTACHMENTS = 0;
-        int WITH_ATTACHMENTS = 1;
-        int BELOW_ATTACHMENTS = 2;
-    }
 
     private @Nullable FuseboxViewHolder mViewHolder;
     private @Nullable PropertyModel mModel;

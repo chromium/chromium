@@ -40,7 +40,8 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.omnibox.status.PermissionStatusHandler;
 import org.chromium.chrome.browser.omnibox.status.StatusMediator;
@@ -263,10 +264,8 @@ public class PageInfoDiscoverabilityTest {
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     /* pageInfoAction= */ null,
-                                    ObservableSuppliers.createNonNull(
-                                            FuseboxCoordinator.FuseboxState.DISABLED),
-                                    ObservableSuppliers.createNonNull(
-                                            FuseboxCoordinator.FuseboxLayoutMode.TOOLBAR),
+                                    ObservableSuppliers.createNonNull(FuseboxState.DISABLED),
+                                    ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR),
                                     CallbackUtils.emptyRunnable());
                     mPermissionStatusHandler = mMediator.getPermissionStatusHandlerForTesting();
                 });

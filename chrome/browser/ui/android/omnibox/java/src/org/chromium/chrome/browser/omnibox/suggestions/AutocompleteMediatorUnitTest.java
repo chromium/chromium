@@ -76,9 +76,9 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
+import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
@@ -209,7 +209,7 @@ public class AutocompleteMediatorUnitTest {
     private ModelList mSuggestionModels;
     private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
-    private SettableNonNullObservableSupplier<@FuseboxCoordinator.FuseboxLayoutMode Integer>
+    private SettableNonNullObservableSupplier<@FuseboxLayoutMode Integer>
             mFuseboxLayoutModeSupplier;
     private SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
     private final SettableNullableObservableSupplier<SideUiStateProvider>
