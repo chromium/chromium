@@ -23,10 +23,12 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using testing::_;
 using testing::A;
 using testing::AllOf;
+using testing::AnyNumber;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::InSequence;
@@ -1153,6 +1155,49 @@ TEST_F(PaintTimingTest, ContentfulPaintCountHistogramsFilteredDocuments) {
       "Renderer.PaintTiming.ContentfulPaintCount.Subframe."
       "UntilPageHiddenOrContextDestroyed",
       0);
+}
+
+// A "content: url(...)" image on a pseudo-element is painted by an anonymous
+// `LayoutImage`. The record is attributed to the originating element, but keyed
+// on the anonymous object, which is what removal is reported for.
+TEST_F(PaintTimingTest, PseudoElementContentImage) {
+  ScopedPaintTimingContentImagePseudoElementsForTest scoped_feature(true);
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      #target::before {
+        content: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+
+  ImageRecord* painted_record = nullptr;
+  EXPECT_CALL(Client(), OnElementFirstContentfulPaint(ForNode(target)));
+  EXPECT_CALL(Client(),
+              OnPaintFinished(ElementsAre(ForNode(target)), IsEmpty()))
+      .WillOnce([&](const HeapVector<Member<ImageRecord>>& image_records,
+                    const HeapVector<Member<TextRecord>>&)
+                    -> OptionalPaintTimingCallback {
+        painted_record = image_records[0].Get();
+        return std::nullopt;
+      });
+  SimulateRendering();
+  VerifyAndClearExpectations();
+
+  ASSERT_TRUE(painted_record);
+  const LayoutObject* image_object =
+      painted_record->ImageGeneratingLayoutObject();
+  ASSERT_TRUE(image_object);
+  EXPECT_TRUE(image_object->IsImage());
+  EXPECT_FALSE(image_object->GetNode());
+  EXPECT_FALSE(painted_record->WasNodeRemoved());
+
+  // The ::before box also reports removal of its style's content image.
+  EXPECT_CALL(Client(), OnImageRemoved(_, _)).Times(AnyNumber());
+  EXPECT_CALL(Client(), OnImageRemoved(Ref(*image_object), _));
+  target->remove();
 }
 
 }  // namespace blink

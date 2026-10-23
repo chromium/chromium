@@ -55,8 +55,10 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
   value->SetBoolean("is_in_main_frame", object.GetFrame()->IsMainFrame());
   value->SetBoolean("is_in_outermost_main_frame",
                     object.GetFrame()->IsOutermostMainFrame());
-  if (object.GetNode()) {
-    value->SetInteger("dom_node_id", object.GetNode()->GetDomNodeId());
+  // Use the generating node so that anonymous objects, e.g. the `LayoutImage`
+  // of a "content: url()" pseudo element, are still identified in the trace.
+  if (Node* node = object.GeneratingNode()) {
+    value->SetInteger("dom_node_id", node->GetDomNodeId());
   }
 }
 

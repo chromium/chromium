@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -166,12 +167,20 @@ SoftNavigationPaintAttributionTracker::UpdateOnPrePaint(
   // cached state if the propagated context is from a more recent modification.
   if (inherited_state) {
     if (!node) {
-      // `node` will be null (anonymous) if `object` is for a pseudo element.
-      // Pseudo elements with a "content" URL are not currently handled because
-      // Paint Timing doesn't handle them (related to
-      // https://github.com/w3c/element-timing/issues/74).
+      // `node` is null when `object` is anonymous -- e.g. the generated
+      // LayoutText/LayoutImage of a "content" pseudo element. Attribute the
+      // paint to the originating element resolved via GeneratingNode().
       if (object.IsText()) {
         MarkNodeForPaintTrackingIfNeeded(text_aggregator, inherited_state);
+      } else if (RuntimeEnabledFeatures::
+                     PaintTimingContentImagePseudoElementsEnabled() &&
+                 paint_timing::IsImageType(object)) {
+        // `GeneratingNode()` is null for pseudo-elements without an
+        // associated node, e.g. margin at-rules inside of @page rules (see
+        // ElementTiming::NotifyImagePaint()).
+        if (Node* generating_node = object.GeneratingNode()) {
+          MarkNodeForPaintTrackingIfNeeded(generating_node, inherited_state);
+        }
       }
     } else if (paint_timing::IsTextType(*node) ||
                paint_timing::IsImageType(object)) {

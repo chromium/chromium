@@ -131,7 +131,8 @@ void ElementTiming::NotifyImagePaint(
                                    IsA<HTMLVideoElement>(node) ||
                                    IsA<SVGImageElement>(node);
   if (!is_image_or_video_element) {
-    if (!RuntimeEnabledFeatures::AllImagesPaintedSentToElementTimingEnabled()) {
+    if (!RuntimeEnabledFeatures::
+            PaintTimingContentImagePseudoElementsEnabled()) {
       return;
     }
     if (IsNeededForElementOrContainerTiming(generating_node)) {

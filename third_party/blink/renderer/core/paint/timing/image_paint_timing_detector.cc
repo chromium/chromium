@@ -96,8 +96,15 @@ void ImagePaintTimingDetector::RecordImage(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const StyleImage* style_image,
     const gfx::Rect& image_border) {
-  Node* node = style_image ? image_layout_object.GeneratingNode()
-                           : image_layout_object.GetNode();
+  // Background images are attributed to their generating node. Other images
+  // only differ from `GetNode()` for anonymous objects -- the `LayoutImage` of
+  // a "content: url()" pseudo-element or a `list-style-image` marker -- which
+  // are attributed to their originating element behind a flag.
+  const bool use_generating_node =
+      style_image ||
+      RuntimeEnabledFeatures::PaintTimingContentImagePseudoElementsEnabled();
+  Node* node = use_generating_node ? image_layout_object.GeneratingNode()
+                                   : image_layout_object.GetNode();
   // `node` can have a null `LayoutObject` if `image_layout_object` is a
   // pseudo-element (e.g. `::before` with a background image) whose originating
   // element has `display: contents`.
