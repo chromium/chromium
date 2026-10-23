@@ -8,6 +8,10 @@ import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UnownedUserDataKey;
@@ -19,12 +23,16 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("ui")
 @NullMarked
 public class AcceleratorManager {
+    @JniType("::ui::AcceleratorManagerAndroid")
+    interface NativeAcceleratorManagerAndroid extends JniTypeToken {}
+
     private static final UnownedUserDataKey<AcceleratorManager> KEY = new UnownedUserDataKey<>();
     private final @Nullable LifetimeAssert mLifetimeAssert;
     private final WindowAndroid mWindow;
     // Note: the native side is not created until it's first accessed in
     // getNativePointerFromWindow().
-    private long mNativeAcceleratorManagerAndroid;
+    private @Nullable JniUniquePtr<NativeAcceleratorManagerAndroid>
+            mNativeAcceleratorManagerAndroid;
     // False while no accelerators are registered. Accelerators can only be registered by native,
     // so if this is true, we know native is initialized.
     private boolean mAcceleratorsAreRegistered;
@@ -40,9 +48,9 @@ public class AcceleratorManager {
 
     public void destroy() {
         LifetimeAssert.destroy(mLifetimeAssert);
-        if (mNativeAcceleratorManagerAndroid != 0) {
-            AcceleratorManagerJni.get().destroy(mNativeAcceleratorManagerAndroid);
-            mNativeAcceleratorManagerAndroid = 0;
+        if (mNativeAcceleratorManagerAndroid != null) {
+            mNativeAcceleratorManagerAndroid.destroy();
+            mNativeAcceleratorManagerAndroid = null;
             mAcceleratorsAreRegistered = false;
         }
         KEY.detachFromHost(mWindow.getUnownedUserDataHost());
@@ -61,7 +69,7 @@ public class AcceleratorManager {
      * @return True if the event was handled.
      */
     public boolean processKeyEvent(KeyEvent event) {
-        return mNativeAcceleratorManagerAndroid != 0
+        return mNativeAcceleratorManagerAndroid != null
                 && mAcceleratorsAreRegistered
                 && AcceleratorManagerJni.get()
                         .processKeyEvent(mNativeAcceleratorManagerAndroid, event);
@@ -77,17 +85,18 @@ public class AcceleratorManager {
     }
 
     @CalledByNative
-    private static long getNativePointerFromWindow(WindowAndroid window) {
+    private static @Nullable JniPtr<NativeAcceleratorManagerAndroid> getNativePointerFromWindow(
+            WindowAndroid window) {
         AcceleratorManager manager = from(window);
         if (manager == null) {
-            return 0;
+            return null;
         }
         return manager.getOrCreateNativePointer();
     }
 
     @CalledByNative
-    private long getOrCreateNativePointer() {
-        if (mNativeAcceleratorManagerAndroid == 0) {
+    private JniPtr<NativeAcceleratorManagerAndroid> getOrCreateNativePointer() {
+        if (mNativeAcceleratorManagerAndroid == null) {
             mNativeAcceleratorManagerAndroid = AcceleratorManagerJni.get().init(this);
         }
         return mNativeAcceleratorManagerAndroid;
@@ -102,10 +111,8 @@ public class AcceleratorManager {
 
     @NativeMethods
     interface Natives {
-        long init(AcceleratorManager caller);
+        JniUniquePtr<NativeAcceleratorManagerAndroid> init(AcceleratorManager caller);
 
-        void destroy(long nativeAcceleratorManagerAndroid);
-
-        boolean processKeyEvent(long nativeAcceleratorManagerAndroid, KeyEvent event);
+        boolean processKeyEvent(JniPtr<NativeAcceleratorManagerAndroid> self, KeyEvent event);
     }
 }

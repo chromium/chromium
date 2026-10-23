@@ -43,8 +43,6 @@ class UI_ANDROID_EXPORT AcceleratorManagerAndroid {
   bool ProcessKeyEvent(JNIEnv* env,
                        const base::android::JavaRef<jobject>& j_key_event);
 
-  void Destroy(JNIEnv* env);
-
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   AcceleratorManager accelerator_manager_;

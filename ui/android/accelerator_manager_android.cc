@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
@@ -28,9 +29,8 @@ AcceleratorManagerAndroid* AcceleratorManagerAndroid::FromWindow(
     return nullptr;
   }
   JNIEnv* env = AttachCurrentThread();
-  return reinterpret_cast<AcceleratorManagerAndroid*>(
-      Java_AcceleratorManager_getNativePointerFromWindow(
-          env, window->GetJavaObject()));
+  return Java_AcceleratorManager_getNativePointerFromWindow(
+      env, window->GetJavaObject());
 }
 
 AcceleratorManagerAndroid::AcceleratorManagerAndroid(
@@ -61,10 +61,6 @@ void AcceleratorManagerAndroid::UnregisterAccelerator(
   }
 }
 
-void AcceleratorManagerAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 bool AcceleratorManagerAndroid::ProcessKeyEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_key_event) {
@@ -80,11 +76,11 @@ bool AcceleratorManagerAndroid::ProcessKeyEvent(
   return accelerator_manager_.Process(accelerator);
 }
 
-int64_t JNI_AcceleratorManager_Init(
+jni_zero::JniUniquePtr<AcceleratorManagerAndroid> JNI_AcceleratorManager_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
-  return reinterpret_cast<int64_t>(new AcceleratorManagerAndroid(
-      base::android::ScopedJavaGlobalRef<jobject>(env, obj)));
+  return jni_zero::MakeUnique<AcceleratorManagerAndroid>(
+      base::android::ScopedJavaGlobalRef<jobject>(env, obj));
 }
 
 }  // namespace ui
