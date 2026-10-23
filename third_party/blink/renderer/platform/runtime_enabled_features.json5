@@ -3715,6 +3715,14 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/576771254. List-based hit tests
+      // (such as elementsFromPoint()) add the culled inline ancestors of an
+      // inline item that has a self-painting layer, such as a
+      // position:relative child.
+      name: "HitTestCulledInlineOfSelfPaintingChild",
+      status: "stable",
+    },
+    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",

@@ -2998,11 +2998,17 @@ bool BoxFragmentPainter::HitTestItemsChildren(
           return true;
         }
       }
-      cursor.MoveToPreviousSibling();
-      continue;
-    }
-
-    if (item->IsText()) {
+      // The item's layer is hit-tested on its own and does not add the culled
+      // inline ancestors outside that layer. List-based hit tests, such as
+      // elementsFromPoint(), still need them, so they fall through to the
+      // culled inline check below.
+      if (!RuntimeEnabledFeatures::
+              HitTestCulledInlineOfSelfPaintingChildEnabled() ||
+          !hit_test.result->GetHitTestRequest().ListBased()) {
+        cursor.MoveToPreviousSibling();
+        continue;
+      }
+    } else if (item->IsText()) {
       if (HitTestTextItem(hit_test, *item, cursor))
         return true;
     } else if (item->Type() == FragmentItem::kLine) {
