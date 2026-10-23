@@ -83,6 +83,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
   std::unique_ptr<net::DhcpPacFileFetcher> CreateDhcpPacFileFetcher(
       net::URLRequestContext* context);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Creates a platform-specific system proxy resolution service (Windows or
+  // macOS) using `mojo_system_proxy_resolver_`. Returns nullptr if the resolver
+  // is unset or unsupported on the current platform version. Linux creates its
+  // portal resolver inline in `CreateProxyResolutionService()`.
+  std::unique_ptr<net::ProxyResolutionService>
+  CreateSystemProxyResolutionService(net::NetLog* net_log);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
   // If set, handles calls to get the PAC script URL from the browser process.
   // Only used if |mojo_proxy_resolver_factory_| is set.
