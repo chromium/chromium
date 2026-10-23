@@ -37,19 +37,11 @@ default_args = {
   v8_enable_gdbjit = false
   v8_imminent_deprecation_warnings = false
 
-  # Don't include webrtc's builtin task queue implementation.
-  rtc_link_task_queue_impl = false
-
   # When building with Chromium, `webrtc::Location` is replaced by
   # `base::Location`. Since WebRTC doesn't use `public_deps` (webrtc:8603), it
   # would fail to propagate the dependency internally. Instead WebRTC let its
   # embedders to define it globally for all of its targets.
   rtc_common_public_deps = [ "//base" ]
-
-  # Don't include the iLBC audio codec.
-  # TODO(bugs.webrtc.org/8396): Once WebRTC gets rid of its internal
-  # deps on codecs, we can remove this.
-  rtc_include_ilbc = false
 
   # Changes some setup for the Crashpad build to set them to build against
   # Chromium's zlib, base, etc.
