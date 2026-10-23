@@ -25,7 +25,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.R;
@@ -229,7 +228,6 @@ public class ChannelsInitializerTest {
 
     @Test
     @Feature({"Browser", "Notifications"})
-    @DisabledTest(message = "https://crbug.com/40762262")
     public void testEnsureInitialized_sitesChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.SITES);
 
