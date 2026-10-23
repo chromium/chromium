@@ -2037,7 +2037,36 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), delegate->requested_bounds().back());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetPipWindowBoundsAnimates) {
+namespace {
+
+class ClientControlledShellSurfacePipAnimationTest
+    : public ClientControlledShellSurfaceTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ClientControlledShellSurfacePipAnimationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kCrossFadeBoundsChangeAnimation, GetParam());
+  }
+
+  ClientControlledShellSurfacePipAnimationTest(
+      const ClientControlledShellSurfacePipAnimationTest&) = delete;
+  ClientControlledShellSurfacePipAnimationTest& operator=(
+      const ClientControlledShellSurfacePipAnimationTest&) = delete;
+
+  ~ClientControlledShellSurfacePipAnimationTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientControlledShellSurfacePipAnimationTest,
+                         testing::Bool());
+
+TEST_P(ClientControlledShellSurfacePipAnimationTest,
+       SetPipWindowBoundsAnimates) {
   constexpr gfx::Rect kClientBounds(256, 256);
   auto shell_surface = exo::test::ShellSurfaceBuilder(kClientBounds.size())
                            .SetWindowState(chromeos::WindowStateType::kPip)
