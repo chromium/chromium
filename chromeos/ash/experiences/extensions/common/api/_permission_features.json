@@ -179,6 +179,12 @@
     "extension_types": ["extension", "platform_app"],
     "platforms": ["chromeos"]
   },
+  "wallpaper": {
+    "channel": "stable",
+    "extension_types": ["platform_app", "extension"],
+    "platforms": ["chromeos"],
+    "location": "component"
+  },
   "wmDesksPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],

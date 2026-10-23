@@ -33,6 +33,7 @@ function_registration("api_registration") {
     "system_log",
     "users_private",
     "vpn_provider",
+    "wallpaper",
     "wm_desks_private",
   ]
 
@@ -50,6 +51,7 @@ function_registration("api_registration") {
     "//chrome/browser/chromeos/extensions/odfs_config_private/odfs_config_private_api.h",
     "//chrome/browser/chromeos/extensions/system_log/system_log_api.h",
     "//chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h",
+    "//chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.h",
     "//chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h",
     "//chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h",
   ]
@@ -66,6 +68,7 @@ function_registration("api_registration") {
     "//chrome/browser/chromeos/extensions/odfs_config_private",
     "//chrome/browser/chromeos/extensions/system_log",
     "//chrome/browser/chromeos/extensions/vpn_provider",
+    "//chrome/browser/chromeos/extensions/wallpaper",
     "//chrome/browser/chromeos/extensions/wm",
   ]
 

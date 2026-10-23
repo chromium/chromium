@@ -929,16 +929,6 @@
     "dependencies": ["permission:virtualKeyboardPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "wallpaper": [{
-    "dependencies": ["permission:wallpaper"],
-    "contexts": ["privileged_extension"]
-  }, {
-    "channel": "stable",
-    "contexts": ["webui"],
-    "matches": [
-      "chrome://file-manager/*"
-    ]
-  }],
   "webAuthenticationProxy": {
     "dependencies": ["permission:webAuthenticationProxy"],
     "contexts": ["privileged_extension"]

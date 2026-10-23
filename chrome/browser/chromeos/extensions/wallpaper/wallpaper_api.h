@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "ash/public/mojom/wallpaper.mojom.h"
-#include "chrome/common/extensions/api/wallpaper.h"
+#include "chromeos/ash/experiences/extensions/common/api/wallpaper.h"
 #include "components/account_id/account_id.h"
 #include "extensions/browser/extension_function.h"
 

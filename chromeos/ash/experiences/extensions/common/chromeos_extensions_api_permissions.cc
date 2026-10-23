@@ -51,6 +51,9 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
     {APIPermissionID::kVpnProvider, "vpnProvider",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kWallpaper, "wallpaper",
+     APIPermissionInfo::kFlagCannotBeOptional |
+         APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kWmDesksPrivate, "wmDesksPrivate"},
 
     // Platform-app permissions.

@@ -188,6 +188,16 @@
     "dependencies": ["permission:vpnProvider"],
     "contexts": ["privileged_extension"]
   },
+  "wallpaper": [{
+    "dependencies": ["permission:wallpaper"],
+    "contexts": ["privileged_extension"]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://file-manager/*"
+    ]
+  }],
   "wmDesksPrivate": {
     "dependencies": ["permission:wmDesksPrivate"],
     "contexts": ["privileged_extension"]

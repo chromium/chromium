@@ -126,7 +126,6 @@ if (enable_extensions) {
       "quick_unlock_private.idl",
       "smart_card_provider_private.idl",
       "terminal_private.json",
-      "wallpaper.json",
     ]
   }
 

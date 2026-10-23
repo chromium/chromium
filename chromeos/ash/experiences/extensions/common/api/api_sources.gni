@@ -25,6 +25,7 @@ chromeos_schema_sources_ = [
   "system_log.idl",
   "users_private.idl",
   "vpn_provider.idl",
+  "wallpaper.json",
   "wm_desks_private.idl",
 ]
 

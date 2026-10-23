@@ -1011,12 +1011,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
-  "wallpaper": {
-    "channel": "stable",
-    "extension_types": ["platform_app", "extension"],
-    "platforms": ["chromeos"],
-    "location": "component"
-  },
   "webAuthenticationProxy": {
     "channel": "stable",
     "extension_types": ["extension"],
