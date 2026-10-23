@@ -3830,6 +3830,19 @@ TEST_F(RenderViewContextMenuOrderTest, AudioMenu_Order) {
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, CanvasMenu_Order) {
+  content::ContextMenuParams params = CreateParams(0);
+  params.page_url = GURL("https://www.example.com/");
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
+  params.has_image_contents = true;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAre(IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
+                                   IDC_CONTENT_CONTEXT_COPYIMAGE, kSeparatorId,
+                                   IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
