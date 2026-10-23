@@ -308,5 +308,14 @@ class TranslationContext:
             '//components/cronet/android:cronet#nontesting': [
                 SetValue('afdo', True)
             ],
+            '//third_party/googletest:gtest': [
+                AppendSet(
+                    'extra_include_dir_deps',
+                    {
+                        # Textually #included by gtest_port_wrapper.cc.
+                        'third_party/googletest/src/googletest/src/gtest-port.cc',
+                    },
+                ),
+            ],
         }
         return args

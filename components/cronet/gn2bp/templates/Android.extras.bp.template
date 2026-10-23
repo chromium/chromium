@@ -218,6 +218,24 @@ cc_library_headers {
     ],
 }
 
+// Bundled libc++ headers do not have file extensions (e.g. <algorithm>,
+// <vector>, __assertion_handler, __config_site), and libc++ sources include
+// runtime/*.ipp outside include_dirs, so Soong's default include_dirs header
+// globs do not capture them for CC action sandboxing. Expose them via a
+// filegroup referenced by ${GN2BP_MODULE_PREFIX}cc_defaults.
+filegroup {
+    name: "${GN2BP_MODULE_PREFIX}libcxx_headers",
+    srcs: [
+        "buildtools/third_party/libc++/__assertion_handler",
+        "buildtools/third_party/libc++/__config_site",
+        "third_party/libc++/src/include/**/*",
+        "third_party/libc++/src/src/support/runtime/*.ipp",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
 // Generates a linker version script ("intersection.ld") containing the list of
 // symbols that are shared between libhttpengine.so and libcrypto.so.
 //

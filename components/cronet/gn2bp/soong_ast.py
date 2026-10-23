@@ -509,6 +509,7 @@ class CcModule(Module):
         'cflags',
         'include_dirs',
         'local_include_dirs',
+        'extra_include_dir_deps',
         'header_libs',
         'strip',
         'stl',
@@ -545,6 +546,7 @@ class CcModule(Module):
         self.cflags = list()
         self.include_dirs = set()
         self.local_include_dirs = set()
+        self.extra_include_dir_deps = set()
         self.header_libs = set()
         self.strip = dict()
         self.stl = None

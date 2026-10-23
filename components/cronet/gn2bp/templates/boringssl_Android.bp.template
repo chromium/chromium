@@ -56,6 +56,10 @@ cc_defaults {
     ],
     local_include_dirs: ["src/include"],
     export_include_dirs: ["src/include"],
+    extra_include_dir_deps: [
+        "src/**/*.h",
+        "src/**/*.inc",
+    ],
 }
 
 cc_defaults {

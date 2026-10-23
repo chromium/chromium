@@ -130,6 +130,9 @@ def create_cc_defaults_module(context: translation_context.TranslationContext):
     defaults.cpp_std = common.CPP_VERSION
     defaults.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     defaults.apex_available.add(common.tethering_apex)
+    defaults.extra_include_dir_deps.add(
+        f':{context.module_prefix}libcxx_headers'
+    )
     return defaults
 
 
@@ -398,6 +401,13 @@ def _rebase_module(
     if getattr(module_copy, 'srcs', None):
         module_copy.srcs = _rebase_files(module_copy.srcs, blueprint_path)
         if module_copy.srcs is None:
+            return None
+
+    if getattr(module_copy, 'extra_include_dir_deps', None):
+        module_copy.extra_include_dir_deps = _rebase_files(
+            module_copy.extra_include_dir_deps, blueprint_path
+        )
+        if module_copy.extra_include_dir_deps is None:
             return None
 
     if getattr(module_copy, 'jars', None):
