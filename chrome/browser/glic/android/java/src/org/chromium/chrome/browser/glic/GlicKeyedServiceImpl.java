@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -58,7 +60,7 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
 
     @Override
     public void toggleUI(
-            long browserWindowPtr,
+            JniPtr<NativeBrowserWindowInterface> browserWindow,
             boolean preventClose,
             Profile profile,
             @GlicInvocationSource int invocationSource) {
@@ -68,7 +70,7 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         tracker.notifyEvent(EventConstants.GLIC_ANDROID_USED);
 
         GlicKeyedServiceImplJni.get()
-                .toggleUI(mNativePtr, browserWindowPtr, preventClose, profile, invocationSource);
+                .toggleUI(mNativePtr, browserWindow, preventClose, profile, invocationSource);
     }
 
     @Override
@@ -296,7 +298,7 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     interface Natives {
         void toggleUI(
                 long nativeGlicKeyedServiceAndroid,
-                long browserWindowPtr,
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
                 boolean preventClose,
                 @JniType("Profile*") Profile profile,
                 @GlicInvocationSource int source);

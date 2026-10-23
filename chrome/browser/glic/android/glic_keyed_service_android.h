@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 class TabAndroid;
@@ -38,12 +39,11 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
   // JNI bridge to show, summon, or activate the panel, or close it if it is
   // already active.
   // `env` is the JNI environment.
-  // `browser_window_ptr` is unpacked to call the cross-platform service.
   // `prevent_close` whether to prevent closing the UI if it's already open.
   // `profile` associated with this request.
   // `source` for the UI toggle.
   void ToggleUI(JNIEnv* env,
-                int64_t browser_window_ptr,
+                BrowserWindowInterface* browser_window,
                 bool prevent_close,
                 Profile* profile,
                 int32_t source);

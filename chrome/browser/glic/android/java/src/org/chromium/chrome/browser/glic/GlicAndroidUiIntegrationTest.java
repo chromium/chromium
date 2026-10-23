@@ -245,7 +245,7 @@ public class GlicAndroidUiIntegrationTest {
 
         // Verify that toggleUI was called on GlicKeyedService.
         verify(mGlicService, Mockito.timeout(5000))
-                .toggleUI(Mockito.anyLong(), Mockito.eq(false), Mockito.any(), Mockito.anyInt());
+                .toggleUI(Mockito.any(), Mockito.eq(false), Mockito.any(), Mockito.anyInt());
     }
 
     @Test

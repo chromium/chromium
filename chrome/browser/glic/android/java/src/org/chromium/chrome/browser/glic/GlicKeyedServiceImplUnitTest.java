@@ -14,6 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -54,6 +56,7 @@ public class GlicKeyedServiceImplUnitTest {
     @Mock private Tab mTabMock;
     @Mock private Tracker mTrackerMock;
     @Mock private RenderFrameHost mRenderFrameHostMock;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindowMock;
 
     private GlicKeyedServiceImpl mService;
 
@@ -127,7 +130,7 @@ public class GlicKeyedServiceImplUnitTest {
     @Test
     public void testOnNativeDestroyed_StopsForwardingCalls() {
         mService.toggleUI(
-                BROWSER_WINDOW_PTR,
+                mBrowserWindowMock,
                 /* preventClose= */ false,
                 mProfileMock,
                 GlicInvocationSource.UNSUPPORTED);
@@ -135,7 +138,7 @@ public class GlicKeyedServiceImplUnitTest {
         verify(mNativesMock)
                 .toggleUI(
                         NATIVE_PTR,
-                        BROWSER_WINDOW_PTR,
+                        mBrowserWindowMock,
                         /* preventClose= */ false,
                         mProfileMock,
                         GlicInvocationSource.UNSUPPORTED);

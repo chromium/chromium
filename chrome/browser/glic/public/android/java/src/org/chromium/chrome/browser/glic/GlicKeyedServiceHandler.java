@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.glic;
 
 import android.app.Activity;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -13,6 +15,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.GURL;
 
@@ -49,13 +52,14 @@ public final class GlicKeyedServiceHandler {
             return false;
         }
 
-        long browserWindowPtr = task.getNativeBrowserWindowPtr(profile, activity);
-        if (browserWindowPtr == 0) {
-            Log.w(TAG, "Failed to trigger GLIC: Native browser window pointer is 0.");
+        JniPtr<NativeBrowserWindowInterface> browserWindow =
+                task.getNativeBrowserWindow(profile, activity);
+        if (browserWindow == null) {
+            Log.w(TAG, "Failed to trigger GLIC: Native browser window is null.");
             return false;
         }
 
-        service.toggleUI(browserWindowPtr, preventClose, profile, invocationSource);
+        service.toggleUI(browserWindow, preventClose, profile, invocationSource);
         return true;
     }
 
