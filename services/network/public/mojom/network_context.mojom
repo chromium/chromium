@@ -1997,4 +1997,13 @@ interface NetworkContext {
 
   // Updates the variations headers to be used for requests.
   SetVariationsHeaders(variations.mojom.VariationsHeaders? variations_headers);
+
+  // Clones this NetworkContext connection. The new receiver is bound to the
+  // same underlying NetworkContext instance. Disconnection of any cloned
+  // receiver does not destroy the NetworkContext nor disconnect other sibling
+  // clones. When owned by NetworkService, disconnection of the primary
+  // NetworkContext receiver will destroy the NetworkContext instance and
+  // disconnect all clones.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
+  Clone(pending_receiver<NetworkContext> receiver);
 };

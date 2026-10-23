@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -645,6 +646,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override;
 
+  void Clone(mojo::PendingReceiver<mojom::NetworkContext> receiver) override;
+
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override;
@@ -1041,6 +1044,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   using DirectReceiver = mojo::DirectReceiver<mojom::NetworkContext>;
   std::variant<Receiver, DirectReceiver> receiver_;
 
+  // Holds secondary receivers bound via Clone(). Unlike `receiver_`,
+  // disconnects on these receivers do not trigger
+  // `on_connection_close_callback_`.
+  mojo::ReceiverSet<mojom::NetworkContext> cloned_receivers_;
   std::unique_ptr<CookieManager> cookie_manager_;
 
   std::unique_ptr<SocketFactory> socket_factory_;

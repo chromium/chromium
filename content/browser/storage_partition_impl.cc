@@ -80,6 +80,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/network/cross_thread_network_context.h"
 #include "content/browser/network/shared_dictionary_util.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -1651,6 +1652,20 @@ network::mojom::NetworkContext* StoragePartitionImpl::GetNetworkContext() {
 
 bool StoragePartitionImpl::IsNetworkContextInitialized() {
   return network_context_owner_->network_context.is_bound();
+}
+
+void StoragePartitionImpl::CloneNetworkContext(
+    mojo::PendingReceiver<network::mojom::NetworkContext> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(initialized_);
+  GetNetworkContext()->Clone(std::move(receiver));
+}
+
+scoped_refptr<CrossThreadNetworkContext>
+StoragePartitionImpl::CreateCrossThreadNetworkContext() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(initialized_);
+  return CrossThreadNetworkContext::Create(weak_factory_.GetWeakPtr());
 }
 
 cert_verifier::mojom::CertVerifierServiceUpdater*

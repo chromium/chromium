@@ -1331,6 +1331,8 @@ source_set("browser") {
     "network/cookie_store_factory.cc",
     "network/cross_origin_embedder_policy_reporter.cc",
     "network/cross_origin_embedder_policy_reporter.h",
+    "network/cross_thread_network_context.cc",
+    "network/cross_thread_network_context.h",
     "network/http_cache_backend_file_operations_factory.cc",
     "network/http_cache_backend_file_operations_factory.h",
     "network/network_errors_listing_ui.cc",

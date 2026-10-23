@@ -435,6 +435,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void SetTryQuicByDefault(bool enable) override {}
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override {}
+  void Clone(mojo::PendingReceiver<mojom::NetworkContext> receiver) override {}
 };
 
 }  // namespace network

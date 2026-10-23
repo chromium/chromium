@@ -3980,6 +3980,12 @@ void NetworkContext::AddQuicHints(
   }
 }
 
+void NetworkContext::Clone(
+    mojo::PendingReceiver<mojom::NetworkContext> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cloned_receivers_.Add(this, std::move(receiver));
+}
+
 void NetworkContext::AddWildcardQuicHints(
     std::vector<mojom::WildcardQuicHintPtr> hints) {
   if (!url_request_context_ ||
