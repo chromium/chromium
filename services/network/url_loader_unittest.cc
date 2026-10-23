@@ -942,8 +942,7 @@ class URLLoaderTest : public testing::Test {
   // the response body before URLLoader is complete, so URLLoader completion
   // won't block on trying to write the body buffer.
   [[nodiscard]] int LoadRequest(const ResourceRequest& request,
-                                std::string* body = nullptr,
-                                bool is_trusted = true) {
+                                std::string* body = nullptr) {
     uint32_t options = mojom::kURLLoadOptionNone;
     if (send_ssl_with_response_) {
       options |= mojom::kURLLoadOptionSendSSLInfoWithResponse;
@@ -969,7 +968,7 @@ class URLLoaderTest : public testing::Test {
     mojo::Remote<mojom::URLLoader> loader;
     std::unique_ptr<URLLoader> url_loader;
 
-    SetUpContext(request.url, is_trusted);
+    SetUpContext(request.url, /*is_trusted=*/true);
 
     URLLoaderOptions url_loader_options;
     url_loader_options.options = options;
@@ -7869,93 +7868,6 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
   // Socket should have been destroyed, so it will not be reused.
   EXPECT_FALSE(socket_data_reads_writes.socket());
 }
-
-class URLLoaderMockSocketAuctionOnlyTest
-    : public URLLoaderMockSocketTest,
-      public testing::WithParamInterface<std::string> {};
-
-TEST_P(URLLoaderMockSocketAuctionOnlyTest,
-       FetchAuctionOnlySignalsFromRendererClosesSocket) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->local_network_access_request_policy =
-      mojom::LocalNetworkAccessRequestPolicy::kAllow;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  const std::string first_read = base::StringPrintf(
-      "HTTP/1.1 200 OK\r\n"
-      "Connection: keep-alive\r\n"
-      "%s"
-      "Content-Type: text/plain\r\n"
-      "Content-Length: 23\r\n\r\n",
-      GetParam().c_str());
-  const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read),
-      net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
-  };
-
-  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
-  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data_connect);
-  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
-
-  GURL url("http://origin.test/");
-  url::Origin initiator = url::Origin::Create(url);
-
-  ResourceRequest request = CreateResourceRequest("GET", url);
-  request.mode = mojom::RequestMode::kNoCors;
-  request.request_initiator = initiator;
-
-  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, LoadRequest(request, /*body=*/nullptr,
-                                                      /*is_trusted=*/false));
-
-  // Socket should have been destroyed, so it will not be reused.
-  EXPECT_FALSE(socket_data_reads_writes.socket());
-}
-
-TEST_P(URLLoaderMockSocketAuctionOnlyTest,
-       FetchAuctionOnlySignalsFromBrowserProcessSucceeds) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->local_network_access_request_policy =
-      mojom::LocalNetworkAccessRequestPolicy::kAllow;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  const std::string first_read = base::StringPrintf(
-      "HTTP/1.1 200 OK\r\n"
-      "Connection: keep-alive\r\n"
-      "%s"
-      "Content-Type: text/plain\r\n"
-      "Content-Length: 23\r\n\r\n",
-      GetParam().c_str());
-  const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read),
-      net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
-  };
-
-  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
-  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data_connect);
-  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
-
-  GURL url("http://origin.test/");
-  url::Origin initiator = url::Origin::Create(url);
-
-  ResourceRequest request = CreateResourceRequest("GET", url);
-  request.mode = mojom::RequestMode::kNoCors;
-  request.request_initiator = initiator;
-  EXPECT_EQ(net::OK,
-            LoadRequest(request, /*body=*/nullptr, /*is_trusted=*/true));
-  EXPECT_TRUE(socket_data_reads_writes.socket());
-}
-
-// TODO(crbug.com/40269364): Remove old names once API users have migrated to
-// new names.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    URLLoaderMockSocketAuctionOnlyTest,
-    testing::Values(
-        "Ad-Auction-Only: true\r\n",
-        "X-FLEDGE-Auction-Only: true\r\n",
-        "Ad-Auction-Only: true\r\nX-FLEDGE-Auction-Only: true\r\n"));
 
 TEST_F(URLLoaderMockSocketTest,
        LocalNetworkAccessRequestPolicyDoesNotCloseSocket) {

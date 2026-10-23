@@ -13,7 +13,6 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -293,8 +292,6 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // ORB responses are reported as a success.
     CompleteBlockedResponse(net::OK, std::nullopt);
   }
-
-  bool is_trusted() const { return request_.trusted_params.has_value(); }
 
   void CompleteBlockedResponse(
       int error_code,
@@ -872,27 +869,6 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
                                     blocked_reason);
     return;
-  }
-
-  // Enforce ad-auction-only signals -- the renderer process isn't allowed
-  // to read auction-only signals for ad auctions; only the browser process
-  // is allowed to read those, and only the browser process can issue trusted
-  // requests.
-  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
-  // new names.
-  if (!loader->is_trusted() && response_head->headers) {
-    std::optional<std::string> auction_only =
-        response_head->headers->GetNormalizedHeader("Ad-Auction-Only");
-    if (!auction_only) {
-      auction_only =
-          response_head->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only");
-    }
-    if (auction_only &&
-        base::EqualsCaseInsensitiveASCII(*auction_only, "true")) {
-      loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
-                                      /*reason=*/std::nullopt);
-      return;
-    }
   }
 
   auto orb_analyzer = orb::ResponseAnalyzer::Create(&orb_state_);

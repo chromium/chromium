@@ -31,7 +31,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1302,28 +1301,6 @@ void URLLoader::ContinueOnResponseStarted() {
     url_request_->AbortAndCloseConnection();
     DeleteSelf();
     return;
-  }
-
-  // Enforce ad-auction-only signals -- the renderer process isn't allowed
-  // to read auction-only signals for ad auctions; only the browser process
-  // is allowed to read those, and only the browser process can issue trusted
-  // requests.
-  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
-  // new names.
-  if (!factory_params_->is_trusted && response_->headers) {
-    std::optional<std::string> auction_only =
-        response_->headers->GetNormalizedHeader("Ad-Auction-Only");
-    if (!auction_only) {
-      auction_only =
-          response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only");
-    }
-    if (auction_only &&
-        base::EqualsCaseInsensitiveASCII(*auction_only, "true")) {
-      CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false);
-      url_request_->AbortAndCloseConnection();
-      DeleteSelf();
-      return;
-    }
   }
 
   // Figure out if we need to sniff (for MIME type detection or for Opaque
