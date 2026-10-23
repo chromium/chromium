@@ -1,0 +1,62 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+agentic_review {
+  capability_groups {
+    path_expression: "chrome/browser/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/sync_preferences/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    rules: "agents/knowledge_base/rules/components/sync/account-for-chromeos-os-preferences-in-sync-type-checks.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "chromeos/ash/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    content_patterns: "\\b(?:DeviceInfoTracker|OnDeviceInfoChange)\\b"
+    rules: "agents/knowledge_base/rules/components/sync/allow-device-info-observer-cleanup-when-sync-stops.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "chromeos/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    content_patterns: "\\b(?:\\w*MetadataChangeList|DataTypeSyncBridge|ApplyMetadataChanges)\\b"
+    rules: "agents/knowledge_base/rules/components/sync/apply-sync-metadata-before-committing-database-transaction.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "chromeos/ash/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    content_patterns: "\\b(?:GetPossiblyTrimmedRemoteSpecifics|IsTrackingMetadata)\\b"
+    rules: "agents/knowledge_base/rules/components/sync/check-is-tracking-metadata-before-getting-remote-specifics.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/browser_sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    rules: "agents/knowledge_base/rules/components/sync/check-sync-delegate-non-null-before-controller-creation.md"
+  }
+  capability_groups {
+    path_expression: "components/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    rules: "agents/knowledge_base/rules/components/sync/clear-unencrypted-proto-fields-before-decryption.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/(?:.*/)?(?:[^/]*_)?sync[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/sync/protocol/[^/]*\\.proto"
+    path_expression: "ios/chrome/browser/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    rules: "agents/knowledge_base/rules/components/sync/do-not-map-unsupported-sync-proto-fields-to-entities.md"
+  }
+  capability_groups {
+    path_expression: "chrome/browser/sync/prefs/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "components/sync_preferences/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    path_expression: "ios/chrome/browser/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm)"
+    rules: "agents/knowledge_base/rules/components/sync/require-sensitive-requires-history-for-url-syncable-prefs.md"
+  }
+  capability_groups {
+    path_expression: "components/sync/(?:.*/)?[^/]*\\.(?:cc|cpp|h|hpp|mm|proto)"
+    rules: "agents/knowledge_base/rules/components/sync/retain-proto-visitors-for-deprecated-sync-fields.md"
+  }
+}
