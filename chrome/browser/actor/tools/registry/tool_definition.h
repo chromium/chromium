@@ -96,7 +96,9 @@ enum class ToolId {
   kPromptGeminiPanel = 37,
   // Closes the Gemini side panel if it is currently open.
   kCloseGeminiPanel = 38,
-  kMaxValue = kCloseGeminiPanel,
+  // Opens a URL in the given tab or in a new tab in that tab's window.
+  kOpenUrl = 39,
+  kMaxValue = kOpenUrl,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

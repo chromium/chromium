@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
@@ -807,6 +808,30 @@ TEST(ToolRegistryTest, GetAllToolsContainsOpenKnownPageTool) {
                                     &ToolDefinition::id));
 }
 
+TEST(ToolRegistryTest, OpenUrlToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      OpenUrlToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kOpenUrl);
+  EXPECT_EQ(definition->name, OpenUrlToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(OpenUrlToolRequest::kUrlParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(OpenUrlToolRequest::kUrlParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(OpenUrlToolRequest::kNewTabParam, "boolean"));
+  EXPECT_THAT(*definition, RequiresParam(OpenUrlToolRequest::kNewTabParam));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsOpenUrlTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  ASSERT_TRUE(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kOpenUrl, &ToolDefinition::id));
+}
 
 TEST(ToolRegistryTest, GetAllToolsContainsEnterFullscreenTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);

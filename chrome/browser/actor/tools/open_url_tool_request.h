@@ -24,6 +24,13 @@ class ToolRequestVisitorFunctor;
 class OpenUrlToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "OpenUrl";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "open_url";
+  // JSON argument key for the destination URL parameter.
+  static constexpr std::string_view kUrlParam = "url";
+  // JSON argument key for whether to open the URL in a new tab.
+  static constexpr std::string_view kNewTabParam = "new_tab";
 
   OpenUrlToolRequest(ActorSurfaceHandle actor_surface_handle,
                      GURL url,
@@ -31,6 +38,9 @@ class OpenUrlToolRequest : public TabToolRequest {
   ~OpenUrlToolRequest() override;
   OpenUrlToolRequest(const OpenUrlToolRequest&);
   OpenUrlToolRequest& operator=(const OpenUrlToolRequest&);
+
+  // Returns the `ToolId::kOpenUrl` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   const GURL& url() const { return url_; }
   bool open_in_new_tab() const { return open_in_new_tab_; }

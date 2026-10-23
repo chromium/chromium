@@ -11,6 +11,9 @@
 
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/open_url_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -18,6 +21,23 @@
 #include "url/origin.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `open_url` tool.
+constexpr std::string_view kOpenUrlToolDescription =
+    "Opens a URL in the current tab or in a new tab.";
+
+// Description for the `url` parameter of the `open_url` tool.
+constexpr std::string_view kUrlParamDescription =
+    "The complete URL to open (e.g. \"https://example.com\").";
+
+// Description for the `new_tab` parameter of the `open_url` tool.
+constexpr std::string_view kNewTabParamDescription =
+    "Opens the URL in a new tab if true, otherwise opens the URL in the "
+    "current tab.";
+
+}  // namespace
 
 OpenUrlToolRequest::OpenUrlToolRequest(ActorSurfaceHandle actor_surface_handle,
                                        GURL url,
@@ -31,6 +51,18 @@ OpenUrlToolRequest::~OpenUrlToolRequest() = default;
 OpenUrlToolRequest::OpenUrlToolRequest(const OpenUrlToolRequest&) = default;
 OpenUrlToolRequest& OpenUrlToolRequest::operator=(const OpenUrlToolRequest&) =
     default;
+
+// static
+std::optional<ToolDefinition> OpenUrlToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kOpenUrl, kModelFacingName,
+                               kOpenUrlToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddStringProperty(kUrlParam, kUrlParamDescription,
+                                 ToolSchemaBuilder::kFormatUri)
+              .AddBooleanProperty(kNewTabParam, kNewTabParamDescription))
+      .Build();
+}
 
 bool OpenUrlToolRequest::RequiresUrlCheckInCurrentTab() const {
   // This tool either navigates *away* from the current URL or opens a new tab;
