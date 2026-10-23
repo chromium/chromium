@@ -71,6 +71,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

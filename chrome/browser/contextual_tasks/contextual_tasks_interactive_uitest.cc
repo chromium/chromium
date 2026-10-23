@@ -135,6 +135,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/webview/webview.h"
 
 using testing::_;
 

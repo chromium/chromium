@@ -16,8 +16,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/controls/webview/webview.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/view.h"
 
 namespace blink::mojom {
@@ -35,9 +34,9 @@ struct OpenURLParams;
 class BrowserWindowInterface;
 class Profile;
 
-namespace input {
-struct NativeWebKeyboardEvent;
-}  // namespace input
+namespace views {
+class WebView;
+}
 
 namespace web_modal {
 class WebContentsModalDialogHost;
@@ -51,7 +50,7 @@ class ContextualTasksUIBase;
 class ContextualTasksWebView
     : public views::View,
       public web_modal::WebContentsModalDialogManagerDelegate,
-      public content::WebContentsDelegate,
+      public views::WebContentsDelegateViews<ContextualTasksWebView>,
       public content::WebContentsObserver {
   METADATA_HEADER(ContextualTasksWebView, views::View)
 
@@ -95,8 +94,6 @@ class ContextualTasksWebView
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params,
@@ -178,10 +175,6 @@ class ContextualTasksWebView
   // Whether the next DidStopLoading() corresponds to an initial or aborted
   // about:blank navigation that should not dismiss the ghost loader.
   bool ignore_next_stop_loading_for_about_blank_ = false;
-
-  // A handler to handle unhandled keyboard messages coming back from the
-  // renderer process.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   base::WeakPtrFactory<ContextualTasksWebView> weak_ptr_factory_{this};
 };

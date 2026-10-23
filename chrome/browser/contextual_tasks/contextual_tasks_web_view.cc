@@ -45,6 +45,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -91,6 +92,8 @@ ContextualTasksWebView::ContextualTasksWebView(
       owns_ghost_loader_web_contents_(ghost_loader_web_contents == nullptr) {
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksSidePanelWebViewElementId);
+
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
     const bool is_dark_mode =
@@ -467,13 +470,6 @@ void ContextualTasksWebView::RequestMediaAccessPermission(
   // `MediaCaptureDevicesDispatcher`.
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request, std::move(callback), /*extension=*/nullptr);
-}
-
-bool ContextualTasksWebView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
 }
 
 content::WebContents* ContextualTasksWebView::OpenURLFromTab(
