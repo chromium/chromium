@@ -27,13 +27,7 @@ class MqlsFeatureRegistryTest : public testing::Test {
 BASE_FEATURE(kLoggingEnabledFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/442828465): Re-enable this test.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_RegisterFeature DISABLED_RegisterFeature
-#else
-#define MAYBE_RegisterFeature RegisterFeature
-#endif
-TEST_F(MqlsFeatureRegistryTest, MAYBE_RegisterFeature) {
+TEST_F(MqlsFeatureRegistryTest, RegisterFeature) {
   EnterprisePolicyPref enterprise_policy("policy_name");
   UserFeedbackCallback logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
