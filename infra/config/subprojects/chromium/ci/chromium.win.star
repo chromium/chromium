@@ -317,7 +317,7 @@ ci.builder(
     ),
     builderless = False,
     cores = 16,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
@@ -1000,6 +1000,7 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
+    os = os.WINDOWS_DEFAULT,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "misc",

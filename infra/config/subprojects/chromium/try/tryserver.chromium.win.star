@@ -359,7 +359,7 @@ try_.builder(
     executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
     cores = 32,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
     siso_project = None,
 )
@@ -370,7 +370,7 @@ try_.builder(
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
     cores = 32,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
     siso_project = None,
 )
