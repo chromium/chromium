@@ -73,7 +73,7 @@ DbStatus MapEntriesTable::UpdateMap(
   // If `clear_all_first` is set, delete all entries for this map.
   if (map_update.clear_all_first) {
     DB_RETURN_IF_ERROR(DeleteMap(map_id));
-  } else {
+  } else if (!map_update.keys_to_delete.empty()) {
     // Delete the specified keys.
     constexpr const char kDeleteEntry[] =
         "DELETE FROM map_entries WHERE map_id = ? AND key = ?";
@@ -89,6 +89,10 @@ DbStatus MapEntriesTable::UpdateMap(
     }
   }
 
+  if (map_update.entries_to_add.empty()) {
+    return DbStatus::OK();
+  }
+
   // Insert or replace entries.
   constexpr const char kInsertOrReplaceEntry[] =
       "INSERT OR REPLACE INTO map_entries("
@@ -99,7 +103,7 @@ DbStatus MapEntriesTable::UpdateMap(
       database_->GetCachedStatement(SQL_FROM_HERE, kInsertOrReplaceEntry));
   insert_statement.BindInt64(0, map_id);
 
-  for (const auto& entry : map_update.entries_to_add) {
+  for (auto& entry : map_update.entries_to_add) {
     insert_statement.BindBlob(1, std::move(entry.key));
 
     const size_t original_size = entry.value.size();

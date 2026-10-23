@@ -453,8 +453,6 @@ DbStatus LocalStorageSqlite::DeleteMapMetadata(
     RETURN_STATUS_ON_ERROR(delete_statement.Run());
     delete_statement.Reset(/*clear_bound_vars=*/true);
   }
-
-  RETURN_STATUS_ON_ERROR(delete_statement.Run());
   return DbStatus::OK();
 }
 
