@@ -3690,7 +3690,7 @@ deps = {
 
   'src/chrome/browser/resources/webui_toolbar/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/webui_toolbar/internal.git' + '@' +
-        'a947d8ad27f6b809aee0b6b3d9c4182236cc78d1',
+        'a306270e77c186a116ba17cb40fcf23660ff432d',
       'condition': 'checkout_src_internal',
   },
 
