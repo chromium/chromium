@@ -126,6 +126,15 @@ Notes (hints) for the next roll(er):
   verify no prior commit modified `src/` or `python/` without updating
   `patches/`) and again after completing the roll (to verify `patches/*.patch`
   reproduces the updated tree).
+* Run `third_party/protobuf/roll_protobuf.py plan --to <tag or commit>` (for
+  example `--to v37.0`) to size a roll before starting it. It replays
+  `patches/*.patch` onto that upstream version with `git apply -3` in a
+  temporary directory, without touching the checkout, and reports each patch
+  as CLEAN, EMPTY (already upstream, so it can be dropped), CONFLICT (with the
+  files and the number of conflict regions) or MISSING_FILE (a file it changes
+  was renamed or deleted upstream), plus the upstream source files added or
+  removed (the same report as `check_file_lists.py`). Add `--json` for
+  machine-readable output.
 * Run
   `third_party/protobuf/compile_size_probe.py -C out/Default --save pre_roll`
   before starting a roll and

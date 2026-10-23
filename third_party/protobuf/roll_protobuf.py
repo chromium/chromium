@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Verifies that //third_party/protobuf is upstream plus patches/*.patch.
+"""Verifies //third_party/protobuf and sizes rolls to new upstream versions.
 
 Chromium embeds upstream protobuf in //third_party/protobuf. Local changes
 are applied to src/ and python/, and also recorded as top-level
@@ -16,9 +16,14 @@ Subcommands:
   check: Applies patches/*.patch in sorted order to the upstream commit on
     README.chromium's 'Revision:' line and verifies that the result matches
     //third_party/protobuf, modulo known Chromium exceptions.
+  plan --to <tag or commit>: Dry run of a roll in temporary repositories
+    (https://crbug.com/568074498). Replays every patch onto the target with
+    `git apply -3`, classifies it (see PatchReplayStatus), and lists upstream
+    library files added or removed between the two versions.
 
-Exit codes: 0 when all checks passed, 1 when verification failed or an error
-occurred, 2 for invalid usage (argparse).
+Exit codes: 0 when the command succeeded (for `plan`, whatever the per-patch
+classification), 1 when verification failed or an error occurred, 2 for
+invalid usage (argparse).
 """
 
 from collections.abc import Collection, Iterable, Sequence
@@ -1010,15 +1015,75 @@ def PlanRoll(to_revision: str,
                     tuple(patch_results), copied_blob_count, file_lists_diff)
 
 
+def _DescribePatchReplayResult(result: PatchReplayResult) -> str:
+    if result.status is PatchReplayStatus.CLEAN:
+        return (f'{result.changed_line_count_before} -> '
+                f'{result.changed_line_count_after} changed lines')
+    if result.status is PatchReplayStatus.EMPTY:
+        return 'already upstream'
+    if result.status is PatchReplayStatus.CONFLICT:
+        # `git apply -3` writes no conflict markers into binary files.
+        return ', '.join(
+            f'{conflicted.path} ({conflicted.conflict_region_count} region(s))'
+            if conflicted.conflict_region_count else
+            f'{conflicted.path} (no conflict markers, binary?)'
+            for conflicted in result.conflicted_files)
+    if result.status is PatchReplayStatus.MISSING_FILE:
+        return ('not in new upstream (renamed or deleted?): ' +
+                ', '.join(result.missing_files))
+    return result.error_message or 'git apply failed'
+
+
+def FormatRollPlanReport(roll_plan: RollPlan) -> str:
+    status_width = max(len(status.value) for status in PatchReplayStatus)
+    lines = [
+        f'Plan for rolling //third_party/protobuf from '
+        f'{roll_plan.old_revision} to {roll_plan.new_revision} '
+        f'({roll_plan.new_commit}):', ''
+    ]
+    lines += [
+        f'  {result.status.value:<{status_width}}  {result.patch_name}: '
+        f'{_DescribePatchReplayResult(result)}'
+        for result in roll_plan.patch_results
+    ]
+    counts = roll_plan.CountPatchesByStatus()
+    count_summary = ', '.join(f'{counts[status]} {status.value}'
+                              for status in PatchReplayStatus
+                              if status in counts)
+    lines += [
+        '', f'{count_summary or "No patches"}; copied '
+        f'{roll_plan.copied_blob_count} preimage blob(s).', ''
+    ]
+    if roll_plan.file_lists_diff is None:
+        lines.append(f'Skipped the upstream file-list report: '
+                     f'{_UPSTREAM_FILE_LISTS_PATH} is missing from the old or '
+                     'new version.')
+    else:
+        lines.append(
+            check_file_lists.FormatFileListsDiffReport(
+                roll_plan.file_lists_diff))
+    return '\n'.join(lines)
+
+
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description='Verifies //third_party/protobuf against upstream plus '
-        'patches/*.patch.')
+        'patches/*.patch, and sizes rolls to new upstream versions.')
     subparsers = parser.add_subparsers(dest='subcommand', required=True)
     subparsers.add_parser(
         'check',
         help='Verify that upstream at README.chromium Revision plus '
         'patches/*.patch reproduces //third_party/protobuf.')
+    plan_parser = subparsers.add_parser(
+        'plan',
+        help='Dry run: classify every patch as CLEAN, EMPTY, CONFLICT or '
+        'MISSING_FILE on a new upstream version, without touching the '
+        'checkout.')
+    plan_parser.add_argument(
+        '--to',
+        required=True,
+        dest='to_revision',
+        help='Upstream tag or commit to plan the roll to (for example v37.0).')
     for subparser in subparsers.choices.values():
         subparser.add_argument(
             '-C',
@@ -1059,10 +1124,19 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
                           arguments.upstream_url)
 
     try:
-        result = CheckTreeMatchesPatchedUpstream(arguments.protobuf_directory,
-                                                 *upstream_arguments)
-        report = FormatTreeVerificationReport(result)
-        exit_code = EXIT_CODE_SUCCESS if result.IsClean() else EXIT_CODE_ERROR
+        if arguments.subcommand == 'plan':
+            result = PlanRoll(arguments.to_revision,
+                              arguments.protobuf_directory,
+                              *upstream_arguments)
+            report = FormatRollPlanReport(result)
+            # A plan with conflicts is what `plan` is for.
+            exit_code = EXIT_CODE_SUCCESS
+        else:
+            result = CheckTreeMatchesPatchedUpstream(
+                arguments.protobuf_directory, *upstream_arguments)
+            report = FormatTreeVerificationReport(result)
+            exit_code = (EXIT_CODE_SUCCESS
+                         if result.IsClean() else EXIT_CODE_ERROR)
         if arguments.should_output_json:
             report = json.dumps(result.ToDictionary(), indent=2)
         print(report)

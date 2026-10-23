@@ -2134,6 +2134,113 @@ class RollProtobufPlanTest(unittest.TestCase):
 
         self.assertEqual(baseline_plan, configured_plan)
 
+    def testFormatRollPlanReportDescribesEachPatchOnItsOwnLine(self):
+        report_lines = roll_protobuf.FormatRollPlanReport(
+            self._PlanRoll()).splitlines()
+
+        self.assertEqual([
+            f'  CLEAN         {_PLAN_CLEAN_PATCH}: 4 -> 2 changed lines',
+            f'  EMPTY         {_PLAN_EMPTY_PATCH}: already upstream',
+            f'  CONFLICT      {_PLAN_CONFLICT_PATCH}: '
+            f'{_PLAN_CONFLICT_PATH} (1 region(s))',
+            f'  MISSING_FILE  {_PLAN_MISSING_FILE_PATCH}: not in new '
+            f'upstream (renamed or deleted?): {_PLAN_RENAMED_PATH}',
+            f'  CLEAN         {_PLAN_STACKED_PATCH}: 3 -> 3 changed lines',
+        ], report_lines[2:7])
+
+    def testFormatRollPlanReportFlagsConflictWithoutMarkersAsBinary(self):
+        roll_plan = roll_protobuf.RollPlan(
+            old_revision='v1',
+            old_commit='1' * 40,
+            new_revision='v2',
+            new_commit='2' * 40,
+            patch_results=(roll_protobuf.PatchReplayResult(
+                patch_name='0001-binary.patch',
+                status=roll_protobuf.PatchReplayStatus.CONFLICT,
+                changed_line_count_before=0,
+                conflicted_files=(roll_protobuf.ConflictedFile(
+                    path='image.png', conflict_region_count=0), ),
+            ), ),
+            copied_blob_count=0,
+            file_lists_diff=None,
+        )
+
+        self.assertIn(
+            '0001-binary.patch: image.png (no conflict markers, binary?)',
+            roll_protobuf.FormatRollPlanReport(roll_plan))
+
+    def testFormatRollPlanReportSaysWhyFileListReportIsMissing(self):
+        roll_plan = roll_protobuf.RollPlan(
+            old_revision='v1',
+            old_commit='1' * 40,
+            new_revision='v2',
+            new_commit='2' * 40,
+            patch_results=(),
+            copied_blob_count=0,
+            file_lists_diff=None,
+        )
+
+        self.assertIn(
+            'No patches; copied 0 preimage blob(s).\n\n'
+            'Skipped the upstream file-list report: src/file_lists.cmake is '
+            'missing from the old or new version.',
+            roll_protobuf.FormatRollPlanReport(roll_plan))
+
+    def testMainPlanPrintsStatusCountsAndCopiedBlobCount(self):
+        exit_code, stdout, _ = _RunMain(
+            'plan',
+            '--to',
+            self.fixture.new_commit,
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--upstream-repo',
+            self.fixture.upstream_directory,
+        )
+
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, exit_code)
+        self.assertIn(
+            '2 CLEAN, 1 EMPTY, 1 CONFLICT, 1 MISSING_FILE; copied 3 '
+            'preimage blob(s).\n\n'
+            'Upstream files added in src/file_lists.cmake',
+            stdout,
+        )
+
+    def testMainPlanOutputsPatchCountsAsJson(self):
+        _, stdout, _ = _RunMain(
+            'plan',
+            '--to',
+            self.fixture.new_commit,
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--upstream-repo',
+            self.fixture.upstream_directory,
+            '--json',
+        )
+
+        self.assertEqual(
+            {
+                'CLEAN': 2,
+                'EMPTY': 1,
+                'CONFLICT': 1,
+                'MISSING_FILE': 1,
+            },
+            json.loads(stdout)['patch_counts'],
+        )
+
+    def testMainPlanExitsOneAndNamesRevisionWhenTargetIsUnknown(self):
+        exit_code, _, stderr = _RunMain(
+            'plan',
+            '--to',
+            'v999.0',
+            '--protobuf-dir',
+            self.fixture.protobuf_directory,
+            '--upstream-repo',
+            self.fixture.upstream_directory,
+        )
+
+        self.assertEqual(roll_protobuf.EXIT_CODE_ERROR, exit_code)
+        self.assertIn('Revision v999.0 not found', stderr)
+
 
 if __name__ == '__main__':
     unittest.main()
