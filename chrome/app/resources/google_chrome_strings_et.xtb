@@ -141,7 +141,6 @@
 <translation id="2216543877350048334">Google'i konto Chrome'ist eemaldamiseks logige välja</translation>
 <translation id="2236949375853147973">Minu tegevused</translation>
 <translation id="22791603784558743">Sulgege teenuse Gemini Chrome'is arendusversioon</translation>
-<translation id="2284380654876659752">Kui külastate saiti, saadab Chrome URL-i hägustatud osa <ph name="BEGIN_LINK" />Google'i ohutule sirvimisele<ph name="END_LINK" /> privaatsusserveri kaudu, mis varjab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="2290014774651636340">Google API võtmed on puudu. Google Chrome'i teatud funktsioonid keelatakse.</translation>
 <translation id="2290095356545025170">Olete kindel, et soovite Google Chrome'i desinstallida?</translation>
 <translation id="2295218613066132598">Kuva Chrome'i saidi otseteed</translation>
@@ -382,7 +381,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="459622048091363950">Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
 <translation id="4598116752460667024">Otsige loendist mis tahes protsessi.</translation>
 <translation id="4600710005438004015">Chrome'i ei saanud uusimale versioonile värskendada, mistõttu jääte ilma uutest funktsioonidest ja turvaparandustest.</translation>
-<translation id="4606805686144157064">Teid hoiatatakse, kui Chrome leiab avalikust andmetega seotud rikkumisest mõne teie parooli.</translation>
 <translation id="4608435347866444037">Otsige seda pilti Google Lensiga</translation>
 <translation id="4624065194742029982">Chrome'i inkognito režiim</translation>
 <translation id="4627412468266359539">Valikuline: aidake Chrome OS Flexi funktsioone ja toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
@@ -399,7 +397,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="4768676935374695498">Otsi sellest videost Google Lensiga</translation>
 <translation id="479167709087336770">See kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile. Seda käitumist saab seadetes alati muuta.</translation>
 <translation id="4793679854893018356">Vaadake, kuidas Chrome teid kaitseb</translation>
-<translation id="4799870290441980300">Lülitab sisse lisafunktsioonid, et pakkuda Chrome'i tugevaimat kaitset.</translation>
 <translation id="4828579605166583682">Google Chrome püüab olemasolevaid paroole asendada. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="4836321460899997044">Chrome’i profiil</translation>
 <translation id="4842397268809523050">Chrome OS Flex ei saa teie andmeid sünkroonida, sest teie domeenis pole sünkroonimine saadaval.</translation>
@@ -556,7 +553,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6251759518630934363">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chrome'i hoiatused vahele jätta.</translation>
 <translation id="6277547788421725101">Sinu vanem lülitas Chrome'i puhul valiku „Saitide, rakenduste ja laienduste load” välja</translation>
 <translation id="627882678981830918">Kohandage ja hallake Chrome'i. Määrake Chrome vaikebrauseriks.</translation>
-<translation id="6280042952415350607">Täiustatud kaitse lülitab JavaScripti optimeerimise välja saitide puhul, mis on Chrome’i jaoks tundmatud.</translation>
 <translation id="6288580400488258237">Valige Google Chrome vaikebrauseriks ja kinnitage see tegumiribale</translation>
 <translation id="6291089322031436445">Chrome Devi rakendused</translation>
 <translation id="6291549208091401781">Google Chrome on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
@@ -727,6 +723,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7777080907402804672">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>
 <translation id="778331955594035129">Chrome vajab selle saidi puhul asukohale juurdepääsu luba</translation>
 <translation id="7787950393032327779">Tundub, et mõni muu Google Chrome'i protsess (<ph name="PROCESS_ID" />) mõnes teises arvutis (<ph name="HOST_NAME" />) kasutab profiili.  Chrome on profiili lukustanud, et seda ei saaks rikkuda.  Kui olete kindel, et ükski teine protsess seda profiili ei kasuta, võite selle avada ja Chrome'i taaskäivitada.</translation>
+<translation id="7800043020703832708">Sule Google'i otsing külgpaneelil</translation>
 <translation id="7801699035218095297">Google Chrome püüab kopeerida paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="7804364787702057554">Teie konto Chrome'is</translation>
 <translation id="7804947029129221742">Teie otsingumootorit muudeti väljaspool Chrome'i. Chrome lähtestas selle teie kaitsmiseks algsele vaikeväärtusele. <ph name="LEARN_MORE_LINK" /></translation>

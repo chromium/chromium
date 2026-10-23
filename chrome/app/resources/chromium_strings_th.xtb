@@ -255,7 +255,6 @@
 <translation id="3531741627422851418">คิวอาร์โค้ดสำหรับดาวน์โหลดเบราว์เซอร์ Chromium บนมือถือ</translation>
 <translation id="354621070532799440">การช่วยเตือน: ฟีเจอร์ความปลอดภัยที่ดีที่สุดของ Google อยู่ในมือคุณแล้ว</translation>
 <translation id="3561853857681580870">หากต้องการแชร์หน้าจอ ให้อนุญาตการบันทึกหน้าจอสำหรับ Chromium ใน "การตั้งค่าระบบ"</translation>
-<translation id="3588112919289558122">การปกป้องที่ดียิ่งขึ้นจะปิดการเพิ่มประสิทธิภาพ JavaScript สำหรับเว็บไซต์ที่ Chromium ไม่รู้จัก</translation>
 <translation id="3597003331831379823">เรียกใช้การตั้งค่าด้วยสิทธิ์ในระดับสูงขึ้นไม่สำเร็จ <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="3639635944603682591">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์นี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chromium ในชื่อ <ph name="USER_EMAIL" /></translation>
@@ -294,7 +293,6 @@
 <translation id="3971865010372729242">เมื่อคุณพิมพ์ในแถบที่อยู่หรือช่องค้นหา Chromium จะส่งสิ่งที่คุณพิมพ์ไปยังเครื่องมือค้นหา, AI และเครื่องมือตัวแทนขององค์กรเพื่อรับคำแนะนำ</translation>
 <translation id="3975724895399328945">เกี่ยวกับ Google Chrome สำหรับการทดสอบ</translation>
 <translation id="3997429360543082038">เกี่ยวกับ Chromium OS</translation>
-<translation id="4010059961270896984">เมื่อคุณเข้าชมเว็บไซต์ Chromium จะนำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ หากเว็บไซต์ทำสิ่งที่น่าสงสัย ระบบจะส่ง URL แบบเต็มและเนื้อหาของหน้าเว็บบางส่วนด้วย</translation>
 <translation id="4016217212818346953">ปลอดภัยอยู่เสมอด้วยเครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4019629340646866719">Chromium OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม ตลอดจน<ph name="BEGIN_LINK_LINUX_OSS" />สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux<ph name="END_LINK_LINUX_OSS" /></translation>
 <translation id="4022972681110646219">แปลหน้าจอ</translation>
@@ -455,7 +453,6 @@
 <translation id="5821520528363214608">โปรดอัปเดต Chromium เพื่อใช้และบันทึกข้อมูล Chromium ลงในบัญชี Google</translation>
 <translation id="5824893331272123205">โหลดแผงนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
-<translation id="5867606647614813312">เปิดฟีเจอร์เพิ่มเติมเพื่อให้การปกป้องที่เข้มงวดที่สุดของ Chromium</translation>
 <translation id="5871205389137001634">คลิกเพื่อออกจากการค้นหารูปภาพ</translation>
 <translation id="5883558403894052917">Chromium พบว่ารายการเหล่านี้มีมัลแวร์</translation>
 <translation id="5889361821821684993">Chromium ดำเนินการตรวจสอบเป็นประจำเพื่อให้มั่นใจว่าเบราว์เซอร์มีการตั้งค่าที่ปลอดภัยที่สุด เราจะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณต้องตรวจสอบ</translation>
@@ -757,7 +754,6 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8522801943730206384">Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="8525579356836940628">หยุดการติดตั้งแล้ว</translation>
 <translation id="8545729292258443488">เข้าถึงรหัสผ่าน แท็บ และอื่นๆ ได้ทุกที่ทุกเวลาด้วยแอป Chromium ในโทรศัพท์<ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">รับคำเตือนหาก Chromium พบรหัสผ่านของคุณในการละเมิดข้อมูลสาธารณะ</translation>
 <translation id="8555465886620020932">ข้อผิดพลาดในการบริการ: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">ฟีเจอร์และส่วนขยายบางอย่างของ Chromium มาพร้อมทางลัด ซึ่งคุณเลือกเปิดใช้อีกครั้งได้</translation>
 <translation id="8556420416730706394">คุณสามารถปักหมุดการค้นหารูปภาพเพื่อให้เข้าถึงได้ง่าย โดยการคลิกปุ่ม "ปักหมุด" ที่ด้านบนของแผงด้านข้าง</translation>

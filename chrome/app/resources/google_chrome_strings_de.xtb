@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">Wenn du dein Google-Konto von Chrome entfernen möchtest, melde dich ab</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="22791603784558743">Gemini in Chrome Dev schließen</translation>
-<translation id="2284380654876659752">Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" />. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
 <translation id="2295218613066132598">Chrome-Website-Tastenkombinationen anzeigen</translation>
@@ -379,7 +378,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="4598116752460667024">Nach Prozessen in der Liste suchen.</translation>
 <translation id="4600710005438004015">Chrome konnte nicht auf die neueste Version aktualisiert werden. In deiner Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
-<translation id="4606805686144157064">Du wirst gewarnt, wenn Chrome eines deiner Passwörter bei einer öffentlichen Datenpanne findet</translation>
 <translation id="4608435347866444037">Dieses Bild mit Google Lens durchsuchen</translation>
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
 <translation id="4627412468266359539">Optional: Lasse Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS Flex zu verbessern.</translation>
@@ -396,7 +394,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4768676935374695498">Dieses Video mit Google Lens durchsuchen</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
-<translation id="4799870290441980300">Aktiviert zusätzliche Funktionen, um den bestmöglichen Schutz in Chrome zu bieten</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4836321460899997044">Chrome-Profil</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
@@ -551,7 +548,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6251759518630934363">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst festlegen, dass Warnungen von Chrome übersprungen werden.</translation>
 <translation id="6277547788421725101">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert</translation>
 <translation id="627882678981830918">Chrome anpassen und verwalten. Chrome als Standardbrowser festlegen.</translation>
-<translation id="6280042952415350607">Durch den erweiterten Schutz wird die JavaScript-Optimierung für Websites deaktiviert, die von Chrome nicht erkannt werden</translation>
 <translation id="6288580400488258237">Google Chrome als Standardbrowser festlegen und an die Taskleiste anheften</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
@@ -722,6 +718,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chrome neu starten.</translation>
+<translation id="7800043020703832708">Google Suche in der Seitenleiste schließen</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>

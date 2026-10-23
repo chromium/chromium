@@ -143,7 +143,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2216543877350048334">Če želite račun Google odstraniti iz Chroma, se odjavite</translation>
 <translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="22791603784558743">Zapiranje Geminija v Chromu Dev</translation>
-<translation id="2284380654876659752">Ko obišete spletno mesto, Chrome prek strežnika za zasebnost, ki skrije vaš naslov IP, <ph name="BEGIN_LINK" />Google Varnemu brskanju<ph name="END_LINK" /> pošlje zakriti del URL-jev. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="2290014774651636340">Manjkajo ključi za Google API. Nekatere funkcije Google Chroma bodo onemogočene.</translation>
 <translation id="2290095356545025170">Ali ste prepričani, da želite odstraniti Google Chrome?</translation>
 <translation id="2295218613066132598">Prikaz bližnjic do spletnih mest v Chromu</translation>
@@ -384,7 +383,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
 <translation id="4598116752460667024">Na seznamu poiščite poljubni postopek.</translation>
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
-<translation id="4606805686144157064">Prejmite opozorilo, če Chrome v javni podatkovni kršitvi najde katero od vaših gesel</translation>
 <translation id="4608435347866444037">Iščite to sliko z Googlom Lens</translation>
 <translation id="4624065194742029982">Anonimni način v Chromu</translation>
 <translation id="4627412468266359539">Izbirno: Pomagajte izboljšati funkcije sistema ChromeOS Flex ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
@@ -401,7 +399,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4768676935374695498">Iščite ta videoposnetek z Googlom Lens</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4793679854893018356">Preberite, kako vas Chrome varuje</translation>
-<translation id="4799870290441980300">Vklopi dodatne funkcije, ki zagotavljajo Chromovo najmočnejšo zaščito</translation>
 <translation id="4828579605166583682">Google Chrome poskuša zamenjati obstoječa gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="4836321460899997044">Profil v Chromu</translation>
 <translation id="4842397268809523050">ChromeOS Flex ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
@@ -560,7 +557,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6251759518630934363">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
 <translation id="6277547788421725101">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome</translation>
 <translation id="627882678981830918">Prilagajanje in nadziranje Chroma. Nastavite Chrome kot privzeto možnost.</translation>
-<translation id="6280042952415350607">Izboljšana zaščita izklopi optimizacijo JavaScripta za spletna mesta, ki jih Chrome ne prepozna</translation>
 <translation id="6288580400488258237">Nastavite Google Chrome kot privzeti brskalnik in ga pripnite v opravilno vrstico</translation>
 <translation id="6291089322031436445">Aplikacije za Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
@@ -731,6 +727,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7777080907402804672">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="778331955594035129">Chrome potrebuje dovoljenje za lokacijo za to spletno mesto.</translation>
 <translation id="7787950393032327779">Videti je, da profil uporablja drug proces brskalnika Google Chrome (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chrome je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chrome.</translation>
+<translation id="7800043020703832708">Zapiranje Iskanja Google v stranskem podoknu</translation>
 <translation id="7801699035218095297">Google Chrome poskuša kopirati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="7804364787702057554">Vaš račun v Chromu</translation>
 <translation id="7804947029129221742">Iskalnik je bil spremenjen zunaj Chroma. Chrome ga je ponastavil na prvotno privzeto vrednost zaradi vaše zaščite. <ph name="LEARN_MORE_LINK" /></translation>

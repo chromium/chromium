@@ -258,7 +258,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3531741627422851418">QR kodas, kuriuo galite atsisiųsti „Chromium“ naršyklę mobiliuosiuose įrenginiuose</translation>
 <translation id="354621070532799440">Priminimas: geriausios „Google“ saugos funkcijos jūsų kišenėje</translation>
 <translation id="3561853857681580870">Jei norite bendrinti ekraną, sistemos nustatymuose leiskite įrašyti „Chromium“ ekrano vaizdą.</translation>
-<translation id="3588112919289558122">Sustiprinta apsauga išjungia „JavaScript“ optimizavimą svetainėse, kurių „Chromium“ neatpažįsta</translation>
 <translation id="3597003331831379823">Nepavyko vykdyti sąrankos su aukštesnio lygio privilegijomis. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Prisijungimas prie „Chromium“</translation>
 <translation id="3639635944603682591">Šio asmens naršymo duomenys bus ištrinti iš šio įrenginio. Jei norite atkurti duomenis, prisijunkite prie „Chromium“ kaip <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3971865010372729242">Kai vedate tekstą adreso juostoje ar paieškos laukelyje, „Chromium“ siunčia tai, ką įvedate, organizacijos paieškai, DI ir tarpininko įrankiams, kad gautų pasiūlymų.</translation>
 <translation id="3975724895399328945">Apie &amp;„Google Chrome for Testing“</translation>
 <translation id="3997429360543082038">Apie „Chromium“ OS</translation>
-<translation id="4010059961270896984">Kai apsilankote svetainėje, „Chromium“ siunčia klaidinančią URL dalį <ph name="BEGIN_LINK" />„Google“ saugaus naršymo funkcijai<ph name="END_LINK" /> per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="4016217212818346953">Būkite saugūs naudodami Slaptažodžių tvarkyklę</translation>
 <translation id="4019629340646866719">„Chromium“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Išversti ekrano turinį</translation>
@@ -458,7 +456,6 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="5821520528363214608">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, atnaujinkite „Chromium“</translation>
 <translation id="5824893331272123205">Nepavyko įkelti šio skydelio, bandykite dar kartą</translation>
 <translation id="5862307444128926510">Sveiki, tai „Chromium“</translation>
-<translation id="5867606647614813312">Įjungiamos papildomos funkcijos, kad būtų užtikrinta patikimiausia „Chromium“ apsauga</translation>
 <translation id="5871205389137001634">Spustelėkite, kad išeitumėte iš vaizdų paieškos</translation>
 <translation id="5883558403894052917">„Chromium“ aptiko kenkėjišką programą šiuose elementuose:</translation>
 <translation id="5889361821821684993">„Chromium“ reguliariai tikrina, ar naršyklės nustatymai yra saugiausi. Pranešime, jei reikės ką nors peržiūrėti.</translation>
@@ -760,7 +757,6 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8522801943730206384">„Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
 <translation id="8525579356836940628">Diegimas sustabdytas</translation>
 <translation id="8545729292258443488">Turėkite slaptažodžius, skirtukus ir kt. su savimi keliaudami, naudodami „Chromium“ programą įrenginyje „<ph name="DEVICE_TYPE" />“</translation>
-<translation id="8548787790260785208">Gaukite įspėjimą, jei „Chromium“ aptinka vieną iš jūsų slaptažodžių viešajame duomenų saugos pažeidime</translation>
 <translation id="8555465886620020932">Paslaugos klaida: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Kai kurioms „Chromium“ funkcijoms ir plėtiniams priskirti šaukiniai. Galite pasirinkti vėl juos įjungti.</translation>
 <translation id="8556420416730706394">Galite prisegti vaizdų paiešką, kad lengvai ją pasiektumėte; spustelėkite mygtuką „Prisegti“ šoninio skydelio viršuje</translation>

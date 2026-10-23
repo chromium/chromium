@@ -256,7 +256,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3531741627422851418">QR-код для завантаження вебпереглядача Chromium на мобільні пристрої</translation>
 <translation id="354621070532799440">Нагадування: найкращі функції безпеки Google у вашій кишені</translation>
 <translation id="3561853857681580870">Щоб показувати свій екран, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
-<translation id="3588112919289558122">Покращений захист вимикає оптимізацію JavaScript для сайтів, які Chromium не розпізнає</translation>
 <translation id="3597003331831379823">Не вдалося виконати налаштування з розширеними повноваженнями. <ph name="METAINSTALLER_ERROR" />.</translation>
 <translation id="3600428265489994557">Увійдіть у Chromium</translation>
 <translation id="3639635944603682591">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3971865010372729242">Коли ви вводите запит в адресному рядку або полі пошуку, Chromium надсилає його в агрегатор пошуку вашої організації, а також штучному інтелекту й агентам на основі ШІ, які вона використовує, щоб надавати вам підказки.</translation>
 <translation id="3975724895399328945">Про &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Про Chromium OS</translation>
-<translation id="4010059961270896984">Коли ви відвідуєте сайт, Chromium надсилає в <ph name="BEGIN_LINK" />Безпечний перегляд Google<ph name="END_LINK" /> обфусковану частину URL-адреси через сервер захисту конфіденційності, який приховує вашу IP-адресу. Якщо на сайті виявлено підозрілу поведінку, Chrome також надсилає повні URL-адреси й уривки контенту сторінки.</translation>
 <translation id="4016217212818346953">Дбайте про безпеку з Менеджером паролів</translation>
 <translation id="4019629340646866719">Chromium OS і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Перекласти вміст екрана</translation>
@@ -456,7 +454,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5821520528363214608">Щоб зберігати й використовувати дані Chromium в обліковому записі Google, оновіть Chromium</translation>
 <translation id="5824893331272123205">Не вдалося завантажити цю панель. Повторіть спробу.</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
-<translation id="5867606647614813312">Забезпечує найвищий рівень захисту в Chromium завдяки додатковим функціям</translation>
 <translation id="5871205389137001634">Натисніть, щоб закрити пошук за зображенням</translation>
 <translation id="5883558403894052917">Веб-переглядач Chromium виявив, що наведені нижче елементи містять зловмисне програмне забезпечення.</translation>
 <translation id="5889361821821684993">Chromium регулярно перевіряє, чи достатньо надійні налаштування вашого веб-переглядача. Ми повідомимо, якщо потрібно буде вжити заходів.</translation>
@@ -758,7 +755,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8522801943730206384">Chromium зможе перевірити ваші паролі, коли ви їх збережете</translation>
 <translation id="8525579356836940628">Встановлення зупинено</translation>
 <translation id="8545729292258443488">Зберігайте доступ до паролів, вкладок і інших даних, де б ви не були, у додатку Chromium на вашому пристрої <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Отримуйте сповіщення, якщо Chromium виявить, що один із ваших паролів розкрито через порушення безпеки даних</translation>
 <translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Деякі функції і розширення Chromium мають швидкі команди. Ви можете знову ввімкнути їх.</translation>
 <translation id="8556420416730706394">Ви можете закріпити пошук за зображенням для швидкого доступу: для цього вгорі бічної панелі натисніть кнопку "Закріпити"</translation>

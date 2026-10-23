@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">For å fjerne Google-kontoen din fra Chrome, logg av</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="22791603784558743">Lukk Gemini i Chrome Dev</translation>
-<translation id="2284380654876659752">Når du besøker nettsteder, sender Chrome en obfuskert del av nettadressen til <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> via en personverntjener som skjuler IP-adressen din. Hvis nettsteder gjør noe mistenkelig, sendes også fullstendige nettadresser og deler av sideinnholdet.</translation>
 <translation id="2290014774651636340">API-nøkler for Google mangler. Noe funksjonalitet i Google Chrome blir deaktivert.</translation>
 <translation id="2290095356545025170">Er du sikker på at du vil avinstallere Google Chrome?</translation>
 <translation id="2295218613066132598">Vis Chrome-nettstedssnarveier</translation>
@@ -380,7 +379,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
 <translation id="4598116752460667024">Søk etter en prosess på listen.</translation>
 <translation id="4600710005438004015">Chrome kunne ikke oppdateres til den nyeste versjonen, så du går glipp av nye funksjoner og sikkerhetsforbedringer.</translation>
-<translation id="4606805686144157064">Få et varsel hvis Chrome finner et av passordene dine i et offentlig databrudd</translation>
 <translation id="4608435347866444037">Søk med dette bildet i Google Lens</translation>
 <translation id="4624065194742029982">Chrome Inkognito</translation>
 <translation id="4627412468266359539">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromeOS Flex bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
@@ -397,7 +395,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="4768676935374695498">Søk i denne videoen med Google Lens</translation>
 <translation id="479167709087336770">Denne funksjonen bruker den samme stavekontrollen som Google Søk. Tekst du skriver inn i nettleseren, sendes til Google. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="4793679854893018356">Finn ut hvordan Chrome holder deg trygg</translation>
-<translation id="4799870290441980300">Slår på flere funksjoner for å gi deg den beste beskyttelsen i Chrome</translation>
 <translation id="4828579605166583682">Google Chrome prøver å erstatte eksisterende passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="4836321460899997044">Chrome-profil</translation>
 <translation id="4842397268809523050">ChromeOS Flex kunne ikke synkronisere dataene dine. Dette skyldes at synkronisering ikke er tilgjengelig for domenet ditt.</translation>
@@ -552,7 +549,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6251759518630934363">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
 <translation id="6277547788421725101">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome</translation>
 <translation id="627882678981830918">Tilpass og kontroller Chrome. Angi Chrome som standard.</translation>
-<translation id="6280042952415350607">Økt beskyttelse slår av JavaScript-optimalisering for nettsteder Chrome ikke gjenkjenner</translation>
 <translation id="6288580400488258237">Bruk Google Chrome som standardnettleser, og fest den til oppgavelinjen</translation>
 <translation id="6291089322031436445">Chrome Dev-apper</translation>
 <translation id="6291549208091401781">Google Chrome er allerede installert for alle brukerne på datamaskinen din.</translation>
@@ -723,6 +719,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7777080907402804672">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
 <translation id="778331955594035129">Chrome trenger posisjonstillatelse for dette nettstedet</translation>
 <translation id="7787950393032327779">Profilen ser ut til å være i bruk av en annen Google Chrome-prosess (<ph name="PROCESS_ID" />) på en annen datamaskin (<ph name="HOST_NAME" />). Chrome har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chrome på nytt.</translation>
+<translation id="7800043020703832708">Lukk Google Søk i sidepanelet</translation>
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7804364787702057554">Kontoen din i Chrome</translation>
 <translation id="7804947029129221742">Søkemotoren er endret utenfor Chrome. For å beskytte deg har Chrome tilbakestilt den til den opprinnelige standardinnstillingen. <ph name="LEARN_MORE_LINK" /></translation>

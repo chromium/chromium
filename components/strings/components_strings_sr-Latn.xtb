@@ -688,6 +688,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2155260325161282517">5×7 in</translation>
 <translation id="2156467141257470387">Možete da koristite sačuvane adrese u svim Google proizvodima. Time ne menjate postojeću adresu na poslu. Biće sačuvana na Google nalogu, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Obaveštenja o praćenju cena</translation>
+<translation id="2158964559178498011">Automatsko popunjavanje funkcioniše na više mesta – pritisnite Ctrl dvaput da biste pronašli i popunili informacije</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Primarni logotip u zaglavlju</translation>
 <translation id="2162535140284745414">Dobijajte predloge u realnom vremenu koji mogu da vam pomognu da otkrijete nove načine za pregledanje pomoću veštačke inteligencije.</translation>
@@ -2193,6 +2194,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Želite da prevedete stranicu?</translation>
 <translation id="468314109939257734">Pregledajte broj svoje virtuelne kartice</translation>
+<translation id="4684818564800397688">Automatsko popunjavanje funkcioniše na više mesta – pritisnite ⌘ dvaput da biste pronašli i popunili informacije</translation>
 <translation id="4686942373615810936">Napravljeno je malopre</translation>
 <translation id="4690205240253392065">Odaberite dobavljača za plaćanje kasnije</translation>
 <translation id="469028408546145398">Dugme Zatvori prozore bez arhiviranja, aktivirajte ga da biste zatvorili sve prozore bez arhiviranja koji su trenutno otvoreni</translation>
@@ -2432,6 +2434,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5052488928733955073">Problem pri popunjavanju informacija. Proverite vezu.</translation>
 <translation id="5053116470141135293">Broj virtuelne kartice će biti popunjen prilikom plaćanja ovom karticom radi zaštite stvarnih podataka. Upravljajte u Google novčaniku. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali ovaj fajl pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
+<translation id="5056587122125565772">Napravi sliku</translation>
 <translation id="505757197798929356">Navedite razlog za otvaranje (obavezno)</translation>
 <translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u podešavanjima</translation>
 <translation id="5061227663725596739">Da li ste mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>

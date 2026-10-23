@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">QR-kód a Chromium böngésző mobileszközökre való letöltéséhez</translation>
 <translation id="354621070532799440">Emlékeztető: A Google legjobb biztonsági funkciói a zsebében</translation>
 <translation id="3561853857681580870">A képernyő megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
-<translation id="3588112919289558122">A Speciális védelem kikapcsolja a JavaScript-optimalizálást a Chromium által fel nem ismert webhelyeknél</translation>
 <translation id="3597003331831379823">Nem sikerült futtatni a beállítást emelt szintű jogosultságokkal. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Bejelentkezés a Chromiumba</translation>
 <translation id="3639635944603682591">A személy böngészési adatai törlődnek az eszközről. Az adatok visszaállításához jelentkezzen be a Chromiumba a következő felhasználóként: <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Amikor beír valamit a címsávba vagy a keresőmezőbe, a Chromium elküldi a beírt szöveget a szervezet keresési, AI- és ügynökeszközeinek javaslatok biztosítása érdekében.</translation>
 <translation id="3975724895399328945">A Google Chrome for Testing névjegye</translation>
 <translation id="3997429360543082038">A ChromiumOS névjegye</translation>
-<translation id="4010059961270896984">Amikor Ön felkeres egy webhelyet, a Chromium az URL egy obfuszkált (érthetetlenné tett) részét elküldi a <ph name="BEGIN_LINK" />Google Biztonságos Böngészésnek<ph name="END_LINK" /> egy olyan adatvédelmi szerveren keresztül, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>
 <translation id="4016217212818346953">A Jelszókezelő gondoskodik a biztonságáról</translation>
 <translation id="4019629340646866719">A ChromiumOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, ahogyan a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" /> létrejöttéhez is.</translation>
 <translation id="4022972681110646219">Képernyőtartalom lefordítása</translation>
@@ -456,7 +454,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5821520528363214608">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, frissítse a Chromiumot</translation>
 <translation id="5824893331272123205">Nem sikerült betölteni ezt a panelt. Próbálja újra.</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
-<translation id="5867606647614813312">További funkciókat kapcsol be, hogy a Chromium a lehető legerősebb védelmet nyújthassa</translation>
 <translation id="5871205389137001634">Kattintson a Képkeresőből való kilépéshez</translation>
 <translation id="5883558403894052917">A Chromium rosszindulatú programot talált a következő elemekben:</translation>
 <translation id="5889361821821684993">A Chromium rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
@@ -756,7 +753,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8522801943730206384">A Chromium képes a jelszavak ellenőrzésére, ha Ön menti őket</translation>
 <translation id="8525579356836940628">Telepítés leállítva</translation>
 <translation id="8545729292258443488">A Chromium alkalmazással útközben is hozzáférhet jelszavaihoz, lapjaihoz és egyebekhez <ph name="DEVICE_TYPE" /> eszközén</translation>
-<translation id="8548787790260785208">Figyelmeztetést kaphat, ha a Chromium azt észleli, hogy az Ön egyik jelszava nyilvános adatvédelmi incidensben volt érintett.</translation>
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Egyes Chromium-funkciókhoz és -bővítményekhez gyorsparancsok tartoznak. Újra bekapcsolhatja őket.</translation>
 <translation id="8556420416730706394">Az egyszerű hozzáférés érdekében kitűzheti a Képkereső funkciót. Ehhez kattintson az oldalsó panel tetején található Rögzítés gombra.</translation>

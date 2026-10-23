@@ -143,7 +143,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2216543877350048334">Ili uondoe Akaunti yako ya Google kwenye Chrome, ondoka kwenye akaunti</translation>
 <translation id="2236949375853147973">Shughuli Zangu</translation>
 <translation id="22791603784558743">Funga Gemini kwenye Chrome - toleo la Dev</translation>
-<translation id="2284380654876659752">Unapotembelea tovuti, Chrome hutuma sehemu ya URL iliyofumbwa kwa <ph name="BEGIN_LINK" />Kipengele cha Kuvinjari Salama na Google<ph name="END_LINK" /> kupitia seva ya faragha inayoficha anwani yako ya IP. Iwapo tovuti itafanya kitu cha kutiliwa shaka, URL kamili na sehemu za maudhui ya ukurasa pia zitatumwa.</translation>
 <translation id="2290014774651636340">Funguo za API za Google zinakosekana. Baadhi ya utendaji wa Google Chrome utazimwa.</translation>
 <translation id="2290095356545025170">Je, una hakika kuwa ungependa kusanidua Google Chrome?</translation>
 <translation id="2295218613066132598">Onyesha njia za mkato za tovuti ya Chrome</translation>
@@ -384,7 +383,6 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="459622048091363950">Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.</translation>
 <translation id="4598116752460667024">Tafuta mchakato wowote kwenye orodha.</translation>
 <translation id="4600710005438004015">Imeshindwa kupata toleo jipya la Chrome, kwa hivyo hutapata masasisho ya usalama na vipengele vipya.</translation>
-<translation id="4606805686144157064">Pata onyo Chrome ikipata mojawapo ya manenosiri yako katika ufichuzi haramu wa data kwa umma</translation>
 <translation id="4608435347866444037">Tafuta picha hii ukitumia Lenzi ya Google</translation>
 <translation id="4624065194742029982">Hali fiche kwenye Chrome</translation>
 <translation id="4627412468266359539">Hiari: Tusaidie kuboresha vipengele na utendaji wa ChromeOS Flex kwa kutuma kiotomatiki uchunguzi na data ya matumizi kwa Google.</translation>
@@ -401,7 +399,6 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4768676935374695498">Tafuta Video Hii ukitumia Lenzi ya Google</translation>
 <translation id="479167709087336770">Huduma hii hutumia kikagua tahajia sawa na kinachotumika kwenye Huduma ya Tafuta na Google. Maandishi unayoandika kwenye kivinjari yanatumwa kwa Google. Unaweza kubadilisha hali hii katika mipangilio wakati wowote.</translation>
 <translation id="4793679854893018356">Pata maelezo ya jinsi Chrome inavyohakikisha usalama wako</translation>
-<translation id="4799870290441980300">Huwasha vipengele vya ziada ili kutoa ulinzi thabiti zaidi wa Chrome</translation>
 <translation id="4828579605166583682">Google Chrome inajaribu kubadilisha manenosiri yaliyopo. Andika nenosiri lako la Windows ili uiruhusu.</translation>
 <translation id="4836321460899997044">Wasifu wa Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex haikuweza kusawazisha data yako kwa sababu usawazishaji haupatikani katika kikoa chako.</translation>
@@ -560,7 +557,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6251759518630934363">Hukutahadharisha kuhusu tovuti hatari, hata zile ambazo hazikutambuliwa na Google hapo awali, kwa kuchambua data zaidi kutoka kwenye tovuti kuliko ulinzi wa kawaida. Unaweza kuchagua kuruka tahadhari za Chrome.</translation>
 <translation id="6277547788421725101">Mzazi wako amezima "Ruhusa za tovuti, programu na viendelezi" kwenye Chrome</translation>
 <translation id="627882678981830918">Dhibiti na uweke mapendeleo kwenye Chrome. Ifanye Chrome iwe kivinjari chako chaguomsingi.</translation>
-<translation id="6280042952415350607">Mipangilio ya ulinzi ulioboreshwa huzima kipengele cha uboreshaji wa JavaScript kwenye tovuti zisizotambuliwa na Chrome</translation>
 <translation id="6288580400488258237">Weka Google Chrome iwe kivinjari chako cha chaguomsingi kisha uibandike kwenye upauzana wako</translation>
 <translation id="6291089322031436445">Programu za Chrome Dev</translation>
 <translation id="6291549208091401781">Tayari Google Chrome imesakinishwa kwa watumiaji wote kwenye kompyuta yako.</translation>
@@ -731,6 +727,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7777080907402804672">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google. Unaweza kuzima mipangilio hii wakati wowote.</translation>
 <translation id="778331955594035129">Chrome inahitaji ruhusa ya kufikia maelezo ya mahali kwa ajili ya tovuti hii</translation>
 <translation id="7787950393032327779">Wasifu unaonekana kuwa unatumika na mchakato mwingine wa Google Chrome (<ph name="PROCESS_ID" />) kwenye kompyuta nyingine (<ph name="HOST_NAME" />). Chrome imefunga wasifu huu ili usifisidiwe. Kama una uhakika hakuna michakato mingine inayotumia wasifu huu, unaweza kufungua wasifu na uzindue Chrome tena.</translation>
+<translation id="7800043020703832708">Funga huduma ya Tafuta na Google kwenye kidirisha cha pembeni</translation>
 <translation id="7801699035218095297">Google Chrome inajaribu kunakili manenosiri. Andika nenosiri lako la Windows ili uiruhusu.</translation>
 <translation id="7804364787702057554">Akaunti yako katika Chrome</translation>
 <translation id="7804947029129221742">Mtambo wako wa kutafuta umebadilishiwa nje ya Chrome. Ili kukulinda, Chrome imeubadilisha kuwa mtambo chaguomsingi halisi. <ph name="LEARN_MORE_LINK" /></translation>

@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Không cho các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Có ưu đãi giảm giá trên một thẻ đang mở, từ <ph name="OLD_PRICE" /> xuống còn <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Thu hồi quyền truy cập vào thiết bị của <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Khi cửa sổ bị thu hẹp, hãy yêu cầu chế độ xem trên thiết bị di động</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6530703012083415527">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cửa sổ bật lên và đường liên kết chuyển hướng. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cửa sổ bật lên và đường liên kết chuyển hướng.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
 <translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web thuộc miền <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
 <translation id="7219254577985949841">Xoá dữ liệu trang web?</translation>
+<translation id="7225256190577194089">Thu hồi mọi quyền đối với thiết bị <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Chọn hình ảnh</translation>
 <translation id="7243246278722455312">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng</translation>
 <translation id="7243308994586599757">Có các tùy chọn ở gần cuối màn hình</translation>

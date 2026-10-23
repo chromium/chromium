@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">帮助改进增强型自动填充功能</translation>
 <translation id="3422958112451181446">按住即可将常用工具固定在此处</translation>
 <translation id="3430407169377889553">请谨慎使用 Gemini，在必要时进行接管。您需要为 Gemini 在执行任务期间的操作负责。</translation>
+<translation id="3432601291244612633">关闭页面</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3441673211568148613">让浏览记录不留痕迹</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
@@ -1379,7 +1380,7 @@
 <translation id="5250371859659394278">来自未知来源</translation>
 <translation id="525510229763628836">已最小化</translation>
 <translation id="5260842098960755113">已关闭会话串</translation>
-<translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{请先填写所有必填字段，然后再保存。}other{请先填写所有必填字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
 <translation id="5275953427913009986">附加的标签页“{title}”</translation>

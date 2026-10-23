@@ -257,7 +257,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3531741627422851418">QR-code om de Chromium-browser te downloaden op mobiele apparaten</translation>
 <translation id="354621070532799440">Herinnering: de beste beveiligingsfuncties van Google in je broekzak</translation>
 <translation id="3561853857681580870">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
-<translation id="3588112919289558122">Geoptimaliseerde beveiliging zet JavaScript-optimalisatie uit voor sites die Chromium niet herkent</translation>
 <translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inloggen bij Chromium</translation>
 <translation id="3639635944603682591">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
@@ -296,7 +295,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3971865010372729242">Als je in de adresbalk of het zoekvak typt, stuurt Chromium wat je typt naar de zoek-, AI- en agenttools van je organisatie om suggesties te krijgen.</translation>
 <translation id="3975724895399328945">Over &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Over Chromium OS</translation>
-<translation id="4010059961270896984">Als je een site bezoekt, stuurt Chromium een geobfusceerd gedeelte van de URL naar <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>
 <translation id="4016217212818346953">Blijf beschermd met Wachtwoordmanager</translation>
 <translation id="4019629340646866719">Chromium OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Scherm vertalen</translation>
@@ -457,7 +455,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="5821520528363214608">Update Chromium om Chromium-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="5824893331272123205">Kan dit deelvenster niet laden. Probeer het opnieuw.</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
-<translation id="5867606647614813312">Zet extra functies aan om de beste beveiliging van Chromium te bieden</translation>
 <translation id="5871205389137001634">Klik om Zoeken met afbeelding te sluiten</translation>
 <translation id="5883558403894052917">Chromium heeft vastgesteld dat deze items malware bevatten:</translation>
 <translation id="5889361821821684993">Chromium checkt regelmatig of je browser de veiligste instellingen heeft. We laten het je weten als je iets moet controleren.</translation>
@@ -759,7 +756,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8522801943730206384">Chromium kan je wachtwoorden checken als je deze hebt opgeslagen</translation>
 <translation id="8525579356836940628">Installatie gestopt</translation>
 <translation id="8545729292258443488">Neem je wachtwoorden, tabbladen en meer overal mee naartoe met de Chromium-app op je <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Krijg een waarschuwing als Chromium een van je wachtwoorden vindt bij een openbaar gegevenslek</translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sommige Chromium-functies en -extensies hebben snelkoppelingen. Je kunt deze weer aanzetten.</translation>
 <translation id="8556420416730706394">Je kunt Zoeken met afbeelding vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>

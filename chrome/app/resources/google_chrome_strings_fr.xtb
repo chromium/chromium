@@ -142,7 +142,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2216543877350048334">Pour supprimer votre compte Google de Chrome, déconnectez-vous</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="22791603784558743">Fermer Gemini dans Chrome Dev</translation>
-<translation id="2284380654876659752">Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à la <ph name="BEGIN_LINK" />navigation sécurisée Google<ph name="END_LINK" /> par le biais d'un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="2290014774651636340">Les clés API Google sont manquantes. Certaines fonctionnalités de Google Chrome vont être désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome ?</translation>
 <translation id="2295218613066132598">Afficher les raccourcis de sites Chrome</translation>
@@ -383,7 +382,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="459622048091363950">Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="4598116752460667024">Rechercher n'importe quel processus dans la liste.</translation>
 <translation id="4600710005438004015">Échec de l'installation de la dernière version de Chrome. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
-<translation id="4606805686144157064">Recevez une alerte si Chrome trouve l'un de vos mots de passe du fait d'une violation de données publique</translation>
 <translation id="4608435347866444037">Rechercher dans cette image avec Google Lens</translation>
 <translation id="4624065194742029982">Navigation privée dans Chrome</translation>
 <translation id="4627412468266359539">Facultatif : contribuez à améliorer les fonctionnalités et performances de ChromeOS Flex en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
@@ -400,7 +398,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4768676935374695498">Rechercher dans cette vidéo avec Google Lens</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4793679854893018356">Découvrez comment Chrome vous protège</translation>
-<translation id="4799870290441980300">Active des fonctionnalités supplémentaires pour fournir les protections les plus efficaces de Chrome</translation>
 <translation id="4828579605166583682">Google Chrome tente de remplacer les mots de passe existants. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
 <translation id="4836321460899997044">Profil Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex n'a pas pu synchroniser vos données, car la synchronisation n'est pas disponible pour votre domaine.</translation>
@@ -559,7 +556,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6251759518630934363">Vous avertit en cas de sites dangereux, y compris ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
 <translation id="6277547788421725101">Ton parent a désactivé "Autorisations des sites, applications et extensions" pour Chrome</translation>
 <translation id="627882678981830918">Personnaliser et contrôler Chrome. Définir Chrome comme navigateur par défaut.</translation>
-<translation id="6280042952415350607">La protection renforcée désactive l'optimisation JavaScript pour les sites que Chrome ne reconnaît pas</translation>
 <translation id="6288580400488258237">Définissez Google Chrome comme navigateur par défaut et épinglez-le à la barre des tâches</translation>
 <translation id="6291089322031436445">Applications Chrome pour les développeurs</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
@@ -730,6 +726,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver à tout moment cette option dans les paramètres.</translation>
 <translation id="778331955594035129">Chrome a besoin de l'autorisation d'accéder à la position pour ce site</translation>
 <translation id="7787950393032327779">Le profil semble être utilisé dans le cadre d'un autre processus Google Chrome (<ph name="PROCESS_ID" />) sur un autre ordinateur (<ph name="HOST_NAME" />). Le profil a été verrouillé de sorte qu'il ne soit pas endommagé. Si vous êtes sûr que le profil n'est utilisé dans le cadre d'aucun autre processus, vous pouvez le déverrouiller et relancer Google Chrome.</translation>
+<translation id="7800043020703832708">Fermer la recherche Google dans le panneau latéral</translation>
 <translation id="7801699035218095297">Google Chrome tente de copier les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="7804364787702057554">Votre compte dans Chrome</translation>
 <translation id="7804947029129221742">Votre moteur de recherche a été modifié en dehors de Chrome. Pour vous protéger, Chrome a rétabli sa valeur par défaut d'origine. <ph name="LEARN_MORE_LINK" /></translation>

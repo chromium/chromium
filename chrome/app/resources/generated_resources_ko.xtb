@@ -6,7 +6,6 @@
 <translation id="1002085272681738789">탭이 다시 활성화됨</translation>
 <translation id="1003088604756913841">새 <ph name="APP" /> 창에서 링크 열기</translation>
 <translation id="100323615638474026">USB 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google 세이프 브라우징</translation>
 <translation id="1003917207516838287">최근 다운로드 기록</translation>
 <translation id="1004218526896219317">사이트 액세스</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -163,6 +162,7 @@
 <translation id="1109482864356262001">움직임 감지 센서 또는 조도 센서가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1110155001042129815">대기</translation>
 <translation id="1110965959145884739">이 기기에 설치할 언어를 선택하세요. 디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">탭 그룹으로 포커스 이동</translation>
 <translation id="1112227834592480032">Google 렌즈 버튼을 선택한 다음 문제를 클릭하고 드래그하세요.</translation>
 <translation id="1112420131909513020">배경 탭에서 블루투스를 사용 중입니다.</translation>
 <translation id="1112998165730922436">전송 일시중지됨</translation>
@@ -267,7 +267,6 @@
 <translation id="1177548198167638471">다시 묻지 않음</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1178093605842850860">이 사이트를 읽고 변경할 수 있음</translation>
-<translation id="1178357842179817577">위험한 사이트, 다운로드, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="1178447762281437907"><ph name="BEGIN_BOLD" />더 관련성 높은 답변을 제공하기 위해 탭이 공유됩니다.<ph name="END_BOLD" /> 사용자가 새 채팅을 시작하면 Google에서는 열려 있는 탭의 콘텐츠와 URL을 사용합니다. 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
@@ -1193,7 +1192,6 @@
 <translation id="1901760057081700494">현재 시간대가 <ph name="TIME_ZONE_ENTRY" />(으)로 설정되어 있습니다. 시간대를 자동으로 업데이트하려면 <ph name="BEGIN_LINK" />시스템 위치 액세스를 사용 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="1903124137025773109">집 주소를 입력하면 더 관련성 높은 Google 검색 결과를 확인하고 Google 지도에서 경로 안내를 받는 등 Google 서비스 전반에서 작업을 처리하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />(<ph name="USERNAME" />)에서 주소를 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1904580727789512086">내가 방문한 URL이 Google 계정에 저장됩니다.</translation>
-<translation id="190530012637606145">비공개 인트라넷을 포함한 모든 비보안 연결에 대해 경고를 표시합니다</translation>
 <translation id="1906181697255754968">사이트에서는 일반적으로 작업 자동 저장 등의 기능을 위해 기기의 파일과 폴더에 액세스합니다.</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />에서 더 많은 확장 프로그램 및 테마를 찾아보세요.</translation>
 <translation id="1907044622262489040">음성으로 입력할 수 있습니다. 검색 + D를 사용한 다음 말하세요.</translation>
@@ -1720,7 +1718,6 @@
 <translation id="2300434721407965566">배터리 수명을 늘리기 위해 80%에서 충전을 중지합니다.</translation>
 <translation id="2301382460326681002">확장 프로그램 루트 디렉터리가 잘못되었습니다.</translation>
 <translation id="2304820083631266885">행성</translation>
-<translation id="2305202347479035002">작동 방식</translation>
 <translation id="2306794767168143227">이 기기의 <ph name="BRAND" />에 저장</translation>
 <translation id="2308798336967462263">Tab, Shift, Ctrl, Esc, Caps lock, 볼륨과 같은 키는 지원되지 않습니다.</translation>
 <translation id="2309620859903500144">모션 센서 또는 조도 센서 액세스가 차단된 사이트입니다.</translation>
@@ -1754,7 +1751,6 @@
 <translation id="2333166365943957309">UI 계층 구조</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
 <translation id="2333766266387181994">읽기 모드 열림, 전체 페이지 보기</translation>
-<translation id="2334384018887664164">콘텐츠 설정에서 신뢰하는 사이트를 허용 목록에 추가할 수 있습니다</translation>
 <translation id="233471714539944337">민감한 콘텐츠</translation>
 <translation id="2335758110242123814">그룹 열기</translation>
 <translation id="2336228925368920074">모든 탭 북마크...</translation>
@@ -1834,7 +1830,6 @@
 <translation id="2407671304279211586">DNS 제공업체 선택</translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408601796549249241">Gemini 하단 시트가 전체 높이로 열렸습니다.</translation>
-<translation id="2408762424059547338">JavaScript 최적화를 사용 중지하여 공격으로부터 사용자를 더 효과적으로 보호합니다</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409378541210421746">언어 선택 수정</translation>
 <translation id="2409709393952490731">휴대전화 또는 태블릿 사용</translation>
@@ -1879,7 +1874,6 @@
 <translation id="2440604414813129000">소스 보기(&amp;O)</translation>
 <translation id="244071666433939959">앱이 창에서 열립니다</translation>
 <translation id="2440823041667407902">위치 액세스</translation>
-<translation id="2441719842399509963">기본 설정으로 돌아가기</translation>
 <translation id="244231003699905658">잘못된 주소입니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="2442916515643169563">텍스트 음영</translation>
 <translation id="2443487764245141020">사이트에서 식별자를 사용하여 기기를 인식해야 할 수도 있습니다.</translation>
@@ -2043,7 +2037,6 @@
 <translation id="2544352060595557290">현재 탭</translation>
 <translation id="2546302722632337735">사이트가 보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용하지 않음</translation>
 <translation id="2546991196809436099">확대하여 화면에 있는 항목을 더 크게 표시할 수 있습니다. 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + M을 사용하세요.</translation>
-<translation id="2547602044908040111">사회 운동가, 언론인, 공인, 선거 관계자 또는 특수한 고위험 직위를 맡고 있는 경우 Google의 <ph name="BEGIN_LINK" />고급 보호 프로그램<ph name="END_LINK" />에 관해 알아보세요.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> 권한이 허용됨</translation>
 <translation id="2548545707296594436">eSIM 프로필 캐시 재설정</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
@@ -2081,7 +2074,6 @@
 <translation id="2581992808349413349">보안 연결을 사용하여 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회합니다. 이는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="2583877283803564049">툴바에 고정</translation>
 <translation id="2583905535229480958">모든 스마트 카드 리더</translation>
-<translation id="2583949330716828639">사이트 예외 관리</translation>
 <translation id="2584109212074498965">Kerberos 티켓을 가져올 수 없습니다. 다시 시도해 보거나 조직의 기기 관리자에게 문의하세요. (오류 코드 <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Chrome에서 웹사이트 마이크 권한 관리하기</translation>
 <translation id="2586672484245266891">더 짧은 URL을 입력하세요.</translation>
@@ -2168,7 +2160,6 @@
 <translation id="2646132387794831258">Google 계정의 폴더에 저장하시겠습니까?</translation>
 <translation id="264897126871533291">적색약</translation>
 <translation id="2649045351178520408">Base64-인코딩 ASCII, 인증서 체인</translation>
-<translation id="2649331484502514724">보안 DNS</translation>
 <translation id="2649508632465204949">새로운 기술 가르쳐 줘</translation>
 <translation id="2651259505411913186">예, 개인 데이터를 학교와 분리하여 유지</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
@@ -3050,7 +3041,6 @@
 <translation id="329838636886466101">복구</translation>
 <translation id="3298789223962368867">잘못된 URL을 입력했습니다.</translation>
 <translation id="32991397311664836">기기:</translation>
-<translation id="330140779027048024">선택한 DNS-over-HTTPS 제공업체와 함께 항상 사용</translation>
 <translation id="3301554464236215299">이 파일은 일반적으로 다운로드되지 않으며 위험할 수 있습니다.</translation>
 <translation id="3301996560342889673">기록을 동기화할까요?</translation>
 <translation id="33022249435934718">GDI 처리</translation>
@@ -3080,7 +3070,6 @@
 <translation id="3319863571062685443">주소가 저장되었습니다</translation>
 <translation id="3320271870899888245">OneDrive에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="3320630259304269485">세이프 브라우징(위험한 사이트로부터 보호) 및 기타 보안 설정</translation>
-<translation id="3320851950558287493">가능한 경우 연결을 HTTPS로 업그레이드하고 비보안 연결을 만들기 전에 경고를 표시합니다</translation>
 <translation id="3320957378743864387">글쓰기 도우미를 제공할 수 없음</translation>
 <translation id="3321460131042519426">줄바꿈 사용</translation>
 <translation id="3321494112580110651">프린터가 표시되지 않나요?</translation>
@@ -3102,7 +3091,6 @@
 <translation id="3336855445806447827">잘 모르겠음</translation>
 <translation id="3337568642696914359">사이트에서 프로토콜을 처리하도록 허용하지 않음</translation>
 <translation id="333863344734218290">안전하지 않은 공개 및 비공개 사이트에 대해 경고 표시</translation>
-<translation id="3339789735267352349">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> 다운로드 완료</translation>
 <translation id="3340978935015468852">설정</translation>
 <translation id="3341091511696469129">Chrome에서는 여기에 표시된 언어의 자막을 생성하고 번역할 수 있습니다</translation>
@@ -3371,7 +3359,6 @@
 <translation id="354068948465830244">사이트 데이터를 읽고 변경할 수 있음</translation>
 <translation id="3541823293333232175">할당됨</translation>
 <translation id="354323442562085715">글쓰기, 계획, 코딩 등</translation>
-<translation id="3543296862747913985">기능</translation>
 <translation id="3543298914473315872">업데이터 프로세스</translation>
 <translation id="3543393733900874979">업데이트 실패(오류: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3544879808695557954">사용자 이름(선택사항)</translation>
@@ -3993,7 +3980,6 @@
 <translation id="3968739731834770921">가나</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
-<translation id="3971154761614127188">일부 기능이 알려지지 않은 사이트의 속도를 제한할 수 있습니다.</translation>
 <translation id="3971355433478412726">Gemini 요청사항</translation>
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3974514184580396500">'다음'을 사용하여 화면에서 포커스를 앞으로 이동합니다.</translation>
@@ -4190,7 +4176,6 @@
 <translation id="4132364317545104286">eSIM 프로필 이름 바꾸기</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> 계속 다운로드</translation>
 <translation id="4133076602192971179">비밀번호 변경을 위해 앱 열기</translation>
-<translation id="4133265950310064865">향상된 보호 모드</translation>
 <translation id="4134838386867070505">1/4단계: 문제 설명</translation>
 <translation id="413534985210133938">'<ph name="LOCAL_FOLDER" />' 폴더가 이 기기에만 저장됩니다. 이 북마크를 '<ph name="LOCAL_FOLDER" />' 폴더로 이동하면 다른 기기에서 더 이상 액세스할 수 없습니다</translation>
 <translation id="4135370802895537423">오른쪽 뷰에서 링크 열기</translation>
@@ -4264,7 +4249,6 @@
 <translation id="4206144641569145248">외계인</translation>
 <translation id="4206323443866416204">의견 보고서</translation>
 <translation id="4206585797409671301">요청 표시가 허용됨</translation>
-<translation id="4207144975205749656">동일한 네트워크의 공격자가 트래픽을 볼 수 없도록 탐색 요청을 암호화합니다.</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" />(<ph name="LAST_ACTIVE_TIME" />)</translation>
 <translation id="4207932031282227921">권한 요청됨, F6 키를 눌러 응답</translation>
 <translation id="4209092469652827314">크게</translation>
@@ -4595,7 +4579,6 @@
 <translation id="4441928470323187829">관리자가 고정함</translation>
 <translation id="4442863809158514979">웹 권한 보기</translation>
 <translation id="4442937638623063085">프로필을 찾을 수 없습니다. 이동통신사에서 제공한 활성화 코드를 입력하세요</translation>
-<translation id="4443111948803895537">계정 및 네트워크 보호</translation>
 <translation id="4443536555189480885">도움말(&amp;H)</translation>
 <translation id="4444304522807523469">USB나 로컬 네트워크에 포함된 문서 스캐너에 액세스</translation>
 <translation id="4444512841222467874">저장 공간이 충분하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
@@ -5138,7 +5121,6 @@
 <translation id="4871308555310586478">Chrome 웹 스토어에서 설치되지 않았습니다.</translation>
 <translation id="4871322859485617074">PIN에 잘못된 문자가 포함되었습니다.</translation>
 <translation id="4871370605780490696">북마크 추가</translation>
-<translation id="4871630917300912613">JavaScript 보호 대책</translation>
 <translation id="4871719318659334896">그룹 닫기</translation>
 <translation id="4872192066608821120">비밀번호를 가져오려면 CSV 파일을 선택하세요.</translation>
 <translation id="4872212987539553601">온디바이스 암호화 설정</translation>
@@ -5554,7 +5536,6 @@
 <translation id="5186362203408605578">QR 코드를 스캔하여 다른 기기 사용</translation>
 <translation id="5186381005592669696">지원되는 앱의 표시 언어 맞춤설정</translation>
 <translation id="5186788525428341874">이 패스키를 사용하여 모든 기기에서 더 빠르게 로그인할 수 있습니다. 비밀번호가 <ph name="ACCOUNT_NAME" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
-<translation id="5186792064936776005">가능한 경우 기본값 사용</translation>
 <translation id="5186931074173692059">비밀번호가 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />(<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" />님이 공유함</translation>
@@ -6133,7 +6114,6 @@
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />에서 확장 프로그램과 테마를 찾아보세요</translation>
 <translation id="5639549361331209298">옵션을 더 보려면 이 페이지를 새로고친 다음 누르기</translation>
 <translation id="5640133431808313291">보안 키 관리</translation>
-<translation id="5640322514952298438">사이트 속도 우선</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />"에서 홈 버튼을 클릭할 때 표시되는 페이지를 변경했습니다.</translation>
 <translation id="5643191124441701136">보안 코드는 카드 앞면에 있습니다</translation>
 <translation id="5643321261065707929">종량제 네트워크</translation>
@@ -6201,7 +6181,6 @@
 <translation id="5701786609538182967">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> 외 앱 1개는 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="5702161882524398150">이전 탭에 관해 물어보기</translation>
 <translation id="5703716265115423771">볼륨 작게</translation>
-<translation id="5703998022096520811">Google 세이프 브라우징에 더 많은 정보를 전송하여 실시간으로 선제적 보호를 제공합니다</translation>
 <translation id="5705005699929844214">항상 접근성 옵션 표시</translation>
 <translation id="5707079561391284762">커서 이동 따라가기</translation>
 <translation id="5707674184620508665">조직(<ph name="ACCOUNT_MANAGER" />)에서 기존 데이터를 보거나 관리할 수 없습니다. 해당 데이터는 기존 프로필에 그대로 유지됩니다.</translation>
@@ -6291,7 +6270,6 @@
 <translation id="5789581866075720267">이 기기에서 <ph name="BRAND" />로 비밀번호를 가져오려면 CSV 파일을 선택하세요.</translation>
 <translation id="5790085346892983794">완료</translation>
 <translation id="5790651917470750848">포트 전달이 이미 존재합니다.</translation>
-<translation id="5792076233957036027">모든 연결에서 사용</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" />의 작업 더보기</translation>
 <translation id="5792728279623964091">전원 버튼을 탭하세요.</translation>
 <translation id="5792874008054171483"><ph name="SITE_NAME" />의 작업 메뉴 더보기</translation>
@@ -6362,7 +6340,6 @@
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
-<translation id="5840656138956959276">향상된 보호 모드: 엄격 적용</translation>
 <translation id="5840658767386246331">Google로 검색</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
@@ -6403,7 +6380,6 @@
 <translation id="5863195274347579748">외부 액세서리를 사용하여 개인 정보에 액세스하거나 개인 정보를 공유할 수도 있습니다.</translation>
 <translation id="5863263400083022538">시스템 서비스</translation>
 <translation id="5863515189965725638">IBAN 수정</translation>
-<translation id="5864624288360677142">가능한 경우 기본값을 사용하고 Google DNS를 백업으로 사용</translation>
 <translation id="5864754048328252126">충전 시 유휴 작업</translation>
 <translation id="586567932979200359">디스크 이미지에서 <ph name="PRODUCT_NAME" />을(를) 실행 중입니다. 컴퓨터에 설치하면 디스크 이미지가 없어도 실행이 가능하며 최신 상태로 유지됩니다.</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
@@ -6566,7 +6542,6 @@
 <translation id="598426658342593742">탭을 옆으로 이동</translation>
 <translation id="5985458664595100876">URL 형식이 잘못되었습니다. \\server\share 및 smb://server/share 형식이 지원됩니다.</translation>
 <translation id="5985556342298151179">기기 관리자가 설치한 Chrome 앱입니다.</translation>
-<translation id="5985899926376570122">고급</translation>
 <translation id="5986442691296752186">Linux 앱이 USB 기기를 제어하도록 허용합니다.</translation>
 <translation id="5987624353990540124">{COUNT,plural, =1{다시 실행하면 보안 시크릿 창은 다시 열리지 않습니다.}other{다시 실행하면 {COUNT}개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="598810097218913399">할당 삭제</translation>
@@ -7037,7 +7012,6 @@
 <translation id="6362853299801475928">문제 신고하기(&amp;R)...</translation>
 <translation id="6363990818884053551">동기화를 시작하려면 본인 여부를 확인하세요.</translation>
 <translation id="6365069501305898914">Facebook</translation>
-<translation id="6366190659675876144">표준 보호 모드</translation>
 <translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6367396429435748845">마우스 키를 일시중지하고 다시 시작하려면 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 키를 누르세요.</translation>
 <translation id="6367853307713830174">Gemini는 작업 단계를 표시하고, 민감한 작업은 수행 전에 확인을 시도합니다. 언제든지 중지하거나 직접 작업을 수행할 수 있습니다.</translation>
@@ -7095,7 +7069,6 @@
 <translation id="6410390304316730527">세이프 브라우징을 사용하면 악성 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드 정보)를 공개하는 등의 위험한 행동을 하도록 사용자를 속이는 공격자를 차단합니다. 이 기능을 사용 중지하는 경우 익숙하지 않거나 평판이 좋지 않은 사이트를 탐색할 때 주의하시기 바랍니다.</translation>
 <translation id="6410390446958964276">로그인한 상태에서는 Google 계정에 저장된 테마, 설정 등을 모든 기기에서 사용할 수 있습니다.</translation>
 <translation id="6411135999030237579">키를 길게 누르면 자동 반복</translation>
-<translation id="6415434255504060856">모든 사이트에 엄격 적용</translation>
 <translation id="6415757856498750027">'w'를 입력하면 'ư'이 표시됩니다.</translation>
 <translation id="6415900369006735853">휴대전화를 통해 인터넷에 연결합니다.</translation>
 <translation id="6416743254476733475">컴퓨터에서 권한을 허용하거나 차단하세요.</translation>
@@ -7455,7 +7428,6 @@
 <translation id="6686665106869989887">오른쪽으로 탭을 이동함</translation>
 <translation id="6686676261102452995">오늘 열어 본 항목</translation>
 <translation id="6686817083349815241">비밀번호 저장</translation>
-<translation id="6686878118106035853">맞춤 향상된 보호 모드는 모든 사이트에 대해 JavaScript 최적화를 사용 중지합니다</translation>
 <translation id="6687008241368170505">Google 비밀번호 관리자 PIN 변경</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> 숨기기</translation>
 <translation id="6689092196793298127">주최자</translation>
@@ -7665,7 +7637,6 @@
 <translation id="6840155290835956714">보내기 전에 확인</translation>
 <translation id="6840184929775541289">인증 기관 아님</translation>
 <translation id="6840214587087739194">주소 삭제됨</translation>
-<translation id="6840654149771416419">개방형 인터넷 연결에서 사용</translation>
 <translation id="6841076158433142214">다음 앱을 사용하여 화면 녹화 시 알림이 전송되지 않습니다.</translation>
 <translation id="6841143363521180029">암호화됨</translation>
 <translation id="6841186874966388268">오류</translation>
@@ -8464,6 +8435,7 @@
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="7435500219604275502">업데이트 적용</translation>
 <translation id="7439519621174723623">계속하려면 기기 이름을 추가하세요.</translation>
+<translation id="7440404390546433462">Google 검색</translation>
 <translation id="7441736921018636843">이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="7441830548568730290">다른 사용자</translation>
 <translation id="744341768939279100">새 프로필 만들기</translation>
@@ -8746,7 +8718,6 @@
 <translation id="7665445336029073980">전체 다운로드 기록</translation>
 <translation id="766560638707011986">도메인 표시</translation>
 <translation id="766635563210446220">비밀번호를 가져올 수 없습니다. <ph name="FILENAME" />를 확인하고 형식이 올바른지 확인하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="7666966001957552011">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램에 관해 경고합니다. 언제든지 이러한 경고를 사용 중지할 수 있습니다. 합법적인 콘텐츠에 대한 경고가 표시되면 <ph name="BEGIN_LINK" />오류를 신고<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="7668205084604701639">Office 파일 설정</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" />의 Google 비밀번호 관리자에서</translation>
 <translation id="7668648754769651616">접근성 기능을 사용하면 기기를 더 쉽게 사용할 수 있습니다. 빠른 설정에 액세스하려면 화면 하단의 시간을 선택하세요.</translation>
@@ -8764,7 +8735,6 @@
 <translation id="7674537509496907005">앱 <ph name="APP_COUNT" />개</translation>
 <translation id="7674542105240814168">위치 정보 액세스 거부됨</translation>
 <translation id="7675175806582227035">MIDI 기기를 제어하고 다시 프로그래밍할 수 있음</translation>
-<translation id="7676019765091965045">유출된 비밀번호 감지</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> 삭제</translation>
 <translation id="7678588695732963732">모든 USB 기기 권한을 재설정하시겠습니까?</translation>
@@ -8933,7 +8903,6 @@
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="780254490276923052">등급 2: 중간</translation>
 <translation id="780301667611848630">나중에</translation>
-<translation id="7803714812705886512">Google에서 위협을 감지하기 위해 더 적은 데이터(예: URL의 일부, 다운로드 정보)를 사용합니다.</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
 <translation id="7805371082115476536">밝게</translation>
 <translation id="7805768142964895445">상태</translation>
@@ -8958,7 +8927,6 @@
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
-<translation id="7823975162954158194">강력한 보호 기능을 제공합니다.</translation>
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="7825289983414309119">산</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>
@@ -9459,7 +9427,6 @@
 <translation id="8198181050118789419">테마: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8199300056570174101">네트워크(서비스) 및 기기 속성</translation>
-<translation id="819953863048845575">브라우징 보호</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8202827109322349110">기본 편집기에서 열기</translation>
 <translation id="8203152941016626022">Nearby Share 기기 이름</translation>
@@ -9677,7 +9644,6 @@
 <translation id="8354125743472063725"><ph name="APP_NAME" />에 허용하는 권한은 이 앱에도 허용됩니다. <ph name="BEGIN_LINK" />상위 앱의 권한 관리<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" />개</translation>
 <translation id="8356409598322585307">이미 등록한 기기입니다. 다시 등록하지 않아도 됩니다.</translation>
-<translation id="8357883857705092796">인식할 수 없는 사이트</translation>
 <translation id="8358685469073206162">페이지를 복원하시겠습니까?</translation>
 <translation id="835927394551949760">Google에 물어보기</translation>
 <translation id="835951711479681002">내 Google 계정에 저장</translation>
@@ -9978,7 +9944,6 @@
 <translation id="8598249292448297523">인쇄</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" />에서 비밀번호 및 패스키 관리</translation>
 <translation id="8602851771975208551">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 앱을 추가했습니다.</translation>
-<translation id="8602867356511778172">Google에서 위협을 더 빠르고 정확하게 감지하기 위해 더 많은 데이터(예: URL, 페이지 콘텐츠 샘플, 시스템 정보)를 사용합니다.</translation>
 <translation id="860399903490378651">이 뷰 닫기</translation>
 <translation id="8605428685123651449">SQLite 메모리</translation>
 <translation id="8606857385325125054"><ph name="PARENT_APP_NAME" />에서 설치한 앱입니다. <ph name="APP_NAME" /> 앱을 제거해도 <ph name="PARENT_APP_NAME" /> 또는 설치된 다른 앱에는 영향을 미치지 않습니다.</translation>
@@ -10109,7 +10074,6 @@
 <translation id="8690129572193755009">사이트에서 프로토콜 처리를 요청할 수 있음</translation>
 <translation id="869144235543261764">이 탭에서는 PIP 모드로 동영상이 재생되고 있습니다</translation>
 <translation id="869167754614449887">다운로드 기록에서 <ph name="FILE_NAME" /> 파일이 삭제되었습니다.</translation>
-<translation id="8691990641861252959">개방형 인터넷에서 비보안 연결에 경고를 표시합니다.</translation>
 <translation id="8692107307702113268">비밀번호가 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="8693862390730570097">'작성 지원 기능'이 자동으로 열리도록 허용하지 않음</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
@@ -10409,7 +10373,6 @@
 <translation id="8920133120839850939">'추가 동작' 탭을 선택한 다음 '페이지 간 스와이프'를 사용 설정하여 앞뒤로 이동하세요</translation>
 <translation id="8922348435910470639">이중 예약됨</translation>
 <translation id="8922624386829239660">마우스로 화면 가장자리를 터치할 경우 화면 움직이기</translation>
-<translation id="8923670289674436542">향상됨: 맞춤</translation>
 <translation id="8923880975836399332">진한 청록색</translation>
 <translation id="8925124370124776087">제목 표시줄 숨김</translation>
 <translation id="8925308599005372373">PDF 업로드</translation>

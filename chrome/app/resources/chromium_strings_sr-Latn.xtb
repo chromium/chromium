@@ -258,7 +258,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3531741627422851418">QR kôd za preuzimanje Chromium pregledača na mobilnim uređajima</translation>
 <translation id="354621070532799440">Podsetnik: Najbolje Google bezbednosne funkcije u vašem džepu</translation>
 <translation id="3561853857681580870">Da biste delili ekran, dozvolite snimanje ekrana za Chromium u podešavanjima sistema.</translation>
-<translation id="3588112919289558122">Poboljšana zaštita isključuje optimizaciju JavaScript-a za sajtove koje Chromium ne prepoznaje</translation>
 <translation id="3597003331831379823">Pokretanje podešavanja sa punim privilegijama nije uspelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Prijavite se u Chromium</translation>
 <translation id="3639635944603682591">Podaci pregledanja ove osobe će biti izbrisani sa ovog uređaja. Da biste vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3971865010372729242">Kada unosite tekst u traku za adresu ili u okvir za pretragu, Chromium šalje ono što unosite u alatke za pretragu, veštačku inteligenciju i agenta organizacije da biste dobijali predloge.</translation>
 <translation id="3975724895399328945">O verziji Google Chrome for Testing</translation>
 <translation id="3997429360543082038">O Chromium OS-u</translation>
-<translation id="4010059961270896984">Kada odete na sajt, Chromium šalje maskirani deo URL-a <ph name="BEGIN_LINK" />Google bezbednom pregledanju<ph name="END_LINK" /> preko servera za privatnost koji krije IP adresu. Ako sajt radi nešto sumnjivo, šalju se i kompletni URL-ovi i delovi sadržaja stranice.</translation>
 <translation id="4016217212818346953">Ostanite bezbedni uz Menadžer lozinki</translation>
 <translation id="4019629340646866719">Chromium OS je omogućen zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru sa otvorenim kodom<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linux okruženje za programiranje<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Prevedi ekran</translation>
@@ -458,7 +456,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="5821520528363214608">Da biste koristili i čuvali Chromium podatke na Google nalogu, ažurirajte Chromium</translation>
 <translation id="5824893331272123205">Učitavanje ovog okna nije uspelo. Probajte ponovo</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
-<translation id="5867606647614813312">Uključuje dodatne funkcije radi pružanja najsnažnije Chromium zaštite</translation>
 <translation id="5871205389137001634">Kliknite da biste napustili pretragu slika</translation>
 <translation id="5883558403894052917">Chromium je otkrio malver u ovim stavkama:</translation>
 <translation id="5889361821821684993">Chromium redovno proverava da li pregledač ima najbezbednija podešavanja. Obavestićemo vas ako je potrebno da nešto pregledate.</translation>
@@ -760,7 +757,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8522801943730206384">Chromium može da proverava lozinke kada ih sačuvate</translation>
 <translation id="8525579356836940628">Instalacija je prekinuta</translation>
 <translation id="8545729292258443488">Nosite svoje lozinke, kartice i drugo sa sobom pomoću aplikacije Chromium na uređaju <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Dobijajte upozorenja ako Chromium pronađe neku od lozinki u javnoj povredi podataka</translation>
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Neke Chromium funkcije i dodaci imaju prečice. Možete ponovo da ih uključite.</translation>
 <translation id="8556420416730706394">Možete da zakačite pretragu slika radi jednostavnog pristupa; kliknite na dugme Zakači u vrhu bočne table</translation>

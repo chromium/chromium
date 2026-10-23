@@ -258,7 +258,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3531741627422851418">QR-kod för att ladda ned webbläsaren Chromium på mobila enheter</translation>
 <translation id="354621070532799440">Påminnelse: Googles bästa säkerhetsfunktioner i fickan</translation>
 <translation id="3561853857681580870">För att dela skärmen tillåter du skärminspelning för Chromium i systeminställningarna.</translation>
-<translation id="3588112919289558122">Utökat skydd inaktiverar JavaScript-optimering för webbplatser som Chromium inte känner igen</translation>
 <translation id="3597003331831379823">Det gick inte att köra konfigureringen med förhöjd behörighet. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Logga in i Chromium</translation>
 <translation id="3639635944603682591">Den här personens webbläsardata tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill återställa data.</translation>
@@ -297,7 +296,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3971865010372729242">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till organisationens sök-, AI- och agentverktyg för att få förslag.</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Om Chromium OS</translation>
-<translation id="4010059961270896984">När du besöker en webbplats skickar Chromium en obfuskerad del av webbadressen till <ph name="BEGIN_LINK" />Google Säker webbsökning<ph name="END_LINK" /> via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>
 <translation id="4016217212818346953">Skydda dig med Lösenordshantering</translation>
 <translation id="4019629340646866719">Chromium OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Översätt text på skärmen</translation>
@@ -458,7 +456,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="5821520528363214608">Uppdatera Chromium om du vill använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="5824893331272123205">Det gick inte att läsa in panelen. Försök igen</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
-<translation id="5867606647614813312">Aktiverar ytterligare funktioner för att tillhandahålla Chromiums starkaste skydd</translation>
 <translation id="5871205389137001634">Klicka för att avsluta bildsökningen</translation>
 <translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig kod:</translation>
 <translation id="5889361821821684993">Chromium kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
@@ -760,7 +757,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8522801943730206384">Chromium kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="8525579356836940628">Installationen avbröts</translation>
 <translation id="8545729292258443488">Ta med dig dina lösenord, flikar och annat med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Få en varning om Chromium upptäcker att ett av dina lösenord har läckt ut i ett offentligt dataintrång</translation>
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Vissa funktioner och tillägg i Chromium har kortkommandon. Du kan välja att aktivera dem igen.</translation>
 <translation id="8556420416730706394">Du kan fästa Bildsökning för enkel åtkomst. Klicka på knappen Fäst högst upp på sidopanelen</translation>

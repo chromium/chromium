@@ -258,7 +258,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3531741627422851418">QR-kóði til að sækja Chromium-vafra í snjalltæki</translation>
 <translation id="354621070532799440">Áminning: Bestu öryggiseiginleikar Google í vasanum</translation>
 <translation id="3561853857681580870">Leyfðu skjáupptöku í Chromium í kerfisstillingunum til að deila skjánum þínum.</translation>
-<translation id="3588112919289558122">Aukin vörn slekkur á fínstillingu JavaScript fyrir vefsvæði sem Chromium þekkir ekki</translation>
 <translation id="3597003331831379823">Ekki tókst að hefja uppsetningu með auknum heimildum. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Skráðu þig inn á Chromium</translation>
 <translation id="3639635944603682591">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
@@ -297,7 +296,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3971865010372729242">Þegar þú skrifar í veffangastikuna eða leitarreitinn sendir Chromium það sem þú skrifar til leitarforrits fyrirtækisins þíns, gervigreindar og verkfæra hjá fulltrúum til að fá tillögur.</translation>
 <translation id="3975724895399328945">Um &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Um ChromiumOS</translation>
-<translation id="4010059961270896984">Þegar þú opnar vefsvæði sendir Chromium ruglaðan hluta vefslóðarinnar til <ph name="BEGIN_LINK" />Öruggrar vefskoðunar Google<ph name="END_LINK" /> í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði gerir eitthvað grunsamlegt eru heilar vefslóðir og efnisbútar af síðu einnig sendir.</translation>
 <translation id="4016217212818346953">Settu öryggið á oddinn með Aðgangsorðastjórnun</translation>
 <translation id="4019629340646866719">ChromiumOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Þýða skjá</translation>
@@ -458,7 +456,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5821520528363214608">Til að nota og vista Chromium-gögn á Google-reikningnum þínum skaltu uppfæra Chromium</translation>
 <translation id="5824893331272123205">Ekki tókst að hlaða glugganum, reyndu aftur</translation>
 <translation id="5862307444128926510">Velkomin(n) í Chromium</translation>
-<translation id="5867606647614813312">Kveikir á viðbótareiginleikum til að veita öflugustu vörn Chromium</translation>
 <translation id="5871205389137001634">Smelltu til að loka myndaleit</translation>
 <translation id="5883558403894052917">Chromium komst að því að eftirfarandi atriði innihalda spilliforrit:</translation>
 <translation id="5889361821821684993">Chromium athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
@@ -759,7 +756,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8522801943730206384">Chromium getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="8525579356836940628">Uppsetning var stöðvuð</translation>
 <translation id="8545729292258443488">Hafðu aðgangsorðin þín, flipa og fleira með þér á ferðinni með Chromium-forritinu í <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Fáðu viðvörun ef Chromium finnur eitt aðgangsorðanna þinna í almennu öryggisbroti</translation>
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sumir eiginleikar og viðbætur Chromium eru með flýtileiðir. Þú getur valið að kveikja aftur á þeim.</translation>
 <translation id="8556420416730706394">Þú getur fest myndaleit til að hafa greiðan aðgang að henni: Smelltu á hnappinn „Festa“ efst í hliðarglugganum</translation>

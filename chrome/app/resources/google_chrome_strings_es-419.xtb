@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">Sal de Chrome para quitar tu Cuenta de Google</translation>
 <translation id="2236949375853147973">Mi actividad</translation>
 <translation id="22791603784558743">Cerrar Gemini en Chrome Dev</translation>
-<translation id="2284380654876659752">Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a la <ph name="BEGIN_LINK" />Navegación segura de Google<ph name="END_LINK" /> con un servidor de privacidad que oculta tu dirección IP. Si un sitio realiza alguna acción sospechosa, también se envían las URLs completas y partes del contenido de la página.</translation>
 <translation id="2290014774651636340">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Google Chrome.</translation>
 <translation id="2290095356545025170">¿Estás seguro de que deseas desinstalar Google Chrome?</translation>
 <translation id="2295218613066132598">Mostrar accesos directos a sitios en Chrome</translation>
@@ -380,7 +379,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="4598116752460667024">Busca cualquier proceso de la lista.</translation>
 <translation id="4600710005438004015">Chrome no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
-<translation id="4606805686144157064">Recibe una advertencia si Chrome encuentra una de tus contraseñas en una violación de la seguridad de los datos pública</translation>
 <translation id="4608435347866444037">Buscar esta imagen con Google Lens</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
 <translation id="4627412468266359539">Opcional: Para ayudar a mejorar las funciones y el rendimiento de ChromeOS Flex, envía automáticamente datos de uso y de diagnóstico a Google.</translation>
@@ -397,7 +395,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="4768676935374695498">Buscar este video con Google Lens</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
 <translation id="4793679854893018356">Obtén información acerca de cómo Chrome te protege</translation>
-<translation id="4799870290441980300">Activa funciones adicionales para proporcionar las protecciones más sólidas de Chrome.</translation>
 <translation id="4828579605166583682">Google Chrome está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="4836321460899997044">Perfil de Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
@@ -552,7 +549,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6251759518630934363">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>
 <translation id="6277547788421725101">Tu madre o padre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome</translation>
 <translation id="627882678981830918">Personaliza y controla Chrome. Establece Chrome como tu navegador predeterminado.</translation>
-<translation id="6280042952415350607">La protección mejorada desactiva la optimización de JavaScript para los sitios que Chrome no reconoce</translation>
 <translation id="6288580400488258237">Establece Google Chrome como tu navegador predeterminado y fíjalo a la barra de tareas</translation>
 <translation id="6291089322031436445">Apps de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome ya está instalado para todos los usuarios en tu computadora.</translation>
@@ -723,6 +719,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7777080907402804672">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google. Puedes desactivar esta opción en la configuración en cualquier momento.</translation>
 <translation id="778331955594035129">Chrome necesita permiso de acceso a la ubicación para este sitio.</translation>
 <translation id="7787950393032327779">Parece que otro proceso de Google Chrome (<ph name="PROCESS_ID" />) está utilizando el perfil en otra computadora (<ph name="HOST_NAME" />). Chrome bloqueó el perfil para que no se dañe. Si puedes confirmar que ningún otro proceso está utilizando este perfil, puedes desbloquearlo y volver a iniciar Chrome.</translation>
+<translation id="7800043020703832708">Cerrar la Búsqueda de Google en el panel lateral</translation>
 <translation id="7801699035218095297">Google Chrome está intentando copiar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="7804364787702057554">Tu cuenta en Chrome</translation>
 <translation id="7804947029129221742">Se cambió tu motor de búsqueda fuera de Chrome. Chrome lo restableció a su configuración predeterminada original para protegerte. <ph name="LEARN_MORE_LINK" /></translation>

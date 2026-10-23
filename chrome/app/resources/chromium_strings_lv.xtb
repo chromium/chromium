@@ -255,7 +255,6 @@
 <translation id="3531741627422851418">Kvadrātkods pārlūka Chromium lejupielādei mobilajās ierīcēs</translation>
 <translation id="354621070532799440">Atgādinājums: Google labākās drošības funkcijas vienmēr par rokai</translation>
 <translation id="3561853857681580870">Lai kopīgotu ekrānu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
-<translation id="3588112919289558122">Izmantojot uzlaboto aizsardzību, tiek izslēgta JavaScript optimizācija vietnēm, ko Chromium neatpazīst.</translation>
 <translation id="3597003331831379823">Neizdevās izpildīt iestatīšanu ar augstām privilēģijām. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Pierakstīšanās pārlūkā Chromium</translation>
 <translation id="3639635944603682591">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chromium kā lietotājs <ph name="USER_EMAIL" />.</translation>
@@ -294,7 +293,6 @@
 <translation id="3971865010372729242">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chromium nosūta rakstīto tekstu jūsu organizācijas meklēšanas, MI un starpnieku rīkiem, lai iegūtu ieteikumus.</translation>
 <translation id="3975724895399328945">Par Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Par Chromium OS</translation>
-<translation id="4010059961270896984">Kad apmeklējat kādu vietni, pārlūks Chromium nosūta funkcijai <ph name="BEGIN_LINK" />Google droša pārlūkošana<ph name="END_LINK" /> pieslēptu URL daļu, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja vietnē tiek veiktas aizdomīgas darbības, tiek nosūtīti arī pilni URL un lapas satura fragmenti.</translation>
 <translation id="4016217212818346953">Gādājiet par drošību, izmantojot paroļu pārvaldnieku</translation>
 <translation id="4019629340646866719">Chromium OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Tulkot ekrāna tekstu</translation>
@@ -455,7 +453,6 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="5821520528363214608">Lai izmantotu un saglabātu Chromium datus Google kontā, atjauniniet pārlūku Chromium.</translation>
 <translation id="5824893331272123205">Nevarēja ielādēt šo paneli. Mēģiniet vēlreiz.</translation>
 <translation id="5862307444128926510">Laipni lūdzam pārlūkā Chromium!</translation>
-<translation id="5867606647614813312">Tiek ieslēgtas papildu funkcijas, lai nodrošinātu visefektīvāko Chromium aizsardzību.</translation>
 <translation id="5871205389137001634">Noklikšķiniet, lai izietu no funkcijas Attēlu meklēšana</translation>
 <translation id="5883558403894052917">Pārlūkā Chromium tika konstatēts, ka tālāk norādītie vienumi satur ļaunprātīgu programmatūru:</translation>
 <translation id="5889361821821684993">Chromium regulāri pārbauda, vai pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
@@ -755,7 +752,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8522801943730206384">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="8525579356836940628">Instalēšana apturēta</translation>
 <translation id="8545729292258443488">Izmantojiet lietotni Chromium savā ierīcē (<ph name="DEVICE_TYPE" />), lai piekļūtu savām parolēm, cilnēm un citiem datiem, atrodoties ceļā</translation>
-<translation id="8548787790260785208">Saņemiet brīdinājumu, ja pārlūkā Chromium tiek konstatēts, ka kāda no jūsu parolēm ir iekļauta publiskā datu aizsardzības pārkāpumā.</translation>
 <translation id="8555465886620020932">Pakalpojuma kļūda: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Dažām Chromium funkcijām un paplašinājumiem ir pieejamas saīsnes. Varat izvēlēties tos atkal ieslēgt.</translation>
 <translation id="8556420416730706394">Varat piespraust funkciju Attēlu meklēšana, lai ērti tai piekļūtu. Sānu paneļa augšdaļā noklikšķiniet uz pogas “Piespraust”.</translation>

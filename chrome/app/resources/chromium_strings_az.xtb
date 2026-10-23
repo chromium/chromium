@@ -256,7 +256,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="3531741627422851418">Mobil cihazlarda Chromium brauzerini endirmək üçün QR kodu</translation>
 <translation id="354621070532799440">Xatırlatma: Google-un ən yaxşı təhlükəsizlik funksiyaları cibinizdədir</translation>
 <translation id="3561853857681580870">Ekranı paylaşmaq üçün Sistem Ayarlarında Chromium üçün ekranın qeydə alınmasına icazə verin.</translation>
-<translation id="3588112919289558122">Təkmil qoruma Chromium-un tanımadığı saytlar üçün JavaScript optimallaşdırmasını söndürür</translation>
 <translation id="3597003331831379823">Artırılmış imtiyazlar ilə ayarlamanı işə salmaq alınmadı. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium-a daxil olun</translation>
 <translation id="3639635944603682591">Bu şəxsin axtarış datası bu cihazdan silinəcək. Datanı bərpa etmək üçün Chromium'a <ph name="USER_EMAIL" /> olaraq daxil olun.</translation>
@@ -295,7 +294,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="3971865010372729242">Ünvan zolağına və ya axtarış xanasına yazdığınız zaman Chromium təkliflər təqdim etmək üçün yazdıqlarınızı təşkilatın axtarış, Sİ və agent alətlərinə göndərir.</translation>
 <translation id="3975724895399328945">Sınaq üçün Google Chrome haqqında</translation>
 <translation id="3997429360543082038">ChromiumOS haqqında</translation>
-<translation id="4010059961270896984">Sayta daxil olduqda Chromium IP ünvanını gizlədən məxfilik mərkəzi vasitəsilə URL-in gizli hissəsini <ph name="BEGIN_LINK" />Google güvənli baxışa<ph name="END_LINK" /> göndərir. Sayt şübhəli nəsə edərsə, tam URL-lər və səhifə kontentinin bəzi hissələri də göndərilir.</translation>
 <translation id="4016217212818346953">Parol Meneceri ilə təhlükəsizliyinizi təmin edin</translation>
 <translation id="4019629340646866719">ChromiumOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux tərtibat mühiti<ph name="END_LINK_LINUX_OSS" /> kimi əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı<ph name="END_LINK_CROS_OSS" /> ilə əlçatan edilib.</translation>
 <translation id="4022972681110646219">Ekranı tərcümə edin</translation>
@@ -373,6 +371,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4786083865378785874">Chromium-da Gemini açıqdırsa, yeni tablar yaradılarkən yan panel açıq qalır</translation>
 <translation id="479167709087336770">Bu, Google axtarışda istifadə edilən eyni orfoqrafiya yoxlayandan istifadə edir. Brauzerdə yazdığınız mətn Google'a göndərilir. Bunu istənilən vaxt ayarlardan dəyişə bilərsiniz.</translation>
 <translation id="4814736265800133385">Hesab olmadan Chromium istifadə edin</translation>
+<translation id="4839733921943823254">Qısayolu bərkidin</translation>
 <translation id="4888717733111232871">mDNS trafikinə imkan vermək üçün Chromium üçün daxil olan qayda.</translation>
 <translation id="4893347770495441059">&amp;Chromium'u Güncəlləmək üçün yenidən başladın</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
@@ -456,7 +455,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="5821520528363214608">Google Hesabınızda Chromium datasından istifadə etmək və datanı yadda saxlamaq üçün Chromium-u güncəlləyin</translation>
 <translation id="5824893331272123205">Bu paneli yükləmək mümkün olmadı, yenidən cəhd edin</translation>
 <translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
-<translation id="5867606647614813312">Chromium-un ən güclü qorumalarını təmin etmək üçün əlavə funksiyaları aktiv edir</translation>
 <translation id="5871205389137001634">Şəkil axtarışından çıxmaq üçün klikləyin</translation>
 <translation id="5883558403894052917">Chromium bu elementlərdə zərərli proqram olduğunu aşkar edib:</translation>
 <translation id="5889361821821684993">Chromium brauzerin ən təhlükəsiz ayarlara malik olub-olmadığını müntəzəm yoxlayır. Nəzərdən keçirilməli məqam olsa, sizə bildirəcəyik.</translation>
@@ -756,10 +754,10 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8522801943730206384">Chromium yadda saxlanan parolları yoxlaya bilər</translation>
 <translation id="8525579356836940628">Quraşdırma dayandırılıb</translation>
 <translation id="8545729292258443488"><ph name="DEVICE_TYPE" /> cihazında Chromium tətbiqi ilə parollarınızı, tablarınızı və daha çoxunu istənilən vaxt, istənilən yerdə əldə edin</translation>
-<translation id="8548787790260785208">Chromium parollarınızdan birini ictimai data pozuntusunda aşkar edərsə, xəbərdarlıq alın</translation>
 <translation id="8555465886620020932">Xidmət xətası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Bəzi Chromium funksiyaları və artırmaları qısayollara malikdir. Onları yenidən aktiv etməyi seçə bilərsiniz.</translation>
 <translation id="8556420416730706394">Asan giriş üçün Şəkil Axtarışını bərkidə bilərsiniz; yan panelin yuxarısındakı Bərkitmə düyməsinə klikləyin</translation>
+<translation id="8564408666201523086">Uğurlu oldu! Artıq yan paneldə Google Axtarış ilə axtarış edərkən asanlıqla suallar verə bilərsiniz</translation>
 <translation id="856656450041460113">Dil siyahısını axtarın</translation>
 <translation id="8576826849825683917">Bir neçə təşkilat Chromium-u idarə edir</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>

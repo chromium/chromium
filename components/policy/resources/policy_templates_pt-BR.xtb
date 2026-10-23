@@ -1582,6 +1582,23 @@ Se esta política não for definida, o recurso "Clique para ligar" vai ficar ati
       Esta política bloqueia o JavaScript com base na correspondência entre a origem do documento de nível superior (geralmente o URL da página que também é mostrado na barra de endereços) e um dos padrões. Ela não é adequada para mitigar ataques de cadeia de suprimentos da web. Por exemplo, fornecer o padrão "https://[*.]foo.com/" não vai impedir que uma página hospedada em https://example.com execute um script carregado de https://www.foo.com/example.js. Além disso, fornecer o padrão "https://example.com/" não vai impedir que um documento de https://example.com execute scripts se ele não for o documento de nível superior, mas incorporado como um subframe em uma página hospedada em outra origem, como https://www.bar.com.</translation>
 <translation id="1942015922182679826">Ativar a exclusão de senhas não descriptografáveis</translation>
 <translation id="1942626390957213764">Desativar o hub de compartilhamento da área de trabalho</translation>
+<translation id="1943243146727870858">Desativar o logon único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para os provedores de identidade listados.
+
+Ao adicionar o valor <ph name="POLICY_VALUE_ALL" />, todos os provedores de identidade para SSO compatíveis são desativados.
+
+Ao adicionar o valor <ph name="POLICY_VALUE_MICROSOFT" />, o logon único para o provedor de identidade na nuvem da Microsoft® no Chrome é desativado.
+
+Se esta política for deixada sem definição, todos os provedores de identidade compatíveis com o <ph name="PRODUCT_NAME" /> serão ativados.
+
+Para provedores de identidade ativados no <ph name="PRODUCT_NAME" /> e configurados no dispositivo pelo admin, os usuários que fizerem login usando esse provedor em qualquer aplicativo compatível com o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> também poderão fazer login em propriedades da web usando esse provedor de identidade automaticamente. As informações de autenticação do usuário são transmitidas ao provedor de identidade na nuvem para cada evento de autenticação.
+
+Observações:
+
+O <ph name="PRODUCT_NAME" /> não aceita logon único usando <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nos modos de navegação anônima ou de convidado.
+
+O <ph name="PRODUCT_NAME" /> só é compatível com o Logon Único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para os seguintes provedores de identidade: Microsoft, Okta e Ping.
+
+Esse recurso está disponível no <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534">Não abrir o <ph name="PRODUCT_NAME" /> quando o usuário fizer login no <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Desativar o isolamento de sites para todos os sites, mas permitir que o usuário ative essa opção</translation>
 <translation id="1945994447126139909">Esta política visa à adaptação a curto prazo e será removida na versão 88 do <ph name="PRODUCT_NAME" />.
@@ -5759,6 +5776,27 @@ Aumentar acima do padrão (128) fica sob sua responsabilidade.
 Os limites aplicados são afetados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Desativar o recurso <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Essa política está obsoleta.</translation>
+<translation id="4531088355818260318">Esta política permite definir uma lista de regras para injetar cabeçalhos HTTP personalizados em solicitações da web que correspondem a padrões de URL específicos. Os cabeçalhos definidos por esta política têm precedência sobre aqueles inicialmente presentes na solicitação, bem como sobre as tentativas de modificações feitas por usuários ou extensões.
+
+Um caso de uso comum para essa política é aplicar controles de acesso de locatário injetando cabeçalhos personalizados (por exemplo, <ph name="EXAMPLE_HEADER_NAME" />).
+
+A política aceita uma lista de regras. Cada regra contém:
+
+* <ph name="PATTERNS_KEY" />: uma lista de padrões de URL para correspondência. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: uma lista de objetos que representam cabeçalhos a serem injetados. Cada um contém:
+
+  * <ph name="HEADER_NAME_KEY" />: o nome do cabeçalho a ser injetado.
+
+  * <ph name="HEADER_VALUE_KEY" />: o valor do cabeçalho a ser injetado.
+
+Se várias regras corresponderem a uma solicitação, serão aplicados os cabeçalhos de todas as regras correspondentes. Se houver vários cabeçalhos com o mesmo nome, será aplicado aquele que tiver o padrão de URL mais específico. Se os padrões forem igualmente específicos, será aplicado aquele que estiver por último na lista.
+
+Os nomes de cabeçalho precisam estar em conformidade com a RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Os valores de cabeçalho não podem conter símbolos NUL, CR ou LF. Os cabeçalhos individuais não podem exceder 8 KB. Cabeçalhos e padrões de URL inválidos serão ignorados.
+
+Esta política é limitada a um total de 500 padrões de URL em todas as regras. Cada regra pode conter no máximo 20 cabeçalhos. Padrões e cabeçalhos além desses limites serão ignorados.
+
+Observação: se um padrão de URL corresponder a esquemas não criptografados (http://, ws:// ou quando o esquema for omitido), os cabeçalhos configurados poderão ser transmitidos em texto simples por um canal não criptografado e ficar expostos a observadores de rede. Para proteger valores de cabeçalho sensíveis ou de identificação, restrinja os padrões de URL a esquemas criptografados (https:// ou wss://).</translation>
 <translation id="4531706050939927436">Os apps Android podem ser instalados forçadamente a partir do Google Admin Console usando o Google Play. Eles não usam esta política.</translation>
 <translation id="4534500438517478692">Nome de restrição Android:</translation>
 <translation id="4541530620466526913">Contas locais de dispositivo</translation>
@@ -7355,6 +7393,7 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, os aplicativos e o uso do dispositivo serão informados.</translation>
+<translation id="5418723809273651607">Provedor de identidade na nuvem da Ping®</translation>
 <translation id="5420245232720940848">Desativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, limitando os recursos dos dispositivos</translation>
 <translation id="5420673997623782432">Bloquear o acesso à geolocalização do sistema para todos os clientes</translation>
 <translation id="5420774177427557782">Controla se as VMs que usam essa configuração podem ser instaladas e executadas (<ph name="INSTALL_ALLOWED" />); executadas, mas não instaladas (<ph name="RUN_ALLOWED" />); ou não podem ser executadas (<ph name="BLOCKED" />). Para instalar uma VM, a chave installer_image_x86_64 também precisa ser definida. A remoção de uma configuração é definida implicitamente como <ph name="BLOCKED" /> para evitar que as VMs sejam executadas sem uma política.</translation>

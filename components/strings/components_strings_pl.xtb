@@ -52,6 +52,7 @@
 <translation id="1080116354587839789">Dopasuj do szerokości</translation>
 <translation id="1081061862829655580">Taca 19</translation>
 <translation id="1082026381988252344">Przewijanie i powiększanie zawartości udostępnionej karty</translation>
+<translation id="1083351079082239441">Zobacz najważniejsze działania, które Gemini wykonał za Ciebie podczas przeglądania stron</translation>
 <translation id="108859316315249327">Spróbuj ponownie</translation>
 <translation id="1089439967362294234">Zmień hasło</translation>
 <translation id="1090629319939036170">Menu VR</translation>
@@ -541,6 +542,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1913037223029790376">Użyj kodu CVC tej karty wirtualnej</translation>
 <translation id="191374271204266022">Skopiuj jako JSON</translation>
 <translation id="1914326953223720820">Usługa rozpakowywania</translation>
+<translation id="1915335901851260370">W tej chwili nie można zapisać imienia i nazwiska posiadacza karty</translation>
 <translation id="1919367280705858090">Uzyskiwanie pomocy w przypadku konkretnego komunikatu o błędzie</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Brak}=1{1 witryna}few{# witryny}many{# witryn}other{# witryny}}</translation>
@@ -688,6 +690,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2155260325161282517">5 x 7 cali</translation>
 <translation id="2156467141257470387">Zapisanych adresów możesz używać w różnych usługach Google. Nie spowoduje to zmiany obecnego adresu służbowego. Adres zostanie zapisany na Twoim koncie Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Powiadomienia ze śledzenia cen</translation>
+<translation id="2158964559178498011">Autouzupełnianie działa w większej liczbie miejsc – naciśnij dwukrotnie Ctrl, aby znaleźć i wypełnić informacje</translation>
 <translation id="2161656808144014275">Tekstowe</translation>
 <translation id="2162435186600002085">Logo nagłówka podstawowego</translation>
 <translation id="2162535140284745414">Otrzymuj sugestie w czasie rzeczywistym, które pomogą Ci znaleźć nowe sposoby przeglądania z wykorzystaniem AI.</translation>
@@ -916,6 +919,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="251033673027346551">Otwórz Portfel Google, aby zarządzać <ph name="BEGIN_LINK" />preferencjami dotyczącymi danych i prywatności<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nie zezwolono (domyślnie)</translation>
 <translation id="2512413427717747692">Przycisk ustawiania Chrome jako przeglądarki domyślnej. Naciśnij Enter, aby ustawić Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
+<translation id="2513217232843681817">Inne rodzaje historii przeglądania, np. wizyty w ramach automatycznego przeglądania zapisane w <ph name="BEGIN_LINK_GAA" />aktywności w aplikacjach z Gemini<ph name="END_LINK_GAA" />, mogą być nadal dostępne na Twoim koncie Google na stronie <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="2515629240566999685">Sprawdź sygnał w swojej okolicy</translation>
 <translation id="2518584823165598232">Ta karta jest niedostępna. Skontaktuj się jej z dostawcą.</translation>
 <translation id="2521385132275182522">Zszywka w prawym dolnym rogu</translation>
@@ -1363,6 +1367,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
 <translation id="3287510313208355388">Pobierz, gdy będę online</translation>
+<translation id="3288416906300127968">Przejdź do rozmowy z Gemini</translation>
 <translation id="3289578402369490638">Z innych sklepów w internecie</translation>
 <translation id="3293642807462928945">Więcej informacji o zasadzie <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Wyświetl hasła i zarządzaj nimi w ustawieniach Chrome</translation>
@@ -1383,6 +1388,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3324687287337751929">4 x 6 cali</translation>
 <translation id="3325568918769906282">malejąco</translation>
 <translation id="3325662270238538525">Ostatnie przypadki używania i modyfikowania plików, w tym nazwy plików, odciski cyfrowe zawartości plików, źródła pobierania i metadane</translation>
+<translation id="3326857361043236066">Najważniejsze działania Gemini związane z przeglądaniem</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
 <translation id="3333762389743153920">Nie spełnia wymagań dotyczących karty wirtualnej</translation>
 <translation id="3338095232262050444">Bezpieczna</translation>
@@ -2019,6 +2025,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4333561522337981382">Zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="4333854382783149454">PKCS #1, SHA-1 z szyfrowaniem RSA</translation>
 <translation id="4336913590841287350">Ta zasada nie jest jeszcze obsługiwana jako zasada dotycząca użytkowników w iOS.</translation>
+<translation id="4338516934178140574">W historii Chrome możesz zobaczyć najważniejsze działania, które Gemini wykonał za Ciebie podczas przeglądania stron</translation>
 <translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4340810192899866471">Importuj z JSON</translation>
 <translation id="4340982228985273705">Ten komputer nie został wykryty jako zarządzany przez firmę, przez co zasada może instalować automatycznie tylko rozszerzenia hostowane w Chrome Web Store. URL sklepu Chrome Web Store służący do aktualizacji to „<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -2112,6 +2119,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4510703642214459906">Obiekt</translation>
 <translation id="4515275063822566619">Karty i adresy pochodzą z Chrome i Twojego konta Google (<ph name="ACCOUNT_EMAIL" />). Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="451601984112574365">Zielony 3</translation>
+<translation id="4519245852815730903">Pojawi się prośba o zezwolenie na użycie każdego adresu e-mail osobno</translation>
 <translation id="4520048001084013693">Pobieranie tego pliku jest zablokowane przez zasady administratora</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Koperta Monarch</translation>
@@ -2193,6 +2201,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Przetłumaczyć stronę?</translation>
 <translation id="468314109939257734">Wyświetl numer karty wirtualnej</translation>
+<translation id="4684818564800397688">Autouzupełnianie działa w większej liczbie miejsc – naciśnij dwukrotnie ⌘, aby znaleźć i wypełnić informacje</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
 <translation id="4690205240253392065">Wybierz dostawcę usługi płatności odroczonych</translation>
 <translation id="469028408546145398">Przycisk Zamknij okna incognito; aktywuj, aby zamknąć wszystkie otwarte okna incognito</translation>
@@ -2382,6 +2391,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4969341057194253438">Usuń nagranie</translation>
 <translation id="4973922308112707173">Dwa otwory u góry</translation>
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
+<translation id="4982928820514634045">Przejdź do informacji kontaktowych</translation>
 <translation id="498323057460789381">Błąd weryfikacji schematu: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Korzystać z mikrofonu?</translation>
 <translation id="4989542687859782284">Niedostępne</translation>
@@ -2391,6 +2401,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4994095017621319069">1 grupa kart nie jest już dostępna</translation>
 <translation id="4995474875135717171">Zmodyfikowano:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać wyszukiwarką w witrynie i wyszukiwarką domyślną, naciśnij Tab, a potem Enter</translation>
+<translation id="4996709766489151157">Wypełnił informacje kontaktowe</translation>
 <translation id="4998950033665438990">Jednostronny</translation>
 <translation id="5000497292978544380">Tryb AI w wyszukiwarce Google</translation>
 <translation id="5001338033791319371">Aby wyjść z pełnego ekranu i zobaczyć pobieranie, przeciągnij od góry i kliknij przycisk Wstecz</translation>
@@ -2410,6 +2421,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5019293549442035120">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">czujniki ruchu i światła</translation>
 <translation id="5019952743397118625">Zasada <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> jest skonfigurowana. Zasada <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nie będzie sterować dostępnością trybu programisty na stronie rozszerzeń.</translation>
+<translation id="502075697789439404">Pobrał plik</translation>
 <translation id="5020862932518041900">Jeśli wybierzesz lub zignorujesz sugestię, Chrome dostosuje się tak, aby wyświetlać tylko to, co jest dla Ciebie istotne</translation>
 <translation id="5021500396464456616">Skontaktuj się z osobą, która wysłała ten link</translation>
 <translation id="5021557570875267742">Monitorowanie cen w Chrome</translation>
@@ -2432,6 +2444,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5052488928733955073">Nie udało się uzupełnić informacji. Sprawdź połączenie.</translation>
 <translation id="5053116470141135293">Podczas płacenia tą kartą zostanie wypełniony numer karty wirtualnej – pozwala to chronić Twoje prawdziwe dane. Zarządzaj w Portfelu Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}many{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
+<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="505757197798929356">Podaj powód otwarcia (wymagane)</translation>
 <translation id="5058282932481719070">Więcej informacji o ulepszonym autouzupełnianiu w ustawieniach</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2956,6 +2969,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Aby korzystać z funkcji Pomóż mi napisać, włącz to ustawienie</translation>
 <translation id="5932224571077948991">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
+<translation id="5933647156166686601">Sprawdź aktywność Gemini</translation>
 <translation id="5937560539988385583">Strona została przetłumaczona</translation>
 <translation id="5938153366081463283">Dodaj kartę wirtualną</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3430,6 +3444,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6721164594124191969">Etykiety (błyszczące)</translation>
 <translation id="6726832600570791992">(emulacja wersji 32-bitowej)</translation>
 <translation id="6727094998759448074">SRA4</translation>
+<translation id="672853333773293432">Zalogował się na konto</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem wielowyrazowym do synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="6740851646645036700">Twój limit pomocy w pisaniu został osiągnięty. Spróbuj później.</translation>
@@ -3494,6 +3509,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6852204201400771460">Załadować ponownie aplikację?</translation>
 <translation id="6854691830678097752">Aby płacić szybciej, zapisz ten kod CVC na swoim koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6858341433205161172"><ph name="DEVICE_NAME" /> (ta przeglądarka)</translation>
 <translation id="6860888819347870819">Może prosić o włączenie obrazu w obrazie</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Nie można teraz zweryfikować karty</translation>
@@ -3545,6 +3561,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6936976777388162184">To urządzenie jest dołączone do pakietu i nie można go zarejestrować w ramach Licencji na kioski i znaki.</translation>
 <translation id="6942444979237658241">Komentarze – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Wpisałeś swoje hasło na stronie, którą nie zarządza <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Aby chronić konto, nie używaj swojego hasła w innych aplikacjach ani witrynach.</translation>
+<translation id="6945116087771548601">Przejdź do pobranych plików</translation>
 <translation id="6948051842255602737">Koniec gry. Twój wynik to: <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Podczas zakupów w Chrome wyświetlaj Pix jako opcję</translation>
 <translation id="6948701128805548767">Aby zobaczyć metody odbioru oraz wymagania, wybierz adres</translation>
@@ -3613,6 +3630,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Próbujesz połączyć się z domeną <ph name="DOMAIN" />, ale serwer przedstawił certyfikat, którego okres ważności jest za długi, by był wiarygodny.</translation>
 <translation id="7053983685419859001">Blokuj</translation>
+<translation id="7054563057916451424"><ph name="DESTINATION" /> – otwiera się w nowej karcie</translation>
 <translation id="7054717457611655239">Od teraz zapisuj pliki w usłudze <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7057567173736333354">Opisz obraz</translation>
 <translation id="7058163556978339998">W <ph name="BROWSER" /> sprawdzono, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
@@ -3842,6 +3860,7 @@ Dodatkowe informacje:
 <translation id="7425037327577270384">Pomóż mi pisać</translation>
 <translation id="7426745633088095666">Udostępnione karty</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7430649113830485349">Sprawdź najważniejsze działania</translation>
 <translation id="7432774160230062882">Potwierdź swoją tożsamość, aby przeglądarka Chromium mogła uzupełnić dane do płatności.</translation>
 <translation id="7437289804838430631">Dodaj dane kontaktowe</translation>
 <translation id="7441627299479586546">Nieprawidłowy podmiot zasady</translation>
@@ -3987,6 +4006,7 @@ Dodatkowe informacje:
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659327900411729175">Koperta Kaku 8</translation>
 <translation id="766014026101194726">{0,plural, =1{Przesyłanie tego pliku jest zablokowane przez zasady administratora}few{Przesyłanie # plików jest zablokowane przez zasady administratora}many{Przesyłanie # plików jest zablokowane przez zasady administratora}other{Przesyłanie # pliku jest zablokowane przez zasady administratora}}</translation>
+<translation id="7660909719765799166">Przejdź do logowania na konto</translation>
 <translation id="7661440329832413796">Pomóż mi nauczyć się kodowania w Pythonie</translation>
 <translation id="7662298039739062396">Ustawienie kontrolowane przez rozszerzenie</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> opuścił(a) grupę</translation>
@@ -4002,6 +4022,7 @@ Dodatkowe informacje:
 <translation id="7675756033024037212">Przewijanie i powiększanie jest niedozwolone</translation>
 <translation id="7676643023259824263">Wyszukaj tekst ze schowka, <ph name="TEXT" /></translation>
 <translation id="7676840398262504532">Twoja organizacja monitoruje kopiowanie treści</translation>
+<translation id="767806704757698045">Działa tylko w obsługiwanych witrynach</translation>
 <translation id="7678730592635586336">Nagraj film jeszcze raz</translation>
 <translation id="7679287273775285018">Zapłać przez e-portfel</translation>
 <translation id="7679367271685653708">Wyświetl historię przeglądania i zarządzaj nią w ustawieniach Chrome</translation>
@@ -4123,6 +4144,7 @@ Dodatkowe informacje:
 <translation id="7885670691503039914">Otrzymasz alert e-mail, jeśli produkt stanieje w dowolnej witrynie. Ta strona zostanie zapisana w folderze zakładek <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7887683347370398519">Sprawdź kod CVC i spróbuj ponownie</translation>
 <translation id="7887885240995164102">Włącz obraz w obrazie</translation>
+<translation id="7888219259712865185">Dostawcy poczty e-mail, tacy jak google.com, mogą potwierdzić Twój adres e-mail, żeby nie trzeba było sprawdzać skrzynki odbiorczej</translation>
 <translation id="7888367499748383555">Bez opłat, RRSO od 0% (jeśli spełniasz wymagania)</translation>
 <translation id="7888575728750733395">Intencja renderowania wydruku</translation>
 <translation id="7890748547282909375">Aby zapisać zrzut ekranu, zaloguj się w Microsoft OneDrive</translation>
@@ -4367,6 +4389,7 @@ Dodatkowe informacje:
 <translation id="8298399736867690281">Karta została zapisana tylko na urządzeniu</translation>
 <translation id="8300302621078931927">Bezpiecznie zapisz dowód tożsamości w Portfelu Google</translation>
 <translation id="8301894345671534559">Wpisz kod</translation>
+<translation id="830342764194666561">Zmienił ustawienia witryny</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Bez opłat, RRSO od 0%</translation>
@@ -4501,6 +4524,7 @@ Dodatkowe informacje:
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8544217240017914508">Google Chrome próbuje zmienić ustawienia wypełniania form płatności.</translation>
 <translation id="8544303911974837265">Poliester</translation>
+<translation id="8545237556624168656">Aby korzystać z tej funkcji, musisz zalogować się na swoje konto e-mail</translation>
 <translation id="854548366864113872">Wysoka cena</translation>
 <translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Podaj powód przesłania (wymagane)</translation>
@@ -4520,6 +4544,7 @@ Dodatkowe informacje:
 <translation id="8577192028579836704">Typowa cena to <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Karta wirtualna jest niedostępna</translation>
 <translation id="8579000896558714521">Zastępowanie funkcji klawiatury</translation>
+<translation id="8579561564816585231">Zalogował się przy użyciu usługi Google, takiej jak Menedżer haseł</translation>
 <translation id="8581064022803799721">Ta strona jest zapisana w folderze <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Dodaj numer telefonu</translation>
 <translation id="8587100480629037893">Śledzenie rąk jest niedozwolone</translation>
@@ -4609,6 +4634,7 @@ Dodatkowe informacje:
 <translation id="8759274551635299824">Ta karta straciła ważność</translation>
 <translation id="87601671197631245">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła, wiadomości i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
 <translation id="8762871163452985706">Adnotacja została cofnięta</translation>
+<translation id="8762944800272172913">Nie udało się otworzyć rozmowy z Gemini</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Wysłano link z urządzenia <ph name="DEVICE_NAME" />}few{Wysłano # linki z urządzenia <ph name="DEVICE_NAME" />}many{Wysłano # linków z urządzenia <ph name="DEVICE_NAME" />}other{Wysłano # linku z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8763986294015493060">Zamknij wszystkie otwarte okna incognito</translation>

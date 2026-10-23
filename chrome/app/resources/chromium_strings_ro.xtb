@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">Cod QR pentru descărcarea browserului Chromium pe dispozitive mobile</translation>
 <translation id="354621070532799440">Memento: cele mai bune funcții de siguranță de la Google la îndemână</translation>
 <translation id="3561853857681580870">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chromium din Setări de sistem.</translation>
-<translation id="3588112919289558122">Protecția îmbunătățită dezactivează optimizarea JavaScript pentru site-urile pe care Chromium nu le recunoaște</translation>
 <translation id="3597003331831379823">Nu s-a putut rula configurarea cu privilegii de nivel superior. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Conectează-te la Chromium</translation>
 <translation id="3639635944603682591">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Când introduci text în bara de adrese sau în caseta de căutare, Chromium trimite ceea ce introduci către instrumentele de căutare, AI și de agent ale organizației tale pentru a primi sugestii.</translation>
 <translation id="3975724895399328945">Despre Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Despre sistemul de operare Chromium</translation>
-<translation id="4010059961270896984">Când accesezi un site, Chromium trimite la <ph name="BEGIN_LINK" />Navigarea sigură Google<ph name="END_LINK" /> o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>
 <translation id="4016217212818346953">Rămâi în siguranță cu Managerul de parole</translation>
 <translation id="4019629340646866719">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Tradu ecranul</translation>
@@ -456,7 +454,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5821520528363214608">Pentru a folosi și a salva datele Chromium în Contul Google, actualizează Chromium</translation>
 <translation id="5824893331272123205">Nu s-a putut încărca panoul. Încearcă din nou.</translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
-<translation id="5867606647614813312">Activează funcții suplimentare ca să oferi cele mai eficiente protecții din Chromium</translation>
 <translation id="5871205389137001634">Dă clic pentru a ieși din Căutarea de imagini</translation>
 <translation id="5883558403894052917">Chromium a descoperit că următoarele elemente conțin programe malware:</translation>
 <translation id="5889361821821684993">Chromium verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
@@ -758,7 +755,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8522801943730206384">Chromium îți poate verifica parolele dacă le salvezi</translation>
 <translation id="8525579356836940628">Instalare oprită</translation>
 <translation id="8545729292258443488">Accesează parolele, filele și multe altele din mers cu aplicația Chromium pe <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Primește avertismente dacă Chromium găsește una dintre parolele tale într-o încălcare a securității datelor publice</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Unele funcții și extensii Chromium au comenzi rapide. Poți alege să le reactivezi.</translation>
 <translation id="8556420416730706394">Poți să fixezi Căutarea de imagini pentru acces ușor. Dă clic pe butonul Fixează din partea de sus a panoului lateral.</translation>

@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">साइटना तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्यापासून ब्लॉक करा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6452138246455930388">तुमच्या उघड्या असलेल्या टॅबवरील किमतीमध्ये <ph name="OLD_PRICE" /> वरून <ph name="NEW_PRICE" /> वर घट झाली आहे, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405"><ph name="NAME" /> साठी डिव्हाइसची परवानगी मागे घ्या</translation>
 <translation id="6500423977866688905">विंडो अरुंद असते, तेव्हा मोबाइल दृश्याची विनंती करा</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
 <translation id="6530703012083415527">सुरू असताना, साइट पॉप-अप आणि रीडिरेक्ट वापरू शकतात. बंद असताना, साइट पॉप-अप आणि रीडिरेक्ट वापरू शकत नाहीत.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">डिव्‍हाइसवरील साइट डेटा</translation>
 <translation id="7201549776650881587">ही कृती <ph name="ORIGIN" /> अंतर्गत किंवा तुमच्या होम स्क्रीनवर त्याच्या अ‍ॅपने सर्व साइटनी स्टोअर केलेला सर्व डेटा आणि कुकी हटवेल</translation>
 <translation id="7219254577985949841">साइट डेटा हटवायचा आहे का?</translation>
+<translation id="7225256190577194089"><ph name="DEVICE_NAME" /> डिव्हाइससाठी सर्व परवानग्या मागे घ्या</translation>
 <translation id="723171743924126238">इमेज निवडा</translation>
 <translation id="7243246278722455312">तुमच्या नवीन टॅब पेजच्या तळाशी असलेली शीट कस्टमाइझ करा</translation>
 <translation id="7243308994586599757">स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत</translation>

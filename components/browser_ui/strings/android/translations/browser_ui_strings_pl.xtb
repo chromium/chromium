@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Nie zezwalaj stronom na korzystanie z urządzenia ani danych rzeczywistości wirtualnej</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6452138246455930388">Obniżka ceny na otwartej karcie. Poprzednio: <ph name="OLD_PRICE" />, teraz: <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Anuluj uprawnienia urządzenia dla: <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Jeśli okno jest wąskie, poproś o wersję na urządzenia mobilne</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="6530703012083415527">Gdy ta opcja jest włączona, strony internetowe mogą używać wyskakujących okienek i przekierowań. Gdy jest wyłączona, nie mają tej możliwości.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
 <translation id="7219254577985949841">Usunąć dane witryny?</translation>
+<translation id="7225256190577194089">Anuluj wszystkie uprawnienia urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Wybierz zdjęcia</translation>
 <translation id="7243246278722455312">Plansza dolna Dostosuj stronę nowej karty</translation>
 <translation id="7243308994586599757">Opcje dostępne u dołu ekranu</translation>

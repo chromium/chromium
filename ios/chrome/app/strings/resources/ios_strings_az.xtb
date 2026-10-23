@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">Qabaqcıl avtodoldurmanı təkmilləşdirməyə kömək edin</translation>
 <translation id="3422958112451181446">Sevimli alətinizi bura bərkitmək üçün basıb saxlayın</translation>
 <translation id="3430407169377889553">Gemini-dan diqqətlə istifadə edin və lazım gələrsə, nəzarəti ələ alın. Tapşırıqlar zamanı Gemini-ın fəaliyyətinə görə məsuliyyət daşıyırsınız.</translation>
+<translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
 <translation id="3441673211568148613">Axtarışı məxfi saxlayın</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
@@ -1941,6 +1942,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="6946722113367118030">Düşünmə</translation>
 <translation id="6947751977892029882">Bu ayarla bağlı xəta oldu. Chrome və iOS-u güncəlləyib yenidən başladın və təkrar cəhd edin. Bu xəta davam edərsə, iPhone-unuz bu ayarı dəstəkləməyə bilər.</translation>
 <translation id="6950522403736391608">Gizli</translation>
+<translation id="6957084631403333422">Fokuslanmış yeni tab səhifəsini sınayın</translation>
 <translation id="695965663642079255">Cəld ödəniş üçün ödəniş məlumatlarını yadda saxlayın və idarə edin</translation>
 <translation id="6962809930976936328">Gemini ilə statistik məlumatlar əldə edin</translation>
 <translation id="6964300328304469089">Seçilib: <ph name="NAME" /> (<ph name="EMAIL" />). Hesab seçin.</translation>
@@ -2178,6 +2180,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7724085059277147439">{count,plural, =1{Element Google Hesabında ({email}) yadda saxlandı}other{Elementlər Google Hesabında ({email}) yadda saxlandı}}</translation>
 <translation id="7729458878441927652">Digər cihazlardakı tablara baxmaq üçün tab və tarixçəni sinxronlaşdırın.</translation>
 <translation id="7730020510075123961">Xeyr, datanı birləşdirin</translation>
+<translation id="7730937523779541003">Fokuslanmış yeni tab səhifəsi tətbiq edildi</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Yalnız bu cihazda.</translation>
 <translation id="7737550920399185748">Foto mediatekanızdakı əsas səhifə fotoları cihazlarınız arasında sinxronlaşdırılmayacaq.</translation>
 <translation id="7738120385185846461">Problemi xəbər verin…</translation>
@@ -2621,6 +2624,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="9032405509996909363">Baxış datasının silinməsini təsdiq edin</translation>
 <translation id="9038526468059454274">Bununla yekunlaşdırın:</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
+<translation id="9042363670218758847">Sürətli axtarışlar üçün yaradılmış düzənə keçin</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="9044703854323320868">Gmail mesajı <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Açıq tabları düzənləmək və məhsuldar olmaq üçün tab qrupları yaradın</translation>

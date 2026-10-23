@@ -257,7 +257,6 @@
 <translation id="3531741627422851418">मोबाइल डिव्हाइसवर Chromium ब्राउझर डाउनलोड करण्यासाठी QR कोड</translation>
 <translation id="354621070532799440">रिमाइंडर: तुमच्या खिशात Google ची सर्वोत्तम सुरक्षितता वैशिष्ट्ये</translation>
 <translation id="3561853857681580870">तुमची स्क्रीन शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chromium साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
-<translation id="3588112919289558122">Chromium ओळखत नसलेल्या साइटसाठी वर्धित संरक्षण JavaScript ऑप्टिमायझेशन बंद करते</translation>
 <translation id="3597003331831379823">वाढीव विशेषाधिकारांसह सेटअप रन करता आला नाही. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium मध्ये साइन इन करा</translation>
 <translation id="3639635944603682591">या व्यक्तीचा ब्राउझिंग डेटा या डिव्हाइसवरून हटवला जाईल. डेटा रीकव्हर करण्यासाठी, Chromium वर <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
@@ -296,7 +295,6 @@
 <translation id="3971865010372729242">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्समध्ये टाइप करता, तेव्हा सूचना मिळवण्यासाठी Chromium तुम्ही जे टाइप करता ते तुमच्या संस्थेचा शोध, AI आणि एजंट टूल यांना पाठवते.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing विषयी</translation>
 <translation id="3997429360543082038">ChromiumOS बद्दल</translation>
-<translation id="4010059961270896984">तुम्ही साइटला भेट देता, तेव्हा Chromium तुमचा आयपी अ‍ॅड्रेस लपवणाऱ्या गोपनीयता सर्व्हरद्वारे <ph name="BEGIN_LINK" />Google सुरक्षित ब्राउझिंग<ph name="END_LINK" /> ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="4016217212818346953">Password Manager सह सुरक्षित रहा</translation>
 <translation id="4019629340646866719">ChromiumOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="4022972681110646219">स्क्रीनचे भाषांतर करा</translation>
@@ -374,6 +372,7 @@
 <translation id="4786083865378785874">Chromium मध्ये Gemini उघडे असल्यास, नवीन टॅब तयार करताना साइड पॅनल उघडे राहते</translation>
 <translation id="479167709087336770">Google Search मध्ये वापरत असेलेले समान स्पेल चेकर हे वापरते. तुम्ही ब्राउझरमध्ये टाइप करत असलेला मजकूर Google कडे पाठवला जातो. तुम्ही हे वर्तन कधीही सेटिंग्ज मध्ये बदलू शकता.</translation>
 <translation id="4814736265800133385">खात्याशिवाय Chromium वापरा</translation>
+<translation id="4839733921943823254">शॉर्टकट पिन करा</translation>
 <translation id="4888717733111232871">mDNS रहदारीस अनुमती देण्यासाठी Chromium साठी अंतर्गामी नियम.</translation>
 <translation id="4893347770495441059">&amp;Chromium अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
@@ -457,7 +456,6 @@
 <translation id="5821520528363214608">तुमच्या Google खाते मध्ये Chromium डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी, Chromium अपडेट करा</translation>
 <translation id="5824893331272123205">हे पॅनल लोड करता आले नाही, पुन्हा प्रयत्न करा</translation>
 <translation id="5862307444128926510">Chromium वर तुमचे स्‍वागत आहे</translation>
-<translation id="5867606647614813312">Chromium चे सर्वात मजबूत संरक्षण पुरवण्यासाठी अतिरिक्त वैशिष्ट्ये सुरू करते</translation>
 <translation id="5871205389137001634">इमेज शोध मधून बाहेर पडण्यासाठी क्लिक करा</translation>
 <translation id="5883558403894052917">Chromium ला या आयटममध्ये मालवेअरचा समावेश असल्याचे आढळले:</translation>
 <translation id="5889361821821684993">तुमच्या ब्राउझरमध्ये सर्वात सुरक्षित सेटिंग्ज असल्याची खात्री करण्यासाठी Chromium नियमितपणे तपासते. तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, आम्ही तुम्हाला कळवू.</translation>
@@ -759,10 +757,10 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="8522801943730206384">तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chromium ते तपासू शकते</translation>
 <translation id="8525579356836940628">इंस्टॉलेशन थांबवले</translation>
 <translation id="8545729292258443488">तुमच्या <ph name="DEVICE_TYPE" /> वरील Chromium अ‍ॅप वापरून तुमचे पासवर्ड, टॅब आणि आणखी बरेच काही फिरतीवर असताना सोबत ठेवा</translation>
-<translation id="8548787790260785208">Chromium ला सार्वजनिक डेटा भंगामध्ये तुमचा एखादा पासवर्ड आढळल्यास, चेतावणी मिळवा</translation>
 <translation id="8555465886620020932">सेवेशी संबंधित एरर: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">काही Chromium वैशिष्ट्ये आणि एक्स्टेंशन ही शॉर्टकटसह येतात. तुम्ही ती पुन्हा सुरू करणे निवडू शकता.</translation>
 <translation id="8556420416730706394">सोप्या अ‍ॅक्सेससाठी तुम्ही इमेज शोध पिन करू शकता; साइड पॅनलच्या सर्वात वरती पिन करा बटणावर क्लिक करा</translation>
+<translation id="8564408666201523086">यशस्वी! तुम्ही आता साइड पॅनलमध्ये Google Search वापरून ब्राउझ करत असताना सहजपणे प्रश्न विचारू शकता</translation>
 <translation id="856656450041460113">भाषा सूचीमध्ये शोधा</translation>
 <translation id="8576826849825683917">एकाहून अधिक संस्था Chromium व्यवस्थापित करतात</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium लेखक. सर्व हक्क राखीव.</translation>

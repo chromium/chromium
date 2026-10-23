@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">মোবাইল ডিভাইসে Chromium ব্রাউজার ডাউনলোড করার QR কোড</translation>
 <translation id="354621070532799440">রিমাইন্ডার: Google-এর সেরা নিরাপত্তা ফিচার এখন আপনার হাতের মুঠোয়</translation>
 <translation id="3561853857681580870">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন।</translation>
-<translation id="3588112919289558122">Chromium শনাক্ত করতে পারে না এমন সব সাইটের জন্য 'উন্নত সুরক্ষা' জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করে দেয়</translation>
 <translation id="3597003331831379823">বিশেষ সুবিধার অ্যাক্সেস সহ সেট-আপ রান করা যায়নি। <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium-এ সাইন-ইন করুন</translation>
 <translation id="3639635944603682591">এই ডিভাইস থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">অ্যাড্রেস বার বা সার্চ বক্সে আপনি কিছু টাইপ করলে, সাজেশন পাওয়ার জন্য আপনি যা টাইপ করেন Chromium সেটি আপনার প্রতিষ্ঠানের সার্চ, AI ও এজেন্ট টুলে পাঠিয়ে দেয়।</translation>
 <translation id="3975724895399328945">Google Chrome for Testing সম্পর্কে</translation>
 <translation id="3997429360543082038">ChromiumOS সম্পর্কে</translation>
-<translation id="4010059961270896984">আপনি কোনও সাইট ভিজিট করলে, Chromium সেই সাইটের URL-এর অস্পষ্ট অংশ <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" />-এ পাঠায়। এই কাজটি একটি প্রাইভেসি সার্ভারের মাধ্যমে করা হয়, যা আপনার IP অ্যাড্রেস লুকিয়ে রাখে। সাইটে সন্দেহজনক কিছু পাওয়া গেলে, সম্পূর্ণ URL ও পৃষ্ঠার কন্টেন্টের কিছু অংশও পাঠানো হয়।</translation>
 <translation id="4016217212818346953">Password Manager ব্যবহার করে নিরাপদে থাকুন</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromiumOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="4022972681110646219">স্ক্রিনে থাকা সব কন্টেন্ট অনুবাদ করুন</translation>
@@ -456,7 +454,6 @@
 <translation id="5821520528363214608">আপনার Google অ্যাকাউন্টে Chromium ডেটা ব্যবহার ও সেভ করতে, Chromium আপডেট করুন</translation>
 <translation id="5824893331272123205">এই প্যানেলটি লোড করা যায়নি, আবার চেষ্টা করুন</translation>
 <translation id="5862307444128926510">Chromium-এ স্বাগতম</translation>
-<translation id="5867606647614813312">Chromium-এর সবচেয়ে শক্তিশালী সুরক্ষা প্রদান করতে অতিরিক্ত ফিচার চালু করে</translation>
 <translation id="5871205389137001634">'ছবি সার্চ করা' ফিচার থেকে বেরিয়ে আসতে ক্লিক করুন</translation>
 <translation id="5883558403894052917">Chromium এইসব আইটেমে ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে:</translation>
 <translation id="5889361821821684993">আপনার ব্রাউজারে সবচেয়ে নিরাপদ সেটিংস নিশ্চিত করতে Chromium তা নিয়মিত চেক করে। আপনাকে কোনও কিছু পর্যালোচনা করতে হবে কিনা তা আমরা আপনাকে জানাব।</translation>
@@ -755,7 +752,6 @@ Chromium আপনার সেটিংস পুনরুদ্ধার ক�
 <translation id="8522801943730206384">আপনি পাসওয়ার্ড সেভ করলে Chromium তা চেক করতে পারবে</translation>
 <translation id="8525579356836940628">ইনস্টল করার কাজ বন্ধ করা হয়েছে</translation>
 <translation id="8545729292258443488"><ph name="DEVICE_TYPE" />-এ Chromium অ্যাপের সাহায্যে যেকোনও সময় ও জায়গায় আপনার পাসওয়ার্ড, ট্যাব সহ আরও অনেক কিছু অ্যাক্সেস করুন</translation>
-<translation id="8548787790260785208">সর্বজনীন ডেটা নিরাপত্তা লঙ্ঘনের কারণে Chromium আপনার কোনও পাসওয়ার্ড খুঁজে পেলে সতর্কতা পান</translation>
 <translation id="8555465886620020932">পরিষেবায় সমস্যা হয়েছে: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556055872671007529">কিছু Chromium ফিচার ও এক্সটেনশনের শর্টকাট থাকে। আপনি চাইলে সেগুলি আবার চালু করতে পারবেন।</translation>
 <translation id="8556420416730706394">সহজে অ্যাক্সেস করার জন্য আপনি 'ছবি সার্চ করা' ফিচার পিন করে রাখতে পারেন; সাইড প্যানেলের একেবারে উপরে পিন করুন বোতামে ক্লিক করুন</translation>

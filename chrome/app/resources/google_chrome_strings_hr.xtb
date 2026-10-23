@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">Odjavite se da biste uklonili svoj Google račun iz Chromea</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="22791603784558743">Zatvorite Gemini u verziji preglednika Chrome Dev</translation>
-<translation id="2284380654876659752">Kad posjetite neku web-lokaciju, Chrome <ph name="BEGIN_LINK" />Google sigurnom pregledavanju<ph name="END_LINK" /> šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako web-lokacija učini nešto sumnjivo, šalju se i potpuni URL-ovi i dijelovi sadržaja stranice.</translation>
 <translation id="2290014774651636340">Nedostaju ključevi Google API-ja. Neke funkcije Google Chromea bit će onemogućene.</translation>
 <translation id="2290095356545025170">Jeste li sigurni da želite deinstalirati Google Chrome?</translation>
 <translation id="2295218613066132598">Prikaži prečace web-lokacija u Chromeu</translation>
@@ -380,7 +379,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web-lokacije će vas moći tražiti pristup.</translation>
 <translation id="4598116752460667024">Potražite bilo koji proces s popisa.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
-<translation id="4606805686144157064">Primite upozorenje ako Chrome pronađe jednu od vaših zaporki u javnom neovlaštenom pristupu podacima</translation>
 <translation id="4608435347866444037">Pretražite tu sliku pomoću Google objektiva</translation>
 <translation id="4624065194742029982">Chromeov anonimni način</translation>
 <translation id="4627412468266359539">Neobavezno: pomozite poboljšati značajke i izvedbu ChromeOS Flexa automatskim slanjem podataka o upotrebi i dijagnostici Googleu.</translation>
@@ -397,7 +395,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="4768676935374695498">Pretražite ovaj videozapis pomoću Google objektiva</translation>
 <translation id="479167709087336770">Upotrebljava istu provjeru pravopisa koja se upotrebljava na Google pretraživanju. Tekst koji unesete u preglednik šalje se Googleu. To ponašanje možete promijeniti u postavkama kad god želite.</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
-<translation id="4799870290441980300">Uključuje dodatne značajke radi pružanja najsnažnije zaštite koju nudi Chrome</translation>
 <translation id="4828579605166583682">Google Chrome pokušava zamijeniti postojeće zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="4836321460899997044">Chrome profil</translation>
 <translation id="4842397268809523050">ChromeOS Flex nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>
@@ -552,7 +549,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6251759518630934363">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
 <translation id="6277547788421725101">Tvoj je roditelj isključio postavku "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chrome</translation>
 <translation id="627882678981830918">Prilagodite Chrome i upravljajte njime. Postavite Chrome kao zadani preglednik.</translation>
-<translation id="6280042952415350607">Poboljšana zaštita isključuje optimizaciju JavaScripta za web-lokacije koje Chrome ne prepoznaje</translation>
 <translation id="6288580400488258237">Postavite Google Chrome kao zadani preglednik i prikvačite ga na traku zadataka</translation>
 <translation id="6291089322031436445">Aplikacije preglednika Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome već je instaliran za sve korisnike na računalu.</translation>
@@ -723,6 +719,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="7777080907402804672">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu. To možete isključiti u bilo kojem trenutku u postavkama.</translation>
 <translation id="778331955594035129">Chrome treba dopuštenje za lokaciju za ovu web-lokaciju</translation>
 <translation id="7787950393032327779">Izgleda da neki drugi proces preglednika Google Chrome (<ph name="PROCESS_ID" />) na nekom drugom računalu (<ph name="HOST_NAME" />) upotrebljava taj profil. Chrome je zaključao profil da se profil ne bi promijenio. Ako ste sigurni da nijedan drugi proces ne upotrebljava taj profil, možete ga otključati i ponovo pokrenuti Chrome.</translation>
+<translation id="7800043020703832708">Zatvorite Google pretraživanje na bočnoj ploči</translation>
 <translation id="7801699035218095297">Google Chrome pokušava kopirati zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="7804364787702057554">Vaš račun u Chromeu</translation>
 <translation id="7804947029129221742">Tražilica je promijenjena izvan Chromea. Radi vaše zaštite Chrome je poništio tu postavku i vratio je na izvornu zadanu vrijednost. <ph name="LEARN_MORE_LINK" /></translation>

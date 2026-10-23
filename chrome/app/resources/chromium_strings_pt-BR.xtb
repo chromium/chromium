@@ -254,7 +254,6 @@
 <translation id="3531741627422851418">QR code para baixar o navegador Chromium em dispositivos móveis</translation>
 <translation id="354621070532799440">Lembrete: os melhores recursos de segurança do Google estão na sua mão</translation>
 <translation id="3561853857681580870">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
-<translation id="3588112919289558122">A proteção reforçada desativa a otimização do JavaScript nos sites que o Chromium não reconhece.</translation>
 <translation id="3597003331831379823">Falha ao executar a configuração com privilégios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Faça login no Chromium</translation>
 <translation id="3639635944603682591">Os dados de navegação dessa pessoa serão excluídos deste dispositivo. Para recuperar os dados, faça login no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -293,7 +292,6 @@
 <translation id="3971865010372729242">O Chromium envia o que você digitou na barra de endereço ou na caixa de pesquisa para as ferramentas de pesquisa, IA e agente da sua organização e recebe sugestões.</translation>
 <translation id="3975724895399328945">Sobre o &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Sobre o ChromiumOS</translation>
-<translation id="4010059961270896984">Quando você acessa um site, o Chromium envia à <ph name="BEGIN_LINK" />navegação segura do Google<ph name="END_LINK" /> apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>
 <translation id="4016217212818346953">Proteja-se com o Gerenciador de senhas</translation>
 <translation id="4019629340646866719">A existência do ChromiumOS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traduzir tela</translation>
@@ -371,6 +369,7 @@
 <translation id="4786083865378785874">Se o Gemini no Chromium estiver aberto, o painel lateral ficará aberto ao criar novas guias</translation>
 <translation id="479167709087336770">Esta opção usa o mesmo corretor ortográfico usado na Pesquisa Google. O texto digitado no navegador é enviado para o Google. É possível alterar esse comportamento nas configurações a qualquer momento.</translation>
 <translation id="4814736265800133385">Usar o Chromium sem uma conta</translation>
+<translation id="4839733921943823254">Fixar atalho</translation>
 <translation id="4888717733111232871">Regra interna para que o Chromium permita tráfego mDNS.</translation>
 <translation id="4893347770495441059">Reinicializar para atualizar o &amp;Chromium</translation>
 <translation id="4918086044614829423">Aceitar</translation>
@@ -454,7 +453,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5821520528363214608">Atualize o Chromium para usar e salvar dados dele na sua Conta do Google</translation>
 <translation id="5824893331272123205">Não foi possível carregar este painel, tente novamente</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
-<translation id="5867606647614813312">Ativa recursos extras para oferecer as proteções mais seguras do Chromium.</translation>
 <translation id="5871205389137001634">Clique para sair da pesquisa por imagens</translation>
 <translation id="5883558403894052917">O Chromium encontrou malware nestes itens:</translation>
 <translation id="5889361821821684993">O Chromium verifica regularmente se o navegador tem as configurações mais seguras. Avisaremos se algo precisar da sua análise.</translation>
@@ -752,10 +750,10 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8522801943730206384">O Chromium poderá verificar suas senhas quando elas forem salvas</translation>
 <translation id="8525579356836940628">Instalação interrompida</translation>
 <translation id="8545729292258443488">Leve suas senhas, guias e muito mais com você usando o Chromium no seu <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Receba um aviso se o Chromium encontrar uma das suas senhas em um vazamento de dados público</translation>
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Alguns recursos e extensões do Chromium incluem atalhos. Você pode reativá-los.</translation>
 <translation id="8556420416730706394">Você pode fixar a pesquisa por imagens para facilitar o acesso. Clique no botão "Fixar" na parte de cima do painel lateral</translation>
+<translation id="8564408666201523086">Pronto! Agora você pode fazer perguntas com facilidade enquanto navega com a Pesquisa Google no painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8576826849825683917">Várias organizações gerenciam o Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>

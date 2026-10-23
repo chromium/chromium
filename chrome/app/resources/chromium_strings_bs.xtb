@@ -258,7 +258,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3531741627422851418">QR kôd za preuzimanje preglednika Chromium na mobilne uređaje</translation>
 <translation id="354621070532799440">Podsjetnik: Googleove najbolje sigurnosne funkcije u džepu</translation>
 <translation id="3561853857681580870">Da podijelite ekran, dozvolite snimanje ekrana za Chromium u Postavkama sistema.</translation>
-<translation id="3588112919289558122">Poboljšana zaštita isključuje optimizaciju JavaScripta za web lokacije koje Chromium ne prepoznaje</translation>
 <translation id="3597003331831379823">Pokretanje postavljanja s dodatnim ovlastima nije uspjelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Prijavite se u Chromium</translation>
 <translation id="3639635944603682591">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da oporavite podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3971865010372729242">Kada pišete u traci za adresu ili okviru za pretraživanje, Chromium šalje ono što pišete u alate za pretraživanje, AI i agente vaše organizacije da dobijete prijedloge.</translation>
 <translation id="3975724895399328945">O verziji &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">O ChromiumOS-u</translation>
-<translation id="4010059961270896984">Kada posjetite web lokaciju, Chromium šalje prikriveni dio URL-a <ph name="BEGIN_LINK" />Sigurnom pregledanju na Googleu<ph name="END_LINK" /> putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija uradi nešto sumnjivo, također se šalju potpuni URL-ovi i dijelovi sadržaja stranice.</translation>
 <translation id="4016217212818346953">Budite sigurni uz Upravitelj lozinki</translation>
 <translation id="4019629340646866719">ChromiumOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Prevedi ekran</translation>
@@ -458,7 +456,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="5821520528363214608">Da koristite i sačuvate podatke Chromiuma na Google računu, ažurirajte Chromium</translation>
 <translation id="5824893331272123205">Učitavanje ploče nije uspjelo. Pokušajte ponovo</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
-<translation id="5867606647614813312">Uključuje dodatne funkcije radi pružanja Chromiumovih najjačih zaštita</translation>
 <translation id="5871205389137001634">Kliknite da napustite pretraživanje pomoću slika</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadržavaju zlonamjerni softver:</translation>
 <translation id="5889361821821684993">Chromium redovno provjerava ima li vaš preglednik najsigurnije postavke. Obavijestit ćemo vas ako nešto bude potrebno pregledati.</translation>
@@ -760,7 +757,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8522801943730206384">Chromium može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="8525579356836940628">Instalacija je zaustavljena</translation>
 <translation id="8545729292258443488">Nosite lozinke, kartice i drugo sa sobom uz aplikaciju Chromium na uređaju <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Dobijte upozorenje ako Chromium pronađe jednu od vaših lozinki u javnom narušavanju podataka</translation>
 <translation id="8555465886620020932">Greška usluge: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Određene funkcije i ekstenzije Chromiuma dolaze s prečicama. Možete ih ponovo uključiti.</translation>
 <translation id="8556420416730706394">Mogućnost kačenja pretraživanja pomoću slika radi lakog pristupa. Klik na dugme Zakači u gornjem dijelu bočne ploče</translation>

@@ -257,7 +257,6 @@
 <translation id="3531741627422851418">ମୋବାଇଲ ଡିଭାଇସରେ Chromium ବ୍ରାଉଜର ଡାଉନଲୋଡ କରିବା ପାଇଁ QR କୋଡ</translation>
 <translation id="354621070532799440">ରିମାଇଣ୍ଡର: Googleର ସର୍ବୋତ୍ତମ ସୁରକ୍ଷା ଫିଚର ଆପଣଙ୍କ ପାଖରେ</translation>
 <translation id="3561853857681580870">ଆପଣଙ୍କ ସ୍କ୍ରିନ ସେୟାର କରିବାକୁ ସିଷ୍ଟମ ସେଟିଂସରେ Chromium ପାଇଁ ସ୍କ୍ରିନ ରେକର୍ଡିଂର ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
-<translation id="3588112919289558122">Chromium ଚିହ୍ନଟ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଉନ୍ନତ ସୁରକ୍ଷା JavaScript ଅପ୍ଟିମାଇଜେସନକୁ ବନ୍ଦ କରିଦିଏ</translation>
 <translation id="3597003331831379823">ବିଶେଷ ଅଧିକାରଗୁଡ଼ିକ ସହ ସେଟଅପ ରନ କରିବାରେ ବିଫଳ ହୋଇଛି। <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3639635944603682591">ଏହି ବ୍ୟକ୍ତିଙ୍କର ବ୍ରାଉଜିଂ ଡାଟା ଏହି ଡିଭାଇସ୍‌ରୁ ଡିଲିଟ୍ କରାଯିବ। ଡାଟା ପୁନରୁଦ୍ଧାର କରିବାକୁ, <ph name="USER_EMAIL" /> ଭାବରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
@@ -296,7 +295,6 @@
 <translation id="3971865010372729242">ଆପଣ ଠିକଣା ବାର କିମ୍ବା ସର୍ଚ୍ଚ ବକ୍ସରେ ଟାଇପ କଲେ, Chromium ଆପଣ ଯାହା ଟାଇପ କରନ୍ତି ତାହା ପରାମର୍ଶ ପାଇବା ପାଇଁ ଆପଣଙ୍କ ସଂସ୍ଥାର ସର୍ଚ୍ଚ, AI ଏବଂ ଏଜେଣ୍ଟ ଟୁଲଗୁଡ଼ିକୁ ପଠାଏ।</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing ବିଷୟରେ</translation>
 <translation id="3997429360543082038">ChromiumOS ବିଷୟରେ</translation>
-<translation id="4010059961270896984">ଆପଣ ଏକ ସାଇଟକୁ ଭିଜିଟ କଲେ, Chromium ଆପଣଙ୍କ IP ଠିକଣାକୁ ଲୁଚାଉଥିବା ଗୋଟିଏ ଗୋପନୀୟତା ସର୍ଭର ମାଧ୍ୟମରେ URLର ଏକ ଅସ୍ପଷ୍ଟ ଅଂଶ <ph name="BEGIN_LINK" />Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ<ph name="END_LINK" />କୁ ପଠାଏ। ଯଦି ଏକ ପୃଷ୍ଠା କିଛି ସନ୍ଦେହଜନକ କାର୍ଯ୍ୟ କରେ, ତେବେ ସମ୍ପୂର୍ଣ୍ଣ URL ଏବଂ ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ମଧ୍ୟ ପଠାଯାଏ।</translation>
 <translation id="4016217212818346953">Password Manager ସହ ସୁରକ୍ଷିତ ରୁହନ୍ତୁ</translation>
 <translation id="4019629340646866719">ChromiumOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭେଲପମେଣ୍ଟ ପରିବେଶ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="4022972681110646219">ସ୍କ୍ରିନକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
@@ -457,7 +455,6 @@
 <translation id="5821520528363214608">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ Chromiumକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="5824893331272123205">ଏହି ପେନେଲକୁ ଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ, ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
-<translation id="5867606647614813312">Chromiumର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପ୍ରଦାନ କରିବା ପାଇଁ ଅତିରିକ୍ତ ଫିଚରକୁ ଚାଲୁ କରେ</translation>
 <translation id="5871205389137001634">ଇମେଜ ସର୍ଚ୍ଚରୁ ବାହାରି ଯିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="5883558403894052917">ଏହି ଆଇଟମଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି:</translation>
 <translation id="5889361821821684993">ଆପଣଙ୍କ ବ୍ରାଉଜରର ସବୁଠାରୁ ସୁରକ୍ଷିତ ସେଟିଂସ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ Chromium ନିୟମିତ ଭାବେ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ବିଷୟ ପାଇଁ ଆପଣଙ୍କ ସମୀକ୍ଷାର ଆବଶ୍ୟକତା ହୁଏ, ତେବେ ଆମେ ଆପଣଙ୍କୁ ଜଣାଇବୁ।</translation>
@@ -759,7 +756,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8522801943730206384">ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="8525579356836940628">ଇନଷ୍ଟଲେସନ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="8545729292258443488">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Chromium ଆପ ସହ ଯାତ୍ରା କରିବା ସମୟରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ, ଟାବ ଏବଂ ଆହୁରି ଅନେକ କିଛି ନିଅନ୍ତୁ</translation>
-<translation id="8548787790260785208">ଯଦି Chromium ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଆପଣଙ୍କର ଗୋଟିଏ ପାସୱାର୍ଡ ପାଏ, ତେବେ ଚେତାବନୀ ପାଆନ୍ତୁ</translation>
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556055872671007529">କିଛି Chromium ଫିଚର ଏବଂ ଏକ୍ସଟେନସନ ସର୍ଟକଟଗୁଡ଼ିକ ସହ ଆସିଥାଏ। ଆପଣ ସେଗୁଡ଼ିକୁ ପୁଣି ଚାଲୁ କରିବାକୁ ବାଛିପାରିବେ।</translation>
 <translation id="8556420416730706394">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ ଇମେଜ ସର୍ଚ୍ଚକୁ ପିନ କରିପାରିବେ; ସାଇଡ ପେନେଲର ଶୀର୍ଷରେ ଥିବା 'ପିନ କରନ୍ତୁ' ବଟନରେ କ୍ଲିକ କରିପାରିବେ</translation>

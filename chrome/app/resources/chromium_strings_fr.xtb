@@ -256,7 +256,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3531741627422851418">QR code pour télécharger le navigateur Chromium sur des appareils mobiles</translation>
 <translation id="354621070532799440">Rappel : Les meilleures fonctionnalités de sécurité de Google dans votre poche</translation>
 <translation id="3561853857681580870">Pour partager votre écran, autorisez l'enregistrement d'écran pour Chromium dans les réglages système.</translation>
-<translation id="3588112919289558122">La protection renforcée désactive l'optimisation JavaScript pour les sites que Chromium ne reconnaît pas</translation>
 <translation id="3597003331831379823">Échec de l'exécution de la configuration avec des droits élevés. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Connectez-vous à Chromium</translation>
 <translation id="3639635944603682591">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3971865010372729242">Lorsque vous tapez du texte dans la barre d'adresse ou le champ de recherche, Chromium l'envoie aux outils de recherche, d'IA et d'agent de votre organisation pour obtenir des suggestions.</translation>
 <translation id="3975724895399328945">À propos de &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">À propos de Chromium OS</translation>
-<translation id="4010059961270896984">Lorsque vous consultez un site, Chromium envoie une partie obscurcie de l'URL à la <ph name="BEGIN_LINK" />navigation sécurisée Google<ph name="END_LINK" /> par le biais d'un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="4016217212818346953">Protégez-vous avec Gestionnaire de mots de passe</translation>
 <translation id="4019629340646866719">Chromium OS dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="4022972681110646219">Traduire l'écran</translation>
@@ -456,7 +454,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5821520528363214608">Pour utiliser et enregistrer des données Chromium dans votre compte Google, mettez à jour Chromium</translation>
 <translation id="5824893331272123205">Impossible de charger ce panneau. Réessayez.</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
-<translation id="5867606647614813312">Active des fonctionnalités supplémentaires pour fournir les protections les plus efficaces de Chromium</translation>
 <translation id="5871205389137001634">Cliquer pour quitter la recherche dans des images</translation>
 <translation id="5883558403894052917">Chromium a détecté que ces éléments contiennent des logiciels malveillants :</translation>
 <translation id="5889361821821684993">Chromium vérifie régulièrement que les paramètres de votre navigateur sont les plus sûrs possibles. Si vous devez examiner quoi que ce soit, nous vous le signalerons.</translation>
@@ -758,7 +755,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8522801943730206384">Chromium ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="8525579356836940628">Installation interrompue</translation>
 <translation id="8545729292258443488">Accédez à vos mots de passe, vos onglets et bien plus où que vous soyez grâce à l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Recevez une alerte si Chromium trouve l'un de vos mots de passe du fait d'une violation de données publique</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Certaines fonctionnalités et extensions Chromium sont accompagnées de raccourcis. Vous pouvez choisir de les réactiver.</translation>
 <translation id="8556420416730706394">Vous pouvez épingler la recherche dans des images pour y accéder facilement. Pour cela, cliquez sur le bouton "Épingler" en haut du panneau latéral.</translation>

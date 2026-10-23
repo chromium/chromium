@@ -255,7 +255,6 @@
 <translation id="3531741627422851418">Codice QR per scaricare il browser Chromium sui dispositivi mobili</translation>
 <translation id="354621070532799440">Promemoria: le migliori funzionalità di sicurezza di Google sempre in tasca</translation>
 <translation id="3561853857681580870">Per condividere lo schermo, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
-<translation id="3588112919289558122">La Protezione avanzata disattiva l'ottimizzazione di JavaScript per i siti non riconosciuti da Chromium</translation>
 <translation id="3597003331831379823">Impossibile eseguire la configurazione con privilegi elevati. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Accedi a Chromium</translation>
 <translation id="3639635944603682591">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
@@ -294,7 +293,6 @@
 <translation id="3971865010372729242">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chromium invia ciò che digiti agli strumenti di ricerca, all'AI e all'agente della tua organizzazione per ricevere suggerimenti.</translation>
 <translation id="3975724895399328945">Informazioni su &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Informazioni su Chromium OS</translation>
-<translation id="4010059961270896984">Quando visiti un sito, Chromium invia una parte offuscata dell'URL a <ph name="BEGIN_LINK" />Google Navigazione sicura<ph name="END_LINK" /> tramite un server per la privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>
 <translation id="4016217212818346953">Stai al sicuro con Gestore delle password</translation>
 <translation id="4019629340646866719">La realizzazione di Chromium OS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traduci schermata</translation>
@@ -455,7 +453,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5821520528363214608">Aggiorna Chromium per usare e salvare i dati di Chromium nel tuo Account Google</translation>
 <translation id="5824893331272123205">Impossibile caricare questo riquadro. Riprova.</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
-<translation id="5867606647614813312">Attiva funzionalità aggiuntive per fornire le protezioni più efficaci di Chromium</translation>
 <translation id="5871205389137001634">Fai clic per uscire dalla ricerca immagini</translation>
 <translation id="5883558403894052917">Chromium ha rilevato che i seguenti elementi contengono malware:</translation>
 <translation id="5889361821821684993">Chromium esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
@@ -756,7 +753,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8522801943730206384">Chromium può controllare le password quando le salvi</translation>
 <translation id="8525579356836940628">Installazione interrotta</translation>
 <translation id="8545729292258443488">Porta con te password, schede e altro ancora ovunque ti trovi con l'app Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Ricevi un avviso se Chromium rileva che una delle tue password è stata compromessa nell'ambito di una violazione dei dati pubblici</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Alcune funzionalità ed estensioni di Chromium sono dotate di scorciatoie. Puoi scegliere di riattivarle.</translation>
 <translation id="8556420416730706394">Puoi bloccare la ricerca immagini per un facile accesso; fai clic sul pulsante Blocca nella parte superiore del riquadro laterale</translation>

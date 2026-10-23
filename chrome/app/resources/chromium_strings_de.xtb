@@ -255,7 +255,6 @@
 <translation id="3531741627422851418">QR-Code zum Herunterladen des Chromium-Browsers auf Mobilgeräte</translation>
 <translation id="354621070532799440">Erinnerung: Die besten Sicherheitsfunktionen von Google in deiner Hosentasche</translation>
 <translation id="3561853857681580870">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
-<translation id="3588112919289558122">Durch den erweiterten Schutz wird die JavaScript-Optimierung für Websites deaktiviert, die von Chromium nicht erkannt werden</translation>
 <translation id="3597003331831379823">Die Einrichtung konnte nicht mit erhöhten Berechtigungen ausgeführt werden. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">In Chromium anmelden</translation>
 <translation id="3639635944603682591">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Wenn du die Daten wiederherstellen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
@@ -294,7 +293,6 @@
 <translation id="3971865010372729242">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chromium deine Eingabe an die Such-, KI- und Hilfetools deiner Organisation, um Vorschläge zu erhalten.</translation>
 <translation id="3975724895399328945">Über &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Über Chromium OS</translation>
-<translation id="4010059961270896984">Wenn du eine Website besuchst, sendet Chromium einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" />. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="4016217212818346953">Mit dem Passwortmanager geschützt bleiben</translation>
 <translation id="4019629340646866719">Chromium OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="4022972681110646219">Bildschirm übersetzen</translation>
@@ -455,7 +453,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5821520528363214608">Aktualisiere Chromium, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="5824893331272123205">Dieser Bereich konnte nicht geladen werden – versuche es noch einmal</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
-<translation id="5867606647614813312">Aktiviert zusätzliche Funktionen, um den bestmöglichen Schutz in Chromium zu bieten</translation>
 <translation id="5871205389137001634">Klicken, um die Bildersuche zu verlassen</translation>
 <translation id="5883558403894052917">Chromium hat festgestellt, dass diese Elemente Malware enthalten:</translation>
 <translation id="5889361821821684993">Chromium prüft regelmäßig, ob dein Browser die sichersten Einstellungen hat. Solltest du etwas überprüfen müssen, informieren wir dich.</translation>
@@ -757,7 +754,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8522801943730206384">Chromium kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8525579356836940628">Installation angehalten</translation>
 <translation id="8545729292258443488">Mit der Chromium App auf deinem Gerät <ph name="DEVICE_TYPE" /> Passwörter, Tabs und andere Daten unterwegs nutzen</translation>
-<translation id="8548787790260785208">Du wirst gewarnt, wenn Chromium eines deiner Passwörter bei einer öffentlichen Datenpanne findet</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Für bestimmte Chromium-Funktionen und -Erweiterungen sind Kürzel verfügbar. Du kannst sie wieder aktivieren.</translation>
 <translation id="8556420416730706394">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>

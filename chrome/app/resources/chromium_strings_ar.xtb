@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">‏يُرجى مسح رمز الاستجابة السريعة ضوئيًا لتنزيل متصفّح Chromium على الأجهزة الجوّالة</translation>
 <translation id="354621070532799440">‏تذكير: أفضل ميزات الأمان من Google في متناول يدك</translation>
 <translation id="3561853857681580870">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
-<translation id="3588112919289558122">‏يؤدي تفعيل ميزة "الحماية المحسّنة" إلى إيقاف ميزة تحسين JavaScript للمواقع الإلكترونية التي لا يتعرّف عليها Chromium</translation>
 <translation id="3597003331831379823">تعذَّر إجراء عملية الإعداد باستخدام أذونات مميزة وعالية المستوى. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">‏سجِّل الدخول إلى Chromium</translation>
 <translation id="3639635944603682591">‏ستُحذَف بيانات تصفُّح هذا المستخدم من هذا الجهاز. ولاسترداد البيانات، سجّل الدخول إلى Chromium بصفتك <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">‏عند الكتابة في شريط العناوين أو مربّع البحث، يرسل Chromium ما تمّت كتابته إلى أدوات البحث والذكاء الاصطناعي والوكلاء في مؤسستك للحصول على اقتراحات.</translation>
 <translation id="3975724895399328945">‏لمحة عن الإصدار Google Chrome for Testing</translation>
 <translation id="3997429360543082038">‏لمحة عن نظام التشغيل Chromium</translation>
-<translation id="4010059961270896984">‏عند الانتقال إلى موقع إلكتروني، يرسل متصفِّح Chromium جزءًا مشفّرًا من عنوان URL إلى <ph name="BEGIN_LINK" />ميزة "التصفّح الآمن من Google"<ph name="END_LINK" /> من خلال خادم لحماية الخصوصية يُخفي عنوان IP الخاص بجهازك. وفي حال رصد سلوك مريب على موقع إلكتروني، يتم أيضًا إرسال عناوين URL الكاملة وأجزاء من محتوى الصفحة.</translation>
 <translation id="4016217212818346953">أنت في أمان مع "مدير كلمات المرور"</translation>
 <translation id="4019629340646866719">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
@@ -373,6 +371,7 @@
 <translation id="4786083865378785874">‏إذا كان "Gemini في Chromium" مفتوحًا، ستبقى اللوحة الجانبية مفتوحة عند إنشاء علامات تبويب جديدة</translation>
 <translation id="479167709087336770">‏يستخدم ذلك المدقق الإملائي نفسه الذي يتم استخدامه في "بحث Google". ويتم إرسال النص الذي تكتبه في المتصفّح إلى Google. يمكنك دائمًا تغيير هذا السلوك في الإعدادات.</translation>
 <translation id="4814736265800133385">‏استخدام Chromium بدون حساب</translation>
+<translation id="4839733921943823254">تثبيت الاختصار</translation>
 <translation id="4888717733111232871">‏قاعدة الوارد إلى Chromium للسماح بحركة مرور mDNS.</translation>
 <translation id="4893347770495441059">‏إعادة تشغيل متصفِّح Chromium لتحديثه</translation>
 <translation id="4918086044614829423">قبول</translation>
@@ -456,7 +455,6 @@
 <translation id="5821520528363214608">‏عليك تحديث متصفِّح Chromium لاستخدام بياناته وحفظها في حسابك على Google</translation>
 <translation id="5824893331272123205">تعذّر تحميل هذه اللوحة. يُرجى إعادة المحاولة</translation>
 <translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
-<translation id="5867606647614813312">‏يفعِّل هذا الخيار ميزات إضافية لتوفير أعلى مستويات الحماية في Chromium</translation>
 <translation id="5871205389137001634">انقر للخروج من ميزة "البحث بالصور"</translation>
 <translation id="5883558403894052917">‏رصد Chromium أنّ هذه العناصر تحتوي على برامج ضارة:</translation>
 <translation id="5889361821821684993">‏يتحقّق Chromium بانتظام من استخدام الإعدادات الأكثر أمانًا في متصفّحك. وسنُعلمك في حال كان عليك اتخاذ إجراء.</translation>
@@ -758,10 +756,10 @@
 <translation id="8522801943730206384">‏لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="8525579356836940628">تم إيقاف التثبيت</translation>
 <translation id="8545729292258443488">‏مع تطبيق Chromium على "<ph name="DEVICE_TYPE" />"، ستكون كلمات المرور وعلامات التبويب الخاصة بك وغيرها متاحة لك أثناء التنقل</translation>
-<translation id="8548787790260785208">‏يمكنك تلقّي تحذير إذا رصد Chromium أنّ إحدى كلمات المرور الخاصة بك قد تم الكشف عنها للجميع بعد عملية اختراق للبيانات</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">‏تتوفّر اختصارات لبعض ميزات وإضافات Chromium. يمكنك اختيار إعادة تفعيلها.</translation>
 <translation id="8556420416730706394">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة من خلال النقر على الزر "تثبيت" في أعلى اللوحة الجانبية</translation>
+<translation id="8564408666201523086">‏تمت العملية بنجاح. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام "بحث Google" في اللوحة الجانبية</translation>
 <translation id="856656450041460113">البحث في قائمة اللغات</translation>
 <translation id="8576826849825683917">‏تدير مؤسسات متعدّدة متصفِّح Chromium</translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>

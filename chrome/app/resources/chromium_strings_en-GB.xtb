@@ -258,7 +258,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3531741627422851418">QR code to download Chromium browser on mobile devices</translation>
 <translation id="354621070532799440">Reminder: Google's best safety features in your pocket</translation>
 <translation id="3561853857681580870">To share your screen, allow screen recording for Chromium in System Settings.</translation>
-<translation id="3588112919289558122">Enhanced protection turns off JavaScript optimisation for sites that Chromium doesn't recognise</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Sign in to Chromium</translation>
 <translation id="3639635944603682591">This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3971865010372729242">When you type in the address bar or search box, Chromium sends what you type to your organisation's search, AI and agent tools to get suggestions.</translation>
 <translation id="3975724895399328945">About Google Chrome for testing</translation>
 <translation id="3997429360543082038">About Chromium OS</translation>
-<translation id="4010059961270896984">When you visit a site, Chromium sends an obfuscated portion of the URL to <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>
 <translation id="4016217212818346953">Stay safe with Password Manager</translation>
 <translation id="4019629340646866719">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
@@ -458,7 +456,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5821520528363214608">To use and save Chromium data in your Google Account, update Chromium</translation>
 <translation id="5824893331272123205">Couldn't load this panel, try again</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
-<translation id="5867606647614813312">Turns on additional features to provide Chromium’s strongest protections</translation>
 <translation id="5871205389137001634">Click to exit image search</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
 <translation id="5889361821821684993">Chromium regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
@@ -760,7 +757,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>
 <translation id="8525579356836940628">Installation stopped</translation>
 <translation id="8545729292258443488">Take your passwords, tabs and more on the go with the Chromium app on your <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Get warned if Chromium finds one of your passwords in a public data breach</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Some Chromium features and extensions come with shortcuts. You can choose to turn them back on.</translation>
 <translation id="8556420416730706394">You can pin image search for easy access; click the Pin button at the top of the side panel</translation>

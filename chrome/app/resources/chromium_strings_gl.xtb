@@ -258,7 +258,6 @@
 <translation id="3531741627422851418">Código QR para descargar o navegador Chromium en dispositivos móbiles</translation>
 <translation id="354621070532799440">Recordatorio: As mellores funcións de seguranza de Google no teu peto</translation>
 <translation id="3561853857681580870">Para compartir a pantalla, vai á configuración do sistema e activa a función de gravación de pantalla para Chromium.</translation>
-<translation id="3588112919289558122">Coa protección mellorada, desactívase a optimización de JavaScript para os sitios que Chromium non recoñece</translation>
 <translation id="3597003331831379823">Produciuse un erro ao executar a configuración con privilexios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inicia sesión en Chromium</translation>
 <translation id="3639635944603682591">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@
 <translation id="3971865010372729242">Cando escribas na barra de enderezos ou na caixa de busca, Chromium enviará o que escribas ás ferramentas de busca, de IA e de axente da túa organización para ofrecerche suxestións.</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Acerca de Chromium OS</translation>
-<translation id="4010059961270896984">Cando visitas un sitio, Chromium envíalle unha parte confusa do URL a <ph name="BEGIN_LINK" />Navegación segura de Google<ph name="END_LINK" /> mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="4016217212818346953">Protexe a túa seguranza co xestor de contrasinais</translation>
 <translation id="4019629340646866719">Chromium OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
@@ -458,7 +456,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5821520528363214608">Actualiza Chromium para poder usar e gardar os seus datos na túa Conta de Google</translation>
 <translation id="5824893331272123205">Non se puido cargar este panel; téntao de novo</translation>
 <translation id="5862307444128926510">Dámosche a benvida a Chromium</translation>
-<translation id="5867606647614813312">Activa máis funcións para proporcionar a máxima protección de Chromium</translation>
 <translation id="5871205389137001634">Fai clic para saír da busca de imaxes</translation>
 <translation id="5883558403894052917">Chromium detectou que os seguintes elementos conteñen software malicioso:</translation>
 <translation id="5889361821821684993">Chromium fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
@@ -760,7 +757,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8522801943730206384">Chromium pode comprobar os teus contrasinais cando os gardes</translation>
 <translation id="8525579356836940628">Detívose a instalación</translation>
 <translation id="8545729292258443488">Esteas onde esteas, leva contigo os teus contrasinais, pestanas e moito máis coa aplicación Chromium no teu dispositivo <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Recibe un aviso se Chromium atopa un dos teus contrasinais nunha violación da seguranza dos datos pública</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algunhas funcións e extensións de Chromium inclúen atallos. Podes decidir se queres volver activalas.</translation>
 <translation id="8556420416730706394">Podes fixar a busca de imaxes para acceder facilmente. Fai clic no botón Fixar que está na parte superior do panel lateral</translation>

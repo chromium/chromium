@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">بہتر کردہ آٹو فل کو بہتر بنانے میں مدد کریں</translation>
 <translation id="3422958112451181446">اپنے پسندیدہ ٹول کو یہاں پن کرنے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="3430407169377889553">‏‫Gemini کو احتیاط سے استعمال کریں اور ضرورت پڑنے پر کنٹرول حاصل کریں۔ ٹاسکس کے دوران Gemini کی کارروائیوں کے لیے آپ ذمہ دار ہیں۔</translation>
+<translation id="3432601291244612633">صفحہ بند کریں</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3441673211568148613">اپنی براؤزنگ کو نجی رکھیں</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
@@ -1941,6 +1942,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6946722113367118030">فکر میں ڈوبا ہوا</translation>
 <translation id="6947751977892029882">‏اس ترتیب کے ساتھ کچھ غلط ہو گیا۔ ‫Chrome اور iOS کو اپ ڈیٹ اور ری سٹارٹ کریں اور دوبارہ کوشش کریں۔ اگر یہ خرابی ہوتی رہتی ہے تو ہو سکتا ہے کہ آپ کا iPhone اس ترتیب کو سپورٹ نہ کرے۔</translation>
 <translation id="6950522403736391608">پوشیدہ</translation>
+<translation id="6957084631403333422">ایک فوکسڈ نئے ٹیب کا صفحہ آزمائیں</translation>
 <translation id="695965663642079255">تیزی سے چیک آؤٹ کرنے کے لیے ادائیگی کی معلومات کو محفوظ کریں اور اس کا نظم کریں</translation>
 <translation id="6962809930976936328">‏‫Gemini سے بصیرتیں حاصل کریں</translation>
 <translation id="6964300328304469089"><ph name="NAME" />، <ph name="EMAIL" /> فی الحال منتخب کردہ ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
@@ -2178,6 +2180,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7724085059277147439">{count,plural, =1{‏آپ کے Google اکاؤنٹ میں محفوظ کردہ آئٹم، {email}}other{‏آپ کے Google اکاؤنٹ میں محفوظ کردہ آئٹمز، {email}}}</translation>
 <translation id="7729458878441927652">اپنے دیگر آلات سے ٹیبز کو دیکھنے کے لیے، اپنے ٹیبز اور سرگزشت کو مطابقت پذیر بنائیں۔</translation>
 <translation id="7730020510075123961">نہیں، ڈیٹا ضم کریں</translation>
+<translation id="7730937523779541003">فوکسڈ نئے ٹیب کا صفحہ لاگو کیا گیا</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />۔ صرف اس آلہ پر۔</translation>
 <translation id="7737550920399185748">آپ کی تصاویر کی لائبریری سے ہوم پیج کی تصاویر آپ کے تمام آلات پر مطابقت پذیر نہیں ہوں گی۔</translation>
 <translation id="7738120385185846461">ایک مسئلے کی اطلاع دیں…</translation>
@@ -2621,6 +2624,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9032405509996909363">'براؤزنگ ڈیٹا کو حذف کریں' کی تصدیق کریں</translation>
 <translation id="9038526468059454274">اس کے ساتھ اس کا خلاصہ کریں</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>
+<translation id="9042363670218758847">فوری تلاشوں کے لیے بنائے گئے لے آؤٹ پر سوئچ کریں</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>
 <translation id="9044703854323320868">‏‫Gmail پیغام <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">اپنے کھلے ٹیبز کو منظم کرنے اور پروڈکٹیو رہنے کے لیے ٹیب گروپس بنائیں</translation>

@@ -143,7 +143,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2216543877350048334">Para alisin ang iyong Google Account sa Chrome, mag-sign out</translation>
 <translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="22791603784558743">Isara ang Gemini sa Chrome Dev</translation>
-<translation id="2284380654876659752">Kapag bumisita ka sa isang site, magpapadala ang Chrome ng na-obfuscate na bahagi ng URL sa <ph name="BEGIN_LINK" />Ligtas na Pag-browse sa Google<ph name="END_LINK" /> sa pamamagitan ng server ng privacy na nagha-hide ng IP address mo. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content ng page.</translation>
 <translation id="2290014774651636340">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Google Chrome.</translation>
 <translation id="2290095356545025170">Sigurado ka bang nais mong i-uninstall ang Google Chrome?</translation>
 <translation id="2295218613066132598">Ipakita ang mga shortcut sa site ng Chrome</translation>
@@ -384,7 +383,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="459622048091363950">Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.</translation>
 <translation id="4598116752460667024">Maghanap ng anumang proseso mula sa listahan.</translation>
 <translation id="4600710005438004015">Hindi ma-update ang Chrome sa pinakabagong bersyon, kaya hindi mo magagamit ang mga bagong feature at pag-aayos sa seguridad.</translation>
-<translation id="4606805686144157064">Mabigyan ng babala kung makikita ng Chrome ang isa sa iyong mga password sa isang pampublikong breach sa data</translation>
 <translation id="4608435347866444037">Hanapin ang larawang ito gamit ang Google Lens</translation>
 <translation id="4624065194742029982">Incognito sa Chrome</translation>
 <translation id="4627412468266359539">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromeOS Flex sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
@@ -401,7 +399,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4768676935374695498">Hanapin ang Video na Ito gamit ang Google Lens</translation>
 <translation id="479167709087336770">Ginagamit nito ang parehong spellchecker na ginagamit sa paghahanap sa Google. Ipinapadala sa Google ang text na tina-type mo sa browser. Puwede mong baguhin ang gawing ito sa mga setting sa lahat ng oras.</translation>
 <translation id="4793679854893018356">Alamin kung paano ka pinapanatiling ligtas ng Chrome</translation>
-<translation id="4799870290441980300">Nag-o-on ng mga karagdagang feature para maibigay ang pinakamalalakas na proteksyon ng Chrome</translation>
 <translation id="4828579605166583682">Sinusubukang palitan ng Google Chrome ang mga kasalukuyang password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="4836321460899997044">Profile sa Chrome</translation>
 <translation id="4842397268809523050">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
@@ -560,7 +557,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6251759518630934363">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chrome.</translation>
 <translation id="6277547788421725101">In-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome</translation>
 <translation id="627882678981830918">I-customize at kontrolin ang Chrome. Itakda ang Chrome bilang default mo.</translation>
-<translation id="6280042952415350607">Ino-off ng pinaigting na proteksyon ang pag-optimize ng JavaScript para sa mga site na hindi nakikilala ng Chrome</translation>
 <translation id="6288580400488258237">Itakda ang Google Chrome bilang iyong default browser at i-pin ito sa taskbar mo</translation>
 <translation id="6291089322031436445">Mga Chrome Dev App</translation>
 <translation id="6291549208091401781">Naka-install na ang Google Chrome para sa lahat ng user sa iyong computer.</translation>
@@ -731,6 +727,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7777080907402804672">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="778331955594035129">Kailangan ng Chrome ng pahintulot sa lokasyon para sa site na ito</translation>
 <translation id="7787950393032327779">Mukhang ginagamit ang profile ng iba pang proseso ng Google Chrome (<ph name="PROCESS_ID" />) sa iba pang computer (<ph name="HOST_NAME" />).  Ni-lock ng Chrome ang profile upang hindi ito ma-corrupt.  Kung nakakatiyak ka na walang ibang mga proseso ang gumagamit sa profile na ito, maaari mong i-unlock ang profile at ilunsad muli ang Chrome.</translation>
+<translation id="7800043020703832708">Isara ang Google Search sa panel sa gilid</translation>
 <translation id="7801699035218095297">Sinusubukan ng Google Chrome na kopyahin ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="7804364787702057554">Iyong account sa Chrome</translation>
 <translation id="7804947029129221742">Binago ang iyong search engine mula sa labas ng Chrome. Para protektahan ka, ni-reset ito ng Chrome sa orihinal na default nito. <ph name="LEARN_MORE_LINK" /></translation>

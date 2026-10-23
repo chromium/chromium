@@ -256,7 +256,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3531741627422851418">Kod QR untuk memuat turun penyemak imbas Chromium pada peranti mudah alih</translation>
 <translation id="354621070532799440">Peringatan: Ciri keselamatan terbaik Google dalam poket anda</translation>
 <translation id="3561853857681580870">Untuk berkongsi skrin anda, benarkan rakaman skrin untuk Chromium dalam Tetapan Sistem.</translation>
-<translation id="3588112919289558122">Perlindungan dipertingkat mematikan pengoptimuman JavaScript untuk laman yang tidak dikenali oleh Chromium</translation>
 <translation id="3597003331831379823">Gagal untuk menjalankan persediaan dengan keistimewaan dipertingkat. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Log masuk ke Chromium</translation>
 <translation id="3639635944603682591">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3971865010372729242">Apabila anda menaip dalam bar alamat atau kotak carian, Chromium akan menghantar perkara yang anda taip kepada alatan carian, AI dan ejen organisasi anda untuk mendapatkan cadangan.</translation>
 <translation id="3975724895399328945">Perihal &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Perihal Chromium OS</translation>
-<translation id="4010059961270896984">Apabila anda melawat laman, Chromium menghantar bahagian pengeliruan URL kepada <ph name="BEGIN_LINK" />Penyemakan Imbas Selamat Google<ph name="END_LINK" /> melalui pelayan privasi yang menyembunyikan alamat IP anda. Jika laman melakukan sesuatu yang mencurigakan, URL penuh dan sedikit kandungan halaman turut dihantar.</translation>
 <translation id="4016217212818346953">Kekal selamat dengan Password Manager</translation>
 <translation id="4019629340646866719">Chromium OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Terjemahkan skrin</translation>
@@ -373,6 +371,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4786083865378785874">Jika Gemini dalam Chromium dibuka, panel sisi akan kekal terbuka apabila anda membuat tab baharu</translation>
 <translation id="479167709087336770">Ini menggunakan penyemak ejaan yang sama seperti yang digunakan dalam carian Google. Teks yang anda taip dalam penyemak imbas akan dihantar kepada Google. Anda boleh menukar gelagat ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="4814736265800133385">Gunakan Chromium tanpa akaun</translation>
+<translation id="4839733921943823254">Sematkan Pintasan</translation>
 <translation id="4888717733111232871">Peraturan masuk bagi Chromium untuk membolehkan trafik mDNS.</translation>
 <translation id="4893347770495441059">Lancarkan Semula untuk Mengemas Kini &amp;Chromium</translation>
 <translation id="4918086044614829423">Terima</translation>
@@ -456,7 +455,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5821520528363214608">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, kemas kinikan Chromium</translation>
 <translation id="5824893331272123205">Tidak dapat memuatkan panel ini, cuba lagi</translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
-<translation id="5867606647614813312">Menghidupkan ciri tambahan untuk memberikan perlindungan terkuat Chromium</translation>
 <translation id="5871205389137001634">Klik untuk keluar daripada Carian Imej</translation>
 <translation id="5883558403894052917">Chromium mendapati bahawa item ini mengandungi perisian hasad:</translation>
 <translation id="5889361821821684993">Chromium sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
@@ -758,10 +756,10 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8522801943730206384">Chromium boleh menyemak kata laluan anda yang disimpan</translation>
 <translation id="8525579356836940628">Pemasangan Dihentikan</translation>
 <translation id="8545729292258443488">Bawa kata laluan, tab dan pelbagai lagi semasa dalam perjalanan dengan apl Chromium pada <ph name="DEVICE_TYPE" /> anda</translation>
-<translation id="8548787790260785208">Dapatkan amaran jika Chromium menemukan satu daripada kata laluan anda dalam pelanggaran data umum</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sesetengah ciri dan sambungan Chromium disertakan dengan pintasan. Anda boleh memilih untuk menghidupkan semula tetapan tersebut.</translation>
 <translation id="8556420416730706394">Anda boleh menyematkan Carian Imej untuk akses mudah; klik butang Semat pada bahagian atas panel sisi</translation>
+<translation id="8564408666201523086">Berjaya! Kini anda boleh mengemukakan pertanyaan dengan mudah semasa anda menyemak imbas dengan Google Search dalam panel sisi</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
 <translation id="8576826849825683917">Berbilang organisasi mengurus Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>

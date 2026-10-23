@@ -52,6 +52,7 @@
 <translation id="1080116354587839789">چوڑائی میں فٹ کریں</translation>
 <translation id="1081061862829655580">ٹرے 19</translation>
 <translation id="1082026381988252344">اپنے مشترکہ ٹیب کے مواد کو اسکرول اور زوم کریں</translation>
+<translation id="1083351079082239441">‏وہ اہم کارروائیاں دیکھیں جو Gemini نے آپ کے لیے براؤزنگ کے دوران مکمل کیں</translation>
 <translation id="108859316315249327">دوبارہ کوشش کریں</translation>
 <translation id="1089439967362294234">پاس ورڈ تبدیل کریں</translation>
 <translation id="1090629319939036170">‏VR مینو</translation>
@@ -541,6 +542,7 @@
 <translation id="1913037223029790376">‏اس ورچوئل کارڈ کے لیے CVC استعمال کریں</translation>
 <translation id="191374271204266022">‏بطور JSON کاپی کریں</translation>
 <translation id="1914326953223720820">اَن زِپ کرنے کی سروس</translation>
+<translation id="1915335901851260370">کارڈ ہولڈر کا نام ابھی محفوظ نہیں کیا جا سکتا</translation>
 <translation id="1919367280705858090">خرابی کے کسی مخصوص پیغام کے بارے میں مدد حاصل کریں</translation>
 <translation id="1919526244108283799">‏‎400 x 600 ملی میٹر</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ}other{# سائٹس}}</translation>
@@ -916,6 +918,7 @@
 <translation id="251033673027346551">‏<ph name="BEGIN_LINK" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK" /> کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں۔</translation>
 <translation id="2512101340618156538">اجازت نہیں ہے (ڈیفالٹ)</translation>
 <translation id="2512413427717747692">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، iOS ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
+<translation id="2513217232843681817">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /> میں آٹو براؤز کے دورے</translation>
 <translation id="2515629240566999685">آپ کے علاقہ میں سگنل چیک کیا جا رہا ہے</translation>
 <translation id="2518584823165598232">یہ کارڈ دستیاب نہیں ہے۔ براہ کرم اپنے کارڈ فراہم کنندہ سے رابطہ کریں۔</translation>
 <translation id="2521385132275182522">نیچے بائیں طرف سٹیپل</translation>
@@ -1364,6 +1367,7 @@
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
 <translation id="3287510313208355388">آن لائن ہونے پر ڈاؤن لوڈ کریں</translation>
+<translation id="3288416906300127968">‏‫Gemini Chat پر جائیں</translation>
 <translation id="3289578402369490638">ویب پر دوسرے اسٹورز سے</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> پالیسی کے بارے میں مزید جانیں</translation>
 <translation id="3295444047715739395">‏Chrome ترتیبات میں اپنے پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
@@ -1384,6 +1388,7 @@
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3325568918769906282">نزولی ترتیب میں</translation>
 <translation id="3325662270238538525">فائل تک حالیہ رسائی اور ترامیم، بشمول فائل کے نام، فائل کے مواد کے ڈیجیٹل فنگر پرنٹس، ڈاؤن لوڈ کا ماخذ اور میٹا ڈیٹا</translation>
+<translation id="3326857361043236066">‏‫Gemini کی کلیدی براؤزنگ کارروائیاں</translation>
 <translation id="3329013043687509092">سیرابی</translation>
 <translation id="3333762389743153920">کارڈ نمبر ورچوئل کارڈ کیلئے اہل نہیں ہے</translation>
 <translation id="3338095232262050444">محفوظ</translation>
@@ -2020,6 +2025,7 @@
 <translation id="4333561522337981382">اپنے سبھی ڈسپلیز پر ونڈوز کا نظم کریں</translation>
 <translation id="4333854382783149454">‏PKCS #1 SHA-1 مع RSA مرموز کاری</translation>
 <translation id="4336913590841287350">‏یہ پالیسی ابھی تک iOS پر صارف کی پالیسی کے طور پر تعاون یافتہ نہیں ہے۔</translation>
+<translation id="4338516934178140574">‏‫Chrome کی سرگزشت میں، آپ وہ اہم کارروائیاں دیکھ سکتے ہیں جو Gemini نے آپ کے لیے براؤزنگ کے دوران مکمل کی ہیں</translation>
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
 <translation id="4340810192899866471">‏JSON سے درآمد کریں</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
@@ -2113,6 +2119,7 @@
 <translation id="4510703642214459906">مقام</translation>
 <translation id="4515275063822566619">‏کارڈز اور پتے Chrome اور آپ کے Google اکاؤنٹ (<ph name="ACCOUNT_EMAIL" />) کی جانب سے ہیں۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں ان کا نظم کر سکتے ہیں۔</translation>
 <translation id="451601984112574365">سبز 3</translation>
+<translation id="4519245852815730903">آپ سے ہر ای میل پتے کو الگ سے اجازت دینے کو کہا جائے گا</translation>
 <translation id="4520048001084013693">منتظم کی پالیسی کے تحت اس فائل کو ڈاؤن لوڈ کرنا مسدود ہے</translation>
 <translation id="4521157617044179198">‎<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)‎</translation>
 <translation id="4521280267704259211">‏Monarch لفافہ</translation>
@@ -2383,6 +2390,7 @@
 <translation id="4969341057194253438">ریکارڈنگ حذف کریں</translation>
 <translation id="4973922308112707173">اوپر دُہرا سوراخ</translation>
 <translation id="4976702386844183910">آخری بار ملاحظہ کردہ <ph name="DATE" /></translation>
+<translation id="4982928820514634045">رابطے کی معلومات پر جائیں</translation>
 <translation id="498323057460789381">سکیما کی توثیق میں خرابی: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">مائیکروفون کا استعمال کریں؟</translation>
 <translation id="4989542687859782284">غیر دستیاب</translation>
@@ -2392,6 +2400,7 @@
 <translation id="4994095017621319069">اب 1 ٹیب گروپ دستیاب نہیں ہے</translation>
 <translation id="4995474875135717171">ترمیم کردہ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />، سائٹ کی تلاش اور اپنے ڈیفالٹ سرچ انجن کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
+<translation id="4996709766489151157">رابطے کی معلومات پُر کی گئی</translation>
 <translation id="4998950033665438990">سنگل فیس</translation>
 <translation id="5000497292978544380">‏‫Google تلاش AI وضع</translation>
 <translation id="5001338033791319371">فُل اسکرین سے باہر نکلنے اور ڈاؤن لوڈ دیکھنے کے لیے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
@@ -2411,6 +2420,7 @@
 <translation id="5019293549442035120">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="5019819206251569004">موشن اور لائٹ سینسرز</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> پالیسی سیٹ ہے۔ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ایکسٹینشنز صفحہ پر ڈویلپر وضع کی دستیابی کو کنٹرول نہیں کرے گا۔</translation>
+<translation id="502075697789439404">فائل ڈاؤن لوڈ ہو گئی</translation>
 <translation id="5020862932518041900">‏اگر آپ کسی تجویز کو منتخب کرتے ہیں یا نظر انداز کرتے ہیں تو Chrome اس بات کو یقینی بنانے کے لیے موافقت کرے گا کہ آپ صرف وہی دیکھیں جو آپ سے متعلق ہے</translation>
 <translation id="5021500396464456616">اس لنک کو بھیجنے والے فرد سے رابطہ کریں</translation>
 <translation id="5021557570875267742">‏Chrome کے ساتھ قیمتوں کو ٹریک کریں</translation>
@@ -2433,6 +2443,7 @@
 <translation id="5052488928733955073">اپنی معلومات پُر کرنے میں دشواری۔ اپنا کنکشن چیک کریں۔</translation>
 <translation id="5053116470141135293">‏آپ کی اصل تفصیلات کی حفاظت کے لیے جب آپ اس کارڈ سے چیک آؤٹ کریں گے تو ایک ورچوئل کارڈ نمبر پُر کیا جائے گا۔ ‫Google والٹ میں نظم کریں۔ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{اس فائل کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}other{ان فائلز کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}}</translation>
+<translation id="5056587122125565772">تصویر تخلیق کریں</translation>
 <translation id="505757197798929356">کھولنے کی وجہ فراہم کریں (درکار ہے)</translation>
 <translation id="5058282932481719070">ترتیبات میں بہتر کردہ آٹو فل خصوصیت کے بارے میں مزید جانیں</translation>
 <translation id="5061227663725596739">کیا آپ کا مطلب <ph name="LOOKALIKE_DOMAIN" /> ہے؟</translation>
@@ -2957,6 +2968,7 @@
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">لکھنے میں میری مدد کریں کے لیے اس ترتیب کو آن کریں</translation>
 <translation id="5932224571077948991">سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
+<translation id="5933647156166686601">‏‫Gemini سرگرمی کا جائزہ لیں</translation>
 <translation id="5937560539988385583">صفحہ کا ترجمہ ہو گیا</translation>
 <translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3432,6 +3444,7 @@
 <translation id="6721164594124191969">لیبلز (گلوسی)</translation>
 <translation id="6726832600570791992">(32 بٹ ایمولیٹڈ)</translation>
 <translation id="6727094998759448074">SRA4</translation>
+<translation id="672853333773293432">اکاؤنٹ کے ساتھ سائن ان کیا گیا</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -3496,6 +3509,7 @@
 <translation id="6852204201400771460">ایپ دوبارہ لوڈ کریں؟</translation>
 <translation id="6854691830678097752">‏تیزی سے چیک آؤٹ کے لیے، اس CVC کو اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6858341433205161172"><ph name="DEVICE_NAME" /> (یہ براؤزر)</translation>
 <translation id="6860888819347870819">تصویر میں تصویر داخل کرنے کے لیے کہہ سکتی ہے</translation>
 <translation id="6864189428899665393">‏‎267 x 389 مل میٹر</translation>
 <translation id="6865412394715372076">ابھی اس کارڈ کی توثیق نہیں کی جا سکتی</translation>
@@ -3547,6 +3561,7 @@
 <translation id="6936976777388162184">‏یہ ایک بنڈل کردہ آلہ ہے اور اس کا Kiosk اور Signage Upgrade کے ساتھ اندراج نہیں کیا جا سکتا۔</translation>
 <translation id="6942444979237658241">تبصرے - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
+<translation id="6945116087771548601">ڈاؤن لوڈز پر جائیں</translation>
 <translation id="6948051842255602737">گیم ختم، آپ کا اسکور <ph name="SCORE" /> ہے۔</translation>
 <translation id="6948223029286835408">‏جب آپ Chrome میں خریداری کرتے ہیں، تو Pix کو اختیار کے طور پر دیکھیں</translation>
 <translation id="6948701128805548767">پِک اپ کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
@@ -3615,6 +3630,7 @@
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی، لیکن سرور نے ایک سرٹیفکیٹ پیش کیا جس کے جواز کا عرصہ اتنا طویل ہے کہ اس پر بھروسہ نہیں کیا جا سکتا۔</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
+<translation id="7054563057916451424">‫<ph name="DESTINATION" />، نئے ٹیب میں کھلتا ہے</translation>
 <translation id="7054717457611655239">آئندہ سے، اپنی فائلز کو <ph name="CLOUD_PROVIDER" /> میں محفوظ کریں۔</translation>
 <translation id="7057567173736333354">اپنی تصویر کی وضاحت کریں</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> نے توثیق کی ہے کہ <ph name="ISSUER" /> نے اس ویب سائٹ کا سرٹیفیکیٹ جاری کیا ہے۔</translation>
@@ -3843,6 +3859,7 @@
 <translation id="7425037327577270384">لکھنے میں میری مدد کریں</translation>
 <translation id="7426745633088095666">اشتراک کردہ ٹیبز</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7430649113830485349">اہم کارروائیوں کا جائزہ لیں</translation>
 <translation id="7432774160230062882">‏تصدیق کریں کہ یہ آپ ہی ہیں تاکہ Chromium آپ کی ادائیگی کی معلومات کو پُر کر سکے۔</translation>
 <translation id="7437289804838430631">رابطے کی معلومات شامل کریں</translation>
 <translation id="7441627299479586546">غلط پالیسی کا مضمون</translation>
@@ -3988,6 +4005,7 @@
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7659327900411729175">‏Kaku 8 لفافہ</translation>
 <translation id="766014026101194726">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کو اپ لوڈ کرنا مسدود ہے}other{منتظم کی پالیسی کے تحت، # فائلز کو اپ لوڈ کرنا مسدود ہے}}</translation>
+<translation id="7660909719765799166">اکاؤنٹ سائن ان پر جائیں</translation>
 <translation id="7661440329832413796">‏‫Python میں کوڈ کرنے کا طریقہ سیکھنے میں میری مدد کریں</translation>
 <translation id="7662298039739062396">ترتیب کو ایک ایکسٹینشن سے کنٹرول کیا جاتا ہے</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> نے گروپ چھوڑ دیا</translation>
@@ -4003,6 +4021,7 @@
 <translation id="7675756033024037212">اسکرول اور زوم کی اجازت نہیں ہے</translation>
 <translation id="7676643023259824263">کلپ بورڈ ٹیکسٹ تلاش کریں، <ph name="TEXT" /></translation>
 <translation id="7676840398262504532">آپ کی تنظیم مواد کاپی کرنے کی نگرانی کرتی ہے</translation>
+<translation id="767806704757698045">صرف تعاون یافتہ سائٹس پر کام کرتا ہے</translation>
 <translation id="7678730592635586336">ویڈیو دوبارہ لیں</translation>
 <translation id="7679287273775285018">‏‫eWallet کے ساتھ ادائیگی کریں</translation>
 <translation id="7679367271685653708">‏Chrome کی ترتیبات میں اپنی براؤزنگ کی سرگزشت دیکھیں اور اس کا نظم کریں</translation>
@@ -4124,6 +4143,7 @@
 <translation id="7885670691503039914">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر، آپ کو ای میل الرٹس موصول ہوں گے۔ یہ صفحہ بُک مارک فولڈر <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
+<translation id="7888219259712865185">‏‫google.com جیسے ای میل فراہم کنندگان آپ کے ای میل پتے کی تصدیق کر سکتے ہیں تاکہ آپ کو اپنا ان باکس چیک کرنے کی ضرورت نہ پڑے</translation>
 <translation id="7888367499748383555">‏کوئی فیس نہیں، کم از کم ‎0% APR (اہلیت کے ساتھ مشروط)</translation>
 <translation id="7888575728750733395">پرنٹ رینڈرنگ انٹینٹ</translation>
 <translation id="7890748547282909375">‏اسکرین شاٹ محفوظ کرنے کے لیے Microsoft OneDrive میں سائن ان کریں</translation>
@@ -4368,6 +4388,7 @@
 <translation id="8298399736867690281">کارڈ صرف آلے پر محفوظ ہے</translation>
 <translation id="8300302621078931927">‏‫Google والٹ میں اپنا ID کارڈ محفوظ طریقے سے رکھیں</translation>
 <translation id="8301894345671534559">کوڈ درج کریں</translation>
+<translation id="830342764194666561">سائٹ کی ترتیبات تبدیل ہو گئیں</translation>
 <translation id="830498451218851433">آدھا فولڈ کریں</translation>
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8310477433309274098">‏کوئی فیس نہیں، کم از کم ‎0% APR</translation>
@@ -4502,6 +4523,7 @@
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8544217240017914508">‏ادائیگی کے طریقوں کو پُر کرنے کی خاطر ترتیبات میں ترمیم کرنے کے لیے Google Chrome کوشش کر رہا ہے۔</translation>
 <translation id="8544303911974837265">پولی ایسٹر</translation>
+<translation id="8545237556624168656">خصوصیت استعمال کرنے کے لیے، آپ کو اپنے ای میل اکاؤنٹ میں سائن ان ہونا ضروری ہے</translation>
 <translation id="854548366864113872">زیادہ قیمت والا اختیار</translation>
 <translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">اپ لوڈ کرنے کی وجہ فراہم کریں (درکار ہے)</translation>
@@ -4521,6 +4543,7 @@
 <translation id="8577192028579836704">عام طور پر سبھی اختیارات <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ورچوئل کارڈ دستیاب نہیں ہے</translation>
 <translation id="8579000896558714521">کی بورڈ اوور رائیڈ</translation>
+<translation id="8579561564816585231">‏پاس ورڈ مینیجر جیسی Google سروس کا استعمال کرتے ہوئے سائن ان کیا گیا</translation>
 <translation id="8581064022803799721">یہ صفحہ <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہے۔</translation>
 <translation id="858637041960032120">فون نمبر شامل کریں</translation>
 <translation id="8587100480629037893">ہینڈ ٹریکنگ کی اجازت نہیں ہے</translation>
@@ -4610,6 +4633,7 @@
 <translation id="8759274551635299824">اس کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="87601671197631245">یہ سائٹ پرانی سیکیورٹی کنفیگریشن کو استعمال کر رہی ہے جو اس سائٹ پر بھیجے جانے پر آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) کو ظاہر کر سکتی ہے۔</translation>
 <translation id="8762871163452985706">تشریح کالعدم ہو گئی</translation>
+<translation id="8762944800272172913">‏‫Gemini چیٹ نہیں کھل سکی</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{‫<ph name="DEVICE_NAME" /> سے لنک بھیجا گیا}other{‫<ph name="DEVICE_NAME" /> سے # لنکس بھیجے گئے}}</translation>
 <translation id="8763927697961133303">‏USB آلہ</translation>
 <translation id="8763986294015493060">فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کریں</translation>

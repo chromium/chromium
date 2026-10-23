@@ -282,7 +282,7 @@
 <translation id="4167393659000039775">Google n'est pas responsable des pertes de données. <ph name="DEVICE_OS" /> peut ne pas fonctionner sur les modèles non certifiés. En savoir plus : g.co/flex/InstallGuide.</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4213918571089943508">Compte Google de l'enfant</translation>
-<translation id="4228071595943929139">Utiliser l'adresse e-mail de votre organisation</translation>
+<translation id="4228071595943929139">Utilisez l'adresse e-mail de votre organisation</translation>
 <translation id="4232484478444192782">Votre téléphone Android se charge de transférer vos informations de connexion Wi-Fi et votre mot de passe.</translation>
 <translation id="4242145785130247982">Plusieurs certificats client ne sont pas compatibles</translation>
 <translation id="4242577469625748426">Échec de l'installation des paramètres des règles sur l'appareil : <ph name="VALIDATION_ERROR" />.</translation>
@@ -646,7 +646,7 @@ ne pensez pas devoir utiliser de
 <translation id="7883792253546618164">Vous pouvez vous désabonner à tout moment.</translation>
 <translation id="7887864092952184874">Souris Bluetooth associée.</translation>
 <translation id="7906440585529721295">Les données locales seront supprimées</translation>
-<translation id="7910725946105920830">Utiliser votre compte Google personnel</translation>
+<translation id="7910725946105920830">Utilisez votre compte Google personnel</translation>
 <translation id="7918257978052780342">Enregistrer</translation>
 <translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils ChromeOS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans ChromeOS. Ces rapports peuvent inclure diverses informations (plantages de ChromeOS, fonctionnalités utilisées, quantité de mémoire généralement utilisée, etc.).<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de l'appareil ChromeOS de votre enfant. Si vous administrez un domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" /></translation>

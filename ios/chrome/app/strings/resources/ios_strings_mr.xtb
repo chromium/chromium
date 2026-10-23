@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">वर्धित ऑटोफिलमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="3422958112451181446">तुमचे आवडते टूल इथे पिन करण्यासाठी प्रेस करून धरून ठेवा</translation>
 <translation id="3430407169377889553">Gemini काळजीपूर्वक वापरा आणि आवश्यक असल्यास, नियंत्रण स्वतःकडे घ्या. टास्कदरम्यान Gemini ने केलेल्या कृतींसाठी तुम्ही जबाबदार असता.</translation>
+<translation id="3432601291244612633">पेज बंद करा</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3441673211568148613">तुमचे ब्राउझिंग खाजगी ठेवा</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
@@ -1942,6 +1943,7 @@
 <translation id="6946722113367118030">विचार करणे</translation>
 <translation id="6947751977892029882">या सेटिंगमध्ये काहीतरी चुकले. Chrome आणि iOS अपडेट करून रीस्टार्ट करा व पुन्हा प्रयत्न करा. ही एरर येत राहिल्यास, तुमचा iPhone या सेटिंगला सपोर्ट करत नसू शकतो.</translation>
 <translation id="6950522403736391608">लपवलेली</translation>
+<translation id="6957084631403333422">फोकस केलेले नवीन टॅब पेज वापरून पहा</translation>
 <translation id="695965663642079255">अधिक जलद चेक आउट करण्यासाठी पेमेंट माहिती सेव्ह करा आणि व्यवस्थापित करा</translation>
 <translation id="6962809930976936328">Gemini वापरून इनसाइट मिळवा</translation>
 <translation id="6964300328304469089">सध्या <ph name="NAME" />, <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
@@ -2179,6 +2181,7 @@
 <translation id="7724085059277147439">{count,plural, =1{तुमच्या {email} या Google खाते मध्ये आयटम सेव्ह केला आहे}other{तुमच्या {email} या Google खाते मध्ये आयटम सेव्ह केले आहेत}}</translation>
 <translation id="7729458878441927652">तुमच्या इतर डिव्हाइसवरील टॅब पाहण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
 <translation id="7730020510075123961">नाही, डेटा मर्ज करा</translation>
+<translation id="7730937523779541003">फोकस केलेले नवीन टॅब पेज लागू केले आहे</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. फक्त या डिव्हाइसवर.</translation>
 <translation id="7737550920399185748">तुमच्या फोटो लायब्ररीमधील होमपेज फोटो तुमच्या सर्व डिव्हाइसवर सिंक होणार नाहीत.</translation>
 <translation id="7738120385185846461">समस्या नोंदवा…</translation>
@@ -2622,6 +2625,7 @@
 <translation id="9032405509996909363">ब्राउझिंग डेटा हटवणे कन्फर्म करा</translation>
 <translation id="9038526468059454274">यासोबत सारांश द्या</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>
+<translation id="9042363670218758847">झटपट शोधांसाठी तयार केलेल्या लेआउटवर स्विच करा</translation>
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>
 <translation id="9044703854323320868">Gmail मेसेज <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">तुमचे उघडे असलेले टॅब संगतवार लावण्यासाठी आणि उत्पादनक्षम राहण्यासाठी टॅब गट तयार करा</translation>

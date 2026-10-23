@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">QR-kode til at downloade Chromium-browseren til mobilenheder</translation>
 <translation id="354621070532799440">Påmindelse: Få Googles bedste sikkerhedsfunktioner med i lommen</translation>
 <translation id="3561853857681580870">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele din skærm.</translation>
-<translation id="3588112919289558122">Forbedret beskyttelse deaktiverer JavaScript-optimering for websites, som Chromium ikke genkender</translation>
 <translation id="3597003331831379823">Konfigurationen med udvidede adgangsrettigheder kunne ikke køres. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Log ind i Chromium</translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Når du skriver i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Om Chromium OS</translation>
-<translation id="4010059961270896984">Når du besøger et website, sender Chromium en sløret del af webadressen til <ph name="BEGIN_LINK" />Google Beskyttet browsing<ph name="END_LINK" /> via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="4016217212818346953">Beskyt dine oplysninger med Adgangskodeadministrator</translation>
 <translation id="4019629340646866719">Chromium OS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Oversæt skærmen</translation>
@@ -456,7 +454,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5821520528363214608">For at bruge og gemme Chromium-data på din Google-konto skal du opdatere Chromium</translation>
 <translation id="5824893331272123205">Dette panel kunne ikke indlæses. Prøv igen</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
-<translation id="5867606647614813312">Aktiverer yderligere funktioner for at levere Chromiums stærkeste beskyttelse</translation>
 <translation id="5871205389137001634">Klik for at afslutte billedsøgning</translation>
 <translation id="5883558403894052917">Chromium har registreret malware i disse elementer:</translation>
 <translation id="5889361821821684993">Chromium tjekker regelmæssigt, om din browser har de sikreste indstillinger. Vi giver dig besked, hvis der er noget, du skal gennemgå.</translation>
@@ -758,7 +755,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8522801943730206384">Chromium kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="8525579356836940628">Installationen blev afbrudt</translation>
 <translation id="8545729292258443488">Tag dine adgangskoder, faner m.m. med på farten med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Få en advarsel, hvis Chromium registrerer, at én af dine adgangskoder er blevet offentligt tilgængelig i forbindelse med et brud på datasikkerheden</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Nogle Chromium-funktioner og -udvidelser har genveje. Du kan vælge at aktivere dem igen.</translation>
 <translation id="8556420416730706394">Du kan fastgøre billedsøgning for at få nem adgang. Klik på knappen Fastgør øverst i sidepanelet</translation>

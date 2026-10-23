@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">Helpwch i wella awtolenwi gwell</translation>
 <translation id="3422958112451181446">Pwyswch a daliwch i binio'ch hoff offeryn yma</translation>
 <translation id="3430407169377889553">Defnyddiwch Gemini yn ofalus a chymerwch reolaeth os oes angen. Rydych yn gyfrifol am weithredoedd Gemini yn ystod tasgau.</translation>
+<translation id="3432601291244612633">Cau'r dudalen</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3441673211568148613">Cadwch eich pori yn breifat</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> munud</translation>
@@ -1941,6 +1942,7 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="6946722113367118030">Meddwl</translation>
 <translation id="6947751977892029882">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch ac ailgychwynnwch Chrome ac iOS, a rhowch gynnig arall arni. Os yw'r gwall hwn yn parhau i ddigwydd, mae'n bosib na fydd eich iPhone yn cefnogi'r gosodiad hwn.</translation>
 <translation id="6950522403736391608">Wedi'i chuddio</translation>
+<translation id="6957084631403333422">Rhowch gynnig ar dudalen tab newydd â ffocws</translation>
 <translation id="695965663642079255">Cadw a rheoli gwybodaeth talu i dalu'n gyflymach</translation>
 <translation id="6962809930976936328">Cael mewnwelediadau gyda Gemini</translation>
 <translation id="6964300328304469089">Mae <ph name="NAME" />, <ph name="EMAIL" /> wedi'i ddewis ar hyn o bryd. Dewis cyfrif.</translation>
@@ -2178,6 +2180,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Eitem a gadwyd yn eich Cyfrif Google, {email}}zero{Eitem a gadwyd yn eich Cyfrif Google, {email}}two{Eitem a gadwyd yn eich Cyfrif Google, {email}}few{Eitem a gadwyd yn eich Cyfrif Google, {email}}many{Eitem a gadwyd yn eich Cyfrif Google, {email}}other{Eitem a gadwyd yn eich Cyfrif Google, {email}}}</translation>
 <translation id="7729458878441927652">I weld tabiau o'ch dyfeisiau eraill, cysonwch eich tabiau a'ch hanes.</translation>
 <translation id="7730020510075123961">Na, cyfuno data</translation>
+<translation id="7730937523779541003">Tudalen tab newydd â ffocws wedi'i chymhwyso</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ar y ddyfais hon yn unig.</translation>
 <translation id="7737550920399185748">Ni fydd lluniau tudalen hafan o'ch llyfrgell luniau yn cysoni ar draws eich dyfeisiau.</translation>
 <translation id="7738120385185846461">Adrodd am broblem…</translation>
@@ -2621,6 +2624,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9032405509996909363">Cadarnhau dileu data pori</translation>
 <translation id="9038526468059454274">Crynhoi gyda</translation>
 <translation id="9039373489628511875">Lled band</translation>
+<translation id="9042363670218758847">Newid i gynllun a adeiladwyd ar gyfer chwiliadau cyflym</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>
 <translation id="9044703854323320868">Neges Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Creu grwpiau tab i drefnu eich tabiau agored ac aros yn gynhyrchiol</translation>

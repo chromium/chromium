@@ -257,7 +257,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3531741627422851418">QR kód na stiahnutie prehliadača Chromium v mobilných zariadeniach</translation>
 <translation id="354621070532799440">Pripomenutie: najlepšie bezpečnostné funkcie Googlu vo vrecku</translation>
 <translation id="3561853857681580870">Ak chcete zdieľať obrazovku, povoľte prehliadaču Chromium nahrávať obrazovku v nastaveniach systému.</translation>
-<translation id="3588112919289558122">Rozšírená ochrana vypína optimalizáciu JavaScriptu pre weby, ktoré Chromium nerozpoznáva</translation>
 <translation id="3597003331831379823">Nastavenie s vyššími oprávneniami sa nepodarilo spustiť. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Prihláste sa do prehliadača Chromium</translation>
 <translation id="3639635944603682591">Dáta prehliadania tejto osoby sa odstránia z tohto zariadenia. Ak ich chcete obnoviť, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
@@ -296,7 +295,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3971865010372729242">Keď píšete do panela s adresou alebo vyhľadávacieho poľa, prehliadač Chromium odosiela zadávaný text vyhľadávaniu, nástrojom umelej inteligencie a nástrojom agentov vašej organizácie, aby získal návrhy.</translation>
 <translation id="3975724895399328945">Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Chromium OS</translation>
-<translation id="4010059961270896984">Keď navštívite určitý web, Chromium odošle znejasnenú časť jeho webovej adresy <ph name="BEGIN_LINK" />Bezpečnému prehliadaniu Google<ph name="END_LINK" /> prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>
 <translation id="4016217212818346953">Zostaňte v bezpečí so Správcom hesiel</translation>
 <translation id="4019629340646866719">Chromium OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Preložiť obrazovku</translation>
@@ -457,7 +455,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="5821520528363214608">Ak chcete používať a ukladať údaje prehliadača Chromium vo svojom účte Google, aktualizujte Chromium</translation>
 <translation id="5824893331272123205">Tento panel sa nepodarilo načítať, skúste to znova</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
-<translation id="5867606647614813312">Zapne ďalšie funkcie, ktoré poskytujú najsilnejšiu ochranu prehliadača Chromium</translation>
 <translation id="5871205389137001634">Kliknutím ukončíte vyhľadávanie podľa obrázkov</translation>
 <translation id="5883558403894052917">Prehliadač Chromium zistil, že tieto položky obsahujú malvér:</translation>
 <translation id="5889361821821684993">Chromium vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
@@ -759,7 +756,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8522801943730206384">Chromium môže skontrolovať heslá, keď ich uložíte</translation>
 <translation id="8525579356836940628">Inštalácia bola zastavená</translation>
 <translation id="8545729292258443488">Vezmite si heslá, karty a ďalší obsah so sebou, keď ste na cestách, pomocou aplikácie Chromium v zariadení <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Dostávať upozornenia, keď Chromium zistí, že došlo k odhaleniu niektorého vášho hesla pri verejnom porušení ochrany údajov</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Niektoré funkcie a rozšírenia prehliadača Chromium majú skratky. Môžete ich znova zapnúť.</translation>
 <translation id="8556420416730706394">Vyhľadávanie podľa obrázkov si môžete pripnúť, aby ste k nemu mali jednoduchý prístup. Hore na bočnom paneli kliknite na Pripnúť.</translation>

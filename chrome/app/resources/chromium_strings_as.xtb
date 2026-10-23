@@ -258,7 +258,6 @@
 <translation id="3531741627422851418">ম’বাইল ডিভাইচত Chromium ব্ৰাউজাৰ ডাউনল’ড কৰিবলৈ কিউআৰ ক’ড</translation>
 <translation id="354621070532799440">ৰিমাইণ্ডাৰ: আপোনাৰ জেপত Googleৰ শ্ৰেষ্ঠ সুৰক্ষা সম্পৰ্কীয় সুবিধাসমূহ</translation>
 <translation id="3561853857681580870">আপোনাৰ স্ক্ৰীনখন শ্বেয়াৰ কৰিবলৈ, ছিষ্টেমৰ ছেটিঙত Chromiumৰ বাবে স্ক্ৰীন ৰেকৰ্ডিঙৰ অনুমতি দিয়ক।</translation>
-<translation id="3588112919289558122">Chromiumৰ বাবে অপৰিচিত ছাইটসমূহৰ ক্ষেত্ৰত বৰ্ধিত সুৰক্ষাই JavaScript অপ্টিমাইজেশ্বন অফ কৰে</translation>
 <translation id="3597003331831379823">উচ্চখাপৰ বিশেষাধিকাৰৰ সৈতে ছেটআপ চলাব কৰিব পৰা নগ’ল। <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="3639635944603682591">এই ডিভাইচটোৰ পৰা এই লোকগৰাকীৰ ব্ৰাউজিঙৰ ডেটা মচা যাব। ডেটা পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
@@ -297,7 +296,6 @@
 <translation id="3971865010372729242">আপুনি ঠিকনাৰ বাৰ বা সন্ধান বাকচত টাইপ কৰিলে, Chromiumএ পৰামৰ্শ পাবৰ বাবে আপুনি যি টাইপ কৰে সেয়া আপোনাৰ প্ৰতিষ্ঠানৰ সন্ধান, AI আৰু এজেন্টৰ সঁজুলিসমূহলৈ পঠিয়ায়।</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testingৰ বিষয়ে</translation>
 <translation id="3997429360543082038">ChromiumOSৰ বিষয়ে</translation>
-<translation id="4010059961270896984">আপুনি কোনো ছাইটলৈ গ’লে, Chromiumএ আপোনাৰ IP ঠিকনা লুকুৱাই ৰখা এটা গোপনীয়তা সম্পৰ্কীয় ছাৰ্ভাৰৰ জৰিয়তে <ph name="BEGIN_LINK" />Googleৰ সুৰক্ষিত ব্ৰাউজিঙ<ph name="END_LINK" />লৈ URLটোৰ এটা অস্পষ্ট অংশ পঠিয়ায়। যদি কোনো ছাইটে কোনো সন্দেহজনক কাৰ্য কৰে, তেন্তে সম্পূৰ্ণ URL আৰু পৃষ্ঠাৰ কিছুমান সমলো পঠিওৱা হয়।</translation>
 <translation id="4016217212818346953">Password Managerৰ সহায়ত সুৰক্ষিত হৈ থাকক</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে ChromiumOSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="4022972681110646219">স্ক্ৰীনৰ সমল অনুবাদ কৰক</translation>
@@ -458,7 +456,6 @@
 <translation id="5821520528363214608">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ, Chromium আপডে’ট কৰক</translation>
 <translation id="5824893331272123205">এই পেনেলটো ল’ড কৰিব পৰা নগ’ল, পুনৰ চেষ্টা কৰক</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
-<translation id="5867606647614813312">Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষা প্ৰদান কৰিবলৈ অতিৰিক্ত সুবিধাসমূহ অন কৰে</translation>
 <translation id="5871205389137001634">প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটোৰ পৰা বাহিৰ হ’বলৈ ক্লিক কৰক</translation>
 <translation id="5883558403894052917">Chromiumএ এই বস্তুবোৰত মালৱেৰ থকাটো পাইছে:</translation>
 <translation id="5889361821821684993">আপোনাৰ ব্ৰাউজাৰত আটাইতকৈ সুৰক্ষিত ছেটিং আছে নে নাই সেয়া নিশ্চিত কৰিবলৈ Chromiumএ নিয়মিতভাৱে পৰীক্ষা কৰে। যদি আপুনি কিবা পৰ্যালোচনা কৰাৰ প্ৰয়োজন হয় তেন্তে আমি আপোনাক জনাম।</translation>
@@ -760,7 +757,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8522801943730206384">আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে</translation>
 <translation id="8525579356836940628">ইনষ্টল কৰাটো বন্ধ হৈছে</translation>
 <translation id="8545729292258443488">আপোনাৰ <ph name="DEVICE_TYPE" />ত Chromium এপ্‌টোৰ জৰিয়তে আপোনাৰ পাছৱৰ্ড, টেব আৰু অধিক বস্তু যিকোনো ঠাইতে ব্যৱহাৰ কৰক</translation>
-<translation id="8548787790260785208">যদি Chromiumএ আপোনাৰ কোনো পাছৱৰ্ড ৰাজহুৱা ডেটা উলংঘনত পায়, তেন্তে সকীয়নি পাওক</translation>
 <translation id="8555465886620020932">ছাৰ্ভাৰ সম্পৰ্কীয় আসোঁৱাহ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556055872671007529">Chromiumৰ কিছুমান সুবিধা আৰু এক্সটেনশ্বনৰ শ্বৰ্টকাট থাকে। আপুনি সেইসমূহ পুনৰ অন কৰিবলৈ বাছনি কৰিব পাৰে।</translation>
 <translation id="8556420416730706394">সহজে এক্সেছ কৰিবলৈ আপুনি প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটো পিন কৰিব পাৰে; ছাইডৰ পেনেলৰ একেবাৰে ওপৰত থকা পিন কৰক শীৰ্ষক বুটামটোত ক্লিক কৰক</translation>

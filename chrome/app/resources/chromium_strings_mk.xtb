@@ -258,7 +258,6 @@
 <translation id="3531741627422851418">QR-код за преземање на прелистувачот Chromium на мобилни уреди</translation>
 <translation id="354621070532799440">Потсетник: најдобрите безбедносни функции на Google на дофат на раката</translation>
 <translation id="3561853857681580870">За да го споделите екранот, дозволете снимање на екранот за Chromium во System Settings.</translation>
-<translation id="3588112919289558122">„Подобрената заштита“ ја исклучува оптимизацијата на JavaScript за сајтовите што не ги препознава Chromium</translation>
 <translation id="3597003331831379823">Поставувањето со зголемени привилегии не можеше да се изврши. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Најавете се на Chromium</translation>
 <translation id="3639635944603682591">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@
 <translation id="3971865010372729242">Кога ќе напишете нешто во лентата за адреса или полето за пребарување, Chromium го испраќа напишаното до алатките за пребарување, AI и агенти на вашата организација за да добивате предлози.</translation>
 <translation id="3975724895399328945">За Google Chrome for Testing</translation>
 <translation id="3997429360543082038">За Chromium OS</translation>
-<translation id="4010059961270896984">Кога ќе посетите конкретен сајт, Chromium испраќа обфускиран дел од URL-адресата до <ph name="BEGIN_LINK" />Безбедно прелистување со Google<ph name="END_LINK" /> преку сервер за приватност што ја крие вашата IP-адреса. Ако конкретен сајт прави нешто сомнително, ќе се испратат и целосните URL-адреси и делови од содржините на страницата.</translation>
 <translation id="4016217212818346953">Заштитете се со Password Manager</translation>
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Преведи го екранот</translation>
@@ -458,7 +456,6 @@
 <translation id="5821520528363214608">За да користите и да зачувувате податоци од Chromium во вашата сметка на Google, ажурирајте го Chromium</translation>
 <translation id="5824893331272123205">Таблава не можеше да се вчита, обидете се повторно</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
-<translation id="5867606647614813312">Вклучува дополнителни функции за да ја обезбеди најсилната заштита на Chromium</translation>
 <translation id="5871205389137001634">Кликнете за да излезете од „Пребарување со слики“</translation>
 <translation id="5883558403894052917">Chromium откри дека овие ставки содржат злонамерен софтвер:</translation>
 <translation id="5889361821821684993">Chromium редовно проверува за да се погрижи вашиот прелистувач да ги има најбезбедните поставки. Ќе ве известиме ако треба да се прегледа нешто.</translation>
@@ -759,7 +756,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8522801943730206384">Chromium може да ги проверува вашите лозинки ако ги зачувате</translation>
 <translation id="8525579356836940628">Инсталирањето е сопрено</translation>
 <translation id="8545729292258443488">Носете си ги лозинките, картичките и друго во движење со апликацијата Chromium на вашиот <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Добивајте предупредувања ако Chromium најде некоја од вашите лозинки во јавен упад во податоци</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Некои функции и екстензии на Chromium доаѓаат со кратенки. Може да изберете да ги вклучите повторно.</translation>
 <translation id="8556420416730706394">Може да ја закачите „Пребарување со слики“ за лесен пристап. Само кликнете го копчето „Закачи“ најгоре на страничната табла</translation>

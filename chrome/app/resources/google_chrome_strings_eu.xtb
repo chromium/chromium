@@ -143,7 +143,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2216543877350048334">Zure Google-ko kontua Chrome-tik kentzeko, amaitu saioa</translation>
 <translation id="2236949375853147973">Nire jarduerak</translation>
 <translation id="22791603784558743">Itxi Chrome Dev-eko Gemini</translation>
-<translation id="2284380654876659752">Webgune bat bisitatzen duzunean, Chrome-k URLaren zati nahasi bat bidaltzen dio <ph name="BEGIN_LINK" />Google-ren Arakatze segurua<ph name="END_LINK" /> eginbideari, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webgune batek susmagarria den zerbait egiten badu, URL osoak eta orriaren edukiaren zati batzuk ere bidaltzen dira.</translation>
 <translation id="2290014774651636340">Google APIko gakoak falta dira. Agian Google Chrome-ren funtzio batzuk desgaituta egongo dira.</translation>
 <translation id="2290095356545025170">Ziur Google Chrome desinstalatu nahi duzula?</translation>
 <translation id="2295218613066132598">Erakutsi Chrome-ko webguneetarako lasterbideak</translation>
@@ -383,7 +382,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="459622048091363950">Chrome-k sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
 <translation id="4598116752460667024">Bilatu zerrendako edozein prozesu.</translation>
 <translation id="4600710005438004015">Ezin izan da eguneratu Chrome azken bertsiora; beraz, ez dituzu erabilgarri eginbide berriak eta segurtasun-konponketak.</translation>
-<translation id="4606805686144157064">Jaso abisu bat Chrome-k zure pasahitzetako bat datuen isilpekotasunaren urratze publiko batean aurkitzen badu</translation>
 <translation id="4608435347866444037">Egin bilaketak irudi honetan Google Lens-ekin</translation>
 <translation id="4624065194742029982">Chrome-ren ezkutuko modua</translation>
 <translation id="4627412468266359539">Aukerakoa: lagundu ChromeOS Flex-en eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
@@ -400,7 +398,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="4768676935374695498">Bilatu bideo honetan Google Lens-ekin</translation>
 <translation id="479167709087336770">Google Bilaketa zerbitzuan erabiltzen den ortografia-zuzentzaile bera erabiltzen da. Arakatzailean idazten duzun testua Google-ri bidaltzen zaio. Aukera horiek aldatzeko, joan ezarpenetara.</translation>
 <translation id="4793679854893018356">Lortu Chrome-k zu babesteko duen moduari buruzko informazio gehiago</translation>
-<translation id="4799870290441980300">Chrome-ren babesik sendoenak eskaintzeko eginbide gehigarriak aktibatzen ditu</translation>
 <translation id="4828579605166583682">Lehendik dauden pasahitzak ordezten saiatzen ari da Google Chrome. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="4836321460899997044">Chrome-ko profila</translation>
 <translation id="4842397268809523050">ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
@@ -559,7 +556,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6251759518630934363">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chrome-ren abisuak saltatzea aukera dezakezu.</translation>
 <translation id="6277547788421725101">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu du Chrome-n</translation>
 <translation id="627882678981830918">Pertsonalizatu eta kontrolatu Chrome. Ezarri Chrome arakatzaile lehenetsi gisa.</translation>
-<translation id="6280042952415350607">Babes hobetuak JavaScript-en optimizazioa desaktibatzen du Chrome-k ezagutzen ez dituen webguneetan</translation>
 <translation id="6288580400488258237">Ezarri Google Chrome arakatzaile lehenetsi gisa eta aingura ezazu zereginen barran</translation>
 <translation id="6291089322031436445">Chrome Dev aplikazioak</translation>
 <translation id="6291549208091401781">Ordenagailuko erabiltzaile guztientzat dago instalatuta Google Chrome.</translation>
@@ -730,6 +726,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7777080907402804672">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio. Aukera hori desaktibatu nahi baduzu, joan ezarpenetara.</translation>
 <translation id="778331955594035129">Chrome-k kokapena erabiltzeko baimena behar du webgune honetan</translation>
 <translation id="7787950393032327779">Google Chrome prozesu bat (<ph name="PROCESS_ID" />) profila beste ordenagailu batean (<ph name="HOST_NAME" />) erabiltzen ari dela dirudi. Chrome-k profila blokeatu du, honda ez dadin. Profila beste inongo prozesuk erabiltzen ari ez dela ziur badakizu, profila desblokeatu eta Chrome berrabiarazi egin dezakezu.</translation>
+<translation id="7800043020703832708">Itxi Google Bilaketa alboko panelean</translation>
 <translation id="7801699035218095297">Pasahitzak kopiatzen saiatzen ari da Google Chrome. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="7804364787702057554">Zure kontua Chrome-n</translation>
 <translation id="7804947029129221742">Bilatzailea Chrome-tik kanpo aldatu da. Zu babesteko, Chrome-k jatorrizko balio lehenetsira berrezarri du. <ph name="LEARN_MORE_LINK" /></translation>

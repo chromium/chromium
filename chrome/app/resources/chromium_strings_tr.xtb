@@ -253,7 +253,6 @@
 <translation id="3531741627422851418">Chromium tarayıcıyı mobil cihazlara indirmek için QR kodu</translation>
 <translation id="354621070532799440">Hatırlatıcı: Google'ın en iyi güvenlik özellikleri cebinizde</translation>
 <translation id="3561853857681580870">Ekranınızı paylaşmak için Sistem Ayarları'nda Chromium'un ekranı kaydetmesine izin verin.</translation>
-<translation id="3588112919289558122">Gelişmiş koruma, Chromium'un tanımadığı siteler için JavaScript optimizasyonunu devre dışı bırakır</translation>
 <translation id="3597003331831379823">Kurulum, üst düzey ayrıcalıklarla çalıştırılamadı. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium'da oturum aç</translation>
 <translation id="3639635944603682591">Bu kullanıcının tarama verileri bu cihazdan silinecektir. Verileri kurtarmak için Chromium'da <ph name="USER_EMAIL" /> olarak oturum açın.</translation>
@@ -292,7 +291,6 @@
 <translation id="3971865010372729242">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, öneriler almak için, yazdıklarınızı kuruluşunuzun arama, yapay zeka ve ajan araçlarına gönderir.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing hakkında</translation>
 <translation id="3997429360543082038">ChromiumOS hakkında</translation>
-<translation id="4010059961270896984">Bir siteyi ziyaret ettiğinizde Chromium, URL'nin kodu karartılmış bir kısmını, IP adresinizi saklayan bir gizlilik sunucusu üzerinden<ph name="BEGIN_LINK" />Google Güvenli Tarama<ph name="END_LINK" />'ya gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>
 <translation id="4016217212818346953">Şifre Yöneticisi ile güvende kalın</translation>
 <translation id="4019629340646866719">ChromiumOS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="4022972681110646219">Ekrandaki yazıları çevir</translation>
@@ -453,7 +451,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="5821520528363214608">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için Chromium'u güncelleyin</translation>
 <translation id="5824893331272123205">Bu panel yüklenemedi, tekrar deneyin</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
-<translation id="5867606647614813312">Chromium'un en güçlü korumalarını sağlamak için ek özellikleri etkinleştirir</translation>
 <translation id="5871205389137001634">Görsel Arama'dan çıkmak için tıklayın</translation>
 <translation id="5883558403894052917">Chromium, aşağıdaki öğelerde kötü amaçlı yazılım tespit etti:</translation>
 <translation id="5889361821821684993">Chromium, tarayıcınızın en güvenli ayarlara sahip olup olmadığını düzenli olarak kontrol eder. İncelemeniz gereken bir konu varsa sizi bilgilendiririz.</translation>
@@ -755,7 +752,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8522801943730206384">Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir</translation>
 <translation id="8525579356836940628">Yükleme İşlemi Durduruldu</translation>
 <translation id="8545729292258443488"><ph name="DEVICE_TYPE" /> cihazınızda Chromium uygulamasıyla şifrelerinizi, sekmelerinizi ve diğer öğelerinizi hareket halindeyken kullanın</translation>
-<translation id="8548787790260785208">Chromium, şifrelerinizden birinin herkese açık veri ihlalinde yer aldığını tespit ederse uyarı alın</translation>
 <translation id="8555465886620020932">Hizmet hatası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Bazı Chromium özellikleri ve uzantıları kısayollar içerir. Dilerseniz bunları tekrar etkinleştirebilirsiniz.</translation>
 <translation id="8556420416730706394">Daha kolay erişmek için yan panelin üst kısmındaki Sabitle düğmesini tıklayarak Görsel Arama'yı sabitleyebilirsiniz</translation>

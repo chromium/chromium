@@ -257,7 +257,6 @@
 <translation id="3531741627422851418">‏موبائل آلات پر Chromium براؤزر ڈاؤن لوڈ کرنے کے لیے QR کوڈ</translation>
 <translation id="354621070532799440">‏یاد دہانی: Google کی بہترین حفاظتی خصوصیات آپ کی جیب میں ہے</translation>
 <translation id="3561853857681580870">‏اپنی اسکرین کا اشتراک کرنے کیلئے، سسٹم کی ترتیبات میں Chromium کیلئے اسکرین ریکارڈنگ کی اجازت دیں۔</translation>
-<translation id="3588112919289558122">‏بہتر کردہ حفاظت ان سائٹس کے لیے JavaScript آپٹیمائزیشن کو آف کر دیتی ہے جنہیں Chromium نہیں پہچانتا ہے</translation>
 <translation id="3597003331831379823">زیادہ مراعات کے ساتھ سیٹ اپ کو چلانے میں ناکام۔ <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">‏‫Chromium میں سائن ان کریں</translation>
 <translation id="3639635944603682591">‏اس شخص کا براؤزنگ ڈیٹا اس آلے سے حذف کر دیا جائے گا۔ ڈیٹا بحال کرنے کیلئے، Chromium میں بطور <ph name="USER_EMAIL" /> سائن ان کریں۔</translation>
@@ -296,7 +295,6 @@
 <translation id="3971865010372729242">‏جب آپ ایڈریس بار یا تلاش کے خانے میں ٹائپ کرتے ہیں تو Chromium آپ کی تنظیم کی تلاش، AI اور ایجنٹ ٹولز کو تجاویز حاصل کرنے کے لیے بھیجتا ہے۔</translation>
 <translation id="3975724895399328945">‏&amp;Google Chrome for Testing کے بارے میں</translation>
 <translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
-<translation id="4010059961270896984">‏جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chromium رازداری سرور کے ذریعے URL کا ایک مبہم حصہ <ph name="BEGIN_LINK" />Google محفوظ براؤزنگ<ph name="END_LINK" /> کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="4016217212818346953">پاس ورڈ مینیجر کے ساتھ محفوظ رہیں</translation>
 <translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="4022972681110646219">اسکرین پر موجود مواد کا ترجمہ کریں</translation>
@@ -374,6 +372,7 @@
 <translation id="4786083865378785874">‏اگر Chromium میں Gemini کھلا ہے تو نئے ٹیبز بناتے وقت سائیڈ پینل کھلا رہتا ہے</translation>
 <translation id="479167709087336770">‏یہ وہی املا جانچ کنندہ استعمال کرتا ہے جسے Google تلاش میں استعمال کیا جاتا ہے۔ آپ براؤزر میں جو متن ٹائپ کرتے ہیں، اسے Google کو بھیجا جاتا ہے۔ آپ اس برتاؤ کو کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="4814736265800133385">‏اکاؤنٹ کے بغیر Chromium استعمال کریں</translation>
+<translation id="4839733921943823254">شارٹ کٹ کو پن کریں</translation>
 <translation id="4888717733111232871">‏mDNS ٹریفک کی اجازت دینے کیلئے Chromium کیلئے ان باؤنڈ اصول۔</translation>
 <translation id="4893347770495441059">‏Chromium&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
@@ -457,7 +456,6 @@
 <translation id="5821520528363214608">‏اپنے Google اکاؤنٹ میں Chromium ڈیٹا استعمال کرنے اور محفوظ کرنے کے لیے، Chromium کو اپ ڈیٹ کریں</translation>
 <translation id="5824893331272123205">اس پینل کو لوڈ نہیں کیا جا سکا، دوبارہ کوشش کریں</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
-<translation id="5867606647614813312">‏‫Chromium کے مضبوط ترین تحفظات فراہم کرنے کے لیے اضافی خصوصیات کو آن کرتا ہے</translation>
 <translation id="5871205389137001634">تصاویر کا استعمال کر کے تلاش سے باہر نکلنے کے لیے کلک کریں</translation>
 <translation id="5883558403894052917">‏Chromium کو پتا چلا ہے کہ یہ آئٹمز میلوئیر پر مشتمل ہیں:</translation>
 <translation id="5889361821821684993">‏Chromium باقاعدگی سے یہ یقینی بنانے کے لیے چیک کرتا ہے کہ آپ کے براؤزر میں سب سے محفوظ ترتیبات موجود ہیں۔ اگر کسی چیز کو آپ کے جائزے کی ضرورت ہے تو ہم آپ کو مطلع کریں گے۔</translation>
@@ -759,10 +757,10 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8522801943730206384">‏جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے</translation>
 <translation id="8525579356836940628">انسٹالیشن رک گئی</translation>
 <translation id="8545729292258443488">‏اپنے فون پر Chromium ایپ کے ساتھ اپنے پاس ورڈز، ٹیبز اور بہت کچھ چلتے پھرتے لے جائیں<ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">‏اگر Chromium کو عوامی ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے کسی ایک کا پتا چلتا ہے تو وارننگ حاصل کریں</translation>
 <translation id="8555465886620020932">سروس کی خرابی: <ph name="SERVICE_ERROR" />۔</translation>
 <translation id="8556055872671007529">‏‫Chromium کی کچھ خصوصیات اور ایکسٹینشنز شارٹ کٹس کے ساتھ آتی ہیں۔ آپ انہیں دوبارہ آن کرنے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="8556420416730706394">آپ آسان رسائی کے لیے تصاویر کا استعمال کر کے تلاش کو پن کر سکتے ہیں؛ سائیڈ پینل کے اوپری حصے میں پن کریں بٹن پر کلک کریں</translation>
+<translation id="8564408666201523086">‏کامیاب! اب آپ سائیڈ پینل میں Google تلاش کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="856656450041460113">زبان کی فہرست تلاش کریں</translation>
 <translation id="8576826849825683917">‏متعدد تنظیمیں Chromium کا نظم کرتی ہیں</translation>
 <translation id="8586442755830160949">‏کاپی رائٹ ‎<ph name="YEAR" /> The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>

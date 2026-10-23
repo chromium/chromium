@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">Chrome から Google アカウントを削除するには、ログアウトしてください</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="22791603784558743">Gemini in Chrome Dev を閉じる</translation>
-<translation id="2284380654876659752">ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを経由して、URL の一部を難読化してから <ph name="BEGIN_LINK" />Google セーフ ブラウジング<ph name="END_LINK" />に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>
 <translation id="2290014774651636340">Google API キーが欠落しています。Google Chrome の一部の機能は無効になります。</translation>
 <translation id="2290095356545025170">Google Chrome をアンインストールしてもよろしいですか？</translation>
 <translation id="2295218613066132598">Chrome のサイト ショートカットを表示する</translation>
@@ -377,7 +376,6 @@
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4598116752460667024">リストからプロセスを検索します。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
-<translation id="4606805686144157064">一般に報告されているデータ侵害でパスワードが検出された場合、警告が表示されます</translation>
 <translation id="4608435347866444037">Google レンズでこの画像を検索する</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
 <translation id="4627412468266359539">オプション: 診断と使用状況のデータを Google に自動送信して ChromeOS Flex の機能と動作の改善に役立てる。</translation>
@@ -394,7 +392,6 @@
 <translation id="4768676935374695498">Google レンズでこの動画を検索</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4793679854893018356">Chrome のユーザー保護の仕組みについて</translation>
-<translation id="4799870290441980300">追加の機能を有効にして、Chrome の最高水準のセキュリティで保護します</translation>
 <translation id="4828579605166583682">Google Chrome が既存のパスワードを置き換えようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="4836321460899997044">Chrome プロファイル</translation>
 <translation id="4842397268809523050">お使いのドメインでは同期が利用できないため、ChromeOS Flex はデータを同期できませんでした。</translation>
@@ -549,7 +546,6 @@
 <translation id="6251759518630934363">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chrome の警告をスキップすることもできます。</translation>
 <translation id="6277547788421725101">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
 <translation id="627882678981830918">Chrome をカスタマイズ、管理します。Chrome をデフォルトに設定します。</translation>
-<translation id="6280042952415350607">保護強化機能により、Chrome で認識できないサイトでは JavaScript の最適化が無効になります</translation>
 <translation id="6288580400488258237">Google Chrome を既定のブラウザに設定して、タスクバーに固定する</translation>
 <translation id="6291089322031436445">Chrome Dev アプリ</translation>
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
@@ -720,6 +716,7 @@
 <translation id="7777080907402804672">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="778331955594035129">このサイトを利用するには、Chrome で位置情報の使用を許可する必要があります</translation>
 <translation id="7787950393032327779">プロファイルは、別のコンピュータ（<ph name="HOST_NAME" />）の別の Google Chrome プロセス（<ph name="PROCESS_ID" />）で使用されているようです。Chrome はプロファイルが破損しないようにプロファイルをロックしています。他のプロセスがこのプロファイルを使用していないことが確実であれば、プロファイルのロックを解除して Chrome を再起動できます。</translation>
+<translation id="7800043020703832708">サイドパネルの Google 検索を閉じる</translation>
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7804364787702057554">Chrome のアカウント設定</translation>
 <translation id="7804947029129221742">検索エンジンが Chrome の外部から変更されました。ユーザーを保護するため、Chrome で元のデフォルトにリセットしました。<ph name="LEARN_MORE_LINK" /></translation>

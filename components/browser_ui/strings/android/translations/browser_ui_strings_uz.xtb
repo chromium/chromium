@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6452138246455930388">Ochiq varaqda narx pasaydi: <ph name="OLD_PRICE" />dan <ph name="NEW_PRICE" />ga, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405"><ph name="NAME" /> saytining qurilmaga ruxsatini bekor qilish</translation>
 <translation id="6500423977866688905">Oyna kichkina boʻlsa, mobil versiyani soʻrang</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6530703012083415527">Yoqilsa, qalqib chiquvchi oyna va yoʻnaltirishlardan foydalana oladi. Oʻchirilsa, foydalana olmaydi.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Qurilmada saqlangan sayt maʼlumotlari</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> saytiga bogʻlangan saytlar yoki ularning bosh ekrandagi ilovasi saqlangan barcha maʼlumotlar va cookie fayllari oʻchirib tashlanadi.</translation>
 <translation id="7219254577985949841">Sayt maʼlumotlari oʻchirilsinmi?</translation>
+<translation id="7225256190577194089"><ph name="DEVICE_NAME" /> qurilmasiga barcha ruxsatlarini bekor qilish</translation>
 <translation id="723171743924126238">Tasvirni tanlang</translation>
 <translation id="7243246278722455312">Yangi varaq sahifasini moslash quyi ekrani</translation>
 <translation id="7243308994586599757">Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>

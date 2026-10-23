@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">Jos haluat poistaa Google-tilin Chromesta, kirjaudu ulos</translation>
 <translation id="2236949375853147973">Oma toiminta</translation>
 <translation id="22791603784558743">Sulje Gemini in Chrome Dev</translation>
-<translation id="2284380654876659752">Kun käyt sivustolla, Chrome lähettää osan URL-osoitteesta obfuskoituna <ph name="BEGIN_LINK" />Googlen selaussuojalle<ph name="END_LINK" /> yksityisyyspalvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto tekee jotakin epäilyttävää, koko URL-osoitteet ja osia sivun sisällöstä lähetetään.</translation>
 <translation id="2290014774651636340">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Google Chromen toiminnoista poistetaan käytöstä.</translation>
 <translation id="2290095356545025170">Haluatko varmasti poistaa Google Chromen?</translation>
 <translation id="2295218613066132598">Näytä Chrome-sivustojen pikakuvakkeet</translation>
@@ -380,7 +379,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="459622048091363950">Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
 <translation id="4598116752460667024">Hae mitä tahansa prosessia listalta.</translation>
 <translation id="4600710005438004015">Chromea ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
-<translation id="4606805686144157064">Saat varoituksen, jos Chrome löytää jonkin salasanoistasi julkisesta tietosuojaloukkauksesta</translation>
 <translation id="4608435347866444037">Hae tätä kuvaa Google Lensilla</translation>
 <translation id="4624065194742029982">Chromen incognito-tila</translation>
 <translation id="4627412468266359539">Valinnainen: Auta parantamaan ChromeOS Flexin ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa automaattisesti Googlelle.</translation>
@@ -397,7 +395,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4768676935374695498">Hae tästä videosta Google Lensillä</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
-<translation id="4799870290441980300">Laittaa päälle lisäominaisuuksia, jotka tarjoavat Chromen tehokkaimman suojauksen</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4836321460899997044">Chrome-profiili</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
@@ -552,7 +549,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6251759518630934363">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
 <translation id="6277547788421725101">Vanhempasi on laittanut Chromen "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
 <translation id="627882678981830918">Yksilöi Chromea ja muuta sen asetuksia. Valitse Chrome oletusselaimeksi.</translation>
-<translation id="6280042952415350607">Parannettu suojaus laittaa JavaScript-optimoinnin pois päältä sivustoilla, joita Chrome ei tunnista</translation>
 <translation id="6288580400488258237">Valitse Google Chrome oletusselaimeksi ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="6291089322031436445">Chromen kehittäjäversion sovellukset</translation>
 <translation id="6291549208091401781">Google Chrome on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
@@ -723,6 +719,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7777080907402804672">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="778331955594035129">Chrome tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="7787950393032327779">Profiili näyttäisi olevan toisen Google Chrome -prosessin (<ph name="PROCESS_ID" />) käytössä toisella tietokoneella (<ph name="HOST_NAME" />). Chrome on lukinnut profiilin, jotta se ei vioitu. Jos olet varma, että mikään toinen prosessi ei käytä tätä profiilia, voit poistaa profiilin lukituksen ja käynnistää Chromen uudelleen.</translation>
+<translation id="7800043020703832708">Sulje Google Haku sivupaneelista</translation>
 <translation id="7801699035218095297">Google Chrome yrittää kopioida salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="7804364787702057554">Tilisi Chromessa</translation>
 <translation id="7804947029129221742">Hakukoneesi on vaihdettu Chromen ulkopuolelta. Chrome on nollannut sen alkuperäisiin oletusasetuksiin suojellakseen sinua. <ph name="LEARN_MORE_LINK" /></translation>

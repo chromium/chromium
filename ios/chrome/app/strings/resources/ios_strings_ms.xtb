@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">Bantu kami meningkatkan autolengkap dipertingkatkan</translation>
 <translation id="3422958112451181446">Tekan dan tahan untuk menyematkan alat kegemaran anda di sini</translation>
 <translation id="3430407169377889553">Gunakan Gemini dengan berhati-hati dan ambil alih kawalan jika perlu. Anda bertanggungjawab terhadap tindakan Gemini semasa melaksanakan tugasan.</translation>
+<translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="3441673211568148613">Pastikan penyemakan imbas anda sulit</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -1941,6 +1942,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="6946722113367118030">Memikirkan</translation>
 <translation id="6947751977892029882">Ada masalah dengan tetapan ini. Kemas kinikan dan mulakan semula Chrome dan iOS, kemudian cuba lagi. Jika ralat ini terus berlaku, iPhone anda mungkin tidak menyokong tetapan ini.</translation>
 <translation id="6950522403736391608">Disembunyikan</translation>
+<translation id="6957084631403333422">Cuba halaman tab baharu yang difokuskan</translation>
 <translation id="695965663642079255">Simpan dan urus maklumat pembayaran untuk semak keluar dengan lebih pantas</translation>
 <translation id="6962809930976936328">Dapatkan cerapan dengan Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> dipilih pada masa ini. Pilih akaun.</translation>
@@ -2178,6 +2180,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item yang disimpan dalam Google Account anda, {email}}other{Item yang disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="7729458878441927652">Untuk melihat tab daripada peranti anda yang lain, segerakkan tab dan sejarah anda.</translation>
 <translation id="7730020510075123961">Tidak, gabungkan data</translation>
+<translation id="7730937523779541003">Halaman tab baharu yang difokuskan telah digunakan</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Hanya pada peranti ini.</translation>
 <translation id="7737550920399185748">Foto halaman utama daripada pustaka foto anda tidak akan disegerakkan merentas peranti anda.</translation>
 <translation id="7738120385185846461">Laporkan Isu…</translation>
@@ -2621,6 +2624,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="9032405509996909363">Sahkan pemadaman data semakan imbas</translation>
 <translation id="9038526468059454274">Ringkaskan dengan</translation>
 <translation id="9039373489628511875">Lebar Jalur</translation>
+<translation id="9042363670218758847">Beralih kepada reka letak yang dibina untuk carian pantas</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
 <translation id="9044703854323320868">Mesej Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Buat kumpulan tab untuk mengatur tab anda yang terbuka dan kekal produktif</translation>

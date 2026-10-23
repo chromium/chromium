@@ -62,7 +62,7 @@
 <translation id="1099928364755383720">自动进入画中画模式</translation>
 <translation id="1100782917270858593">“继续您的历程”按钮，按 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="1101672080107056897">错误操作</translation>
-<translation id="1104409666019087579">某些必填字段是空的。请先填写这些字段，然后再保存。</translation>
+<translation id="1104409666019087579">请先填写所有必填字段，然后再保存。</translation>
 <translation id="1104860668737945357">“管理密码”按钮，激活它即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110809716549020493">系统未自动填入虚拟卡信息？点击虚拟卡详情即可复制到剪贴板。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
@@ -2428,6 +2428,7 @@
 <translation id="5052488928733955073">填写信息时遇到问题。请检查您的网络连接。</translation>
 <translation id="5053116470141135293">使用此卡结账时，系统会填写虚拟卡号，以保护您的真实详细信息。在 Google 钱包中管理。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="505757197798929356">请提供打开原因（必填）</translation>
 <translation id="5058282932481719070">在设置中详细了解增强型自动填充功能</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>

@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">Ajude a melhorar o preenchimento automático aprimorado</translation>
 <translation id="3422958112451181446">Toque e pressione para fixar sua ferramenta favorita aqui</translation>
 <translation id="3430407169377889553">Use o Gemini com cuidado e assuma o controle se necessário. Você é responsável pelas ações do Gemini durante as tarefas.</translation>
+<translation id="3432601291244612633">Fechar página</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3441673211568148613">Mantenha a privacidade da sua navegação</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> minutos</translation>
@@ -1941,6 +1942,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="6946722113367118030">Pensando</translation>
 <translation id="6947751977892029882">Algo deu errado com esta configuração. Atualize e reinicie o Chrome e o iOS e tente de novo. Se o erro persistir, talvez seu iPhone não seja compatível com essa configuração.</translation>
 <translation id="6950522403736391608">Oculto</translation>
+<translation id="6957084631403333422">Testar uma página "Nova guia" simplificada</translation>
 <translation id="695965663642079255">Salve e gerencie as informações de pagamento para finalizar as compras mais rápido</translation>
 <translation id="6962809930976936328">Tenha ideias com o Gemini</translation>
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
@@ -2178,6 +2180,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item salvo na sua Conta do Google {email}}one{Item salvo na sua Conta do Google {email}}other{Itens salvos na sua Conta do Google {email}}}</translation>
 <translation id="7729458878441927652">Para ver as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
 <translation id="7730020510075123961">Não, juntar dados</translation>
+<translation id="7730937523779541003">Página "Nova guia" simplificada aplicada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
 <translation id="7737550920399185748">As fotos da página inicial da biblioteca de fotos não serão sincronizadas entre seus dispositivos.</translation>
 <translation id="7738120385185846461">Informar um problema…</translation>
@@ -2621,6 +2624,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="9032405509996909363">Confirmar exclusão dos dados de navegação</translation>
 <translation id="9038526468059454274">Resuma com o</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
+<translation id="9042363670218758847">Mude para um layout focado nas pesquisas rápidas</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9044703854323320868">Mensagem do Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crie grupos de guias para organizar as guias abertas e manter a produtividade</translation>

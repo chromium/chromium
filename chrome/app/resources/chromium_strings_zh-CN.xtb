@@ -255,7 +255,6 @@
 <translation id="3531741627422851418">用于在移动设备上下载 Chromium 浏览器的二维码</translation>
 <translation id="354621070532799440">温馨提示：Google 顶级安全防护，随身守护</translation>
 <translation id="3561853857681580870">若要共享屏幕，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
-<translation id="3588112919289558122">增强型保护会为 Chromium 无法识别的网站关闭 JavaScript 优化功能</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登录 Chromium</translation>
 <translation id="3639635944603682591">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chromium。</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
 <translation id="3975724895399328945">关于 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">关于 Chromium 操作系统</translation>
-<translation id="4010059961270896984">当您访问某个网站时，Chromium 会通过可隐藏 IP 地址的隐私保护服务器，将经过混淆处理的网址片段发送给 <ph name="BEGIN_LINK" />Google 安全浏览服务<ph name="END_LINK" />。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="4016217212818346953">利用“密码管理工具”，保障安全无忧</translation>
 <translation id="4019629340646866719">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chromium 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
@@ -456,7 +454,6 @@
 <translation id="5821520528363214608">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请更新 Chromium</translation>
 <translation id="5824893331272123205">无法加载此面板，请重试</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
-<translation id="5867606647614813312">开启更多功能，提供 Chromium 最强大的安全防护</translation>
 <translation id="5871205389137001634">点击即可退出图片搜索功能</translation>
 <translation id="5883558403894052917">Chromium 发现这些内容包含恶意软件：</translation>
 <translation id="5889361821821684993">Chromium 会定期进行检查，以确保您的浏览器使用了最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>
@@ -758,7 +755,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8525579356836940628">已停止安装</translation>
 <translation id="8545729292258443488">密码、标签页及更多内容随身行，尽在 <ph name="DEVICE_TYPE" /> 版 Chromium 应用</translation>
-<translation id="8548787790260785208">如果 Chromium 发现您的密码在公开数据泄露事件中外泄，会向您发出警告</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556055872671007529">某些 Chromium 功能和扩展程序附带快捷字词。您可以选择重新开启它们。</translation>
 <translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>

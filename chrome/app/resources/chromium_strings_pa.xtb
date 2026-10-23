@@ -258,7 +258,6 @@
 <translation id="3531741627422851418">ਮੋਬਾਈਲ ਡੀਵਾਈਸਾਂ 'ਤੇ Chromium ਬ੍ਰਾਊਜ਼ਰ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ QR ਕੋਡ</translation>
 <translation id="354621070532799440">ਰਿਮਾਈਂਡਰ: Google ਦੀਆਂ ਬਿਹਤਰੀਨ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਤੁਹਾਡੀ ਜੇਬ ਵਿੱਚ</translation>
 <translation id="3561853857681580870">ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chromium ਵਾਸਤੇ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
-<translation id="3588112919289558122">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਲਈ JavaScript ਸੁਯੋਗਕਰਨ ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਨੂੰ Chromium ਨਹੀਂ ਪਛਾਣਦਾ</translation>
 <translation id="3597003331831379823">ਐਲੀਵੇਟਿਡ ਵਿਸ਼ੇਸ਼-ਅਧਿਕਾਰਾਂ ਨਾਲ ਸੈੱਟਅੱਪ ਚਲਾਉਣਾ ਅਸਫਲ ਰਿਹਾ। <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3639635944603682591">ਇਸ ਵਿਅਕਤੀ ਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਡਾਟਾ ਮੁੜ-ਹਾਸਲ ਕਰਨ ਲਈ, Chromium 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -297,7 +296,6 @@
 <translation id="3971865010372729242">ਜਦੋਂ ਤੁਸੀਂ ਪਤਾ ਬਾਰ ਜਾਂ ਖੋਜ ਬਾਕਸ ਵਿੱਚ ਟਾਈਪ ਕਰਦੇ ਹੋ, ਤਾਂ, Chromium ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੇ ਗਏ ਸ਼ਬਦਾਂ ਨੂੰ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੇ ਖੋਜ, AI ਅਤੇ ਏਜੰਟ ਟੂਲਾਂ ਨੂੰ ਭੇਜਦਾ ਹੈ।</translation>
 <translation id="3975724895399328945">Google Chrome for Testing ਬਾਰੇ</translation>
 <translation id="3997429360543082038">ChromiumOS ਬਾਰੇ</translation>
-<translation id="4010059961270896984">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, Chromium ਤੁਹਾਡੇ IP ਪਤੇ ਨੂੰ ਲੁਕਾਉਣ ਵਾਲੇ ਪਰਦੇਦਾਰੀ ਵਾਲੇ ਸਰਵਰ ਰਾਹੀਂ <ph name="BEGIN_LINK" />Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ<ph name="END_LINK" />ਨੂੰ URL ਦਾ ਭਰਮਾਊ ਹਿੱਸਾ ਭੇਜਦਾ ਹੈ। ਜੇ ਸਾਈਟ 'ਤੇ ਕੁਝ ਸ਼ੱਕੀ ਸਮੱਗਰੀ ਮਿਲਦੀ ਹੈ, ਤਾਂ ਪੂਰੇ URL ਅਤੇ ਪੰਨੇ ਦੀ ਥੋੜ੍ਹੀ ਸਮੱਗਰੀ ਨੂੰ ਵੀ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="4016217212818346953">Password Manager ਨਾਲ ਸੁਰੱਖਿਅਤ ਰਹੋ</translation>
 <translation id="4019629340646866719">ChromiumOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="4022972681110646219">ਸਕ੍ਰੀਨ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
@@ -458,7 +456,6 @@
 <translation id="5821520528363214608">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, Chromium ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5824893331272123205">ਇਸ ਪੈਨਲ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="5862307444128926510">Chromium ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
-<translation id="5867606647614813312">Chromium ਦੀਆਂ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, ਵਧੀਕ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰਦਾ ਹੈ</translation>
 <translation id="5871205389137001634">'ਚਿੱਤਰ ਖੋਜ' ਤੋਂ ਬਾਹਰ ਆਉਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5883558403894052917">Chromium ਨੂੰ ਇਹ ਪਤਾ ਲੱਗਾ ਕਿ ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਵਿੱਚ ਮਾਲਵੇਅਰ ਸ਼ਾਮਲ ਹਨ:</translation>
 <translation id="5889361821821684993">Chromium ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਜਾਂਚ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਸਭ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹਨ। ਜੇ ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਤੁਹਾਡੀ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ, ਤਾਂ ਅਸੀਂ ਤੁਹਾਨੂੰ ਦੱਸ ਦੇਵਾਂਗੇ।</translation>
@@ -760,7 +757,6 @@ Chromium ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾਸ�
 <translation id="8522801943730206384">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Chromium ਉਨ੍ਹਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8525579356836940628">ਸਥਾਪਨਾ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="8545729292258443488">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chromium ਐਪ ਨਾਲ ਤੁਰਦੇ-ਫਿਰਦੇ ਆਪਣੇ ਪਾਸਵਰਡ, ਟੈਬਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
-<translation id="8548787790260785208">ਜੇ Chromium ਨੂੰ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਜਨਤਕ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਦਾ ਹੈ, ਤਾਂ ਚਿਤਾਵਨੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8555465886620020932">ਸੇਵਾ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556055872671007529">ਕੁਝ Chromium ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਸ਼ਾਰਟਕੱਟਾਂ ਨਾਲ ਆਉਂਦੀਆਂ ਹਨ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਵਾਪਸ ਚਾਲੂ ਕਰਨ ਬਾਰੇ ਚੁਣ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8556420416730706394">ਤੁਸੀਂ ਆਸਾਨ ਪਹੁੰਚ ਲਈ 'ਚਿੱਤਰ ਖੋਜ' ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ; ਸਾਈਡ ਪੈਨਲ ਦੇ ਸਿਖਰ 'ਤੇ 'ਪਿੰਨ ਕਰੋ' ਬਟਨ ਨੂੰ ਕਲਿੱਕ ਕਰੋ</translation>

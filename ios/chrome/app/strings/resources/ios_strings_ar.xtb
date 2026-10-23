@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">بانتظار مساهمتك في تحسين "الملء التلقائي المحسّن"</translation>
 <translation id="3422958112451181446">يُرجى الضغط مع الاستمرار لتثبيت أداتك المفضّلة هنا</translation>
 <translation id="3430407169377889553">‏ننصحك باستخدام Gemini بحذر والتحكّم فيه عند الضرورة، لأنّ مسؤولية إجراءاته أثناء تنفيذ المهام تقع على عاتقك.</translation>
+<translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3441673211568148613">تحافظ هذه الميزة على خصوصية بيانات التصفح المتخفي</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
@@ -1939,6 +1940,7 @@
 <translation id="6946722113367118030">تفكير</translation>
 <translation id="6947751977892029882">‏حدث خطأ أثناء ضبط هذا الإعداد. يُرجى تحديث Chrome وiOS وإعادة تشغيلهما، ثم إعادة المحاولة. في حال استمرار ظهور هذا الخطأ، قد لا يكون جهاز iPhone متوافقًا مع هذا الإعداد.</translation>
 <translation id="6950522403736391608">مخفي</translation>
+<translation id="6957084631403333422">حان وقت تجربة صفحة علامة تبويب جديدة مركَّزة</translation>
 <translation id="695965663642079255">يمكنك حفظ معلومات الدفع وإدارتها لإتمام عمليات الدفع بسرعة أكبر</translation>
 <translation id="6962809930976936328">‏عرض أهم النقاط باستخدام Gemini</translation>
 <translation id="6964300328304469089">الحساب الذي تم اختياره حاليًا هو "<ph name="NAME" />" ‏(<ph name="EMAIL" />). اختَر حسابًا.</translation>
@@ -2176,6 +2178,7 @@
 <translation id="7724085059277147439">{count,plural, =1{‏تم حفظ العنصر في حسابك على Google،‏ {email}.}zero{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}two{‏تم حفظ العنصرين في حسابك على Google،‏ {email}.}few{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}many{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}other{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}}</translation>
 <translation id="7729458878441927652">يجب مزامنة علامات التبويب والسجلّ للاطّلاع عليها من أجهزتك الأخرى.</translation>
 <translation id="7730020510075123961">لا. أريد دمج البيانات</translation>
+<translation id="7730937523779541003">تم تطبيق صفحة "علامة تبويب جديدة" مركّزة</translation>
 <translation id="7733646263819020771">حفظ الإشارة المرجعية باسم "<ph name="BOOKMRK_NAME" />" على هذا الجهاز فقط</translation>
 <translation id="7737550920399185748">لن تتم مزامنة صور الصفحة الرئيسية من مكتبة الصور على جميع أجهزتك.</translation>
 <translation id="7738120385185846461">الإبلاغ عن مشكلة…</translation>
@@ -2620,6 +2623,7 @@
 <translation id="9032405509996909363">تأكيد حذف بيانات التصفّح</translation>
 <translation id="9038526468059454274">الملخص بانتظارك مع</translation>
 <translation id="9039373489628511875">معدّل نقل البيانات</translation>
+<translation id="9042363670218758847">يمكنك التبديل إلى تصميم مخصّص لعمليات البحث السريعة</translation>
 <translation id="9042893549633094279">الخصوصية والأمان</translation>
 <translation id="9044703854323320868">‏رسالة Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">لتعزيز إنتاجيتك، يمكنك تنظيم علامات التبويب المفتوحة عبر وضعها في مجموعات</translation>

@@ -46,6 +46,7 @@
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas.}=1{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua janela anônima não será aberta novamente.}one{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua # janela anônima não será aberta novamente.}other{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1434626383986940139">Aplicativos Canary do Google Chrome</translation>
+<translation id="1438812738230833934">Você pode reabrir a Pesquisa Google no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="1439793550875056299">Fixar o Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Seu admin exige que você reinicie o Chrome para que uma atualização seja feita. Sua janela isolada não será reaberta.}one{Seu admin exige que você reinicie o Chrome para que uma atualização seja feita. Você tem # janela isolada, ela não será reaberta.}other{Seu admin exige que você reinicie o Chrome para que uma atualização seja feita. Você tem # janelas isoladas, elas não serão reabertas.}}</translation>
 <translation id="146866447420868597">Fazer login no Chrome?</translation>
@@ -139,7 +140,6 @@
 <translation id="2216543877350048334">Para remover sua Conta do Google do Chrome, saia dela</translation>
 <translation id="2236949375853147973">Minha atividade</translation>
 <translation id="22791603784558743">Fechar o Gemini no Chrome Dev</translation>
-<translation id="2284380654876659752">Quando você acessa um site, o Chrome envia à <ph name="BEGIN_LINK" />navegação segura do Google<ph name="END_LINK" /> apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>
 <translation id="2290014774651636340">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Google Chrome serão desativadas.</translation>
 <translation id="2290095356545025170">Você quer mesmo desinstalar o Google Chrome?</translation>
 <translation id="2295218613066132598">Mostrar atalhos de sites do Chrome</translation>
@@ -375,12 +375,12 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4458462641685292929">Outra operação está em andamento no Google Chrome. Tente novamente mais tarde.</translation>
 <translation id="4493028449971051158">Erro de inicialização: execute o instalador como admin.</translation>
 <translation id="4501471624619070934">A instalação falhou porque o acesso está restrito neste país.</translation>
+<translation id="4501839397124711198">Você pode fixar a Pesquisa Google no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="4571503333518166079">Acessar as configurações de notificação do Chrome</translation>
 <translation id="4580939929828762295">Proteja-se com o Gerenciador de Senhas do Google</translation>
 <translation id="459622048091363950">Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.</translation>
 <translation id="4598116752460667024">Pesquise qualquer processo na lista.</translation>
 <translation id="4600710005438004015">Não foi possível atualizar o Chrome para a versão mais recente. Com isso, você está perdendo novos recursos e correções de segurança.</translation>
-<translation id="4606805686144157064">Receba um aviso se o Chrome encontrar uma das suas senhas em um vazamento de dados público</translation>
 <translation id="4608435347866444037">Pesquise esta imagem com o Google Lens</translation>
 <translation id="4624065194742029982">Navegação anônima do Chrome</translation>
 <translation id="4627412468266359539">Opcional: ajude a melhorar os recursos e o desempenho do ChromeOS Flex enviando automaticamente dados de uso e diagnóstico ao Google.</translation>
@@ -397,9 +397,9 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4768676935374695498">Pesquisar Este Vídeo com o Google Lens</translation>
 <translation id="479167709087336770">Esta opção usa o mesmo corretor ortográfico usado na Pesquisa Google. O texto digitado no navegador é enviado para o Google. É possível alterar esse comportamento nas configurações a qualquer momento.</translation>
 <translation id="4793679854893018356">Saiba como o Chrome protege você</translation>
-<translation id="4799870290441980300">Ativa recursos extras para oferecer a proteção mais segura do Chrome.</translation>
 <translation id="4828579605166583682">O Google Chrome está tentando substituir senhas já existentes. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="4836321460899997044">Perfil do Chrome</translation>
+<translation id="4839733921943823254">Fixar atalho</translation>
 <translation id="4842397268809523050">O ChromeOS Flex não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="4851866215237571846">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome em seu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chrome</translation>
@@ -552,7 +552,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6251759518630934363">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="6277547788421725101">Seu familiar responsável desativou a opção "Permissões para sites, apps e extensões" no Chrome</translation>
 <translation id="627882678981830918">Personalize e controle o Chrome. Defina esse navegador como o padrão.</translation>
-<translation id="6280042952415350607">A proteção reforçada desativa a otimização do JavaScript nos sites que o Chrome não reconhece</translation>
 <translation id="6288580400488258237">Definir o Google Chrome como seu navegador padrão e fixá-lo na barra de tarefas</translation>
 <translation id="6291089322031436445">Apps do Chrome Dev</translation>
 <translation id="6291549208091401781">O Google Chrome já está instalado para todos os usuários do seu computador.</translation>
@@ -723,6 +722,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="778331955594035129">O Chrome precisa da permissão de localização para este site</translation>
 <translation id="7787950393032327779">O perfil parece estar em uso por outro processo do Google Chrome (<ph name="PROCESS_ID" />) em outro computador (<ph name="HOST_NAME" />). O Chrome bloqueou o perfil para que ele não seja corrompido. Se você tiver certeza de que nenhum outro processo está usando este perfil, pode desbloquear o perfil e reiniciar o Chrome.</translation>
+<translation id="7800043020703832708">Fechar a Pesquisa Google no painel lateral</translation>
 <translation id="7801699035218095297">O Google Chrome está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="7804364787702057554">Sua conta no Chrome</translation>
 <translation id="7804947029129221742">Seu mecanismo de pesquisa foi alterado fora do Chrome. Para sua segurança, o Chrome redefiniu essa configuração para o padrão original. <ph name="LEARN_MORE_LINK" /></translation>
@@ -739,6 +739,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7886087451482920026">Selecionar texto com o Google Lens</translation>
 <translation id="7890208801193284374">Se você usa um computador compartilhado, seus amigos e familiares podem navegar separadamente e configurar o Google Chrome da maneira que desejarem.</translation>
 <translation id="7896673875602241923">Anteriormente, alguém fez login no Chrome neste computador como <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo usuário do Chrome para manter suas informações separadas.</translation>
+<translation id="7904213866086517086">Reabrir Pesquisa Google no painel lateral</translation>
 <translation id="7904985524660297937">Teste o Gemini no Google Chrome</translation>
 <translation id="7905880575591690197">O ChromeOS não pôde salvar dados do Chrome na sua Conta do Google devido a um erro durante o login</translation>
 <translation id="7917876797003313048">Você pode gerenciar as Contas do Google conectadas. Elas são usadas no navegador Chrome, na Play Store, no Gmail e muito mais. Se quiser adicionar uma conta para outra pessoa, como um membro da família, adicione um novo usuário ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -803,6 +804,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8394720698884623075">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Há uma janela isolada ou de navegação anônima aberta. Ela não será reaberta após a reinicialização.}one{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Há # janela isolada ou de navegação anônima aberta em todos os perfis. Ela não será reaberta após a reinicialização.}other{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Há # janelas isoladas e de navegação anônima abertas em todos os perfis. Elas não serão reabertas após a reinicialização.}}</translation>
 <translation id="8403038600646341038">Logotipo do Chrome na tela de um computador.</translation>
+<translation id="8406687098231754303">O botão "Pesquisa Google no painel lateral" na barra de ferramentas reabre essa função para você fazer perguntas enquanto navega</translation>
 <translation id="8418845734693287262">O ChromeOS não pôde sincronizar seus dados porque os detalhes de login da sua conta estão desatualizados.</translation>
 <translation id="842386925677997438">Ferramentas de segurança do Chrome</translation>
 <translation id="8425765582779547329">Para usar as configurações escolhidas pelos seus familiares responsáveis e ter mais segurança on-line, faça login no Chrome</translation>
@@ -820,6 +822,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8533056045953418157">Defina o Google Chrome como seu leitor de PDF padrão</translation>
 <translation id="854593887324189900">Pesquisar Esta Imagem com o Google Lens</translation>
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">Pronto! Agora você pode fazer perguntas com facilidade enquanto navega com a Pesquisa Google no painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8575047640889685742">Usar <ph name="BEGIN_LINK" />sua senha longa<ph name="END_LINK" /> para criptografar todos os dados do Chrome na sua Conta do Google. As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será sincronizado.</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>

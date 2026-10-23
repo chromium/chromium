@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">Mã QR để tải trình duyệt Chromium xuống thiết bị di động</translation>
 <translation id="354621070532799440">Lời nhắc: Các tính năng an toàn tốt nhất của Google ngay trên điện thoại của bạn</translation>
 <translation id="3561853857681580870">Để chia sẻ màn hình, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
-<translation id="3588112919289558122">Chế độ bảo vệ nâng cao sẽ tắt tính năng tối ưu hoá JavaScript đối với những trang web mà Chromium không nhận ra</translation>
 <translation id="3597003331831379823">Không thể chạy quy trình thiết lập bằng đặc quyền cấp cao. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Đăng nhập vào Chromium</translation>
 <translation id="3639635944603682591">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chromium bằng <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chromium sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm, AI và công cụ hỗ trợ của tổ chức bạn để đưa ra đề xuất.</translation>
 <translation id="3975724895399328945">Giới thiệu về &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Giới thiệu về ChromiumOS</translation>
-<translation id="4010059961270896984">Khi bạn truy cập vào một trang web, Chromium sẽ gửi một phần URL đã làm rối mã nguồn cho tính năng <ph name="BEGIN_LINK" />Duyệt web An toàn của Google<ph name="END_LINK" /> thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>
 <translation id="4016217212818346953">Giữ an toàn với Trình quản lý mật khẩu</translation>
 <translation id="4019629340646866719">ChromiumOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Dịch màn hình</translation>
@@ -373,6 +371,7 @@
 <translation id="4786083865378785874">Nếu Gemini trong Chromium đang mở, thì bảng điều khiển bên sẽ vẫn mở khi bạn tạo thẻ mới</translation>
 <translation id="479167709087336770">Dịch vụ này sử dụng cùng một trình kiểm tra chính tả dùng trong Google Tìm kiếm. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google. Bạn luôn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="4814736265800133385">Dùng Chromium mà không cần tài khoản</translation>
+<translation id="4839733921943823254">Ghim lối tắt</translation>
 <translation id="4888717733111232871">Quy tắc kết nối để Chromium cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="4893347770495441059">Chạy lại để cập nhật &amp;Chromium</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
@@ -456,7 +455,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5821520528363214608">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy cập nhật Chromium</translation>
 <translation id="5824893331272123205">Không tải được bảng điều khiển này, hãy thử lại</translation>
 <translation id="5862307444128926510">Chào mừng bạn đến với Chromium</translation>
-<translation id="5867606647614813312">Bật các tính năng bổ sung để sử dụng các biện pháp bảo vệ mạnh nhất của Chromium</translation>
 <translation id="5871205389137001634">Nhấp để thoát khỏi chế độ Tìm kiếm hình ảnh</translation>
 <translation id="5883558403894052917">Chromium nhận thấy rằng các mục này chứa phần mềm độc hại:</translation>
 <translation id="5889361821821684993">Chromium thường xuyên kiểm tra để đảm bảo trình duyệt của bạn có các chế độ cài đặt an toàn nhất. Chúng tôi sẽ thông báo cho bạn biết nếu có nội dung nào cần bạn xem xét.</translation>
@@ -758,10 +756,10 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8522801943730206384">Chromium có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
 <translation id="8525579356836940628">Đã dừng cài đặt</translation>
 <translation id="8545729292258443488">Mang theo mật khẩu, thẻ và nhiều dữ liệu khác mọi lúc, mọi nơi nhờ ứng dụng Chromium trên <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Nhận cảnh báo nếu Chromium phát hiện một trong những mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu công khai</translation>
 <translation id="8555465886620020932">Lỗi dịch vụ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Một số tính năng và tiện ích của Chromium đi kèm lối tắt. Bạn có thể chọn bật lại các lối tắt này.</translation>
 <translation id="8556420416730706394">Bạn có thể ghim tính năng Tìm kiếm hình ảnh để thuận tiện sử dụng; hãy nhấp vào nút Ghim ở đầu bảng điều khiển bên</translation>
+<translation id="8564408666201523086">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi khi duyệt web bằng Google Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="856656450041460113">Tìm kiếm trong danh sách ngôn ngữ</translation>
 <translation id="8576826849825683917">Nhiều tổ chức quản lý Chromium</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>

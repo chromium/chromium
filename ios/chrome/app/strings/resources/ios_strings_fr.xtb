@@ -782,6 +782,7 @@
 <translation id="3419787211763835342">Aidez-nous à améliorer la saisie automatique améliorée</translation>
 <translation id="3422958112451181446">Appuyez de manière prolongée pour épingler votre outil préféré ici</translation>
 <translation id="3430407169377889553">Utilisez Gemini avec précaution et reprenez la main si nécessaire. Vous êtes responsable des actions effectuées par Gemini pendant les tâches.</translation>
+<translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3441673211568148613">Protégez la confidentialité de votre navigation</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -2190,7 +2191,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7767651976342854115">Une erreur s'est produite au niveau du paramètre d'utilisation des données.</translation>
-<translation id="7768507955883790804">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez</translation>
+<translation id="7768507955883790804">Les sites appliquent automatiquement ce paramètre lors de votre visite</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772948288262733182">Heureux de vous retrouver</translation>
 <translation id="777637629667389858">Lorsque vous êtes connecté, vous êtes protégé dans tous les services Google.</translation>
@@ -2465,7 +2466,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8577056989960190117">Saisir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Échangez de vive voix avec Gemini</translation>
-<translation id="8585841788766257444">Les sites répertoriés ci-dessous appliquent un paramètre personnalisé au lieu du paramètre par défaut</translation>
+<translation id="8585841788766257444">Les sites ci-dessous appliquent un paramètre personnalisé au lieu du paramètre par défaut</translation>
 <translation id="8587001564479545614">Créer un code de récupération</translation>
 <translation id="8588404856427128947">Éteinte</translation>
 <translation id="8590286732816598906">Groupe d'onglets, <ph name="GROUP_TITLE" />, menu.</translation>

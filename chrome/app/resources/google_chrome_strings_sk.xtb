@@ -141,7 +141,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2216543877350048334">Ak chcete odstrániť svoj účet Google z Chromu, odhláste sa</translation>
 <translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="22791603784558743">Zavrieť Gemini v Chrome Dev</translation>
-<translation id="2284380654876659752">Keď navštívite určitý web, Chrome odošle znejasnenú časť jeho webovej adresy <ph name="BEGIN_LINK" />Bezpečnému prehliadaniu Google<ph name="END_LINK" /> prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>
 <translation id="2290014774651636340">Chýbajú kľúče rozhrania Google API. Niektoré funkcie prehliadača Google Chrome budú zakázané.</translation>
 <translation id="2290095356545025170">Naozaj chcete odinštalovať aplikáciu Google Chrome?</translation>
 <translation id="2295218613066132598">Zobraziť odkazy na weby v Chrome</translation>
@@ -381,7 +380,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="4598116752460667024">Vyhľadajte v zozname ľubovoľný postup.</translation>
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
-<translation id="4606805686144157064">Dostávať upozornenia, keď Chrome zistí, že došlo k odhaleniu niektorého vášho hesla pri verejnom porušení ochrany údajov</translation>
 <translation id="4608435347866444037">Vyhľadať tento obrázok pomocou funkcie Google Lens</translation>
 <translation id="4624065194742029982">Režim inkognito Chromu</translation>
 <translation id="4627412468266359539">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chrome OS Flex automatickým odosielaním diagnostík a údajov o používaní do Googlu.</translation>
@@ -398,7 +396,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4768676935374695498">Vyhľadať toto video pomocou funkcie Google Lens</translation>
 <translation id="479167709087336770">Využíva rovnaký nástroj na kontrolu pravopisu, aký sa používa vo Vyhľadávaní Google. Text zadaný do prehliadača sa odošle Googlu. Toto správanie môžete zmeniť v nastaveniach.</translation>
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
-<translation id="4799870290441980300">Zapne ďalšie funkcie, ktoré poskytujú najsilnejšiu ochranu Chromu</translation>
 <translation id="4828579605166583682">Google Chrome sa pokúša nahradiť existujúce heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="4836321460899997044">Profil Chromu</translation>
 <translation id="4842397268809523050">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
@@ -557,7 +554,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6251759518630934363">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z Chromu môžete preskočiť.</translation>
 <translation id="6277547788421725101">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v Chrome</translation>
 <translation id="627882678981830918">Prispôsobte si a ovládajte Chrome. Nastavte Chrome ako predvolený prehliadač.</translation>
-<translation id="6280042952415350607">Rozšírená ochrana vypne optimalizáciu JavaScriptu pre weby, ktoré Chrome nerozpoznáva</translation>
 <translation id="6288580400488258237">Nastavte si Google Chrome ako predvolený prehliadač a pripnite ho na panel aplikácií</translation>
 <translation id="6291089322031436445">Aplikácie pre Chrome vo verzii pre vývojárov</translation>
 <translation id="6291549208091401781">Google Chrome už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
@@ -728,6 +724,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7777080907402804672">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>
 <translation id="778331955594035129">Chrome vyžaduje pre tento web povolený prístup k polohe</translation>
 <translation id="7787950393032327779">Zdá sa, že profil používa ďalší proces prehliadača Google Chrome (<ph name="PROCESS_ID" />) na inom počítači (<ph name="HOST_NAME" />). Prehliadač Chrome daný profil uzamkol, aby sa nepoškodil. Ak s istotou viete, že tento profil nepoužívajú žiadne iné procesy, môžete ho odomknúť a prehliadač Chrome znova spustiť.</translation>
+<translation id="7800043020703832708">Zavrieť Vyhľadávanie Google na bočnom paneli</translation>
 <translation id="7801699035218095297">Google Chrome sa pokúša kopírovať heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="7804364787702057554">Váš účet v Chrome</translation>
 <translation id="7804947029129221742">Váš vyhľadávač bol zmenený z prostredia mimo Chromu. Chrome ho resetoval na pôvodné predvolené nastavenie, aby vás ochránil. <ph name="LEARN_MORE_LINK" /></translation>

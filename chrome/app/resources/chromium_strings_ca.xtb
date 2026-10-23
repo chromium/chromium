@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">Codi QR per baixar el navegador Chromium en dispositius mòbils</translation>
 <translation id="354621070532799440">Recordatori: les millors funcions de seguretat de Google a la butxaca</translation>
 <translation id="3561853857681580870">Per compartir la pantalla, permet que Chromium gravi la pantalla a Configuració del sistema.</translation>
-<translation id="3588112919289558122">La protecció millorada desactiva l'optimització de JavaScript per als llocs web que Chromium no reconeix</translation>
 <translation id="3597003331831379823">No s'ha pogut executar la configuració amb privilegis elevats. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inicia la sessió a Chromium</translation>
 <translation id="3639635944603682591">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius a les eines de cerca, d'IA i d'agent de la teva organització per obtenir suggeriments.</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Sobre Chromium OS</translation>
-<translation id="4010059961270896984">Quan visites un lloc web, Chromium envia una part ofuscada de l'URL a <ph name="BEGIN_LINK" />Navegació segura de Google<ph name="END_LINK" /> mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa alguna acció sospitosa, també s'envien URL complets i fragments de contingut de la pàgina.</translation>
 <translation id="4016217212818346953">Protegeix-te amb el gestor de contrasenyes</translation>
 <translation id="4019629340646866719">Chromium OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Tradueix la pantalla</translation>
@@ -456,7 +454,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5821520528363214608">Per utilitzar i desar les dades de Chromium al teu Compte de Google, actualitza Chromium</translation>
 <translation id="5824893331272123205">Aquest tauler no s'ha pogut carregar. Torna-ho a provar.</translation>
 <translation id="5862307444128926510">Us donem la benvinguda a Chromium</translation>
-<translation id="5867606647614813312">Activa funcions addicionals per proporcionar les proteccions més eficaces de Chromium</translation>
 <translation id="5871205389137001634">Fes clic per sortir de la cerca d'imatges</translation>
 <translation id="5883558403894052917">Chromium ha detectat que aquests elements contenen programari maliciós:</translation>
 <translation id="5889361821821684993">Chromium comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
@@ -758,7 +755,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8522801943730206384">Chromium pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="8525579356836940628">La instal·lació s'ha aturat</translation>
 <translation id="8545729292258443488">Mentre et desplaces, porta amb tu les teves contrasenyes, pestanyes i més amb l'aplicació Chromium al teu <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Rep un advertiment si Chromium troba que una de les teves contrasenyes s'ha fet pública a causa d'una violació de les dades</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algunes funcions i extensions de Chromium inclouen dreceres. Pots decidir si vols tornar-les a activar.</translation>
 <translation id="8556420416730706394">Pots fixar la cerca d'imatges per accedir-hi fàcilment. Fes clic al botó per fixar que hi ha a la part superior del tauler lateral.</translation>

@@ -257,7 +257,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3531741627422851418">Chromium arakatzailea gailu mugikorretan deskargatzeko QR kodea</translation>
 <translation id="354621070532799440">Gogorarazpena: Google-ren segurtasun-eginbide onenak poltsikoan</translation>
 <translation id="3561853857681580870">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan.</translation>
-<translation id="3588112919289558122">Babes hobetuak JavaScript-en optimizazioa desaktibatzen du Chromium-ek ezagutzen ez dituen webguneetan</translation>
 <translation id="3597003331831379823">Ezin izan da exekutatu konfigurazioa gehiegizko baimenekin. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Hasi saioa Chromium-en</translation>
 <translation id="3639635944603682591">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
@@ -296,7 +295,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3971865010372729242">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chromium-ek erakundearen bilaketa- eta agente-tresnetara, eta AA bidezkoetara bidaltzen du idatzitakoa, iradokizunak lortzeko.</translation>
 <translation id="3975724895399328945">Google Chrome for Testing-i buruz</translation>
 <translation id="3997429360543082038">Chromium OS-ri buruz</translation>
-<translation id="4010059961270896984">Webgune bat bisitatzen duzunean, Chromium-ek URLaren zati nahasi bat bidaltzen dio <ph name="BEGIN_LINK" />Google-ren Arakatze segurua<ph name="END_LINK" /> eginbideari, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webgune batek susmagarria den zerbait egiten badu, URL osoak eta orriaren edukiaren zati batzuk ere bidaltzen dira.</translation>
 <translation id="4016217212818346953">Egon seguru Pasahitz-kudeatzailea zerbitzuarekin</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chromium OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="4022972681110646219">Itzuli pantaila</translation>
@@ -457,7 +455,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="5821520528363214608">Chromium-eko datuak zure Google-ko kontuan erabiltzeko eta gordetzeko, eguneratu Chromium</translation>
 <translation id="5824893331272123205">Ezin izan da kargatu panel hau, saiatu berriro</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
-<translation id="5867606647614813312">Chromium-en babesik sendoenak eskaintzeko eginbide gehigarriak aktibatzen ditu</translation>
 <translation id="5871205389137001634">Irudi-bilaketatik irteteko, sakatu hau</translation>
 <translation id="5883558403894052917">Elementuok malwarea dutela hauteman du Chromium-ek:</translation>
 <translation id="5889361821821684993">Chromium-ek maiz begiratzen die arakatzailearen ezarpenei, ahalik eta seguruenak direla ziurtatzeko. Ezarpenen bat berrikustea komeni bazaizu, jakinarazpen bat bidaliko dizugu.</translation>
@@ -759,7 +756,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8522801943730206384">Gordetzen dituzun pasahitzak egiaztatzeko gai da Chromium</translation>
 <translation id="8525579356836940628">Gelditu da instalazioa</translation>
 <translation id="8545729292258443488">Eraman pasahitzak, fitxak eta bestelako datuak edonora <ph name="DEVICE_TYPE" /> gailuko Chromium aplikazioarekin</translation>
-<translation id="8548787790260785208">Jaso abisu bat Chromium-ek zure pasahitzetako bat datuen isilpekotasunaren urratze publiko batean aurkitzen badu</translation>
 <translation id="8555465886620020932">Zerbitzuaren errorea: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Chromium-en eginbide eta luzapen batzuek lasterbideak dituzte. Haiek berriro aktibatzea aukera dezakezu.</translation>
 <translation id="8556420416730706394">Irudi-bilaketa erraz erabiltzeko, aingura ezazu. Horretarako, sakatu ainguratzeko botoia alboko panelaren goialdean.</translation>

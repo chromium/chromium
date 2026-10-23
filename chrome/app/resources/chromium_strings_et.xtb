@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">QR-kood Chromiumi brauseri allalaadimiseks mobiilseadmetes</translation>
 <translation id="354621070532799440">Meeldetuletus: Google'i parimad ohutusfunktsioonid on teie taskus</translation>
 <translation id="3561853857681580870">Oma ekraani jagamiseks lubage menüüs System Settings Chromiumi puhul ekraani salvestamine.</translation>
-<translation id="3588112919289558122">Täiustatud kaitse lülitab JavaScripti optimeerimise välja saitide puhul, mis on Chromiumi jaoks tundmatud.</translation>
 <translation id="3597003331831379823">Installiprogrammi käitamine administraatoriõigustega ebaõnnestus. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromiumi sisselogimine</translation>
 <translation id="3639635944603682591">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Kui sisestate midagi aadressiribale või otsingukasti, saadab Chromium teie sisestuse soovituste hankimiseks teie organisatsiooni otsingu-, AI- ja agenditööriistadele.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testingu teave</translation>
 <translation id="3997429360543082038">Teave &amp;Chromium OS-i kohta</translation>
-<translation id="4010059961270896984">Kui külastate saiti, saadab Chromium URL-i hägustatud osa <ph name="BEGIN_LINK" />Google'i ohutule sirvimisele<ph name="END_LINK" /> privaatsusserveri kaudu, mis varjab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="4016217212818346953">Kaitske end paroolihalduriga</translation>
 <translation id="4019629340646866719">Chromium OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Tõlgi kuva</translation>
@@ -456,7 +454,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5821520528363214608">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google'i kontol värskendage Chromiumi</translation>
 <translation id="5824893331272123205">Seda paneeli ei õnnestunud laadida. Proovige uuesti</translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
-<translation id="5867606647614813312">Lülitab sisse lisafunktsioonid, et pakkuda Chromiumi tugevaimat kaitset.</translation>
 <translation id="5871205389137001634">Klõpsake pildiotsingust väljumiseks</translation>
 <translation id="5883558403894052917">Chromium leidis, et need üksused sisaldavad pahavara:</translation>
 <translation id="5889361821821684993">Chromium kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
@@ -758,7 +755,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8522801943730206384">Chromium saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="8525579356836940628">Installimine on peatatud</translation>
 <translation id="8545729292258443488">Võtke paroolid, vahelehed ja muu endaga kaasa, kasutades seadmes <ph name="DEVICE_TYPE" /> Chromiumi rakendust</translation>
-<translation id="8548787790260785208">Teid hoiatatakse, kui Chromium leiab avalikust andmetega seotud rikkumisest mõne teie parooli.</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Mõned Chromiumi funktsioonid ja laiendused hõlmavad otseteid. Saate need soovi korral uuesti sisse lülitada.</translation>
 <translation id="8556420416730706394">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada; klõpsake külgpaneeli ülaosas nupul Kinnita</translation>

@@ -257,7 +257,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3531741627422851418">Kodi QR për të shkarkuar shfletuesin Chromium në pajisjet celulare</translation>
 <translation id="354621070532799440">Rikujtesë: Veçoritë më të mira të sigurisë të Google në xhepin tënd</translation>
 <translation id="3561853857681580870">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
-<translation id="3588112919289558122">Mbrojtja e përmirësuar e çaktivizon optimizimin e JavaScript për sajtet që Chromium nuk i njeh</translation>
 <translation id="3597003331831379823">Ekzekutimi i konfigurimit me privilegje të larta dështoi. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Identifikohu në Chromium</translation>
 <translation id="3639635944603682591">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chromium si <ph name="USER_EMAIL" />.</translation>
@@ -296,7 +295,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3971865010372729242">Kur shkruan në shiritin e adresave ose kutinë e kërkimit, Chromium i dërgon ato që ti shkruan te veglat e kërkimit, IA-së dhe agjentit të organizatës sate për të marrë sugjerime.</translation>
 <translation id="3975724895399328945">Rreth &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Rreth ChromiumOS</translation>
-<translation id="4010059961270896984">Kur ti viziton një sajt, Chromium dërgon një pjesë të pakuptueshme të URL-së te <ph name="BEGIN_LINK" />"Shfletimi i sigurt" i Google<ph name="END_LINK" /> nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="4016217212818346953">Qëndro i sigurt me "Menaxherin e fjalëkalimeve"</translation>
 <translation id="4019629340646866719">ChromiumOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Përkthe ekranin</translation>
@@ -457,7 +455,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="5821520528363214608">Për të përdorur dhe ruajtur të dhënat e Chromium te "Llogaria jote e Google", përditëso Chromium</translation>
 <translation id="5824893331272123205">Ky panel nuk mund të ngarkohej. Provo përsëri</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
-<translation id="5867606647614813312">Aktivizon veçori shtesë për të ofruar mbrojtjet më të forta të Chromium</translation>
 <translation id="5871205389137001634">Kliko për të dalë nga "Kërkimi nëpërmjet imazheve"</translation>
 <translation id="5883558403894052917">Chromium vuri re se këta artikuj përmbajnë softuer keqdashës:</translation>
 <translation id="5889361821821684993">Chromium kontrollon rregullisht për t'u siguruar që shfletuesi yt ka cilësimet më të sigurta. Do të të informojmë nëse ka nevojë të rishikosh diçka.</translation>
@@ -757,7 +754,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8522801943730206384">Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="8525579356836940628">Instalimi ndaloi</translation>
 <translation id="8545729292258443488">Merr fjalëkalimet, skedat etj. kur je në lëvizje me aplikacionin e Chromium në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Merr paralajmërim nëse Chromium gjen një nga fjalëkalimet e tua në një nxjerrje publike të paautorizuar të të dhënave</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Disa veçori dhe shtesa të Chromium vijnë me shkurtore. Mund të zgjedhësh që t'i aktivizosh përsëri.</translation>
 <translation id="8556420416730706394">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë; kliko te butoni "Gozhdo" në krye të panelit anësor</translation>

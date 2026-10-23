@@ -253,7 +253,6 @@
 <translation id="3531741627422851418">Kod QR umożliwiający pobranie przeglądarki Chromium na urządzeniach mobilnych</translation>
 <translation id="354621070532799440">Przypomnienie: najlepsze funkcje bezpieczeństwa Google na wyciągnięcie ręki</translation>
 <translation id="3561853857681580870">Aby udostępnić ekran, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
-<translation id="3588112919289558122">Silniejsza ochrona wyłącza optymalizację JavaScriptu w witrynach, których Chromium nie rozpoznaje</translation>
 <translation id="3597003331831379823">Nie udało się uruchomić konfiguracji z podwyższonymi uprawnieniami. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Zaloguj się w Chromium</translation>
 <translation id="3639635944603682591">Dane przeglądania tej osoby zostaną usunięte z tego urządzenia. Aby je odzyskać, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
@@ -292,7 +291,6 @@
 <translation id="3971865010372729242">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chromium wysyła wpisany tekst do narzędzi wyszukiwania, AI i agentów Twojej organizacji, aby uzyskać sugestie.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing – informacje</translation>
 <translation id="3997429360543082038">System operacyjny Chromium – informacje</translation>
-<translation id="4010059961270896984">Gdy wchodzisz na stronę, Chromium wysyła zaciemniony fragment adresu URL do <ph name="BEGIN_LINK" />Bezpiecznego przeglądania Google<ph name="END_LINK" /> przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona robi coś podejrzanego, wysyłane są też pełne adresy URL i fragmenty zawartości strony.</translation>
 <translation id="4016217212818346953">Dbaj o bezpieczeństwo, korzystając z Menedżera haseł</translation>
 <translation id="4019629340646866719">Opracowanie Chromium OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
@@ -370,6 +368,7 @@
 <translation id="4786083865378785874">Jeśli Gemini w Chromium jest otwarty, panel boczny pozostaje otwarty podczas tworzenia nowych kart</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
 <translation id="4814736265800133385">Używaj Chromium bez konta</translation>
+<translation id="4839733921943823254">Przypnij skrót</translation>
 <translation id="4888717733111232871">Reguła dla ruchu przychodzącego w Chromium zezwalająca na ruch mDNS.</translation>
 <translation id="4893347770495441059">Uruchom ponownie, aby zaktualizować &amp;Chromium</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
@@ -453,7 +452,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5821520528363214608">Zaktualizuj Chromium, aby móc zapisywać dane z niego na koncie Google i ich używać</translation>
 <translation id="5824893331272123205">Nie udało się załadować tego panelu. Spróbuj ponownie</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
-<translation id="5867606647614813312">Włącza dodatkowe funkcje, aby zapewnić najsilniejszą ochronę w Chromium</translation>
 <translation id="5871205389137001634">Kliknij, aby zamknąć wyszukiwanie obrazów</translation>
 <translation id="5883558403894052917">Przeglądarka Chromium wykryła w tych elementach złośliwe oprogramowanie:</translation>
 <translation id="5889361821821684993">Chromium regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
@@ -755,10 +753,10 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8522801943730206384">Chromium może sprawdzać Twoje hasła, gdy je zapiszesz</translation>
 <translation id="8525579356836940628">Instalacja zatrzymana</translation>
 <translation id="8545729292258443488">Zabierz ze sobą hasła, karty i inne dane dzięki aplikacji Chromium na urządzeniu <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Otrzymuj ostrzeżenia, jeśli Chromium wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku publicznego naruszenia bezpieczeństwa danych</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Niektóre funkcje i rozszerzenia Chromium mają skróty. Możesz je ponownie włączyć.</translation>
 <translation id="8556420416730706394">Możesz przypiąć wyszukiwanie obrazów, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
+<translation id="8564408666201523086">Gotowe! Teraz możesz łatwo zadawać pytania podczas przeglądania dzięki wyszukiwarce Google w panelu bocznym</translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>
 <translation id="8576826849825683917">Przeglądarką Chromium zarządza kilka organizacji</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>

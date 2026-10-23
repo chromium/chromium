@@ -253,7 +253,6 @@
 <translation id="3531741627422851418">Mobil qurilmalarda Chromium brauzerini yuklab olish uchun QR kod</translation>
 <translation id="354621070532799440">Eslatma: Googlening eng yaxshi xavfsizlik funksiyalari doim yoningizda</translation>
 <translation id="3561853857681580870">Ekranni ulashish uchun tizim sozlamalarida Chromium uchun ekranni yozib olishga ruxsat bering.</translation>
-<translation id="3588112919289558122">Kuchaytirilgan himoya Chromium uchun notanish saytlar boʻyicha JavaScript optimizatsiyasini faolsizlantiradi</translation>
 <translation id="3597003331831379823">Kengaytirilgan ruxsatlar bilan sozlash ishga tushmadi. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromiumga kirish</translation>
 <translation id="3639635944603682591">Bu foydalanuvchi brauzerining tarixi ushbu qurilmadan butunlay tozalanadi. Axborotlarni tiklash uchun brauzerga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
@@ -292,7 +291,6 @@
 <translation id="3971865010372729242">Chromium tavsiyalar olish uchun manzillar qatori yoki qidiruv panelida kiritilgan matnni tashkilotning qidiruvi, AI hamda agent vositalariga yuboradi.</translation>
 <translation id="3975724895399328945">Google Chrome for Testing haqida</translation>
 <translation id="3997429360543082038">ChromiumOS haqida</translation>
-<translation id="4010059961270896984">Sayt ochilganda Chromium himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali <ph name="BEGIN_LINK" />Google Saytlarni xavfsiz kezish<ph name="END_LINK" /> tizimiga yuboradi. Saytda shubhali harakatlar aniqlansa, toʻliq URL manzillar va sahifa kontentidan parcha ham yuboriladi.</translation>
 <translation id="4016217212818346953">Parollar menejeri bilan xavfsizligingizni taʼminlang</translation>
 <translation id="4019629340646866719">ChromiumOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="4022972681110646219">Ekrandagi matnni tarjima qilish</translation>
@@ -370,6 +368,7 @@
 <translation id="4786083865378785874">Chromium ichida Gemini ochiq boʻlsa, yangi varaq yaratishda yon panel ochiq qoladi</translation>
 <translation id="479167709087336770">Google qidiruvida ishlatiladigan imlo tekshiruvi vositasidan foydalanadi. Brauzerda kiritiladigan matn Google serverlariga yuboriladi. Buni istalgan vaqtda sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="4814736265800133385">Chromium brauzeridan hisobsiz foydalanish</translation>
+<translation id="4839733921943823254">Buyruqni mahkamlash</translation>
 <translation id="4888717733111232871">Chromium‘ga kiruvchi trafikni mDNS protokoli orqali uzatishga ruxsat berish</translation>
 <translation id="4893347770495441059">&amp;Chromium brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
@@ -453,7 +452,6 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="5821520528363214608">Chromium maʼlumotlarini ishlatish va Google hisobingizda saqlash uchun Chromiumni yangilang</translation>
 <translation id="5824893331272123205">Bu panel yuklanmadi, qaytadan urining</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
-<translation id="5867606647614813312">Chromiumning eng kuchli himoya tizimi bilan taʼminlash uchun qoʻshimcha funksiyalarni yoqadi</translation>
 <translation id="5871205389137001634">Rasm orqali qidiruvni yopish</translation>
 <translation id="5883558403894052917">Chromium tarkibida zararli dasturi bor quyidagi fayllarni aniqladi:</translation>
 <translation id="5889361821821684993">Chromium brauzer sozlamalari xavfsiz ekanini muntazam tekshiradi. Biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qilamiz.</translation>
@@ -755,10 +753,10 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8522801943730206384">Chromium faqat saqlangan parollaringizni tekshira oladi</translation>
 <translation id="8525579356836940628">Oʻrnatish toʻxtatildi</translation>
 <translation id="8545729292258443488"><ph name="DEVICE_TYPE" /> qurilmangizdagi Chromium ilovasi bilan parollar, varaqlar va boshqa maʼlumotlaringizni oʻzingiz bilan oling</translation>
-<translation id="8548787790260785208">Chromium parollaringiz ommaviy oshkor qilinganini aniqlaganda xabar qilsin</translation>
 <translation id="8555465886620020932">Xizmat xatosi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Ayrim Chromium funksiyalari va kengaytmalarining tezkor tugmalari bilan birga keladi. Ularni qayta yoqishni tanlash mumkin.</translation>
 <translation id="8556420416730706394">Rasm orqali qidiruvga tezkor ruxsat olish uchun yon panelning yuqori qismidagi "Mahkamlash" tugmasini bosing</translation>
+<translation id="8564408666201523086">Tayyor! Endi yon paneldagi Google Qidiruv bilan internetni kezish davomida savollaringizga javoblarni oson olishingiz mumkin</translation>
 <translation id="856656450041460113">Tillar roʻyxatidan qidirish</translation>
 <translation id="8576826849825683917">Chromium bir nechta tashkilot boshqaruvida</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>

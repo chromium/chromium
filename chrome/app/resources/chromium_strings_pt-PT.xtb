@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">Código QR para transferir o navegador Chromium em dispositivos móveis</translation>
 <translation id="354621070532799440">Lembrete: as melhores funcionalidades de segurança da Google no seu bolso</translation>
 <translation id="3561853857681580870">Para partilhar o ecrã, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
-<translation id="3588112919289558122">A Proteção melhorada desativa a otimização do JavaScript para sites que o Chromium não reconhece</translation>
 <translation id="3597003331831379823">Falha ao executar a configuração com privilégios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inicie sessão no Chromium</translation>
 <translation id="3639635944603682591">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Quando escreve na barra de endereço ou na caixa de pesquisa, o Chromium envia o que escreve para as ferramentas de pesquisa, IA e agente da sua organização de forma a receber sugestões.</translation>
 <translation id="3975724895399328945">Acerca do &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Acerca do ChromiumOS</translation>
-<translation id="4010059961270896984">Quando visita um site, o Chromium envia uma parte oculta do URL para a <ph name="BEGIN_LINK" />Navegação Segura do Google<ph name="END_LINK" /> através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>
 <translation id="4016217212818346953">Proteja-se com o Gestor de Palavras-passe</translation>
 <translation id="4019629340646866719">A criação do ChromiumOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traduzir ecrã</translation>
@@ -456,7 +454,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5821520528363214608">Para usar e guardar dados do Chromium na sua Conta Google, atualize o Chromium</translation>
 <translation id="5824893331272123205">Não foi possível carregar este painel. Tente novamente</translation>
 <translation id="5862307444128926510">Damos-lhe as boas-vindas ao Chromium</translation>
-<translation id="5867606647614813312">Ativa funcionalidades adicionais para oferecer as proteções mais avançadas do Chromium</translation>
 <translation id="5871205389137001634">Clique para sair da pesquisa de imagens</translation>
 <translation id="5883558403894052917">O Chromium encontrou malware nestes itens:</translation>
 <translation id="5889361821821684993">O Chromium verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
@@ -758,7 +755,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8522801943730206384">O Chromium consegue verificar as suas palavras-passe quando as guarda</translation>
 <translation id="8525579356836940628">Instalação interrompida</translation>
 <translation id="8545729292258443488">Use as suas palavras-passe, separadores e muito mais em qualquer lugar com a app Chromium no <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Receba um aviso se o Chromium encontrar uma das suas palavras-passe numa violação de dados pública</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algumas funcionalidades e extensões do Chromium incluem atalhos. Pode optar por voltar a ativá-las.</translation>
 <translation id="8556420416730706394">Pode fixar a pesquisa de imagens para acesso fácil. Clique no botão Fixar na parte superior do painel lateral</translation>

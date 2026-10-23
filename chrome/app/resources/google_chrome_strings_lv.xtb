@@ -141,7 +141,6 @@
 <translation id="2216543877350048334">Lai noņemtu savu Google kontu no pārlūka Chrome, izrakstieties.</translation>
 <translation id="2236949375853147973">Manas darbības</translation>
 <translation id="22791603784558743">Aizvērt Gemini pārlūka Chrome izstrādātāju versijā</translation>
-<translation id="2284380654876659752">Kad apmeklējat kādu vietni, pārlūks Chrome nosūta funkcijai <ph name="BEGIN_LINK" />Google droša pārlūkošana<ph name="END_LINK" /> pieslēptu URL daļu, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja vietnē tiek veiktas aizdomīgas darbības, tiek nosūtīti arī pilni URL un lapas satura fragmenti.</translation>
 <translation id="2290014774651636340">Trūkst Google API atslēgu. Tiks atspējotas dažas Google Chrome funkcijas.</translation>
 <translation id="2290095356545025170">Vai tiešām vēlaties atinstalēt Google Chrome?</translation>
 <translation id="2295218613066132598">Rādīt vietņu saīsnes pārlūkā Chrome</translation>
@@ -381,7 +380,6 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="459622048091363950">Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
 <translation id="4598116752460667024">Sarakstā meklējiet jebkuru procesu.</translation>
 <translation id="4600710005438004015">Nevarēja atjaunināt uz jaunāko Chrome versiju, tādēļ jūs nevarēsiet piekļūt jaunākajām funkcijām un drošības labojumiem.</translation>
-<translation id="4606805686144157064">Saņemiet brīdinājumu, ja pārlūkā Chrome tiek konstatēts, ka kāda no jūsu parolēm ir iekļauta publiskā datu aizsardzības pārkāpumā.</translation>
 <translation id="4608435347866444037">Meklēt šo attēlu, izmantojot Google Lens</translation>
 <translation id="4624065194742029982">Chrome inkognito režīms</translation>
 <translation id="4627412468266359539">Neobligāti: palīdziet uzlabot Chrome OS Flex funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
@@ -398,7 +396,6 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4768676935374695498">Meklēt šo videoklipu, izmantojot Google Lens</translation>
 <translation id="479167709087336770">Šeit tiek izmantota tāds pats pareizrakstības pārbaudītājs, kāds tiek izmantots Google meklēšanā. Pārlūkprogrammā ievadītais teksts tiek nosūtīts Google serveriem. Jebkurā brīdī varat mainīt šo darbību iestatījumos.</translation>
 <translation id="4793679854893018356">Uzziniet, kā Chrome rūpējas par jūsu drošību</translation>
-<translation id="4799870290441980300">Tiek ieslēgtas papildu funkcijas, lai nodrošinātu visefektīvāko Chrome aizsardzību.</translation>
 <translation id="4828579605166583682">Pārlūkā Google Chrome tiek mēģināts aizstāt esošās paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="4836321460899997044">Chrome profils</translation>
 <translation id="4842397268809523050">Chrome OS Flex nevarēja sinhronizēt jūsu datus, jo jūsu domēnam nav pieejama sinhronizācija.</translation>
@@ -555,7 +552,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6251759518630934363">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chrome brīdinājumus.</translation>
 <translation id="6277547788421725101">Viens no jūsu vecākiem ir izslēdzis iestatījumu “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chrome.</translation>
 <translation id="627882678981830918">Pielāgojiet un kontrolējiet pārlūku Chrome. Iestatiet Chrome kā noklusējuma pārlūku.</translation>
-<translation id="6280042952415350607">Izmantojot uzlaboto aizsardzību, tiek izslēgta JavaScript optimizācija vietnēm, ko Chrome neatpazīst.</translation>
 <translation id="6288580400488258237">Iestatiet Google Chrome kā noklusējuma pārlūku un piespraudiet to uzdevumjoslai.</translation>
 <translation id="6291089322031436445">Chrome Dev lietotnes</translation>
 <translation id="6291549208091401781">Pārlūks Google Chrome jau ir instalēts visiem jūsu datora lietotājiem.</translation>
@@ -726,6 +722,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7777080907402804672">Ja attēlam nav vērtīga apraksta, pārlūks Chrome mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google. Jebkurā brīdī iestatījumos varat izslēgt šo iespēju.</translation>
 <translation id="778331955594035129">Pārlūkam Chrome ir nepieciešama atrašanās vietas atļauja šai vietnei.</translation>
 <translation id="7787950393032327779">Šķiet, ka profils tiek izmantots citā Google Chrome procesā (<ph name="PROCESS_ID" />) citā datorā (<ph name="HOST_NAME" />). Lai profils netiktu bojāts, pārlūkā Chrome tas ir bloķēts. Ja esat pārliecināts, ka šis profils netiek izmantots citos procesos, varat to atbloķēt un restartēt pārlūku Chrome.</translation>
+<translation id="7800043020703832708">Aizvērt Google meklēšanu sānu panelī</translation>
 <translation id="7801699035218095297">Google Chrome mēģina nokopēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="7804364787702057554">Jūsu konts pārlūkā Chrome</translation>
 <translation id="7804947029129221742">Jūsu meklētājprogramma tika mainīta ārpus pārlūka Chrome. Lai jūs aizsargātu, pārlūkā Chrome tā tika atiestatīta uz sākotnējo noklusējuma meklētājprogrammu. <ph name="LEARN_MORE_LINK" /></translation>

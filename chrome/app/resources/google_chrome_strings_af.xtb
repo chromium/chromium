@@ -143,7 +143,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2216543877350048334">Meld af om jou Google-rekening uit Chrome te verwyder</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="22791603784558743">Maak Gemini in Chrome Dev toe</translation>
-<translation id="2284380654876659752">Wanneer jy ’n werf besoek, stuur Chrome ’n verdoeselde gedeelte van die URL na <ph name="BEGIN_LINK" />Google Veiligblaai<ph name="END_LINK" /> toe deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>
 <translation id="2290014774651636340">Google API-sleutels ontbreek. Sommige funksies van Google Chrome sal gedeaktiveer word.</translation>
 <translation id="2290095356545025170">Is jy seker jy wil Google Chrome deïnstalleer?</translation>
 <translation id="2295218613066132598">Wys Chrome-werfkortpaaie</translation>
@@ -384,7 +383,6 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="459622048091363950">Sodra Chrome toegang het, sal webwerwe jou kan vra vir toegang.</translation>
 <translation id="4598116752460667024">Soek enige proses op die lys.</translation>
 <translation id="4600710005438004015">Chrome kon nie na die nuutste weergawe opdateer nie en daarom het jy nie nuwe kenmerke en sekuriteitregstellings nie.</translation>
-<translation id="4606805686144157064">Kry ’n waarskuwing as Chrome een van jou wagwoorde in ’n publieke dataskending vind</translation>
 <translation id="4608435347866444037">Soek hierdie prent met Google Lens</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4627412468266359539">Opsioneel: Help om Chrome OS Flex-kenmerke en -werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
@@ -401,7 +399,6 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="4768676935374695498">Soek hierdie video met Google Lens</translation>
 <translation id="479167709087336770">Dit gebruik dieselfde speltoetser wat in Google-soektog gebruik word. Teks wat jy in die blaaier tik, word na Google toe gestuur. Jy kan altyd hierdie gedrag in instellings verander.</translation>
 <translation id="4793679854893018356">Vinnd uit hoe Chrome jou veilig hou</translation>
-<translation id="4799870290441980300">Skakel bykomende kenmerke aan om Chrome se sterkste beskerming te verskaf</translation>
 <translation id="4828579605166583682">Google Chrome probeer tans bestaande wagwoorde vervang. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="4836321460899997044">Chrome-profiel</translation>
 <translation id="4842397268809523050">Chrome OS Flex kon nie jou data sinkroniseer nie omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
@@ -560,7 +557,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6251759518630934363">Waarsku jou oor gevaarlike werwe – selfs werwe waarvan Google nie voorheen geweet het nie – deur meer data van werwe te ontleed as standaardbeskerming. Jy kan kies om Chrome-waarskuwings oor te slaan.</translation>
 <translation id="6277547788421725101">Jou ouer het “Toestemmings vir werwe, apps en uitbreidings” vir Chrome afgeskakel</translation>
 <translation id="627882678981830918">Pasmaak en beheer Chrome. Stel Chrome as jou verstek.</translation>
-<translation id="6280042952415350607">Verbeterde beskerming skakel JavaScript-optimering af vir werwe wat Chrome nie herken nie</translation>
 <translation id="6288580400488258237">Stel Google Chrome as jou verstekblaaier en speld dit aan jou taakbalk vas</translation>
 <translation id="6291089322031436445">Chrome Dev-programme</translation>
 <translation id="6291549208091401781">Google Chrome is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
@@ -731,6 +727,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7777080907402804672">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>
 <translation id="778331955594035129">Chrome het liggingtoestemming vir hierdie werf nodig</translation>
 <translation id="7787950393032327779">Dit lyk of die profiel tans deur 'n ander Google Chrome-proses (<ph name="PROCESS_ID" />) op 'n ander rekenaar (<ph name="HOST_NAME" />) gebruik word. Chrome het die profiel gesluit sodat dit nie gekorrupteer word nie. As jy seker is geen ander prosesse gebruik hierdie profiel nie, kan jy die profiel ontsluit en Chrome herbegin.</translation>
+<translation id="7800043020703832708">Maak Google Search in kantpaneel toe</translation>
 <translation id="7801699035218095297">Google Chrome probeer tans om wagwoorde te kopieer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="7804364787702057554">Jou rekening in Chrome</translation>
 <translation id="7804947029129221742">Jou soekenjin is van buite Chrome af verander. Chrome het dit na die oorspronklike verstek teruggestel om jou te beskerm. <ph name="LEARN_MORE_LINK" /></translation>

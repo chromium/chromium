@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Impedir que sites usem seus dispositivos e dados de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Redução no preço na sua guia aberta: <ph name="PRODUCT_NAME" /> de <ph name="OLD_PRICE" /> por <ph name="NEW_PRICE" /> em <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Revogar permissão do dispositivo para <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Quando a janela estiver estreita, solicitar a visualização para dispositivos móveis</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6530703012083415527">Quando essa configuração está ativada, os sites podem usar pop-ups e redirecionamentos. Quando está desativada, os sites não podem usar pop-ups e redirecionamentos.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Dados do site no dispositivo</translation>
 <translation id="7201549776650881587">Essa ação vai excluir todos os dados e cookies armazenados por todos os sites relacionados a <ph name="ORIGIN" /> ou pelo app na sua tela inicial</translation>
 <translation id="7219254577985949841">Excluir dados do site?</translation>
+<translation id="7225256190577194089">Revogar todas as permissões do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
 <translation id="7243246278722455312">A página inferior "Personalizar 'Nova guia'" está aberta</translation>
 <translation id="7243308994586599757">Opções disponíveis perto da parte inferior da tela</translation>

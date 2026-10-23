@@ -5552,7 +5552,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
 - 如果未設定或設為 <ph name="PROFILE_ID_VALUE" />，憑證的主體通用名稱會設為瀏覽器設定檔 ID。
 
-- 如果設為 <ph name="COMPUTER_NAME_VALUE" />，憑證的主體通用名稱會設為機器的主機名稱。注意：如果將這項屬性設為 <ph name="COMPUTER_NAME_VALUE" />，系統會在設定檔範圍的憑證中使用裝置層級屬性，這會對未受管理的裝置或共用裝置造成隱私權影響，因為憑證中會包含電腦主機名稱。
+- 如果設為 <ph name="COMPUTER_NAME_VALUE" />，憑證的主體通用名稱會設為機器的主機名稱。注意：如果將這項屬性設為 <ph name="COMPUTER_NAME_VALUE" />，系統會在設定檔範圍的憑證中使用裝置層級屬性，這會影響未受管或共用裝置的隱私，因為憑證中會包含電腦主機名稱。
 
 如果 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 政策已停用或未設定，這項政策就不會有任何作用。</translation>
 <translation id="4591366717022345234">提供「快速修復版本」給使用者</translation>

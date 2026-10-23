@@ -255,7 +255,6 @@
 <translation id="3531741627422851418">QR code，可連結至 Chromium 瀏覽器行動版的下載頁面</translation>
 <translation id="354621070532799440">提醒：將 Google 最頂尖的安全防護功能帶在身邊</translation>
 <translation id="3561853857681580870">如要分享螢幕內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
-<translation id="3588112919289558122">強化防護會針對 Chromium 無法辨識的網站關閉 JavaScript 最佳化功能</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登入 Chromium</translation>
 <translation id="3639635944603682591">這位使用者的瀏覽資料將從這個裝置上刪除。如要還原資料，請使用 <ph name="USER_EMAIL" /> 登入 Chromium。</translation>
@@ -294,7 +293,6 @@
 <translation id="3971865010372729242">在網址列或搜尋框中輸入時，Chromium 會將這些內容傳送給貴機構的搜尋、AI 和代理工具，為你提供建議。</translation>
 <translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium OS</translation>
-<translation id="4010059961270896984">你造訪網站時，Chromium 會透過隱私權伺服器隱藏你的 IP 位址，再將經過模糊處理的部分網址傳送給 <ph name="BEGIN_LINK" />Google 安全瀏覽<ph name="END_LINK" />。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="4016217212818346953">使用密碼管理工具確保安全</translation>
 <translation id="4019629340646866719">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="4022972681110646219">翻譯這個畫面</translation>
@@ -453,7 +451,6 @@
 <translation id="5821520528363214608">如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請更新 Chromium</translation>
 <translation id="5824893331272123205">無法載入這個面板，請再試一次</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
-<translation id="5867606647614813312">啟用額外功能，提供 Chromium 最強大的防護機制</translation>
 <translation id="5871205389137001634">按一下即可退出「圖片搜尋」</translation>
 <translation id="5883558403894052917">Chromium 偵測到下列項目含有惡意軟體：</translation>
 <translation id="5889361821821684993">Chromium 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
@@ -755,7 +752,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8522801943730206384">Chromium 可以檢查你儲存的密碼</translation>
 <translation id="8525579356836940628">已停止安裝</translation>
 <translation id="8545729292258443488">在 <ph name="DEVICE_TYPE" /> 上使用 Chromium 應用程式，密碼、分頁等資料隨身帶著走</translation>
-<translation id="8548787790260785208">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，會向你發出警告</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556055872671007529">部分 Chromium 功能和擴充功能設有捷徑。你可以選擇重新啟用。</translation>
 <translation id="8556420416730706394">固定「圖片搜尋」可方便之後存取。點選側邊面板頂端的「固定」按鈕即可固定</translation>

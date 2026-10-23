@@ -256,7 +256,6 @@
 <translation id="3531741627422851418">QR kôd za preuzimanje preglednika Chromium na mobilne uređaje</translation>
 <translation id="354621070532799440">Podsjetnik: najbolje Googleove sigurnosne značajke u vašem džepu</translation>
 <translation id="3561853857681580870">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
-<translation id="3588112919289558122">Poboljšana zaštita isključuje optimizaciju JavaScripta za web-lokacije koje Chromium ne prepoznaje</translation>
 <translation id="3597003331831379823">Pokretanje postavljanja s dodatnim ovlastima nije uspjelo. <ph name="METAINSTALLER_ERROR" />.</translation>
 <translation id="3600428265489994557">Prijava na Chromium</translation>
 <translation id="3639635944603682591">Podaci o pregledavanju za tu osobu izbrisat će se s ovog uređaja. Da biste vratili te podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
@@ -295,7 +294,6 @@
 <translation id="3971865010372729242">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upišete Chromium šalje alatima za pretraživanje, AI alatima i alatima za agente vaše organizacije kako bi vam pružio prijedloge.</translation>
 <translation id="3975724895399328945">O verziji &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">O Chromium OS-u</translation>
-<translation id="4010059961270896984">Kad posjetite neku web-lokaciju, Chromium <ph name="BEGIN_LINK" />Google sigurnom pregledavanju<ph name="END_LINK" /> šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako web-lokacija učini nešto sumnjivo, šalju se i potpuni URL-ovi i dijelovi sadržaja stranice.</translation>
 <translation id="4016217212818346953">Ostanite sigurni uz Upravitelj zaporki</translation>
 <translation id="4019629340646866719">Chromium OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojnim okruženjem Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Prevedi zaslon</translation>
@@ -456,7 +454,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="5821520528363214608">Da biste upotrebljavali i spremali Chromiumove podatke spremljene na vašem Google računu, ažurirajte Chromium</translation>
 <translation id="5824893331272123205">Učitavanje ploče nije uspjelo, pokušajte ponovo</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
-<translation id="5867606647614813312">Uključuje dodatne značajke radi pružanja najsnažnije zaštite koju nudi Chromium</translation>
 <translation id="5871205389137001634">Kliknite da biste zatvorili pretraživanje slika</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadrže zlonamjerni softver:</translation>
 <translation id="5889361821821684993">Chromium redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
@@ -758,7 +755,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8522801943730206384">Chromium može provjeriti vaše zaporke kad ih spremite</translation>
 <translation id="8525579356836940628">Instaliranje je zaustavljeno</translation>
 <translation id="8545729292258443488">Imajte pristup svojim zaporkama, karticama i drugim podacima u pokretu uz aplikaciju Chromium na uređaju <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Primite upozorenje ako Chromium pronađe jednu od vaših zaporki u javnom neovlaštenom pristupu podacima</translation>
 <translation id="8555465886620020932">Pogreška usluge: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Neke značajke i proširenja Chromiuma imaju prečace. Možete ih ponovo uključiti.</translation>
 <translation id="8556420416730706394">Pretraživanje slika možete prikvačiti radi lakšeg pristupa; kliknite gumb Prikvači pri vrhu bočne ploče</translation>

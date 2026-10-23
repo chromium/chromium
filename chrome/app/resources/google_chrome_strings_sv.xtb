@@ -143,7 +143,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2216543877350048334">Du kan ta bort Google-kontot från Chrome genom att logga ut</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="22791603784558743">Stäng Gemini i Chrome Dev</translation>
-<translation id="2284380654876659752">När du besöker en webbplats skickas en obfuskerad del av webbadressen till <ph name="BEGIN_LINK" />Google Säker webbsökning<ph name="END_LINK" /> via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>
 <translation id="2290014774651636340">Googles API-nycklar saknas. Vissa funktioner i Google Chrome kommer att vara inaktiverade.</translation>
 <translation id="2290095356545025170">Är du säker på att du vill avinstallera Google Chrome?</translation>
 <translation id="2295218613066132598">Visa genvägar till Chrome-webbplatser</translation>
@@ -384,7 +383,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="459622048091363950">När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.</translation>
 <translation id="4598116752460667024">Sök efter en process i listan.</translation>
 <translation id="4600710005438004015">Det gick inte att uppdatera Chrome till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
-<translation id="4606805686144157064">Få en varning om Chrome upptäcker att ett av dina lösenord har läckt ut i ett offentligt dataintrång</translation>
 <translation id="4608435347866444037">Sök i den här bilden med Google Lens</translation>
 <translation id="4624065194742029982">Inkognitoläget i Chrome</translation>
 <translation id="4627412468266359539">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i ChromeOS Flex.</translation>
@@ -401,7 +399,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4768676935374695498">Sök i den här videon med Google Lens</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4793679854893018356">Läs mer om hur du skyddas i Chrome</translation>
-<translation id="4799870290441980300">Aktiverar ytterligare funktioner för att tillhandahålla Chromes starkaste skydd</translation>
 <translation id="4828579605166583682">Google Chrome försöker ersätta befintliga lösenord. Skriv ditt Windows-lösenord om du vill tillåta detta.</translation>
 <translation id="4836321460899997044">Chrome-profil</translation>
 <translation id="4842397268809523050">Det gick inte att synkronisera data med ChromeOS Flex eftersom synkronisering inte är tillgängligt för din domän.</translation>
@@ -560,7 +557,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6251759518630934363">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
 <translation id="6277547788421725101">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome</translation>
 <translation id="627882678981830918">Anpassa och styr Chrome. Ställ in Chrome som standardwebbläsare.</translation>
-<translation id="6280042952415350607">Utökat skydd inaktiverar JavaScript-optimering för webbplatser som Chrome inte känner igen</translation>
 <translation id="6288580400488258237">Ställ in Google Chrome som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6291089322031436445">Appar i Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome har redan installerats för alla användare på datorn.</translation>
@@ -731,6 +727,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7777080907402804672">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>
 <translation id="778331955594035129">Du behöver ge Chrome platsbehörighet för den här webbplatsen</translation>
 <translation id="7787950393032327779">Profilen verkar användas av en annan Google Chrome-process (<ph name="PROCESS_ID" />) på en annan dator (<ph name="HOST_NAME" />). Profilen har låsts så att den inte används på otillåtet sätt. Om du är säker på att profilen inte används i några andra processer låser du upp profilen och startar om Chrome.</translation>
+<translation id="7800043020703832708">Stäng Google Sök i sidopanelen</translation>
 <translation id="7801699035218095297">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Google Chrome kopieras.</translation>
 <translation id="7804364787702057554">Ditt konto i Chrome</translation>
 <translation id="7804947029129221742">Din sökmotor har ändrats utanför Chrome. Chrome har återställt den till standardinställningen för att skydda dig. <ph name="LEARN_MORE_LINK" /></translation>

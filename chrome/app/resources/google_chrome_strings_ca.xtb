@@ -139,7 +139,6 @@
 <translation id="2216543877350048334">Per suprimir de Chrome el teu Compte de Google, tanca la sessió</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
 <translation id="22791603784558743">Tanca Gemini a Chrome Dev</translation>
-<translation id="2284380654876659752">Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a <ph name="BEGIN_LINK" />Navegació segura de Google<ph name="END_LINK" /> mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa alguna acció sospitosa, també s'envien URL complets i fragments de contingut de la pàgina.</translation>
 <translation id="2290014774651636340">Falten les claus de l'API de Google. Es desactivaran algunes de les funcionalitats de Google Chrome.</translation>
 <translation id="2290095356545025170">Confirmeu que voleu desinstal·lar Google Chrome?</translation>
 <translation id="2295218613066132598">Mostra les dreceres de llocs web de Chrome</translation>
@@ -380,7 +379,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="459622048091363950">Un cop Chrome tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="4598116752460667024">Cerca qualsevol procés de la llista.</translation>
 <translation id="4600710005438004015">Chrome no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les funcions noves ni de les correccions de seguretat.</translation>
-<translation id="4606805686144157064">Rep un advertiment si Chrome troba que una de les teves contrasenyes s'ha fet pública a causa d'una violació de les dades</translation>
 <translation id="4608435347866444037">Cerca aquesta imatge amb Google Lens</translation>
 <translation id="4624065194742029982">Mode d'incògnit a Chrome</translation>
 <translation id="4627412468266359539">Opcional: ajuda a millorar les funcions i el rendiment de ChromeOS Flex enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
@@ -397,7 +395,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4768676935374695498">Cerca en aquest vídeo amb Google Lens</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
-<translation id="4799870290441980300">Activa funcions addicionals per proporcionar les proteccions més eficaces de Chrome</translation>
 <translation id="4828579605166583682">Google Chrome està provant de substituir les contrasenyes existents. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="4836321460899997044">Perfil de Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
@@ -552,7 +549,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6251759518630934363">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chrome.</translation>
 <translation id="6277547788421725101">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chrome</translation>
 <translation id="627882678981830918">Personalitza i controla Chrome. Defineix Chrome com a navegador predeterminat.</translation>
-<translation id="6280042952415350607">La protecció millorada desactiva l'optimització de JavaScript per als llocs web que Chrome no reconeix</translation>
 <translation id="6288580400488258237">Defineix Google Chrome com a navegador predeterminat i fixa'l a la barra de tasques</translation>
 <translation id="6291089322031436445">Aplicacions de Chrome Dev</translation>
 <translation id="6291549208091401781">Ja tens instal·lat Google Chrome per a tots els usuaris de l'ordinador.</translation>
@@ -723,6 +719,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7777080907402804672">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="778331955594035129">Chrome necessita permís d'accés a la ubicació per a aquest lloc web</translation>
 <translation id="7787950393032327779">Sembla que un altre procés de Google Chrome (<ph name="PROCESS_ID" />) està fent servir el perfil en un altre ordinador (<ph name="HOST_NAME" />). Chrome ha bloquejat el perfil perquè no es malmeti. Si esteu segur que no hi ha cap altre procés que utilitzi el perfil, podeu desbloquejar-lo i tornar a iniciar Chrome.</translation>
+<translation id="7800043020703832708">Tanca la Cerca de Google al tauler lateral</translation>
 <translation id="7801699035218095297">Google Chrome està provant de copiar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="7804364787702057554">El teu compte a Chrome</translation>
 <translation id="7804947029129221742">El motor de cerca s'ha canviat des de fora de Chrome. Per protegir-te, Chrome l'ha restablert a la configuració predeterminada original. <ph name="LEARN_MORE_LINK" /></translation>

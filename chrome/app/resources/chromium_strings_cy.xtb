@@ -258,7 +258,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3531741627422851418">Cod QR i lawrlwytho porwr Chromium ar ddyfeisiau symudol</translation>
 <translation id="354621070532799440">Atgoffwr: Nodweddion diogelwch gorau Google yn eich poced</translation>
 <translation id="3561853857681580870">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System.</translation>
-<translation id="3588112919289558122">Mae gwell amddiffyniad yn diffodd optimeiddio JavaScript ar gyfer gwefannau nad yw Chromium yn eu hadnabod</translation>
 <translation id="3597003331831379823">Wedi methu rhedeg gosod gyda breintiau uwch. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Mewngofnodi i Chromium</translation>
 <translation id="3639635944603682591">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
@@ -297,7 +296,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3971865010372729242">Pan fyddwch chi'n teipio yn y bar cyfeiriad neu'r blwch chwilio, mae Chromium yn anfon yr hyn rydych chi'n ei deipio i offer chwilio, AI ac asiant eich sefydliad i gael awgrymiadau.</translation>
 <translation id="3975724895399328945">Ynglŷn â &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Ynghylch ChromiumOS</translation>
-<translation id="4010059961270896984">Pan fyddwch yn ymweld â gwefan, mae Chromium yn anfon rhan o'r URL sydd wedi'i thywyllu at <ph name="BEGIN_LINK" />Bori'n Ddiogel gyda Google<ph name="END_LINK" /> trwy weinydd preifatrwydd sy'n cuddio'ch cyfeiriad IP. Os yw gwefan yn gwneud rhywbeth amheus, bydd URL llawn a darnau o gynnwys tudalen hefyd yn cael eu hanfon.</translation>
 <translation id="4016217212818346953">Cadwch yn ddiogel gyda Rheolwr Cyfrineiriau</translation>
 <translation id="4019629340646866719">Mae ChromiumOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Cyfieithu'r sgrîn</translation>
@@ -375,6 +373,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4786083865378785874">Os yw Gemini yn Chromium ar agor, mae'r panel ochr yn aros ar agor wrth greu tabiau newydd</translation>
 <translation id="479167709087336770">Mae hwn yn defnyddio'r un gwiriwr sillafu â'r un sy'n cael ei ddefnyddio yn Google Search. Anfonir testun rydych yn ei deipio yn y porwr at Google. Gallwch newid yr ymddygiad hwn yn y gosodiadau ar unrhyw adeg.</translation>
 <translation id="4814736265800133385">Defnyddio Chromium heb gyfrif</translation>
+<translation id="4839733921943823254">Pinio Llwybr Byr</translation>
 <translation id="4888717733111232871">Rheol dod i mewn ar gyfer Chromium i ganiatáu traffig mDNS.</translation>
 <translation id="4893347770495441059">Ail-lansiwch i Ddiweddaru &amp;Chromium</translation>
 <translation id="4918086044614829423">Derbyn</translation>
@@ -458,7 +457,6 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="5821520528363214608">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, diweddarwch Chromium</translation>
 <translation id="5824893331272123205">Methu â llwytho'r panel hwn, rhowch gynnig arall arni</translation>
 <translation id="5862307444128926510">Croeso i Chromium</translation>
-<translation id="5867606647614813312">Yn troi nodweddion ychwanegol ymlaen i ddarparu amddiffyniadau cryfaf Chromium</translation>
 <translation id="5871205389137001634">Cliciwch i adael Chwilio Lluniau</translation>
 <translation id="5883558403894052917">Gwnaeth Chromium ganfod bod yr eitemau hyn yn cynnwys drwgwedd:</translation>
 <translation id="5889361821821684993">Mae Chromium yn gwirio i sicrhau bod gan eich porwr y gosodiadau mwyaf diogel yn rheolaidd. Byddwn yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth.</translation>
@@ -760,10 +758,10 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8522801943730206384">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw</translation>
 <translation id="8525579356836940628">Wedi Stopio Gosod</translation>
 <translation id="8545729292258443488">Ewch â'ch cyfrineiriau, tabiau a rhagor gyda'r ap Chromium ar eich <ph name="DEVICE_TYPE" /></translation>
-<translation id="8548787790260785208">Cael rhybudd os bydd Chromium yn dod o hyd i un o'ch cyfrineiriau mewn tor data cyhoeddus</translation>
 <translation id="8555465886620020932">Gwall gwasanaeth: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Mae llwybrau byr yn rhan o rai nodweddion ac estyniadau Chromium. Gallwch ddewis eu troi yn ôl ymlaen.</translation>
 <translation id="8556420416730706394">Gallwch binio Chwilio Lluniau i gael mynediad hawdd; cliciwch ar y botwm Pinio ar frig y panel ochr</translation>
+<translation id="8564408666201523086">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda Google Search yn y panel ochr</translation>
 <translation id="856656450041460113">Chwilio rhestr iaith</translation>
 <translation id="8576826849825683917">Mae mwy nag un sefydliad yn rheoli Chromium</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>

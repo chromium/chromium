@@ -143,7 +143,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2216543877350048334">Jei norite pašalinti „Google“ paskyrą iš „Chrome“, atsijunkite</translation>
 <translation id="2236949375853147973">Mano veikla</translation>
 <translation id="22791603784558743">Uždaryti „Gemini“ kūrėjams skirtoje „Chrome“ naršyklėje</translation>
-<translation id="2284380654876659752">Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį <ph name="BEGIN_LINK" />„Google“ saugaus naršymo funkcijai<ph name="END_LINK" /> per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="2290014774651636340">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Google Chrome“ funkcijos.</translation>
 <translation id="2290095356545025170">Ar tikrai norite pašalinti „Google Chrome“?</translation>
 <translation id="2295218613066132598">Rodyti „Chrome“ svetainių sparčiuosius klavišus</translation>
@@ -384,7 +383,6 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="459622048091363950">Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.</translation>
 <translation id="4598116752460667024">Ieškokite bet kurio proceso iš sąrašo.</translation>
 <translation id="4600710005438004015">Nepavyko atnaujinti „Chrome“ į naujausią versiją, todėl nebus pasiekiamos naujos funkcijos ir saugos pataisos.</translation>
-<translation id="4606805686144157064">Gaukite įspėjimą, jei „Chrome“ aptinka vieną iš jūsų slaptažodžių viešajame duomenų saugos pažeidime</translation>
 <translation id="4608435347866444037">Ieškoti šiame vaizde naudojant „Google Lens“</translation>
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
 <translation id="4627412468266359539">Pasirenkama: padėkite tobulinti „ChromeOS Flex“ funkcijas ir našumą automatiškai siųsdami diagnostikos ir naudojimo duomenis į sistemą „Google“.</translation>
@@ -401,7 +399,6 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="4768676935374695498">Ieškoti šiame vaizdo įraše naudojant „Google Lens“</translation>
 <translation id="479167709087336770">Naudojamas tas pats rašybos tikrinimas kaip ir „Google“ paieškoje. Tekstas, kurį įvedate naršyklėje, nusiunčiamas „Google“. Šį veikimą visada galite pakeisti nustatymuose.</translation>
 <translation id="4793679854893018356">Sužinokite, kaip „Chrome“ užtikrina jūsų saugą</translation>
-<translation id="4799870290441980300">Įjungiamos papildomos funkcijos, kad būtų užtikrinta patikimiausia „Chrome“ apsauga</translation>
 <translation id="4828579605166583682">„Google Chrome“ bando pakeisti esamus slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="4836321460899997044">„Chrome“ profilis</translation>
 <translation id="4842397268809523050">„ChromeOS Flex“ negalėjo sinchronizuoti duomenų, nes jūsų domene sinchronizavimas negalimas.</translation>
@@ -560,7 +557,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6251759518630934363">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
 <translation id="6277547788421725101">Vienas iš tėvų išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“</translation>
 <translation id="627882678981830918">Tinkinkite ir valdykite „Chrome“. Nustatykite „Chrome“ kaip numatytąją naršyklę.</translation>
-<translation id="6280042952415350607">Sustiprinta apsauga išjungia „JavaScript“ optimizavimą svetainėse, kurių „Chromium“ neatpažįsta</translation>
 <translation id="6288580400488258237">Nustatykite „Google Chrome“ kaip numatytąją naršyklę ir prisekite ją prie užduočių juostos</translation>
 <translation id="6291089322031436445">„Chrome Dev“ programos</translation>
 <translation id="6291549208091401781">„Google Chrome“ jau įdiegta visiems kompiuterio naudotojams.</translation>
@@ -731,6 +727,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7777080907402804672">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="778331955594035129">„Chrome“ reikalingas leidimas pasiekti vietovės duomenis šioje svetainėje</translation>
 <translation id="7787950393032327779">Atrodo, kad profilį naudoja kitas „Google Chrome“ procesas (<ph name="PROCESS_ID" />) kitame kompiuteryje (<ph name="HOST_NAME" />). „Chrome“ užrakino profilį, kad jis nebūtų sugadintas. Jei esate tikri, kad jokie kiti procesai nenaudoja šio profilio, galite atrakinti profilį ir iš naujo paleisti „Chrome“.</translation>
+<translation id="7800043020703832708">Uždaryti „Google“ paiešką šoniniame skydelyje</translation>
 <translation id="7801699035218095297">„Google Chrome“ bando kopijuoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="7804364787702057554">Jūsų paskyra naršyklėje „Chrome“</translation>
 <translation id="7804947029129221742">Paieškos variklis buvo pakeistas ne naršyklėje „Chrome“. Kad jus apsaugotų, „Chrome“ jį nustatė iš naujo į pradinį numatytąjį nustatymą. <ph name="LEARN_MORE_LINK" /></translation>

@@ -143,7 +143,6 @@
 <translation id="2216543877350048334">Chrome에서 Google 계정을 삭제하려면 로그아웃하세요.</translation>
 <translation id="2236949375853147973">내 활동</translation>
 <translation id="22791603784558743">Chrome 개발자의 Gemini 닫기</translation>
-<translation id="2284380654876659752">사이트를 방문하면 Chrome에서 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 <ph name="BEGIN_LINK" />Google 세이프 브라우징<ph name="END_LINK" />으로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠 일부도 전송됩니다.</translation>
 <translation id="2290014774651636340">Google API 키가 누락되었습니다. Chrome의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="2290095356545025170">Chrome을 제거하시겠습니까?</translation>
 <translation id="2295218613066132598">Chrome 사이트 바로가기 표시</translation>
@@ -383,7 +382,6 @@
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
 <translation id="4598116752460667024">목록에서 프로세스를 검색합니다.</translation>
 <translation id="4600710005438004015">Chrome을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
-<translation id="4606805686144157064">Chrome에서 공개적인 정보 유출로 인해 노출된 비밀번호를 발견하면 경고가 표시됩니다.</translation>
 <translation id="4608435347866444037">Google 렌즈로 이 이미지 검색하기</translation>
 <translation id="4624065194742029982">Chrome 시크릿 모드</translation>
 <translation id="4627412468266359539">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromeOS Flex의 기능과 성능을 개선할 수 있도록 도와주세요.</translation>
@@ -400,7 +398,6 @@
 <translation id="4768676935374695498">Google 렌즈로 이 동영상 검색</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
 <translation id="4793679854893018356">Chrome이 사용자를 안전하게 보호하는 방법 알아보기</translation>
-<translation id="4799870290441980300">Chrome의 가장 강력한 보호 기능을 제공하는 추가 기능을 사용 설정합니다.</translation>
 <translation id="4828579605166583682">Chrome에서 기존 비밀번호를 교체하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="4836321460899997044">Chrome 프로필</translation>
 <translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
@@ -559,7 +556,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6251759518630934363">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
 <translation id="6277547788421725101">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지했습니다.</translation>
 <translation id="627882678981830918">Chrome을 맞춤설정하고 제어합니다. Chrome을 기본 브라우저로 설정합니다.</translation>
-<translation id="6280042952415350607">향상된 보호 모드는 Chrome에서 인식하지 못하는 사이트에 대해 JavaScript 최적화를 사용 중지합니다</translation>
 <translation id="6288580400488258237">Chrome을 기본 브라우저로 설정하고 태스크 바에 고정하세요.</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
@@ -730,6 +726,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="778331955594035129">Chrome에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
 <translation id="7787950393032327779">다른 컴퓨터(<ph name="HOST_NAME" />)의 다른 Chrome 프로세스(<ph name="PROCESS_ID" />)에서 프로필을 사용 중인 것 같습니다. 프로필이 손상되지 않도록 Chrome에서 잠금 설정했습니다. 다른 프로세스에서 프로필을 사용 중이지 않은 것이 확실한 경우 프로필을 잠금 해제하고 Chrome을 다시 시작하세요.</translation>
+<translation id="7800043020703832708">측면 패널에서 Google 검색 닫기</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7804364787702057554">Chrome의 내 계정</translation>
 <translation id="7804947029129221742">Chrome 외부에서 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chrome에서 검색엔진을 기본값으로 재설정했습니다. <ph name="LEARN_MORE_LINK" /></translation>

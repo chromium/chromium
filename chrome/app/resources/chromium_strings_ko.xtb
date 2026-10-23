@@ -257,7 +257,6 @@
 <translation id="3531741627422851418">휴대기기에서 Chromium 브라우저를 다운로드할 수 있는 QR 코드</translation>
 <translation id="354621070532799440">알림: 주머니에 쏙 들어가는 Google 최고의 안전 기능</translation>
 <translation id="3561853857681580870">화면을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
-<translation id="3588112919289558122">향상된 보호 모드는 Chromium에서 인식하지 못하는 사이트에 대해 JavaScript 최적화를 사용 중지합니다</translation>
 <translation id="3597003331831379823">승격된 권한으로 설정을 실행할 수 없습니다. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Chromium에 로그인하세요</translation>
 <translation id="3639635944603682591">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복구하려면 <ph name="USER_EMAIL" />(으)로 Chromium에 로그인하세요.</translation>
@@ -296,7 +295,6 @@
 <translation id="3971865010372729242">주소 표시줄이나 검색창에 입력하면 추천을 받을 수 있도록 Chromium에서 입력 내용을 조직의 검색, AI, 에이전트 도구로 전송합니다.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing 정보</translation>
 <translation id="3997429360543082038">ChromiumOS 정보</translation>
-<translation id="4010059961270896984">사이트 방문 시 Chromium에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 <ph name="BEGIN_LINK" />Google 세이프 브라우징<ph name="END_LINK" />으로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠 일부도 전송됩니다.</translation>
 <translation id="4016217212818346953">비밀번호 관리자로 보안을 유지하세요</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
@@ -457,7 +455,6 @@
 <translation id="5821520528363214608">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 Chromium을 업데이트하세요.</translation>
 <translation id="5824893331272123205">패널을 로드할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
-<translation id="5867606647614813312">Chromium의 가장 강력한 보호 기능을 제공하는 추가 기능을 사용 설정합니다.</translation>
 <translation id="5871205389137001634">클릭하여 이미지 검색 종료</translation>
 <translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="5889361821821684993">Chromium에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
@@ -759,7 +756,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8522801943730206384">비밀번호를 저장하면 Chromium에서 확인할 수 있습니다</translation>
 <translation id="8525579356836940628">설치가 중단되었습니다</translation>
 <translation id="8545729292258443488"><ph name="DEVICE_TYPE" />에서 Chromium 앱을 사용하여 이동 중에도 비밀번호, 탭 등을 이용하세요</translation>
-<translation id="8548787790260785208">Chromium에서 공개적인 정보 유출로 인해 노출된 비밀번호를 발견하면 경고가 표시됩니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8556055872671007529">일부 Chromium 기능 및 확장 프로그램에는 바로가기가 제공됩니다. 다시 사용 설정할 수 있습니다</translation>
 <translation id="8556420416730706394">측면 패널 상단의 고정 버튼을 클릭하여 이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>

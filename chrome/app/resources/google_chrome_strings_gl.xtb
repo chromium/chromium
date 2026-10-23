@@ -143,7 +143,6 @@
 <translation id="2216543877350048334">Para quitar a túa Conta de Google de Chrome, pecha a sesión</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
 <translation id="22791603784558743">Pechar Gemini en Chrome Dev</translation>
-<translation id="2284380654876659752">Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a <ph name="BEGIN_LINK" />Navegación segura de Google<ph name="END_LINK" /> mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="2290014774651636340">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Google Chrome.</translation>
 <translation id="2290095356545025170">Seguro que queres desinstalar Google Chrome?</translation>
 <translation id="2295218613066132598">Mostrar atallos de sitios de Chrome</translation>
@@ -384,7 +383,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="459622048091363950">Unha vez que Chrome teña acceso, os sitios web poderán solicitalo tamén.</translation>
 <translation id="4598116752460667024">Busca calquera proceso da lista.</translation>
 <translation id="4600710005438004015">Chrome non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
-<translation id="4606805686144157064">Recibe un aviso se Chrome atopa un dos teus contrasinais nunha violación da seguranza dos datos pública</translation>
 <translation id="4608435347866444037">Busca esta imaxe con Google Lens</translation>
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
 <translation id="4627412468266359539">Opcional: Axudar a mellorar o rendemento e as funcións de Chrome OS Flex mediante o envío automático de datos de uso e diagnóstico a Google.</translation>
@@ -401,7 +399,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4768676935374695498">Buscar neste vídeo con Google Lens</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
-<translation id="4799870290441980300">Activa máis funcións para proporcionar a máxima protección de Chrome</translation>
 <translation id="4828579605166583682">Google Chrome está tentando substituír os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="4836321460899997044">Perfil de Chrome</translation>
 <translation id="4842397268809523050">Chrome OS Flex non puido sincronizar os teus datos porque esta función non está dispoñible para o teu dominio.</translation>
@@ -560,7 +557,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6251759518630934363">Analiza máis datos de sitios que a protección estándar para avisarte sobre os que sexan perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
 <translation id="6277547788421725101">O teu pai ou nai desactivou en Chrome a opción Permisos para sitios, aplicacións e extensións</translation>
 <translation id="627882678981830918">Personalizar e controlar Chrome. Define Chrome como o navegador predeterminado.</translation>
-<translation id="6280042952415350607">Coa protección mellorada, desactívase a optimización de JavaScript para os sitios que Chrome non recoñece</translation>
 <translation id="6288580400488258237">Define Google Chrome como o teu navegador predeterminado e fíxao na túa barra de tarefas</translation>
 <translation id="6291089322031436445">Aplicacións de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
@@ -731,6 +727,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="778331955594035129">Chrome necesita permiso de acceso á localización para este sitio</translation>
 <translation id="7787950393032327779">Parece que outro proceso de Google Chrome (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chrome bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquealo e volver iniciar Chrome.</translation>
+<translation id="7800043020703832708">Pechar Busca de Google no panel lateral</translation>
 <translation id="7801699035218095297">Google Chrome está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="7804364787702057554">A túa conta en Chrome</translation>
 <translation id="7804947029129221742">O teu buscador cambiouse desde fóra de Chrome. Para protexerte, Chrome restableceu a configuración predeterminada orixinal. <ph name="LEARN_MORE_LINK" /></translation>
