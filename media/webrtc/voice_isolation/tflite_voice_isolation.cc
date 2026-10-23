@@ -30,7 +30,11 @@
 
 #include "third_party/tflite/src/tensorflow/lite/builtin_ops.h"
 #include "third_party/tflite/src/tensorflow/lite/core/c/builtin_op_data.h"
+#include "third_party/tflite/src/tensorflow/lite/core/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/core/subgraph.h"
+// TODO(crbug.com/575409069): Add a LiteRT shim for resource_variable.h and
+// prepend //third_party/tflite:tflite_shim_config in BUILD.gn when
+// use_litert_tflite = true is supported.
 #include "third_party/tflite/src/tensorflow/lite/experimental/resource/resource_variable.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
@@ -176,6 +180,21 @@ base::span<float> WrapOutputTensor(tflite::Interpreter* interpreter,
   return WrapFloatTensor(interpreter->output_tensor(index));
 }
 
+// Returns true if every byte of `tensor` is zero.
+bool IsAllZeros(const TfLiteTensor& tensor) {
+  return std::ranges::all_of(WrapTensor<const uint8_t>(&tensor),
+                             [](uint8_t byte) { return byte == 0; });
+}
+
+// Fills every byte of `tensor` with `value`. Uses `std::fill_n` on the raw
+// pointer rather than `std::ranges::fill` on `base::span` because libc++'s
+// `std::ranges::fill` does not unwrap `base::CheckedContiguousIterator` via
+// `std::to_address()`, preventing `memset` lowering on the real-time thread.
+void FillTensorBytes(TfLiteTensor* tensor, uint8_t value) {
+  const base::span<uint8_t> bytes = WrapTensor<uint8_t>(tensor);
+  std::fill_n(bytes.data(), bytes.size(), value);
+}
+
 // Returns the indices of the subgraphs invoked by CallOnce ops in the primary
 // subgraph. These subgraphs initialize the model resource variables.
 // Voice Isolation models only define CallOnce initialization ops in the
@@ -225,30 +244,16 @@ TfLiteVoiceIsolation::TfLiteVoiceIsolation(
   DVLOG(1) << "TfLiteVoiceIsolation frame_size=" << kFrameSize;
 }
 
-TfLiteVoiceIsolation::ResourceVariableSnapshot::ResourceVariableSnapshot(
-    tflite::resource::ResourceVariable* variable,
-    size_t bytes)
-    : variable(variable), initial_value(bytes) {}
-
-TfLiteVoiceIsolation::ResourceVariableSnapshot::ResourceVariableSnapshot(
-    ResourceVariableSnapshot&&) noexcept = default;
-
-TfLiteVoiceIsolation::ResourceVariableSnapshot&
-TfLiteVoiceIsolation::ResourceVariableSnapshot::operator=(
-    ResourceVariableSnapshot&&) noexcept = default;
-
-TfLiteVoiceIsolation::ResourceVariableSnapshot::~ResourceVariableSnapshot() =
-    default;
-
-bool TfLiteVoiceIsolation::CaptureInitialState() {
-  TRACE_EVENT("audio", "TfLiteVoiceIsolation::CaptureInitialState");
+bool TfLiteVoiceIsolation::InitResourceVariables() {
+  TRACE_EVENT("audio", "TfLiteVoiceIsolation::InitResourceVariables");
   tflite::resource::ResourceMap& resources =
       interpreter_->primary_subgraph().resources();
 
   // Check the recurrent-state requirements on `MaybeCreate()`: record the
   // post-warmup byte size of every resource variable so we can verify that the
   // CallOnce initialization subgraphs leave each variable with the same byte
-  // size.
+  // size, and pre-fill each variable with non-zero bytes so the post-init
+  // `IsAllZeros()` check verifies that `init_subgraphs` wrote every byte.
   size_t total_bytes = 0;
   for (const auto& [resource_id, unused_resource] : resources) {
     tflite::resource::ResourceVariable* variable =
@@ -257,22 +262,22 @@ bool TfLiteVoiceIsolation::CaptureInitialState() {
       continue;
     }
 
-    const TfLiteTensor* tensor = variable->GetTensor();
+    TfLiteTensor* tensor = variable->GetTensor();
     if (!tensor || !tensor->data.raw || tensor->bytes == 0) {
       return false;
     }
-    initial_state_.emplace_back(variable, tensor->bytes);
+    FillTensorBytes(tensor, uint8_t{0xFF});
+    resource_variables_.push_back(
+        {.variable = variable, .bytes = tensor->bytes});
     total_bytes += tensor->bytes;
   }
 
   // Run the initialization subgraphs the same way the CallOnce kernel does.
   // CallOnce already ran them in the warmup `Invoke()` of `MaybeCreate()` and
-  // does not run them again. Running them here assigns the initial values back
-  // to the resource variables.
+  // does not run them again. Running them here after filling each variable with
+  // 0xFF verifies that they zero-initialize every resource variable and
+  // restores the initial values.
   const std::vector<int> init_subgraphs = FindInitSubgraphs(interpreter_.get());
-  if (!initial_state_.empty() && init_subgraphs.empty()) {
-    return false;
-  }
   for (int subgraph_index : init_subgraphs) {
     tflite::Subgraph* init_subgraph = interpreter_->subgraph(subgraph_index);
     if (subgraph_index <= 0 || !init_subgraph ||
@@ -283,40 +288,38 @@ bool TfLiteVoiceIsolation::CaptureInitialState() {
     }
   }
 
-  // Resource variables are shared by all subgraphs. Store a copy of the
-  // initial value of each one.
-  for (ResourceVariableSnapshot& snapshot : initial_state_) {
-    const TfLiteTensor* tensor = snapshot.variable->GetTensor();
-    if (!tensor || !tensor->data.raw ||
-        tensor->bytes != snapshot.initial_value.size()) {
+  // Resource variables are shared by all subgraphs. Verify once that every
+  // resource variable has its post-warmup byte size and was overwritten with
+  // zeros by `init_subgraphs`.
+  for (const ResourceVariableState& state : resource_variables_) {
+    const TfLiteTensor* tensor = state.variable->GetTensor();
+    if (!tensor || !tensor->data.raw || tensor->bytes != state.bytes ||
+        !IsAllZeros(*tensor)) {
       return false;
     }
-    base::span(snapshot.initial_value)
-        .copy_from(WrapTensor<const uint8_t>(tensor));
   }
   TRACE_EVENT_INSTANT("audio", "TfLiteVoiceIsolation::InitialState",
-                      "resource_variables", initial_state_.size(),
+                      "resource_variables", resource_variables_.size(),
                       "total_bytes", total_bytes);
   DVLOG(1) << "TfLiteVoiceIsolation resource variables="
-           << initial_state_.size();
+           << resource_variables_.size();
   return true;
 }
 
 bool TfLiteVoiceIsolation::ResetState() {
   TRACE_EVENT("audio", "TfLiteVoiceIsolation::ResetState", "resource_variables",
-              initial_state_.size());
-  // Restore the resource variables in place. `CaptureInitialState()` verified
+              resource_variables_.size());
+  // Restore the resource variables in place. `InitResourceVariables()` verified
   // that the initial and post-warmup byte sizes match, and
   // `ResourceVariable::AssignFrom()` during `Invoke()` reuses the existing
   // data buffer when the byte size is unchanged, so no data buffer is
   // allocated in `ResetState()` or `Invoke()`.
-  for (const ResourceVariableSnapshot& snapshot : initial_state_) {
-    TfLiteTensor* tensor = snapshot.variable->GetTensor();
-    if (!tensor || !tensor->data.raw ||
-        tensor->bytes != snapshot.initial_value.size()) {
+  for (const ResourceVariableState& state : resource_variables_) {
+    TfLiteTensor* tensor = state.variable->GetTensor();
+    if (!tensor || !tensor->data.raw || tensor->bytes != state.bytes) {
       return false;
     }
-    WrapTensor<uint8_t>(tensor).copy_from(snapshot.initial_value);
+    FillTensorBytes(tensor, uint8_t{0});
   }
 
   // Models using `is_variable` tensors instead of resource variables; see the
@@ -387,10 +390,11 @@ TfLiteVoiceIsolation::MaybeCreate(const tflite::FlatBufferModel* model) {
   std::unique_ptr<TfLiteVoiceIsolation> voice_isolation = base::WrapUnique(
       new TfLiteVoiceIsolation(std::move(interpreter), std::move(bias)));
 
-  // Computing the bias advanced the model state. Capture the initial state and
-  // restore it so that the first processed frame starts from the same state as
-  // after `ClearBuffers()`.
-  if (!voice_isolation->CaptureInitialState() ||
+  // Computing the bias advanced the model state. Verify that the initial
+  // resource-variable state is all zeros, record the variables, and reset the
+  // state so that the first processed frame starts from the same state as after
+  // `ClearBuffers()`.
+  if (!voice_isolation->InitResourceVariables() ||
       !voice_isolation->ResetState()) {
     return base::unexpected(VoiceIsolationCreationResult::kIncompatibleModel);
   }

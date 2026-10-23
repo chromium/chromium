@@ -167,8 +167,8 @@ std::vector<std::vector<float>> ProcessAndGetSpeechMasks(
   return masks;
 }
 
-constexpr int32_t kModelInputElements = 640;
-constexpr int32_t kModelOutputElements = 1280;
+constexpr int32_t kModelInputElements = kNumDfts * kDftSize;
+constexpr int32_t kModelOutputElements = 2 * kModelInputElements;
 
 FakeModel FinishFakeModel(flatbuffers::FlatBufferBuilder& builder,
                           flatbuffers::Offset<tflite::Model> model_offset) {
@@ -308,17 +308,29 @@ FakeModel BuildModelWithUnallocatedSecondarySubgraphVariable() {
                    &subgraphs, "unallocated_secondary_var", &buffers));
 }
 
+enum class ExtraPrimaryResourceVariable {
+  kNone,
+  kUnassignedByInitSubgraph,
+};
+
 // Builds a model whose CallOnce initialization subgraph assigns a 640-element
-// int32 tensor to a resource variable, while the primary subgraph assigns a
-// 1280-element int32 tensor to the same resource variable during `Invoke()`.
+// int32 tensor initialized to `init_byte_value` to a resource variable, while
+// the primary subgraph assigns a `primary_elements`-element int32 tensor to the
+// same resource variable during `Invoke()`. When `extra_variable` is
+// `kUnassignedByInitSubgraph`, the primary subgraph also assigns an all-zero
+// tensor to a second resource variable that the initialization subgraph omits.
 // `INT32` is used so the XNNPACK delegate does not claim `ASSIGN_VARIABLE`.
-FakeModel BuildModelWithMismatchedResourceVariableSize() {
+FakeModel BuildModelWithResourceVariable(
+    int32_t primary_elements = kModelInputElements,
+    uint8_t init_byte_value = 0,
+    ExtraPrimaryResourceVariable extra_variable =
+        ExtraPrimaryResourceVariable::kNone) {
   flatbuffers::FlatBufferBuilder builder(16384);
 
   const std::vector<uint8_t> primary_value_bytes(
-      kModelOutputElements * sizeof(int32_t), 0);
+      primary_elements * sizeof(int32_t), 0);
   const std::vector<uint8_t> init_value_bytes(
-      kModelInputElements * sizeof(int32_t), 0);
+      kModelInputElements * sizeof(int32_t), init_byte_value);
   std::vector<flatbuffers::Offset<tflite::Buffer>> buffers = {
       tflite::CreateBuffer(builder),
       tflite::CreateBuffer(builder),
@@ -326,6 +338,7 @@ FakeModel BuildModelWithMismatchedResourceVariableSize() {
       tflite::CreateBuffer(builder),
       tflite::CreateBuffer(builder, builder.CreateVector(primary_value_bytes)),
       tflite::CreateBuffer(builder, builder.CreateVector(init_value_bytes)),
+      tflite::CreateBuffer(builder),
       tflite::CreateBuffer(builder),
   };
 
@@ -346,11 +359,12 @@ FakeModel BuildModelWithMismatchedResourceVariableSize() {
 
   const std::vector<int32_t> input_shape = {1, kModelInputElements};
   const std::vector<int32_t> output_shape = {1, kModelOutputElements};
+  const std::vector<int32_t> primary_var_shape = {1, primary_elements};
   const std::vector<int32_t> resource_shape = {1};
 
   // Primary subgraph: runs CallOnce(subgraph 1), concatenates the 640-float
   // input into the 1280-float output, and overwrites resource variable "state"
-  // with a 1280-int32 tensor.
+  // with a `primary_elements`-int32 tensor.
   std::vector<flatbuffers::Offset<tflite::Tensor>> primary_tensors = {
       tflite::CreateTensorDirect(builder, &input_shape,
                                  tflite::TensorType_FLOAT32, /*buffer=*/1,
@@ -361,7 +375,7 @@ FakeModel BuildModelWithMismatchedResourceVariableSize() {
       tflite::CreateTensorDirect(builder, &resource_shape,
                                  tflite::TensorType_RESOURCE, /*buffer=*/3,
                                  "var_handle"),
-      tflite::CreateTensorDirect(builder, &output_shape,
+      tflite::CreateTensorDirect(builder, &primary_var_shape,
                                  tflite::TensorType_INT32, /*buffer=*/4,
                                  "primary_const"),
   };
@@ -391,6 +405,24 @@ FakeModel BuildModelWithMismatchedResourceVariableSize() {
           tflite::BuiltinOptions_AssignVariableOptions,
           tflite::CreateAssignVariableOptions(builder).Union()),
   };
+  if (extra_variable ==
+      ExtraPrimaryResourceVariable::kUnassignedByInitSubgraph) {
+    primary_tensors.push_back(tflite::CreateTensorDirect(
+        builder, &resource_shape, tflite::TensorType_RESOURCE, /*buffer=*/7,
+        "unassigned_var_handle"));
+    const std::vector<int32_t> unassigned_var_handle_outputs = {4};
+    const std::vector<int32_t> unassigned_assign_inputs = {4, 3};
+    primary_operators.push_back(tflite::CreateOperatorDirect(
+        builder, /*opcode_index=*/1, &empty_tensors,
+        &unassigned_var_handle_outputs, tflite::BuiltinOptions_VarHandleOptions,
+        tflite::CreateVarHandleOptionsDirect(builder, /*container=*/"c",
+                                             /*shared_name=*/"unassigned_state")
+            .Union()));
+    primary_operators.push_back(tflite::CreateOperatorDirect(
+        builder, /*opcode_index=*/2, &unassigned_assign_inputs, &empty_tensors,
+        tflite::BuiltinOptions_AssignVariableOptions,
+        tflite::CreateAssignVariableOptions(builder).Union()));
+  }
   const std::vector<int32_t> primary_inputs = {0};
   const std::vector<int32_t> primary_outputs = {1};
 
@@ -430,7 +462,7 @@ FakeModel BuildModelWithMismatchedResourceVariableSize() {
   return FinishFakeModel(
       builder, tflite::CreateModelDirect(
                    builder, /*version=*/TFLITE_SCHEMA_VERSION, &opcodes,
-                   &subgraphs, "mismatched_resource_var_size", &buffers));
+                   &subgraphs, "resource_var_model", &buffers));
 }
 
 // Builds a model whose primary subgraph writes a resource variable without a
@@ -967,7 +999,22 @@ TEST(TfLiteVoiceIsolation, RejectsModelWithVariableTensorsThatCannotBeReset) {
 }
 
 TEST(TfLiteVoiceIsolation, RejectsModelWhoseInitValueSizeDiffersFromStateSize) {
-  FakeModel fake_model = BuildModelWithMismatchedResourceVariableSize();
+  FakeModel fake_model =
+      BuildModelWithResourceVariable(/*primary_elements=*/kModelOutputElements,
+                                     /*init_byte_value=*/0);
+  ASSERT_NE(fake_model.model, nullptr);
+
+  base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
+                 VoiceIsolationCreationResult>
+      result = TfLiteVoiceIsolation::MaybeCreate(fake_model.model.get());
+  EXPECT_THAT(result, base::test::ErrorIs(
+                          VoiceIsolationCreationResult::kIncompatibleModel));
+}
+
+TEST(TfLiteVoiceIsolation, RejectsModelWithNonZeroResourceVariableInit) {
+  FakeModel fake_model =
+      BuildModelWithResourceVariable(/*primary_elements=*/kModelInputElements,
+                                     /*init_byte_value=*/1);
   ASSERT_NE(fake_model.model, nullptr);
 
   base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
@@ -980,6 +1027,20 @@ TEST(TfLiteVoiceIsolation, RejectsModelWhoseInitValueSizeDiffersFromStateSize) {
 TEST(TfLiteVoiceIsolation,
      RejectsModelWithResourceVariableWithoutInitSubgraph) {
   FakeModel fake_model = BuildModelWithResourceVariableWithoutInitSubgraph();
+  ASSERT_NE(fake_model.model, nullptr);
+
+  base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
+                 VoiceIsolationCreationResult>
+      result = TfLiteVoiceIsolation::MaybeCreate(fake_model.model.get());
+  EXPECT_THAT(result, base::test::ErrorIs(
+                          VoiceIsolationCreationResult::kIncompatibleModel));
+}
+
+TEST(TfLiteVoiceIsolation, RejectsModelWithUnassignedResourceVariable) {
+  FakeModel fake_model = BuildModelWithResourceVariable(
+      /*primary_elements=*/kModelInputElements, /*init_byte_value=*/0,
+      /*extra_variable=*/
+      ExtraPrimaryResourceVariable::kUnassignedByInitSubgraph);
   ASSERT_NE(fake_model.model, nullptr);
 
   base::expected<std::unique_ptr<TfLiteVoiceIsolation>,

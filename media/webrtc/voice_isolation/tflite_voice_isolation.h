@@ -6,7 +6,6 @@
 #define MEDIA_WEBRTC_VOICE_ISOLATION_TFLITE_VOICE_ISOLATION_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -75,10 +74,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   // - Invoke() succeeds on an all-zero input (kWarmupFailed). The output for
   //   that input, starting from the initial state, is subtracted from every
   //   frame as a bias.
-  // - Recurrent state is kept in resource variables initialized by CALL_ONCE
-  //   ops of the primary subgraph, or in `is_variable` tensors, which are reset
-  //   to zero. Each resource variable keeps the byte size of its initial value,
-  //   and every `is_variable` tensor is in a subgraph that runs
+  // - Recurrent state is kept in resource variables initialized to zero by
+  //   CALL_ONCE ops of the primary subgraph, or in `is_variable` tensors, both
+  //   of which are reset to zero. Each resource variable keeps its initial
+  //   byte size, and every `is_variable` tensor is in a subgraph that runs
   //   (kIncompatibleModel).
   // - Zero lookahead (assumed, not checked): AlgorithmicDelay() is 0.
   static base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
@@ -86,32 +85,27 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   MaybeCreate(const tflite::FlatBufferModel* model);
 
  private:
-  // Initial value of a TFLite resource variable, where stateful models keep
-  // their recurrent state.
-  struct ResourceVariableSnapshot {
-    ResourceVariableSnapshot(tflite::resource::ResourceVariable* variable,
-                             size_t bytes);
-    ResourceVariableSnapshot(ResourceVariableSnapshot&&) noexcept;
-    ResourceVariableSnapshot& operator=(ResourceVariableSnapshot&&) noexcept;
-    ~ResourceVariableSnapshot();
-
+  // A TFLite resource variable, where stateful models keep their recurrent
+  // state, and its expected byte size.
+  struct ResourceVariableState {
     raw_ptr<tflite::resource::ResourceVariable> variable;
-    std::vector<uint8_t> initial_value;
+    size_t bytes = 0;
   };
 
   TfLiteVoiceIsolation(std::unique_ptr<tflite::Interpreter> interpreter,
                        std::vector<float> bias);
 
   // Runs the model initialization subgraphs (the ones referenced by CallOnce
-  // ops) and stores the initial value of every resource variable. Returns
-  // false if the model has incompatible resource variables (e.g. empty or
-  // whose byte size changes between initialization and `Invoke()`). Allocates
-  // memory, so it must not run on the real-time audio thread.
-  [[nodiscard]] bool CaptureInitialState();
+  // ops), verifies that they zero-initialize every resource variable, and
+  // records the resource variables for `ResetState()`. Returns false if the
+  // model has incompatible resource variables (e.g. uninitialized or non-zero
+  // initial values, empty tensors, or a byte size that changes between
+  // initialization and `Invoke()`).
+  [[nodiscard]] bool InitResourceVariables();
 
-  // Restores the model state captured by `CaptureInitialState()`. Returns
-  // false if it cannot. Does not allocate memory, so it is safe to call on the
-  // real-time audio thread.
+  // Resets all model resource variables and `is_variable` tensors to zero in
+  // place. Returns false if it cannot. Does not allocate memory, so it is safe
+  // to call on the real-time audio thread.
   [[nodiscard]] bool ResetState();
 
   std::unique_ptr<tflite::Interpreter> interpreter_;
@@ -125,7 +119,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   base::AlignedHeapArray<float> denoising_only_dfts_;
   SpeechMaskEstimator speech_mask_estimator_;
   // Declared after `interpreter_`, which owns the resource variables.
-  std::vector<ResourceVariableSnapshot> initial_state_;
+  std::vector<ResourceVariableState> resource_variables_;
 };
 }  // namespace media
 
