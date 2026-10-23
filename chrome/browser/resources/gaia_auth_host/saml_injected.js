@@ -214,12 +214,11 @@ channel.connect('injected');
 channel.sendWithCallback(
     {name: 'getSAMLFlag'}, onGetSAMLFlag.bind(undefined, channel));
 
-// Only expose the SAML credentials passing API and send scroll information
-// from the topmost frame.
-if (window.top === window.self) {
-  const apiCallForwarder = new APICallForwarder();
-  apiCallForwarder.init(channel);
+const apiCallForwarder = new APICallForwarder();
+apiCallForwarder.init(channel);
 
+// Send scroll information from the topmost frame.
+if (window.top === window.self) {
   const scrollHelper = WebviewScrollShadowsHelperConstructor();
   scrollHelper.init(channel);
 }

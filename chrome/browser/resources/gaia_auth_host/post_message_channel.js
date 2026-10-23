@@ -76,8 +76,6 @@ class PostMessagePort {
     this.name = name;
     this.targetWindow = null;
     this.targetOrigin = '';
-    this.isProxy = false;
-    this.isSubframe = false;
     this.deferredMessages_ = [];
     this.onMessage = new EventTarget();
   }
@@ -167,7 +165,7 @@ class ChannelManager {
    * @return {number}
    */
   createChannelId_() {
-    return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    return (new Date()).getTime();
   }
 
   /**
@@ -219,7 +217,6 @@ class ChannelManager {
   createProxyPort(channelId, channelName, targetWindow, targetOrigin) {
     const port =
         this.createPort(channelId, channelName, targetWindow, targetOrigin);
-    port.isProxy = true;
     port.onMessage.addListener(this.getProxyPortForwardHandler_(port));
     return port;
   }
@@ -282,32 +279,19 @@ class ChannelManager {
           (this.upperWindow && e.source === this.upperWindow)) {
         this.dispatchMessageToPort_(e);
       } else {
-        const port = this.channels_[e.data.channelId];
-        if (!port || !port.isProxy || port.targetWindow !== e.source) {
-          return;
-        }
         this.postToUpperWindow(e.data);
       }
     } else if (e.data.type === CHANNEL_CONNECT_MESSAGE) {
       const channelId = e.data.channelId;
       const channelName = e.data.channelName;
-      if (channelId in this.channels_) {
-        return;
-      }
 
       if (this.isDaemon) {
         const port =
             this.createPort(channelId, channelName, e.source, e.origin);
-        port.isSubframe = Boolean(e.data.isSubframe);
         this.onConnect.dispatch(port);
       } else {
         this.createProxyPort(channelId, channelName, e.source, e.origin);
-        this.postToUpperWindow({
-          type: CHANNEL_CONNECT_MESSAGE,
-          channelId: channelId,
-          channelName: channelName,
-          isSubframe: true,
-        });
+        this.postToUpperWindow(e.data);
       }
     } else if (e.data.type === CHANNEL_INIT_MESSAGE) {
       if (ALLOWED_ORIGINS.indexOf(e.origin) === -1) {
