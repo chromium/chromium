@@ -62,6 +62,8 @@
 #import "net/cert/x509_util_apple.h"
 #import "net/ssl/ssl_info.h"
 #import "net/test/cert_test_util.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/test_data_directory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -2410,10 +2412,14 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
 // Test fixture for window.open tests.
 class WindowOpenByDomTest : public WebTestWithWebController {
  protected:
-  WindowOpenByDomTest() : opener_url_("http://test") {}
-
   void SetUp() override {
     WebTestWithWebController::SetUp();
+    net::test_server::RegisterDefaultHandlers(&server_);
+    ASSERT_TRUE(server_.Start());
+    // The opener URL must be the origin root: WKWebView reports the opener of
+    // a popup through the origin-only Referer header, which is what the popup
+    // tests compare against.
+    opener_url_ = server_.GetURL("/");
     web_state()->SetDelegate(&delegate_);
     LoadHtml(@"<html><body></body></html>", opener_url_);
   }
@@ -2430,7 +2436,8 @@ class WindowOpenByDomTest : public WebTestWithWebController {
   void CloseWindow() { ExecuteJavaScript(@"w.close()"); }
 
   // URL of a page which opens child windows.
-  const GURL opener_url_;
+  GURL opener_url_;
+  net::EmbeddedTestServer server_;
   FakeWebStateDelegate delegate_;
 };
 
@@ -2497,21 +2504,18 @@ TEST_F(WindowOpenByDomTest, CloseWindow) {
 }
 
 // Tests that calling document.write() on a newly-opened window doesn't crash.
-// TODO(crbug.com/433776063): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_DocumentWrite DocumentWrite
-#else
-#define MAYBE_DocumentWrite DISABLED_DocumentWrite
-#endif
-TEST_F(WindowOpenByDomTest, MAYBE_DocumentWrite) {
+TEST_F(WindowOpenByDomTest, DocumentWrite) {
   delegate_.allow_popups(opener_url_);
 
-  NSString* const kDocumentWriteScript =
-      @"var w = window.open();"
-      @"w.document.write('<p>Hello</p>');"
-      @"w.document.write(\"<meta http-equiv='refresh' content='0; url=\""
-      @"+ location.toString() + \"'>\");"
-      @"w.document.close();";
+  // Reload the child window with a page served by the test server so the
+  // meta-refresh navigation completes and replaces the written content.
+  NSString* const kDocumentWriteScript = [NSString
+      stringWithFormat:@"var w = window.open();"
+                        "w.document.write('<p>Hello</p>');"
+                        "w.document.write(\"<meta http-equiv='refresh' "
+                        "content='0; url=%s'>\");"
+                        "w.document.close();",
+                       server_.GetURL("/echo").spec().c_str()];
 
   ExecuteJavaScript(kDocumentWriteScript);
   EXPECT_EQ(1U, delegate_.child_windows().size());
