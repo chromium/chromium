@@ -28,8 +28,6 @@ class ExclusiveAccessManagerAndroid {
       const jni_zero::JavaRef<jobject>& j_activity_tab_provider);
   ~ExclusiveAccessManagerAndroid();
 
-  void Destroy(JNIEnv* env);
-
   bool CanEnterFullscreenModeForTab(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jrender_frame_host_android);
