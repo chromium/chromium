@@ -174,11 +174,8 @@ base::FilePath TracingControllerAndroid::GenerateTracingFilePath(
     std::string_view basename) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jfilename =
-      Java_TracingControllerAndroidImpl_generateTracingFilePath(
-          env, base::android::ConvertUTF8ToJavaString(env, basename));
   return base::FilePath(
-      base::android::ConvertJavaStringToUTF8(env, jfilename.obj()));
+      Java_TracingControllerAndroidImpl_generateTracingFilePath(env, basename));
 }
 
 void TracingControllerAndroid::OnTracingStopped(

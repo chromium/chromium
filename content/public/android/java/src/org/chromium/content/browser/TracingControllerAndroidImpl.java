@@ -16,6 +16,7 @@ import android.util.Pair;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -124,10 +125,12 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
 
     /**
      * Generates a filepath to be used for tracing in the Downloads directory.
+     *
      * @param basename The basename to be used, if empty a unique one will be generated.
      */
     @CalledByNative
-    private static @Nullable String generateTracingFilePath(String basename) {
+    private static @Nullable @JniType("std::string") String generateTracingFilePath(
+            @JniType("std::string_view") String basename) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             String state = Environment.getExternalStorageState();
             if (!Environment.MEDIA_MOUNTED.equals(state)) {
