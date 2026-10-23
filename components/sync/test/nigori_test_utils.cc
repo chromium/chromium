@@ -246,7 +246,9 @@ std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
       decrypted_keys.key(),
       [&key_bag](sync_pb::NigoriKey key) { key_bag.AddKeyFromProto(key); });
 
-  cryptographer->EmplaceKeysFrom(key_bag);
+  EXPECT_TRUE(cryptographer->TryFollowRemoteKeyRotation(
+      key_bag, nigori.encryption_keybag().key_name(),
+      /*enforce_key_continuity=*/true));
   return cryptographer;
 }
 

@@ -123,6 +123,21 @@ void CryptographerImpl::EmplaceKeysFrom(const NigoriKeyBag& key_bag) {
   key_bag_.AddAllUnknownKeysFrom(key_bag);
 }
 
+bool CryptographerImpl::TryFollowRemoteKeyRotation(
+    const NigoriKeyBag& new_key_bag,
+    const std::string& new_default_key_name,
+    bool enforce_key_continuity) {
+  CHECK(!new_default_key_name.empty());
+  CHECK(new_key_bag.HasKey(new_default_key_name));
+  if (enforce_key_continuity && !default_encryption_key_name_.empty() &&
+      !new_key_bag.HasKey(default_encryption_key_name_)) {
+    return false;
+  }
+  EmplaceKeysFrom(new_key_bag);
+  SelectDefaultEncryptionKey(new_default_key_name);
+  return true;
+}
+
 void CryptographerImpl::ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys) {
   cross_user_sharing_keys_ = std::move(keys);
 }
@@ -142,11 +157,6 @@ void CryptographerImpl::EmplaceAllNigoriKeysFrom(
 
 void CryptographerImpl::InvalidateDefaultEncryptionKey() {
   default_encryption_key_invalidated_ = true;
-}
-
-const std::string& CryptographerImpl::GetDefaultKeyNamePossiblyInvalidated()
-    const {
-  return default_encryption_key_name_;
 }
 
 void CryptographerImpl::ClearAllKeys() {

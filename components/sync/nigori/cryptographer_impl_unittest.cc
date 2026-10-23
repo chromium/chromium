@@ -264,6 +264,58 @@ TEST(CryptographerImplTest, ShouldEmplaceKeysFrom) {
   EXPECT_TRUE(cryptographer->HasKey(key_name_2));
 }
 
+TEST(CryptographerImplTest, ShouldFollowRemoteKeyRotationWithKeyContinuity) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  const std::string key_name_1 = cryptographer->EmplaceKey(
+      "password1", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(key_name_1);
+  cryptographer->InvalidateDefaultEncryptionKey();
+  ASSERT_FALSE(cryptographer->CanEncrypt());
+
+  NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
+  key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
+  const std::string key_name_2 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password2");
+
+  EXPECT_TRUE(cryptographer->TryFollowRemoteKeyRotation(
+      key_bag, key_name_2, /*enforce_key_continuity=*/true));
+
+  EXPECT_TRUE(cryptographer->HasKey(key_name_1));
+  EXPECT_TRUE(cryptographer->HasKey(key_name_2));
+  EXPECT_TRUE(cryptographer->CanEncrypt());
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name_2));
+}
+
+TEST(CryptographerImplTest,
+     ShouldRejectRemoteKeyRotationWithoutKeyContinuityWhenEnforced) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  const std::string key_name_1 = cryptographer->EmplaceKey(
+      "password1", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(key_name_1);
+  cryptographer->InvalidateDefaultEncryptionKey();
+  ASSERT_FALSE(cryptographer->CanEncrypt());
+
+  // Keybag is missing `key_name_1`.
+  NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
+  const std::string key_name_2 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password2");
+
+  EXPECT_FALSE(cryptographer->TryFollowRemoteKeyRotation(
+      key_bag, key_name_2, /*enforce_key_continuity=*/true));
+  EXPECT_FALSE(cryptographer->HasKey(key_name_2));
+  EXPECT_FALSE(cryptographer->CanEncrypt());
+
+  // Without key continuity enforcement, the rotation succeeds.
+  EXPECT_TRUE(cryptographer->TryFollowRemoteKeyRotation(
+      key_bag, key_name_2, /*enforce_key_continuity=*/false));
+  EXPECT_TRUE(cryptographer->HasKey(key_name_1));
+  EXPECT_TRUE(cryptographer->HasKey(key_name_2));
+  EXPECT_TRUE(cryptographer->CanEncrypt());
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name_2));
+}
+
 TEST(CryptographerImplTest, ShouldEmplaceExistingKeyPair) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
@@ -580,8 +632,6 @@ TEST(CryptographerImplTest, ShouldDisableAndEnableDefaultKey) {
   cryptographer->InvalidateDefaultEncryptionKey();
   EXPECT_FALSE(cryptographer->CanEncrypt());
   EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(""));
-  EXPECT_THAT(cryptographer->GetDefaultKeyNamePossiblyInvalidated(),
-              Eq(key_name));
   // Keys should still exist (we can still decrypt).
   EXPECT_TRUE(cryptographer->HasKey(key_name));
 
@@ -639,7 +689,7 @@ TEST(CryptographerImplTest, ShouldRestoreDisabledDefaultKey) {
   ASSERT_THAT(restored, NotNull());
   EXPECT_FALSE(restored->CanEncrypt());
   EXPECT_THAT(restored->GetDefaultEncryptionKeyName(), Eq(""));
-  EXPECT_THAT(restored->GetDefaultKeyNamePossiblyInvalidated(), Eq(key_name));
+  EXPECT_THAT(restored->ToLocalProto().default_key_name(), Eq(key_name));
   EXPECT_TRUE(restored->HasKey(key_name));
 }
 

@@ -840,13 +840,10 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
                       ModelError::Type::kNigoriMissingNewDefaultKeyInKeybag);
   }
 
-  // TODO(crbug.com/521061749): Move remote key rotation and key continuity
-  // enforcement into CryptographerImpl.
-  const std::string& last_default_key_name =
-      state_.cryptographer->GetDefaultKeyNamePossiblyInvalidated();
-  if (ShouldEnforceKeyContinuity(state_.passphrase_type) &&
-      !last_default_key_name.empty() &&
-      !new_key_bag.HasKey(last_default_key_name)) {
+  if (!state_.cryptographer->TryFollowRemoteKeyRotation(
+          new_key_bag, new_default_key_name,
+          /*enforce_key_continuity=*/
+          ShouldEnforceKeyContinuity(state_.passphrase_type))) {
     // Protocol violation.
     return ModelError(FROM_HERE,
                       ModelError::Type::kNigoriMissingLastDefaultKeyInKeybag);
@@ -880,8 +877,6 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
         state_.cross_user_sharing_key_pair_version.value());
   }
 
-  state_.cryptographer->EmplaceKeysFrom(new_key_bag);
-  state_.cryptographer->SelectDefaultEncryptionKey(new_default_key_name);
   state_.pending_keys.reset();
   state_.pending_keystore_decryptor_token.reset();
 

@@ -75,6 +75,21 @@ class CryptographerImpl : public Cryptographer {
   // Does NOT set or change the default encryption key.
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
+  // Updates the cryptographer with keys from a remotely received `new_key_bag`
+  // and selects `new_default_key_name` as the new default encryption key (which
+  // causes `CanEncrypt()` to return true and re-enables the default key if it
+  // was previously invalidated). `new_default_key_name` must not be empty and
+  // must be present in `new_key_bag`.
+  //
+  // If `enforce_key_continuity` is true and a previous default encryption key
+  // existed (even if invalidated), `new_key_bag` must also contain that
+  // previous default key; otherwise this method leaves `*this` unchanged and
+  // returns false.
+  [[nodiscard]] bool TryFollowRemoteKeyRotation(
+      const NigoriKeyBag& new_key_bag,
+      const std::string& new_default_key_name,
+      bool enforce_key_continuity);
+
   // Drops any pre-existing key pairs and adds all keys from `keys`.
   void ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys);
 
@@ -94,12 +109,6 @@ class CryptographerImpl : public Cryptographer {
   // Invalidates the default encryption key, which causes CanEncrypt() to return
   // false. The default key name is still kept in memory.
   void InvalidateDefaultEncryptionKey();
-
-  // Returns the default encryption key name even if it was invalidated via
-  // InvalidateDefaultEncryptionKey().
-  // TODO(crbug.com/521061749): Remove once remote key rotation and key
-  // continuity enforcement are handled directly by CryptographerImpl.
-  const std::string& GetDefaultKeyNamePossiblyInvalidated() const;
 
   // Reverts the cryptographer to an empty one, i.e. what would be returned by
   // CreateEmpty(). The default key is also cleared.
