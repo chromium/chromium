@@ -111,6 +111,11 @@ class ContainerSpec:
   output_directory: str
 
 
+# section_name -> full_name -> (full_name, template_name, name, added_flags).
+# Many symbols share names, both within and across .size files.
+_NORMALIZED_NAMES_CACHE = collections.defaultdict(dict)
+
+
 def _NormalizeNames(raw_symbols):
   """Ensures that all names are formatted in a useful way.
 
@@ -123,6 +128,19 @@ def _NormalizeNames(raw_symbols):
   for symbol in raw_symbols:
     full_name = symbol.full_name
     section_name = symbol.section_name
+    cache = _NORMALIZED_NAMES_CACHE[section_name]
+    cached = cache.get(full_name)
+    if cached:
+      symbol.full_name, symbol.template_name, symbol.name, added_flags = cached
+      symbol.flags |= added_flags
+      # Skipping |found_prefixes| is fine since it is used only for debug
+      # logging (the prefix was logged when first seen, possibly by a prior
+      # call).
+      continue
+    cache_key = full_name
+    # Clear flags so that the ones added below can be cached.
+    orig_flags = symbol.flags
+    symbol.flags = 0
 
     # See comment in _CalculatePadding() about when this can happen. Don't
     # process names for non-native sections.
@@ -213,6 +231,13 @@ def _NormalizeNames(raw_symbols):
     # Allow using "is" to compare names (and should help with RAM). This applies
     # to all symbols.
     function_signature.InternSameNames(symbol)
+    cache[cache_key] = (
+      symbol.full_name,
+      symbol.template_name,
+      symbol.name,
+      symbol.flags,
+    )
+    symbol.flags |= orig_flags
 
   logging.debug('Found name prefixes of: %r', found_prefixes)
 
