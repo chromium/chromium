@@ -22,6 +22,7 @@ class UIThreadSearchTermsData : public SearchTermsData {
 
   // SearchTermsData implementation.
   std::string GoogleBaseURLValue() const override;
+  std::string GoogleBaseSuggestURLValue() const override;
   std::string GetApplicationLocale() const override;
   std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;

@@ -84,6 +84,8 @@ void TemplateURLTest::CheckSuggestBaseURL(
     const std::string& base_suggest_url) const {
   TestingSearchTermsData search_terms_data(base_url);
   EXPECT_EQ(base_suggest_url, search_terms_data.GoogleBaseSuggestURLValue());
+  EXPECT_EQ(base_suggest_url, SearchTermsData::MakeSnapshot(&search_terms_data)
+                                  ->GoogleBaseSuggestURLValue());
 }
 
 // static

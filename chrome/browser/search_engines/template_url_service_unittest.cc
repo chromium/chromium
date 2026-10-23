@@ -25,12 +25,15 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -2806,6 +2809,46 @@ TEST_F(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
        {".NonSubstitutingSiteSearchSetByUser", 1},
        {".FeaturedAllowUserOverrideSiteSearchSetByPolicy", 1},
        {".NonFeaturedAllowUserOverrideSiteSearchSetByPolicy", 1}});
+}
+
+TEST_F(TemplateURLServiceTest, GoogleBaseSuggestURLCommandLineOverride) {
+  struct Data {
+    const char* const switch_value;
+    const char* const base_suggest_url;
+  };
+  static const auto kTestCases = std::to_array<Data>({
+      {
+          "http://foo.com/",
+          "http://foo.com/complete/",
+      },
+      {
+          "http://www.foo.com/",
+          "http://www.foo.com/complete/",
+      },
+      {
+          "https://www.foo.com/",
+          "https://www.foo.com/complete/",
+      },
+      {
+          "http://foo.com/intl/xx/",
+          "http://foo.com/complete/",
+      },
+  });
+
+  UIThreadSearchTermsData search_terms_data;
+  EXPECT_EQ("https://www.google.com/complete/",
+            search_terms_data.GoogleBaseSuggestURLValue());
+
+  for (const Data& data : kTestCases) {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kGoogleBaseSuggestionURL, data.switch_value);
+    EXPECT_EQ(data.base_suggest_url,
+              search_terms_data.GoogleBaseSuggestURLValue());
+    EXPECT_EQ(data.base_suggest_url,
+              SearchTermsData::MakeSnapshot(&search_terms_data)
+                  ->GoogleBaseSuggestURLValue());
+  }
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

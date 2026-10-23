@@ -10,6 +10,8 @@
 
 #include "base/compiler_specific.h"
 
+class GURL;
+
 // All data needed by TemplateURLRef::ReplaceSearchTerms which typically may
 // only be accessed on the UI thread. This class provides a way to get at data
 // that is needed to expand the search terms in a TemplateURL. For example, it
@@ -53,7 +55,7 @@ class SearchTermsData {
 
   // Returns the value for the GOOGLE_BASE_SUGGEST_URL term.  This
   // implementation simply returns the default value.
-  std::string GoogleBaseSuggestURLValue() const;
+  virtual std::string GoogleBaseSuggestURLValue() const;
 
   // Returns the locale used by the application.  This implementation returns
   // "en" and thus should be overridden where the result is actually meaningful.
@@ -82,6 +84,11 @@ class SearchTermsData {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   virtual size_t EstimateMemoryUsage() const;
+
+ protected:
+  // Returns the suggest URL corresponding to `base_url` by replacing its path
+  // with "/complete/" and clearing the query and ref. `base_url` must be valid.
+  static std::string ConvertBaseURLToSuggestURL(const GURL& base_url);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_

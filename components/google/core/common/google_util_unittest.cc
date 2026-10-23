@@ -432,6 +432,59 @@ TEST(GoogleUtilTest, GoogleBaseURLFixup) {
             google_util::CommandLineGoogleBaseURL().spec());
 }
 
+TEST(GoogleUtilTest, GoogleBaseSuggestionURLNotSpecified) {
+  // By default, none of the IsGoogleXXX functions should return true for a
+  // "foo.com" URL.
+  EXPECT_FALSE(google_util::CommandLineGoogleBaseSuggestionURL().is_valid());
+  EXPECT_FALSE(
+      IsGoogleHostname("www.foo.com", google_util::DISALLOW_SUBDOMAIN));
+  EXPECT_FALSE(IsGoogleDomainUrl(GURL("http://www.foo.com/xyz"),
+                                 google_util::DISALLOW_SUBDOMAIN,
+                                 google_util::DISALLOW_NON_STANDARD_PORTS));
+  EXPECT_FALSE(IsGoogleDomainUrl(GURL("https://www.foo.com/"),
+                                 google_util::DISALLOW_SUBDOMAIN,
+                                 google_util::DISALLOW_NON_STANDARD_PORTS));
+  EXPECT_FALSE(IsHomePage("https://www.foo.com/webhp"));
+  EXPECT_FALSE(IsSearch("http://www.foo.com/search?q=a"));
+
+  // Override the Google base suggestion URL on the command line.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kGoogleBaseSuggestionURL, "http://www.foo.com/");
+
+  // The various IsGoogleXXX functions should respect the command-line flag.
+  EXPECT_TRUE(IsGoogleHostname("www.foo.com", google_util::DISALLOW_SUBDOMAIN));
+  EXPECT_FALSE(IsGoogleHostname("foo.com", google_util::ALLOW_SUBDOMAIN));
+  EXPECT_TRUE(IsGoogleDomainUrl(GURL("http://www.foo.com/xyz"),
+                                google_util::DISALLOW_SUBDOMAIN,
+                                google_util::DISALLOW_NON_STANDARD_PORTS));
+  EXPECT_TRUE(IsGoogleDomainUrl(GURL("https://www.foo.com/"),
+                                google_util::DISALLOW_SUBDOMAIN,
+                                google_util::DISALLOW_NON_STANDARD_PORTS));
+  EXPECT_TRUE(IsHomePage("https://www.foo.com/webhp"));
+  EXPECT_FALSE(IsHomePage("http://www.foo.com/xyz"));
+  EXPECT_TRUE(IsSearch("http://www.foo.com/search?q=a"));
+}
+
+TEST(GoogleUtilTest, GoogleBaseSuggestionURLDisallowQuery) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kGoogleBaseSuggestionURL, "http://www.foo.com/?q=");
+  EXPECT_FALSE(google_util::CommandLineGoogleBaseSuggestionURL().is_valid());
+}
+
+TEST(GoogleUtilTest, GoogleBaseSuggestionURLDisallowRef) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kGoogleBaseSuggestionURL, "http://www.foo.com/#q=");
+  EXPECT_FALSE(google_util::CommandLineGoogleBaseSuggestionURL().is_valid());
+}
+
+TEST(GoogleUtilTest, GoogleBaseSuggestionURLFixup) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kGoogleBaseSuggestionURL, "www.foo.com");
+  ASSERT_TRUE(google_util::CommandLineGoogleBaseSuggestionURL().is_valid());
+  EXPECT_EQ("http://www.foo.com/",
+            google_util::CommandLineGoogleBaseSuggestionURL().spec());
+}
+
 TEST(GoogleUtilTest, YoutubeDomains) {
   EXPECT_TRUE(IsYoutubeDomainUrl(GURL("http://www.youtube.com"),
                                  google_util::ALLOW_SUBDOMAIN,

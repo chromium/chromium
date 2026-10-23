@@ -40,6 +40,17 @@ std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
   return SearchTermsData::GoogleBaseURLValue();
 }
 
+std::string UIThreadSearchTermsData::GoogleBaseSuggestURLValue() const {
+  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+         BrowserThread::CurrentlyOn(BrowserThread::UI));
+  GURL base_url(google_util::CommandLineGoogleBaseSuggestionURL());
+  if (base_url.is_valid()) {
+    return ConvertBaseURLToSuggestURL(base_url);
+  }
+
+  return SearchTermsData::GoogleBaseSuggestURLValue();
+}
+
 std::string UIThreadSearchTermsData::GetApplicationLocale() const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));

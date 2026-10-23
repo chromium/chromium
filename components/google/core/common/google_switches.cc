@@ -6,6 +6,10 @@
 
 namespace switches {
 
+// Specifies an alternate suggestion URL to use for speaking to Google. Useful
+// for testing.
+const char kGoogleBaseSuggestionURL[] = "google-base-suggestion-url";
+
 // Specifies an alternate URL to use for speaking to Google. Useful for testing.
 const char kGoogleBaseURL[] = "google-base-url";
 

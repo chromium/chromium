@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -111,6 +112,11 @@ bool IsCanonicalHostGoogleHostname(std::string_view canonical_host,
   if (base_url.is_valid() && (canonical_host == base_url.host())) {
     return true;
   }
+  const GURL& base_suggestion_url(CommandLineGoogleBaseSuggestionURL());
+  if (base_suggestion_url.is_valid() &&
+      (canonical_host == base_suggestion_url.host())) {
+    return true;
+  }
 
   static constexpr auto google_tlds =
       base::MakeFixedFlatSet<std::string_view>({GOOGLE_TLD_LIST});
@@ -144,6 +150,39 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
 
   return google_subdomains.contains(host);
 }
+
+// Reads and caches a URL from a CommandLine switch, re-parsing if the switch
+// value changes (e.g. in unit tests).
+//
+// Use as a static base::NoDestructor<CommandLineURLFetcher>.
+class CommandLineURLFetcher {
+ public:
+  explicit CommandLineURLFetcher(std::string_view switch_name)
+      : switch_name_(switch_name) {}
+
+  // Return the GURL from command-line. As unit tests may change the
+  // command-line after the first call to this method, cache the command-line
+  // value and update the GURL if it changed.
+  const GURL& GetFromCommandLine(base::CommandLine* command_line) {
+    std::string switch_value =
+        command_line->GetSwitchValueASCII(switch_name_);
+    if (cached_switch_value_ != switch_value) {
+      cached_switch_value_ = std::move(switch_value);
+      cached_url_value_ = url_formatter::FixupURL(cached_switch_value_);
+      if (!cached_url_value_.is_valid() || cached_url_value_.has_query() ||
+          cached_url_value_.has_ref()) {
+        cached_url_value_ = GURL();
+      }
+    }
+
+    return cached_url_value_;
+  }
+
+ private:
+  const std::string_view switch_name_;
+  std::string cached_switch_value_;
+  GURL cached_url_value_;
+};
 
 }  // namespace
 
@@ -213,22 +252,15 @@ GURL GetGoogleSearchURL(const GURL& google_homepage_url) {
 }
 
 const GURL& CommandLineGoogleBaseURL() {
-  // Unit tests may add command-line flags after the first call to this
-  // function, so we don't simply initialize a static |base_url| directly and
-  // then unconditionally return it.
-  static base::NoDestructor<std::string> switch_value;
-  static base::NoDestructor<GURL> base_url;
-  std::string current_switch_value(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kGoogleBaseURL));
-  if (current_switch_value != *switch_value) {
-    *switch_value = current_switch_value;
-    *base_url = url_formatter::FixupURL(*switch_value);
-    if (!base_url->is_valid() || base_url->has_query() || base_url->has_ref()) {
-      *base_url = GURL();
-    }
-  }
-  return *base_url;
+  static base::NoDestructor<CommandLineURLFetcher> kFetcher(
+      switches::kGoogleBaseURL);
+  return kFetcher->GetFromCommandLine(base::CommandLine::ForCurrentProcess());
+}
+
+const GURL& CommandLineGoogleBaseSuggestionURL() {
+  static base::NoDestructor<CommandLineURLFetcher> kFetcher(
+      switches::kGoogleBaseSuggestionURL);
+  return kFetcher->GetFromCommandLine(base::CommandLine::ForCurrentProcess());
 }
 
 bool StartsWithCommandLineGoogleBaseURL(const GURL& url) {

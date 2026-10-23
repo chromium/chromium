@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/search_engines/search_terms_data.h"
+
 #include <memory>
 
 #include "base/check.h"
@@ -31,6 +32,7 @@ class SearchTermsDataSnapshot : public SearchTermsData {
   SearchTermsDataSnapshot& operator=(const SearchTermsDataSnapshot&) = delete;
 
   std::string GoogleBaseURLValue() const override;
+  std::string GoogleBaseSuggestURLValue() const override;
   std::string GetApplicationLocale() const override;
   std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
@@ -42,6 +44,7 @@ class SearchTermsDataSnapshot : public SearchTermsData {
 
  private:
   std::string google_base_url_value_;
+  std::string google_base_suggest_url_value_;
   std::string application_locale_;
   std::u16string rlz_parameter_value_;
   std::string search_client_;
@@ -52,6 +55,8 @@ SearchTermsDataSnapshot::SearchTermsDataSnapshot(
     const SearchTermsData* search_terms_data) {
   if (search_terms_data) {
     google_base_url_value_ = search_terms_data->GoogleBaseURLValue();
+    google_base_suggest_url_value_ =
+        search_terms_data->GoogleBaseSuggestURLValue();
     application_locale_ = search_terms_data->GetApplicationLocale();
     rlz_parameter_value_ = search_terms_data->GetRlzParameterValue(false);
     search_client_ = search_terms_data->GetSearchClient();
@@ -63,6 +68,10 @@ SearchTermsDataSnapshot::~SearchTermsDataSnapshot() = default;
 
 std::string SearchTermsDataSnapshot::GoogleBaseURLValue() const {
   return google_base_url_value_;
+}
+
+std::string SearchTermsDataSnapshot::GoogleBaseSuggestURLValue() const {
+  return google_base_suggest_url_value_;
 }
 
 std::string SearchTermsDataSnapshot::GetApplicationLocale() const {
@@ -86,6 +95,7 @@ size_t SearchTermsDataSnapshot::EstimateMemoryUsage() const {
   size_t res = 0;
 
   res += base::trace_event::EstimateMemoryUsage(google_base_url_value_);
+  res += base::trace_event::EstimateMemoryUsage(google_base_suggest_url_value_);
   res += base::trace_event::EstimateMemoryUsage(application_locale_);
   res += base::trace_event::EstimateMemoryUsage(rlz_parameter_value_);
   res += base::trace_event::EstimateMemoryUsage(search_client_);
@@ -125,6 +135,11 @@ std::string SearchTermsData::GoogleBaseSearchByImageURLValue() const {
 std::string SearchTermsData::GoogleBaseSuggestURLValue() const {
   // Start with the Google base URL.
   const GURL base_url(GoogleBaseURLValue());
+  return ConvertBaseURLToSuggestURL(base_url);
+}
+
+// static
+std::string SearchTermsData::ConvertBaseURLToSuggestURL(const GURL& base_url) {
   DCHECK(base_url.is_valid());
 
   GURL::Replacements repl;
