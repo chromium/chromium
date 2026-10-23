@@ -2487,6 +2487,76 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIn('Version: 37.0\nCPEPrefix: cpe:/a:google:protobuf:37.0',
                       readme_text)
 
+    def testStartRollRefusesWhenWorkingTreeHasUncommittedChanges(self):
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'dirty edit\n'})
+
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Working tree has uncommitted changes'):
+            roll_protobuf.StartRoll(
+                to_revision='v37.0',
+                protobuf_directory=self.fixture.protobuf_directory,
+                upstream_repository_path=self.fixture.upstream_directory,
+            )
+
+        self.assertIsNone(
+            roll_protobuf.LoadRollState(self.fixture.protobuf_directory))
+
+    def testStartRollCommitsCleanAndEmptyPatchesAndStopsAtFirstConflict(self):
+        state = roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+
+        recent_subjects = _RunGitCommand(
+            self.repository_root, ['log', '-3', '--format=%s']).splitlines()
+        conflicted_text = pathlib.Path(
+            self.fixture.protobuf_directory,
+            *_PLAN_CONFLICT_PATH.split('/')).read_text(encoding='utf-8')
+
+        self.assertEqual(('conflict', 2), (state.phase, state.current_index))
+        self.assertEqual(
+            [
+                f'Drop patches/{_PLAN_EMPTY_PATCH} (already upstream)',
+                f'Apply patches/{_PLAN_CLEAN_PATCH}',
+                'Import upstream protobuf v37.0 (unmodified)',
+            ],
+            recent_subjects,
+        )
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             _PLAN_EMPTY_PATCH)))
+        self.assertIn('<<<<<<< ', conflicted_text)
+
+    def testStartRollRefreshedPatchReverseAppliesToItsOwnCommit(self):
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _RunGitCommand(self.repository_root, ['add', '-A', '.'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Keep clean/empty patches'])
+
+        state = roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+
+        self.assertEqual('replayed', state.phase)
+        refreshed_patch_path = os.path.join(self.fixture.protobuf_directory,
+                                            'patches', _PLAN_CLEAN_PATCH)
+        _RunGitCommand(self.repository_root, ['checkout', '--quiet', 'HEAD~1'])
+        _RunGitCommand(
+            self.repository_root,
+            [
+                'apply', '--check', '-R', '--directory=third_party/protobuf',
+                refreshed_patch_path
+            ],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

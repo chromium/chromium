@@ -53,6 +53,7 @@ _REQUESTED_REVISION_REF = 'refs/protobuf-roll/requested'
 UPSTREAM_REPOSITORY_URL = 'https://github.com/protocolbuffers/protobuf.git'
 EXIT_CODE_SUCCESS = 0
 EXIT_CODE_ERROR = 1
+EXIT_CODE_CONFLICT = 2
 
 # Top-level files that belong to Chromium rather than upstream. Must be exactly
 # the files README.chromium roll step 2 restores (roll_protobuf_test.py checks).
@@ -1341,6 +1342,124 @@ def ImportUpstreamRelease(protobuf_directory: str,
                    f'Import upstream protobuf {to_revision} (unmodified)')
     return _RunScratchGit(checkout.repository_root, 'rev-parse',
                           'HEAD').stdout.decode().strip()
+
+
+def _RefreshPatchFileFromHeadCommit(checkout: _CheckoutPaths,
+                                    patch_name: str) -> None:
+    """Rewrites patches/<patch_name> from HEAD~1..HEAD and amends HEAD."""
+    relative_option = ([f'--relative={checkout.protobuf_prefix}']
+                       if checkout.protobuf_prefix else [])
+    refreshed_diff = _RunScratchGit(checkout.repository_root, 'diff',
+                                    '--no-renames', '--no-color',
+                                    '--no-ext-diff', '--no-textconv',
+                                    *relative_option, 'HEAD~1', 'HEAD').stdout
+    patch_file_path = os.path.join(checkout.protobuf_directory, 'patches',
+                                   patch_name)
+    pathlib.Path(patch_file_path).write_bytes(refreshed_diff)
+    _RunScratchGit(checkout.repository_root, 'add', '--', patch_file_path)
+    _RunScratchGit(checkout.repository_root, 'commit', '--quiet',
+                   '--no-verify', '--amend', '--no-edit')
+
+
+def _ReplayRemainingPatches(checkout: _CheckoutPaths,
+                            state: RollState) -> RollState:
+    patch_results = list(state.patch_results)
+    expected_head = state.expected_head
+    for index in range(state.current_index, len(state.patches)):
+        chain_patch = state.patches[index]
+        patch_result = ApplyChainPatchThreeWay(
+            checkout.repository_root,
+            chain_patch,
+            directory_prefix=checkout.protobuf_prefix)
+        if patch_result.status is PatchReplayStatus.CLEAN:
+            _RunScratchGit(checkout.repository_root, 'commit', '--quiet',
+                           '--no-verify', '-m',
+                           f'Apply patches/{chain_patch.patch_name}')
+            _RefreshPatchFileFromHeadCommit(checkout, chain_patch.patch_name)
+        elif patch_result.status is PatchReplayStatus.EMPTY:
+            patch_file_path = os.path.join(checkout.protobuf_directory,
+                                           'patches', chain_patch.patch_name)
+            _RunScratchGit(checkout.repository_root, 'rm', '--quiet', '--',
+                           patch_file_path)
+            _RunScratchGit(
+                checkout.repository_root, 'commit', '--quiet', '--no-verify',
+                '-m',
+                f'Drop patches/{chain_patch.patch_name} (already upstream)')
+        elif patch_result.status in (PatchReplayStatus.CONFLICT,
+                                     PatchReplayStatus.MISSING_FILE):
+            patch_results.append(patch_result)
+            conflict_files = tuple(
+                conflicted.path
+                for conflicted in patch_result.conflicted_files) or tuple(
+                    posixpath.join(checkout.protobuf_prefix, path) if checkout.
+                    protobuf_prefix else path
+                    for path in patch_result.missing_files)
+            conflict_state = dataclasses.replace(
+                state,
+                phase='conflict',
+                expected_head=expected_head,
+                current_index=index,
+                conflict_files=conflict_files,
+                patch_results=tuple(patch_results))
+            _SaveRollState(checkout, conflict_state)
+            return conflict_state
+        else:
+            _RunScratchGit(checkout.repository_root, 'reset', '--quiet',
+                           '--hard', 'HEAD')
+            raise RollProtobufError(
+                f'Failed to apply {chain_patch.patch_name}: '
+                f'{patch_result.error_message}')
+        expected_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                                       'HEAD').stdout.decode().strip()
+        patch_results.append(patch_result)
+        state = dataclasses.replace(state,
+                                    expected_head=expected_head,
+                                    current_index=index + 1,
+                                    conflict_files=(),
+                                    patch_results=tuple(patch_results))
+        _SaveRollState(checkout, state)
+    replayed_state = dataclasses.replace(state,
+                                         phase='replayed',
+                                         expected_head=expected_head,
+                                         current_index=len(state.patches),
+                                         conflict_files=(),
+                                         patch_results=tuple(patch_results))
+    _SaveRollState(checkout, replayed_state)
+    return replayed_state
+
+
+def StartRoll(to_revision: str,
+              protobuf_directory: str = _PROTOBUF_DIRECTORY,
+              upstream_repository_path: str | None = None,
+              cache_directory: str | None = None,
+              build_directory: str | None = None,
+              upstream_url: str = UPSTREAM_REPOSITORY_URL) -> RollState:
+    """Imports to_revision into the checkout and replays patches/*.patch.
+
+    Refuses to run if the working tree has uncommitted changes. Prepares
+    GITDIR/protobuf-roll/, commits the unmodified upstream release, and
+    commits one patch at a time until all patches replay or a patch conflicts.
+    """
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    dirty_status = _RunScratchGit(checkout.repository_root, 'status',
+                                  '--porcelain',
+                                  '--ignore-submodules=all').stdout.strip()
+    if dirty_status:
+        raise RollProtobufError(
+            'Working tree has uncommitted changes; commit or stash them '
+            'before running `roll_protobuf.py start`.')
+    upstream_arguments = (upstream_repository_path, cache_directory,
+                          build_directory, upstream_url)
+    state = PrepareRoll(to_revision, checkout.protobuf_directory,
+                        *upstream_arguments)
+    repository_path, _ = EnsureUpstreamCommitCached(state.new_commit,
+                                                    *upstream_arguments)
+    import_commit = ImportUpstreamRelease(checkout.protobuf_directory,
+                                          repository_path, to_revision,
+                                          state.new_commit)
+    state = dataclasses.replace(state, expected_head=import_commit)
+    _SaveRollState(checkout, state)
+    return _ReplayRemainingPatches(checkout, state)
 
 
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
