@@ -86,7 +86,7 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testBasic() {
+    public void testBasic() throws Exception {
         forceUnflaggedLaunchPath();
         PopupOnClickPageStation page =
                 PopupOnClickPageStation.loadInCurrentTab(
@@ -101,6 +101,8 @@ public class PopupMultiwindowPTTest {
                 "The number of tabs in the original window is unexpected",
                 initialTabCount,
                 mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        assertPopupHasOpener(popup);
 
         TransitAsserts.assertFinalDestinations(page, popup);
     }
@@ -141,8 +143,7 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
-    public void testPopupOpensIfInFreeformWindowing() {
+    public void testPopupOpensIfInFreeformWindowing() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
@@ -156,6 +157,14 @@ public class PopupMultiwindowPTTest {
                 "The number of tabs in the original window is unexpected",
                 1,
                 mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        assertPopupHasOpener(popup);
+        assertEquals(
+                "Opener must hold a live handle to the popup",
+                "true",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        page.webContentsElement.get(),
+                        "basicPopupWindow !== null && !basicPopupWindow.closed"));
 
         TransitAsserts.assertFinalDestinations(page, popup);
     }
@@ -205,7 +214,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupOpensWithLaunchBounds() {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -240,7 +248,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupOpensWithLaunchBounds_osWindowSizeLimit() {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -275,7 +282,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     @DisableIf.Build(product_name_includes = "brya", message = "See crbug.com/527558324")
     public void testPopupOpensWithLaunchBounds_osWindowSizeLimit2() {
         assumeHasBrowserRole();
@@ -300,7 +306,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupClosesOnWindowClose() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -323,7 +328,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupFocusesOnWindowFocus() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -348,7 +352,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupMovesOnWindowMoveTo() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -381,7 +384,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupMovesOnWindowMoveBy() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -414,7 +416,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupResizesOnWindowResizeTo() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -458,7 +459,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testNoOpOnWindowResizeTo_osWindowSizeLimit() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -495,7 +495,6 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     @DisableIf.Build(product_name_includes = "brya", message = "See crbug.com/527558324")
     public void testPopupResizesOnWindowResizeBy() throws Exception {
         assumeHasBrowserRole();
@@ -527,6 +526,14 @@ public class PopupMultiwindowPTTest {
 
     private static void forceUnflaggedLaunchPath() {
         PopupCreatorImpl.setSetMovableTaskRequiredForPopupsForTesting(false);
+    }
+
+    private static void assertPopupHasOpener(CctPageStation popup) throws TimeoutException {
+        assertEquals(
+                "Popup must have a window.opener",
+                "true",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        popup.webContentsElement.get(), "window.opener !== null"));
     }
 
     private static void assumeHasBrowserRole() {
