@@ -2,28 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("tab_strip_api") {
-  sources = [ "tab_strip_service_feature.h" ]
-
-  public_deps = [
-    "//components/browser_apis/tab_strip:mojom_experiment",
-    "//components/browser_apis/tab_strip:service",
-    "//ui/base/unowned_user_data",
-  ]
-}
-
-source_set("impl") {
-  sources = [ "tab_strip_service_feature.cc" ]
-
-  deps = [
-    ":tab_strip_api",
-    "//chrome/browser/ui/browser_window",
-    "//components/browser_apis/tab_strip:service",
-    "//components/browser_apis/tab_strip/adapters",
-  ]
-}
-
 if (!is_android) {
+  source_set("tab_strip_api") {
+    sources = [ "tab_strip_service_feature.h" ]
+
+    public_deps = [
+      "//components/browser_apis/tab_strip:mojom_experiment",
+      "//components/browser_apis/tab_strip:service",
+      "//ui/base/unowned_user_data",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [ "tab_strip_service_feature.cc" ]
+
+    deps = [
+      ":tab_strip_api",
+      "//chrome/browser/ui/browser_window",
+      "//components/browser_apis/tab_strip:service",
+      "//components/browser_apis/tab_strip/adapters",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
 

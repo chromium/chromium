@@ -5,29 +5,31 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
-# This is an experimental API and should not be used outside of its approved
-# implementation. There is a visibility rule that ensures any new dependency on
-# this target must be approved.
-# TODO(crbug.com/433569400) Link to doc for more information.
-mojom("mojom_experiment") {
-  sources = [ "tab_strip_experiment_api.mojom" ]
+if (!is_android) {
+  # This is an experimental API and should not be used outside of its approved
+  # implementation. There is a visibility rule that ensures any new dependency
+  # on this target must be approved.
+  # TODO(crbug.com/433569400) Link to doc for more information.
+  mojom("mojom_experiment") {
+    sources = [ "tab_strip_experiment_api.mojom" ]
 
-  deps = [
-    ":mojom",
-    "//ui/gfx/geometry/mojom",
-  ]
+    deps = [
+      ":mojom",
+      "//ui/gfx/geometry/mojom",
+    ]
 
-  webui_module_path = "/"
-  visibility = [
-    "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/tabs/tab_strip_api:impl",
-    "//chrome/browser/ui/tabs/tab_strip_api:impl_header",
-    "//chrome/browser/ui/tabs/tab_strip_api:unit_tests",
-    "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl:browser_tests",
-    "//chrome/browser/ui/webui_browser",
-    "//components/browser_apis/tab_strip:service",
-    "//components/browser_apis/tab_strip:unit_tests",
-  ]
+    webui_module_path = "/"
+    visibility = [
+      "//chrome/browser/ui/tabs/tab_strip_api",
+      "//chrome/browser/ui/tabs/tab_strip_api:impl",
+      "//chrome/browser/ui/tabs/tab_strip_api:impl_header",
+      "//chrome/browser/ui/tabs/tab_strip_api:unit_tests",
+      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl:browser_tests",
+      "//chrome/browser/ui/webui_browser",
+      "//components/browser_apis/tab_strip:service",
+      "//components/browser_apis/tab_strip:unit_tests",
+    ]
+  }
 }
 
 mojom("mojom_ui_controller") {
@@ -154,22 +156,22 @@ source_set("service") {
   public_deps = [ ":mojom" ]
 
   deps = [
-    ":mojom_experiment",
     "adapters",
     "events",
     "observation",
     "types",
     "utilities",
   ]
+
+  if (!is_android) {
+    deps += [ ":mojom_experiment" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "tab_strip_experiment_service_unittest.cc",
-    "tab_strip_service_impl_unittest.cc",
-  ]
+  sources = [ "tab_strip_service_impl_unittest.cc" ]
 
   deps = [
     ":service",
@@ -180,8 +182,12 @@ source_set("unit_tests") {
     "types:unit_tests",
     "utilities:unit_tests",
     "//base/test:test_support",
-    "//components/browser_apis/tab_strip:mojom_experiment",
     "//components/tabs:public",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [ "tab_strip_experiment_service_unittest.cc" ]
+    deps += [ "//components/browser_apis/tab_strip:mojom_experiment" ]
+  }
 }

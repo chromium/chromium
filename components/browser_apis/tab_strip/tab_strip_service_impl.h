@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSER_APIS_TAB_STRIP_TAB_STRIP_SERVICE_IMPL_H_
 
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "components/browser_apis/tab_strip/adapters/browser_adapter.h"
 #include "components/browser_apis/tab_strip/adapters/context_menu_adapter.h"
 #include "components/browser_apis/tab_strip/adapters/tab_strip_model_adapter.h"
@@ -13,11 +14,14 @@
 #include "components/browser_apis/tab_strip/events/event.h"
 #include "components/browser_apis/tab_strip/observation/tab_strip_api_batched_observer.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
-#include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/gfx/geometry/point.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
+#endif
 
 namespace tabs_api {
 
@@ -45,9 +49,11 @@ class TabStripServiceImpl
   TabStripService::GetTabsResult GetTabsWithoutObservation() override;
   void Accept(
       mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) override;
+#if !BUILDFLAG(IS_ANDROID)
   void AcceptExperimental(
       mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client)
       override;
+#endif
 
   // TabStripServiceDirectReturnStub:
   mojom::TabStripService::GetTabsResult GetTabs() override;
@@ -70,6 +76,7 @@ class TabStripServiceImpl
       mojom::DataPtr data,
       const std::optional<std::vector<std::string>>& update_mask) override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // tabs_api::mojom::TabStripExperimentalService overrides
   //
   // TabStripExperimentalService is intended for quick prototyping for
@@ -81,6 +88,7 @@ class TabStripServiceImpl
 
   mojom::TabStripExperimentService::GetAllTabsForProfileResult
   GetAllTabsForProfile() override;
+#endif
 
   void AddObserver(observation::TabStripApiBatchedObserver* observer) override;
   void RemoveObserver(
@@ -106,7 +114,9 @@ class TabStripServiceImpl
 
  private:
   mojom::TabStripServiceBridge bridge_{this};
+#if !BUILDFLAG(IS_ANDROID)
   mojom::TabStripExperimentServiceBridge experimental_bridge_{this};
+#endif
 
   TabStripModelAdapter& tab_strip_model_adapter();
   TranslationAdapter& translation_adapter();
@@ -130,8 +140,10 @@ class TabStripServiceImpl
   base::ObserverList<observation::TabStripApiBatchedObserver> observers_;
 
   mojo::ReceiverSet<tabs_api::mojom::TabStripService> mojo_clients_;
+#if !BUILDFLAG(IS_ANDROID)
   mojo::ReceiverSet<tabs_api::mojom::TabStripExperimentService>
       mojo_experiment_clients_;
+#endif
   mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver> mojo_observers_;
 };
 
