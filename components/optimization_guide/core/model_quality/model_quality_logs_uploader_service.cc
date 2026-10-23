@@ -255,6 +255,7 @@ void ModelQualityLogsUploaderService::UploadFinalizedLog(
           }
           last_reviewed: "2024-01-12"
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelquality-pa.googleapis.com"
         }
          policy {
           cookies_allowed: NO
