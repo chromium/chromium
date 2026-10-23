@@ -265,13 +265,10 @@ TEST_F(JourneysBackendUtilTest,
   EXPECT_THAT(resolved[1].collections, IsEmpty());
 }
 
-TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_EmptyVisits) {
-  base::Time creation_time = TimeFromMicros(5000);
-  JourneyRow journey("empty_journey", "Empty", creation_time);
-
-  Journey expected_journey("empty_journey", "Empty", creation_time);
-  EXPECT_THAT(StoreJourneyAndResolveVisits(journey),
-              Optional(expected_journey));
+TEST_F(JourneysBackendUtilTest,
+       GetJourneyWithResolvedVisits_NoHistoryEntriesReturnsNullopt) {
+  JourneyRow journey("empty_journey", "Empty", TimeFromMicros(5000));
+  EXPECT_EQ(StoreJourneyAndResolveVisits(journey), std::nullopt);
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -412,13 +409,11 @@ TEST_F(JourneysBackendUtilTest,
           AllOf(Field(&Journey::journey_id, "resolvable"),
                 Field(&Journey::visits, ElementsAre(page_visit, dest_visit))),
           AllOf(Field(&Journey::journey_id, "shares_timestamp"),
-                Field(&Journey::visits, ElementsAre(dest_visit))),
-          AllOf(Field(&Journey::journey_id, "no_entries"),
-                Field(&Journey::visits, IsEmpty()))));
+                Field(&Journey::visits, ElementsAre(dest_visit)))));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kResolutionResultHistogram),
-      BucketsAre(Bucket(SyncedJourneyResolutionResult::kResolved, 3),
-                 Bucket(SyncedJourneyResolutionResult::kMissingVisit, 1),
+      BucketsAre(Bucket(SyncedJourneyResolutionResult::kResolved, 2),
+                 Bucket(SyncedJourneyResolutionResult::kMissingVisit, 2),
                  Bucket(SyncedJourneyResolutionResult::kMissingUrl, 1)));
 }
 

@@ -121,6 +121,12 @@ std::vector<JourneyVisitCollection> ResolveCollections(
 base::expected<Journey, SyncedJourneyResolutionResult> ResolveJourney(
     JourneyRow journey,
     JourneyHistoryEntryLookupSpan lookups) {
+  if (lookups.empty()) {
+    VLOG(1) << "Skipping journey_id=" << journey.journey_id
+            << ": no history entries.";
+    return base::unexpected(SyncedJourneyResolutionResult::kMissingVisit);
+  }
+
   std::vector<JourneyVisit> visits;
   visits.reserve(lookups.size());
 
