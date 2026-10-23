@@ -653,7 +653,7 @@ void Shell::NotifyFullscreenStateChanged(bool is_fullscreen,
     return;
   }
   // A fullscreen state change may trigger another fullscreen state change.
-  // TODO(crbug.com/484371187): Investigate if we can remove the recentrancy.
+  // TODO(crbug.com/484371187): Investigate if we can remove the reentrancy.
   shell_observers_.NotifyAllowReentrancyUntriaged(
       &ShellObserver::OnFullscreenStateChanged, is_fullscreen, container);
 }
@@ -671,9 +671,11 @@ void Shell::NotifyUserWorkAreaInsetsChanged(aura::Window* root_window) {
   if (shutting_down_) {
     return;
   }
-  for (auto& observer : shell_observers_) {
-    observer.OnUserWorkAreaInsetsChanged(root_window);
-  }
+  // A fullscreen state change in `NotifyFullscreenStateChanged` may trigger a
+  // reentrancy call to user work area insets change.
+  // TODO(crbug.com/528597195): Investigate if we can remove the reentrancy.
+  shell_observers_.NotifyAllowReentrancyUntriaged(
+      &ShellObserver::OnUserWorkAreaInsetsChanged, root_window);
 }
 
 void Shell::NotifyShelfAlignmentChanged(aura::Window* root_window,
