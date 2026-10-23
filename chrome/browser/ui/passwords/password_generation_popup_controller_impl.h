@@ -86,8 +86,13 @@ class PasswordGenerationPopupControllerImpl
   void GeneratePasswordValue(
       autofill::password_generation::PasswordGenerationType generation_type);
 
-  // Create a PasswordGenerationPopupView if one doesn't already exist.
-  void Show(GenerationUIState state, bool is_manually_triggered = false);
+  // Creates and shows a PasswordGenerationPopupView if one doesn't already
+  // exist, or updates the existing view. Returns true if `this` and `driver_`
+  // are still alive and the popup is visible after showing; otherwise hides
+  // the popup (if `this` is still alive) and returns false.
+  // Note: May synchronously destroy `this`, `driver_`, or `WebContents` if
+  // dropping fullscreen triggers synchronous frame or tab teardown.
+  bool Show(GenerationUIState state, bool is_manually_triggered = false);
 
   // Update the value of the generated password to be displayed in the UI (e.g.
   // upon editing the generated password).

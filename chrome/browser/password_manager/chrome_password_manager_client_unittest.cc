@@ -86,6 +86,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -2413,6 +2414,106 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
 
   EXPECT_CALL(accepted_callback, Run);
   view->Confirm();
+}
+
+class DropFullscreenWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  explicit DropFullscreenWebContentsDelegate(base::OnceClosure on_exit)
+      : on_exit_(std::move(on_exit)) {}
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    content::FullscreenState state;
+    state.target_mode = content::FullscreenMode::kContent;
+    return state;
+  }
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (on_exit_) {
+      std::move(on_exit_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_exit_;
+};
+
+TEST_F(
+    ChromePasswordManagerClientTest,
+    AutomaticGenerationAvailable_WebContentsDestroyedWhileExitingFullscreen) {
+  const GURL kUrl("https://www.example.com/");
+  NavigateAndCommit(kUrl);
+  FocusWebContentsOnMainFrame();
+  ON_CALL(settings_service(),
+          IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
+      .WillByDefault(Return(true));
+
+  mojo::AssociatedRemote<autofill::mojom::PasswordGenerationDriver>
+      generation_driver;
+  ChromePasswordManagerClient::BindPasswordGenerationDriver(
+      generation_driver.BindNewEndpointAndPassDedicatedReceiver(), main_rfh());
+
+  bool exit_fullscreen_called = false;
+  DropFullscreenWebContentsDelegate delegate(base::BindLambdaForTesting([&]() {
+    exit_fullscreen_called = true;
+    DeleteContents();
+  }));
+  web_contents()->SetDelegate(&delegate);
+
+  FormData form = CreateLoginFormData();
+  autofill::password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(100, 20), /*max_length=*/20, u"password",
+      form.fields()[1].renderer_id(),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      form, /*input_field_empty=*/false);
+
+  generation_driver->AutomaticGenerationAvailable(ui_data);
+  generation_driver.FlushForTesting();
+
+  EXPECT_TRUE(exit_fullscreen_called);
+  EXPECT_FALSE(web_contents());
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       AutomaticGenerationAvailable_SubframeDetachedWhileExitingFullscreen) {
+  const GURL kMainUrl("https://www.example.com/");
+  const GURL kSubframeUrl("https://www.example.com/subframe.html");
+  NavigateAndCommit(kMainUrl);
+  content::RenderFrameHost* subframe =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          kSubframeUrl, content::RenderFrameHostTester::For(main_rfh())
+                            ->AppendChild("subframe"));
+  FocusWebContentsOnFrame(subframe);
+  ON_CALL(settings_service(),
+          IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
+      .WillByDefault(Return(true));
+
+  mojo::AssociatedRemote<autofill::mojom::PasswordGenerationDriver>
+      generation_driver;
+  ChromePasswordManagerClient::BindPasswordGenerationDriver(
+      generation_driver.BindNewEndpointAndPassDedicatedReceiver(), subframe);
+
+  bool exit_fullscreen_called = false;
+  DropFullscreenWebContentsDelegate delegate(base::BindLambdaForTesting([&]() {
+    exit_fullscreen_called = true;
+    content::RenderFrameHostTester::For(subframe)->Detach();
+  }));
+  web_contents()->SetDelegate(&delegate);
+
+  FormData form = CreateLoginFormDataForFrame(subframe);
+  autofill::password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(100, 20), /*max_length=*/20, u"password",
+      form.fields()[1].renderer_id(),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      form, /*input_field_empty=*/false);
+
+  generation_driver->AutomaticGenerationAvailable(ui_data);
+  generation_driver.FlushForTesting();
+
+  EXPECT_TRUE(exit_fullscreen_called);
+  ASSERT_TRUE(web_contents());
+  EXPECT_FALSE(GetClient()->generation_popup_controller());
+  web_contents()->SetDelegate(nullptr);
 }
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
