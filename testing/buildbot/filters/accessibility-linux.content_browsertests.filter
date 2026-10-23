@@ -21,4 +21,3 @@
 # opposite of the situation when --force-renderer-accessibility is used.
 -AccessibilityMetricsBrowserTest.EventProcessingTime
 -ScopedAccessibilityModeTest*
--*AccessibilityPerformanceMeasurementExperiment*

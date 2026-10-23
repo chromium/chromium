@@ -84,7 +84,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool IsAXModeChangeAllowed() const override;
   void SetActivationFromPlatformEnabled(bool enabled) override;
   bool IsActivationFromPlatformEnabled() override;
-  bool IsAccessibilityPerformanceMeasurementExperimentActive() const override;
   void NotifyWebContentsPreferencesChanged() const override;
 
   // ui::AXPlatform::Delegate:
@@ -205,13 +204,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // discovery.
   virtual void RefreshAssistiveTech();
 
-  // Helper function to configure the accessibility performance experiment.
-  std::unique_ptr<ScopedAccessibilityMode>
-  ConfigureAccessibilityPerformanceExperiment();
-
-  // Helper to disable and clean-up the accessibility performance experiment.
-  void ExitPerformanceExperiment();
-
   // Called whenever any accessibility mode changes; updates histograms, crash
   // keys, assistive tech, and `AXModeObserver`s for the transition from
   // `old_mode` to `new_mode`.
@@ -260,14 +252,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // A ScopedAccessibilityMode that holds the process-wide mode flags modified
   // via --force-renderer-accessibility on the command line.
   std::unique_ptr<ScopedAccessibilityMode> forced_accessibility_mode_;
-
-  // Keeps track of whether the Accessibility Performance Measurement Experiment
-  // is currently active. This is necessary because there are cases where we
-  // don't want to make the experiment active, and checking the state of the
-  // feature flag causes the study to be active. In this case, if the conditions
-  // are met, this will contain the mode of the current experiment group,
-  // nullptr otherwise.
-  std::unique_ptr<ScopedAccessibilityMode> experiment_accessibility_mode_;
 
   // A ScopedAccessibilityMode that holds process-wide mode flags required to
   // support the platform API calls being used.

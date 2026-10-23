@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,21 +52,6 @@ class CONTENT_EXPORT RenderAccessibilityHost
   RenderAccessibilityHost& operator=(const RenderAccessibilityHost&) = delete;
 
   ~RenderAccessibilityHost() override;
-
-  // Sets the current state of the "renderer serialization only" variant of the
-  // accessibility performance measurement experiment. When enabled, all
-  // instances silently ignore inbound calls to `HandleAXEvents()` and
-  // `HandleAXLocationChanges()` from renderers.
-  static void SetRendererSerializationExperimentEnabled(bool enabled);
-
-  // Sets a repeating callback to be invoked when the "renderer serialization
-  // only" variant of the accessibility performance measurement experiment is
-  // active and discards incoming accessibility data from the renderer.
-  // For testing only.
-  // TODO(accessibility): Investigate use of an InterceptorForTesting in place
-  // of this callback.
-  static void SetAccessibilityDataDiscardedCallbackForTesting(
-      base::RepeatingClosure closure);
 
   void HandleAXEvents(
       const ui::AXUpdatesAndEvents& updates_and_events,

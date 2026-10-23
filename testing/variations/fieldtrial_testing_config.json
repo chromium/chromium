@@ -175,26 +175,6 @@
             ]
         }
     ],
-    "AccessibilityPerformanceMeasurementExperiment": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control2025-07-08",
-                    "disable_features": [
-                        "AccessibilityPerformanceMeasurementExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityRequestScopedContentChangedEvents": [
         {
             "platforms": [

@@ -17,11 +17,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -264,22 +262,6 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
   return mode;
 }
 
-// Determines if the given `mode` contains flags that conflict
-// with the performance experiment. Certain AXMode flags are allowed because
-// they are either extra annotations or not relevant to web content (the
-// primary focus of the performance measurement).
-bool IsAXModeConflictingWithExperiment(ui::AXMode mode) {
-  // Remove the allowed flags from the 'mode'.
-  // If any flags remain after this operation, they are considered conflicting.
-  mode &=
-      ~ui::AXMode(ui::AXMode::kAnnotateMainNode | ui::AXMode::kFromPlatform |
-                  ui::AXMode::kLabelImages | ui::AXMode::kNativeAPIs);
-
-  // If 'mode' is not entirely cleared after removing allowed flags, then
-  // conflicting flags were present.
-  return !mode.is_mode_off();
-}
-
 }  // namespace
 
 // static
@@ -384,12 +366,6 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   // checks elsewhere, thereby simplifying other logic.
   forced_accessibility_mode_ = CreateScopedModeForProcess(initial_mode);
 
-  // Configure the performance experiment if no command-line switches were used.
-  if (!disallow_changes && initial_mode.is_mode_off()) {
-    experiment_accessibility_mode_ =
-        ConfigureAccessibilityPerformanceExperiment();
-  }
-
   UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
                         !initial_mode.is_mode_off());
 
@@ -433,41 +409,6 @@ void BrowserAccessibilityStateImpl::RefreshAssistiveTech() {
   bool sr_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
   OnAssistiveTechFound(sr_active ? ui::AssistiveTech::kGenericScreenReader
                                  : ui::AssistiveTech::kNone);
-}
-
-std::unique_ptr<ScopedAccessibilityMode>
-BrowserAccessibilityStateImpl::ConfigureAccessibilityPerformanceExperiment() {
-  if (!features::IsAccessibilityPerformanceMeasurementExperimentEnabled()) {
-    // This is the control group.
-    return nullptr;
-  }
-
-  // Checking the flag is what causes the study to be active, so we need to
-  // configure the AXModes based on which experiment arm we are in.
-
-  switch (features::GetAccessibilityPerformanceMeasurementExperimentGroup()) {
-    case features::AccessibilityPerformanceMeasurementExperimentGroup::
-        kAXModeComplete:
-      return CreateScopedModeForProcess(ui::kAXModeComplete);
-    case features::AccessibilityPerformanceMeasurementExperimentGroup::
-        kWebContentsOnly:
-      // TODO(accessibility): there seems to be a strange naming here.
-      // kWebContentsOnly helper function in ax_mode.h defines almost a
-      // kAXModeComplete. However, in experiment setup discussions, we wanted
-      // more likely kAXModeBasic, where only the real, AXMode, kWebContents
-      // is set. Which one is it?
-      return CreateScopedModeForProcess(ui::kAXModeBasic);
-    case features::AccessibilityPerformanceMeasurementExperimentGroup::
-        kAXModeCompleteNoInlineTextBoxes:
-      return CreateScopedModeForProcess(ui::kAXModeComplete &
-                                        ~ui::AXMode::kInlineTextBoxes);
-    case features::AccessibilityPerformanceMeasurementExperimentGroup::
-        kRendererSerializationOnly:
-      RenderAccessibilityHost::SetRendererSerializationExperimentEnabled(true);
-      return CreateScopedModeForProcess(ui::kAXModeComplete);
-  }
-
-  NOTREACHED();
 }
 
 void BrowserAccessibilityStateImpl::RefreshAssistiveTechIfNecessary(
@@ -536,11 +477,6 @@ void BrowserAccessibilityStateImpl::SetActivationFromPlatformEnabled(
 
 bool BrowserAccessibilityStateImpl::IsActivationFromPlatformEnabled() {
   return activation_from_platform_enabled_;
-}
-
-bool BrowserAccessibilityStateImpl::
-    IsAccessibilityPerformanceMeasurementExperimentActive() const {
-  return experiment_accessibility_mode_.get();
 }
 
 void BrowserAccessibilityStateImpl::NotifyWebContentsPreferencesChanged()
@@ -733,22 +669,7 @@ void BrowserAccessibilityStateImpl::OnDisablerDestroyedForWebContents(
 
 std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
-  auto scoped_mode_for_process = scoped_modes_for_process_.Add(mode);
-  if (IsAccessibilityPerformanceMeasurementExperimentActive() &&
-      IsAXModeConflictingWithExperiment(mode)) {
-    // A new mode is being added while the performance experiment is
-    // running, which indicates that user is turning on accessibility features.
-    // The experiment is stopped by posting a task to avoid
-    // synchronous destruction, which could be problematic if an accessibility
-    // service is currently in a callstack that's using the accessibility tree
-    // that this class might modify or destroy during cleanup.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BrowserAccessibilityStateImpl::ExitPerformanceExperiment,
-            base::Unretained(this)));
-  }
-  return scoped_mode_for_process;
+  return scoped_modes_for_process_.Add(mode);
 }
 
 void BrowserAccessibilityStateImpl::ApplyAccessibilityModeToWebContents(
@@ -862,25 +783,10 @@ BrowserAccessibilityStateImpl::CreateScopedModeForBrowserContext(
     ui::AXMode mode) {
   // kFromPlatform is only permissible for process-wide scopers.
   CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
-  auto scoped_mode = ModeCollectionForTarget::Add(
+  return ModeCollectionForTarget::Add(
       browser_context,
       &BrowserAccessibilityStateImpl::OnModeChangedForBrowserContext, this,
       mode);
-  if (IsAccessibilityPerformanceMeasurementExperimentActive() &&
-      IsAXModeConflictingWithExperiment(mode)) {
-    // A new mode is being added while the performance experiment is
-    // running, which indicates that user is turning on accessibility features.
-    // The experiment is stopped by posting a task to avoid
-    // synchronous destruction, which could be problematic if an accessibility
-    // service is currently in a callstack that's using the accessibility tree
-    // that this class might modify or destroy during cleanup.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BrowserAccessibilityStateImpl::ExitPerformanceExperiment,
-            base::Unretained(this)));
-  }
-  return scoped_mode;
 }
 
 void BrowserAccessibilityStateImpl::OnModeChangedForBrowserContext(
@@ -912,24 +818,9 @@ BrowserAccessibilityStateImpl::CreateScopedModeForWebContents(
   CHECK(!web_contents->IsNeverComposited());
   // kFromPlatform is only permissible for process-wide scopers.
   CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
-  auto scoped_mode = ModeCollectionForTarget::Add(
+  return ModeCollectionForTarget::Add(
       web_contents, &BrowserAccessibilityStateImpl::OnModeChangedForWebContents,
       this, mode);
-  if (IsAccessibilityPerformanceMeasurementExperimentActive() &&
-      IsAXModeConflictingWithExperiment(mode)) {
-    // A new mode is being added while the performance experiment is
-    // running, which indicates that user is turning on accessibility features.
-    // The experiment is stopped by posting a task to avoid
-    // synchronous destruction, which could be problematic if an accessibility
-    // service is currently in a callstack that's using the accessibility tree
-    // that this class might modify or destroy during cleanup.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BrowserAccessibilityStateImpl::ExitPerformanceExperiment,
-            base::Unretained(this)));
-  }
-  return scoped_mode;
 }
 
 void BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
@@ -958,31 +849,6 @@ void BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
 void BrowserAccessibilityStateImpl::OnFocusChangedInPage(
     const FocusedNodeDetails& details) {
   focus_changed_callbacks_.Notify(details);
-}
-
-void BrowserAccessibilityStateImpl::ExitPerformanceExperiment() {
-  experiment_accessibility_mode_.reset();
-  if (features::GetAccessibilityPerformanceMeasurementExperimentGroup() !=
-      features::AccessibilityPerformanceMeasurementExperimentGroup::
-          kRendererSerializationOnly) {
-    return;
-  }
-  RenderAccessibilityHost::SetRendererSerializationExperimentEnabled(false);
-  if (BrowserAccessibilityState::GetInstance()->GetAccessibilityMode().has_mode(
-          ui::AXMode::kWebContents)) {
-    // If this experiment variant was discarding incoming accessibility
-    // events,
-    // and the accessibility mode still includes `ui::AXMode::kWebContents`
-    // after the experiment shutdown, force a reset on all WebContents.
-    // This ensures they rebuild the full accessibility tree.
-    std::ranges::for_each(WebContentsImpl::GetAllWebContents(),
-                          [](WebContentsImpl* web_contents) {
-                            if (!web_contents->IsBeingDestroyed() &&
-                                !web_contents->IsNeverComposited()) {
-                              web_contents->ResetAccessibility();
-                            }
-                          });
-  }
 }
 
 }  // namespace content
