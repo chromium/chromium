@@ -317,6 +317,29 @@ public class SeamlessSigninTest {
 
     @Test
     @MediumTest
+    public void testManagedAccount_signInByAnotherFlow_dismissesBottomSheet() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
+                        .build();
+        mIsAccountManaged = true;
+        createCoordinatorAndLaunchSigninFlow();
+        waitForManagementNoticeSheet();
+
+        mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
+        verifySignInNeverStarted();
+        verify(mSigninManagerMock, never()).signOut(anyInt());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     public void testAutomotiveDevice_signInDefaultAccount() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()

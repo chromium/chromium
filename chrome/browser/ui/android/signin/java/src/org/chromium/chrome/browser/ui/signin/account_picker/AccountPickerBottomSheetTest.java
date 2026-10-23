@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -563,7 +564,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(5, mFakeIdentityManager.getObserverCount());
 
         Espresso.pressBack();
 
@@ -596,7 +597,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(5, mFakeIdentityManager.getObserverCount());
 
         Espresso.pressBack();
 
@@ -628,7 +629,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(5, mFakeIdentityManager.getObserverCount());
 
         onViewWaiting(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
 
@@ -661,7 +662,7 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(4, mFakeIdentityManager.getObserverCount());
+        Assert.assertEquals(5, mFakeIdentityManager.getObserverCount());
 
         onVisibleView(withText(R.string.cancel)).perform(click());
 
@@ -875,13 +876,123 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInDefaultAccount_alreadySignedIn() {
-        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
         mFakeIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT2);
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
         clickContinueButtonAndCheckSignInInProgressSheet();
 
         InOrder calledInOrder = inOrder(mAccountPickerDelegateMock, mSigninManagerMock);
         calledInOrder.verify(mSigninManagerMock).signOut(SignoutReason.SIGNIN_RETRIGGERED);
+        calledInOrder
+                .verify(mSigninManagerMock)
+                .signin(eq(TestAccounts.ACCOUNT1), eq(mSigninAccessPoint), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testSignInByAnotherFlow_dismissesCollapsedSheet() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SHOWN);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 1);
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        // Another flow, e.g. the forced sign-in screen, signs in while the sheet is shown.
+        mFakeIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        CriteriaHelper.pollUiThread(
+                () -> getBottomSheetController().getSheetState() == SheetState.HIDDEN);
+        verify(mAccountPickerDelegateMock).onSignInCancel();
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
+        verify(mSigninManagerMock, never()).signOut(anyInt());
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
+        // The sheet wasn't dismissed by the user.
+        accountConsistencyHistogram.assertExpected();
+        Assert.assertEquals(
+                1,
+                SigninPreferencesManager.getInstance()
+                        .getWebSigninAccountPickerActiveDismissalCount());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testSignInByAnotherFlow_managementNoticeAcceptedBeforeDismissal() {
+        mIsAccountManaged = true;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        waitForBottomSheetView(withId(R.id.account_picker_confirm_management_description));
+
+        // Another flow signs in, and the management notice is accepted before the sheet closes.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT2);
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> getBottomSheetController().getSheetState() == SheetState.HIDDEN);
+        verify(mAccountPickerDelegateMock).onSignInCancel();
+        verify(mSigninManagerMock, never()).signOut(anyInt());
+        verify(mSigninManagerMock, never()).setUserAcceptedAccountManagement(anyBoolean());
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testSignInManagedAccount_retryAfterPostSigninError() {
+        mIsAccountManaged = true;
+        // Like SigninManager, signing in sets the primary account and signing out clears it.
+        doCallback(
+                        /* index= */ 2,
+                        (SigninManager.SignInCallback callback) -> {
+                            mFakeIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
+                            callback.onSignInComplete();
+                        })
+                .when(mSigninManagerMock)
+                .signin(any(), anyInt(), any());
+        doAnswer(
+                        invocation -> {
+                            mFakeIdentityManager.setPrimaryAccount(null);
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .signOut(anyInt());
+        // The first attempt fails after the account was signed in.
+        AtomicInteger signinCompleteCount = new AtomicInteger();
+        doAnswer(
+                        invocation -> {
+                            if (signinCompleteCount.getAndIncrement() == 0) {
+                                AccountPickerDelegate.SigninStateController controller =
+                                        invocation.getArgument(1);
+                                controller.showGenericError();
+                            }
+                            return null;
+                        })
+                .when(mAccountPickerDelegateMock)
+                .onSignInComplete(any(), any());
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        waitForBottomSheetView(withId(R.id.account_picker_confirm_management_description));
+        clickContinueButtonAndWaitForErrorSheet();
+
+        clickContinueButtonAndCheckSignInInProgressSheet();
+
+        // The sheet's own sign-ins don't close it. Signing out clears management acceptance, so
+        // the retry sets it after the sign-out.
+        verify(mAccountPickerDelegateMock, never()).onSignInCancel();
+        InOrder calledInOrder = inOrder(mSigninManagerMock);
+        calledInOrder.verify(mSigninManagerMock).signOut(SignoutReason.SIGNIN_RETRIGGERED);
+        calledInOrder.verify(mSigninManagerMock).setUserAcceptedAccountManagement(true);
         calledInOrder
                 .verify(mSigninManagerMock)
                 .signin(eq(TestAccounts.ACCOUNT1), eq(mSigninAccessPoint), any());

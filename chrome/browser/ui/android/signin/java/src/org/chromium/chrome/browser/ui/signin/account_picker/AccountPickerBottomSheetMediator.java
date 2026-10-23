@@ -20,6 +20,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,6 +49,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -66,6 +69,7 @@ public class AccountPickerBottomSheetMediator
                 AccountPickerBottomSheetView.BackPressListener,
                 AccountPickerDelegate.SigninStateController,
                 AccountsChangeObserver,
+                IdentityManager.Observer,
                 ProfileDataCache.Observer,
                 EnterpriseSignalsDisclaimerCoordinator.Delegate {
 
@@ -103,6 +107,11 @@ public class AccountPickerBottomSheetMediator
     // in AccountManagerFacade for sign-in.
     private @Nullable String mPendingAddedAccountEmail;
     private boolean mAcceptedAccountManagement;
+    // Whether a sign-in started by this sheet is in progress.
+    private boolean mIsSigningIn;
+    // Whether another flow signed in while this sheet was shown, e.g. the forced sign-in screen.
+    // The sheet then closes without signing in.
+    private boolean mSignedInByAnotherFlow;
 
     // Properties for metrics recording.
     private final AccountPickerDismissalLogger mDismissalLogger;
@@ -275,6 +284,7 @@ public class AccountPickerBottomSheetMediator
         mModel.addObserver(mModelPropertyChangedObserver);
         mProfileDataCache.addObserver(this);
         mAccountManagerFacade.addObserver(this);
+        mIdentityManager.addObserver(this);
     }
 
     /** Implements {@link AccountPickerCoordinator.Listener}. */
@@ -388,6 +398,23 @@ public class AccountPickerBottomSheetMediator
         updateSelectedAccountData(profileData);
     }
 
+    /** Implements {@link IdentityManager.Observer}. */
+    @Override
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        if (eventDetails.getEventTypeFor() != PrimaryAccountChangeEvent.Type.SET
+                || mIsSigningIn
+                || mSignedInByAnotherFlow) {
+            return;
+        }
+        // Another flow signed in while the sheet was shown. The sheet's sign-in is no longer
+        // needed, and starting it would first sign that account out. Closing is posted so that the
+        // sheet isn't torn down while the other flow is still notifying observers.
+        mSignedInByAnotherFlow = true;
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::closeAfterSigninByAnotherFlow));
+    }
+
     /** Implements {@link AccountPickerDelegate.SigninStateController controller}. */
     @Override
     public void showGenericError() {
@@ -467,6 +494,7 @@ public class AccountPickerBottomSheetMediator
         mAccountPickerDelegate.onAccountPickerDestroy();
         mProfileDataCache.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
+        mIdentityManager.removeObserver(this);
         mModel.removeObserver(mModelPropertyChangedObserver);
     }
 
@@ -718,6 +746,10 @@ public class AccountPickerBottomSheetMediator
                 mSelectedAccount,
                 mCallbackController.makeCancelable(
                         (Boolean isAccountManaged) -> {
+                            if (mSignedInByAnotherFlow) {
+                                // The sheet is closing because another flow signed in.
+                                return;
+                            }
                             assertNonNull(mSigninTimestampsLogger)
                                     .recordTimestamp(Event.MANAGEMENT_STATUS_LOADED);
                             if (isAccountManaged) {
@@ -743,14 +775,15 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void signInAfterCheckingManagement() {
+        if (mSignedInByAnotherFlow) {
+            // The sheet is closing because another flow signed in. Don't replace that sign-in.
+            return;
+        }
         if (mSelectedAccount == null) {
             handleMissingSelectedAccountForSignIn();
             return;
         }
 
-        if (mAcceptedAccountManagement) {
-            mSigninManager.setUserAcceptedAccountManagement(true);
-        }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
 
         if (mInitializedWithNoAccount) {
@@ -780,13 +813,21 @@ public class AccountPickerBottomSheetMediator
             mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED);
         }
 
+        // Signing out clears the management acceptance, so set it after the sign-out above, right
+        // before signing in.
+        if (mAcceptedAccountManagement) {
+            mSigninManager.setUserAcceptedAccountManagement(true);
+        }
+
         CoreAccountInfo selectedAccount = mSelectedAccount;
+        mIsSigningIn = true;
         mSigninManager.signin(
                 selectedAccount,
                 mSigninAccessPoint,
                 new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {
+                        mIsSigningIn = false;
                         // Delegates can optionally run extra operations immediately after sign-in
                         // while the loading bottom sheet is still shown. For example, websignin
                         // creates a WebSigninTrackerBridge which asynchronously awaits cookie sync.
@@ -798,6 +839,7 @@ public class AccountPickerBottomSheetMediator
 
                     @Override
                     public void onSignInAborted() {
+                        mIsSigningIn = false;
                         showGenericError();
                     }
                 });
@@ -849,6 +891,17 @@ public class AccountPickerBottomSheetMediator
         }
 
         // Dismisses the bottom sheet, if shown.
+        mDismissBottomSheet.run();
+        mAccountPickerDelegate.onSignInCancel();
+    }
+
+    /** Closes the sheet without signing in, after another flow signed in. */
+    private void closeAfterSigninByAnotherFlow() {
+        if (mIsSeamlessSignin) {
+            // Also prevents the seamless flow from displaying the sheet again later.
+            abandonSeamlessSignin();
+            return;
+        }
         mDismissBottomSheet.run();
         mAccountPickerDelegate.onSignInCancel();
     }
