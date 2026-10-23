@@ -14,13 +14,16 @@ struct DawnProcTable;
 namespace webnn {
 
 struct WebGpuContextProperties {
-  raw_ptr<WGPUDeviceImpl> wgpu_device = nullptr;
-  raw_ptr<const DawnProcTable> dawn_procs = nullptr;
   // Closure invoked to flush command buffer IPC across the Dawn Wire channel
   // during buffer readback. This closure also captures underlying C++ handles
   // (such as DawnControlClientHolder and wgpu::Device) to keep them alive for
   // the duration of the WebNN context.
+  //
+  // Declared first so it's destroyed last, ensuring `wgpu_device` and
+  // `dawn_procs` below are released before the `wgpu::Device` is freed.
   base::RepeatingClosure webgpu_flush;
+  raw_ptr<WGPUDeviceImpl> wgpu_device = nullptr;
+  raw_ptr<const DawnProcTable> dawn_procs = nullptr;
 
   bool IsValid() const {
     return wgpu_device != nullptr && dawn_procs != nullptr &&

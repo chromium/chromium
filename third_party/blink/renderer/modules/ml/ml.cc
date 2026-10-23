@@ -91,8 +91,6 @@ void OnWebGpuDeviceRequested(
     wgpu::Device device) {
   wgpu::Device wgpu_device = std::move(device);
   std::move(callback).Run(webnn::WebGpuContextProperties{
-      .wgpu_device = wgpu_device.Get(),
-      .dawn_procs = &dawn::wire::client::GetProcs(),
       // Explicitly retain references to both `DawnControlClientHolder` and
       // `wgpu::Device` within this closure so that the underlying GPU
       // command buffer channel and Dawn device remain alive throughout the
@@ -103,7 +101,9 @@ void OnWebGpuDeviceRequested(
              const wgpu::Device& /*wgpu_device*/) {
             dawn_control_client->Flush();
           },
-          dawn_control_client, wgpu_device)});
+          dawn_control_client, wgpu_device),
+      .wgpu_device = wgpu_device.Get(),
+      .dawn_procs = &dawn::wire::client::GetProcs()});
 }
 
 void OnWebGpuAdapterRequested(
