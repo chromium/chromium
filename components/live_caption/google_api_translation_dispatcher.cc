@@ -120,6 +120,7 @@ void GoogleApiTranslationDispatcher::GetTranslation(
           data: "Captions to be translated by Google's Cloud Translate web "
             "service."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "translation.googleapis.com"
           internal {
             contacts {
               email: "evanliu@google.com"
