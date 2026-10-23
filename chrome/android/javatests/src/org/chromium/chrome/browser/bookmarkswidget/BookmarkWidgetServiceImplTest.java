@@ -46,6 +46,7 @@ public class BookmarkWidgetServiceImplTest {
     private static final String TEST_TITLE = "Test Bookmark Title";
     private static final String FOLDER_TITLE = "Test Bookmark Folder";
     private static final GURL TEST_URL = new GURL("https://www.test.com");
+    private static final GURL NTP_URL = new GURL("chrome://newtab/");
 
     private Context mContext;
     private FakeBookmarkModel mBookmarkModel;
@@ -103,6 +104,42 @@ public class BookmarkWidgetServiceImplTest {
                 "Back button should be hidden for a bookmark.",
                 View.GONE,
                 backButton.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testBookmarkWithNtpUrl() {
+        // LargeIconBridge declines favicon requests for NTP URLs without running the callback.
+        // The widget must still finish loading instead of blocking forever.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkId otherBookmarksFolder = mBookmarkModel.getOtherFolderId();
+                    mBookmarkModel.addBookmark(otherBookmarksFolder, 0, TEST_TITLE, NTP_URL);
+                    SharedPreferences prefs = BookmarkWidgetServiceImpl.getWidgetState(WIDGET_ID);
+                    prefs.edit()
+                            .putString(
+                                    "bookmarkswidget.current_folder",
+                                    otherBookmarksFolder.toString())
+                            .apply();
+                });
+
+        mFactory.onDataSetChanged();
+
+        // Position 0 is the label for the bookmark folder, so bookmark is at position 1.
+        RemoteViews views = mFactory.getViewAt(1);
+        assertNotNull(views);
+
+        View itemView = views.apply(mContext, new FrameLayout(mContext));
+        TextView titleView = itemView.findViewById(R.id.title);
+        ImageView favicon = itemView.findViewById(R.id.favicon);
+
+        assertNotNull(titleView);
+        assertNotNull(favicon);
+        assertEquals(TEST_TITLE, titleView.getText().toString());
+        assertEquals(
+                "Fallback favicon should be visible for an NTP bookmark.",
+                View.VISIBLE,
+                favicon.getVisibility());
     }
 
     @Test
