@@ -16,8 +16,6 @@
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
-class Profile;
-
 namespace ash {
 
 class NetworkPortalSigninController : public views::WidgetObserver,
@@ -110,12 +108,13 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   // dedicated OTR profile. Overridden in tests.
   virtual void ShowSigninWindow(const GURL& url);
 
-  // Shows the signin UI in browser tab using the specified profile. Overridden
-  // in tests.
-  virtual void ShowTab(Profile* profile, const GURL& url);
+  // Shows the signin UI in a captive-portal-marked browser tab (with HTTPS
+  // upgrades disabled) using the active user profile. Used when incognito
+  // browsing is disabled by policy. Overridden in tests.
+  virtual void ShowTab(const GURL& url);
 
-  // Shows the signin UI in a browser tab using the active user profile.
-  // Overridden in tests.
+  // Shows the signin UI in a regular browser tab using the active user
+  // profile. Overridden in tests.
   virtual void ShowActiveProfileTab(const GURL& url);
 
   SigninMode GetSigninMode(NetworkState::PortalState portal_state) const;

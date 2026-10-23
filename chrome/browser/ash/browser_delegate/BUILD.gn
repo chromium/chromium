@@ -51,6 +51,7 @@ static_library("impl") {
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ui/base",
+    "//components/captive_portal/core",
     "//components/sessions",
     "//components/sessions:session_id",
     "//third_party/blink/public/mojom:mojom_platform",

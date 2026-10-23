@@ -68,13 +68,11 @@ class TestSigninController : public NetworkPortalSigninController {
     signin_window_url_ = url.spec();
     WaitForHistograms();
   }
-  void ShowTab(Profile* profile, const GURL& url) override {
-    incognito_ = profile && profile->IsOffTheRecord();
+  void ShowTab(const GURL& url) override {
     tab_url_ = url.spec();
     WaitForHistograms();
   }
   void ShowActiveProfileTab(const GURL& url) override {
-    incognito_ = false;
     tab_url_ = url.spec();
     WaitForHistograms();
   }
@@ -82,7 +80,6 @@ class TestSigninController : public NetworkPortalSigninController {
   const std::string& signin_dialog_url() const { return signin_dialog_url_; }
   const std::string& signin_window_url() const { return signin_window_url_; }
   const std::string& tab_url() const { return tab_url_; }
-  bool incognito() const { return incognito_; }
 
  private:
   void WaitForHistograms() {
@@ -97,7 +94,6 @@ class TestSigninController : public NetworkPortalSigninController {
   std::string signin_dialog_url_;
   std::string signin_window_url_;
   std::string tab_url_;
-  bool incognito_ = false;
 };
 
 }  // namespace
@@ -304,7 +300,6 @@ TEST_F(NetworkPortalSigninControllerTest, AuthenticationIgnoresProxyFalse) {
   EXPECT_EQ(GetSigninMode(), SigninMode::kNormalTab);
   ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
-  EXPECT_FALSE(controller_->incognito());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, ProbeUrl) {
@@ -352,7 +347,6 @@ TEST_F(NetworkPortalSigninControllerTest, IncognitoDisabledByPolicy) {
   EXPECT_EQ(GetSigninMode(), SigninMode::kIncognitoDisabledByPolicy);
   ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
-  EXPECT_FALSE(controller_->incognito());
 }
 
 TEST_F(NetworkPortalSigninControllerTest,

@@ -12,6 +12,8 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
@@ -42,6 +44,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
 #include "components/account_id/account_id.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/tabs/public/tab_interface.h"
@@ -309,6 +312,48 @@ content::WebContents* BrowserControllerImpl::OpenUrl(
   }
   Navigate(&nav_params);
   return nav_params.navigated_or_inserted_contents.get();
+}
+
+content::WebContents* BrowserControllerImpl::OpenCaptivePortalSignin(
+    const AccountId& account_id,
+    const GURL& url,
+    CaptivePortalWindowMode mode) {
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
+  CHECK(profile);
+
+  switch (mode) {
+    case CaptivePortalWindowMode::kPopup: {
+      // In Guest mode, the active profile is OTR. Since creating an OTR profile
+      // from another OTR profile is not supported, use the active profile
+      // directly. Otherwise, use a dedicated captive-portal OTR profile to
+      // avoid passing existing OTR cookies to the captive portal sign-in page
+      // (see b/245578628).
+      if (!profile->IsOffTheRecord()) {
+        static const base::NoDestructor<Profile::OTRProfileID> otr_profile_id(
+            Profile::OTRProfileID::CreateUniqueForCaptivePortal());
+        profile = profile->GetOffTheRecordProfile(*otr_profile_id,
+                                                  /*create_if_needed=*/true);
+        CHECK(profile);
+      }
+      NavigateParams nav_params(profile, url,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+      nav_params.disposition = WindowOpenDisposition::kNewPopup;
+      nav_params.captive_portal_window_type =
+          captive_portal::CaptivePortalWindowType::kPopup;
+      Navigate(&nav_params);
+      return nav_params.navigated_or_inserted_contents.get();
+    }
+    case CaptivePortalWindowMode::kTab: {
+      NavigateParams nav_params(profile, url, ui::PAGE_TRANSITION_LINK);
+      nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      nav_params.captive_portal_window_type =
+          captive_portal::CaptivePortalWindowType::kTab;
+      Navigate(&nav_params);
+      return nav_params.navigated_or_inserted_contents.get();
+    }
+  }
+  NOTREACHED();
 }
 
 BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(

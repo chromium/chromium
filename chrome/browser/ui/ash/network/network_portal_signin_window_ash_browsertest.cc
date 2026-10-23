@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   // Navigate within the captive portal signin window. The contents should be
   // opened in the same browser.
   BrowserWindowInterface* browser =
-      portal_signin_window->GetBrowserForTesting();
+      &portal_signin_window->GetBrowserForTesting()->GetBrowser();
   NavigateParams params(browser, GURL("http://www.google.com"),
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   Navigate(&params);
@@ -123,9 +123,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
   auto* portal_signin_window = NetworkPortalSigninWindow::Get();
   portal_signin_window->Show(
       GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl()));
+  ASSERT_TRUE(portal_signin_window->GetBrowserForTesting());
   BrowserWindowInterface* browser =
-      portal_signin_window->GetBrowserForTesting();
-  ASSERT_TRUE(browser);
+      &portal_signin_window->GetBrowserForTesting()->GetBrowser();
 
   web_contents_observer.Wait();
 
@@ -444,13 +444,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   content::WaitForLoadStop(new_contents);
   EXPECT_EQ(new_contents->GetLastCommittedURL(),
             embedded_test_server()->GetURL("/target.html"));
-  EXPECT_EQ(portal_signin_window->GetBrowserForTesting()
-                ->GetTabStripModel()
-                ->GetActiveWebContents(),
-            web_contents);
   EXPECT_EQ(
-      portal_signin_window->GetBrowserForTesting()->GetTabStripModel()->count(),
-      1);
+      portal_signin_window->GetBrowserForTesting()->GetActiveWebContents(),
+      web_contents);
+  EXPECT_EQ(portal_signin_window->GetBrowserForTesting()->GetWebContentsCount(),
+            1u);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
 }
 
@@ -501,9 +499,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   nav_observer.Wait();
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             embedded_test_server()->GetURL("/target.html"));
-  EXPECT_EQ(
-      portal_signin_window->GetBrowserForTesting()->GetTabStripModel()->count(),
-      1);
+  EXPECT_EQ(portal_signin_window->GetBrowserForTesting()->GetWebContentsCount(),
+            1u);
 }
 
 }  // namespace ash

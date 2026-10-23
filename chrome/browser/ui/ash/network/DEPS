@@ -14,10 +14,7 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
-  "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
   "+chrome/browser/ui/webui/ash/cellular_setup",
   "+chrome/browser/ui/webui/ash/floating_workspace",
   "+chrome/grit",
@@ -29,19 +26,15 @@ specific_include_rules = {
   # Reads the incognito availability preference.
   "network_portal_signin_controller(_unittest)?\\.cc": [
     "+chrome/browser/prefs/incognito_mode_prefs.h",
-    "+chrome/browser/ui/navigator/browser_navigator.h",
-    "+chrome/browser/ui/navigator/browser_navigator_params.h",
   ],
   "network_portal_signin_controller_browsertest\\.cc": [
     "+chrome/browser/ash/login/test/oobe_base_test.h",
   ],
-  "network_portal_signin_window(_ash_browsertest)?\\.cc": [
-    "+chrome/browser/ui/navigator/browser_navigator.h",
-    "+chrome/browser/ui/navigator/browser_navigator_params.h",
-  ],
   "network_portal_signin_window_ash_browsertest\\.cc": [
     "+chrome/browser/ash/login/test/guest_session_mixin.h",
-    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/navigator/browser_navigator.h",
+    "+chrome/browser/ui/navigator/browser_navigator_params.h",
   ],
   ".*_unittest\\.cc": [
     "+chrome/browser/ash/login/users",

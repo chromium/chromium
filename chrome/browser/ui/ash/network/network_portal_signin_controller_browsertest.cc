@@ -12,10 +12,9 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -140,10 +139,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
   NetworkPortalSigninController::Get()->ShowSignin(
       NetworkPortalSigninController::SigninSource::kNotification);
 
-  BrowserWindowInterface* browser =
+  BrowserDelegate* browser =
       NetworkPortalSigninWindow::Get()->GetBrowserForTesting();
   ASSERT_TRUE(browser);
-  EXPECT_NE(browser->GetProfile(), ProfileManager::GetActiveUserProfile());
+  EXPECT_TRUE(browser->IsOffTheRecord());
 }
 
 // Runs on the OOBE screen, i.e. before any user has logged in, where the portal

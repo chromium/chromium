@@ -47,6 +47,10 @@ class BrowserControllerImpl : public BrowserController,
   content::WebContents* OpenUrl(const AccountId& account_id,
                                 const GURL& url,
                                 const OpenUrlParams& params) override;
+  content::WebContents* OpenCaptivePortalSignin(
+      const AccountId& account_id,
+      const GURL& url,
+      CaptivePortalWindowMode mode) override;
   BrowserDelegate* NewTabWithPostData(const AccountId& account_id,
                                       const GURL& url,
                                       base::span<const uint8_t> post_data,

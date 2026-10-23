@@ -11,13 +11,13 @@
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
-class BrowserWindowInterface;
-
 namespace content {
 class WebContents;
 }
 
 namespace ash {
+
+class BrowserDelegate;
 
 // Class controlling the captive portal signin window.
 // See also the NetworkPortalSigninController class.
@@ -33,7 +33,7 @@ class NetworkPortalSigninWindow {
   // Shows the signin window.
   void Show(const GURL& url);
 
-  BrowserWindowInterface* GetBrowserForTesting();
+  BrowserDelegate* GetBrowserForTesting();
   content::WebContents* GetWebContentsForTesting();
 
   int portal_detection_requested_for_testing() const {
@@ -47,6 +47,8 @@ class NetworkPortalSigninWindow {
 
  private:
   class WindowObserver;
+
+  BrowserDelegate* GetBrowser();
 
   SessionID window_session_id_{SessionID::InvalidValue()};
   std::unique_ptr<WindowObserver> window_observer_;
