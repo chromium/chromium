@@ -16,11 +16,15 @@ import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 // This interface has capabilities that should NOT be accessible to a renderer.
 // For example, DeserializeHandle can give access to arbitrary paths on disk.
 interface FileSystemAccessContext {
-  // Serializes a handle represented by `token`. If token is not valid this
-  // returns an empty array, otherwise this returns a serialization that can
-  // be stored to disk by for example IndexedDB, and then later read back and
-  // passed to DeserializeHandle to turn it back into a token.
+  // Serializes a handle represented by `token` on behalf of the storage bucket
+  // owned by `storage_key`. If `token` is not valid, or if it does not belong
+  // to `storage_key` (same origin, and for sandboxed handles the same storage
+  // key -- the same rule a renderer must satisfy to redeem the token), this
+  // returns an empty array. Otherwise this returns a serialization that can be
+  // stored to disk by for example IndexedDB, and then later read back and
+  // passed to `DeserializeHandle` to turn it back into a token.
   SerializeHandle(
+      blink.mojom.StorageKey storage_key,
       pending_remote<blink.mojom.FileSystemAccessTransferToken> token)
       => (array<uint8> bits);
 

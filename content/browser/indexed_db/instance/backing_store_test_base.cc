@@ -151,6 +151,7 @@ bool BackingStoreTestBase::CommitTransactionPhaseOneAndVerify(
                 token_clone;
             token_remote.Clone(token_clone.InitWithNewPipeAndPassReceiver());
             file_system_access_context_->SerializeHandle(
+                bucket_context_->bucket_info().storage_key,
                 std::move(token_clone), std::move(deliver_serialized_token));
           }));
   if (!async_work_to_be_done.has_value()) {

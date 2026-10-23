@@ -4611,6 +4611,7 @@ bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
 
           backing_store_->bucket_context_->file_system_access_context()
               ->SerializeHandle(
+                  backing_store_->bucket_context_->bucket_info().storage_key,
                   std::move(token_clone),
                   base::BindOnce(
                       [](base::WeakPtr<Transaction> transaction,

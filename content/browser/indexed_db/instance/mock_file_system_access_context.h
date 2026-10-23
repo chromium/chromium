@@ -19,6 +19,7 @@ class MockFileSystemAccessContext
   ~MockFileSystemAccessContext() override;
 
   void SerializeHandle(
+      const blink::StorageKey& storage_key,
       mojo::PendingRemote<::blink::mojom::FileSystemAccessTransferToken>
           pending_token,
       SerializeHandleCallback callback) override;

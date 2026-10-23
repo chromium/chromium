@@ -14,6 +14,7 @@ MockFileSystemAccessContext::MockFileSystemAccessContext() = default;
 MockFileSystemAccessContext::~MockFileSystemAccessContext() = default;
 
 void MockFileSystemAccessContext::SerializeHandle(
+    const blink::StorageKey& storage_key,
     mojo::PendingRemote<::blink::mojom::FileSystemAccessTransferToken>
         pending_token,
     SerializeHandleCallback callback) {

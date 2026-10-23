@@ -920,7 +920,10 @@ Status Transaction::DoPendingCommit() {
                         token_clone.InitWithNewPipeAndPassReceiver());
                     transaction->bucket_context()
                         .file_system_access_context()
-                        ->SerializeHandle(std::move(token_clone),
+                        ->SerializeHandle(transaction->bucket_context()
+                                              .bucket_info()
+                                              .storage_key,
+                                          std::move(token_clone),
                                           std::move(deliver_serialized_token));
                   },
                   ptr_factory_.GetWeakPtr())),

@@ -155,6 +155,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   // storage::mojom::FileSystemAccessContext:
   void SerializeHandle(
+      const blink::StorageKey& storage_key,
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       SerializeHandleCallback callback) override;
   void DeserializeHandle(
@@ -587,6 +588,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
           directory_handle_receiver,
       FileSystemAccessTransferTokenImpl* resolved_token);
   void DidResolveForSerializeHandle(
+      const blink::StorageKey& storage_key,
       SerializeHandleCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
   void DidGetSandboxedBucketForDeserializeHandle(
@@ -655,6 +657,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // permissions related to the URL are based on this path.
   std::string SerializeURLWithPermissionRoot(
       const storage::FileSystemURL& url,
+      const url::Origin& origin,
       FileSystemAccessPermissionContext::HandleType type,
       const base::FilePath& root_permission_path,
       const std::string& display_name);

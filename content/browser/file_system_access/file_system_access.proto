@@ -37,6 +37,9 @@ message LocalFileData {
   // The display name of the file. If `display_name` is empty, the basename
   // of the file path is used.
   optional bytes display_name = 3;
+
+  // The serialized `url::Origin` associated with the handle.
+  optional string origin = 4;
 }
 
 // Used to serialize a File System Access handle representing a file or
