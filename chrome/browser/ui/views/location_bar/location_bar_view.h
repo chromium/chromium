@@ -418,6 +418,10 @@ class LocationBarView
   //  reliable.
   void ClearInPopupStateTransition();
 
+  // Once the location bar is drawn again, reopens the Full WebUI popup closed
+  // in `VisibilityChanged()` if the edit model still has a draft.
+  void RestoreOmniboxStateIfDrawn();
+
   // LocationBar:
   void FocusSearch() override;
   void UpdateContentSettingsIcons() override;
@@ -436,6 +440,7 @@ class LocationBarView
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnFocus() override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
   // LocationBarView directs mouse button events from

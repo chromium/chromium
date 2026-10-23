@@ -189,6 +189,11 @@ class OmniboxEditModel {
 
   std::u16string user_text() const { return user_text_; }
 
+  // Returns true if the user has an uncommitted draft: non-empty user text, or
+  // keyword mode, even with empty user text. In Full WebUI mode, a draft keeps
+  // the popup open when the omnibox is blurred.
+  bool HasDraft() const;
+
   // Encapsulates all the varied conditions for whether to override the
   // permanent page icon (associated with the currently displayed page),
   // with a temporary icon (associated with the current match or user text).

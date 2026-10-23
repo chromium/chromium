@@ -401,6 +401,11 @@ AutocompleteMatch OmniboxEditModel::CurrentMatchAndAlternateNavUrl(
   return match;
 }
 
+bool OmniboxEditModel::HasDraft() const {
+  return is_keyword_selected() ||
+         (user_input_in_progress_ && !user_text_.empty());
+}
+
 bool OmniboxEditModel::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
   url_for_editing_ = controller_->client()->GetFormattedFullURL();

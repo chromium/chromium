@@ -1685,6 +1685,56 @@ void LocationBarView::OnVisibleBoundsChanged() {
   }
 }
 
+void LocationBarView::VisibilityChanged(views::View* starting_from,
+                                        bool is_visible) {
+  // The Full WebUI popup is a separate widget, so it isn't hidden along with
+  // the location bar, e.g. when top chrome is hidden in fullscreen. Close it
+  // while the location bar isn't drawn, and reopen it for a draft once it is.
+  // A null `starting_from` is the browser widget itself being shown or hidden
+  // (e.g. minimized), which doesn't change whether the location bar is drawn.
+  // TODO(b/577150359): Do the same in `WebUILocationBar`.
+  // On macOS and ChromeOS, fullscreen keeps the location bar drawn (immersive
+  // mode). Ignore the momentary visibility changes while entering or exiting
+  // it there, which would otherwise close a focused popup.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+  if (!is_full_webui_omnibox_ || !starting_from) {
+    return;
+  }
+  WebContents* contents = GetWebContents();
+  if (!contents) {
+    return;
+  }
+  if (IsDrawn()) {
+    // This runs during the browser view's layout. Restore afterwards, so the
+    // popup is sized to the laid out location bar.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&LocationBarView::RestoreOmniboxStateIfDrawn,
+                                  weak_factory_.GetWeakPtr()));
+    return;
+  }
+  if (GetOmniboxController()->popup_state_manager()->popup_state() ==
+      OmniboxPopupState::kNone) {
+    return;
+  }
+  // Close the popup, which also blurs the omnibox (see `OnPopupStateChanged()`)
+  // but keeps any draft in the edit model. `ReshowPopup()` reopens it for that
+  // draft.
+  const bool had_focus = GetOmniboxController()->edit_model()->has_focus();
+  GetOmniboxController()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kNone);
+  // The location bar can't hold keyboard focus while it isn't drawn.
+  if (had_focus) {
+    contents->Focus();
+  }
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+}
+
+void LocationBarView::RestoreOmniboxStateIfDrawn() {
+  if (IsDrawn()) {
+    omnibox_popup_view_->ReshowPopup();
+  }
+}
+
 void LocationBarView::OnFocus() {
   if (is_full_webui_omnibox_) {
     // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for

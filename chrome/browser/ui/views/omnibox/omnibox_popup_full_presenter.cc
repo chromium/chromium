@@ -710,9 +710,7 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
   // counts as a draft even if the user text is empty.
   // NOTE: Query values directly from edit model, as they are not guaranteed to
   // remain consistent after calling `Revert()` or `OnKillFocus()`.
-  if (!edit_model->is_keyword_selected() &&
-      (!edit_model->user_input_in_progress() ||
-       edit_model->user_text().empty())) {
+  if (!edit_model->HasDraft()) {
     if (controller()->popup_state_manager()->popup_state() ==
         OmniboxPopupState::kFull) {
       controller()->popup_state_manager()->SetPopupState(
