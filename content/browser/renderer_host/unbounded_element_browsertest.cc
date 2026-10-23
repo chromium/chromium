@@ -58,37 +58,36 @@
 
 namespace content {
 
-namespace {
-
-void SkipTestsForUnsupportedPlatforms() {
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/508672616): Not yet implemented on iOS.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_ANDROID)
-  // if (base::android::android_info::sdk_int() <
-  //     base::android::android_info::SDK_VERSION_U) {
-  //   GTEST_SKIP()
-  //       << "Unbounded elements require Android U (API 34+ / Android 14+).";
-  // }
-
-  // TODO(crbug.com/544212552): Flaky/failing on Android.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    // TODO(crbug.com/523970924): Wayland is flaky.
-    GTEST_SKIP();
-  }
-#endif
-}
-
-}  // namespace
-
 class UnboundedElementBrowserTestBase : public ContentBrowserTest {
  public:
   UnboundedElementBrowserTestBase() = default;
   ~UnboundedElementBrowserTestBase() override = default;
 
  protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/508672616): Not yet implemented on iOS.
+    GTEST_SKIP();
+#elif BUILDFLAG(IS_ANDROID)
+    // if (base::android::android_info::sdk_int() <
+    //     base::android::android_info::SDK_VERSION_U) {
+    //   GTEST_SKIP()
+    //       << "Unbounded elements require Android U (API 34+ / Android 14+).";
+    // }
+
+    // TODO(crbug.com/544212552): Flaky/failing on Android.
+    GTEST_SKIP();
+#else
+#if BUILDFLAG(IS_OZONE)
+    if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+      // TODO(crbug.com/523970924): Wayland is flaky.
+      GTEST_SKIP();
+    }
+#endif
+    ContentBrowserTest::SetUp();
+#endif
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
@@ -181,7 +180,6 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase,
   UnboundedElementBrowserTest() = default;
   ~UnboundedElementBrowserTest() override = default;
   void SetUp() override {
-    SkipTestsForUnsupportedPlatforms();
     std::vector<base::test::FeatureRef> enabled_features = {
         blink::features::kUnboundedElement,
         blink::features::kUnsafeUnboundedElementOnTheOpenWeb};
@@ -206,11 +204,6 @@ class UnboundedElementEscapingOpenWebBrowserTest
   UnboundedElementEscapingOpenWebBrowserTest()
       : base::test::WithFeatureOverride(::features::kTreesInViz) {}
   ~UnboundedElementEscapingOpenWebBrowserTest() override = default;
-
-  void SetUp() override {
-    SkipTestsForUnsupportedPlatforms();
-    UnboundedElementBrowserTestBase::SetUp();
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_{{
@@ -2327,7 +2320,6 @@ class UnboundedElementWebUITest : public UnboundedElementBrowserTestBase {
   ~UnboundedElementWebUITest() override = default;
 
   void SetUp() override {
-    SkipTestsForUnsupportedPlatforms();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUnboundedElement},
         /*disabled_features=*/{
@@ -2538,7 +2530,6 @@ class UnboundedElementPermutationBrowserTest
   ~UnboundedElementPermutationBrowserTest() override = default;
 
   void SetUp() override {
-    SkipTestsForUnsupportedPlatforms();
     const auto& params = GetParam();
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
