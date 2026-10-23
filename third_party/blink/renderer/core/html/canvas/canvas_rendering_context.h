@@ -277,8 +277,8 @@ class CORE_EXPORT CanvasRenderingContext
   virtual bool Is2DCanvasAccelerated() const { NOTREACHED(); }
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
-  virtual void fillTextForTesting(const String& text, double x, double y) {
-    NOTREACHED();
+  void RecordUKMCanvasAccessibilityForTesting() {
+    RecordUKMCanvasAccessibility();
   }
 
   scoped_refptr<StaticBitmapImage> GetElementImage(
@@ -343,6 +343,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
   bool did_draw_text_for_testing() const { return did_draw_text_; }
+  void DisposeForTesting() { Dispose(); }
 
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,
@@ -371,7 +372,7 @@ class CORE_EXPORT CanvasRenderingContext
   void RenderTaskEnded();
   bool did_draw_in_current_task_ = false;
   bool did_print_in_current_task_ = false;
-  bool did_record_accessibility_ukm_ = false;
+  bool should_record_accessibility_ukm_ = true;
   bool did_schedule_accessibility_ukm_recording_ = false;
   bool did_process_task_ = false;
   bool did_draw_text_ = false;
