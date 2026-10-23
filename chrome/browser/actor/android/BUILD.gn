@@ -7,8 +7,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceController.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManager.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorMetrics.java",
@@ -19,11 +17,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ActorTaskTimeoutManager.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskTimeoutParameters.java",
     "java/src/org/chromium/chrome/browser/actor/ActorUtils.java",
-    "java/src/org/chromium/chrome/browser/actor/NoOpActorForegroundServiceController.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorServiceTabUtils.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorTabStateHelper.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/BackgroundSession.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/OffscreenRenderingManager.java",
+    "java/src/org/chromium/chrome/browser/actor/foreground_service/ActorForegroundServiceController.java",
+    "java/src/org/chromium/chrome/browser/actor/foreground_service/ActorForegroundServiceManager.java",
+    "java/src/org/chromium/chrome/browser/actor/foreground_service/NoOpActorForegroundServiceController.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorBroadcastReceiver.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarController.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactory.java",
@@ -170,7 +170,6 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorMetricsTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelperTest.java",
@@ -182,6 +181,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/background_tabs/BackgroundTabRestorationHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ColdBackgroundTabTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/OffscreenRenderingManagerTest.java",
+    "java/src/org/chromium/chrome/browser/actor/foreground_service/ActorForegroundServiceManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactoryTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationServiceTest.java",

@@ -23,6 +23,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for {@link ActorTaskTimeoutManager}. */

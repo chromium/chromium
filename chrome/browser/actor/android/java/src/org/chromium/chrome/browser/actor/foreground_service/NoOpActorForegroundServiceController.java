@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.foreground_service;
 
 import android.app.Notification;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Set;

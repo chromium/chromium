@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.foreground_service;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -21,6 +21,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorMetrics;
+import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ActorTaskTimeoutManager;
+import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -309,7 +316,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             if (mPinnedNotificationId
                     != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
                 Notification placeholder =
-                        ActorNotificationFactory.buildTaskStartsSoonNotification().getNotification();
+                        ActorNotificationFactory.buildTaskStartsSoonNotification()
+                                .getNotification();
                 startOrUpdateForegroundService(
                         ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID, placeholder);
             }
@@ -402,8 +410,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mPinnedNotification = null;
 
         if (pinnedNotificationId != INVALID_NOTIFICATION_ID
-                && pinnedNotificationId
-                        != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID
+                && pinnedNotificationId != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID
                 && mNotificationService != null) {
             mNotificationService.repostNotification(pinnedNotificationId);
         }

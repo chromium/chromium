@@ -9,6 +9,7 @@ import android.os.Looper;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
 
 /**
  * Responsible for monitoring Actor task lifecycle transitions and regulating timeouts.
