@@ -67,6 +67,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/memory_coordinator_browsertest_util.h"
+#include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/base_window.h"
@@ -83,10 +84,16 @@
 #include "content/public/browser/web_contents.h"
 #else
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "chrome/browser/printing/print_view_manager.h"
+#include "printing/backend/test_print_backend.h"  // nogncheck
+#include "printing/printing_context.h"
 #endif
 
 namespace glic {
@@ -873,25 +880,53 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                                   GlicSidePanelCoordinator::State::kClosed));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
-                       PrintAfterReloadDoesNotCrash) {
-  auto* glic_service = GlicKeyedService::Get(GetProfile());
-  if (glic_service->IsNoWebviewEnabled()) {
-    GTEST_SKIP() << "WebUI printing is not applicable in NoWebview mode.";
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+class GlicInstanceCoordinatorPrintingTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  void SetUp() override {
+    printing::PrintBackend::SetPrintBackendForTesting(
+        test_print_backend_.get());
+    printing::PrintingContext::SetPrintingContextFactoryForTest(
+        &test_printing_context_factory_);
+    test_printing_context_factory_.SetCancelErrorOnNewDocument(true);
+    GlicInstanceCoordinatorBrowserTest::SetUp();
   }
+
+  void TearDown() override {
+    GlicInstanceCoordinatorBrowserTest::TearDown();
+    // Reset after TearDown(), since InProcessBrowserTest::TearDown() drains the
+    // message loop where in-flight PrintNow() IPC replies invoke
+    // PrintingContext.
+    printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
+    printing::PrintBackend::SetPrintBackendForTesting(nullptr);
+  }
+
+ private:
+  scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
+      base::MakeRefCounted<printing::TestPrintBackend>();
+  printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorPrintingTest,
+                       PrintAfterReloadDoesNotCrash) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
 
   // Trigger a reload.
+  auto* glic_service = GlicKeyedService::Get(GetProfile());
   glic_service->Reload(
       instance->host().webui_contents()->GetPrimaryMainFrame());
 
   // Wait for the reload to complete.
+  ASSERT_OK(WaitForGlicClient(instance));
   ASSERT_TRUE(content::WaitForLoadStop(instance->host().webui_contents()));
 
   content::WebContents* glic_contents = instance->host().webui_contents();
+  ASSERT_TRUE(glic_contents);
   auto* print_view_manager =
       printing::PrintViewManager::FromWebContents(glic_contents);
+  ASSERT_TRUE(print_view_manager);
   print_view_manager->PrintNow(glic_contents->GetPrimaryMainFrame());
 
   // If we reached here without crashing, the test passes.
