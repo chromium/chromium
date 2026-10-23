@@ -259,6 +259,44 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, ReleaseMemory) {
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       PassiveConsumerDoesNotReceiveReleaseMemory) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  constexpr base::MemoryConsumerTraits kPassiveTraits(
+      base::MemoryConsumerTraits::ConsumerType::kPassive);
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kPassiveTraits, kChildId);
+
+  // A release-only request is dropped entirely.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // A limit change with a release request only delivers the limit.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
 TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId(1);

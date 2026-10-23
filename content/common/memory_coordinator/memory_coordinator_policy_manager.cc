@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory_coordinator/traits.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
@@ -315,6 +316,13 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
   // result in a change to the aggregate limit or a memory release request.
   std::erase_if(updates, [&](auto& update) {
     GroupState& group_state = GetGroupState(host_state, update.consumer_id);
+
+    // Passive consumers can't release memory (their OnReleaseMemory() is a
+    // no-op), so don't send them the request.
+    if (group_state.traits().consumer_type ==
+        base::MemoryConsumerTraits::ConsumerType::kPassive) {
+      update.release_memory = false;
+    }
 
     std::optional<base::MemoryLimit> new_effective_limit;
     if (update.memory_limit) {
