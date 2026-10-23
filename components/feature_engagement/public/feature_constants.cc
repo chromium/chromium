@@ -59,6 +59,9 @@ BASE_FEATURE(kIPHComposeNewBadgeFeature,
 BASE_FEATURE(kIPHContextualTasksEphemeralToolbarButtonFeature,
              "IPH_ContextualTasksEphemeralToolbarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHContextualTasksPinnedIconChangedFeature,
+             "IPH_ContextualTasksPinnedIconChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHCriticalActionAppMenuFeature,
              "IPH_CriticalActionAppMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -400,6 +400,8 @@ should be able to be added at any place in this file.
       summary="For ContextualSuggestions feature."/>
   <variant name="_ContextualTasksEphemeralToolbarButton"
       summary="For Contextual Tasks ephemeral toolbar button."/>
+  <variant name="_ContextualTasksPinnedIconChanged"
+      summary="For Contextual Tasks pinned toolbar button icon change toast."/>
   <variant name="_CookieControls"
       summary="For CookieControls feature. (obsolete)"/>
   <variant name="_CriticalActionAppMenu"

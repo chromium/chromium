@@ -325,8 +325,11 @@ class ContextualTasksButtonInteractiveTestMixin : public T {
 
   auto SignIntoEligibleAccount() {
     return this->Do([&]() {
-      identity_test_env()->MakePrimaryAccountAvailable(
-          "primary@example.com", signin::ConsentLevel::kSignin);
+      if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
+              signin::ConsentLevel::kSignin)) {
+        identity_test_env()->MakePrimaryAccountAvailable(
+            "primary@example.com", signin::ConsentLevel::kSignin);
+      }
       GetTestingService()->GetFakeEligibilityManager()->SetIsEligible(true);
     });
   }
@@ -2695,4 +2698,80 @@ IN_PROC_BROWSER_TEST_F(
                    button->GetDropShadowLayerForTesting() == nullptr;
           },
           true));
+}
+
+class ContextualTasksPinnedIconChangedPromoInteractiveTest
+    : public ContextualTasksEphemeralButtonPromoInteractiveTestBase {
+ public:
+  ContextualTasksPinnedIconChangedPromoInteractiveTest()
+      : ContextualTasksEphemeralButtonPromoInteractiveTestBase(
+            UseDefaultTrackerAllowingPromos(
+                {feature_engagement::
+                     kIPHContextualTasksPinnedIconChangedFeature})) {}
+  ~ContextualTasksPinnedIconChangedPromoInteractiveTest() override = default;
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonPromoInteractiveTestBase::
+            GetEnabledFeatures();
+    const std::string test_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+    if (test_name != "PRE_ShowsPromoForPreviouslyPinnedUserInSuperGArm") {
+      enabled_features.push_back(
+          {contextual_tasks::kContextualTasksUnifyPinButtonLogos,
+           {{"ContextualTasksUnifyPinButtonLogo", "super-g"}}});
+    }
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPinnedIconChangedPromoInteractiveTest,
+                       PRE_ShowsPromoForPreviouslyPinnedUserInSuperGArm) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPinnedIconChangedPromoInteractiveTest,
+                       ShowsPromoForPreviouslyPinnedUserInSuperGArm) {
+  RunTestSequence(
+      SignIntoEligibleAccount(),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForPromo(
+          feature_engagement::kIPHContextualTasksPinnedIconChangedFeature),
+      CheckView(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+          [](user_education::HelpBubbleView* bubble) {
+            return bubble->arrow();
+          },
+          views::BubbleBorder::TOP_RIGHT),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPinnedIconChangedPromoInteractiveTest,
+                       PRE_DoesNotShowPromoWhenNewlyPinnedInSuperGArm) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CheckPromoRequested(
+          feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
+          false));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPinnedIconChangedPromoInteractiveTest,
+                       DoesNotShowPromoWhenNewlyPinnedInSuperGArm) {
+  RunTestSequence(
+      SignIntoEligibleAccount(),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CheckPromoRequested(
+          feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
+          false));
 }

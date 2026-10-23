@@ -219,6 +219,8 @@ chromium-metrics-reviews@google.com.
       summary="contextual search for users who use web search"/>
   <variant name="IPH_ContextualTasksEphemeralToolbarButton"
       summary="contextual tasks ephemeral toolbar button"/>
+  <variant name="IPH_ContextualTasksPinnedIconChanged"
+      summary="contextual tasks pinned toolbar button icon change toast"/>
   <variant name="IPH_CriticalActionAppMenu"
       summary="educating users on the Chrome app menu where to view Gemini
                key browsing actions in history."/>

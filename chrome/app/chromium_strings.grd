@@ -2118,6 +2118,14 @@ Chromium is unable to recover your settings.
           is_accessibility_with_no_ui="true">
           From the "Contextual Tasks" button on the toolbar, you can reopen Contextual Tasks to ask questions while you browse
         </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH" desc="The body text of the one-time toast IPH informing users who previously pinned the Contextual Tasks shortcut that its toolbar icon has been updated.">
+          New icon, same shortcut: Click to ask questions as you browse with Contextual Tasks.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER"
+          desc="The screen reader text of the one-time toast IPH informing users who previously pinned the Contextual Tasks shortcut that its toolbar icon has been updated."
+          is_accessibility_with_no_ui="true">
+          The "Contextual Tasks" button on the toolbar has a new icon. Click it to ask questions as you browse with Contextual Tasks.
+        </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP1" desc="The body text of the first step of the Contextual Tasks tutorial.">
           Open the overflow menu
         </message>

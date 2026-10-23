@@ -699,6 +699,19 @@ void BrowserActions::InitializeSidePanelActions() {
                       contextual_tasks::ContextualTasksPanelController::From(
                           bwi);
                   if (controller) {
+                    // Only mark the "icon changed" promo as used when in the
+                    // Super G arm, so clicking the old pinned icon before the
+                    // flag is enabled does not suppress the promo later.
+                    if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
+                      if (auto* const user_ed =
+                              BrowserUserEducationInterface::From(bwi)) {
+                        user_ed->NotifyFeaturePromoFeatureUsed(
+                            feature_engagement::
+                                kIPHContextualTasksPinnedIconChangedFeature,
+                            FeaturePromoFeatureUsedAction::
+                                kClosePromoIfPresent);
+                      }
+                    }
                     bool is_open = controller->IsPanelOpenForContextualTask();
                     const char* user_action =
                         is_open ? "ContextualTasks.PermanentToolbarButton."

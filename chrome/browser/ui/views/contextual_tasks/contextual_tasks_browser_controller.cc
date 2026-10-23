@@ -16,9 +16,16 @@
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_button_controller.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #endif
 
 namespace contextual_tasks {
@@ -59,22 +66,29 @@ ContextualTasksBrowserController::ContextualTasksBrowserController(
           browser_window_interface_, eligibility_manager_.get(),
           side_panel_coordinator_.get());
 
+  Profile* const profile = browser_window_interface_->GetProfile();
+  was_pinned_ = GetEffectivePinState(profile);
+  if (auto* pinned_model = PinnedToolbarActionsModel::Get(profile)) {
+    pinned_toolbar_observation_.Observe(pinned_model);
+  }
+
   UpdatePinButtonVisibilityState(browser_window_interface_);
+  MaybeShowPinnedIconChangedPromo();
 
   // This subscription is safe because the browser_window_interface_
   // BrowserWindowFeatures, which owns this controller and this subscription.
   actions_visibility_subscription_ =
       eligibility_manager_->RegisterOnEntryPointEligibilityChanged(
-          base::IgnoreArgs<bool>(
-              base::BindRepeating(&UpdatePinButtonVisibilityState,
-                                  base::Unretained(browser_window_interface_))));
+          base::BindRepeating(
+              &ContextualTasksBrowserController::OnEntryPointEligibilityChanged,
+              base::Unretained(this)));
 #endif
 }
-
 
 void ContextualTasksBrowserController::Shutdown() {
 #if !BUILDFLAG(IS_ANDROID)
   actions_visibility_subscription_ = base::CallbackListSubscription();
+  pinned_toolbar_observation_.Reset();
 
   close_button_controller_.reset();
   ephemeral_button_controller_.reset();
@@ -92,5 +106,87 @@ ContextualTasksBrowserController* ContextualTasksBrowserController::From(
     BrowserWindowInterface* browser_window_interface) {
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksBrowserController::OnActionsChanged() {
+  if (!browser_window_interface_) {
+    return;
+  }
+  Profile* const profile = browser_window_interface_->GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
+    return;
+  }
+  const bool is_pinned = GetEffectivePinState(profile);
+  if (is_pinned == was_pinned_) {
+    return;
+  }
+  was_pinned_ = is_pinned;
+  if (is_pinned) {
+    // If the user pins the button while already in the Super G icon arm, mark
+    // the "icon changed" promo as dismissed and used so it will not trigger on
+    // future startups or new windows.
+    if (ShouldUseSuperGIconForPinButtons()) {
+      if (auto* const service =
+              UserEducationServiceFactory::GetForBrowserContext(profile)) {
+        auto& storage = service->user_education_storage_service();
+        user_education::FeaturePromoData data =
+            storage
+                .ReadPromoData(feature_engagement::
+                                   kIPHContextualTasksPinnedIconChangedFeature)
+                .value_or(user_education::FeaturePromoData());
+        data.is_dismissed = true;
+        data.last_dismissed_by =
+            user_education::FeaturePromoClosedReason::kFeatureEngaged;
+        storage.SavePromoData(
+            feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
+            data);
+      }
+      if (auto* const user_ed =
+              BrowserUserEducationInterface::From(browser_window_interface_)) {
+        user_ed->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      }
+    }
+  } else if (auto* const user_ed =
+                 BrowserUserEducationInterface::From(browser_window_interface_)) {
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHContextualTasksPinnedIconChangedFeature);
+  }
+}
+
+void ContextualTasksBrowserController::OnEntryPointEligibilityChanged(
+    bool /*is_eligible*/) {
+  UpdatePinButtonVisibilityState(browser_window_interface_);
+  MaybeShowPinnedIconChangedPromo();
+}
+
+void ContextualTasksBrowserController::MaybeShowPinnedIconChangedPromo() {
+  if (has_requested_pinned_icon_changed_promo_ || !browser_window_interface_) {
+    return;
+  }
+  Profile* const profile = browser_window_interface_->GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
+    return;
+  }
+  // Show the promo at startup if the user is in the Super G arm and already has
+  // the toolbar button pinned. Users who pinned or clicked the button after
+  // entering the Super G arm have already dismissed the promo or notified
+  // Feature Engagement that the feature was used, which suppresses the promo.
+  if (!ShouldUseSuperGIconForPinButtons() || !GetEffectivePinState(profile) ||
+      !EntryPointEligibilityManager::IsPinningEligible(profile)) {
+    return;
+  }
+  if (auto* const user_ed =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    has_requested_pinned_icon_changed_promo_ = true;
+    if (!user_ed->HasFeaturePromoBeenDismissed(
+            feature_engagement::kIPHContextualTasksPinnedIconChangedFeature)) {
+      user_ed->MaybeShowStartupFeaturePromo(
+          feature_engagement::kIPHContextualTasksPinnedIconChangedFeature);
+    }
+  }
+}
+#endif
 
 }  // namespace contextual_tasks

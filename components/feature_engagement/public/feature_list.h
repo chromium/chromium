@@ -430,6 +430,8 @@ DEFINE_VARIATION_PARAM(kIPHComposeNewBadgeFeature,
                        "IPH_ComposeNewBadgeFeature");
 DEFINE_VARIATION_PARAM(kIPHContextualTasksEphemeralToolbarButtonFeature,
                        "IPH_ContextualTasksEphemeralToolbarButton");
+DEFINE_VARIATION_PARAM(kIPHContextualTasksPinnedIconChangedFeature,
+                       "IPH_ContextualTasksPinnedIconChanged");
 DEFINE_VARIATION_PARAM(kIPHCriticalActionAppMenuFeature,
                        "IPH_CriticalActionAppMenu");
 DEFINE_VARIATION_PARAM(kIPHCriticalActionFilterChipFeature,
@@ -903,6 +905,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHComposeMSBBSettingsFeature),
         VARIATION_ENTRY(kIPHComposeNewBadgeFeature),
         VARIATION_ENTRY(kIPHContextualTasksEphemeralToolbarButtonFeature),
+        VARIATION_ENTRY(kIPHContextualTasksPinnedIconChangedFeature),
         VARIATION_ENTRY(kIPHCriticalActionAppMenuFeature),
         VARIATION_ENTRY(kIPHCriticalActionFilterChipFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeAutoOpenFeature),

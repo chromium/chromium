@@ -17,6 +17,9 @@
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+
 class ContextualTasksEphemeralButtonController;
 class ContextualTasksCloseButtonController;
 #endif
@@ -26,13 +29,17 @@ namespace contextual_tasks {
 // Manages the browser-window-scoped lifecycle, initialization, and eligibility
 // callbacks for all Contextual Tasks entry point and side panel controllers.
 // Accessible from BrowserWindowInterface via the UnownedUserData pattern.
-class ContextualTasksBrowserController {
+class ContextualTasksBrowserController
+#if !BUILDFLAG(IS_ANDROID)
+    : public PinnedToolbarActionsModel::Observer
+#endif
+{
  public:
   DECLARE_USER_DATA(ContextualTasksBrowserController);
 
   explicit ContextualTasksBrowserController(
       BrowserWindowInterface* browser_window_interface);
-  virtual ~ContextualTasksBrowserController();
+  ~ContextualTasksBrowserController() override;
 
   static ContextualTasksBrowserController* From(
       BrowserWindowInterface* browser_window_interface);
@@ -48,6 +55,9 @@ class ContextualTasksBrowserController {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
+  // PinnedToolbarActionsModel::Observer:
+  void OnActionsChanged() override;
+
   ContextualTasksEphemeralButtonController* ephemeral_button_controller() {
     return ephemeral_button_controller_.get();
   }
@@ -67,11 +77,19 @@ class ContextualTasksBrowserController {
   std::unique_ptr<ContextualTasksSidePanelCoordinator> side_panel_coordinator_;
 
 #if !BUILDFLAG(IS_ANDROID)
+  void OnEntryPointEligibilityChanged(bool is_eligible);
+  void MaybeShowPinnedIconChangedPromo();
+
   std::unique_ptr<ContextualTasksEphemeralButtonController>
       ephemeral_button_controller_;
   std::unique_ptr<ContextualTasksCloseButtonController>
       close_button_controller_;
   base::CallbackListSubscription actions_visibility_subscription_;
+  base::ScopedObservation<PinnedToolbarActionsModel,
+                          PinnedToolbarActionsModel::Observer>
+      pinned_toolbar_observation_{this};
+  bool was_pinned_ = false;
+  bool has_requested_pinned_icon_changed_promo_ = false;
 #endif
 };
 

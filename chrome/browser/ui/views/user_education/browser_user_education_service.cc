@@ -2272,6 +2272,20 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when the ephemeral contextual tasks toolbar "
                        "button is shown after closing the side panel.")));
 
+  // kIPHContextualTasksPinnedIconChangedFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+          IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH,
+          IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(148, "dianaou@google.com",
+                       "Triggered once for users who already had the "
+                       "Contextual Tasks toolbar button pinned before "
+                       "entering the Super G icon arm.")));
+
   // kIPHVerticalTabsExpandOnHoverFeature:
   const auto expand_on_hover_iph_body_string_id =
       IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_ENABLED_IPH_BODY;
