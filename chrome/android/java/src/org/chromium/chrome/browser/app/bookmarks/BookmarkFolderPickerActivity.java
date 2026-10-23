@@ -149,9 +149,19 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
 
         if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             setFinishOnTouchOutside(true);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
-            getWindow().setDimAmount(Color.alpha(scrimColor) / 255.0f);
+            // When launched from another bookmark dialog, the parent dialog's window remains
+            // visible underneath and keeps owning the dim. Requesting a second dim here would make
+            // WindowManager move the dim layer to this window, which shows up as a scrim flash.
+            // The floating dialog theme enables the dim by default, so it must be cleared
+            // explicitly.
+            if (isFromBookmarkDialog) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            } else {
+                // FLAG_DIM_BEHIND is already set by the floating dialog theme; only the dim amount
+                // needs to match the modal dialog scrim.
+                int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
+                getWindow().setDimAmount(Color.alpha(scrimColor) / 255.0f);
+            }
         } else {
             Toolbar toolbar = assumeNonNull(mCoordinator.getToolbar());
             setSupportActionBar(toolbar);
