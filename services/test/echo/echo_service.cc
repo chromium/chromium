@@ -62,6 +62,8 @@ void EchoService::Crash() {
 
 #if BUILDFLAG(IS_WIN)
 void EchoService::DelayLoad() {
+  // Avoid symbolizing a stack we won't use.
+  base::debug::DisableInProcessStackDumpingForTesting();
   // This causes wevtapi.dll to be delay loaded. It should not work from inside
   // a sandboxed process.
   EVT_HANDLE handle = ::EvtCreateRenderContext(0, nullptr, 0);
