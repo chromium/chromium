@@ -70,6 +70,7 @@ using chrome_test_util::ToolbarButtonWithID;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
 using reading_list_test_utils::OpenReadingList;
 using reading_list_test_utils::OpenTestReadingList;
+using reading_list_test_utils::ReadingListItem;
 using reading_list_test_utils::VisibleReadingListItem;
 
 namespace {
@@ -227,22 +228,12 @@ void AssertAllEntriesVisible() {
 
 // Asserts that the entry `title` is not visible.
 void AssertEntryNotVisible(NSString* title) {
-  [ChromeEarlGreyUI waitForAppToIdle];
-  ScrollToTop();
-  NSError* error;
-
-  [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(title)]
-         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
-      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
-      assertWithMatcher:grey_notNil()
-                  error:&error];
-  GREYAssertNotNil(error, @"Entry is visible");
+  [[EarlGrey selectElementWithMatcher:ReadingListItem(title)]
+      assertWithMatcher:grey_notVisible()];
 }
 
-// Asserts `header` is visible.
+// Asserts that `header` is not visible.
 void AssertHeaderNotVisible(NSString* header) {
-  [ChromeEarlGreyUI waitForAppToIdle];
-  ScrollToTop();
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabel(header)]
       assertWithMatcher:grey_notVisible()];
