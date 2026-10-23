@@ -196,7 +196,6 @@ BASE_DECLARE_FEATURE(kDisableGridTabSwitcher);
 BASE_DECLARE_FEATURE(kDisablePartnerHomepageAndroid);
 BASE_DECLARE_FEATURE(kDisableScrollbarOfFadingEdgeScrollView);
 BASE_DECLARE_FEATURE(kDiscardPageWithCrashedSubframePolicy);
-BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
 BASE_DECLARE_FEATURE(kDownloadToolbarButtonForDesktop);
 BASE_DECLARE_FEATURE(kEdgeToEdgeAutomotive);
