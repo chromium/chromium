@@ -11,6 +11,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_profile_attributes_updater_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -43,6 +44,11 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  // SigninProfileAttributesUpdater must be instantiated and observe
+  // IdentityManager before UserPolicySigninService so that profile attributes
+  // (such as GAIA ID and user management acceptance) are updated before
+  // UserPolicySigninService processes sign-in events.
+  DependsOn(SigninProfileAttributesUpdaterFactory::GetInstance());
 }
 
 UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() = default;

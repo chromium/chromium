@@ -96,6 +96,10 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void Shutdown() override;
 
   // UserPolicySigninServiceBase implementation:
+  // Returns the delay before attempting registration. If the policy store is in
+  // an error state (status() != CloudPolicyStore::STATUS_OK), clears
+  // policy_prefs::kLastPolicyCheckTime and returns a zero delay so registration
+  // retries immediately.
   base::TimeDelta GetTryRegistrationDelay() override;
   void UpdateLastPolicyCheckTime() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;

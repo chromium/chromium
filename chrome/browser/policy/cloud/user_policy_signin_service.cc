@@ -194,6 +194,9 @@ void UserPolicySigninService::ShutdownCloudPolicyManager() {
 
 void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
     const base::FilePath& profile_path) {
+  if (!profile_ || profile_path != profile_->GetPath()) {
+    return;
+  }
   if (CanApplyPolicies(/*check_for_refresh_token=*/true))
     TryInitializeForSignedInUser();
 }

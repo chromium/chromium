@@ -111,6 +111,9 @@ void UserPolicySigninService::ShutdownCloudPolicyManager() {
   if (enterprise_groups_handler) {
     enterprise_groups_handler->ResetAndClearGroups();
   }
+  if (profile_prefs_) {
+    profile_prefs_->ClearPref(policy_prefs::kLastPolicyCheckTime);
+  }
   UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
 }
 
@@ -182,7 +185,13 @@ void UserPolicySigninService::OnProfileAttributesStorageDestroying() {
 
 void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
     const base::FilePath& profile_path) {
+  if (!profile_ || profile_path != profile_->GetPath()) {
+    return;
+  }
   has_logged_profile_can_be_managed_metric_ = false;
+  if (profile_prefs_) {
+    profile_prefs_->ClearPref(policy_prefs::kLastPolicyCheckTime);
+  }
   VLOG_POLICY(1, POLICY_FETCHING)
       << "UserPolicySigninService::OnProfileUserManagementAcceptanceChanged - "
          "CanApplyPolicies: "
@@ -320,6 +329,16 @@ std::string UserPolicySigninService::GetProfileId() {
 }
 
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
+  if (policy_manager() && policy_manager()->core() &&
+      policy_manager()->core()->store() &&
+      policy_manager()->core()->store()->status() !=
+          CloudPolicyStore::STATUS_OK) {
+    if (profile_prefs_) {
+      profile_prefs_->ClearPref(policy_prefs::kLastPolicyCheckTime);
+    }
+    return base::TimeDelta();
+  }
+
   int64_t last_check_time_internal =
       profile_prefs_->GetInt64(policy_prefs::kLastPolicyCheckTime);
   if (last_check_time_internal == 0) {

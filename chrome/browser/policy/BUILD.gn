@@ -1523,6 +1523,7 @@ source_set("impl") {
       "cloud/user_policy_signin_service_util.cc",
       "file_selection_dialogs_policy_handler.cc",
     ]
+    deps += [ "//chrome/browser/signin" ]
   }
 
   if (is_win) {
