@@ -46,25 +46,8 @@ Tests WebXR WebGPU projection layer rendering.
       };
 
       onImmersiveXRFrameCallback = function(session, frame, gl) {
-        const commandEncoder = gpuDevice.createCommandEncoder();
-        const pose = frame.getViewerPose(
-            sessionInfos[getSessionType(session)].currentRefSpace);
-        for (const view of pose.views) {
-          const subImage = gpuBinding.getViewSubImage(projectionLayer, view);
-          const renderPass = commandEncoder.beginRenderPass({
-            colorAttachments: [{
-              view: subImage.colorTexture.createView(
-                  subImage.getViewDescriptor()),
-              loadOp: 'clear',
-              storeOp: 'store',
-              clearValue: {r: 1.0, g: 0.0, b: 0.0, a: 1.0},  // Red
-            }],
-          });
-          renderPass.end();
-        }
-        gpuDevice.queue.submit([commandEncoder.finish()]);
-
-        if (++frameCount === 1) {
+        ++frameCount;
+        if (frameCount === 1) {
           // Verify that a scaleFactor producing a half-pixel per-eye width
           // floors the per-eye width before multiplying by the layer count.
           const halfPixelScale =
@@ -77,7 +60,34 @@ Tests WebXR WebGPU projection layer rendering.
           assert_equals(
               scaledLayer.textureWidth, projectionLayer.textureWidth - 1,
               'Per-eye width should be floored before multiplying by layers');
-        } else if (frameCount === 3) {
+        }
+
+        // Render blue on frame 1, skip rendering on frame 2, render red on
+        // frame 3, and skip rendering on frame 4+ to verify that unrendered
+        // frames do not submit cleared textures and that subsequent frames can
+        // reuse the active swapchain image.
+        if (frameCount === 1 || frameCount === 3) {
+          const clearColor = frameCount === 1 ?
+              {r: 0.0, g: 0.0, b: 1.0, a: 1.0} :  // Blue
+              {r: 1.0, g: 0.0, b: 0.0, a: 1.0};   // Red
+          const commandEncoder = gpuDevice.createCommandEncoder();
+          const pose = frame.getViewerPose(
+              sessionInfos[getSessionType(session)].currentRefSpace);
+          for (const view of pose.views) {
+            const subImage = gpuBinding.getViewSubImage(projectionLayer, view);
+            const renderPass = commandEncoder.beginRenderPass({
+              colorAttachments: [{
+                view: subImage.colorTexture.createView(
+                    subImage.getViewDescriptor()),
+                loadOp: 'clear',
+                storeOp: 'store',
+                clearValue: clearColor,
+              }],
+            });
+            renderPass.end();
+          }
+          gpuDevice.queue.submit([commandEncoder.finish()]);
+        } else if (frameCount === 4) {
           done();
         }
       };

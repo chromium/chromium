@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
@@ -11,6 +12,10 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
 
@@ -40,6 +45,9 @@ void MockForLayers::ProcessSubmittedFrameUnlocked(
     const std::vector<device::ViewData>& views,
     const std::vector<device::LayerData>& layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
+  if (views.empty() && layers.empty()) {
+    return;
+  }
   base::AutoLock lock(lock_);
   last_submitted_views_ = views;
   last_submitted_layers_ = layers;
@@ -228,6 +236,12 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestProjectionLayerWithoutLayersFeature) {
 }
 
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestWebGpuProjectionLayer) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
+    GTEST_SKIP() << "WebGPU on Vulkan requires Android 12 (S) or higher.";
+  }
+#endif
   UiUtils::DisableOverlayForTesting();
   MockForLayers mock;
 
@@ -237,7 +251,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestWebGpuProjectionLayer) {
   t->WaitOnJavaScriptStep();
   t->AssertNoJavaScriptErrors();
 
-  mock.WaitForTotalFrameCount(1);
+  mock.WaitForTotalFrameCount(2);
 
   constexpr uint32_t view_dimension = 128;
 
@@ -259,6 +273,12 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestWebGpuProjectionLayer) {
 
 #if BUILDFLAG(ENABLE_CARDBOARD)
 IN_PROC_BROWSER_TEST_F(WebXrVrCardboardBrowserTest, TestWebGpuProjectionLayer) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
+    GTEST_SKIP() << "WebGPU on Vulkan requires Android 12 (S) or higher.";
+  }
+#endif
   LoadFileAndAwaitInitialization("test_openxr_webgpu_projection_layer");
   EnterSessionWithUserGestureOrFail();
 
