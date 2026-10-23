@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/thread.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -282,6 +283,27 @@ TEST_F(WebrtcEncodingInfoHandlerTests, GpuEncoderSupportDeferred) {
   EXPECT_TRUE(encoding_info_callback.IsSuccess());
   EXPECT_TRUE(encoding_info_callback.IsSupported());
   EXPECT_TRUE(encoding_info_callback.IsPowerEfficient());
+}
+
+TEST_F(WebrtcEncodingInfoHandlerTests, SeparateWorkerAndMainThreadInstances) {
+  base::Thread worker_thread("WorkerThread");
+  ASSERT_TRUE(worker_thread.Start());
+
+  WebrtcEncodingInfoHandler* worker_handler = nullptr;
+  worker_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](WebrtcEncodingInfoHandler** handler) {
+                       *handler = WebrtcEncodingInfoHandler::Instance();
+                     },
+                     &worker_handler));
+  worker_thread.FlushForTesting();
+
+  WebrtcEncodingInfoHandler* main_handler =
+      WebrtcEncodingInfoHandler::Instance();
+
+  EXPECT_NE(worker_handler, nullptr);
+  EXPECT_NE(main_handler, nullptr);
+  EXPECT_NE(worker_handler, main_handler);
 }
 
 }  // namespace blink

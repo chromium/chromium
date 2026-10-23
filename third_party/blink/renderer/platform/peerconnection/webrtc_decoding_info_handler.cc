@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
@@ -32,8 +33,14 @@
 
 namespace blink {
 WebrtcDecodingInfoHandler* WebrtcDecodingInfoHandler::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebrtcDecodingInfoHandler, instance, ());
-  return &instance;
+  if (!IsMainThread()) {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(WebrtcDecodingInfoHandler, worker_instance,
+                                    (nullptr));
+    return &worker_instance;
+  }
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebrtcDecodingInfoHandler,
+                                  main_thread_instance, ());
+  return &main_thread_instance;
 }
 
 WebrtcDecodingInfoHandler::WebrtcDecodingInfoHandler()
