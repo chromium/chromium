@@ -381,6 +381,8 @@ class CORE_EXPORT HTMLSelectElement final
   void setSelectedContentElement(HTMLSelectedContentElement*);
 
   void DefaultEventHandler(Event&) override;
+  bool HasActivationBehavior() const override;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
   // UpdateAllSelectedcontentsSingle and UpdateAllSelectedcontentsMultiple both
