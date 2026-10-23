@@ -44,6 +44,10 @@ using chrome_test_util::ShareButton;
 
 namespace {
 
+// Default polling interval for `GREYCondition` waits, avoiding
+// `GREYCondition`'s 0.5s default sleep when `pollInterval` is omitted.
+constexpr base::TimeDelta kDefaultPollInterval = base::Milliseconds(100);
+
 constexpr base::TimeDelta kDuoTransitionTimeout = base::Seconds(10);
 constexpr base::TimeDelta kDuoTransitionSettleDuration =
     base::Milliseconds(250);
@@ -489,7 +493,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return url == [ChromeEarlGrey webStateVisibleURL];
                   }];
   bool pageLoaded =
-      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()
+                          pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, kWaitForPageToStartLoadingError);
   // Wait until the page is loaded.
   [self waitForPageToFinishLoading];
@@ -543,7 +548,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return ![ChromeEarlGreyAppInterface isLoading];
                   }];
 
-  if (![finishedLoading waitWithTimeout:timeout.InSecondsF()]) {
+  if (![finishedLoading waitWithTimeout:timeout.InSecondsF()
+                           pollInterval:kDefaultPollInterval.InSecondsF()]) {
     return testing::NSErrorWithLocalizedDescription(
         kWaitForPageToFinishLoadingError);
   }
@@ -563,7 +569,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                   }];
 
   GREYAssertTrue(
-      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()],
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()
+                          pollInterval:kDefaultPollInterval.InSecondsF()],
       @"All WebStates failed to finish loading within timeout.");
 }
 
@@ -651,7 +658,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                   }];
 
   bool matchedElement =
-      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                         pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
@@ -673,7 +681,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                   }];
 
   bool matchedElement =
-      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                         pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
@@ -775,7 +784,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                                error:&error];
                                    return error == nil;
                                  }];
-  // Wait for the tap.
+  // Wait for the tap. Do not use kDefaultPollInterval here because each
+  // iteration actively synthesizes and injects a tap gesture.
   BOOL hasClicked =
       [tapButton waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(hasClicked, errorDescription);
@@ -880,7 +890,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return actualCount == count;
                   }];
   bool tabCountEqual =
-      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
 
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
@@ -905,7 +916,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                         [ChromeEarlGreyAppInterface inactiveTabCount] == count;
                   }];
   bool tabCountEqual =
-      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
 
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
@@ -925,7 +937,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                         [ChromeEarlGreyAppInterface incognitoTabCount] == count;
                   }];
   bool tabCountEqual =
-      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
 
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
@@ -964,7 +977,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                     error:&error];
                     return error == nil;
                   }];
-  if (![waitForWebState waitWithTimeout:timeout.InSecondsF()]) {
+  if (![waitForWebState waitWithTimeout:timeout.InSecondsF()
+                           pollInterval:kDefaultPollInterval.InSecondsF()]) {
     return testing::NSErrorWithLocalizedDescription(errorString);
   }
   return nil;
@@ -997,7 +1011,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                    return [ChromeEarlGreyAppInterface
                                        webStateContainsTextInIFrame:text];
                                  }];
-  bool containsText = [waitForText waitWithTimeout:timeout.InSecondsF()];
+  bool containsText =
+      [waitForText waitWithTimeout:timeout.InSecondsF()
+                      pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
@@ -1013,7 +1029,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return
                         [ChromeEarlGreyAppInterface webStateContainsText:text];
                   }];
-  bool containsText = [waitForText waitWithTimeout:timeout.InSecondsF()];
+  bool containsText =
+      [waitForText waitWithTimeout:timeout.InSecondsF()
+                      pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
@@ -1029,7 +1047,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                        webStateContainsText:text];
                                  }];
   bool containsText =
-      [waitForText waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [waitForText waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                      pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
@@ -1045,8 +1064,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                    return [ChromeEarlGreyAppInterface
                                        webStateContainsBlockedImage:imageID];
                                  }];
-  bool success =
-      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+  bool success = [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()
+                               pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
@@ -1061,8 +1080,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                    return [ChromeEarlGreyAppInterface
                                        webStateContainsLoadedImage:imageID];
                                  }];
-  bool success =
-      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+  bool success = [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()
+                               pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
@@ -1075,8 +1094,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                    return [ChromeEarlGreyAppInterface
                                        webStateZoomScaleCloseTo:scale];
                                  }];
-  bool success =
-      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+  bool success = [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()
+                               pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
@@ -1250,7 +1269,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                   block:^BOOL {
                     return [ChromeEarlGreyAppInterface
                         hasSendTabToSelfEntryWithGUID:guid];
-                  }] waitWithTimeout:10.0];
+                  }] waitWithTimeout:10.0
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
   GREYAssertTrue(entrySynced,
                  @"Send Tab To Self entry did not sync to the client.");
 }
@@ -1261,7 +1281,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                   block:^BOOL {
                     return [ChromeEarlGreyAppInterface
                         hasSendTabToSelfTargetDevice:deviceName];
-                  }] waitWithTimeout:10.0];
+                  }] waitWithTimeout:10.0
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
   GREYAssertTrue(deviceSynced,
                  @"Send Tab To Self target device did not sync to the client.");
 }
@@ -1325,7 +1346,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                              presentOnClient:expectPresent];
                   }];
 
-  bool success = [waitForURL waitWithTimeout:timeout.InSecondsF()];
+  bool success = [waitForURL waitWithTimeout:timeout.InSecondsF()
+                                pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, kHistoryError);
 }
 
@@ -1373,7 +1395,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return !error;
                   }];
 
-  bool success = [verifyEntities waitWithTimeout:timeout.InSecondsF()];
+  bool success =
+      [verifyEntities waitWithTimeout:timeout.InSecondsF()
+                         pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
@@ -1390,7 +1414,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                    return !blockError;
                                  }];
 
-  bool success = [verifyURLs waitWithTimeout:timeout.InSecondsF()];
+  bool success = [verifyURLs waitWithTimeout:timeout.InSecondsF()
+                                pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_NO_ERROR(blockError);
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
@@ -1439,7 +1464,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return [ChromeEarlGreyAppInterface windowCount] == 1;
                   }];
   bool extraWindowsClosed =
-      [windowCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [windowCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                           pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(extraWindowsClosed,
                              @"Failed waiting for extra windows to disconnect");
 }
@@ -1462,7 +1488,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return actualCount == count;
                   }];
   bool windowCountEqual =
-      [windowCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [windowCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                           pollInterval:kDefaultPollInterval.InSecondsF()];
 
   NSString* errorString = [NSString
       stringWithFormat:
@@ -1501,7 +1528,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                   }];
 
   BOOL pageLoaded =
-      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()
+                          pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, kWaitForPageToFinishLoadingError);
 }
 
@@ -1551,7 +1579,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                        webStateContainsText:text
                                          inWindowWithNumber:windowNumber];
                                  }];
-  bool containsText = [waitForText waitWithTimeout:timeout.InSecondsF()];
+  bool containsText =
+      [waitForText waitWithTimeout:timeout.InSecondsF()
+                      pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
@@ -1573,7 +1603,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return actualCount == count;
                   }];
   bool tabCountEqual =
-      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
 
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
@@ -1605,7 +1636,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return actualCount == count;
                   }];
   bool tabCountEqual =
-      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                        pollInterval:kDefaultPollInterval.InSecondsF()];
 
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
@@ -1651,6 +1683,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                         base::Milliseconds(100));
                     return isSignoutFinished;
                   }];
+  // Do not use `kDefaultPollInterval` here because each iteration already
+  // spins the runloop for 100ms while background threads clear browsing data.
   bool success = [signOutFinished
       waitWithTimeout:base::test::ios::kWaitForClearBrowsingDataTimeout
                           .InSecondsF()];
@@ -1681,8 +1715,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSString* errorString =
       [NSString stringWithFormat:@"Failed waiting for condition '%@'",
                                  javaScriptCondition];
-  EG_TEST_HELPER_ASSERT_TRUE([condition waitWithTimeout:timeout.InSecondsF()],
-                             errorString);
+  EG_TEST_HELPER_ASSERT_TRUE(
+      [condition waitWithTimeout:timeout.InSecondsF()
+                    pollInterval:kDefaultPollInterval.InSecondsF()],
+      errorString);
 }
 
 - (JavaScriptExecutionResult*)evaluateJavaScriptWithPotentialError:
@@ -1867,7 +1903,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return [EarlGrey isKeyboardShownWithError:nil];
                   }];
   bool success =
-      [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+      [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()
+                          pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, @"Keyboard didn't appear");
 }
 
@@ -1883,7 +1920,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                     return ![EarlGrey isKeyboardShownWithError:nil];
                   }];
   bool success =
-      [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+      [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()
+                          pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success, @"Keyboard didn't dismiss");
 }
 
@@ -2119,7 +2157,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                  }];
 
   // Wait for the image to be copied.
-  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+  GREYAssertTrue(
+      [copyCondition waitWithTimeout:5
+                        pollInterval:kDefaultPollInterval.InSecondsF()],
+      @"Copying image failed");
 }
 
 #pragma mark - Context Menus Utilities (EG2)
@@ -2391,7 +2432,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // Reader mode WebState (page load).
   constexpr base::TimeDelta timeout =
       kWaitForJSCompletionTimeout + kWaitForPageLoadTimeout;
-  return [condition waitWithTimeout:timeout.InSecondsF()];
+  return [condition waitWithTimeout:timeout.InSecondsF()
+                       pollInterval:kDefaultPollInterval.InSecondsF()];
 }
 
 - (void)hideReaderMode {
