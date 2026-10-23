@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.view.Display;
 
+import org.jni_zero.JniPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -54,20 +56,20 @@ public class ContextualTasksBridgeUnitTest {
     @Mock private HelpAndFeedbackLauncher mMockHelpAndFeedbackLauncher;
     @Mock private WebContents mWebContents;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
 
     private Activity mActivity;
     private ContextualTasksBridge mBridge;
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
 
     private static final String TEST_URL = "https://example.com";
-    private static final long TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR = 5678L;
     private static final long TEST_NATIVE_BRIDGE_PTR = 1234L;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         ContextualTasksBridgeJni.setInstanceForTesting(mMockJni);
-        when(mMockJni.init(any(), eq(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR), eq(mProfile)))
+        when(mMockJni.init(any(), eq(mBrowserWindow), eq(mProfile)))
                 .thenReturn(TEST_NATIVE_BRIDGE_PTR);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
@@ -75,8 +77,8 @@ public class ContextualTasksBridgeUnitTest {
         mBridge = new ContextualTasksBridge(mProfile, mWindowAndroid);
         mBridge.onAddedToTask(
                 new InitInfo(
-                        TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR,
-                        /* nativeBrowserWindow= */ null,
+                        /* nativeBrowserWindowPtr= */ 0,
+                        mBrowserWindow,
                         /* isVisible= */ true,
                         new Rect(),
                         new Rect(),

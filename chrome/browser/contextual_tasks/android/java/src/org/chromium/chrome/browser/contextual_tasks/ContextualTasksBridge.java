@@ -9,6 +9,7 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.V
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -86,10 +88,10 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
-        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
-        if (nativeBrowserWindowPtr == 0) return;
+        JniPtr<NativeBrowserWindowInterface> browserWindow = initInfo.nativeBrowserWindow;
+        if (browserWindow == null) return;
         mNativeContextualTasksBridge =
-                ContextualTasksBridgeJni.get().init(this, nativeBrowserWindowPtr, mProfile);
+                ContextualTasksBridgeJni.get().init(this, browserWindow, mProfile);
 
         SettableMonotonicObservableSupplier<ContextualTasksBridge> supplier =
                 (SettableMonotonicObservableSupplier<ContextualTasksBridge>)
@@ -191,7 +193,7 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     public interface Natives {
         long init(
                 ContextualTasksBridge obj,
-                long browserWindowPtr,
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
                 @JniType("Profile*") Profile profile);
 
         void destroy(long nativeContextualTasksBridge);

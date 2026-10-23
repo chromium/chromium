@@ -80,10 +80,8 @@ DEFINE_USER_DATA(ContextualTasksBridge);
 
 static int64_t JNI_ContextualTasksBridge_Init(
     const jni_zero::JavaRef<jobject>& caller,
-    int64_t browser_window_ptr,
+    BrowserWindowInterface* browser_window,
     Profile* profile) {
-  auto* browser_window =
-      reinterpret_cast<BrowserWindowInterface*>(browser_window_ptr);
   CHECK(browser_window);
   return reinterpret_cast<intptr_t>(
       new ContextualTasksBridge(caller, browser_window, profile));
