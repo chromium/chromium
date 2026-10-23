@@ -117,7 +117,8 @@ void SetRequestCredentials(
     mojom::CredentialsMode credentials_mode,
     const std::optional<url::Origin>& initiator,
     net::URLRequest& url_request,
-    const cors::OriginAccessList* origin_access_list);
+    const cors::OriginAccessList* origin_access_list,
+    bool disable_web_security);
 
 // Selects between the `client_security_state` fields in
 // `url_loader_factory_params` and the ClientSecurityState from

@@ -184,6 +184,13 @@ BASE_DECLARE_FEATURE(kUpdateRequestForCorsRedirect);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kAvoidCorsURLLoaderRestartOnRedirect);
 
+// https://crbug.com/571161435
+// Kill switch. When enabled, requests with CredentialsMode::kSameOrigin allow
+// credentials and client certificates when `disable_web_security` is enabled on
+// the URLLoaderFactoryParams.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kAllowSameOriginCredentialsWithDisableWebSecurity);
+
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBrowsingTopics);
 
