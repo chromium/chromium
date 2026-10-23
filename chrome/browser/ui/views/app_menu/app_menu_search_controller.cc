@@ -160,20 +160,15 @@ std::unique_ptr<actions::ActionItem> AppMenuSearchController::Search(
 
 void AppMenuSearchController::OnQueryChanged() {
   std::unique_ptr<actions::ActionItem> results = Search(search_bar_->GetText());
-  if (!results && !search_results_) {
-    // The query is too short to search, and the normal menu is already shown.
+  if (!results) {
+    // The query is below the minimum query length threshold. Keep the current
+    // rows, so only the back button leaves the results.
     return;
   }
 
-  if (results) {
-    delegate_->ShowSearchResults(results.get());
-  } else {
-    delegate_->RestoreMenu();
-  }
+  delegate_->ShowSearchResults(results.get());
   search_results_ = std::move(results);
-  search_bar_->SetLeadingIcon(search_results_
-                                  ? AppMenuSearchBarView::LeadingIcon::kBack
-                                  : AppMenuSearchBarView::LeadingIcon::kSearch);
+  search_bar_->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
 }
 
 void AppMenuSearchController::OnBackPressed() {

@@ -29,8 +29,8 @@ class BaseAction;
 // ChroMenu. Handles extracting searchable items from the app menu hierarchy,
 // querying FuzzyFinder, and constructing an ephemeral ActionItem results tree
 // for the UI to render. It searches whenever the search bar's query changes,
-// owns the results tree, and has its `Delegate` show the results or the normal
-// menu.
+// owns the results tree, and has its `Delegate` show the results. When the
+// back button is pressed, it has the `Delegate` show the normal menu again.
 class AppMenuSearchController {
  public:
   // Implemented by the app menu that shows the search results.
@@ -119,7 +119,8 @@ class AppMenuSearchController {
   };
 
   // Searches for the search bar's query and has `delegate_` show the results.
-  // When the query becomes too short to search, has it show the normal menu.
+  // Leaves the menu as it is when the query is below the minimum query length
+  // threshold.
   void OnQueryChanged();
 
   // Has `delegate_` restore the normal menu again.

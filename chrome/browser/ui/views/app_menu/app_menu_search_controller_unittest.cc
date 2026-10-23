@@ -841,18 +841,39 @@ TEST_F(AppMenuSearchControllerTest, ChangingQueryReplacesResults) {
   EXPECT_TRUE(IsBackButtonVisible());
 }
 
-TEST_F(AppMenuSearchControllerTest, ShortQueryAfterResultsShowsNormalMenu) {
+TEST_F(AppMenuSearchControllerTest, ShortQueryKeepsResults) {
   menu_root_->AddChild(actions::ActionItem::Builder()
                            .SetActionId(kActionNewTab)
                            .SetText(u"New Tab")
                            .Build());
   controller_->InitializeSearchIndex();
 
-  testing::InSequence sequence;
-  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()));
-  EXPECT_CALL(delegate_, RestoreMenu());
-  search_bar_->SetText(u"New");
   search_bar_->SetText(u"N");
+  EXPECT_FALSE(IsBackButtonVisible());
+
+  base::WeakPtr<actions::ActionItem> results;
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()))
+      .WillOnce([&results](actions::ActionItem* shown) {
+        results = shown->GetAsWeakPtr();
+      });
+  search_bar_->SetText(u"New");
+  EXPECT_TRUE(results);
+  EXPECT_TRUE(IsBackButtonVisible());
+
+  search_bar_->SetText(u"N");
+  EXPECT_TRUE(results);
+  EXPECT_TRUE(IsBackButtonVisible());
+
+  search_bar_->SetText(std::u16string());
+  EXPECT_TRUE(results);
+  EXPECT_TRUE(IsBackButtonVisible());
+
+  EXPECT_CALL(delegate_, RestoreMenu());
+  views::test::ButtonTestApi(
+      views::Button::AsButton(search_bar_->GetViewByElementId(
+          AppMenuSearchBarView::kBackButtonElementId)))
+      .NotifyDefaultMouseClick();
+  EXPECT_FALSE(results);
   EXPECT_FALSE(IsBackButtonVisible());
 }
 
