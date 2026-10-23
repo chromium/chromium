@@ -1,17 +1,5 @@
 {
   "phases": {
-    "ninja": {
-      "gn_args": {
-        "is_component_build": false,
-        "is_debug": false,
-        "symbol_level": 0,
-        "target_cpu": "arm64",
-        "target_os": "mac",
-        "use_reclient": true,
-        "use_remoteexec": true,
-        "use_siso": false
-      }
-    },
     "siso_native": {
       "gn_args": {
         "is_component_build": false,

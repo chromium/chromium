@@ -115,13 +115,6 @@ def cq_build_perf_builder(description_html, **kwargs):
     # enable_missing_deps_check = False in properties.
     props = {"enable_missing_deps_check": True}
     props.update(kwargs.pop("properties", {}))
-    if not kwargs.get("siso_enabled", True):
-        props["$build/reclient"] = {
-            "instance": siso.project.DEFAULT_UNTRUSTED,
-            "jobs": 500,
-            "metrics_project": "chromium-reclient-metrics",
-            "scandeps_server": True,
-        }
     return ci.builder(
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_wiYV1BraSr\">http://shortn/_wiYV1BraSr</a>.",
         siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -475,17 +468,11 @@ cq_build_perf_builder(
     xcode = xcode.xcode_default,
 )
 
-def developer_build_perf_builder(description_html, reclient_jobs = None, **kwargs):
+def developer_build_perf_builder(description_html, **kwargs):
     props = {
         # Run the extra missing-deps check build (crbug.com/346429448) on all
         # platforms.
         "enable_missing_deps_check": True,
-        "$build/reclient": {
-            "instance": siso.project.DEFAULT_UNTRUSTED,
-            "jobs": reclient_jobs,
-            "metrics_project": "chromium-reclient-metrics",
-            "scandeps_server": True,
-        },
     }
     return ci.builder(
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_wiYV1BraSr\">http://shortn/_wiYV1BraSr</a>." +
@@ -528,7 +515,6 @@ This builder measures build performance for Android developer builds, by simulat
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["android_developer", "remoteexec", "no_siso", "reclient"]),
         "siso_native": gn_args.config(configs = ["android_developer", "remoteexec"]),
         "siso_no_clang_modules": gn_args.config(configs = ["android_developer", "remoteexec", "no_clang_modules"]),
     },
@@ -537,7 +523,6 @@ This builder measures build performance for Android developer builds, by simulat
         category = "build perf|android",
         short_name = "dev",
     ),
-    reclient_jobs = 5120,
     siso_profile_mode = "local",
     # Setting -1 makes siso use the default remote concurrency.
     siso_remote_jobs = -1,
@@ -564,7 +549,6 @@ This builder measures build performance for Linux developer builds, by simulatin
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "linux", "x64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "linux", "x64"]),
         "siso_no_clang_modules": gn_args.config(configs = ["developer", "remoteexec", "linux", "x64", "no_clang_modules"]),
     },
@@ -573,7 +557,6 @@ This builder measures build performance for Linux developer builds, by simulatin
         category = "build perf|linux",
         short_name = "dev",
     ),
-    reclient_jobs = 5120,
     siso_profile_mode = "local",
     # Setting -1 makes siso use the default remote concurrency.
     siso_remote_jobs = -1,
@@ -600,7 +583,6 @@ This builder measures build performance for Windows developer builds, by simulat
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["windows_developer", "remoteexec", "no_siso", "reclient"]),
         "siso_native": gn_args.config(configs = ["windows_developer", "remoteexec"]),
         # TODO(https://crbug.com/425537956): Add no clang modules build config after enabling clang modules on Windows.
     },
@@ -609,7 +591,6 @@ This builder measures build performance for Windows developer builds, by simulat
         category = "build perf|windows",
         short_name = "dev",
     ),
-    reclient_jobs = 1000,
     # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
     siso_profile_mode = "cloud",
     # Setting -1 makes siso use the default remote concurrency.
@@ -637,7 +618,6 @@ This builder measures build performance for Mac developer builds, by simulating 
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["mac_developer", "remoteexec", "no_siso", "reclient"]),
         "siso_native": gn_args.config(configs = ["mac_developer", "remoteexec"]),
         "siso_no_clang_modules": gn_args.config(configs = ["mac_developer", "remoteexec", "no_clang_modules"]),
     },
@@ -647,7 +627,6 @@ This builder measures build performance for Mac developer builds, by simulating 
         category = "build perf|mac",
         short_name = "dev",
     ),
-    reclient_jobs = 640,
     siso_configs = [],
     siso_profile_mode = "local",
     # Setting -1 makes siso use the default remote concurrency.
@@ -678,7 +657,6 @@ This builder measures build performance for iOS developer builds, by simulating 
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["ios_developer", "remoteexec", "no_siso", "reclient", "arm64"]),
         "siso_native": gn_args.config(configs = ["ios_developer", "remoteexec", "arm64"]),
         "siso_no_clang_modules": gn_args.config(configs = ["ios_developer", "remoteexec", "arm64", "no_clang_modules"]),
     },
@@ -688,7 +666,6 @@ This builder measures build performance for iOS developer builds, by simulating 
         category = "build perf|ios",
         short_name = "dev",
     ),
-    reclient_jobs = 640,
     siso_configs = [],
     siso_profile_mode = "local",
     # Setting -1 makes siso use the default remote concurrency.

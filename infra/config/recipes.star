@@ -320,10 +320,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:reclient_reclient_comparison",
-)
-
-build_recipe(
     name = "recipe:requires_testing_checker",
 )
 

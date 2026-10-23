@@ -27,7 +27,7 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     ssd = None,
     gardener_rotations = gardener_rotations.CHROMIUM_CLANG,
-    # Because these run ToT Clang, reclient is not used.
+    # Because these run ToT Clang, remote execution is not used.
     # Naturally the runtime will be ~4-8h on average for basic builds.
     # Complex (e.g. sanitizer), CFI builds can take much longer.
     execution_timeout = 16 * time.hour,

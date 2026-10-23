@@ -789,13 +789,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "reclient",
-    args = {
-        "use_reclient": True,
-    },
-)
-
-gn_args.config(
     name = "include_unwind_tables",
     args = {
         "exclude_unwind_tables": False,

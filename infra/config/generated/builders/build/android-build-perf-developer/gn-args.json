@@ -1,17 +1,5 @@
 {
   "phases": {
-    "ninja": {
-      "gn_args": {
-        "android_static_analysis": "off",
-        "is_debug": true,
-        "symbol_level": 1,
-        "target_cpu": "x64",
-        "target_os": "android",
-        "use_reclient": true,
-        "use_remoteexec": true,
-        "use_siso": false
-      }
-    },
     "siso_native": {
       "gn_args": {
         "android_static_analysis": "off",
