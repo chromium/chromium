@@ -2444,8 +2444,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       EffectPaintPropertyNode::FilterInfo filter_info;
       UpdateFilterEffect(object_, properties_->Filter(), filter_info);
       bool is_filter_disallowed =
-          RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-              object_.GetDocument().GetExecutionContext()) &&
           IsA<Element>(object_.GetNode()) &&
           To<Element>(object_.GetNode())->IsInCanvasSubtree() &&
           filter_info.operations.OriginTainted();
@@ -4178,8 +4176,6 @@ void FragmentPaintPropertyTreeBuilder::PopulateBackdropFilterIfNeeded(
   }
   if (!operations.IsEmpty()) {
     bool is_filter_disallowed =
-        RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-            object_.GetDocument().GetExecutionContext()) &&
         IsA<Element>(object_.GetNode()) &&
         To<Element>(object_.GetNode())->IsInCanvasSubtree() &&
         operations.OriginTainted();
