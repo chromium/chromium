@@ -54,6 +54,17 @@ void VerifyIssuerCommonName(const std::string& pem_encoded_certificate,
   EXPECT_EQ(certs[0]->issuer().common_name, expected_issuer_name);
 }
 
+void VerifySubjectCommonName(const std::string& pem_encoded_certificate,
+                             std::string_view expected_subject_name) {
+  net::CertificateList certs =
+      net::X509Certificate::CreateCertificateListFromBytes(
+          base::as_byte_span(pem_encoded_certificate),
+          net::X509Certificate::FORMAT_AUTO);
+  ASSERT_FALSE(certs.empty());
+  ASSERT_TRUE(certs[0]);
+  EXPECT_EQ(certs[0]->subject().common_name, expected_subject_name);
+}
+
 }  // namespace
 
 class RequestHandlerForBrowserPublicKeyUploadTest
@@ -139,6 +150,7 @@ TEST_F(RequestHandlerForBrowserPublicKeyUploadTest, HandleBrowserCertRequest) {
   ASSERT_TRUE(upload_response.has_pem_encoded_certificate());
   VerifyIssuerCommonName(upload_response.pem_encoded_certificate(),
                          "Browser Root CA");
+  VerifySubjectCommonName(upload_response.pem_encoded_certificate(), kDeviceId);
 }
 
 TEST_F(RequestHandlerForBrowserPublicKeyUploadTest, HandleProfileCertRequest) {
@@ -169,6 +181,65 @@ TEST_F(RequestHandlerForBrowserPublicKeyUploadTest, HandleProfileCertRequest) {
   ASSERT_TRUE(upload_response.has_pem_encoded_certificate());
   VerifyIssuerCommonName(upload_response.pem_encoded_certificate(),
                          "Profile Root CA");
+  VerifySubjectCommonName(upload_response.pem_encoded_certificate(),
+                          kProfileId);
+}
+
+TEST_F(RequestHandlerForBrowserPublicKeyUploadTest,
+       HandleCertRequestWithCustomCommonName) {
+  auto ec_private_key = LoadPrivateKey();
+  ASSERT_TRUE(ec_private_key);
+  auto public_key = ec_private_key->ToSubjectPublicKeyInfo();
+
+  constexpr char kCustomCommonName[] = "custom_computer_name";
+
+  enterprise_management::DeviceManagementRequest device_management_request;
+  auto* request =
+      device_management_request.mutable_browser_public_key_upload_request();
+  request->set_public_key(public_key.data(), public_key.size());
+  request->set_key_trust_level(BPKUR::CHROME_BROWSER_OS_KEY);
+  request->set_key_type(BPKUR::EC_KEY);
+  request->set_provision_certificate(true);
+  request->set_common_name(kCustomCommonName);
+
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
+  ASSERT_TRUE(HasResponseBody());
+  auto response = GetDeviceManagementResponse();
+  ASSERT_TRUE(response.has_browser_public_key_upload_response());
+
+  auto& upload_response = response.browser_public_key_upload_response();
+  ASSERT_TRUE(upload_response.has_pem_encoded_certificate());
+  VerifyIssuerCommonName(upload_response.pem_encoded_certificate(),
+                         "Browser Root CA");
+  VerifySubjectCommonName(upload_response.pem_encoded_certificate(),
+                          kCustomCommonName);
+}
+
+TEST_F(RequestHandlerForBrowserPublicKeyUploadTest, FailWithCommonNameTooLong) {
+  auto ec_private_key = LoadPrivateKey();
+  ASSERT_TRUE(ec_private_key);
+  auto public_key = ec_private_key->ToSubjectPublicKeyInfo();
+
+  std::string long_common_name(65, 'a');
+
+  enterprise_management::DeviceManagementRequest device_management_request;
+  auto* request =
+      device_management_request.mutable_browser_public_key_upload_request();
+  request->set_public_key(public_key.data(), public_key.size());
+  request->set_key_trust_level(BPKUR::CHROME_BROWSER_OS_KEY);
+  request->set_key_type(BPKUR::EC_KEY);
+  request->set_provision_certificate(true);
+  request->set_common_name(long_common_name);
+
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
 }
 
 TEST_F(RequestHandlerForBrowserPublicKeyUploadTest,

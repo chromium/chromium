@@ -20,7 +20,9 @@ class MockKeyUploadClient : public KeyUploadClient {
 
   MOCK_METHOD(void,
               CreateCertificate,
-              (scoped_refptr<PrivateKey>, CreateCertificateCallback),
+              (scoped_refptr<PrivateKey>,
+               std::string,
+               CreateCertificateCallback),
               (override));
   MOCK_METHOD(void,
               SyncKey,

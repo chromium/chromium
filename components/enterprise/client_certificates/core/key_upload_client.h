@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_KEY_UPLOAD_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,10 +40,12 @@ class KeyUploadClient {
 
   // Uploads the SPKI corresponding to `private_key` along with a
   // proof-of-possession with a parameter indicating that a client certificate
-  // should be provisioned for this key. `callback` will be invoked with the
-  // HTTP status code from the response, and a X509Certificate instance if it
-  // was present in the response body.
+  // should be provisioned for this key using `common_name` (if non-empty) as
+  // the Subject Common Name. `callback` will be invoked with the HTTP status
+  // code from the response, and a X509Certificate instance if it was present
+  // in the response body.
   virtual void CreateCertificate(scoped_refptr<PrivateKey> private_key,
+                                 std::string common_name,
                                  CreateCertificateCallback callback) = 0;
 
   // Uploads the SPKI corresponding to `private_key` along with a

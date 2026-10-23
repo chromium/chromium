@@ -15,11 +15,13 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/dm_server_client.h"
+#include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/mock_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
@@ -80,7 +82,8 @@ scoped_refptr<MockPrivateKey> CreateMockedKey(
 enterprise_management::DeviceManagementRequest CreateExpectedRequest(
     bool provision_certificate,
     BPKUR::KeyTrustLevel trust_level = BPKUR::CHROME_BROWSER_HW_KEY,
-    const net::X509Certificate* cert = nullptr) {
+    const net::X509Certificate* cert = nullptr,
+    const std::string& common_name = std::string()) {
   enterprise_management::DeviceManagementRequest request;
   auto* upload_request = request.mutable_browser_public_key_upload_request();
   std::string spki_string(kFakeSpki);
@@ -93,6 +96,9 @@ enterprise_management::DeviceManagementRequest CreateExpectedRequest(
   upload_request->set_key_trust_level(trust_level);
   upload_request->set_key_type(BPKUR::RSA_KEY);
   upload_request->set_provision_certificate(provision_certificate);
+  if (provision_certificate && !common_name.empty()) {
+    upload_request->set_common_name(common_name);
+  }
   return request;
 }
 
@@ -128,13 +134,15 @@ class KeyUploadClientTest : public testing::Test {
 
   void SetUpUploadPublicKey(
       policy::DMServerJobResult result,
-      scoped_refptr<net::X509Certificate> fake_cert = nullptr) {
-    EXPECT_CALL(*mock_management_delegate_,
-                UploadBrowserPublicKey(
-                    EqualsProto(CreateExpectedRequest(
-                        /*provision_certificate=*/!!fake_cert,
-                        BPKUR::CHROME_BROWSER_HW_KEY, fake_cert.get())),
-                    _))
+      scoped_refptr<net::X509Certificate> fake_cert = nullptr,
+      const std::string& common_name = std::string()) {
+    EXPECT_CALL(
+        *mock_management_delegate_,
+        UploadBrowserPublicKey(
+            EqualsProto(CreateExpectedRequest(
+                /*provision_certificate=*/!!fake_cert,
+                BPKUR::CHROME_BROWSER_HW_KEY, fake_cert.get(), common_name)),
+            _))
         .WillOnce(RunOnceCallback<1>(result));
   }
 
@@ -155,13 +163,16 @@ class KeyUploadClientTest : public testing::Test {
   }
 
   scoped_refptr<PrivateKey> SetUpSuccessPath(
-      scoped_refptr<net::X509Certificate> fake_cert = nullptr) {
+      scoped_refptr<net::X509Certificate> fake_cert = nullptr,
+      const std::string& common_name = std::string()) {
     SetUpDMToken();
-    SetUpUploadPublicKey(CreateResult(fake_cert), fake_cert);
+    SetUpUploadPublicKey(CreateResult(fake_cert), fake_cert, common_name);
     CreateUploadClient();
     return SetUpPrivateKey(fake_cert.get());
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kClientCertCommonNameAttribute};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<KeyUploadClient> upload_client_;
   std::unique_ptr<enterprise_attestation::MockCloudManagementDelegate>
@@ -177,7 +188,48 @@ TEST_F(KeyUploadClientTest, CreateCertificate_Success) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+  upload_client_->CreateCertificate(private_key, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
+
+  auto [response_code, certificate] = test_future.Take();
+
+  EXPECT_EQ(response_code, kSuccessCode);
+  ASSERT_TRUE(certificate);
+  EXPECT_TRUE(test_cert->EqualsIncludingChain(certificate.get()));
+}
+
+TEST_F(KeyUploadClientTest, CreateCertificate_WithCommonName_Success) {
+  auto test_cert = LoadTestCert();
+  ASSERT_TRUE(test_cert);
+  auto private_key = SetUpSuccessPath(test_cert, "workstation-host-01");
+
+  base::test::TestFuture<HttpCodeOrClientError,
+                         scoped_refptr<net::X509Certificate>>
+      test_future;
+  upload_client_->CreateCertificate(private_key, "workstation-host-01",
+                                    test_future.GetCallback());
+
+  auto [response_code, certificate] = test_future.Take();
+
+  EXPECT_EQ(response_code, kSuccessCode);
+  ASSERT_TRUE(certificate);
+  EXPECT_TRUE(test_cert->EqualsIncludingChain(certificate.get()));
+}
+
+TEST_F(KeyUploadClientTest,
+       CreateCertificate_WithCommonName_FeatureDisabled_OmitsCommonName) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kClientCertCommonNameAttribute);
+
+  auto test_cert = LoadTestCert();
+  ASSERT_TRUE(test_cert);
+  auto private_key = SetUpSuccessPath(test_cert, /*common_name=*/std::string());
+
+  base::test::TestFuture<HttpCodeOrClientError,
+                         scoped_refptr<net::X509Certificate>>
+      test_future;
+  upload_client_->CreateCertificate(private_key, "workstation-host-01",
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 
@@ -204,7 +256,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_WrongFormat_Fail) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+  upload_client_->CreateCertificate(private_key, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 
@@ -219,7 +272,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_NoDMToken_Fail) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(nullptr, test_future.GetCallback());
+  upload_client_->CreateCertificate(nullptr, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 
@@ -235,7 +289,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_NullKey_Fail) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(nullptr, test_future.GetCallback());
+  upload_client_->CreateCertificate(nullptr, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 
@@ -263,7 +318,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_DMServerFailed) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+  upload_client_->CreateCertificate(private_key, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 
@@ -289,7 +345,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_NetFailed) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+  upload_client_->CreateCertificate(private_key, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 
@@ -315,7 +372,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_MalformedResponse) {
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
       test_future;
-  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+  upload_client_->CreateCertificate(private_key, /*common_name=*/std::string(),
+                                    test_future.GetCallback());
 
   auto [response_code, certificate] = test_future.Take();
 

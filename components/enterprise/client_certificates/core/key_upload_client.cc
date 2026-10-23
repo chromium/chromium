@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
@@ -76,6 +77,7 @@ BPKUR::KeyType AlgorithmToType(crypto::sign::SignatureKind algorithm) {
 void OnSignatureCreated(
     scoped_refptr<PrivateKey> private_key,
     bool create_certificate,
+    std::string common_name,
     base::OnceCallback<void(
         UploadClientErrorOr<enterprise_management::DeviceManagementRequest>)>
         callback,
@@ -98,6 +100,10 @@ void OnSignatureCreated(
   mutable_upload_request->set_key_type(
       AlgorithmToType(private_key->GetAlgorithm()));
   mutable_upload_request->set_provision_certificate(create_certificate);
+  if (create_certificate && !common_name.empty() &&
+      features::IsClientCertCommonNameAttributeEnabled()) {
+    mutable_upload_request->set_common_name(std::move(common_name));
+  }
 
   std::move(callback).Run(std::move(overall_request));
 }
@@ -135,6 +141,7 @@ class KeyUploadClientImpl : public KeyUploadClient {
 
   // KeyUploadClient:
   void CreateCertificate(scoped_refptr<PrivateKey> private_key,
+                         std::string common_name,
                          CreateCertificateCallback callback) override;
   void SyncKey(scoped_refptr<PrivateKey> private_key,
                SyncKeyCallback callback) override;
@@ -145,6 +152,7 @@ class KeyUploadClientImpl : public KeyUploadClient {
   void GetRequest(
       scoped_refptr<PrivateKey> private_key,
       bool create_certificate,
+      std::string common_name,
       base::OnceCallback<void(
           UploadClientErrorOr<enterprise_management::DeviceManagementRequest>)>
           callback);
@@ -191,8 +199,9 @@ KeyUploadClientImpl::~KeyUploadClientImpl() = default;
 
 void KeyUploadClientImpl::CreateCertificate(
     scoped_refptr<PrivateKey> private_key,
+    std::string common_name,
     CreateCertificateCallback callback) {
-  GetRequest(private_key, /*create_certificate=*/true,
+  GetRequest(private_key, /*create_certificate=*/true, std::move(common_name),
              base::BindOnce(&KeyUploadClientImpl::OnCertificateRequestCreated,
                             weak_factory_.GetWeakPtr(), private_key,
                             std::move(callback)));
@@ -201,6 +210,7 @@ void KeyUploadClientImpl::CreateCertificate(
 void KeyUploadClientImpl::SyncKey(scoped_refptr<PrivateKey> private_key,
                                   SyncKeyCallback callback) {
   GetRequest(private_key, /*create_certificate=*/false,
+             /*common_name=*/std::string(),
              base::BindOnce(&KeyUploadClientImpl::OnSyncRequestCreated,
                             weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -208,6 +218,7 @@ void KeyUploadClientImpl::SyncKey(scoped_refptr<PrivateKey> private_key,
 void KeyUploadClientImpl::GetRequest(
     scoped_refptr<PrivateKey> private_key,
     bool create_certificate,
+    std::string common_name,
     base::OnceCallback<void(
         UploadClientErrorOr<enterprise_management::DeviceManagementRequest>)>
         callback) {
@@ -226,7 +237,8 @@ void KeyUploadClientImpl::GetRequest(
   std::vector<uint8_t> pubkey = private_key->GetSubjectPublicKeyInfo();
   auto* key = private_key.get();
   key->Sign(pubkey, base::BindOnce(&OnSignatureCreated, std::move(private_key),
-                                   create_certificate, std::move(callback)));
+                                   create_certificate, std::move(common_name),
+                                   std::move(callback)));
 }
 
 void KeyUploadClientImpl::OnCertificateRequestCreated(

@@ -95,12 +95,33 @@ RequestHandlerForBrowserPublicKeyUpload::HandleRequest(
 
   em::DeviceManagementResponse device_management_response;
   if (key_upload_request.provision_certificate()) {
+    if (key_upload_request.has_common_name() &&
+        key_upload_request.common_name().size() > 64) {
+      return CreateHttpResponse(
+          net::HTTP_BAD_REQUEST,
+          "common_name exceeds maximum length of 64 UTF-8 bytes");
+    }
+
+    std::string subject_common_name;
+    if (key_upload_request.has_common_name() &&
+        !key_upload_request.common_name().empty()) {
+      subject_common_name = key_upload_request.common_name();
+    } else if (is_profile) {
+      subject_common_name = profile_id;
+    } else {
+      subject_common_name =
+          KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID);
+    }
+    if (subject_common_name.empty()) {
+      subject_common_name = "Test Client Cert";
+    }
+
     device_management_response.mutable_browser_public_key_upload_response()
         ->set_pem_encoded_certificate(GeneratePEMEncodedCertificate(
             key_upload_request.public_key(),
             /*issuer_common_name=*/
             is_profile ? "Profile Root CA" : "Browser Root CA",
-            /*subject_common_name=*/"Test Client Cert"));
+            subject_common_name));
   }
 
   device_management_response.mutable_browser_public_key_upload_response()
