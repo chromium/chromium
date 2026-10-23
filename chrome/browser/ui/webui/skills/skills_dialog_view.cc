@@ -55,7 +55,8 @@ gfx::Size GetWebViewMaxSize() {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsDialogView, kSkillsDialogElementId);
 
 SkillsDialogView::SkillsDialogView(Profile* profile, const GURL& url)
-    : ui::WebDialogWebContentsDelegate(
+    : views::WebContentsDelegateViews<SkillsDialogView,
+                                      ui::WebDialogWebContentsDelegate>(
           profile,
           std::make_unique<ChromeWebContentsHandler>()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -80,6 +81,8 @@ SkillsDialogView::SkillsDialogView(Profile* profile, const GURL& url)
   web_view_->EnableSizingFromWebContents(GetWebViewMinSize(),
                                          GetWebViewMaxSize());
   AddChildView(std::move(web_view));
+
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 }
 
 SkillsDialogView::~SkillsDialogView() {
@@ -98,17 +101,6 @@ void SkillsDialogView::ChildPreferredSizeChanged(views::View* child) {
 gfx::Size SkillsDialogView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return GetLayoutManager()->GetPreferredSize(this, available_size);
-}
-
-bool SkillsDialogView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  if (!web_view_) {
-    return false;
-  }
-
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, web_view_->GetFocusManager());
 }
 
 void SkillsDialogView::ResizeDueToAutoResize(content::WebContents* web_contents,

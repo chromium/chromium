@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 #include "url/gurl.h"
@@ -19,8 +19,10 @@ namespace skills {
 
 // The contents view for the Skills dialog. It hosts the WebView that renders
 // the Skills WebUI and manages the layout and dimensions of the dialog content.
-class SkillsDialogView : public views::View,
-                         public ui::WebDialogWebContentsDelegate {
+class SkillsDialogView
+    : public views::View,
+      public views::WebContentsDelegateViews<SkillsDialogView,
+                                             ui::WebDialogWebContentsDelegate> {
   METADATA_HEADER(SkillsDialogView, views::View)
  public:
   SkillsDialogView(Profile* profile, const GURL& url);
@@ -36,8 +38,6 @@ class SkillsDialogView : public views::View,
       const views::SizeBounds& available_size) const override;
 
   // contents::WebContentsDelegate:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) override;
 
@@ -46,7 +46,6 @@ class SkillsDialogView : public views::View,
 
  private:
   raw_ptr<views::WebView> web_view_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace skills
