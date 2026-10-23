@@ -11,12 +11,10 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
-#include "components/sync_device_info/device_info.h"
 
 class Profile;
 class BrowserWindowInterface;
@@ -64,10 +62,6 @@ class GlicExperimentalTriggeringCoordinator {
       ScopedIncomingMessageResultLogger result_logger,
       GlicExperimentalTriggeringUpdateCallback update_callback,
       tabs::TabInterface* prepared_tab);
-
-  // Returns the capabilities supported for Glic experimental triggering.
-  static base::flat_set<std::string> GetCapabilities(
-      syncer::DeviceInfo::GlicExperimentalTriggeringState state);
 
   size_t GetUpdatesHandlerMapSizeForTesting() const {
     return context_id_to_updates_handler_map_.size();

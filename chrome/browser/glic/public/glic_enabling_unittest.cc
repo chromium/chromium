@@ -1975,7 +1975,20 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
 TEST_F(GlicEnablingProfileReadyStateTestBase,
        GetExperimentalTriggeringCapabilities_UnavailableReturnsEmpty) {
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  // With experimental triggering unavailable, capabilities must be empty.
+  // Fully opt in and enable the screenshot feature. kGlicExperimentalTriggering
+  // is disabled by default in this fixture, so experimental triggering is
+  // still unavailable and no capability (including screenshot) may leak.
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
+                                    true);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
+  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   EXPECT_TRUE(enabling.GetExperimentalTriggeringCapabilities().empty());
 }
 
@@ -2011,6 +2024,52 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
 
     EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
               syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
+    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
+              (base::flat_set<std::string>{kGlicCapabilityScreenshot,
+                                           kGlicCapabilityStructuredYields,
+                                           kGlicCapabilityPaymentMetadata}));
+  }
+}
+
+TEST_F(GlicEnablingProfileReadyStateTestBase,
+       GetExperimentalTriggeringCapabilities_NeedsOptIn) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  // Leave the opt-in incomplete.
+  enabling.SetCompletedFre(prefs::FreStatus::kIncomplete);
+  enabling.SetUserEnabledActuationOnWeb(false);
+  enabling.SetExperimentalTriggeringEnabled(false);
+  // Bypass the enterprise policy check which defaults to disabled.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic,
+                              features::kGlicExperimentalTriggering},
+        /*disabled_features=*/{
+            features::kGlicExperimentalTriggeringOptInBypass,
+            features::kGlicExperimentalTriggeringScreenshot});
+
+    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+              syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
+    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
+              (base::flat_set<std::string>{kGlicCapabilityStructuredYields,
+                                           kGlicCapabilityPaymentMetadata}));
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic,
+                              features::kGlicExperimentalTriggering,
+                              features::kGlicExperimentalTriggeringScreenshot},
+        /*disabled_features=*/{
+            features::kGlicExperimentalTriggeringOptInBypass});
+
+    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+              syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
     EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
               (base::flat_set<std::string>{kGlicCapabilityScreenshot,
                                            kGlicCapabilityStructuredYields,

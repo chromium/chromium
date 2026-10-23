@@ -8,7 +8,6 @@
 #include <optional>
 #include <variant>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -418,51 +417,6 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
             TaskUpdate::DataType::kErrorMessage);
   EXPECT_EQ(response->task_update->data,
             "No active Glic instance available for screenshot.");
-}
-
-TEST_F(GlicExperimentalTriggeringCoordinatorTest,
-       GetCapabilities_ReflectsStateAndFeatureFlag) {
-  // 1. When state is kUnavailable, capabilities is always empty.
-  EXPECT_TRUE(
-      GlicExperimentalTriggeringCoordinator::GetCapabilities(
-          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable)
-          .empty());
-
-  // 2. When screenshot feature is disabled, only unflagged capabilities are
-  // reported.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        features::kGlicExperimentalTriggeringScreenshot);
-
-    const base::flat_set<std::string> expected = {
-        kGlicCapabilityStructuredYields, kGlicCapabilityPaymentMetadata};
-    EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
-                  syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
-              expected);
-    EXPECT_EQ(
-        GlicExperimentalTriggeringCoordinator::GetCapabilities(
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn),
-        expected);
-  }
-
-  // 3. When screenshot feature is enabled.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(
-        features::kGlicExperimentalTriggeringScreenshot);
-
-    const base::flat_set<std::string> expected = {
-        kGlicCapabilityScreenshot, kGlicCapabilityStructuredYields,
-        kGlicCapabilityPaymentMetadata};
-    EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
-                  syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
-              expected);
-    EXPECT_EQ(
-        GlicExperimentalTriggeringCoordinator::GetCapabilities(
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn),
-        expected);
-  }
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, UnrecognizedStopActuation) {

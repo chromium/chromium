@@ -52,6 +52,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1673,23 +1674,6 @@ void GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup(
   if (it != context_id_to_updates_handler_map_.end()) {
     context_id_to_updates_handler_map_.erase(it);
   }
-}
-
-// static
-base::flat_set<std::string>
-GlicExperimentalTriggeringCoordinator::GetCapabilities(
-    syncer::DeviceInfo::GlicExperimentalTriggeringState state) {
-  if (state ==
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {
-    return {};
-  }
-  base::flat_set<std::string> capabilities = {kGlicCapabilityStructuredYields,
-                                              kGlicCapabilityPaymentMetadata};
-  if (base::FeatureList::IsEnabled(
-          features::kGlicExperimentalTriggeringScreenshot)) {
-    capabilities.insert(kGlicCapabilityScreenshot);
-  }
-  return capabilities;
 }
 
 }  // namespace glic
