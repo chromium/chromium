@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -294,6 +295,8 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kAccessibilityReadAnythingLastOpenedPresentationState);
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Wait for both load stop and language determination so that an in-flight
@@ -2329,11 +2332,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        MAYBE_Activate_OnCloseReadingMode_ListensForPageAck) {
   handler_ = CreateHandler();
-  auto* controller =
-      ReadAnythingController::From(browser()->GetActiveTabInterface());
 
   // Open reading mode and getting the starting web contents.
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kAppMenu);
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::View* overlay_view =
       browser_view->GetWidget()->GetContentsView()->GetViewByID(
@@ -2346,23 +2348,27 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   ASSERT_NE(original_contents, nullptr);
 
   // Close reading mode without acknowledging it.
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return handler_->ack_timed_out_for_testing(); }));
 
   // After showing RM again, the web contents should be new
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kAppMenu);
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu);
   auto* new_contents = GetImmersiveWebContents();
   ASSERT_NE(new_contents, original_contents);
 
   // Close reading mode again and now acknowledge it.
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu);
   handler_->AckReadingModeHidden();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !handler_->ack_timed_out_for_testing(); }));
 
   // After showing RM again, the web contents should be the same.
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kAppMenu);
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu);
   ASSERT_EQ(GetImmersiveWebContents(), new_contents);
 }
 
@@ -2465,7 +2471,8 @@ IN_PROC_BROWSER_TEST_F(
   handler_ = CreateHandler();
   ReadAnythingController* controller =
       ReadAnythingController::From(browser()->GetActiveTabInterface());
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
 
   handler_->OnDistillationStateChanged(
       read_anything::mojom::ReadAnythingDistillationState::kDistillationEmpty);
@@ -2480,7 +2487,8 @@ IN_PROC_BROWSER_TEST_F(
   handler_ = CreateHandler();
   ReadAnythingController* controller =
       ReadAnythingController::From(browser()->GetActiveTabInterface());
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
 
   handler_->OnDistillationStateChanged(
       read_anything::mojom::ReadAnythingDistillationState::

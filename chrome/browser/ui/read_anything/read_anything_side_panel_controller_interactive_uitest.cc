@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
+#include "chrome/browser/ui/read_anything/read_anything_test_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -137,10 +138,13 @@ IN_PROC_BROWSER_TEST_F(
       IDC_SHOW_READING_MODE_KEYBOARD, &reading_mode_accelerator));
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadingModeWebContentsId);
   RunTestSequence(
       InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, embedded_test_server()->GetURL(
-                                          kDocumentWithNamedElement)),
+      // Use a page with content. On an empty page, Reading Mode switches from
+      // the immersive overlay to the side panel on its own.
+      NavigateWebContents(
+          kActiveTab, embedded_test_server()->GetURL("/long_text_page.html")),
 
       // Use the keyboard shortcut command to open the immersive overlay
       SendAccelerator(kBrowserViewElementId, reading_mode_accelerator),
@@ -154,13 +158,14 @@ IN_PROC_BROWSER_TEST_F(
           },
           ReadAnythingController::PresentationState::kInImmersiveOverlay),
 
-      // Change presentation to Side Panel
-      Do([this]() {
-        auto* controller = ReadAnythingController::From(
-            browser()->GetTabStripModel()->GetActiveTab());
-        controller->ShowSidePanelUI(
-            SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
-      }),
+      // Change presentation to Side Panel the same way Reading Mode's
+      // presentation menu does.
+      InAnyContext(WaitForShow(kReadAnythingSettingsButtonElementId)),
+      InSameContext(InstrumentWebContentsContaining(
+          kReadingModeWebContentsId, kReadAnythingSettingsButtonElementId)),
+      InAnyContext(ExecuteJs(kReadingModeWebContentsId,
+                             "() => chrome.readingMode.togglePresentation()")
+                       .SetMustRemainVisible(false)),
       WaitForShow(kSidePanelElementId),
 
       // Verify that presentation state is Side Panel
@@ -378,10 +383,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelInteractiveTest, ToggleImages) {
 
       // Show Read Anything side panel.
       Do([this]() {
-        auto* controller = ReadAnythingController::From(
-            browser()->GetTabStripModel()->GetActiveTab());
-        controller->ShowSidePanelUI(
-            SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
+        read_anything::test::PreferSidePanel(browser()->GetProfile());
+        read_anything::ReadAnythingEntryPointController::ShowUI(
+            browser(), ReadAnythingOpenTrigger::kOmniboxChip);
       }),
       WaitForShow(kSidePanelElementId),
       // This is an element in the page.

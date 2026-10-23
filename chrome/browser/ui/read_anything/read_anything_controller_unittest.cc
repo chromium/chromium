@@ -44,6 +44,8 @@ class MockReadAnythingImmersiveActivationObserver
   MOCK_METHOD(void, OnCloseImmersive, (), (override));
 };
 
+}  // namespace
+
 class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -72,12 +74,10 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*mock_side_panel_ui_,
             Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
         .WillByDefault([this]() {
-          controller_->SetPresentationState(
-              ReadAnythingPresentationState::kInSidePanel);
+          SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
         });
     ON_CALL(*mock_side_panel_ui_, Close).WillByDefault([this]() {
-      controller_->SetPresentationState(
-          ReadAnythingPresentationState::kInactive);
+      SetPresentationState(ReadAnythingPresentationState::kInactive);
     });
 
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
@@ -98,12 +98,11 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
     ON_CALL(mock_immersive_observer_, OnShowImmersive)
         .WillByDefault([this](ReadAnythingOpenTrigger trigger) {
-          controller_->SetPresentationState(
+          SetPresentationState(
               ReadAnythingPresentationState::kInImmersiveOverlay);
         });
     ON_CALL(mock_immersive_observer_, OnCloseImmersive).WillByDefault([this]() {
-      controller_->SetPresentationState(
-          ReadAnythingPresentationState::kInactive);
+      SetPresentationState(ReadAnythingPresentationState::kInactive);
     });
 
     controller_->AddImmersiveActivationObserver(&mock_immersive_observer_);
@@ -111,8 +110,7 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     if (controller_) {
-      controller_->SetPresentationState(
-          ReadAnythingPresentationState::kInactive);
+      SetPresentationState(ReadAnythingPresentationState::kInactive);
       controller_->RemoveImmersiveActivationObserver(&mock_immersive_observer_);
     }
     controller_.reset();
@@ -126,6 +124,22 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  void ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
+    controller_->ShowImmersiveUI(trigger);
+  }
+  void ShowInPreferredUI(ReadAnythingOpenTrigger trigger) {
+    controller_->ShowInPreferredUI(trigger);
+  }
+  void ToggleUI(ReadAnythingOpenTrigger trigger) {
+    controller_->ToggleUI(trigger);
+  }
+  void TogglePresentation(bool is_user_initiated) {
+    controller_->TogglePresentation(is_user_initiated);
+  }
+  void SetPresentationState(ReadAnythingPresentationState new_state) {
+    controller_->SetPresentationState(new_state);
+  }
+
   std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
       mock_browser_window_interface_;
   std::unique_ptr<BrowserWindowFeatures> browser_window_features_;
@@ -142,7 +156,7 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ReadAnythingControllerUnitTest,
        OnDistillationStateChanged_EmptyContentInImmersive_TogglesToSidePanel) {
   base::HistogramTester histogram_tester;
-  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
 
@@ -162,7 +176,7 @@ TEST_F(ReadAnythingControllerUnitTest,
 
 TEST_F(ReadAnythingControllerUnitTest,
        OnDistillationStateChanged_WithContentInImmersive_StaysImmersive) {
-  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
 
@@ -180,8 +194,7 @@ TEST_F(ReadAnythingControllerUnitTest,
 TEST_F(ReadAnythingControllerUnitTest,
        OnDistillationStateChanged_EmptyInSidePanel_StaysInSidePanel) {
   base::HistogramTester histogram_tester;
-  controller_->SetPresentationState(
-      ReadAnythingPresentationState::kInSidePanel);
+  SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
 
   EXPECT_CALL(mock_immersive_observer_, OnCloseImmersive).Times(0);
   controller_->OnDistillationStateChanged(
@@ -196,7 +209,7 @@ TEST_F(ReadAnythingControllerUnitTest,
 TEST_F(ReadAnythingControllerUnitTest,
        OnDistillationStateChanged_OpenWithDistillationEmpty_OpensInSidePanel) {
   base::HistogramTester histogram_tester;
-  controller_->SetPresentationState(ReadAnythingPresentationState::kInactive);
+  SetPresentationState(ReadAnythingPresentationState::kInactive);
 
   controller_->OnDistillationStateChanged(
       ReadAnythingDistillationState::kDistillationEmpty);
@@ -208,7 +221,7 @@ TEST_F(ReadAnythingControllerUnitTest,
   EXPECT_CALL(*mock_side_panel_ui_,
               Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
       .Times(1);
-  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
@@ -224,7 +237,7 @@ TEST_F(ReadAnythingControllerUnitTest, AutomaticToggleDoesNotUpdatePreference) {
       static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
                            kInImmersiveOverlay));
 
-  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
 
@@ -240,20 +253,19 @@ TEST_F(ReadAnythingControllerUnitTest, AutomaticToggleDoesNotUpdatePreference) {
 TEST_F(ReadAnythingControllerUnitTest,
        TogglePresentation_UpdatesPreferenceWhenUserInitiated) {
   PrefService* prefs = profile()->GetPrefs();
-  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
 
-  controller_->TogglePresentation(/*is_user_initiated=*/true);
+  TogglePresentation(/*is_user_initiated=*/true);
 
   EXPECT_EQ(prefs->GetInteger(
                 prefs::kAccessibilityReadAnythingLastOpenedPresentationState),
             static_cast<int>(ReadAnythingPresentationState::kInSidePanel));
 
-  controller_->SetPresentationState(
-      ReadAnythingPresentationState::kInSidePanel);
+  SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
 
-  controller_->TogglePresentation(/*is_user_initiated=*/true);
+  TogglePresentation(/*is_user_initiated=*/true);
 
   EXPECT_EQ(
       prefs->GetInteger(
@@ -267,12 +279,12 @@ TEST_F(ReadAnythingControllerUnitTest, ShowInPreferredUI_RespectsPreference) {
       prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
       static_cast<int>(ReadAnythingPresentationState::kInSidePanel));
 
-  controller_->SetPresentationState(ReadAnythingPresentationState::kInactive);
+  SetPresentationState(ReadAnythingPresentationState::kInactive);
   EXPECT_CALL(mock_immersive_observer_, OnShowImmersive).Times(0);
   EXPECT_CALL(*mock_side_panel_ui_,
               Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
       .Times(1);
-  controller_->ShowInPreferredUI(ReadAnythingOpenTrigger::kAppMenu);
+  ShowInPreferredUI(ReadAnythingOpenTrigger::kAppMenu);
 
   prefs->SetInteger(
       prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
@@ -284,7 +296,7 @@ TEST_F(ReadAnythingControllerUnitTest, ShowInPreferredUI_RespectsPreference) {
   EXPECT_CALL(*mock_side_panel_ui_,
               Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
       .Times(0);
-  controller_->ShowInPreferredUI(ReadAnythingOpenTrigger::kAppMenu);
+  ShowInPreferredUI(ReadAnythingOpenTrigger::kAppMenu);
 }
 
 TEST_F(ReadAnythingControllerUnitTest, ToggleUI_TogglesAndRespectsPreference) {
@@ -297,7 +309,7 @@ TEST_F(ReadAnythingControllerUnitTest, ToggleUI_TogglesAndRespectsPreference) {
   EXPECT_CALL(*mock_side_panel_ui_,
               Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
       .Times(1);
-  controller_->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInSidePanel);
 
@@ -306,7 +318,7 @@ TEST_F(ReadAnythingControllerUnitTest, ToggleUI_TogglesAndRespectsPreference) {
               Close(SidePanelEntryHideReason::kSidePanelClosed,
                     /*suppress_animations=*/false))
       .Times(1);
-  controller_->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInactive);
 
@@ -317,28 +329,27 @@ TEST_F(ReadAnythingControllerUnitTest, ToggleUI_TogglesAndRespectsPreference) {
   EXPECT_CALL(mock_immersive_observer_,
               OnShowImmersive(ReadAnythingOpenTrigger::kOmniboxChip))
       .Times(1);
-  controller_->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // ToggleUI when open in Immersive -> closes Immersive.
   EXPECT_CALL(mock_immersive_observer_, OnCloseImmersive).Times(1);
-  controller_->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInactive);
 }
 
 TEST_F(ReadAnythingControllerUnitTest,
        ShowImmersiveUI_FromSidePanel_ClosesSidePanelWithoutAnimation) {
-  controller_->SetPresentationState(
-      ReadAnythingPresentationState::kInSidePanel);
+  SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
 
   EXPECT_CALL(*mock_side_panel_ui_,
               Close(SidePanelEntryHideReason::kSidePanelClosed,
                     /*suppress_animations=*/true))
       .Times(1);
   EXPECT_CALL(mock_immersive_observer_, OnShowImmersive).Times(1);
-  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
 }
@@ -484,5 +495,3 @@ TEST(ReadAnythingControllerPdfUrlTest, GetPdfUrlWithFitToWidth) {
       GURL("https://example.com/test.pdf#preview=foo&view=FitH"));
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-}  // namespace

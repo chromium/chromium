@@ -17,14 +17,17 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_test_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -33,6 +36,9 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -70,7 +76,6 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/translate/content/browser/pdf_translation_coordinator.h"
@@ -1566,6 +1571,27 @@ class TranslateManagerReadingModeBrowserTest
   }
 
  protected:
+  // Opens Reading Mode, or closes it if it's open, the same way Reading Mode's
+  // keyboard shortcut does.
+  void ToggleReadingMode() {
+    chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_KEYBOARD);
+  }
+
+  // Switches Reading Mode from the side panel to the immersive overlay the same
+  // way Reading Mode's presentation menu does.
+  void TogglePresentationFromSidePanel() {
+    views::View* content_wrapper =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->side_panel()
+            ->GetContentParentView();
+    ASSERT_EQ(content_wrapper->children().size(), 1u);
+    content::WebContents* reading_mode_contents =
+        static_cast<SidePanelWebUIView*>(content_wrapper->children()[0])
+            ->web_contents();
+    ASSERT_TRUE(content::ExecJs(reading_mode_contents,
+                                "chrome.readingMode.togglePresentation();"));
+  }
+
   // Switches to a new tab and back to the active tab, which hides Reading Mode
   // and shows it again if it was open.
   void SwitchTabAwayAndBack() {
@@ -1582,15 +1608,13 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
-  auto* controller = ReadAnythingController::From(
-      browser()->tab_strip_model()->GetActiveTab());
-  ASSERT_TRUE(controller);
+  read_anything::test::PreferSidePanel(browser()->GetProfile());
 
-  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ToggleReadingMode();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
 
-  controller->CloseSidePanelUI(ReadAnythingCloseReason::kClosedByUser);
+  ToggleReadingMode();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
@@ -1604,14 +1628,14 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
       browser()->tab_strip_model()->GetActiveTab());
   ASSERT_TRUE(controller);
 
-  controller->ShowImmersiveUI(
-      ReadAnythingController::ReadAnythingOpenTrigger::kOmniboxChip);
+  // Reading Mode opens in the immersive overlay by default.
+  ToggleReadingMode();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
   ASSERT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInImmersiveOverlay);
 
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  ToggleReadingMode();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
@@ -1927,7 +1951,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   auto* controller = ReadAnythingController::From(
       browser()->tab_strip_model()->GetActiveTab());
   ASSERT_TRUE(controller);
-  controller->TogglePresentation(/*is_user_initiated=*/false);
+  TogglePresentationFromSidePanel();
   EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
     return controller->GetPresentationState() ==
            ReadAnythingController::PresentationState::kInImmersiveOverlay;
@@ -1936,7 +1960,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_TRUE(language_state->pending_source_language().has_value());
 
   // Closing Reading Mode after the toggle should still cancel it.
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  ToggleReadingMode();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 
@@ -1961,7 +1985,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   auto* controller = ReadAnythingController::From(
       browser()->tab_strip_model()->GetActiveTab());
   ASSERT_TRUE(controller);
-  controller->TogglePresentation(/*is_user_initiated=*/false);
+  TogglePresentationFromSidePanel();
   EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
     return controller->GetPresentationState() ==
            ReadAnythingController::PresentationState::kInImmersiveOverlay;

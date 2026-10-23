@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
@@ -1319,6 +1320,7 @@ void ReadAnythingUntrustedPageHandler::CloseUI() {
     return;
   }
   read_anything_controller_->CloseImmersiveUI(
+      base::PassKey<ReadAnythingUntrustedPageHandler>(),
       ReadAnythingCloseReason::kClosedByUser);
 }
 
@@ -1335,7 +1337,9 @@ void ReadAnythingUntrustedPageHandler::SendPinStateRequest() {
 
 void ReadAnythingUntrustedPageHandler::TogglePresentation() {
   CHECK(read_anything_controller_);
-  read_anything_controller_->TogglePresentation(/*is_user_initiated=*/true);
+  read_anything_controller_->TogglePresentation(
+      base::PassKey<ReadAnythingUntrustedPageHandler>(),
+      /*is_user_initiated=*/true);
 }
 
 void ReadAnythingUntrustedPageHandler::AckReadingModeHidden() {

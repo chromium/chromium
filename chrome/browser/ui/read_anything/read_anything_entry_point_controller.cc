@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -270,7 +271,8 @@ void ReadAnythingEntryPointController::ShowUI(
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);
-    controller->ShowInPreferredUI(open_trigger);
+    controller->ShowInPreferredUI(
+        base::PassKey<ReadAnythingEntryPointController>(), open_trigger);
   }
 }
 
@@ -290,7 +292,8 @@ void ReadAnythingEntryPointController::ToggleUI(
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);
-    controller->ToggleUI(open_trigger);
+    controller->ToggleUI(base::PassKey<ReadAnythingEntryPointController>(),
+                         open_trigger);
   }
 }
 

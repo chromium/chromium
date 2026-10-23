@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
@@ -39,10 +40,15 @@ namespace input {
 struct NativeWebKeyboardEvent;
 }  // namespace input
 
+namespace read_anything {
+class ReadAnythingEntryPointController;
+}  // namespace read_anything
+
 class ReadAnythingController;
 class ReadAnythingHatsSurveyController;
 class ReadAnythingOmniboxController;
 class ReadAnythingSidePanelController;
+class ReadAnythingUntrustedPageHandler;
 class SidePanelRegistry;
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -109,8 +115,11 @@ class ReadAnythingControllerGlue
 // This controller is owned by TabFeatures and is instantiated once per tab.
 // Its lifetime is tied to the TabInterface.
 //
-// It acts as the primary entry point for all Reading Mode commands and is
-// responsible for orchestrating the display of the Reading Mode UI.
+// External callers must use ReadAnythingEntryPointController to open or toggle
+// Reading Mode. ReadAnythingController orchestrates the display and lifecycle
+// of the Reading Mode UI once invoked. Once Reading Mode is open, controls
+// inside its own WebUI (through ReadAnythingUntrustedPageHandler) can also
+// close the immersive overlay or switch presentations.
 class ReadAnythingController : public tabs::ContentsObservingTabFeature {
  public:
   using Observer = ReadAnythingLifecycleObserver;
@@ -148,33 +157,34 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void OnEntryShown(ReadAnythingOpenTrigger trigger);
   void OnEntryHidden();
 
-  // Displays the Reading Mode UI in the Side Panel.
-  void ShowSidePanelUI(SidePanelOpenTrigger trigger);
-
-  // Displays the Immersive Reading Mode UI in a full screen overlay.
-  void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
-
-  // Closes the Immersive Reading Mode UI.
-  void CloseImmersiveUI(ReadAnythingCloseReason reason);
-
-  // Closes the Reading mode side panel UI.
-  void CloseSidePanelUI(ReadAnythingCloseReason reason);
-
   // Shows Reading Mode using the user's preferred presentation mode.
-  void ShowInPreferredUI(ReadAnythingOpenTrigger trigger);
+  void ShowInPreferredUI(
+      base::PassKey<read_anything::ReadAnythingEntryPointController>,
+      ReadAnythingOpenTrigger trigger);
 
-  // Toggles the Immersive Reading Mode UI.
-  void ToggleUI(ReadAnythingOpenTrigger trigger);
+  // Toggles the Reading Mode UI.
+  void ToggleUI(base::PassKey<read_anything::ReadAnythingEntryPointController>,
+                ReadAnythingOpenTrigger trigger);
 
-  // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
-  void TogglePresentation(bool is_user_initiated);
+  // The following methods back controls inside Reading Mode's own WebUI, so
+  // they're restricted to ReadAnythingUntrustedPageHandler. They act on Reading
+  // Mode once it's open, rather than being entry points that open it, so they
+  // don't go through ReadAnythingEntryPointController.
+
+  // Closes the Immersive Reading Mode UI. Backs the immersive overlay's close
+  // button.
+  void CloseImmersiveUI(base::PassKey<ReadAnythingUntrustedPageHandler>,
+                        ReadAnythingCloseReason reason);
+
+  // Toggles between the Immersive Reading Mode UI and the Side Panel UI. Backs
+  // Reading Mode's presentation menu.
+  void TogglePresentation(base::PassKey<ReadAnythingUntrustedPageHandler>,
+                          bool is_user_initiated);
 
   // Returns the current presentation_state_ of the Reading Mode feature. This
   // refers to the current host of the WebUI, but does not guarantee that the
   // feature is necessarily showing by the host.
   PresentationState GetPresentationState() const;
-
-  void SetPresentationState(PresentationState new_state);
 
   // Handles OpenURL requests originating from Reading Mode WebUI instances
   // (both side panel and immersive views). Enforces security policies
@@ -247,6 +257,32 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void OnSidePanelWillHide(SidePanelEntryHideReason side_panel_reason);
 
  private:
+  friend class ReadAnythingControllerBrowserTest;
+  friend class ReadAnythingControllerUnitTest;
+
+  // Displays the Reading Mode UI in the Side Panel.
+  void ShowSidePanelUI(SidePanelOpenTrigger trigger);
+
+  // Displays the Immersive Reading Mode UI in a full screen overlay.
+  void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
+
+  // Closes the Immersive Reading Mode UI.
+  void CloseImmersiveUI(ReadAnythingCloseReason reason);
+
+  // Closes the Reading mode side panel UI.
+  void CloseSidePanelUI(ReadAnythingCloseReason reason);
+
+  // Shows Reading Mode using the user's preferred presentation mode.
+  void ShowInPreferredUI(ReadAnythingOpenTrigger trigger);
+
+  // Toggles the Reading Mode UI.
+  void ToggleUI(ReadAnythingOpenTrigger trigger);
+
+  // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
+  void TogglePresentation(bool is_user_initiated);
+
+  void SetPresentationState(PresentationState new_state);
+
   // Saves the presentation state to the user's preferences.
   void SavePresentationPreference(PresentationState state);
 

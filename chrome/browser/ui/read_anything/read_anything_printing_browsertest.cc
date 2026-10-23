@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -270,11 +271,8 @@ class ReadAnythingPrintingTestBase : public InProcessBrowserTest {
   // Shows IRM on the active tab and waits until its app has loaded.
   content::WebContents* OpenIRM() {
     tabs::TabInterface* tab = GetActiveTab();
-    auto* controller = ReadAnythingController::From(tab);
-    CHECK(controller);
-
-    controller->ShowImmersiveUI(
-        read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+    read_anything::ReadAnythingEntryPointController::ShowUI(
+        browser(), read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
 
     // Print commands must not target the IRM contents before the overlay is
     // visible.
@@ -504,8 +502,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   // Close IRM, which closes the preview. Wait until the preview is destroyed
   // so that its callbacks can't reach the next observer.
   content::WebContentsDestroyedWatcher watcher(preview);
-  ReadAnythingController::From(GetActiveTab())
-      ->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
   watcher.Wait();
 
   // IRM reads the line focus prefs only when it loads. Each tab loads its own
@@ -568,8 +566,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   ASSERT_TRUE(old_dialog);
   content::WebContentsDestroyedWatcher watcher(old_dialog);
 
-  ReadAnythingController::From(tab)->CloseImmersiveUI(
-      ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
 
   EXPECT_EQ(printing::GetWebContentsToPrint(tab), tab->GetContents());
   // The preview closes asynchronously. Wait until it is destroyed, which also
@@ -607,8 +605,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   content::WebContents* irm_contents = OpenIRM();
   ASSERT_TRUE(irm_contents);
 
-  ReadAnythingController::From(tab)->CloseImmersiveUI(
-      ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
 
   PrintAndExpectPreviewForTab(tab, irm_contents);
 }
@@ -670,7 +668,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
                        IrmClosedDuringHiddenPendingPrintCancelsPrint) {
   NavigateToArticle();
-  tabs::TabInterface* tab = GetActiveTab();
   content::WebContents* irm_contents = OpenIRM();
   ASSERT_TRUE(irm_contents);
   WaitForDistillation(irm_contents);
@@ -690,8 +687,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
         ->HasPrintPreviewDialog(dialog);
   }));
 
-  ReadAnythingController::From(tab)->CloseImmersiveUI(
-      ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
   // Closing IRM cancels the pending print synchronously, so check before
   // waiting.
   ASSERT_EQ(printing::PrintPreviewDialogController::GetInstance()
@@ -790,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingDisabledBrowserTest,
   EXPECT_EQ(printing::GetWebContentsToPrint(tab), tab->GetContents());
 
   // After IRM closes, Print prints the page.
-  ReadAnythingController::From(tab)->CloseImmersiveUI(
-      ReadAnythingCloseReason::kClosedByUser);
+  read_anything::ReadAnythingEntryPointController::ToggleUI(
+      browser(), read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
   PrintAndExpectPreviewForTab(tab, irm_contents);
 }

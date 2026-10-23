@@ -540,6 +540,12 @@ void ReadAnythingController::ShowSidePanelUI(SidePanelOpenTrigger trigger) {
   }
 }
 
+void ReadAnythingController::CloseImmersiveUI(
+    base::PassKey<ReadAnythingUntrustedPageHandler>,
+    ReadAnythingCloseReason reason) {
+  CloseImmersiveUI(reason);
+}
+
 void ReadAnythingController::CloseImmersiveUI(ReadAnythingCloseReason reason) {
   if (GetPresentationState() != PresentationState::kInImmersiveOverlay) {
     return;
@@ -593,6 +599,12 @@ void ReadAnythingController::OnSidePanelWillHide(
 }
 
 void ReadAnythingController::ShowInPreferredUI(
+    base::PassKey<read_anything::ReadAnythingEntryPointController>,
+    ReadAnythingOpenTrigger trigger) {
+  ShowInPreferredUI(trigger);
+}
+
+void ReadAnythingController::ShowInPreferredUI(
     ReadAnythingOpenTrigger trigger) {
   if (!tab_ || !tab_->GetBrowserWindowInterface()) {
     // This is not likely to happen, but if it ever does, default to showing
@@ -621,6 +633,12 @@ void ReadAnythingController::ShowInPreferredUI(
   }
 }
 
+void ReadAnythingController::ToggleUI(
+    base::PassKey<read_anything::ReadAnythingEntryPointController>,
+    ReadAnythingOpenTrigger trigger) {
+  ToggleUI(trigger);
+}
+
 void ReadAnythingController::ToggleUI(ReadAnythingOpenTrigger trigger) {
   if (trigger == ReadAnythingOpenTrigger::kKeyboardShortcut) {
     if (auto* user_ed = BrowserUserEducationInterface::From(
@@ -643,6 +661,12 @@ void ReadAnythingController::ToggleUI(ReadAnythingOpenTrigger trigger) {
   }
 
   ShowInPreferredUI(trigger);
+}
+
+void ReadAnythingController::TogglePresentation(
+    base::PassKey<ReadAnythingUntrustedPageHandler>,
+    bool is_user_initiated) {
+  TogglePresentation(is_user_initiated);
 }
 
 void ReadAnythingController::TogglePresentation(bool is_user_initiated) {
