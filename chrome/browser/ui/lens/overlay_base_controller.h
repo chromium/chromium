@@ -25,6 +25,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -43,12 +44,13 @@ class PrefService;
 // Manages all state associated with the overlay.
 // This class is not thread safe. It should only be used from the browser
 // thread.
-class OverlayBaseController : public content::WebContentsDelegate,
-                              public views::ViewObserver,
-                              public views::WidgetObserver,
-                              public content::RenderProcessHostObserver,
-                              public ImmersiveModeController::Observer,
-                              public content::WebContentsObserver {
+class OverlayBaseController
+    : public views::WebContentsDelegateViews<OverlayBaseController>,
+      public views::ViewObserver,
+      public views::WidgetObserver,
+      public content::RenderProcessHostObserver,
+      public ImmersiveModeController::Observer,
+      public content::WebContentsObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 

@@ -36,7 +36,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/input/native_web_keyboard_event.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/tabs/public/tab_interface.h"
@@ -49,7 +48,6 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -120,11 +118,6 @@ gfx::RectF GetRectForRegion(const SkBitmap& image, const gfx::RectF& region) {
   return gfx::RectF((region.x() - 0.5 * region.width()) * x_scale,
                     (region.y() - 0.5 * region.height()) * y_scale,
                     region.width() * x_scale, region.height() * y_scale);
-}
-
-bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
-  return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-         event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
 constexpr int kSelectionPaddingDip = 5;
@@ -277,6 +270,15 @@ SelectionOverlayController::SelectionOverlayController(
   TabStripModel* tab_strip_model = window->GetTabStripModel();
   CHECK(tab_strip_model);
   tab_strip_model->AddObserver(this);
+  SetOnEscCallback(base::BindRepeating(
+      [](base::WeakPtr<SelectionOverlayController> controller) {
+        if (controller && controller->state() == State::kOverlay) {
+          controller->Close(CloseReason::kEscapeKeyPress);
+          return true;
+        }
+        return false;
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 SelectionOverlayController::~SelectionOverlayController() {
@@ -675,24 +677,6 @@ void SelectionOverlayController::InitializeOverlay() {
   }
 
   RenderPendingRegions();
-}
-
-bool SelectionOverlayController::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  if (!overlay_web_view_ || state() != State::kOverlay) {
-    return false;
-  }
-  views::FocusManager* focus_manager = overlay_web_view_->GetFocusManager();
-  if (!focus_manager) {
-    return false;
-  }
-  if (IsEscapeEvent(event)) {
-    Close(CloseReason::kEscapeKeyPress);
-    return true;
-  }
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,
-                                                               focus_manager);
 }
 
 void SelectionOverlayController::StartScreenshotFlow() {

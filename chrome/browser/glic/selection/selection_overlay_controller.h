@@ -28,15 +28,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
-
-namespace input {
-struct NativeWebKeyboardEvent;
 }
 
 namespace views {
@@ -148,10 +143,6 @@ class SelectionOverlayController
   void OnOverlayWebViewFocused(views::WebView* web_view);
 
   void InitializeOverlay();
-
-  // `content::WebContentsDelegate`:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
 
   // `TabStripModelObserver`:
   void OnSplitTabChanged(const SplitTabChange& change) override;
@@ -301,8 +292,6 @@ class SelectionOverlayController
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   // Subscription to the active tab changes of the window that hosts `tab_`.
   base::CallbackListSubscription active_tab_subscription_;
-
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Must be the last member.
   base::WeakPtrFactory<SelectionOverlayController> weak_factory_{this};
