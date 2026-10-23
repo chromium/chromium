@@ -242,6 +242,7 @@ composebox-favicon-group {
 #menu hr {
   background: var(--color-sys-divider);
   border: none;
+  flex-shrink: 0;
   height: 1px;
   margin: 8px 0;
 }

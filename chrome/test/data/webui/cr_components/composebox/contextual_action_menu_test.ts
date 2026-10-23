@@ -3145,6 +3145,34 @@ suite('ContextualActionMenu', () => {
           const trigger = $$(actionMenu, '#shareTabsTrigger');
           assertFalse(isVisible(trigger));
         });
+
+    test(
+        'Flyout divider retains 1px height when tab list overflows max-height',
+        async () => {
+          actionMenu.smartTabSharingActive = false;
+          actionMenu.tabSuggestions =
+              Array.from({length: 12}, (_, i) => createTabSuggestion({
+                                         tabId: i + 1,
+                                         title: `Tab ${i + 1}`,
+                                       }));
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+          await actionMenu.updateComplete;
+
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          assertTrue(!!trigger);
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+          await actionMenu.updateComplete;
+
+          const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+          assertTrue(!!flyout);
+          assertTrue(flyout.scrollHeight > flyout.clientHeight);
+
+          const divider = flyout.querySelector('hr');
+          assertTrue(!!divider);
+          assertEquals(1, divider.offsetHeight);
+        });
   });
 
   suite('getSelectedTabs_', () => {
