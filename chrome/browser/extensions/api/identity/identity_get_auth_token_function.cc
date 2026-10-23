@@ -392,13 +392,6 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void IdentityGetAuthTokenFunction::StartWaitingForCookies() {
-  // A tracker from a previous wait, if any, has already reported its result.
-  web_signin_tracker_.reset();
-  // The tracker may report its result synchronously from its constructor,
-  // e.g. if the account reconcilor is already in an error state. Handling the
-  // result may finish the request and delete this
-  // `IdentityGetAuthTokenFunction`, so it is deferred until the tracker is
-  // constructed.
   web_signin_tracker_ = std::make_unique<signin::WebSigninTracker>(
       IdentityManagerFactory::GetForProfile(GetProfile()),
       AccountReconcilorFactory::GetForProfile(GetProfile()),
@@ -406,25 +399,15 @@ void IdentityGetAuthTokenFunction::StartWaitingForCookies() {
       base::BindOnce(&IdentityGetAuthTokenFunction::OnWebSigninTrackerResult,
                      weak_ptr_factory_.GetWeakPtr()),
       g_wait_for_cookies_timeout);
-
-  if (synchronous_tracker_result_) {
-    // May delete this `IdentityGetAuthTokenFunction`.
-    OnWebSigninTrackerResult(
-        *std::exchange(synchronous_tracker_result_, std::nullopt));
-  }
+  // The tracker may report its result synchronously, e.g. if the account
+  // reconcilor is already in an error state. Handling the result may finish
+  // the request and delete this `IdentityGetAuthTokenFunction`.
+  web_signin_tracker_->Start();
 }
 
 void IdentityGetAuthTokenFunction::OnWebSigninTrackerResult(
     signin::WebSigninTracker::Result result) {
-  if (!web_signin_tracker_) {
-    // Called from the tracker constructor, as `web_signin_tracker_` is not
-    // assigned yet. Handled by `StartWaitingForCookies()`.
-    synchronous_tracker_result_ = result;
-    return;
-  }
-
-  // Not resetting `web_signin_tracker_`, as this callback is run by the
-  // tracker itself.
+  web_signin_tracker_.reset();
 
   if (result != signin::WebSigninTracker::Result::kSuccess) {
     CompleteMintTokenFlow();

@@ -50,6 +50,12 @@ class WebSigninTracker : public IdentityManager::Observer,
 
   ~WebSigninTracker() override;
 
+  // Starts tracking the sign-in. Must be called at most once. May invoke
+  // `callback` synchronously if the sign-in result is already known (e.g., if
+  // the account is already in cookies or `AccountReconcilor` is in an error
+  // state), and `callback` may safely destroy `this` if this happens.
+  void Start();
+
   // IdentityManager::Observer:
   void OnAccountsInCookieUpdated(
       const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
@@ -78,6 +84,7 @@ class WebSigninTracker : public IdentityManager::Observer,
   // address of the account has not been made available in IdentityManager yet.
   std::variant<CoreAccountId, std::string> signin_account_;
   base::OnceCallback<void(Result)> callback_;
+  const std::optional<base::TimeDelta> timeout_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>

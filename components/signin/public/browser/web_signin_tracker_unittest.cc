@@ -52,6 +52,16 @@ class WebSigninTrackerTest : public ::testing::Test {
         account, std::move(callback), timeout);
   }
 
+  std::unique_ptr<WebSigninTracker> CreateAndStartWebSigninTracker(
+      CoreAccountId account,
+      base::OnceCallback<void(WebSigninTracker::Result)> callback,
+      std::optional<base::TimeDelta> timeout = std::nullopt) {
+    std::unique_ptr<WebSigninTracker> tracker =
+        CreateWebSigninTracker(account, std::move(callback), timeout);
+    tracker->Start();
+    return tracker;
+  }
+
   ConsentLevel GetConsentLevel() const {
 #if BUILDFLAG(IS_CHROMEOS)
     return ConsentLevel::kSync;
@@ -76,7 +86,7 @@ TEST_F(WebSigninTrackerTest,
       identity_test_env_.MakeAccountAvailable("test@gmail.com");
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(account.GetAccountId(), callback.Get());
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kSuccess));
 
   identity_test_env_.SetPrimaryAccount(account.GetEmail(), GetConsentLevel());
@@ -110,7 +120,7 @@ TEST_F(WebSigninTrackerTest,
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kSuccess));
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account1.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(account1.GetAccountId(), callback.Get());
 
   tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.Success", 1);
 }
@@ -124,7 +134,8 @@ TEST_F(WebSigninTrackerTest,
       identity_test_env_.MakeAccountAvailable("test2@gmail.com");
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(signin_account.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(signin_account.GetAccountId(),
+                                     callback.Get());
   EXPECT_CALL(callback, Run(_)).Times(0);
 
   identity_test_env_.SetPrimaryAccount(non_signin_account.GetEmail(),
@@ -142,7 +153,7 @@ TEST_F(WebSigninTrackerTest, ReconcilorAuthErrorShouldTriggerAuthErrorResult) {
       identity_test_env_.MakeAccountAvailable("test@gmail.com");
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(account.GetAccountId(), callback.Get());
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kAuthError))
@@ -176,7 +187,7 @@ TEST_F(WebSigninTrackerTest,
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kAuthError));
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(account.GetAccountId(), callback.Get());
 
   tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.AuthError", 1);
 }
@@ -188,7 +199,7 @@ TEST_F(WebSigninTrackerTest,
       identity_test_env_.MakeAccountAvailable("test@gmail.com");
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(account.GetAccountId(), callback.Get());
   base::RunLoop run_loop;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kOtherError))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
@@ -218,7 +229,7 @@ TEST_F(WebSigninTrackerTest,
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kOtherError));
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.GetAccountId(), callback.Get());
+      CreateAndStartWebSigninTracker(account.GetAccountId(), callback.Get());
 
   tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.OtherError", 1);
 }
@@ -230,7 +241,8 @@ TEST_F(WebSigninTrackerTest, TimeoutResult) {
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   base::TimeDelta timeout = base::Seconds(30);
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.GetAccountId(), callback.Get(), timeout);
+      CreateAndStartWebSigninTracker(account.GetAccountId(), callback.Get(),
+                                     timeout);
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kTimeout))
@@ -241,6 +253,29 @@ TEST_F(WebSigninTrackerTest, TimeoutResult) {
   run_loop.Run();
 
   tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.Timeout", 1);
+}
+
+TEST_F(WebSigninTrackerTest, KnownResultShouldNotBeTriggeredBeforeStart) {
+  base::HistogramTester tester;
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("test@gmail.com");
+  identity_test_env_.SetPrimaryAccount(account.GetEmail(), GetConsentLevel());
+  CookieParamsForTest cookie_params{std::string(account.GetEmail()),
+                                    account.GetGaiaId()};
+  identity_test_env_.SetCookieAccounts({cookie_params});
+
+  base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  std::unique_ptr<WebSigninTracker> web_signin_tracker =
+      CreateWebSigninTracker(account.GetAccountId(), callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+  tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.Success", 0);
+
+  // The account is already in cookies, so the result is reported right away.
+  EXPECT_CALL(callback, Run(WebSigninTracker::Result::kSuccess));
+  web_signin_tracker->Start();
+
+  tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.Success", 1);
 }
 
 }  // namespace signin

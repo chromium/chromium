@@ -297,12 +297,8 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   std::unique_ptr<RefreshTokensLoadedWaiter> refresh_tokens_loaded_waiter_;
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Waits for the account to be available in the cookie jar before showing the
-  // remote consent dialog. Kept alive after reporting its result, until the
-  // next wait.
+  // remote consent dialog.
   std::unique_ptr<signin::WebSigninTracker> web_signin_tracker_;
-  // Result reported from the `web_signin_tracker_` constructor, handled once
-  // the constructor returns.
-  std::optional<signin::WebSigninTracker::Result> synchronous_tracker_result_;
 #endif
   std::unique_ptr<GaiaRemoteConsentFlow> gaia_remote_consent_flow_;
   std::string consent_result_;

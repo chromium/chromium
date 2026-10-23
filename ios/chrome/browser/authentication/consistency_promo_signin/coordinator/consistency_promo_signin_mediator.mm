@@ -298,6 +298,10 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
                                          signinAccount:accountId
                                           withCallback:&callback
                                            withTimeout:kSigninTimeout];
+  // TODO(crbug.com/570450501): Stub the tracker in tests and remove this check.
+  if (_webSigninTracker) {
+    _webSigninTracker->Start();
+  }
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:

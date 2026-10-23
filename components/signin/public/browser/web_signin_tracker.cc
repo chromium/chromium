@@ -49,15 +49,22 @@ WebSigninTracker::WebSigninTracker(
     : identity_manager_(identity_manager),
       account_reconcilor_(account_reconcilor),
       signin_account_(signin_account),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      timeout_(timeout) {
   CHECK(callback_);
+}
+
+WebSigninTracker::~WebSigninTracker() = default;
+
+void WebSigninTracker::Start() {
+  CHECK(web_signin_tracker_start_time_.is_null());
   web_signin_tracker_start_time_ = base::TimeTicks::Now();
 
   identity_manager_observation_.Observe(identity_manager_);
   account_reconcilor_observation_.Observe(account_reconcilor_);
 
-  if (timeout) {
-    timeout_timer_.Start(FROM_HERE, *timeout, this,
+  if (timeout_) {
+    timeout_timer_.Start(FROM_HERE, *timeout_, this,
                          &WebSigninTracker::OnTimeoutReached);
   }
 
@@ -69,10 +76,8 @@ WebSigninTracker::WebSigninTracker(
     return;
   }
 
-  OnStateChanged(account_reconcilor->GetState());
+  OnStateChanged(account_reconcilor_->GetState());
 }
-
-WebSigninTracker::~WebSigninTracker() = default;
 
 void WebSigninTracker::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,

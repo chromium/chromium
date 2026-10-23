@@ -37,7 +37,10 @@ WebSigninTrackerBridge::WebSigninTrackerBridge(
     : tracker_(identity_manager,
                account_reconcilor,
                std::move(signin_account),
-               std::move(callback)) {}
+               std::move(callback)) {
+  // TODO(crbug.com/570450501): Let callers start the tracker separately.
+  tracker_.Start();
+}
 
 WebSigninTrackerBridge::~WebSigninTrackerBridge() = default;
 
