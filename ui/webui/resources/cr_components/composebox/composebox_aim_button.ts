@@ -17,10 +17,11 @@ export enum AimButtonMode {
   SEND = 'send',
 }
 
-// The string is used as the CSS class of the trailing icon element (close icon
-// or arrow icon). Keep the string in sync with the selectors in the stylesheet.
+// The string is used as the CSS class of the trailing icon element (close icon,
+// arrow icon, or collapsed). Keep the string in sync with the selectors in the
+// stylesheet.
 enum TrailingIcon {
-  NONE = '',
+  NONE = 'collapsed',
   ARROW = 'arrow-icon',
   EXIT = 'icon-clear',
 }
@@ -83,9 +84,11 @@ export class ComposeboxAimButtonElement extends CrLitElement {
     this.$.button?.blur();
   }
 
-  // Only the exit state without X (exit icon) shows the leading icon.
-  protected showLeadingIcon_(): boolean {
-    return this.mode === AimButtonMode.EXIT && !this.showExitIcon;
+  // Only the exit state without X (exit icon) shows the leading icon. The
+  // returned class must match the stylesheet's `.collapsed` selector.
+  protected getLeadingIconClass_(): string {
+    const shown = this.mode === AimButtonMode.EXIT && !this.showExitIcon;
+    return shown ? '' : 'collapsed';
   }
 
   // Send state shows the arrow icon; exit state with X (exit icon) shows the

@@ -16,20 +16,17 @@ export function getHtml(this: ComposeboxAimButtonElement) {
     title="${this.getTitle_()}"
     aria-label="${this.getTitle_()}"
     @click="${this.onClick_}">
-  ${this.showLeadingIcon_() ? html`
-    <div id="leadingIcon"
-        slot="prefix-icon"
-        aria-hidden="true">
-    </div>
-  ` : ''}
+  <div id="leadingIcon"
+      slot="prefix-icon"
+      class="${this.getLeadingIconClass_()}"
+      aria-hidden="true">
+  </div>
   <span id="label">${this.label}</span>
-  ${this.getTrailingIcon_() ? html`
-    <div id="trailingIcon"
-        slot="suffix-icon"
-        class="${this.getTrailingIcon_()}"
-        aria-hidden="true">
-    </div>
-  ` : ''}
+  <div id="trailingIcon"
+      slot="suffix-icon"
+      class="${this.getTrailingIcon_()}"
+      aria-hidden="true">
+  </div>
 </cr-button>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -33,8 +33,8 @@
   border: none;
   color: var(--color-composebox-submit-button-icon, white);
   font-size: 13px;
-  /* Fixed 8px/12px padding + 22px label margin keeps width at label + 42px. */
-  padding-inline: 8px 12px;
+  gap: 0;
+  padding-inline: 8px;
 }
 
 :host-context(.focus-outline-visible) #button:focus {
@@ -43,37 +43,26 @@
       var(--cr-focus-outline-color));
 }
 
-/* 22px reserves 20px leading icon + 2px gap.
- * Shifted by default: start offset 12px instead of 30px (8+22). */
 #label {
-  inset-inline-start: -18px;
-  margin-inline-start: 22px;
-  position: relative;
-  transition: inset-inline-start var(--aim-motion-duration)
-      var(--aim-motion-easing);
   white-space: nowrap;
 }
 
-/* The label rests at 30px only while the leading icon is mounted. */
-#leadingIcon ~ #label {
-  inset-inline-start: 0;
-}
-
-/* Keep icons out of flow so swapping them preserves the label's layout. */
+/* A fixed mask size keeps the glyph unscaled while the box width animates. */
 #leadingIcon,
 #trailingIcon {
   -webkit-mask-image: var(--cr-icon-image);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
+  -webkit-mask-size: 20px;
   background-color: currentColor;
   height: 20px;
   mask-image: var(--cr-icon-image);
   mask-position: center;
   mask-repeat: no-repeat;
-  mask-size: contain;
-  position: absolute;
-  transition: opacity var(--aim-motion-duration) var(--aim-motion-easing);
+  mask-size: 20px;
+  transition-duration: var(--aim-motion-duration);
+  transition-property: width, margin-inline, opacity;
+  transition-timing-function: var(--aim-motion-easing);
   width: 20px;
 }
 
@@ -82,12 +71,27 @@
   --cr-icon-image:
       url(//resources/cr_components/searchbox/icons/search_spark.svg);
   -webkit-mask-size: 18px;
-  inset-inline-start: 8px;
+  margin-inline-end: 2px;
   mask-size: 18px;
 }
 
 #trailingIcon {
-  inset-inline-end: 8px;
+  margin-inline-start: 2px;
+}
+
+#leadingIcon.collapsed,
+#trailingIcon.collapsed {
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
+}
+
+#leadingIcon.collapsed {
+  margin-inline-end: 4px;
+}
+
+#trailingIcon.collapsed {
+  margin-inline-start: 4px;
 }
 
 #trailingIcon.arrow-icon {
@@ -102,12 +106,4 @@
 
 :host-context([dir='rtl']) #trailingIcon.arrow-icon {
   transform: scaleX(-1);
-}
-
-/* The template mounts one icon at a time; CSS only fades the mounted one in. */
-@starting-style {
-  #leadingIcon,
-  #trailingIcon {
-    opacity: 0;
-  }
 }
