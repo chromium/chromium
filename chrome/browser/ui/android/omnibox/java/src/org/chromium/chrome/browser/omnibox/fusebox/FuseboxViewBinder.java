@@ -473,7 +473,7 @@ class FuseboxViewBinder {
             setCustomButtonDrawables(buttonView, drawable, data.selected);
         } else {
             int iconId = data.iconId == 0 ? IconResourceIds.GLOBE_VALUE : data.iconId;
-            @DrawableRes int iconRes = getResIdForIconId(iconId);
+            @DrawableRes int iconRes = FuseboxIconUtils.getResIdForIconId(iconId);
             setButtonDrawables(buttonView, iconRes, data.selected);
         }
 
@@ -525,25 +525,6 @@ class FuseboxViewBinder {
         imageView.setVisibility(startDrawable != null ? View.VISIBLE : View.GONE);
 
         setButtonSelected(holder, selected);
-    }
-
-    /** Maps ids found in generated protos to local resources backed drawable ids. */
-    private static @DrawableRes int getResIdForIconId(int iconId) {
-        return switch (iconId) {
-            case IconResourceIds.GLOBE_VALUE -> R.drawable.ic_globe_24dp;
-            case IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE ->
-                    R.drawable.search_spark_black_24dp;
-            case IconResourceIds.IMAGE_CREATE_VALUE -> R.drawable.image_create_24dp;
-            case IconResourceIds.BANANA_VALUE -> R.drawable.create_image_24dp;
-            case IconResourceIds.TRAVEL_EXPLORE_VALUE -> R.drawable.travel_explore_24dp;
-            case IconResourceIds.DRAFT_SPARK_VALUE -> R.drawable.draft_spark_24dp;
-            case IconResourceIds.AUTORENEW_VALUE -> R.drawable.autorenew_24dp;
-            case IconResourceIds.TIMER_VALUE -> R.drawable.ic_timer;
-            case IconResourceIds.BOLT_VALUE -> R.drawable.bolt_24dp;
-            case IconResourceIds.TASK_SPARK_VALUE -> R.drawable.task_spark_24dp;
-            case IconResourceIds.ACUTE_VALUE -> R.drawable.acute_24dp;
-            default -> Resources.ID_NULL;
-        };
     }
 
     private static void themeButton(
@@ -733,7 +714,7 @@ class FuseboxViewBinder {
 
         @IconResourceIdsProtoIntDef.IconResourceIds
         int iconId = model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID);
-        @DrawableRes int startIconRes = getResIdForIconId(iconId);
+        @DrawableRes int startIconRes = FuseboxIconUtils.getResIdForIconId(iconId);
         Drawable startDrawable =
                 startIconRes != Resources.ID_NULL ? context.getDrawable(startIconRes) : null;
         Drawable endDrawable = assumeNonNull(context.getDrawable(R.drawable.btn_close)).mutate();

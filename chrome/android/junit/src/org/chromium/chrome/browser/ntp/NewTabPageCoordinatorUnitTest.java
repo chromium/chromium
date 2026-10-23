@@ -121,8 +121,14 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.IconProto.Icon;
+import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.InputSourceProto.InputSource;
+import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
+import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -1137,6 +1143,100 @@ public class NewTabPageCoordinatorUnitTest {
                         AutocompleteRequestType.AI_MODE,
                         OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED,
                         /* pastedText= */ null);
+    }
+
+    @Test
+    public void testGetCreateImageChipIconRes_usesImageGenToolConfigIcon() {
+        InputState inputState =
+                new InputStateBuilder()
+                        .withToolConfigs(
+                                ToolConfig.newBuilder()
+                                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                                        .setIcon(
+                                                Icon.newBuilder()
+                                                        .setIconId(IconResourceIds.TRAVEL_EXPLORE))
+                                        .build(),
+                                ToolConfig.newBuilder()
+                                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                                        .setIcon(
+                                                Icon.newBuilder().setIconId(IconResourceIds.BANANA))
+                                        .build())
+                        .build();
+        assertEquals(
+                R.drawable.create_image_24dp,
+                NewTabPageCoordinator.getCreateImageChipIconRes(inputState));
+    }
+
+    @Test
+    public void testGetCreateImageChipIconRes_fallsBackToDefault() {
+        assertEquals(
+                R.drawable.image_create_24dp,
+                NewTabPageCoordinator.getCreateImageChipIconRes(null));
+        // No icon.
+        assertEquals(
+                R.drawable.image_create_24dp,
+                NewTabPageCoordinator.getCreateImageChipIconRes(
+                        new InputStateBuilder()
+                                .withToolConfigs(
+                                        ToolConfig.newBuilder()
+                                                .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                                                .build())
+                                .build()));
+        // Icon without a client drawable.
+        assertEquals(
+                R.drawable.image_create_24dp,
+                NewTabPageCoordinator.getCreateImageChipIconRes(
+                        new InputStateBuilder()
+                                .withToolConfigs(
+                                        ToolConfig.newBuilder()
+                                                .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                                                .setIcon(
+                                                        Icon.newBuilder()
+                                                                .setIconId(IconResourceIds.SOCCER))
+                                                .build())
+                                .build()));
+    }
+
+    @Test
+    public void testGetGalleryChipIconRes_usesGallerySourcedLensImageConfigIcon() {
+        InputState inputState =
+                new InputStateBuilder()
+                        .withInputTypeConfigs(
+                                InputTypeConfig.newBuilder()
+                                        .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                                        .setInputSource(InputSource.INPUT_SOURCE_CAMERA)
+                                        .setIcon(
+                                                Icon.newBuilder()
+                                                        .setIconId(IconResourceIds.TRAVEL_EXPLORE))
+                                        .build(),
+                                InputTypeConfig.newBuilder()
+                                        .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                                        .setInputSource(InputSource.INPUT_SOURCE_GALLERY)
+                                        .setIcon(Icon.newBuilder().setIconId(IconResourceIds.BOLT))
+                                        .build())
+                        .build();
+        assertEquals(R.drawable.bolt_24dp, NewTabPageCoordinator.getGalleryChipIconRes(inputState));
+    }
+
+    @Test
+    public void testGetGalleryChipIconRes_fallsBackToDefault() {
+        assertEquals(
+                R.drawable.add_photo_alternate_24dp,
+                NewTabPageCoordinator.getGalleryChipIconRes(null));
+        // Only a camera-sourced config.
+        assertEquals(
+                R.drawable.add_photo_alternate_24dp,
+                NewTabPageCoordinator.getGalleryChipIconRes(
+                        new InputStateBuilder()
+                                .withInputTypeConfigs(
+                                        InputTypeConfig.newBuilder()
+                                                .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                                                .setInputSource(InputSource.INPUT_SOURCE_CAMERA)
+                                                .setIcon(
+                                                        Icon.newBuilder()
+                                                                .setIconId(IconResourceIds.BOLT))
+                                                .build())
+                                .build()));
     }
 
     @Test

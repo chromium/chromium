@@ -18,6 +18,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -74,6 +75,7 @@ import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxIconUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
@@ -108,9 +110,14 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.IconProto.Icon;
+import org.chromium.components.omnibox.InputSourceProto.InputSource;
+import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
+import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -241,9 +248,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private boolean mIsComposeplatePolicyEnabled;
     private boolean mIsComposeplateViewInitialized;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
-    // Whether the image generation tool is allowed for mProfile. Lazily computed by
-    // #isImageGenToolAllowed(); TriState.NOT_SET until then.
-    private @TriState int mIsImageGenToolAllowed;
+    // The Composebox InputState for mProfile.
+    private @Nullable InputState mComposeboxInputState;
     // Previous visibility states for metrics.
     private @TriState int mPreviousVoiceSearchButtonVisible;
     private @TriState int mPreviousLensButtonVisible;
@@ -657,11 +663,17 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // log.
         mComposeplateCoordinator.setComposeplateButtonClickListener(
                 this::onComposeplateButtonClicked);
-        @ActionChips int chipType = getOptionalButtonChipType();
+        @ActionChips int merchandisingChipType = NewTabPageUtils.getMerchandisingChipsType();
+        if (merchandisingChipType == ActionChips.CREATE_IMAGE
+                || merchandisingChipType == ActionChips.GALLERY) {
+            mComposeboxInputState = fetchComposeboxInputState();
+        }
+        @ActionChips int chipType = getOptionalButtonChipType(mComposeboxInputState);
         if (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
                     this::onCreateButtonClicked, chipType);
-            mComposeplateCoordinator.setOptionalButtonIcon(R.drawable.image_create_24dp);
+            mComposeplateCoordinator.setOptionalButtonIcon(
+                    getCreateImageChipIconRes(mComposeboxInputState));
             mComposeplateCoordinator.setOptionalButtonText(
                     mActivity.getString(R.string.ntp_action_chip_create_image));
             mComposeplateCoordinator.setOptionalButtonContentDescription(
@@ -669,6 +681,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         } else if (chipType == NewTabPageUtils.ActionChips.GALLERY) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
                     this::onGalleryButtonClicked, chipType);
+            mComposeplateCoordinator.setOptionalButtonIcon(
+                    getGalleryChipIconRes(mComposeboxInputState));
         }
 
         updateComposeplateBackground();
@@ -1344,7 +1358,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void updateComposeplateOptionalButtonVisibility() {
         if (mComposeplateCoordinator == null) return;
 
-        @ActionChips int chipType = getOptionalButtonChipType();
+        @ActionChips int chipType = getOptionalButtonChipType(mComposeboxInputState);
         boolean isOptionalButtonVisible =
                 mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                         && (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE
@@ -1358,45 +1372,101 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * don't support the fusebox, since both rely on it. The create image chip falls back to the
      * gallery chip when image generation isn't an allowed tool for the current profile.
      */
-    private @ActionChips int getOptionalButtonChipType() {
+    private static @ActionChips int getOptionalButtonChipType(@Nullable InputState inputState) {
         @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
         if ((chipType == ActionChips.CREATE_IMAGE || chipType == ActionChips.GALLERY)
                 && !OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
             return ActionChips.DEFAULT;
         }
-        if (chipType == ActionChips.CREATE_IMAGE && !isImageGenToolAllowed()) {
+        if (chipType == ActionChips.CREATE_IMAGE && !isImageGenToolAllowed(inputState)) {
             return ActionChips.GALLERY;
         }
         return chipType;
     }
 
-    /**
-     * Returns whether the image generation tool is allowed for the current profile. On first call,
-     * this starts a short-lived Composebox session to read the allowed tools from its initial
-     * {@link InputState}, then immediately closes it. The result is cached for the lifetime of this
-     * coordinator.
-     */
-    private boolean isImageGenToolAllowed() {
-        if (mIsImageGenToolAllowed == TriState.NOT_SET) {
-            mIsImageGenToolAllowed = TriStateUtils.from(computeIsImageGenToolAllowed());
-        }
-        return mIsImageGenToolAllowed == TriState.TRUE;
+    /** Returns whether the image generation tool is allowed in {@code inputState}. */
+    private static boolean isImageGenToolAllowed(@Nullable InputState inputState) {
+        return inputState != null && inputState.allowedTools.contains(ToolMode.TOOL_MODE_IMAGE_GEN);
     }
 
-    private boolean computeIsImageGenToolAllowed() {
+    /**
+     * Returns the {@link InputState} for the current profile, or null if no Composebox
+     * session can be created. This starts a short-lived Composebox session to read its initial
+     * {@link InputState}, then immediately closes it.
+     */
+    private @Nullable InputState fetchComposeboxInputState() {
         ComposeboxQueryControllerBridge bridge =
                 ComposeboxQueryControllerBridge.create(mProfile, /* webContents= */ null);
         // No session can be created if, e.g., AIM is ineligible or disabled by policy; no tools
         // are available in that case.
-        if (bridge == null) return false;
+        if (bridge == null) return null;
         try {
             // The initial input state is delivered synchronously while the session is created.
-            InputState inputState = bridge.getInputStateSupplier().get();
-            return inputState != null
-                    && inputState.allowedTools.contains(ToolMode.TOOL_MODE_IMAGE_GEN);
+            return bridge.getInputStateSupplier().get();
         } finally {
             bridge.destroy();
         }
+    }
+
+    /**
+     * Returns the icon for the create image chip, derived from the icon of the {@link
+     * ToolMode#TOOL_MODE_IMAGE_GEN} {@link ToolConfig}. Falls back to a default icon if the config
+     * has no icon with a matching client drawable.
+     */
+    @VisibleForTesting
+    static @DrawableRes int getCreateImageChipIconRes(@Nullable InputState inputState) {
+        if (inputState != null) {
+            for (ToolConfig toolConfig : inputState.getToolConfigs()) {
+                if (toolConfig.getToolValue() == ToolMode.TOOL_MODE_IMAGE_GEN) {
+                    return getIconResOrDefault(
+                            toolConfig.hasIcon() ? toolConfig.getIcon() : null,
+                            R.drawable.image_create_24dp);
+                }
+            }
+        }
+        return R.drawable.image_create_24dp;
+    }
+
+    /**
+     * Returns the icon for the gallery chip, derived from the icon of the {@link
+     * InputType#INPUT_TYPE_LENS_IMAGE} {@link InputTypeConfig}. Since that input type is shared by
+     * multiple sources (e.g. camera), the config with {@link InputSource#INPUT_SOURCE_GALLERY} is
+     * preferred, followed by one without a specified source. Falls back to a default icon if no
+     * such config has an icon with a matching client drawable.
+     */
+    @VisibleForTesting
+    static @DrawableRes int getGalleryChipIconRes(@Nullable InputState inputState) {
+        @Nullable InputTypeConfig galleryConfig = null;
+        if (inputState != null) {
+            for (InputTypeConfig inputTypeConfig : inputState.getInputTypeConfigs()) {
+                if (inputTypeConfig.getInputTypeValue() != InputType.INPUT_TYPE_LENS_IMAGE_VALUE) {
+                    continue;
+                }
+                int source = inputTypeConfig.getInputSourceValue();
+                if (source == InputSource.INPUT_SOURCE_GALLERY_VALUE) {
+                    galleryConfig = inputTypeConfig;
+                    break;
+                }
+                if (source == InputSource.INPUT_SOURCE_UNSPECIFIED_VALUE && galleryConfig == null) {
+                    galleryConfig = inputTypeConfig;
+                }
+            }
+        }
+        return getIconResOrDefault(
+                galleryConfig != null && galleryConfig.hasIcon() ? galleryConfig.getIcon() : null,
+                R.drawable.add_photo_alternate_24dp);
+    }
+
+    /**
+     * Returns the client drawable mapped from {@code icon}'s id, or {@code defaultRes} if the icon
+     * is absent or has no matching client drawable.
+     */
+    private static @DrawableRes int getIconResOrDefault(
+            @Nullable Icon icon, @DrawableRes int defaultRes) {
+        if (icon == null || !icon.hasIconId()) return defaultRes;
+
+        @DrawableRes int iconRes = FuseboxIconUtils.getResIdForIconId(icon.getIconIdValue());
+        return iconRes != Resources.ID_NULL ? iconRes : defaultRes;
     }
 
     /**
