@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.widget.displaystyle;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
@@ -95,5 +96,27 @@ public class UiConfigTest {
                 .onDisplayStyleChanged(
                         new DisplayStyle(
                                 HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR));
+    }
+
+    @Test
+    @Config(qualifiers = "w700dp-h600dp")
+    public void testObserverNotification_DisplayStyleUnchanged() {
+        mUiConfig = new UiConfig(mView);
+        DisplayStyleObserver observer = mock(DisplayStyleObserver.class);
+        mUiConfig.addObserver(observer);
+        DisplayStyle wideDisplayStyle =
+                new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
+
+        // Initial notification upon adding observer.
+        verify(observer).onDisplayStyleChanged(wideDisplayStyle);
+
+        // Observers are notified on every refresh even if the display style is unchanged, since
+        // some observers depend on the exact available width.
+        mUiConfig.updateDisplayStyle();
+        verify(observer, times(2)).onDisplayStyleChanged(wideDisplayStyle);
+
+        // Update with inset that keeps the display style (700 - 50 = 650 -> Wide).
+        mUiConfig.setHorizontalInset(50);
+        verify(observer, times(3)).onDisplayStyleChanged(wideDisplayStyle);
     }
 }

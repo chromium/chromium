@@ -44,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -604,6 +605,94 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "w839dp")
+    public void testSearchBoxWidth_MediumWindowOnTablet() {
+        testSearchBoxWidthInWideWindowOnTabletImpl(/* isExpandedWindow= */ false);
+    }
+
+    @Test
+    @Config(qualifiers = "w840dp")
+    public void testSearchBoxWidth_ExpandedWindowOnTablet() {
+        testSearchBoxWidthInWideWindowOnTabletImpl(/* isExpandedWindow= */ true);
+    }
+
+    @Test
+    @Config(qualifiers = "w839dp")
+    public void testSearchBoxWidth_ResizeBetweenMediumAndExpandedWindowOnTablet() {
+        setHorizontalDisplayStyle(HorizontalDisplayStyle.WIDE);
+        createCoordinator(/* isLff= */ true);
+        assertEquals(0, mCoordinator.getSearchBoxTwoSideMarginForTesting());
+
+        // Crossing the expanded window width doesn't change the display style, but UiConfig still
+        // notifies its observers on the configuration change.
+        RuntimeEnvironment.setQualifiers("w840dp");
+        notifyDisplayStyleObserver();
+        assertEquals(
+                getExpandedWindowSearchBoxTwoSideMargin(),
+                mCoordinator.getSearchBoxTwoSideMarginForTesting());
+
+        RuntimeEnvironment.setQualifiers("w839dp");
+        notifyDisplayStyleObserver();
+        assertEquals(0, mCoordinator.getSearchBoxTwoSideMarginForTesting());
+    }
+
+    @Test
+    @Config(qualifiers = "w900dp")
+    public void testSearchBoxWidth_ExpandedScreenWithHorizontalInsetOnTablet() {
+        setHorizontalDisplayStyle(HorizontalDisplayStyle.WIDE);
+        createCoordinator(/* isLff= */ true);
+        assertEquals(
+                getExpandedWindowSearchBoxTwoSideMargin(),
+                mCoordinator.getSearchBoxTwoSideMarginForTesting());
+
+        // The horizontal inset, e.g. of a side UI, is excluded from the window width, so the
+        // window becomes a medium-width window.
+        when(mUiConfig.getHorizontalInset()).thenReturn(100);
+        notifyDisplayStyleObserver();
+
+        assertEquals(0, mCoordinator.getSearchBoxTwoSideMarginForTesting());
+    }
+
+    /**
+     * Verifies the search box width in a wide window on tablets. In medium-width windows, the
+     * search box matches the MVT width, since the NTP is already inset by the Feed's lateral
+     * paddings. In expanded windows, the search box has extra lateral margins.
+     *
+     * @param isExpandedWindow Whether the window is an expanded window.
+     */
+    private void testSearchBoxWidthInWideWindowOnTabletImpl(boolean isExpandedWindow) {
+        setHorizontalDisplayStyle(HorizontalDisplayStyle.WIDE);
+        createCoordinator(/* isLff= */ true);
+        NewTabPageLayout layout = mCoordinator.getNewTabPageLayout();
+        View mvtView = layout.findViewById(R.id.mv_tiles_container);
+        mvtView.setVisibility(View.VISIBLE);
+        Resources res = mActivity.getResources();
+        // Below the max search box width, so that the search box width isn't capped.
+        int measureWidth = res.getDimensionPixelSize(R.dimen.ntp_search_box_max_width) - 100;
+
+        mCoordinator.onMeasure(measureWidth);
+
+        int expectedTwoSideMargin =
+                isExpandedWindow ? getExpandedWindowSearchBoxTwoSideMargin() : 0;
+        assertEquals(
+                measureWidth - expectedTwoSideMargin,
+                layout.findViewById(R.id.search_box).getLayoutParams().width);
+        assertEquals(measureWidth, mvtView.getLayoutParams().width);
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_Tablet_UpdatesComposeplateNarrowWindowState() {
+        int horizontalInsetDp = 20;
+        when(mUiConfig.getHorizontalInset()).thenReturn(horizontalInsetDp);
+        createCoordinator(/* isLff= */ true);
+        setupMockSubCoordinators();
+
+        notifyDisplayStyleObserver();
+
+        verify(mMockComposeplate).updateIsInNarrowWindow(eq(horizontalInsetDp));
+    }
+
+    @Test
     public void testSigninPromoLateralMargins_NarrowWindowOnTablet() {
         when(mUiConfig.getCurrentDisplayStyle())
                 .thenReturn(
@@ -725,19 +814,64 @@ public class NewTabPageCoordinatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
     public void testInitializeComposeplate() {
+        recreateCoordinatorAndInitializeComposeplate(/* isLff= */ false);
+
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testInitializeComposeplate_Tablet_NarrowWindow() {
+        testInitializeComposeplateOnTabletImpl(/* isInNarrowWindow= */ true);
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testInitializeComposeplate_Tablet_RegularWindow() {
+        testInitializeComposeplateOnTabletImpl(/* isInNarrowWindow= */ false);
+    }
+
+    /**
+     * Verifies that the composeplate created on tablets uses the phone layout only in windows
+     * narrower than {@code R.dimen.composeplate_view_lff_layout_min_window_width}, where the
+     * optional button is icon-only.
+     *
+     * @param isInNarrowWindow Whether the window is narrower than the min window width of the large
+     *     form factor layout.
+     */
+    private void testInitializeComposeplateOnTabletImpl(boolean isInNarrowWindow) {
+        Resources res = mActivity.getResources();
+        int minWindowWidthDp =
+                Math.round(
+                        res.getDimension(R.dimen.composeplate_view_lff_layout_min_window_width)
+                                / res.getDisplayMetrics().density);
+        int windowWidthDp = isInNarrowWindow ? minWindowWidthDp - 1 : minWindowWidthDp;
+        RuntimeEnvironment.setQualifiers("+w" + windowWidthDp + "dp");
+        recreateCoordinatorAndInitializeComposeplate(/* isLff= */ true);
+        boolean expectedUseLffLayout = !isInNarrowWindow;
+
+        View optionalButtonText =
+                mCoordinator.getNewTabPageLayout().findViewById(R.id.optional_button_text);
+        assertEquals(
+                expectedUseLffLayout ? View.VISIBLE : View.GONE,
+                optionalButtonText.getVisibility());
+    }
+
+    /**
+     * Recreates the coordinator without a composeplate, then initializes the composeplate.
+     *
+     * @param isLff Whether the NTP is on a large form factor device.
+     */
+    private void recreateCoordinatorAndInitializeComposeplate(boolean isLff) {
         mCoordinator.destroy();
-
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(mProfile)).thenReturn(false);
-        createCoordinator();
+        createCoordinator(isLff);
         assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
-
         SearchBoxCoordinator mockSearchBox = mock(SearchBoxCoordinator.class);
         when(mockSearchBox.getView()).thenReturn(new View(mActivity));
         mCoordinator.setSearchBoxCoordinatorForTesting(mockSearchBox);
 
         mCoordinator.initializeComposeplate();
-
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
     }
 
     /**
@@ -2014,17 +2148,97 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    // Tests for middle window size, i.e., between 420dp and 840dp.
+    @Config(qualifiers = "w700dp")
     @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
-    public void testOnDisplayStyleChanged_Tablet() {
+    public void testOnDisplayStyleChanged_Tablet_WideToRegularWindow() {
+        testOnDisplayStyleChangedOnTabletImpl(
+                HorizontalDisplayStyle.WIDE, HorizontalDisplayStyle.REGULAR);
+    }
+
+    @Test
+    // Tests for middle window size, i.e., between 420dp and 840dp.
+    @Config(qualifiers = "w700dp")
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
+    public void testOnDisplayStyleChanged_Tablet_RegularToWideWindow() {
+        testOnDisplayStyleChangedOnTabletImpl(
+                HorizontalDisplayStyle.REGULAR, HorizontalDisplayStyle.WIDE);
+    }
+
+    /**
+     * Verifies that resizing the window on tablets updates the search box margins.
+     *
+     * @param initialDisplayStyle The {@link HorizontalDisplayStyle} before the change.
+     * @param newDisplayStyle The {@link HorizontalDisplayStyle} after the change.
+     */
+    private void testOnDisplayStyleChangedOnTabletImpl(
+            @HorizontalDisplayStyle int initialDisplayStyle,
+            @HorizontalDisplayStyle int newDisplayStyle) {
+        setHorizontalDisplayStyle(initialDisplayStyle);
         createCoordinator(/* isLff= */ true);
         verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
         setupMockSubCoordinators();
         verify(mMockLogo, never()).updateDoodleOnTablet(anyBoolean());
+        assertEquals(
+                getExpectedSearchBoxTwoSideMarginOnTablet(initialDisplayStyle),
+                mCoordinator.getSearchBoxTwoSideMarginForTesting());
 
-        mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
+        setHorizontalDisplayStyle(newDisplayStyle);
+        notifyDisplayStyleObserver();
 
         verify(mMockLogo).updateDoodleOnTablet(anyBoolean());
         verify(mMockComposeplate, never()).onDisplayStyleChanged();
+        assertEquals(
+                getExpectedSearchBoxTwoSideMarginOnTablet(newDisplayStyle),
+                mCoordinator.getSearchBoxTwoSideMarginForTesting());
+    }
+
+    /**
+     * Returns the expected two side margins of the search box on tablets in a window narrower than
+     * {@code R.dimen.ntp_search_box_expanded_window_min_width} (840dp), but still in state of
+     * HorizontalDisplayStyle.WIDE. The side margin is 0 so that the search box matches the MVT
+     * width, otherwise the narrow-window margins.
+     *
+     * @param horizontalDisplayStyle The {@link HorizontalDisplayStyle} of the window.
+     */
+    private int getExpectedSearchBoxTwoSideMarginOnTablet(
+            @HorizontalDisplayStyle int horizontalDisplayStyle) {
+        if (horizontalDisplayStyle == HorizontalDisplayStyle.WIDE) return 0;
+
+        return 2
+                * mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
+    }
+
+    /**
+     * Returns the expected two side margins of the search box on tablets in a window at least
+     * {@code R.dimen.ntp_search_box_expanded_window_min_width} wide.
+     */
+    private int getExpandedWindowSearchBoxTwoSideMargin() {
+        return 2
+                * mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet);
+    }
+
+    private void setHorizontalDisplayStyle(@HorizontalDisplayStyle int horizontalDisplayStyle) {
+        when(mUiConfig.getCurrentDisplayStyle())
+                .thenReturn(
+                        new UiConfig.DisplayStyle(
+                                horizontalDisplayStyle, VerticalDisplayStyle.REGULAR));
+    }
+
+    /**
+     * Notifies the latest registered {@link DisplayStyleObserver}, i.e., the one of the coordinator
+     * created last, as {@link UiConfig} does on every configuration change, size change and
+     * horizontal inset change. The display style argument is null, since the NTP reads the current
+     * display style from {@link UiConfig}.
+     */
+    private void notifyDisplayStyleObserver() {
+        verify(mUiConfig, atLeastOnce()).addObserver(mDisplayStyleObserverCaptor.capture());
+        mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
     }
 
     @Test

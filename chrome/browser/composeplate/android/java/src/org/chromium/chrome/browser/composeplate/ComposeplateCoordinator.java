@@ -29,6 +29,29 @@ public class ComposeplateCoordinator {
     private final ComposeplateView mView;
     private final boolean mIsLff;
 
+    // The dimensions below have a single value across configurations, e.g., portrait and
+    // landscape, so they are read once and cached.
+
+    /** The default spacing of the buttons. */
+    private final int mDefaultButtonSpacingPx;
+
+    /** The lateral padding of the optional button with the large form factor layout. */
+    private final int mOptionalButtonPaddingLffPx;
+
+    /** The end margin of the optional button with the large form factor layout. */
+    private final int mOptionalButtonMarginEndLffPx;
+
+    /** The lateral padding reserved for the search box shadow when NTP Aurora is enabled. */
+    private final int mSearchBoxShadowPaddingPx;
+
+    /**
+     * The min window width in dp on large form factor devices to use the large form factor layout.
+     */
+    private final int mLffLayoutMinWindowWidthDp;
+
+    /** Whether the composeplate is shown in a narrow window, see {@link #setIsInNarrowWindow}. */
+    private boolean mIsInNarrowWindow;
+
     /**
      * The {@link ActionChips} type of the optional button, used to record its impression metrics.
      * Null until the optional button's click listener is set.
@@ -40,16 +63,32 @@ public class ComposeplateCoordinator {
      *
      * @param parentView The parent {@link ViewGroup} for the composeplate.
      * @param isLff Whether the device is a large form factor.
+     * @param horizontalInsetDp The horizontal inset of the window in dp, used to initialize whether
+     *     the composeplate is shown in a narrow window. See {@link #updateIsInNarrowWindow}.
      */
-    public ComposeplateCoordinator(ViewGroup parentView, boolean isLff) {
+    public ComposeplateCoordinator(ViewGroup parentView, boolean isLff, int horizontalInsetDp) {
         mIsLff = isLff;
-        mModel =
-                new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS)
-                        .with(ComposeplateProperties.IS_LFF, isLff)
-                        .build();
+        mModel = new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS).build();
         mView = parentView.findViewById(R.id.composeplate_view);
+
+        Resources res = mView.getResources();
+        mDefaultButtonSpacingPx =
+                res.getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
+        mOptionalButtonPaddingLffPx =
+                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding_lff);
+        mOptionalButtonMarginEndLffPx =
+                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin_lff);
+        mSearchBoxShadowPaddingPx =
+                res.getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+        // Round to avoid float precision issues when comparing with the integer window width.
+        mLffLayoutMinWindowWidthDp =
+                Math.round(
+                        res.getDimension(R.dimen.composeplate_view_lff_layout_min_window_width)
+                                / res.getDisplayMetrics().density);
+
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
         maybeRevertToLegacyLayout();
+        updateIsInNarrowWindow(horizontalInsetDp);
     }
 
     private void maybeRevertToLegacyLayout() {
@@ -158,10 +197,7 @@ public class ComposeplateCoordinator {
             targetWidth -= margin * 2;
         } else if (NewTabPageUtils.isNtpAuroraEnabled()) {
             // If aurora is enabled, consider the shadow.
-            int paddingForShadow =
-                    mView.getResources()
-                            .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
-            targetWidth -= paddingForShadow * 2;
+            targetWidth -= mSearchBoxShadowPaddingPx * 2;
         }
 
         if (layoutParams.width == targetWidth) {
@@ -201,9 +237,71 @@ public class ComposeplateCoordinator {
      */
     public void setOptionalButtonVisibility(boolean visible) {
         mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, visible);
-        // On mobiles, the incognito button is icon-only when the optional button is visible.
-        mModel.set(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE, !visible || mIsLff);
+        updateButtonLayout();
         updateButtonSpacing(visible);
+    }
+
+    /**
+     * Updates whether the composeplate is shown in a narrow window on large form factor devices,
+     * i.e., narrower than {@code R.dimen.composeplate_view_lff_layout_min_window_width}. No-op on
+     * phones, which always use the phone layout. This threshold doesn't match any {@code
+     * HorizontalDisplayStyle}, so this should be called whenever the window width or the horizontal
+     * inset may have changed, e.g., on every {@code UiConfig} notification.
+     *
+     * @param horizontalInsetDp The horizontal inset of the window in dp, which is excluded from the
+     *     window width, the same as the width that {@code UiConfig} uses to compute the display
+     *     style. See {@code UiConfig#getHorizontalInset()}.
+     */
+    public void updateIsInNarrowWindow(int horizontalInsetDp) {
+        if (!mIsLff) return;
+
+        int windowWidthDp =
+                mView.getResources().getConfiguration().screenWidthDp - horizontalInsetDp;
+        setIsInNarrowWindow(windowWidthDp < mLffLayoutMinWindowWidthDp);
+    }
+
+    /**
+     * Sets whether the composeplate is shown in a narrow window. On large form factor devices, the
+     * buttons use the same layout and spacing as on phones in narrow windows, since there isn't
+     * enough space to show the texts of all buttons.
+     *
+     * @param isInNarrowWindow Whether the composeplate is shown in a narrow window.
+     */
+    private void setIsInNarrowWindow(boolean isInNarrowWindow) {
+        mIsInNarrowWindow = isInNarrowWindow;
+        updateButtonLayout();
+        updateButtonSpacing(mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE));
+    }
+
+    /** Returns whether the buttons use the large form factor layout. */
+    private boolean useLffLayout() {
+        return mIsLff && !mIsInNarrowWindow;
+    }
+
+    /**
+     * Updates the layout of the buttons, which depends on whether the optional button is visible
+     * and whether to use the large form factor layout:
+     *
+     * <ul>
+     *   <li>With the large form factor layout, i.e., on large form factor devices except in narrow
+     *       windows, the optional button shows its text and all buttons share the width equally.
+     *   <li>Otherwise, the optional button is icon-only. When it is visible, the incognito button
+     *       is also icon-only, and both buttons wrap their content, so that the composeplate button
+     *       takes the rest of the width.
+     * </ul>
+     */
+    private void updateButtonLayout() {
+        boolean isOptionalButtonVisible =
+                mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE);
+        boolean useLffLayout = useLffLayout();
+        mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_TEXT_VISIBLE, useLffLayout);
+        mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_WRAP_CONTENT, !useLffLayout);
+        mModel.set(
+                ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE,
+                !isOptionalButtonVisible || useLffLayout);
+        mModel.set(
+                ComposeplateProperties.IS_INCOGNITO_BUTTON_WRAP_CONTENT,
+                isOptionalButtonVisible && !useLffLayout);
     }
 
     /**
@@ -220,26 +318,32 @@ public class ComposeplateCoordinator {
 
     /**
      * Updates the lateral paddings and end margins of the buttons based on whether the optional
-     * button is visible.
+     * button is visible and whether to use the large form factor layout.
      *
      * @param isOptionalButtonVisible Whether the optional button is visible.
      */
     private void updateButtonSpacing(boolean isOptionalButtonVisible) {
         if (NewTabPageUtils.isBesideMvtModuleEnabled()) return;
 
-        // Always read the dimensions from the current resources instead of caching them, since
-        // the activity isn't recreated on configuration changes and wide windows (w600dp) have
-        // different values. This ensures fresh values are applied after the screen rotates or
-        // the window is resized, e.g., when entering or leaving split-screen mode.
-        Resources res = mView.getResources();
-        int defaultSpacing = res.getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
-        int optionalButtonPadding = defaultSpacing;
-        int optionalButtonMarginEnd = defaultSpacing;
+        int optionalButtonPadding = mDefaultButtonSpacingPx;
+        int optionalButtonMarginEnd = mDefaultButtonSpacingPx;
         if (isOptionalButtonVisible) {
-            optionalButtonPadding =
-                    res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
-            optionalButtonMarginEnd =
-                    res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin);
+            if (useLffLayout()) {
+                optionalButtonPadding = mOptionalButtonPaddingLffPx;
+                optionalButtonMarginEnd = mOptionalButtonMarginEndLffPx;
+            } else {
+                // Always read the phone layout dimensions from the current resources instead of
+                // caching them, since the activity isn't recreated on configuration changes and
+                // wide windows have different values (see values-w600dp/dimens.xml). This ensures
+                // fresh values are applied after the screen rotates or the window is resized,
+                // e.g., when entering or leaving split-screen mode.
+                Resources res = mView.getResources();
+                optionalButtonPadding =
+                        res.getDimensionPixelSize(
+                                R.dimen.composeplate_view_optional_button_padding);
+                optionalButtonMarginEnd =
+                        res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin);
+            }
         }
 
         mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING, optionalButtonPadding);
@@ -285,8 +389,8 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Sets the text of the optional button. It is only shown on large form factors; see {@link
-     * #setOptionalButtonContentDescription(String)} for the accessible name.
+     * Sets the text of the optional button. It is only shown with the large form factor layout; see
+     * {@link #setOptionalButtonContentDescription(String)} for the accessible name.
      *
      * @param text The text of the optional button.
      */

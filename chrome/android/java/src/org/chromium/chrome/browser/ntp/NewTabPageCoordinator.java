@@ -657,7 +657,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                     mNewTabPageLayout.findViewById(R.id.composeplate_view_stub);
             composeplateView = (ViewGroup) composeplateViewStub.inflate();
         }
-        mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mIsLff);
+        mComposeplateCoordinator =
+                new ComposeplateCoordinator(
+                        composeplateView, mIsLff, assertNonNull(mUiConfig).getHorizontalInset());
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
         // log.
@@ -1921,7 +1923,15 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         updateDoodleOnTablet();
+        // The search box margins and the composeplate layout change at window widths that don't
+        // match any display style. They are still updated here, since UiConfig notifies its
+        // observers on every configuration change, size change and horizontal inset change, even
+        // if the display style stays the same.
         updateSearchBoxTwoSideMargin();
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.updateIsInNarrowWindow(
+                    assertNonNull(mUiConfig).getHorizontalInset());
+        }
         // Request a layout pass to trigger onMeasure(), which acts as the single source of
         // truth to calculate and uniformly apply the bounded widths to all NTP elements.
         ViewUtils.requestLayout(mNewTabPageLayout, "NewTabPageCoordinator.onDisplayStyleChanged");

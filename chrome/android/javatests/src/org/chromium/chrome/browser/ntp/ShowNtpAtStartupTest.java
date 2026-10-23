@@ -75,6 +75,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -687,9 +688,29 @@ public class ShowNtpAtStartupTest {
         verifyFakeSearchBoxWidthForCurrentOrientation();
     }
 
-    private int calculateExpectedWidthSlack(int currentWidth, Resources res) {
-        int contentTwoSideMarginConstant =
-                2 * res.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet);
+    private int calculateExpectedWidthSlack(
+            int currentWidth, Resources res, int horizontalInsetDp) {
+        // Narrow windows use the narrow-window margins. In medium-width windows, the search box has
+        // no extra lateral margins since the NTP is already inset by the Feed's lateral paddings.
+        // Expanded windows use the tablet margins. Same as UiConfig, the window width excludes the
+        // horizontal inset.
+        int windowWidthDp = res.getConfiguration().screenWidthDp - horizontalInsetDp;
+        int expandedWindowMinWidthDp =
+                Math.round(
+                        res.getDimension(R.dimen.ntp_search_box_expanded_window_min_width)
+                                / res.getDisplayMetrics().density);
+        int contentTwoSideMarginConstant;
+        if (windowWidthDp < UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) {
+            contentTwoSideMarginConstant =
+                    2
+                            * res.getDimensionPixelSize(
+                                    R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
+        } else if (windowWidthDp >= expandedWindowMinWidthDp) {
+            contentTwoSideMarginConstant =
+                    2 * res.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet);
+        } else {
+            contentTwoSideMarginConstant = 0;
+        }
         int maxContentWidth = res.getDimensionPixelSize(R.dimen.ntp_search_box_max_width);
         return Math.max(contentTwoSideMarginConstant, currentWidth - maxContentWidth);
     }
@@ -707,7 +728,9 @@ public class ShowNtpAtStartupTest {
                     int width = ntpLayout.getWidth();
 
                     // Expected: Calculate the expected slack mathematically from constants.
-                    int expectedSlack = calculateExpectedWidthSlack(width, res);
+                    int horizontalInsetDp =
+                            ntp.getCoordinatorForTesting().getUiConfig().getHorizontalInset();
+                    int expectedSlack = calculateExpectedWidthSlack(width, res, horizontalInsetDp);
 
                     // Actual: Assert the actual search box matches the expected slack.
                     Criteria.checkThat(

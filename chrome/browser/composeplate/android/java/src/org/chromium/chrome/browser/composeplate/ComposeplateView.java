@@ -39,9 +39,6 @@ public class ComposeplateView extends LinearLayout {
     /** Whether the AI Mode button icon should be tinted, see {@link #setAiModeButtonIcon}. */
     private boolean mShouldTintAiModeButtonIcon = true;
 
-    /** Whether the device is a large form factor. */
-    private boolean mIsLff;
-
     public ComposeplateView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -171,8 +168,8 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Updates the text of the optional button. The text is only shown on large form factors; see
-     * {@link #setOptionalButtonContentDescription(String)} for the accessible name.
+     * Updates the text of the optional button. The text is only shown with the large form factor
+     * layout; see {@link #setOptionalButtonContentDescription(String)} for the accessible name.
      *
      * @param text The text of the optional button.
      */
@@ -196,53 +193,45 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Sets whether the device is a large form factor, which changes the layout of the buttons when
-     * the optional button is visible.
-     *
-     * @param isLff Whether the device is a large form factor.
-     */
-    void setIsLff(boolean isLff) {
-        mIsLff = isLff;
-    }
-
-    /**
-     * Updates the visibility of the optional button. When the optional button is visible:
-     *
-     * <ul>
-     *   <li>On large form factors, the optional button shows its text and all three buttons share
-     *       the width equally.
-     *   <li>Otherwise, the optional button is icon-only, and the optional and incognito buttons
-     *       wrap their content, so that the composeplate button takes the rest of the width. The
-     *       incognito button's text is hidden via {@link #setIncognitoButtonTextVisibility}.
-     * </ul>
-     *
-     * When the optional button is hidden, the default layout is restored.
+     * Updates the visibility of the optional button.
      *
      * @param visible Whether the optional button is visible.
      */
     void setOptionalButtonVisibility(boolean visible) {
-        if (mOptionalButton != null) {
-            mOptionalButton.setVisibility(visible ? View.VISIBLE : View.GONE);
-        }
+        if (mOptionalButton == null) return;
 
-        if (mOptionalButtonText != null) {
-            mOptionalButtonText.setVisibility(mIsLff ? View.VISIBLE : View.GONE);
-        }
+        mOptionalButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 
-        // The incognito and optional buttons wrap their content only on mobiles.
-        // If the width of the button is WRAP_CONTENT, its weight is set to 0; If its width is set
-        // to 0dp, the weight is set to 1, i.e., shares the width equally with the other buttons.
-        boolean isIncognitoButtonWrapContent = visible && !mIsLff;
-        updateButtonLayoutParams(
-                mIncognitoButton,
-                getWidth(isIncognitoButtonWrapContent),
-                getWeight(isIncognitoButtonWrapContent));
+    /**
+     * Updates the visibility of the optional button's text.
+     *
+     * @param visible Whether the optional button's text is visible.
+     */
+    void setOptionalButtonTextVisibility(boolean visible) {
+        if (mOptionalButtonText == null) return;
 
-        boolean isOptionalButtonWrapContent = !mIsLff;
-        updateButtonLayoutParams(
-                mOptionalButton,
-                getWidth(isOptionalButtonWrapContent),
-                getWeight(isOptionalButtonWrapContent));
+        mOptionalButtonText.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Sets whether the optional button wraps its content instead of sharing the width equally with
+     * the other weighted buttons.
+     *
+     * @param wrapContent Whether the optional button wraps its content.
+     */
+    void setOptionalButtonWrapContent(boolean wrapContent) {
+        updateButtonLayoutParams(mOptionalButton, getWidth(wrapContent), getWeight(wrapContent));
+    }
+
+    /**
+     * Sets whether the incognito button wraps its content instead of sharing the width equally with
+     * the other weighted buttons.
+     *
+     * @param wrapContent Whether the incognito button wraps its content.
+     */
+    void setIncognitoButtonWrapContent(boolean wrapContent) {
+        updateButtonLayoutParams(mIncognitoButton, getWidth(wrapContent), getWeight(wrapContent));
     }
 
     /**

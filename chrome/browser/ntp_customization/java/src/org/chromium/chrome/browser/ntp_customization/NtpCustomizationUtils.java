@@ -1738,7 +1738,10 @@ public class NtpCustomizationUtils {
      *
      * <ul>
      *   <li>LFF devices in narrow/split-screen: Uses narrow-window specific margins.
-     *   <li>LFF devices in full/wide view: Uses wide-window specific margins.
+     *   <li>LFF devices in medium-width windows: No extra margin. The NTP is already inset by the
+     *       Feed's lateral paddings on wide windows, so the search box matches the width of the
+     *       Most Visited Tiles (MVT) container and the Feed below it, capped by its max width.
+     *   <li>LFF devices in expanded windows: Uses wide-window specific margins.
      *   <li>Phones: Uses the standard Most Visited Tiles (MVT) container margin.
      * </ul>
      *
@@ -1754,10 +1757,30 @@ public class NtpCustomizationUtils {
                             R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet)
                     * 2;
         } else if (isLff) {
-            return resource.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet) * 2;
+            return isInExpandedWindow(resource, uiConfig)
+                    ? resource.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet)
+                            * 2
+                    : 0;
         } else {
             return resource.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin) * 2;
         }
+    }
+
+    /**
+     * Returns whether the window is at least {@code
+     * R.dimen.ntp_search_box_expanded_window_min_width} wide. The window width excludes the
+     * horizontal inset, the same as the width that {@link UiConfig} uses to compute the display
+     * style.
+     */
+    private static boolean isInExpandedWindow(Resources resource, UiConfig uiConfig) {
+        int windowWidthDp =
+                resource.getConfiguration().screenWidthDp - uiConfig.getHorizontalInset();
+        // Round to avoid float precision issues when comparing with the integer window width.
+        int minWidthDp =
+                Math.round(
+                        resource.getDimension(R.dimen.ntp_search_box_expanded_window_min_width)
+                                / resource.getDisplayMetrics().density);
+        return windowWidthDp >= minWidthDp;
     }
 
     /**

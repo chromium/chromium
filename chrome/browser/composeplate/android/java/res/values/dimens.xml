@@ -10,6 +10,11 @@ found in the LICENSE file.
     <dimen name="composeplate_view_button_margin">8dp</dimen>
     <dimen name="composeplate_view_optional_button_padding">32dp</dimen>
     <dimen name="composeplate_view_optional_button_margin">4dp</dimen>
+    <!-- The spacing of the optional button with the large form factor layout. -->
+    <dimen name="composeplate_view_optional_button_padding_lff">@dimen/composeplate_view_button_margin</dimen>
+    <dimen name="composeplate_view_optional_button_margin_lff">12dp</dimen>
+    <!-- The min window width on large form factor devices to use the large form factor layout. -->
+    <dimen name="composeplate_view_lff_layout_min_window_width">420dp</dimen>
     <dimen name="composeplate_view_height">48dp</dimen>
     <dimen name="composeplate_view_icon_size">24dp</dimen>
     <dimen name="composeplate_view_legacy_height">44dp</dimen>
