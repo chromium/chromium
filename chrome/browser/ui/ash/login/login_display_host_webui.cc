@@ -243,20 +243,6 @@ void MaybeShutdownLoginDisplayHostWebUI() {
   }
 }
 
-// Safely check if the UserContext is stored in the WizardContext;
-bool ShouldPreserveUserContext() {
-  if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
-      !LoginDisplayHost::default_host()) {
-    return false;
-  }
-  WizardContext* wizard_context =
-      LoginDisplayHost::default_host()->GetWizardContext();
-  if (!wizard_context || !wizard_context->timebound_user_context_holder) {
-    return false;
-  }
-  return true;
-}
-
 // ShowLoginWizard is split into two parts. This function is sometimes called
 // from TriggerShowLoginWizardFinish() directly, and sometimes from
 // OnLanguageSwitchedCallback() (if locale was updated).
@@ -282,15 +268,7 @@ void ShowLoginWizardFinish(
     return;
   }
 
-  std::unique_ptr<TimeboundUserContextHolder> user_context;
   if (ShouldShowSigninScreen(CHECK_DEREF(local_state), first_screen)) {
-    if (ShouldPreserveUserContext()) {
-      // Move the user context to the local variable before it's destroyed.
-      WizardContext* wizard_context =
-          LoginDisplayHost::default_host()->GetWizardContext();
-      CHECK(wizard_context);
-      user_context = std::move(wizard_context->timebound_user_context_holder);
-    }
     // Shutdown WebUI host to replace with the Mojo one.
     MaybeShutdownLoginDisplayHostWebUI();
   }
@@ -313,13 +291,6 @@ void ShowLoginWizardFinish(
     display_host = new LoginDisplayHostWebUI(
         local_state, application_locale_storage, shared_url_loader_factory,
         browser_policy_connector_ash);
-  }
-
-  if (features::IsOobeAddUserDuringEnrollmentEnabled() && user_context) {
-    // Restore the user context within the wizard context.
-    WizardContext* wizard_context = display_host->GetWizardContext();
-    CHECK(wizard_context);
-    wizard_context->timebound_user_context_holder = std::move(user_context);
   }
 
   // Restore system timezone.

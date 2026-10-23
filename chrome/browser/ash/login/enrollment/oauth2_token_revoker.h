@@ -14,13 +14,7 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-class OAuth2TokenRevokerBase {
- public:
-  virtual ~OAuth2TokenRevokerBase() = default;
-  virtual void Start(const std::string& token) = 0;
-};
-
-class OAuth2TokenRevoker : public OAuth2TokenRevokerBase {
+class OAuth2TokenRevoker {
  public:
   // `shared_url_loader_factory` must be non-null.
   OAuth2TokenRevoker(
@@ -28,9 +22,9 @@ class OAuth2TokenRevoker : public OAuth2TokenRevokerBase {
 
   OAuth2TokenRevoker(const OAuth2TokenRevoker&) = delete;
   OAuth2TokenRevoker& operator=(const OAuth2TokenRevoker&) = delete;
-  ~OAuth2TokenRevoker() override;
+  ~OAuth2TokenRevoker();
 
-  void Start(const std::string& token) override;
+  void Start(const std::string& token);
 
  private:
   const scoped_refptr<network::SharedURLLoaderFactory>

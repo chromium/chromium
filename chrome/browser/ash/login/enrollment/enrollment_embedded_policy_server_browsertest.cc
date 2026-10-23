@@ -6,7 +6,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login/resources/grit/ash_login_strings.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
-#include "chrome/browser/ash/login/enrollment/mock_oauth2_token_revoker.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
@@ -1375,52 +1373,6 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,
 
   SetupAutoLaunchApp(settings.owner_settings_service());
   enrollment_screen()->OnConfirmationClosed();
-
-  // Wait for app to be launched.
-  ASSERT_TRUE(WaitKioskLaunched());
-}
-
-// Making sure the Kiosk flow still works when configured together with the
-// feature that allows to skip the gaia screen by reusing the credentials used
-// during the enrollment.
-class KioskEnrollmentTestWithAddUserFlowEnabled : public KioskEnrollmentTest {
- public:
-  KioskEnrollmentTestWithAddUserFlowEnabled() {
-    feature_list_.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
-  }
-
-  void ExpectCachedTokenRevoked() {
-    std::unique_ptr<MockOAuth2TokenRevoker> mock_token_revoker =
-        std::make_unique<MockOAuth2TokenRevoker>();
-    EXPECT_CALL(*mock_token_revoker, Start(FakeGaiaMixin::kFakeRefreshToken))
-        .Times(::testing::Exactly(1));
-    TimeboundUserContextHolder* holder =
-        host()->GetWizardContext()->timebound_user_context_holder.get();
-    EXPECT_TRUE(holder);
-    holder->InjectTokenRevokerForTesting(std::move(mock_token_revoker));
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    KioskEnrollmentTestWithAddUserFlowEnabled,
-    ManualEnrollmentAutolaunchKioskAppWithAddUserAfterEnrollment) {
-  base::ScopedAllowBlockingForTesting allow_io;
-  TriggerEnrollmentAndSignInSuccessfully();
-
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
-      CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
-  // The tokens should be revoked when the Kiosk session starts.
-  ExpectCachedTokenRevoked();
-
-  ScopedDeviceSettings settings;
-
-  SetupAutoLaunchApp(settings.owner_settings_service());
-  enrollment_ui_.LeaveSuccessScreen();
 
   // Wait for app to be launched.
   ASSERT_TRUE(WaitKioskLaunched());

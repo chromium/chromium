@@ -61,7 +61,6 @@ bool WizardContext::ShouldTriggerAutoWipe(PrefService& local_state) const {
 void SetUserContext(WizardContext& wizard_context,
                     std::unique_ptr<UserContext> user_context) {
   CHECK(!wizard_context.user_context);
-  CHECK(!wizard_context.timebound_user_context_holder);
   wizard_context.user_context = std::move(user_context);
 }
 

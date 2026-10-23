@@ -273,10 +273,6 @@ class EnrollmentScreen
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
 
-  // Stores the signin artifacts and the refresh token in the wizard context
-  // if the appropriate conditions are met.
-  void MaybeStoreUserContextInWizardContext();
-
   const raw_ref<PrefService> local_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
@@ -326,9 +322,6 @@ class EnrollmentScreen
   int num_retries_ = 0;
   std::unique_ptr<EnrollmentLauncher> enrollment_launcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> status_checker_;
-
-  std::unique_ptr<login::OnlineSigninArtifacts> signin_artifacts_;
-  bool using_saml_api_ = false;
 
   base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};
 };

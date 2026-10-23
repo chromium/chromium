@@ -25,7 +25,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
-#include "chrome/browser/ash/login/enrollment/timebound_user_context_holder.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -45,13 +44,11 @@
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
-#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/session/process_shutdown.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -87,7 +84,6 @@ constexpr int64_t kMaxDelayMS = 8 * 60 * 1000;  // 8 minutes
 
 constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
 constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
-constexpr char kUserActionUsingSamlApi[] = "using-saml-api";
 
 // Max number of retries to check install attributes state.
 constexpr int kMaxInstallAttributesStateCheckRetries = 60;
@@ -253,13 +249,10 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
     return;
   }
 
-  const bool revoke_oauth2_tokens =
-      !(features::IsOobeAddUserDuringEnrollmentEnabled() &&
-        context()->timebound_user_context_holder);
   enrollment_launcher_->ClearAuth(
       base::BindOnce(&EnrollmentScreen::OnAuthCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      revoke_oauth2_tokens);
+      /*revoke_oauth2_tokens=*/true);
 }
 
 void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
@@ -519,9 +512,6 @@ void EnrollmentScreen::OnLoginDone(
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);
 
-  signin_artifacts_ = std::make_unique<login::OnlineSigninArtifacts>(
-      std::move(signin_artifacts));
-
   if (view_) {
     view_->ShowEnrollmentWorkingScreen();
   }
@@ -686,8 +676,6 @@ void EnrollmentScreen::OnDeviceEnrolled() {
     view_->SetEnterpriseDomainInfo(enterprise_domain_manager,
                                    ui::GetChromeOSDeviceName());
   }
-
-  MaybeStoreUserContextInWizardContext();
 
   enrollment_launcher_->GetDeviceAttributeUpdatePermission();
 
@@ -879,10 +867,6 @@ void EnrollmentScreen::OnUserAction(const base::ListValue& args) {
     OnCancel();
     return;
   }
-  if (action_id == kUserActionUsingSamlApi) {
-    using_saml_api_ = true;
-    return;
-  }
   BaseScreen::OnUserAction(args);
 }
 
@@ -1004,48 +988,6 @@ void EnrollmentScreen::HideOfflineMessage(NetworkStateInformer::State state,
     error_screen_->Hide();
   }
   histogram_helper_.OnErrorHide();
-}
-
-void EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
-  if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
-      effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
-    return;
-  }
-  // Technically this should be an invariant, but this feature is not crucial
-  // and allows for an easy fallback to the normal flow. Because of this we use
-  // soft checks in case of unforeseen flows that would cause a crash otherwise.
-  if (!signin_artifacts_ || !enrollment_launcher_ || !enrollment_succeeded_) {
-    return;
-  }
-
-  const AccountId account_id = AccountId::FromNonCanonicalEmail(
-      signin_artifacts_->email, signin_artifacts_->gaia_id,
-      AccountType::GOOGLE);
-  std::unique_ptr<UserContext> user_context =
-      login::BuildUserContextForGaiaSignIn(
-          /*user_type=*/user_manager::UserType::kRegular,
-          /*account_id=*/account_id,
-          /*using_saml=*/signin_artifacts_->using_saml,
-          /*using_saml_api=*/using_saml_api_,
-          /*password=*/signin_artifacts_->password.value_or(""),
-          /*password_attributes=*/SamlPasswordAttributes(),
-          /*sync_trusted_vault_keys=*/std::nullopt,
-          /*challenge_response_key=*/std::nullopt);
-  user_context->SetRefreshToken(enrollment_launcher_->GetOAuth2RefreshToken());
-
-  signin_artifacts_.reset();
-
-  CHECK(LoginDisplayHost::default_host());
-  WizardContext* wizard_context =
-      LoginDisplayHost::default_host()->GetWizardContext();
-  CHECK(wizard_context);
-  // Make sure we aren't overwriting any existing information.
-  CHECK(!wizard_context->user_context);
-  wizard_context->timebound_user_context_holder =
-      std::make_unique<TimeboundUserContextHolder>(shared_url_loader_factory_,
-                                                   std::move(user_context));
-
-  return;
 }
 
 }  // namespace ash
