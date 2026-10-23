@@ -5,12 +5,14 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -836,28 +838,34 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
     return flat_rule::RequestMethod_NON_HTTP;
   }
 
-  using net::HttpRequestHeaders;
-  static const base::NoDestructor<
-      base::flat_map<std::string_view, flat_rule::RequestMethod>>
-      kRequestMethods(
-          {{HttpRequestHeaders::kDeleteMethod, flat_rule::RequestMethod_DELETE},
-           {HttpRequestHeaders::kGetMethod, flat_rule::RequestMethod_GET},
-           {HttpRequestHeaders::kHeadMethod, flat_rule::RequestMethod_HEAD},
-           {HttpRequestHeaders::kOptionsMethod,
-            flat_rule::RequestMethod_OPTIONS},
-           {HttpRequestHeaders::kPatchMethod, flat_rule::RequestMethod_PATCH},
-           {HttpRequestHeaders::kPostMethod, flat_rule::RequestMethod_POST},
-           {HttpRequestHeaders::kPutMethod, flat_rule::RequestMethod_PUT},
-           {HttpRequestHeaders::kConnectMethod,
-            flat_rule::RequestMethod_CONNECT}});
+  static const auto kRequestMethods = []() {
+    using net::HttpRequestHeaders;
+    const auto kRequestMethodsArray = std::to_array<
+        std::pair<const std::string_view, flat_rule::RequestMethod>>({
+        // keep-sorted start
+        {HttpRequestHeaders::kConnectMethod, flat_rule::RequestMethod_CONNECT},
+        {HttpRequestHeaders::kDeleteMethod, flat_rule::RequestMethod_DELETE},
+        {HttpRequestHeaders::kGetMethod, flat_rule::RequestMethod_GET},
+        {HttpRequestHeaders::kHeadMethod, flat_rule::RequestMethod_HEAD},
+        {HttpRequestHeaders::kOptionsMethod, flat_rule::RequestMethod_OPTIONS},
+        {HttpRequestHeaders::kPatchMethod, flat_rule::RequestMethod_PATCH},
+        {HttpRequestHeaders::kPostMethod, flat_rule::RequestMethod_POST},
+        {HttpRequestHeaders::kPutMethod, flat_rule::RequestMethod_PUT}
+        // keep-sorted end
+    });
 
-  DCHECK(std::ranges::all_of(*kRequestMethods, [](const auto& key_value) {
-    return std::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
-  }));
+    DCHECK(std::ranges::all_of(kRequestMethodsArray, [](const auto& key_value) {
+      return std::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
+    }));
+
+    return base::fixed_flat_map<std::string_view, flat_rule::RequestMethod,
+                                kRequestMethodsArray.size()>(
+        base::sorted_unique, kRequestMethodsArray);
+  }();
 
   std::string normalized_method = base::ToUpperASCII(method);
-  auto it = kRequestMethods->find(normalized_method);
-  if (it == kRequestMethods->end()) {
+  auto it = kRequestMethods.find(normalized_method);
+  if (it == kRequestMethods.end()) {
     return flat_rule::RequestMethod_OTHER_HTTP;
   }
   return it->second;
