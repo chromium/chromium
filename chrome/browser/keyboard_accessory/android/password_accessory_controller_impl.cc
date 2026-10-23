@@ -15,6 +15,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -230,13 +231,11 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   const bool is_password_field = last_focus_info_->focused_field_type ==
                                  FocusedFieldType::kFillablePasswordField;
   if (autofill::IsFillable(last_focus_info_->focused_field_type)) {
-    base::span<const UiCredential> suggestions =
-        credential_cache_->GetCredentialStore(origin).GetCredentials();
-    info_to_add.reserve(suggestions.size());
-    for (const auto& credential : suggestions) {
-      info_to_add.emplace_back(
-          TranslateCredentials(credential, origin, is_password_field));
-    }
+    info_to_add = base::ToVector(
+        credential_cache_->GetCredentialStore(origin).GetCredentials(),
+        [&origin, is_password_field](const UiCredential& credential) {
+          return TranslateCredentials(credential, origin, is_password_field);
+        });
   }
 
   if (password_manager::PasswordManagerDriver* driver =
@@ -246,12 +245,12 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
       credentials_delegate->NotifyForPasskeysDisplay();
       auto passkeys = credentials_delegate->GetPasskeys();
       if (passkeys.has_value()) {
-        passkeys_to_add.reserve(passkeys.value()->size());
-        for (const password_manager::PasskeyCredential& passkey :
-             *passkeys.value()) {
-          passkeys_to_add.emplace_back(passkey.display_name(),
-                                       passkey.credential_id());
-        }
+        passkeys_to_add = base::ToVector(
+            *passkeys.value(),
+            [](const password_manager::PasskeyCredential& passkey) {
+              return PasskeySection(passkey.display_name(),
+                                    passkey.credential_id());
+            });
       }
     }
   }

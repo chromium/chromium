@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -201,23 +202,19 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   const BrowserAutofillManager* autofill_manager =
       GetWebContents().GetFocusedFrame() ? GetAutofillManager() : nullptr;
 
-  std::vector<UserInfo> info_to_add;
   bool allow_filling =
       autofill_manager && autofill_manager->client().IsContextSecure();
 
-  std::vector<const CachedServerCardInfo*> unmasked_cards =
-      GetUnmaskedCreditCards();
-  if (!unmasked_cards.empty()) {
-    // Add the cached server cards first, so that they show up on the top of the
-    // manual filling view.
-    std::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
-                           [allow_filling](const CachedServerCardInfo* data) {
-                             return TranslateCachedCard(data, allow_filling);
-                           });
-  }
+  // Add the cached server cards first, so that they show up on the top of the
+  // manual filling view.
+  std::vector<UserInfo> info_to_add =
+      base::ToVector(GetUnmaskedCreditCards(),
+                     [allow_filling](const CachedServerCardInfo* data) {
+                       return TranslateCachedCard(data, allow_filling);
+                     });
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
-  bool add_all_cards = unmasked_cards.empty() || !autofill_manager;
+  bool add_all_cards = info_to_add.empty() || !autofill_manager;
   for (const CardOrVirtualCard& card_or_virtual : GetAllCreditCards()) {
     const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
     if (add_all_cards || !autofill_manager->GetCreditCardAccessManager()
