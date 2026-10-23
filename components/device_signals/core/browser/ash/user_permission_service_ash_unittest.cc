@@ -142,7 +142,7 @@ TEST_F(UserPermissionServiceAshTest,
   EXPECT_EQ(permission_service_->CanCollectSignals(),
             UserPermission::kUnsupported);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
-            UserPermission::kUnsupported);
+            UserPermission::kMissingConsent);
 }
 
 // Tests that signals cannot be collected on the signin screen if the device is
@@ -167,7 +167,7 @@ TEST_F(UserPermissionServiceAshTest,
 
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
-            UserPermission::kUnsupported);
+            UserPermission::kMissingConsent);
 }
 
 }  // namespace device_signals

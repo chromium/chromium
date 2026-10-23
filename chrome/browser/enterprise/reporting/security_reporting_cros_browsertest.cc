@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -44,6 +45,7 @@ namespace {
 
 constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kFakeAffiliationID[] = "fake_affiliation_id";
+constexpr char kUnaffiliatedID[] = "unaffiliated_id";
 constexpr char kFakeSerialNumber[] = "fake_serial_number";
 constexpr char kCookieHeaderName[] = "Cookie";
 constexpr char kSetCookiePath[] = "/set-cookie";
@@ -149,7 +151,19 @@ class SecurityReportingCrosBrowserTest
     return g_browser_process->profile_manager()->GetPrimaryUserProfile();
   }
 
-  void SetupManagedDevice() {
+  void SetupManagedUser(bool is_affiliated) {
+    const user_manager::User* user =
+        ash::ProfileHelper::Get()->GetUserByProfile(profile());
+    CHECK(user);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(user->GetAccountId(),
+                                                          /*is_managed=*/true,
+                                                          is_affiliated);
+    profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+    profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+        {is_affiliated ? kFakeAffiliationID : kUnaffiliatedID});
+  }
+
+  void SetupManagedDevice(bool is_affiliated = true) {
     device_policy()->policy_data().set_managed_by(kFakeEnrollmentDomain);
     device_policy()->policy_data().add_device_affiliation_ids(
         kFakeAffiliationID);
@@ -159,12 +173,7 @@ class SecurityReportingCrosBrowserTest
         ash::system::StatisticsProvider::LoadingState::kFinished);
     policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
-    const user_manager::User* user =
-        ash::ProfileHelper::Get()->GetUserByProfile(profile());
-    user_manager::UserManager::Get()->SetUserPolicyStatus(
-        user->GetAccountId(),
-        /*is_managed=*/true,
-        /*is_affiliated=*/true);
+    SetupManagedUser(is_affiliated);
   }
 
   void SetFakeCookieValue(std::string_view cookie_value) {
@@ -174,13 +183,61 @@ class SecurityReportingCrosBrowserTest
                                             GetSetCookiesPath(cookie_value))));
   }
 
+  void VerifyUnaffiliatedReportPayload(
+      em::AffiliationState_UnaffiliationReason expected_reason) {
+    profile()->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+
+    ReportingDelegateFactoryDesktop delegate_factory;
+    ChromeProfileRequestGenerator generator(
+        profile()->GetPath(), &delegate_factory,
+        enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile()));
+
+    base::test::TestFuture<
+        base::expected<ReportRequestQueue, ReportGenerationError>>
+        future;
+    generator.Generate(
+        ReportGenerationConfig(ReportTrigger::kTriggerManual,
+                               ReportType::kProfileReport,
+                               SecuritySignalsMode::kSignalsAttached,
+                               /*use_cookies=*/false),
+        future.GetCallback());
+
+    auto result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    auto& requests = result.value();
+    ASSERT_EQ(requests.size(), 1u);
+
+    auto& profile_report_request =
+        requests.front()->GetChromeProfileReportRequest();
+    EXPECT_TRUE(profile_report_request.has_os_report());
+    EXPECT_FALSE(
+        profile_report_request.os_report().has_device_enrollment_domain());
+    EXPECT_EQ(profile_report_request.os_report().mac_addresses_size(), 0);
+    EXPECT_FALSE(
+        profile_report_request.browser_device_identifier().has_host_name());
+    EXPECT_FALSE(
+        profile_report_request.browser_device_identifier().has_serial_number());
+    EXPECT_FALSE(
+        profile_report_request.browser_device_identifier().has_computer_name());
+    EXPECT_TRUE(profile_report_request.has_browser_report());
+    ASSERT_EQ(profile_report_request.browser_report()
+                  .chrome_user_profile_infos_size(),
+              1);
+    const auto& profile_info =
+        profile_report_request.browser_report().chrome_user_profile_infos(0);
+    EXPECT_TRUE(profile_info.has_profile_signals_report());
+    EXPECT_FALSE(profile_info.affiliation().is_affiliated());
+    EXPECT_EQ(profile_info.affiliation().unaffiliation_reason(),
+              expected_reason);
+  }
+
   base::OnceCallback<void(CapturedProfileReportRequest)> pending_capture_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurityReportingCrosBrowserTest,
                        GenerateReportPayload) {
-  SetupManagedDevice();
+  SetupManagedDevice(/*is_affiliated=*/true);
 
   profile()->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
 
@@ -195,7 +252,8 @@ IN_PROC_BROWSER_TEST_F(SecurityReportingCrosBrowserTest,
   generator.Generate(
       ReportGenerationConfig(ReportTrigger::kTriggerManual,
                              ReportType::kProfileReport,
-                             SecuritySignalsMode::kSignalsAttached, false),
+                             SecuritySignalsMode::kSignalsAttached,
+                             /*use_cookies=*/false),
       future.GetCallback());
 
   auto result = future.Take();
@@ -206,7 +264,30 @@ IN_PROC_BROWSER_TEST_F(SecurityReportingCrosBrowserTest,
   auto& profile_report_request =
       requests.front()->GetChromeProfileReportRequest();
   EXPECT_TRUE(profile_report_request.has_os_report());
+  EXPECT_EQ(profile_report_request.os_report().device_enrollment_domain(),
+            kFakeEnrollmentDomain);
+  EXPECT_GT(profile_report_request.os_report().mac_addresses_size(), 0);
+  EXPECT_TRUE(profile_report_request.has_browser_device_identifier());
+  EXPECT_TRUE(
+      profile_report_request.browser_device_identifier().has_host_name());
+  EXPECT_TRUE(
+      profile_report_request.browser_device_identifier().has_serial_number());
   EXPECT_TRUE(profile_report_request.has_browser_report());
+  ASSERT_EQ(
+      profile_report_request.browser_report().chrome_user_profile_infos_size(),
+      1);
+  const auto& profile_info =
+      profile_report_request.browser_report().chrome_user_profile_infos(0);
+  EXPECT_TRUE(profile_info.has_profile_signals_report());
+  EXPECT_TRUE(profile_info.affiliation().is_affiliated());
+}
+
+IN_PROC_BROWSER_TEST_F(SecurityReportingCrosBrowserTest,
+                       GenerateReportPayload_UnaffiliatedUser) {
+  SetupManagedDevice(/*is_affiliated=*/false);
+
+  VerifyUnaffiliatedReportPayload(
+      em::AffiliationState_UnaffiliationReason_DEVICE_MANANGED_DIFFERENT_DOMAIN);
 }
 
 IN_PROC_BROWSER_TEST_F(SecurityReportingCrosBrowserTest, UploadWithAuth) {
@@ -266,6 +347,27 @@ IN_PROC_BROWSER_TEST_F(SecurityReportingCrosBrowserTest, UploadWithAuth) {
   auto captured = test_future.Get();
   ASSERT_TRUE(captured.request);
   EXPECT_EQ(captured.cookie, CreateFakeAuthCookieValue());
+}
+
+class UnmanagedDeviceSecurityReportingCrosBrowserTest
+    : public SecurityReportingCrosBrowserTest {
+ public:
+  UnmanagedDeviceSecurityReportingCrosBrowserTest() {
+    device_state_.SetState(
+        ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(UnmanagedDeviceSecurityReportingCrosBrowserTest,
+                       GenerateReportPayload_ManagedUser) {
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kFakeSerialNumber);
+  fake_statistics_provider_.SetLoadingState(
+      ash::system::StatisticsProvider::LoadingState::kFinished);
+  SetupManagedUser(/*is_affiliated=*/false);
+
+  VerifyUnaffiliatedReportPayload(
+      em::AffiliationState_UnaffiliationReason_DEVICE_UNMANAGED);
 }
 
 }  // namespace enterprise_reporting

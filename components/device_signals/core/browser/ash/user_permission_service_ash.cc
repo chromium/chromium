@@ -41,12 +41,17 @@ UserPermission UserPermissionServiceAsh::CanCollectSignals() const {
 }
 
 UserPermission UserPermissionServiceAsh::CanCollectReportSignals() const {
-  if (IsDeviceCloudManaged() && user_delegate_->IsManagedUser() &&
-      user_delegate_->IsAffiliated()) {
+  if (!user_delegate_->IsManagedUser()) {
+    return UserPermission::kUnsupported;
+  }
+
+  if (IsDeviceCloudManaged() && user_delegate_->IsAffiliated()) {
     return UserPermission::kGranted;
   }
 
-  return UserPermission::kUnsupported;
+  // In unaffiliated or unmanaged device contexts, return kMissingConsent to
+  // collect posture-only signals while redacting device-identifying PII.
+  return UserPermission::kMissingConsent;
 }
 
 }  // namespace device_signals
