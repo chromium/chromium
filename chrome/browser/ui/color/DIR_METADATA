@@ -1,0 +1,13 @@
+agentic_review {
+  capability_groups {
+    path_expression: "chrome/.*_interactive_uitest\\.(cc|h)"
+    path_expression: "chrome/.*_browsertest\\.(cc|h)"
+    path_expression_exclusion: ".*_unittest\\.(cc|h)"
+    content_patterns: "\\bRunTestSequence\\b"
+    content_patterns: "\\bInteractive(Browser|BrowserWindow|FeaturePromo|Views)Test\\b"
+    content_patterns: "\\bInProcessBrowserTest\\b"
+    review_capability_skills: [
+      "agents/skills/kombucha-testing/references/review-checklist.md"
+    ]
+  }
+}
