@@ -204,6 +204,15 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
     }));
   }
 
+ protected:
+  // A test that leaves a permission request pending sets this instead of
+  // using a local factory. The manager shows the prompt again whenever its
+  // WebContents turns visible, which on Mac can happen while the browser
+  // closes after the test body. A local factory is gone by then and its
+  // replacement hits NOTREACHED. This member outlives the browser, and the
+  // factory stops serving the manager once the manager is destroyed.
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
@@ -367,7 +376,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
           content->GetWebContents());
   ASSERT_TRUE(permission_manager);
 
-  permissions::MockPermissionPromptFactory prompt_factory(permission_manager);
+  prompt_factory_ = std::make_unique<permissions::MockPermissionPromptFactory>(
+      permission_manager);
 
   // Add a mock permission request for a standard origin to set
   // IsRequestInProgress() to true without auto-approving. This avoids needing
@@ -378,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
       permissions::PermissionRequestGestureType::GESTURE);
   permission_manager->AddRequest(
       content->GetWebContents()->GetPrimaryMainFrame(), std::move(request));
-  prompt_factory.WaitForPermissionBubble();
+  prompt_factory_->WaitForPermissionBubble();
 
   EXPECT_TRUE(permission_manager->IsRequestInProgress());
 
@@ -1123,9 +1133,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupFullWebUIBrowserTest,
   EXPECT_EQ(state_manager->popup_state(), OmniboxPopupState::kNone);
 }
 
+// Tests the AIM popup without `omnibox::kOmniboxAimPopupDeferCreation`, the
+// feature's default state. Browser tests apply
+// testing/variations/fieldtrial_testing_config.json, whose
+// WebUIReloadButtonStudy entry enables the feature, so a test of the default
+// path has to disable it explicitly rather than rely on the default.
+class OmniboxAimPopupNoDeferCreationBrowserTest
+    : public OmniboxAimPopupBrowserTest {
+ public:
+  OmniboxAimPopupNoDeferCreationBrowserTest() {
+    feature_list_.InitAndDisableFeature(omnibox::kOmniboxAimPopupDeferCreation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Without `omnibox::kOmniboxAimPopupDeferCreation`, a new window's AIM popup
 // creates its content with the presenter, before the window is shown.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupNoDeferCreationBrowserTest,
                        CreatesContentWithPresenterWithoutDeferCreation) {
   ASSERT_FALSE(
       base::FeatureList::IsEnabled(omnibox::kOmniboxAimPopupDeferCreation));
