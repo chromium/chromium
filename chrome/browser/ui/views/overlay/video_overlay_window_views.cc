@@ -1827,7 +1827,9 @@ gfx::Rect VideoOverlayWindowViews::GetBounds() {
 }
 
 void VideoOverlayWindowViews::UpdateNaturalSize(const gfx::Size& natural_size) {
-  CHECK(!natural_size.IsEmpty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/576771786): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!natural_size.IsEmpty());
   natural_size_ = natural_size;
   SetAspectRatio(gfx::SizeF(natural_size_));
 
