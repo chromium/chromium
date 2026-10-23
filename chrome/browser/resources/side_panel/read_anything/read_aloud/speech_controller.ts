@@ -522,6 +522,9 @@ export class SpeechController {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
+    let textToPlay = utteranceText;
+    let boundaryIndex = 0;
+
     // If we're resuming a previously interrupted message, use word
     // boundaries (if available) to resume at the beginning of the current
     // word.
@@ -547,35 +550,18 @@ export class SpeechController {
         }
 
         return skippedPosition;
+      }
 
-      } else {
-        if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-          // When line focus is enabled, highlight and position the current
-          // granularity before notifying word boundaries and playing audio so
-          // line focus is properly aligned to the text before speech starts.
-          this.highlightCurrentGranularity_(segments);
-          this.notifyWordBoundary_(resumeBoundary);
-          this.playText_(utteranceTextForWordBoundary);
-        } else {
-          this.notifyWordBoundary_(resumeBoundary);
-          this.playText_(utteranceTextForWordBoundary);
-          this.highlightCurrentGranularity_(segments);
-        }
-      }
-    } else {
-      if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-        // When line focus is enabled, highlight and position the current
-        // granularity before notifying word boundaries and playing audio so
-        // line focus is properly aligned to the text before speech starts.
-        this.highlightCurrentGranularity_(segments);
-        this.notifyWordBoundary_(0);
-        this.playText_(utteranceText);
-      } else {
-        this.notifyWordBoundary_(0);
-        this.playText_(utteranceText);
-        this.highlightCurrentGranularity_(segments);
-      }
+      textToPlay = utteranceTextForWordBoundary;
+      boundaryIndex = resumeBoundary;
     }
+
+    // Highlight and position the current granularity before notifying word
+    // boundaries and playing audio so line focus is properly aligned to the
+    // text before speech starts.
+    const wordSegments = this.highlightCurrentGranularity_(segments);
+    this.notifyWordBoundary_(boundaryIndex, wordSegments);
+    this.playText_(textToPlay);
 
     return true;
   }
@@ -800,26 +786,27 @@ export class SpeechController {
 
         this.wordBoundaries_.updateBoundary(event.charIndex, event.charLength);
 
+        // No need to update the highlight on word boundary events if
+        // highlighting is off or if sentence highlighting is used.
+        // Therefore, we don't need to pass in axIds because these are
+        // calculated downstream.
+        const wordSegments = this.highlightCurrentGranularity_(
+            [], /* scrollIntoView= */ true,
+            /*shouldUpdateSentenceHighlight= */ false);
+
         const {
           speechUtteranceStartIndex,
           previouslySpokenIndex,
         } = this.wordBoundaries_.state;
         const index = speechUtteranceStartIndex + previouslySpokenIndex;
-        this.notifyWordBoundary_(index);
-
-        // No need to update the highlight on word boundary events if
-        // highlighting is off or if sentence highlighting is used.
-        // Therefore, we don't need to pass in axIds because these are
-        // calculated downstream.
-        this.highlightCurrentGranularity_(
-            [], /* scrollIntoView= */ true,
-            /*shouldUpdateSentenceHighlight= */ false);
+        this.notifyWordBoundary_(index, wordSegments);
       }
     };
   }
 
-  private notifyWordBoundary_(index: number) {
-    const highlightSegments =
+  private notifyWordBoundary_(
+      index: number, precomputedSegments: Segment[]|null = null) {
+    const highlightSegments = precomputedSegments ??
         this.readAloudModel_.getHighlightForCurrentSegmentIndex(
             index, /* highlightPhrases= */ false);
     this.listeners_.forEach(l => l.onWordBoundary(highlightSegments));
@@ -1121,14 +1108,14 @@ export class SpeechController {
   private highlightCurrentGranularity_(
       segments: Segment[], scrollIntoView: boolean = true,
       shouldUpdateSentenceHighlight: boolean = true,
-      shouldSetLastReadingPos: boolean = true) {
+      shouldSetLastReadingPos: boolean = true): Segment[]|null {
     if (shouldSetLastReadingPos && segments.length && segments[0]) {
       this.model_.setLastPosition({
         node: segments[0].node,
         offset: segments[0].start,
       });
     }
-    this.highlighter_.highlightCurrentGranularity(
+    return this.highlighter_.highlightCurrentGranularity(
         segments, scrollIntoView, shouldUpdateSentenceHighlight);
   }
 

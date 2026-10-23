@@ -36,9 +36,12 @@ export class ReadAloudHighlighter {
         !!this.currentGranularity_ && this.currentGranularity_.isVisible();
   }
 
+  // Highlights the current granularity. `sentenceSegments` is only used for
+  // sentence highlighting. Returns the current word's segments when word
+  // highlighting is used, or null otherwise.
   highlightCurrentGranularity(
-      segments: Segment[], scrollIntoView: boolean,
-      shouldUpdateSentenceHighlight: boolean): void {
+      sentenceSegments: Segment[], scrollIntoView: boolean,
+      shouldUpdateSentenceHighlight: boolean): Segment[]|null {
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
       case this.audioBrowserProxy_.getNoHighlighting():
@@ -51,15 +54,14 @@ export class ReadAloudHighlighter {
       // highlights have already been calculated.
       case this.audioBrowserProxy_.getSentenceHighlighting():
         if (shouldUpdateSentenceHighlight) {
-          this.highlightCurrentSentence_(segments, scrollIntoView);
+          this.highlightCurrentSentence_(sentenceSegments, scrollIntoView);
         }
-        break;
+        return null;
       case this.audioBrowserProxy_.getWordHighlighting():
-        this.highlightCurrentWordOrPhrase_(/*highlightPhrases=*/ false);
-        break;
+        return this.highlightCurrentWordOrPhrase_(/*highlightPhrases=*/ false);
       case this.audioBrowserProxy_.getPhraseHighlighting():
         this.highlightCurrentWordOrPhrase_(/*highlightPhrases=*/ true);
-        break;
+        return null;
       case this.audioBrowserProxy_.getAutoHighlighting():
       default:
         // This cannot happen, but ensures the switch statement is exhaustive.
@@ -169,7 +171,7 @@ export class ReadAloudHighlighter {
     return highlight;
   }
 
-  private highlightCurrentWordOrPhrase_(highlightPhrases: boolean): void {
+  private highlightCurrentWordOrPhrase_(highlightPhrases: boolean): Segment[] {
     const {
       speechUtteranceStartIndex,
       previouslySpokenIndex,
@@ -190,6 +192,7 @@ export class ReadAloudHighlighter {
       this.addHighlightToCurrentGranularity_(highlight);
       this.scrollHighlightIntoView_();
     }
+    return highlightSegments;
   }
 
   private highlightCurrentSentence_(

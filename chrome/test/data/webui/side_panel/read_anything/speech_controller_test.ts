@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {ContentPositionSource, MAX_SPEECH_LENGTH, ReadAloudHighlighter, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {NodeStore, Segment, SpeechController, SpeechListener, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {NodeStore, Segment, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, setContent, setupTestEnvironment} from './common.js';
@@ -36,6 +36,28 @@ suite('SpeechController', () => {
     element.textContent = text;
     speechController.onPlayPauseToggle(element);
     return element;
+  }
+
+  function addWordBoundaryListener(
+      onWordBoundary: (segments: Segment[]) => void) {
+    speechController.addListener({
+      onWordBoundary,
+      onIsSpeechActiveChange() {},
+      onIsAudioCurrentlyPlayingChange() {},
+      onEngineStateChange() {},
+      onPreviewVoicePlaying() {},
+      onPlayingFromSelection() {},
+    });
+  }
+
+  // Starts speech and makes the model return a highlight for the first word.
+  function playWithWordHighlight(text: string) {
+    onPlayPauseToggle(text);
+    const node = readAloudModel.getCurrentTextSegments()[0]!.node;
+    const highlights: Segment[] = [{node, start: 0, length: 3}];
+    readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
+    readAloudModel.resetResolver('getHighlightForCurrentSegmentIndex');
+    return {spoken: speech.getArgs('speak')[0], highlights};
   }
 
   setup(() => {
@@ -1285,7 +1307,7 @@ suite('SpeechController', () => {
   });
 
   test(
-      'highlightAndPlayMessage highlights before notifying word boundary when line focus is enabled',
+      'highlightAndPlayMessage highlights before notifying word boundary',
       async () => {
         const text = 'Testing highlight order with line focus.';
         setContent(text, readAloudModel);
@@ -1297,18 +1319,9 @@ suite('SpeechController', () => {
         const originalHighlight = highlighter.highlightCurrentGranularity;
         highlighter.highlightCurrentGranularity = (...args) => {
           events.push('highlight');
-          originalHighlight.apply(highlighter, args);
+          return originalHighlight.apply(highlighter, args);
         };
-
-        const testListener: SpeechListener = {
-          onWordBoundary: () => events.push('word_boundary'),
-          onIsSpeechActiveChange: () => {},
-          onIsAudioCurrentlyPlayingChange: () => {},
-          onEngineStateChange: () => {},
-          onPreviewVoicePlaying: () => {},
-          onPlayingFromSelection: () => {},
-        };
-        speechController.addListener(testListener);
+        addWordBoundaryListener(() => events.push('word_boundary'));
 
         speechController.onPlayPauseToggle(element);
         await speech.whenCalled('speak');
@@ -1317,6 +1330,76 @@ suite('SpeechController', () => {
         assertEquals('word_boundary', events[1]);
 
         highlighter.highlightCurrentGranularity = originalHighlight;
+      });
+
+  test('word boundary highlights before notifying listeners', () => {
+    audioBrowserProxy.highlightGranularity = audioBrowserProxy.wordHighlighting;
+    const {spoken} = playWithWordHighlight('Highlight then notify');
+    const events: string[] = [];
+    const highlighter = ReadAloudHighlighter.getInstance();
+    const originalHighlight = highlighter.highlightCurrentGranularity;
+    highlighter.highlightCurrentGranularity = (...args) => {
+      events.push('highlight');
+      return originalHighlight.apply(highlighter, args);
+    };
+    addWordBoundaryListener(() => events.push('word_boundary'));
+
+    spoken.onboundary(createWordBoundaryEvent(spoken, 0, 9));
+    highlighter.highlightCurrentGranularity = originalHighlight;
+
+    assertDeepEquals(['highlight', 'word_boundary'], events);
+  });
+
+  test('word boundary reuses word highlight segments for listeners', () => {
+    audioBrowserProxy.highlightGranularity = audioBrowserProxy.wordHighlighting;
+    const {spoken, highlights} =
+        playWithWordHighlight('One lookup per word boundary');
+    let notified: Segment[] = [];
+    addWordBoundaryListener(segments => {
+      notified = segments;
+    });
+
+    spoken.onboundary(createWordBoundaryEvent(spoken, 0, 3));
+
+    assertEquals(
+        1, readAloudModel.getCallCount('getHighlightForCurrentSegmentIndex'));
+    assertEquals(highlights, notified);
+  });
+
+  test(
+      'word boundary with phrase highlighting notifies listeners with words',
+      () => {
+        audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+        audioBrowserProxy.highlightGranularity =
+            audioBrowserProxy.phraseHighlighting;
+        const {spoken} = playWithWordHighlight('Phrases are not words');
+
+        spoken.onboundary(createWordBoundaryEvent(spoken, 0, 7));
+
+        // [index, highlightPhrases] for the phrase highlight, then for the
+        // listeners' word lookup.
+        assertDeepEquals(
+            [[0, true], [0, false]],
+            readAloudModel.getArgs('getHighlightForCurrentSegmentIndex'));
+      });
+
+  test(
+      'word boundary with sentence highlighting looks up word segments', () => {
+        audioBrowserProxy.highlightGranularity =
+            audioBrowserProxy.sentenceHighlighting;
+        const {spoken, highlights} =
+            playWithWordHighlight('Sentences still notify');
+        let notified: Segment[] = [];
+        addWordBoundaryListener(segments => {
+          notified = segments;
+        });
+
+        spoken.onboundary(createWordBoundaryEvent(spoken, 0, 9));
+
+        assertDeepEquals(
+            [[0, false]],
+            readAloudModel.getArgs('getHighlightForCurrentSegmentIndex'));
+        assertEquals(highlights, notified);
       });
 
   test('onLockScreen callback triggers onLockScreen', () => {

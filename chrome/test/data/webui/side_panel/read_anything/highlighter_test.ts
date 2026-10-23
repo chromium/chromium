@@ -69,11 +69,12 @@ suite('Highlighter', () => {
     }];
     readAloudModel.setCurrentTextSegments(segments);
 
-    highlighter.highlightCurrentGranularity(
+    const wordSegments = highlighter.highlightCurrentGranularity(
         segments,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
+    assertEquals(null, wordSegments);
     assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">' + text1 + '</span>' +
@@ -220,11 +221,12 @@ suite('Highlighter', () => {
         [{node: ReadAloudNode.create(sentence)!, start: 5, length: 5}];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
-    highlighter.highlightCurrentGranularity(
+    const wordSegments = highlighter.highlightCurrentGranularity(
         highlights,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
+    assertEquals(highlights, wordSegments);
     assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">Will </span>' +
@@ -493,11 +495,12 @@ suite('Highlighter', () => {
         [{node: ReadAloudNode.create(sentence)!, start: 12, length: 20}];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
-    highlighter.highlightCurrentGranularity(
+    const wordSegments = highlighter.highlightCurrentGranularity(
         highlights,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
+    assertEquals(null, wordSegments);
     assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">But darling </span>' +
@@ -652,11 +655,12 @@ suite('Highlighter', () => {
     }];
     readAloudModel.setCurrentTextSegments(segments);
 
-    highlighter.highlightCurrentGranularity(
+    const wordSegments = highlighter.highlightCurrentGranularity(
         segments,
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
+    assertEquals(null, wordSegments);
     assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">' + text1 + '</span>' +
