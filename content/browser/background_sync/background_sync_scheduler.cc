@@ -119,7 +119,9 @@ void BackgroundSyncScheduler::ScheduleOrCancelBrowserWakeupForSyncType(
   auto* browser_context = storage_partition->browser_context();
   CHECK(browser_context, base::NotFatalUntil::M159);
   auto* controller = browser_context->GetBackgroundSyncController();
-  CHECK(controller, base::NotFatalUntil::M159);
+  // TODO(crbug.com/576063166): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(controller);
 
   auto& delayed_processing_info = GetDelayedProcessingInfoMap(sync_type);
 
