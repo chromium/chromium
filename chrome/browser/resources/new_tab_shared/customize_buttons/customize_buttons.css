@@ -161,3 +161,29 @@ while the icon has a color rule of it's own. */
   from { transform:rotate(0deg); }
   to { transform:rotate(720deg); }
 }
+
+@media (forced-colors: active) {
+  #customizeButton,
+  #wallpaperSearchButton,
+  :host([show-background-image]) #customizeButton,
+  :host([show-background-image]) #wallpaperSearchButton {
+    --cr-button-background-color: ButtonFace;
+    --cr-button-text-color: ButtonText;
+    --cr-hover-background-color: Highlight;
+    border: 1px solid ButtonBorder;
+    forced-color-adjust: none;
+  }
+
+  #customizeButton:hover,
+  #customizeButton:focus-visible,
+  #wallpaperSearchButton:hover,
+  #wallpaperSearchButton:focus-visible,
+  :host([show-background-image]) #customizeButton:hover,
+  :host([show-background-image]) #customizeButton:focus-visible,
+  :host([show-background-image]) #wallpaperSearchButton:hover,
+  :host([show-background-image]) #wallpaperSearchButton:focus-visible {
+    --cr-button-background-color: Highlight;
+    --cr-button-text-color: HighlightText;
+    border-color: Highlight;
+  }
+}
