@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -356,29 +355,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded() {
 void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
     signin_metrics::SourceForRefreshTokenOperation source) {
   // Revoking credentials on Android is not allowed.
-  NOTREACHED(base::NotFatalUntil::M153);
-
-  // TODO(crbug.com/512831931): Cleanup after M153 is rolled out.
-  DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials";
-  ScopedBatchChange batch(this);
-  std::vector<CoreAccountId> accounts_to_revoke = GetAccounts();
-
-  // Clear accounts in the token service before calling
-  // |FireRefreshTokenRevoked|.
-  SetAccounts(std::vector<CoreAccountId>());
-
-  for (const CoreAccountId& account : accounts_to_revoke) {
-    FireRefreshTokenRevoked(account);
-  }
-
-  // We don't expose the list of accounts if the user is signed out, so it is
-  // safe to assume that the account list is empty here.
-  // TODO(crbug.com/40287987): Once we expose the list of accounts all the
-  // time, this assumption should be re-evaluated.
-  const std::vector<AccountInfo> empty_accounts_list =
-      std::vector<AccountInfo>();
-  SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      std::vector<AccountInfo>(), std::nullopt);
+  NOTREACHED();
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(

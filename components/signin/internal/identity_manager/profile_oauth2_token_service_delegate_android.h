@@ -85,8 +85,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   friend class OAuth2TokenServiceDelegateAndroidForTest;
 
   // ProfileOAuth2TokenServiceDelegate implementation:
-  // Overridden from ProfileOAuth2TokenService to complete signout of all
-  // POA2TService aware accounts.
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;
 
