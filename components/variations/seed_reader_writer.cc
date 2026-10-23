@@ -164,9 +164,11 @@ base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
 
 // Serializes, compresses, and returns the compressed seed info used during
 // write to disk. Will be run asynchronously on a background thread.
-std::optional<std::string> DoSerialize(StoredSeedInfo seed_info,
-                                       base::FilePath file_path,
-                                       std::string histogram_suffix) {
+std::optional<std::string> DoSerialize(
+    StoredSeedInfo seed_info,
+    base::FilePath file_path,
+    std::string histogram_suffix,
+    base::OnceClosure on_serialize_failed_callback) {
   if (!seed_info.has_data()) {
     // If the seed data was purged from memory, read it from the existing file
     // first to preserve the seed data and signature.
@@ -175,6 +177,7 @@ std::optional<std::string> DoSerialize(StoredSeedInfo seed_info,
     if (!read_result.has_value()) {
       // If we cannot read the existing seed file, we cannot safely write the
       // update without destroying the seed data.
+      std::move(on_serialize_failed_callback).Run();
       return std::nullopt;
     }
     seed_info.set_data(std::move(read_result.value().data()));
@@ -184,6 +187,7 @@ std::optional<std::string> DoSerialize(StoredSeedInfo seed_info,
   std::string compressed_seed_info;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   if (!Compress(uncompressed_data, &compressed_seed_info)) {
+    std::move(on_serialize_failed_callback).Run();
     return std::nullopt;
   }
   base::UmaHistogramTimes(
@@ -646,6 +650,17 @@ void SeedReaderWriter::StoreBase64EncodedSeedAndSignatureForTesting(
                         .signature = std::move(base64_signature)});
 }
 
+bool SeedReaderWriter::IsEmpty() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ShouldUseSeedFile()) {
+    // Empty seeds are never purged from memory (see
+    // ShouldClearSeedDataFromMemory()), so `!stored_seed_info_.has_data()`
+    // means a non-empty seed was purged after being written to disk.
+    return stored_seed_info_.has_data() && stored_seed_info_.data().empty();
+  }
+  return local_state_->GetString(fields_prefs_->seed).empty();
+}
+
 bool SeedReaderWriter::IsIdenticalToSafeSeedSentinel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
@@ -733,27 +748,38 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   // use std::move here as we may attempt to read `seed_info_.data` from memory
   // after a write and before we modify `seed_info_.data` again, in which case
   // unexpected empty data would be read.
-  auto call_clear_seed_cb =
+  ++pending_background_writes_;
+  seed_writer_->RegisterOnNextWriteCallbacks(
+      base::OnceClosure(),
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&SeedReaderWriter::OnSeedWriteComplete,
-                                        weak_ptr_factory_.GetWeakPtr()));
-  seed_writer_->RegisterOnNextWriteCallbacks(base::OnceClosure(),
-                                             std::move(call_clear_seed_cb));
+                                        weak_ptr_factory_.GetWeakPtr())));
+  // ImportantFileWriter skips `after_write_callback` when the background data
+  // producer returns std::nullopt, so pass a failure callback to ensure
+  // OnSeedWriteComplete(/*write_success=*/false) still runs and decrements
+  // `pending_background_writes_`.
+  auto on_serialize_failed_cb = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&SeedReaderWriter::OnSeedWriteComplete,
+                     weak_ptr_factory_.GetWeakPtr(), /*write_success=*/false));
   // TODO(crbug.com/370539202): Potentially use std::move instead of copy if we
   // are able to move seed data out of memory before the write completes.
   return base::BindOnce(&DoSerialize, stored_seed_info_, seed_writer_->path(),
-                        histogram_suffix_);
+                        histogram_suffix_, std::move(on_serialize_failed_cb));
 }
 
 bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return seed_purgeable_from_memory_ && !HasPendingWrite() &&
-         stored_seed_info_.has_data() && !stored_seed_info_.data().empty() &&
+         pending_background_writes_ == 0 && stored_seed_info_.has_data() &&
+         !stored_seed_info_.data().empty() &&
          stored_seed_info_.data() != kIdenticalToSafeSeedSentinel;
 }
 
 void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_GT(pending_background_writes_, 0);
+  --pending_background_writes_;
   if (migrating_from_old_source_ && write_success) {
     // Clients using a seed file should clear seed from local state, as it will
     // no longer be used.
@@ -1056,7 +1082,8 @@ void SeedReaderWriter::GetSeedDataFromSeedFile(
         }
         std::move(done_callback)
             .Run(ReadSeedDataResult{
-                .result = LoadSeedResult::kSuccess,
+                .result = result->data().empty() ? LoadSeedResult::kEmpty
+                                                 : LoadSeedResult::kSuccess,
                 .seed_data = std::move(result->data()),
                 .signature = std::move(result->signature())});
       },
