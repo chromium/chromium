@@ -1477,7 +1477,9 @@ export class OmniboxPopupSearchboxElement extends
 
     this.hasInputSelection_ = selection.start !== selection.end;
 
-    this.selectRange(selection);
+    // Key on the logical focus state rather than DOM focus, since focusing may
+    // be deferred (see above) while the document is hidden.
+    this.selectRange(selection, state.isFocused);
     this.getDropdownElement().unselect();
 
     // Records user timing marks for tab state restoration and browser/tab
@@ -1658,8 +1660,12 @@ export class OmniboxPopupSearchboxElement extends
   /**
    * Applies `selection` to `#input`. If a partial sub-range is requested while
    * displaying an elided URL, unelides `fullUrl_` first before selecting.
+   * `isFocused` is whether the input is (or is about to be, if focusing is
+   * deferred) focused. An unfocused input shows the start of its text, which
+   * the #mirror then elides at its end.
    */
-  private selectRange(selection: {start: number, end: number}) {
+  private selectRange(
+      selection: {start: number, end: number}, isFocused: boolean) {
     const {start, end} = selection;
     const input = this.getInputElement().inputElement.value;
     const isFullSelection =
@@ -1687,11 +1693,15 @@ export class OmniboxPopupSearchboxElement extends
       this.$.input.setSelectionRange(
           selStart, selEnd, start > end ? 'backward' : 'none');
       const inputEl = this.getInputElement().inputElement;
-      if (selStart === inputEl.value.length &&
+      // Blink only scrolls an unfocused input back to its start when it blurs,
+      // so e.g. a draft restored unfocused (on a tab switch) with the caret at
+      // its end would otherwise stay scrolled, with the ellipsis out of view.
+      if (!isFocused || (selStart === 0 && selEnd === 0)) {
+        inputEl.scrollLeft = 0;
+      } else if (
+          selStart === inputEl.value.length &&
           selEnd === inputEl.value.length) {
         inputEl.scrollLeft = inputEl.scrollWidth;
-      } else if (selStart === 0 && selEnd === 0) {
-        inputEl.scrollLeft = 0;
       } else if (!isFullSelection) {
         this.scrollSelectionStartIntoView_(selStart);
       }

@@ -670,6 +670,53 @@ suite('SearchboxInputTest', () => {
         assertFalse(spans[0]!.classList.contains('dimmed'));
       });
 
+  // The ellipsis that elides overflowing text while the input is unfocused is
+  // painted in the mirror's own color, so it should match the trailing text.
+  test('Styles mirror like its trailing text', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    function assertMirrorColorMatchesTrailingText(dimmed: boolean) {
+      const lastSpan = mirror!.lastElementChild!;
+      assertEquals(dimmed, lastSpan.classList.contains('dimmed'));
+      assertEquals(dimmed, mirror!.classList.contains('dimmed'));
+      assertEquals(
+          getComputedStyle(lastSpan).color, getComputedStyle(mirror!).color);
+    }
+
+    // A URL whose (trailing) path is de-emphasized.
+    input.setInput({text: 'https://www.google.com/search?q=test', inline: ''});
+    input.urlEmphasis = {
+      textIsUrl: true,
+      deemphasisMode: UrlDeemphasisMode.kAllButHost,
+      schemeRange: {start: 0, end: 5},
+      hostRange: {start: 8, end: 22},
+      schemeStrikeThrough: false,
+      schemeDangerous: false,
+    };
+    await input.updateComplete;
+    assertMirrorColorMatchesTrailingText(/*dimmed=*/ true);
+
+    // A URL whose (trailing) host is emphasized.
+    input.setInput({text: 'https://www.google.com', inline: ''});
+    input.urlEmphasis = {
+      textIsUrl: true,
+      deemphasisMode: UrlDeemphasisMode.kAllButHost,
+      schemeRange: {start: 0, end: 5},
+      hostRange: {start: 8, end: 22},
+      schemeStrikeThrough: false,
+      schemeDangerous: false,
+    };
+    await input.updateComplete;
+    assertMirrorColorMatchesTrailingText(/*dimmed=*/ false);
+
+    // A search query, which is never de-emphasized.
+    input.setInput({text: 'search query text', inline: ''});
+    input.urlEmphasis = null;
+    await input.updateComplete;
+    assertMirrorColorMatchesTrailingText(/*dimmed=*/ false);
+  });
+
   test('Emphasizes data URL scheme in mirror element', async () => {
     input = await createInput({urlEmphasisEnabled: true});
     input.setInput({text: 'data:text/html,hello', inline: ''});
