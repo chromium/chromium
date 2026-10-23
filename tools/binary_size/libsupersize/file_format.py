@@ -157,14 +157,19 @@ def SortSymbols(raw_symbols):
   raw_symbols.sort(key=_SortKey)
 
 
+_NATIVE_SECTIONS_SET = frozenset(models.NATIVE_SECTIONS)
+
+
 def CalculatePadding(raw_symbols):
   """Populates the |padding| field based on symbol addresses."""
   logging.info('Calculating padding')
 
   seen_container_and_sections = set()
-  for i, symbol in enumerate(raw_symbols[1:]):
-    prev_symbol = raw_symbols[i]
-    if symbol.IsOverhead():
+  # This loop is hot, so avoids method calls and properties.
+  for prev_symbol, symbol in zip(
+    raw_symbols, itertools.islice(raw_symbols, 1, None)
+  ):
+    if symbol.full_name.startswith('Overhead: '):
       # Overhead symbols are not actionable so should be padding-only.
       symbol.padding = symbol.size
     if (
@@ -184,8 +189,7 @@ All: {}
     if (
       symbol.address <= 0
       or prev_symbol.address <= 0
-      or not symbol.IsNative()
-      or not prev_symbol.IsNative()
+      or symbol.section_name not in _NATIVE_SECTIONS_SET
     ):
       continue
 
@@ -199,11 +203,13 @@ All: {}
         'Found duplicate symbols:\n%r\n%r' % (prev_symbol, symbol)
       )
 
-    padding = symbol.address - prev_symbol.end_address
+    padding = symbol.address - (
+      prev_symbol.address + prev_symbol.size - prev_symbol.padding
+    )
     symbol.padding = padding
     symbol.size += padding
     assert symbol.size >= 0, (
-      'Symbol has negative size (likely not sorted propertly): '
+      'Symbol has negative size (likely not sorted properly): '
       '%r\nprev symbol: %r' % (symbol, prev_symbol)
     )
 
