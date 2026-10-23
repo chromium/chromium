@@ -96,6 +96,9 @@ import org.chromium.ui.modelutil.PropertyModel;
     }
 
     public void onAccepted() {
+        // The confirm button stays enabled (but non-clickable) while loading, so guard against
+        // repeated accepts.
+        if (mModel.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE)) return;
         mModel.set(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE, true);
         mDelegate.onUiAccepted();
     }

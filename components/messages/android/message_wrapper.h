@@ -15,10 +15,6 @@
 #include "components/messages/android/message_enums.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace ui {
-class WindowAndroid;
-}
-
 namespace messages {
 
 // |MessagesWrapper| represents a message for native feature code. It accepts
@@ -59,6 +55,8 @@ class MessageWrapper {
   void SetPrimaryButtonText(const std::u16string& primary_button_text);
   int GetPrimaryButtonTextMaxLines();
   void SetPrimaryButtonTextMaxLines(int max_lines);
+  PrimaryWidgetAppearance GetPrimaryWidgetAppearance();
+  void SetPrimaryWidgetAppearance(PrimaryWidgetAppearance appearance);
   std::u16string GetSecondaryButtonMenuText();
   void SetSecondaryButtonMenuText(
       const std::u16string& secondary_button_menu_text);
@@ -89,9 +87,6 @@ class MessageWrapper {
   // The icon is tinted to default_icon_color_accent1 by default.
   // Call this method to display icons of original colors.
   void DisableIconTint();
-  // Sets an animated circular progress spinner as the message icon. Returns
-  // true if the spinner icon was attached.
-  bool ShowLoadingSpinner(ui::WindowAndroid* window_android);
   int GetSecondaryIconResourceId();
   void SetSecondaryIconResourceId(int resource_id);
 

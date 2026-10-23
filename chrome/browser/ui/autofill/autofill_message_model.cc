@@ -135,18 +135,15 @@ AutofillMessageModel::CreateForPrivateInferenceNotice(
 
 std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForEmailVerificationLoading(
-    ui::WindowAndroid* window_android,
-    base::OnceClosure action_callback,
     messages::MessageWrapper::DismissCallback dismiss_callback) {
   std::unique_ptr<messages::MessageWrapper> message =
       std::make_unique<messages::MessageWrapper>(
           messages::MessageIdentifier::EMAIL_VERIFICATION_LOADING);
   message->SetTitle(l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_LOADING));
-  message->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_CANCEL));
-  if (!message->ShowLoadingSpinner(window_android)) {
-    message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-        IDR_ANDROID_AUTOFILL_EMAIL_VERIFIED));
-  }
+  message->SetIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_EMAIL_VERIFIED));
+  message->SetPrimaryWidgetAppearance(
+      messages::PrimaryWidgetAppearance::PROGRESS_SPINNER);
   // Keep the loading banner visible while token retrieval is in flight until it
   // is explicitly replaced by the verified or error banner.
   constexpr base::TimeDelta kEmailVerificationLoadingDuration =
@@ -154,8 +151,8 @@ AutofillMessageModel::CreateForEmailVerificationLoading(
   message->SetDuration(kEmailVerificationLoadingDuration.InMilliseconds());
 
   return std::make_unique<AutofillMessageModel>(
-      std::move(message), Type::kEmailVerificationLoading,
-      std::move(action_callback), std::move(dismiss_callback));
+      std::move(message), Type::kEmailVerificationLoading, base::DoNothing(),
+      std::move(dismiss_callback));
 }
 
 std::unique_ptr<AutofillMessageModel>

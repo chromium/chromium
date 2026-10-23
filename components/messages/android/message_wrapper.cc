@@ -8,7 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -114,6 +113,20 @@ void MessageWrapper::SetPrimaryButtonTextMaxLines(int max_lines) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_setPrimaryButtonTextMaxLines(env, java_message_wrapper_,
                                                    max_lines);
+}
+
+PrimaryWidgetAppearance MessageWrapper::GetPrimaryWidgetAppearance() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return static_cast<PrimaryWidgetAppearance>(
+      Java_MessageWrapper_getPrimaryWidgetAppearance(env,
+                                                     java_message_wrapper_));
+}
+
+void MessageWrapper::SetPrimaryWidgetAppearance(
+    PrimaryWidgetAppearance appearance) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setPrimaryWidgetAppearance(env, java_message_wrapper_,
+                                                 static_cast<int>(appearance));
 }
 
 std::u16string MessageWrapper::GetSecondaryButtonMenuText() {
@@ -236,15 +249,6 @@ void MessageWrapper::SetIconRoundedCornerRadius(int radius) {
 void MessageWrapper::DisableIconTint() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_disableIconTint(env, java_message_wrapper_);
-}
-
-bool MessageWrapper::ShowLoadingSpinner(ui::WindowAndroid* window_android) {
-  if (!window_android || !window_android->GetJavaObject()) {
-    return false;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_MessageWrapper_showLoadingSpinner(
-      env, java_message_wrapper_, window_android->GetJavaObject());
 }
 
 int MessageWrapper::GetSecondaryIconResourceId() {

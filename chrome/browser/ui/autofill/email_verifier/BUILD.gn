@@ -118,7 +118,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/autofill:test_support",
       "//components/messages/android",
       "//components/messages/android:test_support",
-      "//components/strings",
       "//ui/base",
     ]
   } else {

@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.autofill.email_verification.EmailVerif
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -40,17 +41,19 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (propertyKey == ON_CANCEL_CLICKED) {
             view.mCancelButton.setOnClickListener(_ -> model.get(ON_CANCEL_CLICKED).run());
         } else if (propertyKey == SHOW_LOADING_STATE) {
-            if (model.get(SHOW_LOADING_STATE)) {
-                view.mConfirmButton.setEnabled(false);
-                view.mCancelButton.setEnabled(false);
-                view.mLoadingView.showLoadingUi(/* skipDelay= */ true);
-                view.mLoadingViewContainer.setVisibility(View.VISIBLE);
-            } else {
-                view.mLoadingViewContainer.setVisibility(View.GONE);
-                view.mLoadingView.hideLoadingUi(/* skipDelay= */ true);
-                view.mConfirmButton.setEnabled(true);
-                view.mCancelButton.setEnabled(true);
-            }
+            boolean isLoading = model.get(SHOW_LOADING_STATE);
+            // Keep the confirm button's size and color while loading: hide its label and show a
+            // spinner inside it instead of disabling it (which would grey it out).
+            view.mConfirmButton.setClickable(!isLoading);
+            view.mConfirmButton.setTextScaleX(isLoading ? 0f : 1f);
+            view.mConfirmButton.setContentDescription(
+                    isLoading
+                            ? view.mContentView
+                                    .getContext()
+                                    .getString(R.string.email_verification_loading)
+                            : null);
+            view.mConfirmButtonSpinner.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            view.mCancelButton.setEnabled(!isLoading);
         } else {
             assert false : "Unhandled property key: " + propertyKey;
         }

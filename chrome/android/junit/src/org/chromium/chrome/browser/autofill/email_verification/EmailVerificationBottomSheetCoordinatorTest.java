@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.email_verification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -139,9 +140,12 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
                 mActivity.getString(R.string.autofill_email_verifier_prompt_not_now),
                 cancelBtn.getText().toString());
 
-        View loadingContainer = view.mContentView.findViewById(R.id.loading_view_container);
-        assertNotNull(loadingContainer);
-        assertEquals(View.GONE, loadingContainer.getVisibility());
+        View spinner =
+                view.mContentView.findViewById(R.id.email_verification_confirm_button_spinner);
+        assertNotNull(spinner);
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertTrue(confirmBtn.isClickable());
+        assertEquals(1f, confirmBtn.getTextScaleX(), 0f);
     }
 
     @Test
@@ -149,7 +153,8 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
         EmailVerificationBottomSheetView view = mCoordinator.getViewForTesting();
         Button confirmBtn = view.mContentView.findViewById(R.id.email_verification_confirm_button);
         Button cancelBtn = view.mContentView.findViewById(R.id.email_verification_cancel_button);
-        View loadingContainer = view.mContentView.findViewById(R.id.loading_view_container);
+        View spinner =
+                view.mContentView.findViewById(R.id.email_verification_confirm_button_spinner);
 
         confirmBtn.performClick();
 
@@ -157,10 +162,15 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
         PropertyModel model = mCoordinator.getPropertyModelForTesting();
         assertTrue(model.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE));
         assertEquals(View.VISIBLE, confirmBtn.getVisibility());
-        assertFalse(confirmBtn.isEnabled());
+        assertTrue(confirmBtn.isEnabled());
+        assertFalse(confirmBtn.isClickable());
+        assertEquals(0f, confirmBtn.getTextScaleX(), 0f);
+        assertEquals(
+                mActivity.getString(R.string.email_verification_loading),
+                confirmBtn.getContentDescription());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(View.VISIBLE, cancelBtn.getVisibility());
         assertFalse(cancelBtn.isEnabled());
-        assertEquals(View.VISIBLE, loadingContainer.getVisibility());
     }
 
     @Test
@@ -181,10 +191,14 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         assertFalse(model.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE));
-        View loadingContainer = view.mContentView.findViewById(R.id.loading_view_container);
-        assertEquals(View.GONE, loadingContainer.getVisibility());
+        View spinner =
+                view.mContentView.findViewById(R.id.email_verification_confirm_button_spinner);
+        assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.VISIBLE, confirmBtn.getVisibility());
         assertTrue(confirmBtn.isEnabled());
+        assertTrue(confirmBtn.isClickable());
+        assertEquals(1f, confirmBtn.getTextScaleX(), 0f);
+        assertNull(confirmBtn.getContentDescription());
         assertEquals(View.VISIBLE, cancelBtn.getVisibility());
         assertTrue(cancelBtn.isEnabled());
     }

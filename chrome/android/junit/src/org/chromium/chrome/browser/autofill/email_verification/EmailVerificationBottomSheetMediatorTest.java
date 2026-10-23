@@ -138,6 +138,14 @@ public final class EmailVerificationBottomSheetMediatorTest {
     }
 
     @Test
+    public void testOnAccepted_whileLoading_isNoOp() {
+        mMediator.onAccepted();
+        mMediator.onAccepted();
+
+        verify(mDelegate, times(1)).onUiAccepted();
+    }
+
+    @Test
     public void testDismissalOnResponse() {
         mMediator.onAccepted();
         assertTrue(

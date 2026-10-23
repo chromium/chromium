@@ -486,6 +486,7 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_iban_text_input_top_margin">20dp</dimen>
 
     <!-- Common autofill bottom sheet dimensions. -->
+    <dimen name="autofill_bottom_sheet_button_spinner_size">24dp</dimen>
     <dimen name="autofill_bottom_sheet_chip_top_margin">22dp</dimen>
     <dimen name="autofill_bottom_sheet_confirm_button_top_margin">22dp</dimen>
     <dimen name="autofill_bottom_sheet_drag_handlebar_spacing_top">8dp</dimen>

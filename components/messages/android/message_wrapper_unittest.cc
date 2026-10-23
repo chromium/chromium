@@ -40,10 +40,16 @@ TEST_F(MessageWrapperTest, ClearsJavaPointerOnDestruction) {
   EXPECT_EQ(0, helper_.GetNativePtr(java_object));
 }
 
-TEST_F(MessageWrapperTest, ShowLoadingSpinnerWithNullWindowReturnsFalse) {
+TEST_F(MessageWrapperTest, SetPrimaryWidgetAppearance) {
   auto message_wrapper =
       std::make_unique<MessageWrapper>(MessageIdentifier::TEST_MESSAGE);
-  EXPECT_FALSE(message_wrapper->ShowLoadingSpinner(nullptr));
+  EXPECT_EQ(PrimaryWidgetAppearance::BUTTON_IF_TEXT_IS_SET,
+            message_wrapper->GetPrimaryWidgetAppearance());
+
+  message_wrapper->SetPrimaryWidgetAppearance(
+      PrimaryWidgetAppearance::PROGRESS_SPINNER);
+  EXPECT_EQ(PrimaryWidgetAppearance::PROGRESS_SPINNER,
+            message_wrapper->GetPrimaryWidgetAppearance());
 }
 
 }  // namespace messages

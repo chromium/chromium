@@ -156,19 +156,19 @@ TEST(AutofillMessageModelTest, VerifyResurrectChurnedUsersAttributes) {
 }
 
 TEST(AutofillMessageModelTest, VerifyEmailVerificationLoadingAttributes) {
-  base::MockCallback<base::OnceClosure> cancel_callback;
   base::MockCallback<messages::MessageWrapper::DismissCallback>
       dismiss_callback;
 
   std::unique_ptr<AutofillMessageModel> message_model =
       AutofillMessageModel::CreateForEmailVerificationLoading(
-          /*window_android=*/nullptr, cancel_callback.Get(),
           dismiss_callback.Get());
 
   EXPECT_EQ(test_api(*message_model).GetMessage().GetTitle(),
             l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_LOADING));
-  EXPECT_EQ(test_api(*message_model).GetMessage().GetPrimaryButtonText(),
-            l10n_util::GetStringUTF16(IDS_CANCEL));
+  EXPECT_TRUE(
+      test_api(*message_model).GetMessage().GetPrimaryButtonText().empty());
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetPrimaryWidgetAppearance(),
+            messages::PrimaryWidgetAppearance::PROGRESS_SPINNER);
   EXPECT_EQ(
       test_api(*message_model).GetMessage().GetIconResourceId(),
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_EMAIL_VERIFIED));
@@ -178,11 +178,8 @@ TEST(AutofillMessageModelTest, VerifyEmailVerificationLoadingAttributes) {
             AutofillMessageModel::TypeToString(
                 AutofillMessageModel::Type::kEmailVerificationLoading));
 
-  EXPECT_CALL(cancel_callback, Run);
-  message_model->OnActionClicked();
-
-  EXPECT_CALL(dismiss_callback, Run(messages::DismissReason::PRIMARY_ACTION));
-  message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+  EXPECT_CALL(dismiss_callback, Run(messages::DismissReason::GESTURE));
+  message_model->OnDismissed(messages::DismissReason::GESTURE);
 }
 
 TEST(AutofillMessageModelTest, VerifyEmailVerifiedAttributes) {

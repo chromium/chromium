@@ -14,10 +14,6 @@
 
 class GURL;
 
-namespace ui {
-class WindowAndroid;
-}
-
 namespace autofill {
 
 class AutofillMessageControllerImpl;
@@ -85,8 +81,6 @@ class AutofillMessageModel {
       base::RepeatingClosure secondary_action_callback);
   static std::unique_ptr<AutofillMessageModel>
   CreateForEmailVerificationLoading(
-      ui::WindowAndroid* window_android,
-      base::OnceClosure action_callback,
       messages::MessageWrapper::DismissCallback dismiss_callback);
   static std::unique_ptr<AutofillMessageModel> CreateForEmailVerified(
       const GURL& issuer,

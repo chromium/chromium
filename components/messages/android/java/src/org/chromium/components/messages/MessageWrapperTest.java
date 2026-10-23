@@ -6,12 +6,7 @@ package org.chromium.components.messages;
 
 import static org.mockito.Mockito.never;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.view.ContextThemeWrapper;
-
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,9 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for MessageWrapper. */
@@ -177,37 +170,22 @@ public class MessageWrapperTest {
                 "Secondary menu is not cleared.", 0, messageSecondaryMenuItems.mMenuItems.size());
     }
 
-    /** Tests that showLoadingSpinner attaches a running CircularProgressDrawable with TINT_NONE. */
+    /** Tests that setPrimaryWidgetAppearance updates the message's primary widget appearance. */
     @Test
-    public void testShowLoadingSpinner() {
+    public void testSetPrimaryWidgetAppearance() {
         MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
 
-        Assert.assertFalse(message.showLoadingSpinner(null));
-
-        Context context =
-                new ContextThemeWrapper(
-                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        WindowAndroid window = new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
-
-        Assert.assertTrue(message.showLoadingSpinner(window));
-
-        Drawable icon = messageProperties.get(MessageBannerProperties.ICON);
-        Assert.assertNotNull(icon);
-        Assert.assertTrue(icon instanceof CircularProgressDrawable);
-        Assert.assertTrue(((CircularProgressDrawable) icon).isRunning());
-        icon.setVisible(false, false);
-        Assert.assertFalse(((CircularProgressDrawable) icon).isRunning());
-        icon.setVisible(true, false);
-        Assert.assertTrue(((CircularProgressDrawable) icon).isRunning());
-        Assert.assertTrue(
-                messageProperties
-                        .getAllSetProperties()
-                        .contains(MessageBannerProperties.ICON_TINT_COLOR));
         Assert.assertEquals(
-                MessageBannerProperties.TINT_NONE,
-                messageProperties.get(MessageBannerProperties.ICON_TINT_COLOR));
+                PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET,
+                message.getPrimaryWidgetAppearance());
 
-        window.destroy();
+        message.setPrimaryWidgetAppearance(PrimaryWidgetAppearance.PROGRESS_SPINNER);
+
+        Assert.assertEquals(
+                PrimaryWidgetAppearance.PROGRESS_SPINNER, message.getPrimaryWidgetAppearance());
+        Assert.assertEquals(
+                PrimaryWidgetAppearance.PROGRESS_SPINNER,
+                messageProperties.get(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE));
     }
 }
