@@ -6,4 +6,5 @@
 // omnibox_popup.html. Only pulls in what the classic popup renders, so that
 // every browser window doesn't pay for parsing and defining the AIM composebox
 // and full WebUI omnibox elements that live in the omnibox_popup.js bundle.
+import './profile_load_time_data.js';
 import './app.js';

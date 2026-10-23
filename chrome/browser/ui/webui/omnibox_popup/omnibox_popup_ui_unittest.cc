@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/full_webui_omnibox_layout_helper.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
@@ -70,6 +73,9 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
   web_ui.set_web_contents(web_contents());
 
   auto omnibox_popup_ui = std::make_unique<OmniboxPopupUI>(&web_ui);
+  EXPECT_EQ(OmniboxPopupUI::GetProfileLoadTimeData(profile()).FindBool(
+                "composeboxContextDragAndDropEnabled"),
+            false);
 
   mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler;
   mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page;
@@ -272,4 +278,21 @@ TEST_F(OmniboxPopupUITest, FullWebUIOmniboxLayoutHelperPopulateLoadTimeData) {
   EXPECT_FALSE(dict.contains("locationBarPageInfoIconVerticalPadding"));
   EXPECT_FALSE(dict.contains("locationBarIconSize"));
   EXPECT_FALSE(dict.contains("locationBarFontSize"));
+}
+
+TEST_F(OmniboxPopupUITest, GetProfileLoadTimeData) {
+  base::DictValue dict = OmniboxPopupUI::GetProfileLoadTimeData(profile());
+
+  // The searchbox values that depend on the profile.
+  for (const auto item :
+       SearchboxHandler::GetProfileDependentWebUIDataSourceDict(profile(),
+                                                                {})) {
+    EXPECT_TRUE(dict.contains(item.first)) << item.first;
+  }
+  // The popup's own values that depend on the profile.
+  for (std::string_view key :
+       {"searchboxComposeButtonIcon", "searchboxDefaultIcon",
+        "composeboxShowChip", "composeboxShowCurrentTabChip"}) {
+    EXPECT_TRUE(dict.contains(key)) << key;
+  }
 }

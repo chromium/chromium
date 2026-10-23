@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
 #include <atomic>
+#include <optional>
 #include <string_view>
 
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/webui_url_constants.h"
@@ -81,8 +84,7 @@ std::string_view AddContextButtonVariantToSearchboxLayoutMode(
   return "";
 }
 
-void PopulateAiModeButtonUiConfig(content::WebUIDataSource* source,
-                                  Profile* profile) {
+void PopulateAiModeButtonUiConfig(base::DictValue& dict, Profile* profile) {
   // Use AIM button service to dynamically populate the various AIM button
   // properties based on the current config, if present.
   GURL compose_icon(
@@ -92,9 +94,9 @@ void PopulateAiModeButtonUiConfig(content::WebUIDataSource* source,
             "search_spark_old.svg");
   if (auto* service = AiModeButtonServiceFactory::GetForProfile(profile)) {
     if (const auto* config = service->GetCurrentConfig()) {
-      source->AddString("searchboxComposeButtonText", config->text);
-      source->AddString("searchboxComposeButtonTitle", config->tooltip);
-      source->AddString("searchboxComposeButtonA11yLabel", config->a11y_label);
+      dict.Set("searchboxComposeButtonText", config->text);
+      dict.Set("searchboxComposeButtonTitle", config->tooltip);
+      dict.Set("searchboxComposeButtonA11yLabel", config->a11y_label);
       // For third-party DSE, use the favicon for the AIM button icon.
       std::string favicon_url(config->favicon_url);
       if (config->id != SearchEngineType::SEARCH_ENGINE_GOOGLE &&
@@ -110,7 +112,15 @@ void PopulateAiModeButtonUiConfig(content::WebUIDataSource* source,
       }
     }
   }
-  source->AddString("searchboxComposeButtonIcon", compose_icon.spec());
+  dict.Set("searchboxComposeButtonIcon", compose_icon.spec());
+}
+
+// Returns whether the WebUIDataSource of `web_ui` is shared by the windows of
+// all profiles, i.e. it is in TopChromeWebUIProfile. If so, the loadTimeData
+// values that depend on the profile are passed to each frame instead of being
+// in the data source.
+bool IsWebUIDataSourceShared(content::WebUI* web_ui) {
+  return Profile::FromWebUI(web_ui)->IsTopChromeWebUIProfile();
 }
 
 }  // namespace
@@ -137,27 +147,18 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUIOmniboxPopupHost);
 
-  // Read the pref directly rather than creating the contextual search session
-  // here: every window builds popups, and most never use the session.
-  // Handlers create it on first use.
-  const bool session_allows_drag_and_drop =
-      ContextualSearchServiceFactory::GetForProfile(profile_) &&
-      contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          profile_->GetPrefs());
-
-  source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
-      Profile::FromWebUI(web_ui),
-      {.enable_voice_search = false,
-       .enable_lens_search = false,
-       .session_allows_drag_and_drop = session_allows_drag_and_drop}));
-
-  PopulateAiModeButtonUiConfig(source, profile_);
+  source->AddLocalizedStrings(
+      SearchboxHandler::GetProfileIndependentWebUIDataSourceDict(
+          {.enable_voice_search = false, .enable_lens_search = false}));
+  // The values that depend on the profile. If the data source is shared by the
+  // windows of all profiles, WebUIRenderFrameCreated() passes them to each
+  // frame instead.
+  if (!IsWebUIDataSourceShared(web_ui)) {
+    source->AddLocalizedStrings(GetProfileLoadTimeData(profile_));
+  }
 
   source->AddBoolean("isTopChromeSearchbox", true);
   FullWebUIOmniboxLayoutHelper::PopulateLoadTimeData(source);
-  source->AddString("searchboxDefaultIcon",
-                    GetDefaultSearchProviderIcon(
-                        TemplateURLServiceFactory::GetForProfile(profile_)));
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());
   source->AddBoolean("webuiOmniboxFullPopupEnabled",
@@ -230,14 +231,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean(
       "dynamicAimFulfillmentEnabled",
       base::FeatureList::IsEnabled(omnibox::kDynamicAimFulfillmentOmnibox));
-  // The popup chip UI entrypoint is enabled by the AskG experiment
-  // (kAskGShowChip).
-  source->AddBoolean(
-      "composeboxShowChip",
-      omnibox::IsAimPopupEnabled(profile_) && omnibox::kAskGShowChip.Get());
-  source->AddBoolean("composeboxShowCurrentTabChip",
-                     omnibox::kAskGCurrentTabChip.Get() &&
-                         omnibox::AreContextualTasksEligible(profile_));
   source->AddBoolean("composeboxShowLensIcon", omnibox::kAskGLensIcon.Get());
   source->AddBoolean("askGLensIconIphEnabled", omnibox::kAskGLensIconIph.Get());
   source->AddBoolean("askGComposeboxLensChipEnabled",
@@ -341,6 +334,48 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 OmniboxPopupUI::~OmniboxPopupUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
+
+// static
+base::DictValue OmniboxPopupUI::GetProfileLoadTimeData(Profile* profile) {
+  // Read the pref directly rather than creating the contextual search session
+  // here: every window builds popups, and most never use the session.
+  // Handlers create it on first use.
+  const bool session_allows_drag_and_drop =
+      ContextualSearchServiceFactory::GetForProfile(profile) &&
+      contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs());
+
+  base::DictValue dict =
+      SearchboxHandler::GetProfileDependentWebUIDataSourceDict(
+          profile,
+          {.session_allows_drag_and_drop = session_allows_drag_and_drop});
+
+  PopulateAiModeButtonUiConfig(dict, profile);
+
+  dict.Set("searchboxDefaultIcon",
+           GetDefaultSearchProviderIcon(
+               TemplateURLServiceFactory::GetForProfile(profile)));
+  // The popup chip UI entrypoint is enabled by the AskG experiment
+  // (kAskGShowChip).
+  dict.Set("composeboxShowChip",
+           omnibox::IsAimPopupEnabled(profile) && omnibox::kAskGShowChip.Get());
+  dict.Set("composeboxShowCurrentTabChip",
+           omnibox::kAskGCurrentTabChip.Get() &&
+               omnibox::AreContextualTasksEligible(profile));
+  return dict;
+}
+
+void OmniboxPopupUI::WebUIRenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  // If the data source isn't shared, the constructor added these values to it.
+  if (!IsWebUIDataSourceShared(web_ui())) {
+    return;
+  }
+  if (std::optional<std::string> json = base::WriteJson(GetProfileLoadTimeData(
+          webui::GetUserProfile(web_ui()->GetWebContents())))) {
+    render_frame_host->SetWebUIProperty("profileLoadTimeData", *json);
+  }
+}
 
 // The popup's chrome://theme/colors.css and layout_constants_v0.css are
 // render-blocking stylesheets in <head>. Serve them from the renderer without

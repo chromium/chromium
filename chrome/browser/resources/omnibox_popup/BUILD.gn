@@ -32,6 +32,7 @@ build_webui("build") {
     "omnibox_popup_contextual_entrypoint_button.ts",
     "omnibox_popup_searchbox.html.ts",
     "omnibox_popup_searchbox.ts",
+    "profile_load_time_data.ts",
     "textfield_model.ts",
   ]
   css_files = [
@@ -55,7 +56,10 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
 
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/omnibox_popup/mojom:mojom_ts__generator" ]
