@@ -122,24 +122,6 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
       << message_;
 }
 
-// Tests that tab capture video frames can be received in a VIDEO element.
-// TODO(crbug.com/216820236): This test is flaky.
-// Possible culprit:
-// The script uses a complicated animation loop to create frames, when simpler
-// CSS animations would be fine.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_EndToEndWithoutRemoting) {
-  AddExtensionToCommandLineAllowlist();
-  // Note: The range of acceptable colors is quite large because there's no way
-  // to know whether software compositing is being used for screen capture; and,
-  // if software compositing is being used, there is no color space management
-  // and color values can be off by a lot. That said, color accuracy is being
-  // tested by a suite of content_browsertests.
-  ASSERT_TRUE(RunExtensionTest(
-      "tab_capture/end_to_end",
-      {.extension_url = "end_to_end.html?method=local&colorDeviation=50"}))
-      << message_;
-}
-
 // Tests that getUserMedia() is NOT a way to start tab capture.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
