@@ -175,36 +175,6 @@ message UMAMetrics {
         [(unit) = "ms_smallerIsBetter"];
   }
 
-  message SharedStorage {
-    repeated double document_timing_add_module = 1
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_append = 2 [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_clear = 3 [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_delete = 4 [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_run_executed_in_worklet = 5
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_run = 6 [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_select_url_executed_in_worklet = 7
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_select_url = 8
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double document_timing_set = 9 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_append = 10 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_clear = 11 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_delete = 12 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_entries_next = 13
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_get = 14 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_keys_next = 15
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_length = 16 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_remaining_budget = 17
-        [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_set = 18 [(unit) = "ms_smallerIsBetter"];
-    repeated double worklet_timing_values_next = 19
-        [(unit) = "ms_smallerIsBetter"];
-  };
-
   message SubresourceFilter {
     repeated int64 page_load_num_subresource_loads_matched_rules = 1
         [(unit) = "count_smallerIsBetter"];
@@ -267,7 +237,7 @@ message UMAMetrics {
   optional NewTabPage new_tab_page = 9;
   optional Omnibox omnibox = 10;
   optional PageLoad page_load = 11;
-  optional SharedStorage shared_storage = 12;
+  reserved 12;  // Deprecated SharedStorage shared_storage.
   optional SubresourceFilter subresource_filter = 13;
   optional TabSearch tab_search = 14;
   optional TabStrip tab_strip = 15;

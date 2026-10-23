@@ -463,7 +463,6 @@ _TIME_UNIT_EVENT_METRIC_ALLOWLIST = frozenset(
     ('ServiceWorker.MainResourceLoadCompleted', 'RouterEvaluationTime'),
     ('ServiceWorker.OnLoad', 'TotalCacheLookupTime'),
     ('ServiceWorker.OnLoad', 'TotalRouterEvaluationTime'),
-    ('SharedStorage.Worklet.OnDestroyed', 'AbsoluteUsefulResourceDuration'),
     ('SmartCharging', 'DurationOfLastCharge'),
     ('SmartCharging', 'DurationRecentAudioPlaying'),
     ('SmartCharging', 'DurationRecentVideoPlaying'),
