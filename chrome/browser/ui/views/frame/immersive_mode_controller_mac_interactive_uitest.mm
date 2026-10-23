@@ -183,6 +183,41 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(overlay_widget_window.contentView, overlay_widget_content_view);
 }
 
+// Tests that the tab strip is placed at the origin of the tab overlay view when
+// immersive fullscreen is enabled, even if no fullscreen layout pass ran before
+// it was reparented. Space for the traffic lights is reserved by the tab strip
+// border in the overlay, so any offset carried over from the non-fullscreen
+// layout would leave an extra gap. See https://crbug.com/574977354.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       TabStripAtOriginOfTabOverlay) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  if (!browser_view->tab_overlay_view()) {
+    GTEST_SKIP() << "Tab strip is not hosted in a separate overlay.";
+  }
+  views::View* const tab_strip = browser_view->tab_strip_view();
+
+  // In the non-fullscreen layout, the tab strip is offset to make room for the
+  // traffic lights.
+  RunScheduledLayouts();
+  ASSERT_EQ(tab_strip->parent(), browser_view);
+  ASSERT_GT(tab_strip->x(), 0);
+
+  // Enable immersive mode directly, without first laying out the browser view
+  // in a fullscreen state. This simulates the browser view layout being
+  // deferred during the fullscreen transition, as happens when a new window
+  // enters fullscreen before it becomes visible.
+  auto* const controller = ImmersiveModeController::From(browser());
+  controller->SetEnabled(true);
+  ASSERT_EQ(tab_strip->parent(), browser_view->tab_overlay_view());
+  EXPECT_EQ(tab_strip->origin(), gfx::Point());
+
+  // The origin should stay put after any subsequent layout.
+  RunScheduledLayouts();
+  EXPECT_EQ(tab_strip->origin(), gfx::Point());
+
+  controller->SetEnabled(false);
+}
+
 // Tests that minimum content offset is nonzero iff the find bar is shown and
 // "Always Show Toolbar in Full Screen" is off.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
