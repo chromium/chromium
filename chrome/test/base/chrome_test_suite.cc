@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -102,6 +103,11 @@ void ChromeTestSuite::Initialize() {
   // values for DIR_EXE and DIR_MODULE.
   content::ContentTestSuiteBase::Initialize();
 
+  // Disable writing SYSLOG messages to the system event log (Windows
+  // Application Event Log or POSIX syslog) during tests, and avoid symbolizing
+  // stack traces on SYSLOG(ERROR) on Windows.
+  logging::SetSyslogLoggingForTesting(false);
+
   ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
       ChromeMainDelegate::GetNonWildcardDomainNonPortSchemes());
 
@@ -130,6 +136,8 @@ void ChromeTestSuite::Shutdown() {
 #if BUILDFLAG(IS_MAC)
   base::apple::SetOverrideFrameworkBundlePath({});
 #endif
+
+  logging::SetSyslogLoggingForTesting(true);
 
   content::ContentTestSuiteBase::Shutdown();
 }
