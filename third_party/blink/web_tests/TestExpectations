@@ -898,6 +898,23 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgri
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid/row/grid-lanes-subgrid-002a.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid/row/independent-formatting-context.html [ Failure ]
 
+# Grid Lanes 'reading-flow' across tracks is not yet supported.
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-014.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-015.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-016.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-017.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-018.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-019.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-020.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-column-reading-flow-021.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-005.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-006.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-007.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-008.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-009.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-010.html [ Failure ]
+crbug.com/343257585 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-lanes-row-reading-flow-011.html [ Failure ]
+
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure Timeout ]
 crbug.com/819816 external/wpt/css/css-fonts/font-kerning-03.html [ Failure ]
