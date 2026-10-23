@@ -39,6 +39,12 @@ Mojo instead, a **profile** tells Fuzzilli:
     `Sources/FuzzilliCli/Profiles/`.
 2.  Register the profile in Fuzzilli's profile dictionary in
     `Sources/FuzzilliCli/Profiles/Profile.swift`
+3.  If the primary interface is new, add the `<mojom target>_fuzzilli` target
+    of its mojom to the `data_deps` of `js_in_process_fuzzer` in
+    `//chrome/test/fuzzing/BUILD.gn`. This target generates the Mojo scripts
+    page of the mojom, which loads the MojoJS bindings of the mojom and of its
+    imports. The first statement of the profile's `codePrefix` tells
+    `js_in_process_fuzzer` to load that page.
 
 ### Adding a hand-written type to `common/`
 

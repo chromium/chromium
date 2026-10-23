@@ -3155,6 +3155,7 @@ test("unit_tests") {
       "//chrome/browser/user_education:unit_tests",
       "//chrome/browser/webapps/installable:unit_tests",
       "//chrome/common/child_module:unit_tests",
+      "//chrome/test/fuzzing:unit_tests",
       "//chrome/test/interaction:unit_tests",
       "//chrome/test/user_education:impl",
       "//chrome/utility:unit_tests",

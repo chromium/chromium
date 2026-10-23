@@ -129,6 +129,7 @@ class Generator(generator.Generator):
 
     return {
       "module": self.module,
+      "mojo_scripts_page_path": self._GetMojoScriptsPagePath(),
       "primary": self.primary_interface,
       "interface_remotes": list(self.interface_remotes.values()),
       "interface_receivers": list(self.interface_receivers.values()),
