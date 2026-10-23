@@ -104,6 +104,7 @@ if (is_android) {
       ":ukm_java_test_support",
       "//base:base_java_test_support",
       "//base:tasks_java",
+      "//base/test:public_transit_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/browsing_data/android:java",
       "//chrome/browser/flags:java",

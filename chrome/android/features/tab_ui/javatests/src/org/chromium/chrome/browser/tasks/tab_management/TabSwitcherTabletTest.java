@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -213,10 +214,7 @@ public class TabSwitcherTabletTest {
         checkTabSwitcherViewHolderVisibility(false);
 
         // Close all tabs.
-        ChromeTabUtils.closeAllTabs(
-                InstrumentationRegistry.getInstrumentation(), cta.getTabModelSelectorSupplier());
-
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
+        ChromeTriggers.closeAllTabsProgrammatically(mPage);
 
         // Assert the grid tab switcher is shown automatically, since there is no next tab.
         checkTabSwitcherViewHolderVisibility(true);
