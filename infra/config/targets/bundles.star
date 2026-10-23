@@ -5626,14 +5626,14 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_vm_eg2_cq_tests",
+            targets = "ios_vm_eg2_smoke_cq_tests",
             mixins = [
-                "ci_only",
                 "xcodebuild_sim_runner",
                 "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPHONE_15_18_5",
+                "SIM_IPHONE_16_26_5",
             ],
         ),
         targets.bundle(
@@ -5643,7 +5643,6 @@ targets.bundle(
                 "mac_26_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_16_26_5",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -5693,6 +5692,28 @@ targets.bundle(
                     shards = 18,
                 ),
             ),
+        ],
+    },
+)
+
+targets.bundle(
+    name = "ios_vm_eg2_smoke_cq_tests",
+    targets = [
+        "ios_chrome_all_eg2tests_module",
+        "ios_web_shell_eg2tests_module",
+    ],
+    per_test_modifications = {
+        "ios_chrome_all_eg2tests_module": [
+            targets.mixin(
+                args = [
+                    "--clones",
+                    "1",
+                ],
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "ios_smoke_tests",
         ],
     },
 )

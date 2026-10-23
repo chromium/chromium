@@ -970,7 +970,10 @@
 * [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
-### ios_chrome_integration_eg2tests_module iPhone 16 26.5
+### ios_chrome_all_eg2tests_module iPhone 15 18.5
+* [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
+
+### ios_chrome_all_eg2tests_module iPhone 16 26.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_chrome_integration_eg2tests_module iPhone 16 27.0
@@ -1019,6 +1022,9 @@
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_web_inttests iPhone 16 27.0
+* [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
+
+### ios_web_shell_eg2tests_module iPhone 15 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_web_shell_eg2tests_module iPhone 16 26.5

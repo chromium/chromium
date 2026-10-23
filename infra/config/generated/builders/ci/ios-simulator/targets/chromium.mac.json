@@ -2073,6 +2073,7 @@
         "args": [
           "--clones",
           "1",
+          "--run-eg-smoke-tests-only",
           "--use-simulator-cache",
           "--platform",
           "iPhone 15",
@@ -2085,14 +2086,13 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 15 18.5",
+        "name": "ios_chrome_all_eg2tests_module iPhone 15 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2125,16 +2125,17 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 3
         },
-        "test": "ios_chrome_integration_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "test": "ios_chrome_all_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module/",
         "variant_id": "iPhone 15 18.5"
       },
       {
         "args": [
           "--clones",
           "1",
+          "--run-eg-smoke-tests-only",
           "--use-simulator-cache",
           "--platform",
           "iPhone 16",
@@ -2151,9 +2152,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.5",
+        "name": "ios_chrome_all_eg2tests_module iPhone 16 26.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2186,10 +2187,10 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 3
         },
-        "test": "ios_chrome_integration_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "test": "ios_chrome_all_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module/",
         "variant_id": "iPhone 16 26.5"
       },
       {
@@ -3647,7 +3648,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
