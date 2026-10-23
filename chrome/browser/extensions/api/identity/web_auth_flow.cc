@@ -13,10 +13,12 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/extensions/browser_window_util.h"
@@ -27,7 +29,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -52,14 +53,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#else
-static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -113,10 +106,6 @@ WebAuthFlow::~WebAuthFlow() {
           : nullptr;
   if (popup_browser) {
     popup_browser->GetWindow()->Close();
-  } else if (web_contents()) {
-    // Explicitly close `web_contents()` if it's not displayed in any browser
-    // window.
-    web_contents()->Close();
   }
 
   CloseInfoBar();
@@ -255,25 +244,41 @@ void WebAuthFlow::CloseInfoBar() {
   }
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
 void WebAuthFlow::OnBrowserWindowInterfaceInitialized(
     BrowserWindowInterface* browser) {
+  window_creation_pending_ = false;
   if (!browser) {
-    delegate_->OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW);
+    if (delegate_) {
+      std::exchange(delegate_, nullptr)
+          ->OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW);
+    }
     return;
   }
-
-  TabModel* tab_model =
-      TabModelList::FindTabModelWithWindowSessionId(browser->GetSessionID());
-  tab_model->CreateTab(
-      TabAndroid::FromWebContents(tab_model->GetActiveWebContents()),
-      std::move(web_contents_), TabModel::kInvalidIndex,
-      TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
-      /*should_pin=*/false);
 
   if (popup_displayed_callback_for_testing_) {
     std::move(popup_displayed_callback_for_testing_).Run();
   }
+}
+
+void WebAuthFlow::CreatePopupWindow() {
+  if (!delegate_ || profile_->ShutdownStarted()) {
+    // The flow was abandoned while the launch was queued. Destroy the
+    // WebContents here, outside any observer notification.
+    WebContentsObserver::Observe(nullptr);
+    web_contents_.reset();
+    return;
+  }
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
+                                   *profile_, user_gesture_);
+  if (popup_bounds_.has_value()) {
+    params.initial_bounds = popup_bounds_.value();
+  }
+  params.web_contents = std::move(web_contents_);
+  CreateBrowserWindow(
+      std::move(params),
+      base::BindOnce(&WebAuthFlow::OnBrowserWindowInterfaceInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void WebAuthFlow::SetPopupDisplayedCallbackForTesting(
@@ -306,17 +311,14 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
 
   browser->GetWindow()->Show();
 #else
-  static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
-  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
-                                   *profile_, user_gesture_);
-  if (popup_bounds_.has_value()) {
-    params.initial_bounds = popup_bounds_.value();
-  }
-
-  base::OnceCallback<void(BrowserWindowInterface*)> callback =
-      base::BindOnce(&WebAuthFlow::OnBrowserWindowInterfaceInitialized,
-                     weak_factory_.GetWeakPtr());
-  CreateBrowserWindow(std::move(params), std::move(callback));
+  static_assert(BUILDFLAG(IS_ANDROID));
+  // Post the launch: Java destroys the WebContents synchronously on failure,
+  // which must not happen inside the DidStopLoading notification that got us
+  // here.
+  window_creation_pending_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&WebAuthFlow::CreatePopupWindow,
+                                weak_factory_.GetWeakPtr()));
 #endif
 
   return true;
@@ -346,6 +348,13 @@ void WebAuthFlow::AfterUrlLoaded() {
     }
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (window_creation_pending_) {
+    // The popup launch posted by a previous load has not run yet.
+    return;
+  }
+#endif
 
   // If `web_contents_` is nullptr, this means that the interactive tab has
   // already been opened once.
@@ -391,6 +400,18 @@ void WebAuthFlow::OnTimeout() {
 
 void WebAuthFlow::WebContentsDestroyed() {
   WebContentsObserver::Observe(nullptr);
+#if BUILDFLAG(IS_ANDROID)
+  if (window_creation_pending_) {
+    window_creation_pending_ = false;
+    // Java destroys the WebContents before calling back with nullptr; clear
+    // the delegate so the failure is reported once.
+    if (delegate_) {
+      std::exchange(delegate_, nullptr)
+          ->OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW);
+    }
+    return;
+  }
+#endif
   if (delegate_) {
     delegate_->OnAuthFlowFailure(WebAuthFlow::WINDOW_CLOSED);
   }
@@ -505,8 +526,6 @@ void WebAuthFlow::OnProfileWillBeDestroyed(Profile* profile) {
           : nullptr;
   if (popup_browser) {
     popup_browser->GetWindow()->Close();
-  } else if (web_contents()) {
-    web_contents()->Close();
   }
 
   WebContentsObserver::Observe(nullptr);
