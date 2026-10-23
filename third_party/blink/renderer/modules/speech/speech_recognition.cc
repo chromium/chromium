@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_phrase.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -87,6 +88,19 @@ constexpr char kWebSpeechSetProcessLocallyHistogram[] =
     "Accessibility.WebSpeech.SetProcessLocally";
 constexpr char kWebSpeechDownloadActivationOutcomeHistogram[] =
     "Accessibility.WebSpeech.DownloadActivationOutcome";
+
+// When enabled, Web Speech API trace events under the "speech" category include
+// the recognized utterance text. This is strictly for local debugging/benchmark
+// use and will never be enabled by default or shipped, to avoid logging PII in
+// field traces.
+BASE_FEATURE(kWebSpeechTraceUtterance, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Consolidates simple Web Speech lifecycle trace events into a single
+// out-of-line call site to avoid duplicating Perfetto template expansions.
+NOINLINE void TraceWebSpeechEvent(const char* event_name) {
+  TRACE_EVENT_INSTANT("speech", "SpeechRecognition::Event", "event",
+                      event_name);
+}
 
 // LINT.IfChange(WebSpeechDownloadActivationOutcome)
 //
@@ -518,10 +532,52 @@ void SpeechRecognition::ResultRetrieved(
     event_time_stamp = audio_start_ticks_ + *latest_audio_end_time;
   }
 
+  const wtf_size_t result_index = aggregated_results.size() - results.size();
+  TRACE_EVENT_INSTANT(
+      "speech", "SpeechRecognition::ResultRetrieved", "event", "result", "data",
+      [&](perfetto::TracedValue context) {
+        const bool trace_utterance =
+            base::FeatureList::IsEnabled(kWebSpeechTraceUtterance);
+        perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+        dict.Add("result_index", result_index);
+        dict.Add("new_result_count", results.size());
+        dict.Add("final_count", results.size() - provisional_count);
+        dict.Add("provisional_count", provisional_count);
+        dict.Add("total_result_count", aggregated_results.size());
+        dict.Add("event_time_stamp_us",
+                 event_time_stamp.since_origin().InMicroseconds());
+        if (latest_audio_end_time.has_value()) {
+          dict.Add("latest_audio_end_time_ms",
+                   latest_audio_end_time->InMilliseconds());
+        }
+        perfetto::TracedArray results_array = dict.AddArray("results");
+        for (const auto& result : results) {
+          perfetto::TracedDictionary result_dict =
+              results_array.AppendDictionary();
+          result_dict.Add("is_final", !result->is_provisional);
+          result_dict.Add("hypothesis_count", result->hypotheses.size());
+          if (result->audio_start_time.has_value()) {
+            result_dict.Add("audio_start_time_ms",
+                            result->audio_start_time->InMilliseconds());
+          }
+          if (result->audio_end_time.has_value()) {
+            result_dict.Add("audio_end_time_ms",
+                            result->audio_end_time->InMilliseconds());
+          }
+          if (!result->hypotheses.empty()) {
+            const auto& top = result->hypotheses[0];
+            result_dict.Add("top_confidence", top->confidence);
+            result_dict.Add("top_utterance_length", top->utterance.length());
+            if (trace_utterance) {
+              result_dict.Add("top_utterance", top->utterance);
+            }
+          }
+        }
+      });
+
   // We dispatch an event with (1) + (2) + (3).
   DispatchEvent(*SpeechRecognitionEvent::CreateResult(
-      aggregated_results.size() - results.size(),
-      std::move(aggregated_results), event_time_stamp));
+      result_index, std::move(aggregated_results), event_time_stamp));
 }
 
 void SpeechRecognition::ErrorOccurred(
@@ -532,14 +588,18 @@ void SpeechRecognition::ErrorOccurred(
   base::UmaHistogramEnumeration(kWebSpeechErrorOccurredHistogram, error->code);
   if (error->code ==
       media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
+    TraceWebSpeechEvent("nomatch");
     DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr));
   } else {
+    TRACE_EVENT_INSTANT("speech", "SpeechRecognition::ErrorOccurred", "event",
+                        "error", "error_code", error->code);
     // TODO(primiano): message?
     DispatchEvent(*SpeechRecognitionErrorEvent::Create(error->code, String()));
   }
 }
 
 void SpeechRecognition::Started() {
+  TraceWebSpeechEvent("start");
   DispatchEvent(*Event::Create(event_type_names::kStart));
 }
 
@@ -547,20 +607,26 @@ void SpeechRecognition::AudioStarted() {
   // Per spec, result timestamps are relative to the `audiostart` event, so
   // record that instant as the time origin for incoming result offsets.
   audio_start_ticks_ = base::TimeTicks::Now();
+  TraceWebSpeechEvent("audiostart");
   DispatchEvent(*Event::Create(event_type_names::kAudiostart));
 }
 
 void SpeechRecognition::SoundStarted() {
+  TraceWebSpeechEvent("soundstart");
   DispatchEvent(*Event::Create(event_type_names::kSoundstart));
+  TraceWebSpeechEvent("speechstart");
   DispatchEvent(*Event::Create(event_type_names::kSpeechstart));
 }
 
 void SpeechRecognition::SoundEnded() {
+  TraceWebSpeechEvent("speechend");
   DispatchEvent(*Event::Create(event_type_names::kSpeechend));
+  TraceWebSpeechEvent("soundend");
   DispatchEvent(*Event::Create(event_type_names::kSoundend));
 }
 
 void SpeechRecognition::AudioEnded() {
+  TraceWebSpeechEvent("audioend");
   DispatchEvent(*Event::Create(event_type_names::kAudioend));
 }
 
@@ -586,6 +652,7 @@ void SpeechRecognition::Ended() {
   session_.reset();
   receiver_.reset();
   ResetAudioSink();
+  TraceWebSpeechEvent("end");
   DispatchEvent(*Event::Create(event_type_names::kEnd));
 }
 

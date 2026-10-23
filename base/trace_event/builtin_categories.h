@@ -259,6 +259,10 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("shell"),
     perfetto::Category("shutdown"),
     perfetto::Category("skia"),
+    perfetto::Category("speech")
+        .SetTags("audio")
+        .SetDescription(
+            "Events from the Web Speech API and speech recognition."),
     perfetto::Category("sql"),
     perfetto::Category("startup"),
     perfetto::Category("sync"),
