@@ -62,6 +62,10 @@ export function highlight(node: Node, ranges: Range[]): HTMLElement {
 
   const wrapper = document.createElement('span');
   wrapper.classList.add(WRAPPER_CSS_CLASS);
+  // Ensure hit-testing resolves to the enclosing element (e.g., an <a> link)
+  // rather than the decorative highlight spans, preventing settings toggles
+  // from inadvertently switching when a highlighted link is clicked.
+  wrapper.style.pointerEvents = 'none';
   // Use existing node as placeholder to determine where to insert the
   // replacement content.
   assert(node.parentNode);

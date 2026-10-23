@@ -276,4 +276,27 @@ suite('SearchSettingsTest', function() {
     assertEquals(0, highlights.length);
     assertEquals(1, document.querySelectorAll('.search-bubble').length);
   });
+
+  test('highlight in link preserves hit-testing', async () => {
+    document.body.innerHTML = getTrustedStaticHtml`
+        <settings-section>
+          <a id="myLink" href="#">Learn more</a>
+        </settings-section>`;
+
+    const section = document.querySelector('settings-section')!;
+    const link = document.querySelector<HTMLElement>('#myLink')!;
+
+    await searchManager.search('Learn', section);
+
+    const searchHit = link.querySelector<HTMLElement>('.search-highlight-hit');
+    assertTrue(!!searchHit);
+
+    const rect = searchHit.getBoundingClientRect();
+    assertTrue(rect.width > 0);
+    assertTrue(rect.height > 0);
+
+    const hitTarget = document.elementFromPoint(
+        rect.left + rect.width / 2, rect.top + rect.height / 2);
+    assertEquals(link, hitTarget);
+  });
 });
