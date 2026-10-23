@@ -129,6 +129,7 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
         /*enabled_features=*/
         {{::features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}},
+         {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}},
          {features::kGlicActorRejectInteractionDisallowedTargets, {}}},
         /*disabled_features=*/{});
   }
@@ -152,7 +153,8 @@ class ActorClickToolInteractionDisallowedTargetFeatureDisabledTest
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{::features::kGlicActor, {}},
-         {features::kGlicActorPolicyControlExemption, {}}},
+         {features::kGlicActorPolicyControlExemption, {}},
+         {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}}},
         /*disabled_features=*/
         {features::kGlicActorRejectInteractionDisallowedTargets});
   }
@@ -806,18 +808,7 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest,
   EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
 }
 
-class ActorClickToolDelayBrowserTest : public ActorClickToolBrowserTest {
- public:
-  ActorClickToolDelayBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kActorClickDelay, {{kActorClickDelayParam.name, "50ms"}}}}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ActorClickToolDelayBrowserTest, ClickTool_Delay) {
+IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_Delay) {
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

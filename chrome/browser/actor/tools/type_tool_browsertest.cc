@@ -898,8 +898,7 @@ class ActorTypeToolBrowserTestWithLongDelay : public ActorTypeToolBrowserTest {
  public:
   ActorTypeToolBrowserTestWithLongDelay() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{::features::kGlicActor, {}},
-         {::features::kGlicActorIncrementalTyping,
+        {{::features::kGlicActor,
           {{::features::kGlicActorKeyDownDuration.name, "10s"}}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {});
