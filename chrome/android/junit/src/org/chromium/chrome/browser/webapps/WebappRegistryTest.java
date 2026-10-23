@@ -6,13 +6,31 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
+import android.content.pm.Signature;
+import android.content.pm.SigningInfo;
+import android.net.Uri;
 import android.text.TextUtils;
+
+import androidx.browser.trusted.Token;
+import androidx.browser.trusted.TrustedWebActivityService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,15 +45,18 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.browsing_data.UrlFilters;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -1280,5 +1301,263 @@ public class WebappRegistryTest {
 
         assertTrue(registry.isAppInstalledForUrl(new GURL(narrowedScope)));
         assertFalse(registry.isAppInstalledForUrl(new GURL("https://example.com/apps/pwa-b/")));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testQueryIsAppInstalledForUrl() throws Exception {
+        // Register an installed WebAPK for scopeA. Turn off TWA detection so that only the
+        // WebAPK decides the result.
+        final String packageA = "org.chromium.webapk.a";
+        final String scopeA = "https://example.com/apps/pwa-a/";
+        final GURL outOfScope = new GURL("https://example.com/apps/pwa-b/");
+        registerWebapp(
+                new WebApkIntentDataProviderBuilder(packageA, scopeA).setScope(scopeA).build());
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .addPackage(packageA);
+        TwaValidator.setTwaInstalledOverrideForTesting(false);
+        WebappRegistry registry = WebappRegistry.getInstance();
+        List<Boolean> results = new ArrayList<>();
+
+        // Query one in-scope URL and one out-of-scope URL. The callbacks must not run until the
+        // worker and UI tasks run.
+        registry.queryIsAppInstalledForUrl(new GURL(scopeA + "page.html"), results::add);
+        registry.queryIsAppInstalledForUrl(outOfScope, results::add);
+        assertTrue("Results must be asynchronous", results.isEmpty());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(Arrays.asList(true, false), results);
+
+        // TWAs are detected on the worker; only http(s) URLs can have an installed app.
+        TwaValidator.setTwaInstalledOverrideForTesting(true);
+        // Pump after each query: runAllBackgroundAndUi() idles the UI looper before the worker, so
+        // the chrome:// reply (posted straight to the UI thread) would otherwise come first.
+        registry.queryIsAppInstalledForUrl(outOfScope, results::add);
+        RobolectricUtil.runAllBackgroundAndUi();
+        registry.queryIsAppInstalledForUrl(new GURL("chrome://settings"), results::add);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(Arrays.asList(true, false, true, false), results);
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    @SuppressWarnings("unchecked")
+    public void testQueryIsAppInstalledForUrl_callbackRunsWhenWorkerThrows() {
+        // No WebAPK is registered, so the worker goes on to the TWA check for this page.
+        final String twaPackage = "com.example.twa";
+        final String pageUrl = "https://example.com/apps/page.html";
+        PackageManager pm = RuntimeEnvironment.getApplication().getPackageManager();
+
+        // Make a fake TWA package handle VIEW intents for the page, so that TwaValidator picks it
+        // as a candidate.
+        ResolveInfo viewResolveInfo = new ResolveInfo();
+        viewResolveInfo.activityInfo = new ActivityInfo();
+        viewResolveInfo.activityInfo.packageName = twaPackage;
+        Shadows.shadowOf(pm)
+                .addResolveInfoForIntent(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl)), viewResolveInfo);
+
+        // Give the package a TrustedWebActivityService, so that TwaValidator goes on to read the
+        // verified delegate apps.
+        ResolveInfo serviceResolveInfo = new ResolveInfo();
+        serviceResolveInfo.serviceInfo = new ServiceInfo();
+        serviceResolveInfo.serviceInfo.packageName = twaPackage;
+        Intent serviceIntent = new Intent();
+        serviceIntent.setPackage(twaPackage);
+        serviceIntent.setAction(TrustedWebActivityService.ACTION_TRUSTED_WEB_ACTIVITY_SERVICE);
+        Shadows.shadowOf(pm).addResolveInfoForIntent(serviceIntent, serviceResolveInfo);
+
+        // Make the delegate app set throw when the worker iterates it. This simulates an
+        // unexpected RuntimeException on the worker thread.
+        InstalledWebappPermissionStore store = mock(InstalledWebappPermissionStore.class);
+        Set<Token> throwingTokens = mock(Set.class);
+        when(throwingTokens.iterator()).thenThrow(new RuntimeException("Simulated worker failure"));
+        when(store.getAllDelegateApps(any())).thenReturn(throwingTokens);
+        WebappRegistry registry = WebappRegistry.getInstance();
+        registry.setPermissionStoreForTesting(store);
+
+        // Query the page, then run the worker task and the UI reply.
+        List<Boolean> results = new ArrayList<>();
+        registry.queryIsAppInstalledForUrl(new GURL(pageUrl), results::add);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The worker hit the exception, but the callback still ran on the UI thread with false.
+        verify(throwingTokens).iterator();
+        assertEquals(Collections.singletonList(false), results);
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testGetAppInstallStateKeyForUrl() throws Exception {
+        // With no apps, an http(s) URL gets the origin-only key, for example
+        // "https://example.com|0|". Empty, invalid and non-http(s) URLs get null, because no app
+        // can be installed for them.
+        final String packageA = "org.chromium.webapk.a";
+        final String packageB = "org.chromium.webapk.b";
+        final String scopeA = "https://example.com/apps/pwa-a/";
+        final String scopeB = "https://example.com/apps/pwa-b/";
+        final GURL pageA = new GURL(scopeA + "1.html");
+        final GURL outOfScope = new GURL(scopeB + "1.html");
+        WebappRegistry registry = WebappRegistry.getInstance();
+        String originKey = registry.getAppInstallStateKeyForUrl(pageA);
+        assertEquals("https://example.com|0|", originKey);
+        assertEquals(originKey, registry.getAppInstallStateKeyForUrl(outOfScope));
+        assertNull(registry.getAppInstallStateKeyForUrl(GURL.emptyGURL()));
+        assertNull(registry.getAppInstallStateKeyForUrl(new GURL("not a url")));
+        assertNull(registry.getAppInstallStateKeyForUrl(new GURL("about:blank")));
+        assertNull(registry.getAppInstallStateKeyForUrl(new GURL("chrome://settings")));
+
+        // Another site's WebAPK doesn't change the key.
+        registerWebapp(
+                new WebApkIntentDataProviderBuilder("org.chromium.webapk.o", "https://o.com/")
+                        .setScope("https://o.com/")
+                        .build());
+        assertEquals(originKey, registry.getAppInstallStateKeyForUrl(pageA));
+
+        // A WebAPK whose scope contains the URL changes it, for in-scope URLs only.
+        BrowserServicesIntentDataProvider webApkA =
+                new WebApkIntentDataProviderBuilder(packageA, scopeA).setScope(scopeA).build();
+        registerWebapp(webApkA);
+        String keyA = registry.getAppInstallStateKeyForUrl(pageA);
+        assertNotEquals(originKey, keyA);
+        assertEquals("https://example.com|0|" + packageA, keyA);
+        assertEquals(keyA, registry.getAppInstallStateKeyForUrl(new GURL(scopeA + "2?q#r")));
+        assertEquals(originKey, registry.getAppInstallStateKeyForUrl(outOfScope));
+
+        // Two WebAPKs with different scopes on one origin give distinct keys.
+        BrowserServicesIntentDataProvider webApkB =
+                new WebApkIntentDataProviderBuilder(packageB, scopeB).setScope(scopeB).build();
+        registerWebapp(webApkB);
+        String keyB = registry.getAppInstallStateKeyForUrl(outOfScope);
+        assertEquals("https://example.com|0|" + packageB, keyB);
+        assertNotEquals(keyA, keyB);
+        assertEquals(keyA, registry.getAppInstallStateKeyForUrl(pageA));
+
+        // Uninstalling a WebAPK changes the key back.
+        WebappDataStorage storageA = registry.getWebappDataStorage(webApkA.getWebappExtras().id);
+        assertNotNull(storageA);
+        storageA.setWebApkUninstallTimestamp();
+        assertEquals(originKey, registry.getAppInstallStateKeyForUrl(pageA));
+
+        // A TWA verified for the origin changes it via getDelegateAppCount.
+        InstalledWebappPermissionStore store = mock(InstalledWebappPermissionStore.class);
+        registry.setPermissionStoreForTesting(store);
+        doReturn(1).when(store).getDelegateAppCount(any());
+        assertEquals("https://example.com|1|", registry.getAppInstallStateKeyForUrl(pageA));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testGetAppInstallStateKeyForUrl_nestedScopesAndLegacyShortcuts() throws Exception {
+        // The parent WebAPK scope contains the child WebAPK scope.
+        final String packageParent = "org.chromium.webapk.parent";
+        final String scopeParent = "https://example.com/apps/";
+        final String packageChild = "org.chromium.webapk.child";
+        final String scopeChild = "https://example.com/apps/pwa-b/";
+        final GURL childPage = new GURL(scopeChild + "index.html");
+        WebappRegistry registry = WebappRegistry.getInstance();
+
+        // With no apps, the child page gets the origin-only key.
+        String initialKey = registry.getAppInstallStateKeyForUrl(childPage);
+        assertEquals("https://example.com|0|", initialKey);
+
+        // A legacy (non-WebAPK) shortcut on the same URL does not change the key.
+        registerWebappWithId(
+                "legacy_shortcut", createShortcutIntentDataProvider(childPage.getSpec()));
+        assertEquals(initialKey, registry.getAppInstallStateKeyForUrl(childPage));
+
+        // Register parent first, then child: nested scopes produce a sorted package list.
+        registerWebapp(
+                new WebApkIntentDataProviderBuilder(packageParent, scopeParent)
+                        .setScope(scopeParent)
+                        .build());
+        registerWebapp(
+                new WebApkIntentDataProviderBuilder(packageChild, scopeChild)
+                        .setScope(scopeChild)
+                        .build());
+
+        // The child page is in both scopes, so its key lists both packages. A page in the parent
+        // scope only lists the parent package.
+        assertEquals(
+                "https://example.com|0|" + packageChild + "," + packageParent,
+                registry.getAppInstallStateKeyForUrl(childPage));
+        assertEquals(
+                "https://example.com|0|" + packageParent,
+                registry.getAppInstallStateKeyForUrl(new GURL(scopeParent + "index.html")));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testGetAppInstallStateKeyForUrl_twaCountAndRemoveOrigin() {
+        // Start with an empty permission store, so that no TWA is verified for the origin.
+        final GURL page = new GURL("https://example.com/apps/page.html");
+        final Origin origin = Origin.create(page.getSpec());
+        assertNotNull(origin);
+        WebappRegistry registry = WebappRegistry.getInstance();
+        InstalledWebappPermissionStore store = registry.getPermissionStore();
+        store.clearForTesting();
+
+        // With no TWA, the TWA count in the key is 0.
+        assertEquals("https://example.com|0|", registry.getAppInstallStateKeyForUrl(page));
+
+        // Create signed tokens for two fake TWA packages.
+        Token token1 = createTokenForTestPackage("com.example.twa.one", "0102030405060708");
+        Token token2 = createTokenForTestPackage("com.example.twa.two", "1112131415161718");
+
+        // One TWA on the origin gives a count of 1.
+        store.addDelegateApp(origin, token1);
+        assertEquals("https://example.com|1|", registry.getAppInstallStateKeyForUrl(page));
+
+        // Two TWAs on the same origin give a count of 2.
+        store.addDelegateApp(origin, token2);
+        assertEquals("https://example.com|2|", registry.getAppInstallStateKeyForUrl(page));
+
+        // Removing the origin resets the TWA count in the key back to 0.
+        store.removeOrigin(origin);
+        assertEquals("https://example.com|0|", registry.getAppInstallStateKeyForUrl(page));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testGetAppInstallStateKeyForUrl_changesAfterInitStoragesOnUiThread()
+            throws Exception {
+        // Build a WebAPK for scopeA, but do not register it through the registry.
+        final String packageA = "org.chromium.webapk.a";
+        final String scopeA = "https://example.com/apps/pwa-a/";
+        final GURL pageA = new GURL(scopeA + "1.html");
+        BrowserServicesIntentDataProvider webApkA =
+                new WebApkIntentDataProviderBuilder(packageA, scopeA).setScope(scopeA).build();
+        String webappId = webApkA.getWebappExtras().id;
+
+        // Persist the WebAPK to SharedPreferences after setUp()'s initial load, so mStorages does
+        // not contain it yet.
+        addWebappsToRegistry(webappId);
+        WebappDataStorage.open(webappId).updateFromWebappIntentDataProvider(webApkA);
+
+        // The registry has not loaded the new storage, so the key does not include the WebAPK.
+        WebappRegistry registry = WebappRegistry.getInstance();
+        assertEquals("https://example.com|0|", registry.getAppInstallStateKeyForUrl(pageA));
+
+        // Warm up from a background thread, then pump the UI thread to run initStoragesOnUiThread.
+        Thread warmUpThread = new Thread(WebappRegistry::warmUpSharedPrefs);
+        warmUpThread.start();
+        warmUpThread.join();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // initStoragesOnUiThread() added the WebAPK to mStorages, so the key now includes it.
+        assertEquals(
+                "https://example.com|0|" + packageA, registry.getAppInstallStateKeyForUrl(pageA));
+    }
+
+    private static Token createTokenForTestPackage(String packageName, String certHex) {
+        PackageManager pm = RuntimeEnvironment.getApplication().getPackageManager();
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = packageName;
+        packageInfo.signingInfo = new SigningInfo();
+        Shadows.shadowOf(packageInfo.signingInfo)
+                .setSignatures(new Signature[] {new Signature(certHex)});
+        Shadows.shadowOf(pm).installPackage(packageInfo);
+        Token token = Token.create(packageName, pm);
+        assertNotNull(token);
+        return token;
     }
 }
