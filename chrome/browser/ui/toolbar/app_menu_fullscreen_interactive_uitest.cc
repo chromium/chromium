@@ -2,31 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+
+#include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/test/bind.h"
-#include "base/test/gtest_util.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chrome/test/interaction/tracked_element_webcontents.h"
-#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
-#include "url/gurl.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
 
 namespace {
 class ViewBoundsChangeWaiter : public views::ViewObserver {
@@ -44,6 +68,20 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
+
+views::Button* FindButtonByTooltip(views::View* root,
+                                   std::u16string_view tooltip) {
+  if (auto* button = views::AsViewClass<views::Button>(root);
+      button && button->GetTooltipText() == tooltip) {
+    return button;
+  }
+  for (views::View* child : root->children()) {
+    if (views::Button* found = FindButtonByTooltip(child, tooltip)) {
+      return found;
+    }
+  }
+  return nullptr;
+}
 }  // namespace
 
 // Tests for Chrome Menu - Fullscreen manual test cases.
@@ -229,4 +267,76 @@ IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ClosingTab) {
       // Chrome should not exit full screen mode when you close a tab in full
       // screen mode.
       CheckFullscreenForBrowser(waiter2, true));
+}
+
+class AppMenuFullscreenButtonInteractiveTest
+    : public AppMenuFullscreenInteractiveTest {
+ public:
+  AppMenuFullscreenButtonInteractiveTest() {
+    scoped_feature_list_.InitWithFeatures(
+#if BUILDFLAG(IS_CHROMEOS)
+        // Rounded windows change the frame's minimum height when entering
+        // fullscreen, triggering synchronous
+        // Widget::OnSizeConstraintsChanged().
+        {chromeos::features::kFeatureManagementRoundedWindows},
+#else
+        {},
+#endif
+        {features::kAppMenuGlowUp});
+  }
+  ~AppMenuFullscreenButtonInteractiveTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for b/576555601: clicking the full screen button in the app
+// menu enters fullscreen and closes the menu while MenuController defers
+// MenuRunnerImpl destruction on the stack.
+IN_PROC_BROWSER_TEST_F(AppMenuFullscreenButtonInteractiveTest,
+                       ToggleFullscreenFromMenuButton) {
+#if BUILDFLAG(IS_MAC)
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
+
+  static constexpr char kFullscreenButtonName[] = "FullscreenButton";
+  const std::u16string fullscreen_tooltip =
+      l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN);
+  std::unique_ptr<ui_test_utils::FullscreenWaiter> waiter1, waiter2;
+
+  RunTestSequence(
+      CreateFullscreenWaiter(waiter1, true),
+      PressButton(kToolbarAppMenuButtonElementId),
+      NameViewRelative(AppMenuModel::kIncognitoMenuItem, kFullscreenButtonName,
+                       [fullscreen_tooltip](views::View* menu_item) {
+                         return FindButtonByTooltip(
+                             menu_item->GetWidget()->GetRootView(),
+                             fullscreen_tooltip);
+                       }),
+      ScrollIntoView(kFullscreenButtonName),
+      WithView(kFullscreenButtonName,
+               [](views::Button* button) {
+                 views::Widget* menu_widget = button->GetWidget();
+                 menu_widget->LayoutRootViewIfNecessary();
+                 const gfx::Point point_in_screen =
+                     button->GetBoundsInScreen().CenterPoint();
+                 gfx::Point point_in_menu = point_in_screen;
+                 views::View::ConvertPointFromScreen(menu_widget->GetRootView(),
+                                                     &point_in_menu);
+                 ui::MouseEvent press_event(
+                     ui::EventType::kMousePressed, point_in_menu,
+                     point_in_screen, base::TimeTicks(),
+                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+                 menu_widget->OnMouseEvent(&press_event);
+                 ui::MouseEvent release_event(
+                     ui::EventType::kMouseReleased, point_in_menu,
+                     point_in_screen, base::TimeTicks(),
+                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+                 menu_widget->OnMouseEvent(&release_event);
+               })
+          .SetMustRemainVisible(false),
+      CheckFullscreenForBrowser(waiter1, true),
+      CreateFullscreenWaiter(waiter2, false),
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_FULLSCREEN); }),
+      CheckFullscreenForBrowser(waiter2, false));
 }
