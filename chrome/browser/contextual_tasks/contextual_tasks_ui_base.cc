@@ -112,6 +112,13 @@ void OpenUrlWithDisposition(Profile* profile,
 
 GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
+    // Check if user is signed into Chrome. If so, hide the avatar as it is
+    // duplicative with the one in top Chrome.
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      return GURL();
+    }
+    // If the user is not signed into Chrome, but signed into Google.com,
+    // return cached avatar (if available; otherwise return generic).
     std::optional<gaia::ListedAccount> account =
         contextual_tasks::GetAccountFromCookieJar(identity_manager, url);
     if (account.has_value() && !account->signed_out && account->valid) {
@@ -123,9 +130,12 @@ GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
                                   kProfileAvatarPathPrefix,
                                   account->gaia_id.ToString()}));
       }
+      return GURL(profiles::GetPlaceholderAvatarIconUrl());
     }
   }
-  return GURL(profiles::GetPlaceholderAvatarIconUrl());
+  // If the user is fully signed out in Google + Chrome, do not show the
+  // avatar.
+  return GURL();
 }
 
 // `WebUIDataSource::SetRequestFilter` only supports a single filter callback

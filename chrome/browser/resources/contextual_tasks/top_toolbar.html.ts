@@ -80,7 +80,7 @@ export function getHtml(this: TopToolbarElement) {
         ?disabled="${!this.enableOpenInNewTabButton}">
       </cr-icon-button>
     ` : ''}
-    ${this.isSidePanelRearchitectureEnabled_ ? html`
+    ${this.isSidePanelRearchitectureEnabled_ && this.profileAvatarUrl ? html`
       <div id="profileIndicator" class="profile-indicator">
         <img class="profile-avatar-img"
             src="${this.profileAvatarUrl}"

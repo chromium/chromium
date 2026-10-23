@@ -1266,6 +1266,13 @@ suite('TopToolbarTest', () => {
       await microtasksFinished();
     });
 
+    test('hides profile indicator when avatar url is empty', () => {
+      assertEquals('', topToolbar.profileAvatarUrl);
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector('#profileIndicator');
+      assertEquals(null, profileIndicator);
+    });
+
     test(
         'hides profile indicator when rearchitecture is disabled', async () => {
           loadTimeData.overrideValues({
@@ -1300,7 +1307,7 @@ suite('TopToolbarTest', () => {
         });
 
     test(
-        'renders signed-out profile indicator with chrome placeholder avatar',
+        'renders profile indicator with chrome placeholder avatar',
         async () => {
           topToolbar.profileAvatarUrl =
               'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
@@ -1335,6 +1342,11 @@ suite('TopToolbarTest', () => {
           '.profile-avatar-img');
       assertTrue(!!avatarImg);
       assertEquals('data:image/png;base64,pushedAvatar', avatarImg.src);
+
+      toolbarProxy.callbackRouterRemote.setProfileAvatarUrl('');
+      await microtasksFinished();
+      assertEquals(
+          null, topToolbar.shadowRoot.querySelector('#profileIndicator'));
     });
   });
 });

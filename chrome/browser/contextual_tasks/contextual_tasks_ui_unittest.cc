@@ -4199,6 +4199,34 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_SignedOutInitially) {
                                     page_handler.BindNewPipeAndPassReceiver());
 
   GURL avatar_url = future.Take();
+  EXPECT_EQ(avatar_url, GURL());
+}
+
+TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithoutExtendedInfo) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<GURL> future;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillOnce(
+          [&future](const GURL& avatar_url) { future.SetValue(avatar_url); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  GURL avatar_url = future.Take();
   EXPECT_EQ(avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
 }
 
@@ -4239,6 +4267,40 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
                                account_info.GetGaiaId().ToString()})));
 }
 
+TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenWhenSignedInToChrome) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user@example.com", signin::ConsentLevel::kSignin);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), account_info.GetAccountId(),
+      "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<GURL> future;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillOnce(
+          [&future](const GURL& avatar_url) { future.SetValue(avatar_url); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  GURL avatar_url = future.Take();
+  EXPECT_EQ(avatar_url, GURL());
+}
+
 TEST_F(ContextualTasksUiTest,
        ProfileIndicator_UpdateProfileIndicatorPushesAvatarUrl) {
   content::TestWebUI web_ui;
@@ -4261,7 +4323,7 @@ TEST_F(ContextualTasksUiTest,
                                     page_handler.BindNewPipeAndPassReceiver());
 
   GURL initial_avatar_url = future.Take();
-  EXPECT_EQ(initial_avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
+  EXPECT_EQ(initial_avatar_url, GURL());
 
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("cookie_user@example.com");
@@ -4299,10 +4361,10 @@ TEST_F(ContextualTasksUiTest,
        {std::string(second_account.GetEmail()), second_account.GetGaiaId(),
         /*signed_out=*/false}});
 
-  // Account 0 is signed_out=true, so index 0 falls back to the placeholder.
+  // Account 0 is signed_out=true, so index 0 returns an empty URL.
   controller.UpdateProfileIndicator(
       GURL("https://google.com/search?authuser=0"));
-  EXPECT_EQ(future.Take(), GURL(profiles::GetPlaceholderAvatarIconUrl()));
+  EXPECT_EQ(future.Take(), GURL());
 
   // Account 1 is signed in with its own avatar bitmap.
   controller.UpdateProfileIndicator(
@@ -4322,9 +4384,9 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
   const std::string* avatar_url =
       signed_out_dict.FindString("profileAvatarUrl");
   ASSERT_TRUE(avatar_url);
-  EXPECT_EQ(*avatar_url, profiles::GetPlaceholderAvatarIconUrl());
+  EXPECT_EQ(*avatar_url, "");
 
-  // Signed-in test.
+  // Web signed-in (Chrome signed-out) test.
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
   SkBitmap bitmap;
@@ -4345,6 +4407,16 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
             base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
                           "?gaia_id=",
                           account_info.GetGaiaId().ToString()}));
+
+  // Chrome signed-in test (no identity mismatch).
+  identity_test_env()->SetPrimaryAccount("user@example.com",
+                                         signin::ConsentLevel::kSignin);
+  base::DictValue chrome_signed_in_dict =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
+  const std::string* chrome_signed_in_avatar_url =
+      chrome_signed_in_dict.FindString("profileAvatarUrl");
+  ASSERT_TRUE(chrome_signed_in_avatar_url);
+  EXPECT_EQ(*chrome_signed_in_avatar_url, "");
 }
 
 #if !BUILDFLAG(IS_ANDROID)
