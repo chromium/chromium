@@ -834,10 +834,6 @@ BookmarkEditorView::EditorNode::EditorNode(const std::u16string& title,
 
 BookmarkEditorView::EditorNode::~EditorNode() = default;
 
-BookmarkEditorView::EditorNode* BookmarkEditorView::EditorTreeModel::GetRoot() {
-  return AsNode(ui::TreeModel::GetRoot());
-}
-
 void BookmarkEditorView::EditorTreeModel::SetTitle(
     ui::TreeModelNode* node,
     const std::u16string& title) {

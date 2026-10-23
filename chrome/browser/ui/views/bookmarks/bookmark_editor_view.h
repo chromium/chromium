@@ -98,7 +98,7 @@ class BookmarkEditorView : public BookmarkEditor,
       return static_cast<const EditorNode*>(model_node);
     }
 
-    EditorNode* GetRoot() override;
+    EditorNode* GetRoot() { return AsNode(ui::TreeModel::GetRoot()); }
 
     void SetTitle(ui::TreeModelNode* node,
                   const std::u16string& title) override;

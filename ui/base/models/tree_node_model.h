@@ -9,14 +9,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "ui/base/models/tree_model.h"
 
 namespace ui {
 
@@ -71,7 +70,7 @@ namespace ui {
 //   };
 //   using MyModel = ui::TreeNodeModel<MyNode>;
 template <class NodeType>
-class TreeNode : public TreeModelNode {
+class TreeNode {
  public:
   using TreeNodes = std::vector<std::unique_ptr<NodeType>>;
 
@@ -83,7 +82,7 @@ class TreeNode : public TreeModelNode {
   TreeNode(const TreeNode&) = delete;
   TreeNode& operator=(const TreeNode&) = delete;
 
-  ~TreeNode() override {}
+  virtual ~TreeNode() = default;
 
   // Adds |node| as a child of this node, at |index|. Returns a raw pointer to
   // the node.
@@ -143,19 +142,9 @@ class TreeNode : public TreeModelNode {
                : std::nullopt;
   }
 
-  // TreeModelNode:
-  void SetTitle(const std::u16string& title) override { title_ = title; }
+  virtual void SetTitle(const std::u16string& title) { title_ = title; }
 
-  const std::u16string& GetTitle() const override { return title_; }
-
-  const std::u16string& GetAccessibleTitle() const override {
-    return title_.empty() ? placeholder_accessible_title_ : title_;
-  }
-
-  void SetPlaceholderAccessibleTitle(
-      std::u16string placeholder_accessible_title) {
-    placeholder_accessible_title_ = placeholder_accessible_title;
-  }
+  const std::u16string& GetTitle() const { return title_; }
 
   // Returns true if this == ancestor, or one of this nodes parents is
   // ancestor.
@@ -197,10 +186,6 @@ class TreeNode : public TreeModelNode {
   // Title displayed in the tree.
   std::u16string title_;
 
-  // If set, a placeholder accessible title to fall back to if there is no
-  // title.
-  std::u16string placeholder_accessible_title_;
-
   // This node's parent.
   raw_ptr<NodeType> parent_;
 
@@ -232,95 +217,6 @@ class TreeNodeWithValue : public TreeNode<TreeNodeWithValue<ValueType>> {
 
  private:
   using ParentType = TreeNode<TreeNodeWithValue<ValueType>>;
-};
-
-// TreeNodeModel --------------------------------------------------------------
-
-// TreeModel implementation intended to be used with TreeNodes.
-template <class NodeType>
-class TreeNodeModel : public TreeModel {
- public:
-  // Creates a TreeNodeModel with the specified root node.
-  explicit TreeNodeModel(std::unique_ptr<NodeType> root)
-      : root_(std::move(root)) {}
-
-  TreeNodeModel(const TreeNodeModel&) = delete;
-  TreeNodeModel& operator=(const TreeNodeModel&) = delete;
-
-  virtual ~TreeNodeModel() override {}
-
-  static NodeType* AsNode(TreeModelNode* model_node) {
-    return static_cast<NodeType*>(model_node);
-  }
-  static const NodeType* AsNode(const TreeModelNode* model_node) {
-    return static_cast<const NodeType*>(model_node);
-  }
-
-  NodeType* Add(NodeType* parent,
-                std::unique_ptr<NodeType> node,
-                size_t index) {
-    DCHECK(parent);
-    DCHECK(node);
-    NodeType* node_ptr = parent->Add(std::move(node), index);
-    NotifyObserverTreeNodeAdded(parent, index);
-    return node_ptr;
-  }
-
-  // Shorthand for "add at end".
-  NodeType* Add(NodeType* parent, std::unique_ptr<NodeType> node) {
-    return Add(parent, std::move(node), parent->children().size());
-  }
-
-  std::unique_ptr<NodeType> Remove(NodeType* parent, size_t index) {
-    DCHECK(parent);
-    std::unique_ptr<NodeType> owned_node = parent->Remove(index);
-    NotifyObserverTreeNodeRemoved(parent, index);
-    return owned_node;
-  }
-
-  std::unique_ptr<NodeType> Remove(NodeType* parent, NodeType* node) {
-    DCHECK(parent);
-    return Remove(parent, parent->GetIndexOf(node).value());
-  }
-
-  // TreeModel:
-
-  // C++ allows one to override a base class' virtual function with one that
-  // returns a different type, as long as that type implements the base class'
-  // return type. This is convenient because it allows callers with references
-  // to the specific TreeNodeModel to get the proper return type without
-  // casting.
-  //
-  // However, this does require that the NodeType be defined when this is
-  // parsed (normally one could forward define this).
-  NodeType* GetRoot() override {
-    return root_.get();
-  }
-
-  Nodes GetChildren(const TreeModelNode* parent) const override {
-    DCHECK(parent);
-    const auto& children = AsNode(parent)->children();
-    Nodes nodes;
-    nodes.reserve(children.size());
-    std::ranges::transform(children, std::back_inserter(nodes),
-                           &TreeNode<NodeType>::TreeNodes::value_type::get);
-    return nodes;
-  }
-
-  std::optional<size_t> GetIndexOf(TreeModelNode* parent,
-                                   TreeModelNode* child) const override {
-    DCHECK(parent);
-    return AsNode(parent)->GetIndexOf(AsNode(child));
-  }
-
-  TreeModelNode* GetParent(TreeModelNode* node) const override {
-    DCHECK(node);
-    return AsNode(node)->parent();
-  }
-
- private:
-  // The root.
-  std::unique_ptr<NodeType> root_;
 };
 
 }  // namespace ui

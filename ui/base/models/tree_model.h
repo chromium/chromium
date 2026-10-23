@@ -59,13 +59,13 @@ class COMPONENT_EXPORT(UI_BASE) TreeModelNode {
   std::optional<size_t> GetIndexOf(const TreeModelNode* node) const;
   bool HasAncestor(const TreeModelNode* ancestor) const;
 
-  virtual void SetTitle(const std::u16string& title);
+  void SetTitle(const std::u16string& title);
 
   // Returns the title for the node.
-  virtual const std::u16string& GetTitle() const;
+  const std::u16string& GetTitle() const;
 
   // Returns the accessible title for the node.
-  virtual const std::u16string& GetAccessibleTitle() const;
+  const std::u16string& GetAccessibleTitle() const;
 
   void SetPlaceholderAccessibleTitle(
       std::u16string placeholder_accessible_title);
@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
 
   // Returns the root of the tree. This may or may not be shown in the tree,
   // see SetRootShown for details.
-  virtual TreeModelNode* GetRoot();
+  TreeModelNode* GetRoot();
   const TreeModelNode* GetRoot() const;
 
   template <typename NodeType = TreeModelNode>
@@ -140,14 +140,14 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   void NotifyObserverTreeNodeChanged(TreeModelNode* node);
 
   // Returns the children of |parent|.
-  virtual Nodes GetChildren(const TreeModelNode* parent) const;
+  Nodes GetChildren(const TreeModelNode* parent) const;
 
   // Returns the index of |child| in |parent|.
-  virtual std::optional<size_t> GetIndexOf(TreeModelNode* parent,
-                                           TreeModelNode* child) const;
+  std::optional<size_t> GetIndexOf(TreeModelNode* parent,
+                                   TreeModelNode* child) const;
 
   // Returns the parent of |node|, or NULL if |node| is the root.
-  virtual TreeModelNode* GetParent(TreeModelNode* node) const;
+  TreeModelNode* GetParent(TreeModelNode* node) const;
 
   // Adds an observer of the model.
   void AddObserver(TreeModelObserver* observer);
@@ -158,9 +158,6 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   // Sets the title of |node|.
   // This is only invoked if the node is editable and the user edits a node.
   virtual void SetTitle(TreeModelNode* node, const std::u16string& title);
-
- protected:
-  TreeModel();
 
  private:
   void AddImpl(TreeModelNode* parent,

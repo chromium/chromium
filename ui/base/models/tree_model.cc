@@ -87,8 +87,6 @@ void TreeModelNode::AddImpl(std::unique_ptr<TreeModelNode> node, size_t index) {
 TreeModel::TreeModel(std::unique_ptr<TreeModelNode> root)
     : root_(std::move(root)) {}
 
-TreeModel::TreeModel() = default;
-
 TreeModel::~TreeModel() = default;
 
 TreeModelNode* TreeModel::GetRoot() {
