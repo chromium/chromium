@@ -9738,16 +9738,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
 
-    {"omnibox-dynamic-ai-mode-button",
-     flag_descriptions::kDynamicAiModeButtonName,
-     flag_descriptions::kDynamicAiModeButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxDynamicAiModeButton)},
-
-    {"ntp-realbox-dynamic-ai-mode-button",
-     flag_descriptions::kNtpRealboxDynamicAiModeButtonName,
-     flag_descriptions::kNtpRealboxDynamicAiModeButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxDynamicAiModeButton)},
-
     {"omnibox-ai-mode-space-does-not-activate",
      flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateName,
      flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateDescription,

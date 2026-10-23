@@ -60,16 +60,6 @@ inline constexpr char kAiSubscriptionAvatarRingFollowupDescription[] =
     "Shows the AI subscription avatar decorations on more surfaces. Requires "
     "#enable-ai-subscription-avatar-ring.";
 
-inline constexpr char kDynamicAiModeButtonName[] =
-    "Omnibox Dynamic AI Mode Button";
-inline constexpr char kDynamicAiModeButtonDescription[] =
-    "Enables dynamic behaviour for the AI mode button in the WebUI Omnibox.";
-
-inline constexpr char kNtpRealboxDynamicAiModeButtonName[] =
-    "NTP Realbox Dynamic AI Mode Button";
-inline constexpr char kNtpRealboxDynamicAiModeButtonDescription[] =
-    "Enables dynamic behaviour for the AI mode button in the NTP Realbox.";
-
 inline constexpr char kOmniboxDynamicAimSubmitName[] = "Dynamic Aim Submit";
 inline constexpr char kOmniboxDynamicAimSubmitDescription[] =
     "Enables dynamic aim button submission variants.";
