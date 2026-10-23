@@ -43,12 +43,6 @@ BASE_FEATURE(kEnableEwalletNewAccountLinking,
 // within iframe.
 BASE_FEATURE(kEnableIframeForPix, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, Chrome will prompt users without linked Pix accounts to link
-// their Pix accounts to Google Wallet.
-BASE_FEATURE(kEnablePixAccountLinking, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, Chrome will offer a native Pix account linking flow for
 // users on Chrome, removing the Wallet app dependency.
 BASE_FEATURE(kEnablePixAccountLinkingNative, base::FEATURE_DISABLED_BY_DEFAULT);

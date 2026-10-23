@@ -2224,12 +2224,6 @@ inline constexpr char kEnableDesktopQrCodeDetectionDescription[] =
     "When enabled, QR code detection for facilitated payments will be "
     "supported on Desktop and Android.";
 
-inline constexpr char kEnablePixAccountLinkingName[] =
-    "Enable Pix account linking";
-inline constexpr char kEnablePixAccountLinkingDescription[] =
-    "When enabled, users without linked Pix accounts will be prompted to link "
-    "their Pix accounts to Google Wallet.";
-
 inline constexpr char kEnablePixAccountLinkingNativeName[] =
     "Enable native Pix account linking";
 inline constexpr char kEnablePixAccountLinkingNativeDescription[] =

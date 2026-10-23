@@ -4457,11 +4457,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-pix-account-linking",
-    "owners": [ "siashah@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enable-pix-account-linking-native",
     "owners": [ "longsheng@google.com", "siashah@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 162

@@ -10409,11 +10409,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(multistep_filter::kMultistepFilter)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-pix-account-linking",
-     flag_descriptions::kEnablePixAccountLinkingName,
-     flag_descriptions::kEnablePixAccountLinkingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixAccountLinking)},
-
     {"enable-pix-account-linking-native",
      flag_descriptions::kEnablePixAccountLinkingNativeName,
      flag_descriptions::kEnablePixAccountLinkingNativeDescription, kOsAndroid,

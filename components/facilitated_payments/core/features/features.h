@@ -23,9 +23,6 @@ extern const base::FeatureParam<int> kQrCodeDetectionMinImageSize;
 extern const base::FeatureParam<double> kQrCodeDetectionMaxAspectRatio;
 BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
 BASE_DECLARE_FEATURE(kEnableIframeForPix);
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kEnablePixAccountLinking);
-#endif  // BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEnablePixAccountLinkingNative);
 extern const base::FeatureParam<int>
     kPixAccountLinkingNativeTriggerDelaySeconds;

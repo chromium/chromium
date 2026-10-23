@@ -7341,21 +7341,6 @@
             ]
         }
     ],
-    "EnablePixAccountLinking": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnablePixAccountLinking"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnablePixAccountLinkingNative": [
         {
             "platforms": [
