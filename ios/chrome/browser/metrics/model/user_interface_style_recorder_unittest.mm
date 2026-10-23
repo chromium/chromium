@@ -16,15 +16,24 @@ namespace {
 
 class UserInterfaceStyleRecorderTest : public PlatformTest {
  protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    // Flush any `UserInterfaceStyleRecorder` instances still alive from
+    // previous tests (e.g. via `ChromeOverlayWindow`) so they deregister from
+    // `UIApplicationDidBecomeActiveNotification` before `HistogramTester` is
+    // created.
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:UIApplicationDidBecomeActiveNotification
+                      object:nil];
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedRestoreDefaultTimezone timezone_{"UTC"};
   base::test::ScopedLibcTimezoneOverride libc_timezone_{"UTC"};
 };
 
-// TODO(crbug.com/538008300): Flaky on iOS.
-TEST_F(UserInterfaceStyleRecorderTest,
-       DISABLED_RecordDarkModeMetrics_MidnightTo6AM) {
+TEST_F(UserInterfaceStyleRecorderTest, RecordDarkModeMetrics_MidnightTo6AM) {
   base::HistogramTester tester;
   base::Time::Exploded exploded;
   base::Time::Now().LocalExplode(&exploded);
