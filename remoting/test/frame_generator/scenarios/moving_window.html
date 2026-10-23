@@ -82,7 +82,9 @@ no changes added to commit (use "git add" and/or "git commit -a")
   }
 
   window.onload = () => {
-    requestAnimationFrame(animate);
+    if (!window.location.search.includes('benchmark=1')) {
+      requestAnimationFrame(animate);
+    }
   };
 </script>
 </body>

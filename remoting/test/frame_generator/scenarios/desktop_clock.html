@@ -143,7 +143,9 @@
   }
 
   window.onload = () => {
-    requestAnimationFrame(animate);
+    if (!window.location.search.includes('benchmark=1')) {
+      requestAnimationFrame(animate);
+    }
   };
 </script>
 </body>

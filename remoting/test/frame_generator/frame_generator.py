@@ -298,6 +298,12 @@ def main():
         path_binary = shutil.which(chrome_path)
         if path_binary:
             chrome_path = path_binary
+        elif chrome_path == 'out/Release/chrome':
+            for candidate in ['google-chrome', 'chromium', 'chrome']:
+                fallback = shutil.which(candidate)
+                if fallback:
+                    chrome_path = fallback
+                    break
 
     if not os.path.exists(chrome_path) or os.path.isdir(chrome_path):
         print(f"Error: Chrome binary not found at {chrome_path}",
@@ -350,7 +356,7 @@ def main():
             'mobile': False
         }, session_id=session_id)
 
-        url = pathlib.Path(scenario_path).as_uri()
+        url = pathlib.Path(scenario_path).as_uri() + '?benchmark=1'
         client.call('Page.navigate', {'url': url}, session_id=session_id)
         client.wait_for_event('Page.loadEventFired')
 

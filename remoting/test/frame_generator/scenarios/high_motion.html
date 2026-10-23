@@ -41,6 +41,7 @@
 
   function draw(t) {
     if (canvas.width === 0) init();
+    ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#111';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -71,7 +72,9 @@
   }
 
   init();
-  requestAnimationFrame(animate);
+  if (!window.location.search.includes('benchmark=1')) {
+    requestAnimationFrame(animate);
+  }
 </script>
 </body>
 </html>

@@ -66,11 +66,22 @@ std::unique_ptr<webrtc::DesktopFrame> DifferFrameGenerator::GenerateFrame() {
         bool changed = false;
         if (block_width < webrtc::kBlockSize) {
           // BlockDifference() assumes kBlockSize width. If we are at the right
-          // edge of the frame and the block is narrower than kBlockSize, we
-          // mark it as changed to avoid out-of-bounds memory access.
+          // edge of the frame and the block is narrower than kBlockSize,
+          // compare each row of the partial block directly.
           // Note: webrtc::BlockDifference can safely handle partial heights, so
-          // we only need to be conservative for narrow widths.
-          changed = true;
+          // we only need this fallback for narrow widths.
+          const size_t row_bytes =
+              static_cast<size_t>(block_width) * webrtc::kBytesPerPixel;
+          for (int row = 0; row < block_height; ++row) {
+            size_t row_offset =
+                offset + static_cast<size_t>(row) * static_cast<size_t>(stride);
+            if (!std::ranges::equal(
+                    data_span.subspan(row_offset, row_bytes),
+                    last_data_span.subspan(row_offset, row_bytes))) {
+              changed = true;
+              break;
+            }
+          }
         } else {
           // webrtc::BlockDifference requires raw pointers. subspan() ensures
           // the offset and size are within bounds of the original span.

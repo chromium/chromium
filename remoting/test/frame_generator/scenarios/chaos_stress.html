@@ -42,8 +42,8 @@
       shapes.push({
         x: rng.range(0, canvas.width),
         y: rng.range(0, canvas.height),
-        vx: rng.range(-30, 30), // High speed
-        vy: rng.range(-30, 30),
+        vx: rng.range(-400, 400), // High speed
+        vy: rng.range(-400, 400),
         vr: rng.range(-5, 5), // High rotation speed
         size: rng.range(20, 100),
         color: `hsla(${rng.range(0, 360)}, 80%, 60%, 0.6)`,
@@ -102,7 +102,9 @@
   }
 
   initShapes();
-  requestAnimationFrame(animate);
+  if (!window.location.search.includes('benchmark=1')) {
+    requestAnimationFrame(animate);
+  }
 </script>
 </body>
 </html>
