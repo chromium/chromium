@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/tools/convert_dict/aff_reader.h"
@@ -56,8 +55,11 @@ void SplitDicLine(const std::string& line, std::vector<std::string>* output) {
 // parameter to tell this method whether the first non empty line in the file
 // contains the number of words or not. If it does, skip the first line. If it
 // does not, then the first line contains a word.
-bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
-                     const char* file_type, const char* encoding,
+bool PopulateWordSet(WordSet* word_set,
+                     FILE* file,
+                     AffReader* aff_reader,
+                     const std::string& file_type,
+                     const std::string& encoding,
                      bool file_has_word_count_in_the_first_line) {
   int line_number = 0;
   while (!feof(file)) {
@@ -77,21 +79,19 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
     std::vector<std::string> split;
     SplitDicLine(line, &split);
     if (split.empty() || split.size() > 2) {
-      UNSAFE_TODO(printf("Line %d has extra slashes in the %s file\n",
-                         line_number, file_type));
+      printf("Line %d has extra slashes in the %s file\n", line_number,
+             file_type.c_str());
       return false;
     }
 
     // The first part is the word, the second (optional) part is the affix. We
     // always use UTF-8 as the encoding to simplify life.
     std::string utf8word;
-    std::string_view encoding_string = encoding;
-    if (encoding_string == "UTF-8") {
+    if (encoding == "UTF-8") {
       utf8word = split[0];
     } else if (!aff_reader->EncodingToUTF8(split[0], &utf8word)) {
-      UNSAFE_TODO(
-          printf("Unable to convert line %d from %s to UTF-8 in the %s file\n",
-                 line_number, encoding, file_type));
+      printf("Unable to convert line %d from %s to UTF-8 in the %s file\n",
+             line_number, encoding.c_str(), file_type.c_str());
       return false;
     }
 

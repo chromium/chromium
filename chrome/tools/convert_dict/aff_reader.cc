@@ -147,9 +147,10 @@ bool AffReader::Read() {
 bool AffReader::EncodingToUTF8(const std::string& encoded,
                                std::string* utf8) const {
   std::u16string word;
-  if (!base::CodepageToUTF16(encoded, encoding(),
-                             base::OnStringConversionError::FAIL, &word))
+  if (!base::CodepageToUTF16(encoded, encoding().c_str(),
+                             base::OnStringConversionError::FAIL, &word)) {
     return false;
+  }
   *utf8 = base::UTF16ToUTF8(word);
   return true;
 }
