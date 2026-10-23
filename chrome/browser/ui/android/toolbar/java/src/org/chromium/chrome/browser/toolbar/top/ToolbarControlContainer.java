@@ -473,12 +473,16 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled() && mToolbarHairline != null) {
-            // Set the hairline's top margin to toolbar view to avoid the hairline's top
-            // margin from becoming too big (e.g. toolbar height + tab strip height).
-            MarginLayoutParams hairlineParams =
-                    (MarginLayoutParams) mToolbarHairline.getLayoutParams();
-            if (hairlineParams.topMargin != mToolbarLayoutHeight) {
-                hairlineParams.topMargin = mToolbarLayoutHeight;
+            // Set the hairline's top margin to toolbar view when anchored to the bottom of the
+            // top toolbar to avoid the hairline's top margin from becoming too big (e.g. toolbar
+            // height + tab strip height). When the toolbar is bottom-anchored, the hairline is
+            // anchored to the top of the toolbar and its top margin must remain 0.
+            CoordinatorLayout.LayoutParams hairlineParams =
+                    (CoordinatorLayout.LayoutParams) mToolbarHairline.getLayoutParams();
+            int targetTopMargin =
+                    hairlineParams.anchorGravity == Gravity.TOP ? 0 : mToolbarLayoutHeight;
+            if (hairlineParams.topMargin != targetTopMargin) {
+                hairlineParams.topMargin = targetTopMargin;
             }
         }
         updateToolbarContainerTopMargin();

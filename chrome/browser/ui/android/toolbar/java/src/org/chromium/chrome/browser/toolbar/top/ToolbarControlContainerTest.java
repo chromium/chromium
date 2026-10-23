@@ -33,6 +33,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -1865,6 +1866,29 @@ public class ToolbarControlContainerTest {
                 toolbarLayoutHeight,
                 /* expectedContainerTopMargin= */ 0,
                 /* expectedHairlineTopMargin= */ simulatedTabStripHeight + toolbarLayoutHeight);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void testOnMeasure_BottomAnchoredToolbarHairlineTopMarginZero() {
+        initControlContainer(R.layout.toolbar_phone);
+
+        Resources res = mActivity.getResources();
+        int toolbarLayoutHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+
+        CoordinatorLayout.LayoutParams hairlineParams =
+                mControlContainer.mutateHairlineLayoutParams();
+        hairlineParams.anchorGravity = Gravity.TOP;
+        hairlineParams.topMargin = toolbarLayoutHeight;
+
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(1024, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        mControlContainer.measure(widthSpec, heightSpec);
+
+        assertEquals(
+                "Bottom-anchored toolbar hairline top margin should be 0.",
+                0,
+                hairlineParams.topMargin);
     }
 
     @Test
