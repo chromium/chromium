@@ -322,8 +322,31 @@ void RemoveSharedTab(NSString* title) {
   config.features_enabled.push_back(kAssistantContainer);
   config.features_enabled.push_back(kComposeboxPhysicalKeyboardReturnKeys);
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
-  config.features_disabled.push_back(kAssistantAimMinimizedState);
   config.features_disabled.push_back(kComposeboxServerSideState);
+
+  if ([self isRunningTest:@selector(testMinimizedStateWhenFlagEnabled)]) {
+    config.features_enabled.push_back(kAssistantAimMinimizedState);
+  } else {
+    config.features_disabled.push_back(kAssistantAimMinimizedState);
+  }
+
+  if ([self isRunningTest:
+                @selector(testCobrowseAutoAttachesCurrentTabAfterNavigation)] ||
+      [self
+          isRunningTest:
+              @selector(
+                  testCobrowsePreservesAutoAttachedTabAfterSendingQueryAndNavigation)] ||
+      [self isRunningTest:@selector(
+                              testCobrowseFollowUpAfterSameTabNavigation)] ||
+      [self
+          isRunningTest:
+              @selector(
+                  testCobrowseRemovedTabStaysRemovedAfterRefocusingOrQuery)] ||
+      [self
+          isRunningTest:
+              @selector(testCobrowseNavigatingToChromeURLDoesNotAutoAttach)]) {
+    config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
+  }
 
   if ([self
           isRunningTest:@selector(
@@ -869,14 +892,6 @@ void RemoveSharedTab(NSString* title) {
 // All 3 detents are available in this mode. This test verifies that we start
 // in minimized and are not stuck in it.
 - (void)testMinimizedStateWhenFlagEnabled {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  // Remove from disabled list to allow enabling it.
-  std::erase(config.features_disabled, kAssistantAimMinimizedState);
-
-  config.features_enabled.push_back(kAssistantAimMinimizedState);
-  config.relaunch_policy = ForceRelaunchByKilling;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   OpenCoBrowse(_defaultURL);
 
   // Wait for the assistant to appear and be visible.
@@ -1453,11 +1468,6 @@ void RemoveSharedTab(NSString* title) {
 // and when navigating to a new URL while minimized, re-expanding and focusing
 // the input plate updates the auto-attached tab to the new page.
 - (void)testCobrowseAutoAttachesCurrentTabAfterNavigation {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // 1. Open Co-browse on Tab A (/pony.html).
   OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
 
@@ -1518,11 +1528,6 @@ void RemoveSharedTab(NSString* title) {
 // and after sending a query (interacting with the page), navigating to a new
 // URL preserves the previously shared tab while auto-attaching the new page.
 - (void)testCobrowsePreservesAutoAttachedTabAfterSendingQueryAndNavigation {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // 1. Open Co-browse on Tab A (/pony.html).
   OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
 
@@ -1553,8 +1558,7 @@ void RemoveSharedTab(NSString* title) {
       nil);
   [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
       performAction:grey_tap()];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Explain this page" flags:0];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"Explain this page"];
 
   id<GREYMatcher> sendButton = grey_allOf(
       grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
@@ -1598,11 +1602,6 @@ void RemoveSharedTab(NSString* title) {
 // URL in the SAME tab and re-focusing the Co-browse omnibox auto-attaches the
 // new page while preserving the previously shared page from the same tab.
 - (void)testCobrowseFollowUpAfterSameTabNavigation {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // 1. Open Co-browse on Tab A (/pony.html).
   OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
 
@@ -1633,8 +1632,7 @@ void RemoveSharedTab(NSString* title) {
       nil);
   [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
       performAction:grey_tap()];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Explain this page" flags:0];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"Explain this page"];
 
   id<GREYMatcher> sendButton = grey_allOf(
       grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
@@ -1683,11 +1681,6 @@ void RemoveSharedTab(NSString* title) {
 // re-added when refocusing the Co-browse omnibox, and that navigating to a new
 // URL allows the new page to be auto-attached.
 - (void)testCobrowseRemovedTabStaysRemovedAfterRefocusingOrQuery {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // 1. Open Co-browse on Tab A (/pony.html).
   OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
 
@@ -1784,11 +1777,6 @@ void RemoveSharedTab(NSString* title) {
 // does not auto-attach the tab and removes any previously auto-attached item
 // without showing an error snackbar.
 - (void)testCobrowseNavigatingToChromeURLDoesNotAutoAttach {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // 1. Open Co-browse on Tab A (/pony.html).
   OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
 
