@@ -30,7 +30,6 @@
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -45,6 +44,7 @@
 #include "components/enterprise/browser/reporting/prefs.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/net/core/utils.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -570,7 +570,7 @@ base::DictValue ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
                        base::UTF8ToUTF16(enterprise_manager)));
   result.Set("info", std::move(info));
   result.Set("showSecureGatewayDisclosure",
-             enterprise_util::IsSecureGatewayDisclosureRequired(profile));
+             enterprise_net::IsSecureGatewayEnabled(profile->GetPrefs()));
   return result;
 }
 

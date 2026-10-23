@@ -39,6 +39,7 @@ source_set("management") {
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/promotion",
+    "//components/enterprise/net/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

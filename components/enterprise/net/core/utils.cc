@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
@@ -17,7 +18,10 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/enterprise/net/core/auth_scope_metadata.h"
+#include "components/enterprise/net/core/features.h"
+#include "components/enterprise/net/core/prefs.h"
 #include "components/policy/core/common/values_util.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -675,6 +679,16 @@ base::DictValue ProvisioningDomainProxyConfigToDict(
   dict.Set(kProxyMatchKey, std::move(rules_list));
 
   return dict;
+}
+
+bool IsSecureGatewayEnabled(PrefService* prefs) {
+  CHECK(prefs);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return IsDynamicRouteFetchingEnabled() &&
+         !prefs->GetList(kProxyProvisioningDomains).empty();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 }  // namespace enterprise_net
