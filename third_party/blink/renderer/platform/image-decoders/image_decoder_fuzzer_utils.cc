@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_fuzzer_utils.h"
 
+#include <limits>
+
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
@@ -57,39 +59,75 @@ ImageDecoder::AlphaOption GetAlphaOption(FuzzedDataProvider& fdp) {
                            : ImageDecoder::kAlphaNotPremultiplied;
 }
 
+// Returns a `uint32_t` value >= kMinMaxDecodedBytes.
+uint32_t GetMaxDecodedBytes(FuzzedDataProvider& fdp) {
+  // The floor is a heuristic, not a threshold used by ImageDecoder: it is
+  // chosen to exceed the decoded frame size of typical seed images so fuzzed
+  // input rarely puts the decoder in aggressive purge mode, where cached
+  // frames are dropped and later frames are re-decoded from scratch.
+  constexpr uint32_t kMinMaxDecodedBytes = 1024 * 1024;
+  return fdp.ConsumeIntegralInRange<uint32_t>(
+      kMinMaxDecodedBytes, std::numeric_limits<uint32_t>::max());
+}
+
 std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
                                                  FuzzedDataProvider& fdp) {
+  // Options are read into locals before construction: argument evaluation order
+  // is unspecified, so reading them inline would make a repro depend on the
+  // compiler's ordering.
   switch (decoder_type) {
-    case DecoderType::kBmpDecoder:
-      return std::make_unique<BMPImageDecoder>(
-          GetAlphaOption(fdp), GetColorBehavior(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>());
+    case DecoderType::kBmpDecoder: {
+      const ImageDecoder::AlphaOption alpha_option = GetAlphaOption(fdp);
+      const ColorBehavior color_behavior = GetColorBehavior(fdp);
+      const uint32_t max_decoded_bytes = GetMaxDecodedBytes(fdp);
+      return std::make_unique<BMPImageDecoder>(alpha_option, color_behavior,
+                                               max_decoded_bytes);
+    }
     case DecoderType::kJpegDecoder: {
+      const ImageDecoder::AlphaOption alpha_option = GetAlphaOption(fdp);
+      const ColorBehavior color_behavior = GetColorBehavior(fdp);
+      const cc::AuxImage aux_image = GetAuxImageType(fdp);
+      const uint32_t max_decoded_bytes = GetMaxDecodedBytes(fdp);
       return std::make_unique<JPEGImageDecoder>(
-          GetAlphaOption(fdp), GetColorBehavior(fdp), GetAuxImageType(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>());
+          alpha_option, color_behavior, aux_image, max_decoded_bytes);
     }
     case DecoderType::kPngDecoder: {
-      return std::make_unique<PngImageDecoder>(
-          GetAlphaOption(fdp), GetColorBehavior(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
-          /*offset=*/fdp.ConsumeIntegral<uint32_t>(),
-          /*bit_depth_option=*/GetHbdOption(fdp));
+      const ImageDecoder::AlphaOption alpha_option = GetAlphaOption(fdp);
+      const ColorBehavior color_behavior = GetColorBehavior(fdp);
+      const uint32_t max_decoded_bytes = GetMaxDecodedBytes(fdp);
+      const uint32_t offset = fdp.ConsumeIntegral<uint32_t>();
+      const ImageDecoder::HighBitDepthDecodingOption bit_depth_option =
+          GetHbdOption(fdp);
+      return std::make_unique<PngImageDecoder>(alpha_option, color_behavior,
+                                               max_decoded_bytes, offset,
+                                               bit_depth_option);
     }
     case DecoderType::kAvifDecoder: {
+      const ImageDecoder::AlphaOption alpha_option = GetAlphaOption(fdp);
+      const ImageDecoder::HighBitDepthDecodingOption bit_depth_option =
+          GetHbdOption(fdp);
+      const ColorBehavior color_behavior = GetColorBehavior(fdp);
+      const cc::AuxImage aux_image = GetAuxImageType(fdp);
+      const uint32_t max_decoded_bytes = GetMaxDecodedBytes(fdp);
+      const ImageDecoder::AnimationOption animation_option =
+          GetAnimationOption(fdp);
       return std::make_unique<AVIFImageDecoder>(
-          GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
-          GetAuxImageType(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
-          GetAnimationOption(fdp));
+          alpha_option, bit_depth_option, color_behavior, aux_image,
+          max_decoded_bytes, animation_option);
     }
 #if BUILDFLAG(ENABLE_JXL_DECODER)
     case DecoderType::kJxlDecoder: {
+      const ImageDecoder::AlphaOption alpha_option = GetAlphaOption(fdp);
+      const ImageDecoder::HighBitDepthDecodingOption bit_depth_option =
+          GetHbdOption(fdp);
+      const ColorBehavior color_behavior = GetColorBehavior(fdp);
+      const cc::AuxImage aux_image = GetAuxImageType(fdp);
+      const uint32_t max_decoded_bytes = GetMaxDecodedBytes(fdp);
+      const ImageDecoder::AnimationOption animation_option =
+          GetAnimationOption(fdp);
       return std::make_unique<JXLImageDecoder>(
-          GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
-          GetAuxImageType(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
-          GetAnimationOption(fdp));
+          alpha_option, bit_depth_option, color_behavior, aux_image,
+          max_decoded_bytes, animation_option);
     }
 #endif
   }
