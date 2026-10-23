@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.glic.toolbar_button;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
@@ -36,9 +38,9 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
-        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
-        if (nativeBrowserWindowPtr == 0) return;
-        mNativePtr = GlicSplitButtonDelegateBridgeJni.get().create(nativeBrowserWindowPtr, this);
+        JniPtr<NativeBrowserWindowInterface> browserWindow = initInfo.nativeBrowserWindow;
+        if (browserWindow == null) return;
+        mNativePtr = GlicSplitButtonDelegateBridgeJni.get().create(browserWindow, this);
     }
 
     @Override
@@ -149,7 +151,9 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
 
     @NativeMethods
     public interface Natives {
-        long create(long browserWindowInterfacePtr, GlicSplitButtonDelegateBridge delegate);
+        long create(
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
+                GlicSplitButtonDelegateBridge delegate);
 
         void destroy(long nativeGlicSplitButtonDelegateAndroid);
 

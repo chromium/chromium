@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
 
+import org.jni_zero.JniPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,19 +22,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /** Unit tests for {@link GlicSplitButtonDelegateBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class GlicSplitButtonDelegateBridgeUnitTest {
-    private static final long BROWSER_WINDOW_PTR = 100L;
     private static final long NATIVE_BRIDGE_PTR = 200L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private GlicSplitButtonDelegate mDelegateMock;
     @Mock private GlicSplitButtonDelegateBridge.Natives mNativesMock;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindowMock;
 
     private GlicSplitButtonDelegateBridge mBridge;
 
@@ -43,10 +46,11 @@ public class GlicSplitButtonDelegateBridgeUnitTest {
         mBridge = new GlicSplitButtonDelegateBridge(mDelegateMock);
     }
 
-    private static InitInfo createInitInfo(long nativeBrowserWindowPtr) {
+    private static InitInfo createInitInfo(
+            @Nullable JniPtr<NativeBrowserWindowInterface> browserWindow) {
         return new InitInfo(
-                nativeBrowserWindowPtr,
-                /* nativeBrowserWindow= */ null,
+                /* nativeBrowserWindowPtr= */ 0,
+                browserWindow,
                 /* isVisible= */ true,
                 /* boundsInPx= */ new Rect(),
                 /* boundsInDp= */ new Rect(),
@@ -55,15 +59,15 @@ public class GlicSplitButtonDelegateBridgeUnitTest {
 
     @Test
     public void testLifecycleAndJavaToNativeForwarding() {
-        when(mNativesMock.create(BROWSER_WINDOW_PTR, mBridge)).thenReturn(NATIVE_BRIDGE_PTR);
-        // Zero browser window pointer should be a no-op.
-        mBridge.onAddedToTask(createInitInfo(0L));
+        when(mNativesMock.create(mBrowserWindowMock, mBridge)).thenReturn(NATIVE_BRIDGE_PTR);
+        // Null browser window pointer should be a no-op.
+        mBridge.onAddedToTask(createInitInfo(null));
         mBridge.onGlicActorButtonClicked();
         verify(mNativesMock, never()).onGlicActorButtonClicked(anyLong());
 
         // Valid browser window pointer initializes native bridge and forwards events.
-        mBridge.onAddedToTask(createInitInfo(BROWSER_WINDOW_PTR));
-        verify(mNativesMock).create(BROWSER_WINDOW_PTR, mBridge);
+        mBridge.onAddedToTask(createInitInfo(mBrowserWindowMock));
+        verify(mNativesMock).create(mBrowserWindowMock, mBridge);
 
         mBridge.onNudgeActivity(GlicNudgeActivity.NUDGE_SHOWN);
         verify(mNativesMock).onNudgeActivity(NATIVE_BRIDGE_PTR, GlicNudgeActivity.NUDGE_SHOWN);

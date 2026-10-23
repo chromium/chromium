@@ -187,10 +187,8 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
 
 static int64_t JNI_GlicSplitButtonDelegateBridge_Create(
     JNIEnv* env,
-    int64_t j_native_browser_window_interface,
+    BrowserWindowInterface* browser,
     const base::android::JavaRef<JGlicSplitButtonDelegateBridge>& j_delegate) {
-  BrowserWindowInterface* browser = reinterpret_cast<BrowserWindowInterface*>(
-      j_native_browser_window_interface);
   if (!browser) {
     return 0l;
   }

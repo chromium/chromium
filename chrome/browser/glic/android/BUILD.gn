@@ -22,6 +22,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/glic/ui/GlicExperimentalOptInUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicSidePanelComponentProvider.java",
   ]
+  deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
 }
 
 java_cpp_enum("java_enums_srcjar") {

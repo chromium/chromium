@@ -28,6 +28,7 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
+import org.jni_zero.JniPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,6 +76,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
@@ -121,6 +123,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private GlicSplitButtonDelegateBridge.Natives mGlicSplitButtonDelegateBridgeJniMock;
     @Mock private SideUiStateProvider mSideUiStateProvider;
     @Mock private Callback<Boolean> mGlicPanelStateObserver;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
 
     @Captor private ArgumentCaptor<List<Animator>> mAnimatorsListCaptor;
 
@@ -145,7 +148,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         GlicUtils.setIsSidePanelFormFactorForTesting(true);
         GlicSplitButtonDelegateBridgeJni.setInstanceForTesting(
                 mGlicSplitButtonDelegateBridgeJniMock);
-        when(mGlicSplitButtonDelegateBridgeJniMock.create(anyLong(), any())).thenReturn(1L);
+        when(mGlicSplitButtonDelegateBridgeJniMock.create(any(), any())).thenReturn(1L);
         CompositorAnimationHandler.setTestingMode(true);
         when(mUpdateHost.getAnimationHandler())
                 .thenReturn(new CompositorAnimationHandler(CallbackUtils.emptyRunnable()));
@@ -173,7 +176,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                             InitInfo info =
                                     new InitInfo(
                                             mBwiPtr,
-                                            /* nativeBrowserWindow= */ null,
+                                            mBrowserWindow,
                                             /* isVisible= */ true,
                                             new Rect(),
                                             new Rect(),
