@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.touch_to_fill.password_generation;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.prefs.PrefService;
@@ -22,16 +26,21 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 class TouchToFillPasswordGenerationBridge
         implements TouchToFillPasswordGenerationCoordinator.Delegate {
+    @JniType("::TouchToFillPasswordGenerationBridgeImpl")
+    interface NativeTouchToFillPasswordGenerationBridgeImpl extends JniTypeToken {}
+
     private final WindowAndroid mWindowAndroid;
     private final TouchToFillPasswordGenerationCoordinator mCoordinator;
-    private long mNativeTouchToFillPasswordGenerationBridge;
+    private @Nullable JniRawPtr<NativeTouchToFillPasswordGenerationBridgeImpl>
+            mNativeTouchToFillPasswordGenerationBridge;
 
     @CalledByNative
     private static TouchToFillPasswordGenerationBridge create(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @JniType("content::WebContents*") WebContents webContents,
             @JniType("PrefService*") PrefService prefService,
-            long nativeTouchToFillPasswordGenerationBridge) {
+            JniRawPtr<NativeTouchToFillPasswordGenerationBridgeImpl>
+                    nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         assert bottomSheetController != null : "BottomSheetController should not be null.";
@@ -44,7 +53,8 @@ class TouchToFillPasswordGenerationBridge
     }
 
     public TouchToFillPasswordGenerationBridge(
-            long nativeTouchToFillPasswordGenerationBridge,
+            JniRawPtr<NativeTouchToFillPasswordGenerationBridgeImpl>
+                    nativeTouchToFillPasswordGenerationBridge,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid,
             WebContents webContents,
@@ -73,21 +83,25 @@ class TouchToFillPasswordGenerationBridge
     @CalledByNative
     public void hideFromNative() {
         mCoordinator.hideFromNative();
-        mNativeTouchToFillPasswordGenerationBridge = 0;
+        if (mNativeTouchToFillPasswordGenerationBridge != null) {
+            mNativeTouchToFillPasswordGenerationBridge.release();
+            mNativeTouchToFillPasswordGenerationBridge = null;
+        }
     }
 
     @Override
     public void onDismissed(boolean passwordAccepted) {
-        if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
+        if (mNativeTouchToFillPasswordGenerationBridge == null) return;
 
         TouchToFillPasswordGenerationBridgeJni.get()
                 .onDismissed(mNativeTouchToFillPasswordGenerationBridge, passwordAccepted);
-        mNativeTouchToFillPasswordGenerationBridge = 0;
+        mNativeTouchToFillPasswordGenerationBridge.release();
+        mNativeTouchToFillPasswordGenerationBridge = null;
     }
 
     @Override
     public void onGeneratedPasswordAccepted(String password) {
-        if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
+        if (mNativeTouchToFillPasswordGenerationBridge == null) return;
 
         TouchToFillPasswordGenerationBridgeJni.get()
                 .onGeneratedPasswordAccepted(mNativeTouchToFillPasswordGenerationBridge, password);
@@ -97,7 +111,7 @@ class TouchToFillPasswordGenerationBridge
 
     @Override
     public void onGeneratedPasswordRejected() {
-        if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
+        if (mNativeTouchToFillPasswordGenerationBridge == null) return;
 
         TouchToFillPasswordGenerationBridgeJni.get()
                 .onGeneratedPasswordRejected(mNativeTouchToFillPasswordGenerationBridge);
@@ -107,12 +121,15 @@ class TouchToFillPasswordGenerationBridge
 
     @NativeMethods
     interface Natives {
-        void onDismissed(long nativeTouchToFillPasswordGenerationBridge, boolean passwordAccepted);
+        void onDismissed(
+                JniPtr<NativeTouchToFillPasswordGenerationBridgeImpl> self,
+                boolean passwordAccepted);
 
         void onGeneratedPasswordAccepted(
-                long nativeTouchToFillPasswordGenerationBridge,
+                JniPtr<NativeTouchToFillPasswordGenerationBridgeImpl> self,
                 @JniType("std::u16string") String password);
 
-        void onGeneratedPasswordRejected(long nativeTouchToFillPasswordGenerationBridge);
+        void onGeneratedPasswordRejected(
+                JniPtr<NativeTouchToFillPasswordGenerationBridgeImpl> self);
     }
 }

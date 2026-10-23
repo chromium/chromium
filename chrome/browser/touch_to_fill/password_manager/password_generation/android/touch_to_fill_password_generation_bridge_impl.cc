@@ -12,6 +12,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -40,7 +41,7 @@ bool TouchToFillPasswordGenerationBridgeImpl::Show(
   JNIEnv* env = jni_zero::AttachCurrentThread();
   java_object_.Reset(Java_TouchToFillPasswordGenerationBridge_create(
       env, web_contents->GetNativeView()->GetWindowAndroid(), web_contents,
-      pref_service, reinterpret_cast<intptr_t>(this)));
+      pref_service, jni_zero::MakeRaw(this)));
 
   return Java_TouchToFillPasswordGenerationBridge_show(env, java_object_,
                                                        password, account);
