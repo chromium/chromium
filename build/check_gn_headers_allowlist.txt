@@ -159,15 +159,6 @@ sandbox/linux/system_headers/capability.h
 skia/ext/convolver_mips_dspr2.h
 skia/ext/skia_commit_hash.h
 third_party/hunspell/src/hunspell/hunvisapi.h
-third_party/khronos/EGL/egl.h
-third_party/khronos/EGL/eglext.h
-third_party/khronos/EGL/eglplatform.h
-third_party/khronos/GLES2/gl2.h
-third_party/khronos/GLES2/gl2ext.h
-third_party/khronos/GLES2/gl2platform.h
-third_party/khronos/GLES3/gl3.h
-third_party/khronos/GLES3/gl3platform.h
-third_party/khronos/KHR/khrplatform.h
 third_party/leveldatabase/chromium_logger.h
 third_party/libaddressinput/chromium/addressinput_util.h
 third_party/libphonenumber/phonenumber_api.h
