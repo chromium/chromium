@@ -7,8 +7,9 @@ description: >-
   chrome/browser/ui/views/web_apps/, and the web apps sync integration tests in
   chrome/browser/sync/test/integration/web_apps/. It checks command completion
   waits, FakeWebAppProvider setup before provider start, FakeWebContentsManager
-  page state, test install helpers, and OS integration test overrides. Use when
-  a CL adds or changes these test files.
+  page state, test install helpers, OS integration test overrides, and test
+  assertions on command debug values. Use when a CL adds or changes these test
+  files.
 ---
 
 ### `WEBAPPS_AWAIT_COMMANDS_INSTEAD_OF_IDLE_OR_SLEEP`: Wait on command completion via `base::test::TestFuture` (or test observers) instead of `RunUntilIdle()` or sleeps
@@ -80,3 +81,33 @@ description: >-
   `ScopedRegistryUpdate` that change an app that the test installed before, for
   example in `single_client_web_apps_sync_generated_icon_fix_sync_test.cc`. The
   helper definitions in `test/web_app_test_utils.cc`.
+
+### `WEBAPPS_ASSERT_OUTCOMES_NOT_COMMAND_DEBUG_VALUES`: Assert command results, app state, or histograms, not command debug values
+
+- **Severity**: WARNING
+- **Why**: Command debug values (`GetMutableDebugValue()`, the
+  `WebAppCommandManager` log, and `ToDebugValue()` output) exist for
+  chrome://web-app-internals and bug reports. Their keys and strings are not a
+  contract, and authors change them without test updates. A test that reads them
+  checks internal steps of the command, not its behavior. When a key changes,
+  the test fails for no real reason, or a `nullptr` check makes it pass without
+  a real check.
+- **Look for**: New test code that reads
+  `provider().command_manager().log().GetEntries()`,
+  `command_manager().ToDebugValue()`, or a command's `GetDebugValue()`, and then
+  checks dict keys (for example `FindBool("...")`, `FindString("...")`,
+  `base::test::DictionaryHasValues`, `base::test::DictionaryHasValue` or
+  `FindStringByDottedPath("!metadata.!name")`) to prove that a command did or
+  skipped a step. New test helpers, such as `GetLastCommandDebugValue()`, that
+  search the log for a command name.
+- **Fix**: Assert the command result from a `base::test::TestFuture` (for
+  example `webapps::InstallResultCode`), the registrar or OS integration state,
+  or UMA through `base::HistogramTester` (for example `WebApp.Install.Result`
+  and `WebApp.Install.Source.Failure`). If the result does not tell two cases
+  apart, use or add a more specific result code.
+- **Do not flag**: Tests of the debug output itself, for example
+  `WebAppCommandManagerTest.ToDebugValue`, the `ToDebugValue` tests in `locks/`,
+  the `WebApp` debug value test in `web_app_unittest.cc`, and
+  `IwaCacheOneAppTest.GetDebugValue`. Debug values that a test only prints in a
+  failure message (`<< debug_value`). Existing debug value reads that the CL
+  does not change.
