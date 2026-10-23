@@ -55,9 +55,12 @@ DrivePickerHostView::DrivePickerHostView(
   // `GetWebContents()` is guaranteed to return a valid pointer. We use a
   // `CHECK` here to assert this state and remove redundant defensive checks.
   CHECK(web_view->GetWebContents());
-  web_view->GetWebContents()->SetDelegate(this);
-  web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
 
+  web_view->GetWebContents()->SetDelegate(this);
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
+  SetOnEscCloseWidget();
+
+  web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIDrivePickerHostURL));
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
@@ -263,30 +266,6 @@ content::WebContents* DrivePickerHostView::AddNewContents(
                          std::move(new_contents), target_url, new_disposition,
                          window_features);
   return nullptr;
-}
-
-content::KeyboardEventProcessingResult
-DrivePickerHostView::PreHandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  if (event.windows_key_code == ui::VKEY_ESCAPE &&
-      event.GetType() == blink::WebInputEvent::Type::kRawKeyDown) {
-    views::Widget* widget = GetWidget();
-    if (widget) {
-      widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
-    }
-    return content::KeyboardEventProcessingResult::HANDLED;
-  }
-  return content::KeyboardEventProcessingResult::NOT_HANDLED;
-}
-bool DrivePickerHostView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  if (!event.os_event) {
-    return false;
-  }
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
 }
 
 BEGIN_METADATA(DrivePickerHostView)
