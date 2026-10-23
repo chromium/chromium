@@ -20,8 +20,6 @@ namespace syncer {
 class ExtensionsActivity;
 }
 
-namespace browser_sync {
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using BookmarksApiWatcherObserver = extensions::BookmarksApiWatcher::Observer;
 #else
@@ -59,7 +57,5 @@ class ExtensionsActivityMonitor : public BookmarksApiWatcherObserver {
       bookmarks_api_observation_{this};
 #endif
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_EXTENSIONS_ACTIVITY_MONITOR_H_

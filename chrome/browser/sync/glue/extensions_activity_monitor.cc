@@ -16,8 +16,6 @@
 
 using content::BrowserThread;
 
-namespace browser_sync {
-
 ExtensionsActivityMonitor::ExtensionsActivityMonitor(
     content::BrowserContext* context)
     : extensions_activity_(base::MakeRefCounted<syncer::ExtensionsActivity>()) {
@@ -63,5 +61,3 @@ const scoped_refptr<syncer::ExtensionsActivity>&
 ExtensionsActivityMonitor::GetExtensionsActivity() {
   return extensions_activity_;
 }
-
-}  // namespace browser_sync

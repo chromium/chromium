@@ -222,13 +222,13 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               extension_system_profile_.value())));
 
       controllers.push_back(
-          std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
+          std::make_unique<ExtensionSettingDataTypeController>(
               syncer::EXTENSION_SETTINGS, data_type_store_factory,
               extensions::settings_sync_util::GetSyncableServiceProvider(
                   extension_system_profile_.value(),
                   syncer::EXTENSION_SETTINGS),
               dump_stack,
-              browser_sync::ExtensionSettingDataTypeController::DelegateMode::
+              ExtensionSettingDataTypeController::DelegateMode::
                   kTransportModeWithSingleModel,
               extension_system_profile_.value()));
     }
@@ -259,7 +259,7 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
           extension_system_profile_.value()));
 
       controllers.push_back(
-          std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
+          std::make_unique<ExtensionSettingDataTypeController>(
               syncer::APP_SETTINGS, data_type_store_factory,
               extensions::settings_sync_util::GetSyncableServiceProvider(
                   extension_system_profile_.value(), syncer::APP_SETTINGS),
@@ -267,12 +267,12 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
 #if BUILDFLAG(IS_CHROMEOS)
               base::FeatureList::IsEnabled(
                   syncer::kReplaceSyncPromosWithSignInPromos)
-                  ? browser_sync::ExtensionSettingDataTypeController::
-                        DelegateMode::kTransportModeWithSingleModel
-                  : browser_sync::ExtensionSettingDataTypeController::
-                        DelegateMode::kLegacyFullSyncModeOnly,
+                  ? ExtensionSettingDataTypeController::DelegateMode::
+                        kTransportModeWithSingleModel
+                  : ExtensionSettingDataTypeController::DelegateMode::
+                        kLegacyFullSyncModeOnly,
 #else
-              browser_sync::ExtensionSettingDataTypeController::DelegateMode::
+              ExtensionSettingDataTypeController::DelegateMode::
                   kLegacyFullSyncModeOnly,
 #endif  // BUILDFLAG(IS_CHROMEOS)
               extension_system_profile_.value()));

@@ -23,8 +23,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_sync {
-
 namespace {
 
 using extensions::Extension;
@@ -193,5 +191,3 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, MultiGet) {
 }
 
 }  // namespace
-
-}  // namespace browser_sync

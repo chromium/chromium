@@ -10,8 +10,6 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/extension_system.h"
 
-namespace browser_sync {
-
 ExtensionSettingDataTypeController::ExtensionSettingDataTypeController(
     syncer::DataType type,
     syncer::OnceDataTypeStoreFactory store_factory,
@@ -43,5 +41,3 @@ void ExtensionSettingDataTypeController::LoadModels(
   NonUiSyncableServiceBasedDataTypeController::LoadModels(configure_context,
                                                            model_load_callback);
 }
-
-}  // namespace browser_sync

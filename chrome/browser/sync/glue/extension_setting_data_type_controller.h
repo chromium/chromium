@@ -14,8 +14,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
-namespace browser_sync {
-
 // A DataTypeController that processes extension data on the extensions
 // background thread.
 // NOTE: Chrome OS uses a fork of this class for APP_SETTINGS.
@@ -47,7 +45,5 @@ class ExtensionSettingDataTypeController
  private:
   const raw_ptr<Profile> profile_;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_EXTENSION_SETTING_DATA_TYPE_CONTROLLER_H_

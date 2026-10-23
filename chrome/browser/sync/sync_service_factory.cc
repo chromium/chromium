@@ -401,7 +401,7 @@ std::unique_ptr<syncer::SyncClient> BuildSyncClient(Profile* profile) {
       DataTypeStoreServiceFactory::GetForProfile(profile),
       supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           profile->GetProfileKey()),
-      std::make_unique<browser_sync::ExtensionsActivityMonitor>(profile));
+      std::make_unique<ExtensionsActivityMonitor>(profile));
 }
 
 std::unique_ptr<KeyedService> BuildSyncService(

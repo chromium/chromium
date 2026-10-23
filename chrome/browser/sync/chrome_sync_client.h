@@ -30,9 +30,9 @@ namespace trusted_vault {
 class TrustedVaultService;
 }  // namespace trusted_vault
 
-namespace browser_sync {
-
 class ExtensionsActivityMonitor;
+
+namespace browser_sync {
 
 class ChromeSyncClient : public syncer::SyncClient {
  public:
