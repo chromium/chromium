@@ -14,22 +14,21 @@
 typedef PlatformTest URLOpenerParamsTest;
 
 // Simple test for initWithUIOpenURLContext:.
-// TODO(crbug.com/40166681): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_initWithUIOpenURLContext initWithUIOpenURLContext
-#else
-#define MAYBE_initWithUIOpenURLContext DISABLED_initWithUIOpenURLContext
-#endif
-TEST_F(URLOpenerParamsTest, MAYBE_initWithUIOpenURLContext) {
+TEST_F(URLOpenerParamsTest, initWithUIOpenURLContext) {
   NSURL* url = [NSURL URLWithString:@"https://url.test"];
   NSString* source = @"source";
-  id open_url_context = [OCMockObject mockForClass:[UIOpenURLContext class]];
-  id open_url_context_options =
-      [OCMockObject mockForClass:[UISceneOpenURLOptions class]];
+  // `UIOpenURLContext` and `UISceneOpenURLOptions` cannot be instantiated
+  // directly because UIKit marks `+new` and `-init` as `NS_UNAVAILABLE` and
+  // exposes only read-only properties, so mocks are required. Use nice mocks
+  // (`OCMClassMock`) rather than strict mocks so the test is not brittle to
+  // harmless unstubbed calls (such as `-description` or internal UIKit
+  // methods).
+  UIOpenURLContext* open_url_context = OCMClassMock([UIOpenURLContext class]);
+  UISceneOpenURLOptions* open_url_context_options =
+      OCMClassMock([UISceneOpenURLOptions class]);
   OCMStub([open_url_context_options sourceApplication]).andReturn(source);
   OCMStub([open_url_context URL]).andReturn(url);
-  [(UIOpenURLContext*)[[open_url_context stub]
-      andReturn:open_url_context_options] options];
+  OCMStub([open_url_context options]).andReturn(open_url_context_options);
 
   URLOpenerParams* params =
       [[URLOpenerParams alloc] initWithUIOpenURLContext:open_url_context];
