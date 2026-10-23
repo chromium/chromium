@@ -55,6 +55,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
@@ -70,8 +71,11 @@ using net::test_server::HttpResponse;
 using password_manager::CredentialLeakFlags;
 using password_manager::CredentialLeakType;
 using password_manager::PasswordString;
+using ::testing::Contains;
+using ::testing::Each;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -136,6 +140,22 @@ std::vector<views::View*> GetViewsByID(int id, views::View* parent) {
   std::vector<views::View*> views;
   GetViewsByID(id, parent, views);
   return views;
+}
+
+void GetLabelTexts(views::View* parent, std::vector<std::u16string>& texts) {
+  if (views::IsViewClass<views::Label>(parent)) {
+    texts.emplace_back(static_cast<views::Label*>(parent)->GetText());
+  }
+  for (views::View* child : parent->children()) {
+    GetLabelTexts(child, texts);
+  }
+}
+
+// Returns the texts of all views::Labels in the subtree rooted at `parent`.
+std::vector<std::u16string> GetLabelTexts(views::View* parent) {
+  std::vector<std::u16string> texts;
+  GetLabelTexts(parent, texts);
+  return texts;
 }
 
 // ManagePasswordsUIController subclass to capture the dialog instance
@@ -494,6 +514,40 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   EXPECT_CALL(*this, OnChooseCredential(Pointee(form)));
   dialog->Accept();
   bubble_observer.Wait();
+}
+
+// Site-provided usernames and display names (e.g. stored via
+// navigator.credentials.store()) must not be able to add lines of text to the
+// account chooser.
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
+                       PopupAccountChooserShowsCredentialFieldsOnSingleLine) {
+  GURL origin("https://example.com");
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
+  password_manager::PasswordForm form;
+  form.url = origin;
+  form.display_name = u"Peter\nChrome Security";
+  form.username_value = u"peter@pan.test\n\nThis site is verified";
+  form.match_type = affiliations::MatchType::kExact;
+  local_credentials.push_back(
+      std::make_unique<password_manager::PasswordForm>(form));
+
+  SetupChooseCredentials(std::move(local_credentials),
+                         url::Origin::Create(origin));
+
+  ASSERT_TRUE(controller()->current_account_chooser());
+  views::Widget* widget = IsParamFeatureEnabled()
+                              ? static_cast<PasswordCombinedSelectorView*>(
+                                    controller()->current_account_chooser())
+                                    ->GetWidget()
+                              : static_cast<AccountChooserDialogView*>(
+                                    controller()->current_account_chooser())
+                                    ->GetWidget();
+  std::vector<std::u16string> texts = GetLabelTexts(widget->GetRootView());
+  EXPECT_THAT(texts, Contains(u"Peter Chrome Security"));
+  EXPECT_THAT(texts, Contains(u"peter@pan.test This site is verified"));
+  EXPECT_THAT(texts, Not(Contains(u"This site is verified")));
+  EXPECT_THAT(texts, Each(Not(Contains(u'\n'))));
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,

@@ -57,6 +57,14 @@ inline constexpr int kAvatarImageSize = 32;
 // Crops and scales |image_skia| to the desired size for an account avatar.
 gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
 
+// Returns `text` prepared to be displayed on a single line in the password
+// manager UI. Control characters, line breaks and other whitespace sequences
+// are collapsed into single spaces, and unterminated directional formatting
+// characters are terminated. This is meant for site-provided credential data
+// (e.g. usernames and display names stored via the Credential Management API),
+// which must not be able to add lines or change the layout of browser UI.
+std::u16string GetSingleLineDisplayText(std::u16string text);
+
 // Returns the upper and lower label to be displayed in the account chooser UI
 // for |form|. The lower label can be multiline.
 std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
