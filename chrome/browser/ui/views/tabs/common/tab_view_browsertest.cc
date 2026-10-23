@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -57,8 +58,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
@@ -1205,6 +1209,48 @@ IN_PROC_BROWSER_TEST_F(TabViewTest,
   EXPECT_TRUE(region_view->pane_has_focus());
 }
 
+IN_PROC_BROWSER_TEST_F(TabViewTest,
+                       PinnedSplitTabUnsplitUpdatesLayerRoundedCorners) {
+  const gfx::AnimationTestApi::RenderModeResetter enable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  AppendPinnedTab();
+  AppendPinnedTab();
+  tab_strip_model()->ActivateTabAt(0);
+  tab_strip_model()->AddToNewSplit(
+      {1}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  auto* layout_manager = static_cast<TabCollectionAnimatingLayoutManager*>(
+      pinned_collection_node()->view()->GetLayoutManager());
+  RunScheduledLayouts();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !layout_manager->is_animating(); }));
+
+  TabView* remaining_tab = GetTabView(0);
+  ASSERT_TRUE(remaining_tab);
+  EXPECT_TRUE(remaining_tab->pinned());
+  EXPECT_TRUE(remaining_tab->split());
+  EXPECT_FALSE(remaining_tab->GetBoundsInScreen().IsEmpty());
+
+  // Closing one tab in the pinned split reparents the remaining tab back to the
+  // pinned container with a layer for the animation. Its layer corner radius
+  // and clip path should reflect the non-split pinned vertical tab corner
+  // radius.
+  tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_FALSE(remaining_tab->split());
+  EXPECT_EQ(remaining_tab->clip_path(), remaining_tab->GetPath());
+  ASSERT_NE(remaining_tab->layer(), nullptr);
+  EXPECT_EQ(remaining_tab->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(
+                GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius)));
+
+  RunScheduledLayouts();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !layout_manager->is_animating(); }));
+  EXPECT_EQ(remaining_tab->layer(), nullptr);
+}
+
 class HorizontalTabViewTest : public TabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -1443,6 +1489,41 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, KeyboardExtendTabSelection_RTL) {
   EXPECT_TRUE(tab_1->HasFocus());
   EXPECT_EQ(
       2, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
+                       UnsplitTabAnimationDoesNotSetLayerRoundedCorners) {
+  const gfx::AnimationTestApi::RenderModeResetter enable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  AppendSplitTab();
+
+  auto* layout_manager = static_cast<TabCollectionAnimatingLayoutManager*>(
+      unpinned_collection_node()->view()->GetLayoutManager());
+  RunScheduledLayouts();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !layout_manager->is_animating(); }));
+
+  TabView* remaining_tab = GetTabView(1);
+  ASSERT_TRUE(remaining_tab);
+  EXPECT_TRUE(remaining_tab->split());
+  EXPECT_FALSE(remaining_tab->GetBoundsInScreen().IsEmpty());
+  EXPECT_EQ(remaining_tab->layer(), nullptr);
+
+  // Closing the right tab in the split reparents the remaining tab back to the
+  // unpinned container with a layer for the animation. Horizontal tabs must not
+  // apply vertical tab rounded corners to their layer, as doing so clips the
+  // outward-flaring bottom corners of the horizontal tab shape.
+  tab_strip_model()->CloseWebContentsAt(2, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_FALSE(remaining_tab->split());
+  ASSERT_NE(remaining_tab->layer(), nullptr);
+  EXPECT_TRUE(remaining_tab->layer()->rounded_corner_radii().IsEmpty());
+
+  RunScheduledLayouts();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !layout_manager->is_animating(); }));
+  EXPECT_EQ(remaining_tab->layer(), nullptr);
 }
 
 class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {

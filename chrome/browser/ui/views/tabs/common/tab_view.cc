@@ -848,6 +848,7 @@ void TabView::AddedToWidget() {
           &TabView::OnFrameActiveStateChanged, base::Unretained(this)));
 
   OnTabStateChanged();
+  UpdateClipPathAndRoundedCorners();
 
   // Recompute accessible name when the structure changes.
   UpdateAccessibleName();
@@ -922,7 +923,7 @@ void TabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void TabView::UpdateParentLayer() {
   views::View::UpdateParentLayer();
-  if (layer()) {
+  if (orientation_ == TabStripOrientation::kVertical && layer()) {
     UpdateLayerRoundedCorners();
   }
 }
@@ -936,6 +937,15 @@ void TabView::OnViewFocused(views::View* observed_view) {
 void TabView::OnViewBlurred(views::View* observed_view) {
   if (observed_view == close_button_) {
     InvalidateLayout();
+  }
+}
+
+void TabView::UpdateClipPathAndRoundedCorners() {
+  if (orientation_ == TabStripOrientation::kVertical) {
+    SetClipPath(GetPath());
+    if (layer()) {
+      UpdateLayerRoundedCorners();
+    }
   }
 }
 

@@ -208,6 +208,8 @@ class TabView : public views::View,
 
   SkScalar GetCornerRadius() const;
 
+  void UpdateClipPathAndRoundedCorners();
+
   // Applies rounded corners to the view's layer.
   void UpdateLayerRoundedCorners();
 
