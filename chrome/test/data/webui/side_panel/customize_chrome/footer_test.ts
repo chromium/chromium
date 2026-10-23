@@ -6,8 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/footer.js';
 
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote, ManagementNoticeState} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {browserProxyFactory, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import type {FooterElement} from 'chrome://customize-chrome-side-panel.top-chrome/footer.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -27,11 +26,11 @@ suite('FooterTest', () => {
     metrics = fakeMetricsPrivate();
     handler = installMock(
         CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
-    callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+        (mock: CustomizeChromePageHandlerRemote) => {
+          const {instance, remote} = browserProxyFactory.createForTest(mock);
+          browserProxyFactory.setInstance(instance);
+          callbackRouterRemote = remote;
+        });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     footer = document.createElement('customize-chrome-footer');

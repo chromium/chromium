@@ -23,10 +23,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
-import {CurrentPageActionButtonState} from './reading_list.mojom-webui.js';
-import type {ReadingListApiProxy} from './reading_list_api_proxy.js';
-import {ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
+import type {BrowserProxy, ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
+import {browserProxyFactory, CurrentPageActionButtonState} from './reading_list.mojom-webui.js';
 import {getCss} from './reading_list_app.css.js';
 import {getHtml} from './reading_list_app.html.js';
 import {MARKED_AS_READ_UI_EVENT} from './reading_list_item.js';
@@ -97,8 +95,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private accessor readExpanded_: boolean = false;
   private accessor isWebUIBrowser_: boolean =
       loadTimeData.getBoolean('isWebUIBrowser');
-  private apiProxy_: ReadingListApiProxy =
-      ReadingListApiProxyImpl.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
   private readingListEventTracker_: EventTracker = new EventTracker();
@@ -126,7 +123,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     document.addEventListener(
         'visibilitychange', this.visibilityChangedListener_);
 
-    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    const callbackRouter = this.apiProxy_.callbackRouter;
     this.listenerIds_.push(
         callbackRouter.itemsChanged.addListener(
             (entries: ReadLaterEntriesByStatus) =>
@@ -137,7 +134,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
     this.scrollTarget_ = this.$.scroller;
     this.updateReadLaterEntries_();
-    this.apiProxy_.updateCurrentPageActionButtonState();
+    this.apiProxy_.handler.updateCurrentPageActionButtonState();
 
     this.readingListEventTracker_.add(
         this.shadowRoot, MARKED_AS_READ_UI_EVENT,
@@ -148,7 +145,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(
-        id => this.apiProxy_.getCallbackRouter().removeListener(id));
+        id => this.apiProxy_.callbackRouter.removeListener(id));
 
     document.removeEventListener(
         'visibilitychange', this.visibilityChangedListener_);
@@ -296,7 +293,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private async updateReadLaterEntries_() {
     const getEntriesStartTimestamp = Date.now();
 
-    const {entries} = await this.apiProxy_.getReadLaterEntries();
+    const {entries} = await this.apiProxy_.handler.getReadLaterEntries();
 
     chrome.metricsPrivate.recordTime(
         'ReadingList.WebUI.ReadingListDataReceived',
@@ -304,7 +301,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
     // Push ShowUI() callback to the event queue to allow deferred rendering
     // to take place.
-    setTimeout(() => this.apiProxy_.showUi(), 0);
+    setTimeout(() => this.apiProxy_.handler.showUI(), 0);
     this.updateReadingListItems_(entries);
   }
 
@@ -373,10 +370,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
   protected onCurrentPageActionButtonClick_() {
     if (this.getCurrentPageActionButtonMarkAsRead_()) {
-      this.apiProxy_.markCurrentTabAsRead();
+      this.apiProxy_.handler.markCurrentTabAsRead();
       this.sendTutorialCustomEvent();
     } else {
-      this.apiProxy_.addCurrentTab();
+      this.apiProxy_.handler.addCurrentTab();
     }
   }
 

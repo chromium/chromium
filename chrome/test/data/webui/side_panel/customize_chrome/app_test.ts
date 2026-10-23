@@ -6,11 +6,9 @@ import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
 import type {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 import type {BackgroundCollection, CustomizeChromePageRemote, ManagementNoticeState} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection, NewTabPageType} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
+import {browserProxyFactory as customizeChromeBrowserProxyFactory, CustomizeChromePageHandlerRemote, CustomizeChromeSection, NewTabPageType} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {browserProxyFactory as customizeToolbarBrowserProxyFactory, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
 import type {CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
-import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -27,13 +25,14 @@ suite('AppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
+        (mock: CustomizeChromePageHandlerRemote) => {
+          const {instance, remote} =
+              customizeChromeBrowserProxyFactory.createForTest(mock);
+          customizeChromeBrowserProxyFactory.setInstance(instance);
+          callbackRouter = remote;
+        });
     handler.setResultFor('getBackgroundImages', new Promise(() => {}));
     handler.setResultFor('getBackgroundCollections', new Promise(() => {}));
-    callbackRouter = CustomizeChromeApiProxy.getInstance()
-                         .callbackRouter.$.bindNewPipeAndPassRemote();
     customizeChromeApp = document.createElement('customize-chrome-app');
     document.body.appendChild(customizeChromeApp);
     return microtasksFinished();
@@ -334,9 +333,11 @@ suite('AppTest', () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       toolbarCustomizationHandler = installMock(
           CustomizeToolbarHandlerRemote,
-          (mock: CustomizeToolbarHandlerRemote) =>
-              CustomizeToolbarApiProxy.setInstance(
-                  mock, new CustomizeToolbarClientCallbackRouter()));
+          (mock: CustomizeToolbarHandlerRemote) => {
+            const {instance} =
+                customizeToolbarBrowserProxyFactory.createForTest(mock);
+            customizeToolbarBrowserProxyFactory.setInstance(instance);
+          });
       toolbarCustomizationHandler.setResultFor(
           'listActions', Promise.resolve([]));
       toolbarCustomizationHandler.setResultFor(

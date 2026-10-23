@@ -13,9 +13,9 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Action, Category} from '../customize_toolbar.mojom-webui.js';
+import type {Action, BrowserProxy, Category} from '../customize_toolbar.mojom-webui.js';
+import {browserProxyFactory} from '../customize_toolbar.mojom-webui.js';
 
-import {CustomizeToolbarApiProxy} from './customize_toolbar_api_proxy.js';
 import {getCss} from './toolbar.css.js';
 import {getHtml} from './toolbar.html.js';
 
@@ -49,8 +49,7 @@ export class ToolbarElement extends ToolbarElementBase {
     };
   }
 
-  private apiProxy_: CustomizeToolbarApiProxy =
-      CustomizeToolbarApiProxy.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
   protected accessor actions_: Action[] = [];

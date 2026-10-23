@@ -8,8 +8,7 @@ import type {ButtonLabelElement} from 'chrome://customize-chrome-side-panel.top-
 import type {CardsElement} from 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote, ModuleSettings} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {browserProxyFactory, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -31,11 +30,11 @@ suite('CardsTest', () => {
     metrics = fakeMetricsPrivate();
     handler = installMock(
         CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
-    callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+        (mock: CustomizeChromePageHandlerRemote) => {
+          const {instance, remote} = browserProxyFactory.createForTest(mock);
+          browserProxyFactory.setInstance(instance);
+          callbackRouterRemote = remote;
+        });
   });
 
   async function setupTest(

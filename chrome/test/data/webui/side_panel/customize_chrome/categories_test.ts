@@ -8,8 +8,7 @@ import type {CategoriesElement} from 'chrome://customize-chrome-side-panel.top-c
 import {CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 import {CustomizeChromeAction, NtpImageType} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {browserProxyFactory, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
@@ -74,11 +73,11 @@ suite('CategoriesTest', () => {
     windowProxy = installMock(WindowProxy);
     handler = installMock(
         CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
-    callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+        (mock: CustomizeChromePageHandlerRemote) => {
+          const {instance, remote} = browserProxyFactory.createForTest(mock);
+          browserProxyFactory.setInstance(instance);
+          callbackRouterRemote = remote;
+        });
     metrics = fakeMetricsPrivate();
   });
 

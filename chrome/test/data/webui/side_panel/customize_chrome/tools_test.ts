@@ -6,8 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/tools.js';
 
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {browserProxyFactory, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import type {CustomizeChromeToolsElement} from 'chrome://customize-chrome-side-panel.top-chrome/tools.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -31,11 +30,11 @@ suite('ToolChipsTest', () => {
     metrics = fakeMetricsPrivate();
     handler = installMock(
         CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
-    callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+        (mock: CustomizeChromePageHandlerRemote) => {
+          const {instance, remote} = browserProxyFactory.createForTest(mock);
+          browserProxyFactory.setInstance(instance);
+          callbackRouterRemote = remote;
+        });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toolChips = document.createElement('customize-chrome-tools');

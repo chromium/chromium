@@ -14,9 +14,8 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ReadLaterEntry} from './reading_list.mojom-webui.js';
-import type {ReadingListApiProxy} from './reading_list_api_proxy.js';
-import {ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
+import type {BrowserProxy, ReadLaterEntry} from './reading_list.mojom-webui.js';
+import {browserProxyFactory} from './reading_list.mojom-webui.js';
 import {getCss} from './reading_list_item.css.js';
 import {getHtml} from './reading_list_item.html.js';
 
@@ -65,8 +64,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   };
 
   accessor buttonRipples: boolean = false;
-  private apiProxy_: ReadingListApiProxy =
-      ReadingListApiProxyImpl.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_);
@@ -85,7 +83,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
       return;
     }
 
-    this.apiProxy_.openUrl(this.data.url, {
+    this.apiProxy_.handler.openURL(this.data.url, {
       middleButton: true,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,
@@ -95,7 +93,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   }
 
   private onClick_(e: MouseEvent|KeyboardEvent) {
-    this.apiProxy_.openUrl(this.data.url, {
+    this.apiProxy_.handler.openURL(this.data.url, {
       middleButton: false,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,
@@ -105,7 +103,8 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   }
 
   private onContextMenu_(e: MouseEvent) {
-    this.apiProxy_.showContextMenuForUrl(this.data.url, e.clientX, e.clientY);
+    this.apiProxy_.handler.showContextMenuForURL(
+        this.data.url, e.clientX, e.clientY);
   }
 
   private onKeyDown_(e: KeyboardEvent) {
@@ -147,7 +146,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
 
   protected onUpdateStatusClick_(e: Event) {
     e.stopPropagation();
-    this.apiProxy_.updateReadStatus(this.data.url, !this.data.read);
+    this.apiProxy_.handler.updateReadStatus(this.data.url, !this.data.read);
     if (!this.data.read) {
       this.fire(MARKED_AS_READ_UI_EVENT);
     }
@@ -155,7 +154,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
 
   protected onItemDeleteClick_(e: Event) {
     e.stopPropagation();
-    this.apiProxy_.removeEntry(this.data.url);
+    this.apiProxy_.handler.removeEntry(this.data.url);
   }
 
   /**

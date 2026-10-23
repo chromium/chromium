@@ -21,8 +21,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
-import type {BackgroundCollection, CollectionImage, Theme} from './customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import type {BackgroundCollection, BrowserProxy, CollectionImage, Theme} from './customize_chrome.mojom-webui.js';
+import {browserProxyFactory} from './customize_chrome.mojom-webui.js';
 import {getCss} from './themes.css.js';
 import {getHtml} from './themes.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -75,8 +75,7 @@ export class ThemesElement extends ThemesElementBase {
   private accessor theme_: Theme|undefined;
   protected accessor themes_: CollectionImage[] = [];
 
-  private apiProxy_: CustomizeChromeApiProxy =
-      CustomizeChromeApiProxy.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private previewImageLoadStartEpoch_: number = -1;
   private setThemeListenerId_: number|null = null;
 

@@ -30,16 +30,15 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
-import type {Theme} from '../customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import type {DescriptorB, DescriptorDValue, Descriptors, Group, InspirationDescriptors, InspirationGroup, ResultDescriptors, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
-import {DescriptorDName, UserFeedback, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import type {BrowserProxy as CustomizeChromeBrowserProxy, Theme} from '../customize_chrome.mojom-webui.js';
+import {browserProxyFactory as customizeChromeBrowserProxyFactory} from '../customize_chrome.mojom-webui.js';
+import type {BrowserProxy as WallpaperSearchBrowserProxy, DescriptorB, DescriptorDValue, Descriptors, Group, InspirationDescriptors, InspirationGroup, ResultDescriptors, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
+import {browserProxyFactory as wallpaperSearchBrowserProxyFactory, DescriptorDName, UserFeedback, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import type {ComboboxGroup, ComboboxItem, CustomizeChromeComboboxElement} from './combobox/customize_chrome_combobox.js';
 import {getCss} from './wallpaper_search.css.js';
 import {getHtml} from './wallpaper_search.html.js';
-import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
 export const DESCRIPTOR_D_VALUE: ColorDescriptor[] = [
   {
@@ -205,10 +204,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private accessor status_: WallpaperSearchStatus = WallpaperSearchStatus.kOk;
   private accessor theme_: Theme|undefined;
 
-  private apiProxy_: CustomizeChromeApiProxy =
-      CustomizeChromeApiProxy.getInstance();
-  private wallpaperSearchProxy_: WallpaperSearchProxy =
-      WallpaperSearchProxy.getInstance();
+  private apiProxy_: CustomizeChromeBrowserProxy =
+      customizeChromeBrowserProxyFactory.getInstance();
+  private wallpaperSearchProxy_: WallpaperSearchBrowserProxy =
+      wallpaperSearchBrowserProxyFactory.getInstance();
   private setThemeListenerId_: number|null = null;
   private setHistoryListenerId_: number|null = null;
   private loadingUiResizeObserver_: ResizeObserver|null = null;

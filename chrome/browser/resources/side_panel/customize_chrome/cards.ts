@@ -14,8 +14,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './cards.css.js';
 import {getHtml} from './cards.html.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
-import type {ModuleSettings} from './customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import type {BrowserProxy, ModuleSettings} from './customize_chrome.mojom-webui.js';
+import {browserProxyFactory} from './customize_chrome.mojom-webui.js';
 
 export interface CardsElement {
   $: {
@@ -59,8 +59,7 @@ export class CardsElement extends CrLitElement {
   protected accessor show_: boolean = false;
   protected accessor managedByPolicy_: boolean = false;
 
-  private apiProxy_: CustomizeChromeApiProxy =
-      CustomizeChromeApiProxy.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private setModulesSettingsListenerId_: number|null = null;
   protected accessor initialized_: boolean = false;
 

@@ -30,9 +30,8 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
-import type {BackgroundCollection, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
-import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import type {BackgroundCollection, BrowserProxy, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
+import {browserProxyFactory, ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
 import type {ThemesElement} from './themes.js';
 
 const SECTION_TO_SELECTOR = {
@@ -122,8 +121,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('toolbarCustomizationEnabled');
 
   private listenerIds_: number[] = [];
-  private apiProxy_: CustomizeChromeApiProxy =
-      CustomizeChromeApiProxy.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

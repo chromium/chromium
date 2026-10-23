@@ -9,7 +9,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
-import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import type {BrowserProxy} from './customize_chrome.mojom-webui.js';
+import {browserProxyFactory} from './customize_chrome.mojom-webui.js';
 import {getCss} from './tools.css.js';
 import {getHtml} from './tools.html.js';
 
@@ -40,8 +41,7 @@ export class CustomizeChromeToolsElement extends CrLitElement {
 
   protected accessor isChipsEnabled_: boolean = false;
 
-  private apiProxy_: CustomizeChromeApiProxy =
-      CustomizeChromeApiProxy.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private setToolsSettingsListenerId_: number|null = null;
 
   // This function gets called when the element is attached to the DOM, which

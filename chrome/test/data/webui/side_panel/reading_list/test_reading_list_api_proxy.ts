@@ -2,31 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ReadLaterEntriesByStatus, Window} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
-import {PageCallbackRouter} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
-import type {ReadingListApiProxy} from 'chrome://read-later.top-chrome/reading_list_api_proxy.js';
+import type {PageHandlerInterface, ReadLaterEntriesByStatus, Window} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestReadingListApiProxy extends TestBrowserProxy implements
-    ReadingListApiProxy {
-  callbackRouter: PageCallbackRouter = new PageCallbackRouter();
+    PageHandlerInterface {
   private entries_: ReadLaterEntriesByStatus;
   private windows_: Window[];
 
   constructor() {
     super([
       'getReadLaterEntries',
-      'openUrl',
+      'openURL',
       'updateReadStatus',
       'addCurrentTab',
       'markCurrentTabAsRead',
       'removeEntry',
-      'showContextMenuForUrl',
+      'showContextMenuForURL',
       'updateCurrentPageActionButtonState',
-      'showUi',
-      'closeUi',
+      'showUI',
+      'closeUI',
       'getWindowData',
     ]);
 
@@ -45,8 +42,9 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
     return Promise.resolve({entries: this.entries_});
   }
 
-  openUrl(url: Url, clickModifiers: ClickModifiers) {
-    this.methodCalled('openUrl', [url, clickModifiers]);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  openURL(url: Url, clickModifiers: ClickModifiers) {
+    this.methodCalled('openURL', [url, clickModifiers]);
   }
 
   updateReadStatus(url: Url, read: boolean) {
@@ -65,29 +63,28 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
     this.methodCalled('removeEntry', url);
   }
 
-  showContextMenuForUrl(url: Url, locationX: number, locationY: number) {
-    this.methodCalled('showContextMenuForUrl', [url, locationX, locationY]);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  showContextMenuForURL(url: Url, locationX: number, locationY: number) {
+    this.methodCalled('showContextMenuForURL', [url, locationX, locationY]);
   }
 
   updateCurrentPageActionButtonState() {
     this.methodCalled('updateCurrentPageActionButtonState');
   }
 
-  showUi() {
-    this.methodCalled('showUi');
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  showUI() {
+    this.methodCalled('showUI');
   }
 
-  closeUi() {
-    this.methodCalled('closeUi');
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  closeUI() {
+    this.methodCalled('closeUI');
   }
 
   getWindowData() {
     this.methodCalled('getWindowData');
     return Promise.resolve({windows: this.windows_});
-  }
-
-  getCallbackRouter() {
-    return this.callbackRouter;
   }
 
   setEntries(entries: ReadLaterEntriesByStatus) {

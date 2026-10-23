@@ -7,13 +7,12 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {browserProxyFactory as customizeChromeBrowserProxyFactory, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import type {Descriptors, InspirationGroup, ResultDescriptors, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
-import {DescriptorDName, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {browserProxyFactory as wallpaperSearchBrowserProxyFactory, DescriptorDName, UserFeedback, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import type {ComboboxGroup} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import type {WallpaperSearchElement, WallpaperSearchResponse} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {DESCRIPTOR_D_VALUE} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
-import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
@@ -82,15 +81,20 @@ suite('WallpaperSearchTest', () => {
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);
     handler = installMock(
-        WallpaperSearchHandlerRemote,
-        (mock: WallpaperSearchHandlerRemote) =>
-            WallpaperSearchProxy.setInstance(
-                mock, new WallpaperSearchClientCallbackRouter()));
-    wallpaperSearchCallbackRouterRemote =
-        WallpaperSearchProxy.getInstance()
-            .callbackRouter.$.bindNewPipeAndPassRemote();
-    callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+        WallpaperSearchHandlerRemote, (mock: WallpaperSearchHandlerRemote) => {
+          const {instance, remote} =
+              wallpaperSearchBrowserProxyFactory.createForTest(mock);
+          wallpaperSearchBrowserProxyFactory.setInstance(instance);
+          wallpaperSearchCallbackRouterRemote = remote;
+        });
+    installMock(
+        CustomizeChromePageHandlerRemote,
+        (mock: CustomizeChromePageHandlerRemote) => {
+          const {instance, remote} =
+              customizeChromeBrowserProxyFactory.createForTest(mock);
+          customizeChromeBrowserProxyFactory.setInstance(instance);
+          callbackRouterRemote = remote;
+        });
     metrics = fakeMetricsPrivate();
   });
 

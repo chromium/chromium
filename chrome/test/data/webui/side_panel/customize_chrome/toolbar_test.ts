@@ -4,10 +4,8 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/toolbar.js';
 
-import {ActionId, CategoryId} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
+import {ActionId, browserProxyFactory, CategoryId, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
 import type {Action, Category, CustomizeToolbarClientRemote, CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
-import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
-import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import type {ToolbarElement} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/toolbar.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -64,12 +62,11 @@ suite('CustomizerToolbarTest', () => {
     windowProxy.setResultFor('onLine', true);
     handler = installMock(
         CustomizeToolbarHandlerRemote,
-        (mock: CustomizeToolbarHandlerRemote) =>
-            CustomizeToolbarApiProxy.setInstance(
-                mock, new CustomizeToolbarClientCallbackRouter()));
-    customizeToolbarCallbackRouterRemote =
-        CustomizeToolbarApiProxy.getInstance()
-            .callbackRouter.$.bindNewPipeAndPassRemote();
+        (mock: CustomizeToolbarHandlerRemote) => {
+          const {instance, remote} = browserProxyFactory.createForTest(mock);
+          browserProxyFactory.setInstance(instance);
+          customizeToolbarCallbackRouterRemote = remote;
+        });
   });
 
   test('toolbar element added to side panel', () => {

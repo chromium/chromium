@@ -17,7 +17,6 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "reading_list_api_proxy.ts",
     "reading_list_app.html.ts",
     "reading_list_app.ts",
     "reading_list_item.html.ts",
