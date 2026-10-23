@@ -346,13 +346,6 @@ external/wpt/web-animations/responsive/toggle-animated-iframe-visibility.html
 external/wpt/web-bundle/subresource-loading/csp-blocked.https.tentative.html
 external/wpt/web-locks/bfcache/sharedworker-multiple.tentative.https.html
 external/wpt/web-locks/query-ordering.https.html
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_f32
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s24
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s32
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_u8
-external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2
-external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2
 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_annexb
 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_hevc
 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_annexb
@@ -362,8 +355,6 @@ external/wpt/webcodecs/videoDecoder-codec-specific-orientation.https.any.html?h2
 external/wpt/webcodecs/videoDecoder-codec-specific-orientation.https.any.worker.html?h265_annexb
 external/wpt/webcodecs/videoDecoder-codec-specific-orientation.https.any.worker.html?h265_hevc
 external/wpt/webcodecs/videoFrame-construction.any.html
-external/wpt/webcodecs/videoFrame-texImage.any.html
-external/wpt/webcodecs/videoFrame-texImage.any.worker.html
 external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html
 external/wpt/webrtc/RTCDataChannel-close.html
 external/wpt/webrtc/RTCPeerConnection-operations.https.html
