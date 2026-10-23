@@ -55,7 +55,9 @@ AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
 }
 
 AudioStreamMonitor::~AudioStreamMonitor() {
-  CHECK(audible_clients_.empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/576113884): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(audible_clients_.empty());
 }
 
 bool AudioStreamMonitor::WasRecentlyAudible() const {
