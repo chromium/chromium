@@ -700,6 +700,10 @@ void ContextualTasksButton::MaybeShowFeaturePromo() {
 
 void ContextualTasksButton::UpdateDropShadow(bool force_paint,
                                              float initial_opacity) {
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+    return;
+  }
+
   if (!GetVisible() && !force_paint) {
     return;
   }

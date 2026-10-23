@@ -1376,11 +1376,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, true),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &ContextualTasksButton::GetDropShadowLayerForTesting,
+                        testing::IsNull()),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &views::View::GetTooltipText, expected_open_tooltip),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, false),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &ContextualTasksButton::GetDropShadowLayerForTesting,
+                        testing::IsNull()),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &views::View::GetTooltipText, expected_closed_tooltip),
       PressButton(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
@@ -2662,7 +2668,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksPinnedButtonActiveIndicatorInteractiveTest,
-    EphemeralButtonShowsActiveIndicatorAndDropShadow) {
+    EphemeralButtonShowsActiveIndicatorWithoutDropShadow) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       Do([&]() {
@@ -2676,7 +2682,7 @@ IN_PROC_BROWSER_TEST_F(
           [](ContextualTasksButton* button) {
             return button->GetStatusIndicatorForTesting() != nullptr &&
                    button->GetStatusIndicatorForTesting()->GetVisible() &&
-                   button->GetDropShadowLayerForTesting() != nullptr;
+                   button->GetDropShadowLayerForTesting() == nullptr;
           },
           true),
       SimulateClosingContextualTaskSidePanel(),
@@ -2686,7 +2692,7 @@ IN_PROC_BROWSER_TEST_F(
           [](ContextualTasksButton* button) {
             return button->GetStatusIndicatorForTesting() != nullptr &&
                    button->GetStatusIndicatorForTesting()->GetVisible() &&
-                   button->GetDropShadowLayerForTesting() != nullptr;
+                   button->GetDropShadowLayerForTesting() == nullptr;
           },
           true));
 }
