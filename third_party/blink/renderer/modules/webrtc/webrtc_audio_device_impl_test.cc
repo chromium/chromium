@@ -255,8 +255,6 @@ TEST_F(WebRtcAudioDeviceImplTest, ReleaseRendererSoonWithShutDownQueue) {
   scoped_refptr<WebRtcAudioDeviceImpl> test_audio_device =
       new webrtc::RefCountedObject<WebRtcAudioDeviceImpl>();
 
-  EXPECT_TRUE(test_audio_device->SetAudioRenderer(renderer.get()));
-
   // 5. Start a worker thread. In production, Terminate() is called on the
   // WebRTC worker thread. To avoid thread checker failures in Terminate()
   // (signaling_thread_checker_), we must also initialize (Init()) the ADM on
@@ -274,6 +272,8 @@ TEST_F(WebRtcAudioDeviceImplTest, ReleaseRendererSoonWithShutDownQueue) {
                      base::Unretained(test_audio_device.get()),
                      base::Unretained(&init_loop)));
   init_loop.Run();
+
+  EXPECT_TRUE(test_audio_device->SetAudioRenderer(renderer.get()));
 
   // 6. Detach the frame. This shuts down the frame's task queues (including
   // the one used by the renderer). Subsequent posts to this queue will fail.

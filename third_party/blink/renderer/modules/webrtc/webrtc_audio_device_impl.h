@@ -94,7 +94,9 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   int32_t PlayoutDelay(uint16_t* delay_ms) const override;
 
  public:
-  // Sets the |renderer_|, returns false if |renderer_| already exists.
+  // Sets the |renderer_|, returns false if |renderer_| already exists, if the
+  // device is not initialized, or if Terminate() ran while initializing
+  // |renderer| (in which case |renderer| has been disconnected and stopped).
   // Called on the main renderer thread.
   bool SetAudioRenderer(blink::WebRtcAudioRenderer* renderer);
 
@@ -112,9 +114,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // function will not be able to pick an appropriate device and return 0.
   base::UnguessableToken GetAuthorizedDeviceSessionIdForAudioRenderer();
 
-  const scoped_refptr<blink::WebRtcAudioRenderer>& renderer() const {
-    return renderer_;
-  }
+  scoped_refptr<blink::WebRtcAudioRenderer> renderer() const;
 
   // blink::WebRtcAudioRendererSource implementation.
 
@@ -182,11 +182,11 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Cached value of the current audio delay on the output/renderer side.
   base::TimeDelta output_delay_ GUARDED_BY(lock_);
 
-  // Protects |renderer_|, |playout_sinks_|, |output_delay_|, |playing_|,
-  // and |recording_|.
+  // Protects |renderer_|, |playout_sinks_|, |output_delay_|, |initialized_|,
+  // |playing_|, and |recording_|.
   mutable base::Lock lock_;
 
-  bool initialized_;
+  bool initialized_ GUARDED_BY(lock_);
   bool playing_ GUARDED_BY(lock_);
   bool recording_ GUARDED_BY(lock_);
 
