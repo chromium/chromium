@@ -266,9 +266,9 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
       }
 
       // This opening is directly above the current item. Record where the item
-      // will be stored so a later densely packed item can refer to it during
-      // fragmentation.
-      if (grid_lanes) {
+      // will be stored so a later densely packed item can refer to it. Only
+      // dense packing reads this path.
+      if (grid_lanes && is_dense_packing_) {
         // Densely packed items are children of the item below their opening,
         // while normally placed items are roots. This method handles normal
         // placement, which is why we use an empty `item_below_index_path`.
