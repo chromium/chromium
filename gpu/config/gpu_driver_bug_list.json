@@ -762,6 +762,9 @@
       "id": 165,
       "cr_bugs": [596774],
       "description": "Unpacking overlapping rows from unpack buffers is unstable on NVIDIA GL driver",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "NVIDIA.*",
       "features": [
         "unpack_overlapping_rows_separately_unpack_buffer"
@@ -3385,6 +3388,9 @@
       "id": 480,
       "cr_bugs": [520656244],
       "description": "Reattach FBO depth/stencil attachments when they are reallocated on Qualcomm GPUs",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "Qualcomm.*",
       "driver_version": {
         "op": "<",
@@ -3434,6 +3440,9 @@
       "id": 484,
       "cr_bugs": [529867799],
       "description": "Pack large row length separately when packing into a pixel pack buffer to work around Mali driver bug.",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "features": [
         "pack_large_row_length_separately_pack_buffer"
@@ -3481,6 +3490,9 @@
       "id": 488,
       "cr_bugs": [534468209],
       "description": "Flush pending GPU jobs/queries before unbinding or deleting a user framebuffer object on ARM Mali Valhall/Avalon GPUs to avoid driver crash.",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "features": [
         "flush_queries_before_deleting_or_unbinding_fbo"
@@ -3490,6 +3502,9 @@
       "id": 489,
       "cr_bugs": [530045332],
       "description": "Lose context when 3D texture depth increases on Qualcomm GPUs",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "Qualcomm.*",
       "features": [
         "lose_gl_context_when_increase_texture_3d_depth"
@@ -3548,6 +3563,9 @@
       "id": 494,
       "cr_bugs": [553172761],
       "description": "Upload non-power-of-two textures via TexSubImage2D instead of TexImage2D when uploading client-side data.",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "Imagination.*",
       "features": [
         "use_tex_sub_image_for_client_data_npot_uploads"
@@ -3606,6 +3624,9 @@
         551065272
       ],
       "description": "Recreate mipmap levels before calling glGenerateMipmap on Mali GPUs",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "features": [
         "recreate_mipmap_levels_before_generate"
@@ -3643,6 +3664,9 @@
       "id": 501,
       "description": "Older PowerVR drivers mishandle large 3D NPOT sizes in texStorage3D",
       "cr_bugs": [551673541],
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "Imagination.*",
       "gl_renderer": "PowerVR.*",
       "features": [
