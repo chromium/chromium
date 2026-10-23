@@ -35,7 +35,6 @@ class PrivateAiOakSessionDriverIOS : public PrivateAiOakSessionDriver {
 
  private:
   void OnServiceDisconnected(OakSessionService* service);
-  void DestroyService(OakSessionService* service);
 
   std::map<OakSessionService*, std::unique_ptr<OakSessionService>> services_;
 
