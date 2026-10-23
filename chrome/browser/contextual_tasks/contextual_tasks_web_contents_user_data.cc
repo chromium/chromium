@@ -681,7 +681,7 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
     page_state.last_sent_suggest_inputs_serialized.clear();
   }
 
-  if (!GetSelectedTabs().empty() && !page_state.context_library_is_active) {
+  if (HasContextLibraryTabs() && !page_state.context_library_is_active) {
     SendMountContextLibrary();
   }
   if (auto model = GetOrCreateInputStateModel()) {
@@ -761,11 +761,13 @@ void ContextualTasksWebContentsUserData::SendMountContextLibrary() {
 }
 
 void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
-  bool has_tabs = !GetSelectedTabs().empty();
-  if (!has_tabs) {
+  if (GetSelectedTabs().empty()) {
     pending_context_uploads_.clear();
     failed_context_uploads_.clear();
   }
+  // Submitted and restored tabs are still shown by the context library, so
+  // only unmount it once the session has no tabs left to show.
+  const bool has_tabs = HasContextLibraryTabs();
   auto& page_state = GetPrimaryPageSearchState();
   if (has_tabs != page_state.context_library_is_active) {
     page_state.context_library_is_active = has_tabs;
@@ -774,6 +776,16 @@ void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
   }
   UpdateContextState();
   UpdateSuggestInputs();
+}
+
+bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (!session_handle) {
+    return false;
+  }
+  // Attached tabs include both unsubmitted and submitted (persisted) tabs.
+  const auto& tab_context = session_handle->GetTabContextState();
+  return !tab_context.attached.empty() || !tab_context.restored.empty();
 }
 
 void ContextualTasksWebContentsUserData::OnTabContextUploadStarted(
@@ -1084,6 +1096,10 @@ void ContextualTasksWebContentsUserData::
   // strip underlines from the task's context (these underlines are in addition
   // to any underlines placed by other handlers).
   service->SetUrlResourcesFromServer(*task_id, std::move(committed_context));
+
+  // The restored tabs may be the only tabs in the session (e.g. when reopening
+  // a previous thread), so mount the context library if it is not mounted.
+  UpdateContextLibraryInputState();
 }
 
 void ContextualTasksWebContentsUserData::OnLensThumbnailCreated(

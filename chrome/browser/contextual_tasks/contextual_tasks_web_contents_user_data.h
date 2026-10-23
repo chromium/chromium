@@ -297,6 +297,11 @@ class ContextualTasksWebContentsUserData
       const std::vector<uint8_t>& message_bytes);
   PageSearchState& GetPrimaryPageSearchState();
   const PageSearchState* GetPrimaryPageSearchState() const;
+  // Returns true if the session has tabs for the context library to show:
+  // unsubmitted tabs, submitted (persisted) tabs, or tabs restored from the AIM
+  // thread. Keep in sync with
+  // `ContextualTasksExtensionHandler::SendTabContextToExtensionPage()`.
+  bool HasContextLibraryTabs();
 
   struct ImplicitTab {
     base::UnguessableToken token;

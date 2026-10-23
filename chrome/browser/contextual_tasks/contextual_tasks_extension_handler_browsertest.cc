@@ -2626,6 +2626,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
         EXPECT_EQ(response.added_contexts(0).contextual_input_upload_type(),
                   lens::LensOverlayContextualInputUploadType::
                       CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        // The submitted tab is still shown by the context library. It was
+        // attached directly to the session above, so the library mounts now.
+        auto client_message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(client_message.has_value());
+        ASSERT_TRUE(client_message->has_inject_chrome_input());
+        EXPECT_EQ(
+            client_message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_TRUE(client_message->inject_chrome_input().is_active());
         run_loop.Quit();
       });
 
@@ -2738,6 +2749,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
         EXPECT_EQ(
             client_message->on_submit_query_response().added_contexts_size(),
             0);
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        // The previous turn's tab is still shown by the context library.
+        auto client_message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(client_message.has_value());
+        ASSERT_TRUE(client_message->has_inject_chrome_input());
+        EXPECT_EQ(
+            client_message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_TRUE(client_message->inject_chrome_input().is_active());
         run_loop.Quit();
       });
 
@@ -3582,6 +3603,58 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_UsesHelperTaskIdAndMountsLibrary) {
+  auto* tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tasks_service, nullptr);
+  ContextualTask task = tasks_service->CreateTask();
+  // Extension frames never call `SetTaskId()`, so the task is only tracked by
+  // the WebContents helper, which adopts the untasked session here.
+  ASSERT_EQ(ContextualSearchWebContentsHelper::FromWebContents(web_contents_)
+                ->GetSessionForTask(task.GetTaskId()),
+            mock_session_handle_);
+
+  base::UnguessableToken submitted_token = base::UnguessableToken::Create();
+  mock_session_handle_->SetSubmittedContextTokens({submitted_token});
+  const SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_);
+  contextual_search::FileInfo submitted_file;
+  submitted_file.file_token = submitted_token;
+  submitted_file.tab_session_id = active_tab_id;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(101);
+  submitted_file.request_id = req_id;
+  EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
+      .WillOnce(
+          Return(std::vector<contextual_search::FileInfo>{submitted_file}));
+
+  // Restoring a thread whose only tabs come from AIM mounts the library.
+  base::RunLoop mount_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(
+            message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+        mount_run_loop.Quit();
+      });
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary library;
+  AddWebpageContext(library, 101, "https://example.com/a", "Tab A");
+  SendUpdateThreadContextLibrary(library);
+  mount_run_loop.Run();
+
+  const auto& restored = mock_session_handle_->GetTabContextState().restored;
+  ASSERT_EQ(restored.size(), 1u);
+  EXPECT_EQ(restored[0].tab_id, active_tab_id.id());
+  EXPECT_EQ(restored[0].url, GURL("https://example.com/a"));
+}
+
+IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     ZeroIframes_PostSearchMessageQueuesUntilHandshakeAndFlushes) {
   auto* user_data =
@@ -3754,12 +3827,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   SimulateUserInteraction();
   EXPECT_TRUE(user_data->OnSearchMessageReceived(
       std::vector<uint8_t>(submit_str.begin(), submit_str.end())));
-  ASSERT_EQ(dispatched_messages.size(), 1u);
-  ASSERT_TRUE(dispatched_messages.back().has_on_submit_query_response());
-  const auto& resp = dispatched_messages.back().on_submit_query_response();
+  ASSERT_EQ(dispatched_messages.size(), 2u);
+  ASSERT_TRUE(dispatched_messages[0].has_on_submit_query_response());
+  const auto& resp = dispatched_messages[0].on_submit_query_response();
   ASSERT_EQ(resp.added_contexts_size(), 1);
   EXPECT_EQ(resp.added_contexts(0).search_session_id(), "zero_iframe_session");
   EXPECT_EQ(resp.added_contexts(0).request_id().context_id(), 777);
+  // The submitted tab is still shown by the context library. It was attached
+  // directly to the session above, so the library mounts now.
+  ASSERT_TRUE(dispatched_messages[1].has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages[1].inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+  EXPECT_TRUE(dispatched_messages[1].inject_chrome_input().is_active());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3830,7 +3909,8 @@ IN_PROC_BROWSER_TEST_F(
   ready_run_loop.Run();
 
   // 3. Submitting the query moves the tab into persisted/submitted context and
-  // emits CONTEXT_STATE_NONE (previous-turn context is excluded).
+  // emits CONTEXT_STATE_NONE (previous-turn context is excluded). The submitted
+  // tab is still shown by the context library, so it stays mounted.
   contextual_search::FileInfo file_info;
   file_info.file_token = token;
   lens::LensOverlayRequestId req_id;
@@ -3846,15 +3926,6 @@ IN_PROC_BROWSER_TEST_F(
         auto message = wrapper.As<lens::ClientToSearchMessage>();
         ASSERT_TRUE(message.has_value());
         EXPECT_TRUE(message->has_on_submit_query_response());
-      })
-      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
-        auto message = wrapper.As<lens::ClientToSearchMessage>();
-        ASSERT_TRUE(message.has_value());
-        ASSERT_TRUE(message->has_inject_chrome_input());
-        EXPECT_EQ(
-            message->inject_chrome_input().input_type(),
-            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
-        EXPECT_FALSE(message->inject_chrome_input().is_active());
       })
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
@@ -4810,6 +4881,8 @@ IN_PROC_BROWSER_TEST_F(
       contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
   ready2_run_loop.Run();
 
+  // The submitted tab is still shown by the context library, so it stays
+  // mounted.
   base::RunLoop submit_run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
@@ -4822,12 +4895,6 @@ IN_PROC_BROWSER_TEST_F(
                       .request_id()
                       .context_id(),
                   1000);
-      })
-      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
-        auto message = wrapper.As<lens::ClientToSearchMessage>();
-        ASSERT_TRUE(message.has_value());
-        ASSERT_TRUE(message->has_inject_chrome_input());
-        EXPECT_FALSE(message->inject_chrome_input().is_active());
       })
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
@@ -5462,6 +5529,30 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
   mock_session_handle_->SetPersistedTabs({{active_tab_id, {token, req_id}}});
   tab_context_run_loop.Run();
+
+  // Completing handshake when `uploaded_context_tokens_` is empty (e.g. on SRP
+  // after CreateSearchUrl / SetPersistedTabs) still mounts CONTEXT_LIBRARY.
+  base::RunLoop handshake_run_loop;
+  EXPECT_CALL(mock_page_, OnHandshakeComplete());
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(
+            message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+        handshake_run_loop.Quit();
+      });
+
+  lens::SearchToClientMessage handshake_msg;
+  handshake_msg.mutable_handshake_response()->set_auth_user_index(0);
+  const size_t size = handshake_msg.ByteSizeLong();
+  std::vector<uint8_t> serialized_handshake(size);
+  handshake_msg.SerializeToArray(serialized_handshake.data(), size);
+  handler_->OnWebviewMessage(serialized_handshake, std::nullopt);
+  handshake_run_loop.Run();
 }
 
 }  // namespace contextual_tasks
