@@ -1445,7 +1445,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
 }
 
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForStretch(
-    const GridLanesRunningPositions::AlignmentCandidate& candidate,
+    const AlignmentCandidate& candidate,
     wtf_size_t builder_child_index) {
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
@@ -1471,7 +1471,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForStretch(
 }
 
 void GridLanesLayoutAlgorithm::RelayoutStackingAxisStretchItem(
-    const GridLanesRunningPositions::AlignmentCandidate& candidate,
+    const AlignmentCandidate& candidate,
     wtf_size_t builder_child_index,
     const LogicalOffset item_offset) {
   const ConstraintSpace stretched_space =

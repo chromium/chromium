@@ -13,8 +13,6 @@
 
 namespace blink {
 
-using ItemIndexPath = Vector<wtf_size_t>;
-
 // Placement data shared by every lane entry for a single grid-lanes item.
 struct GridLanesItemPlacementData
     : public GarbageCollected<GridLanesItemPlacementData> {

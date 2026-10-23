@@ -238,6 +238,7 @@ blink_core_sources_layout = [
   "grid_lanes/layout_grid_lanes.cc",
   "grid_lanes/layout_grid_lanes.h",
   "grid_lanes/stacking_baseline_accumulator.h",
+  "grid_lanes/track_opening.cc",
   "grid_lanes/track_opening.h",
   "hit_test_cache.cc",
   "hit_test_cache.h",

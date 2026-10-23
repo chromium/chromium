@@ -48,7 +48,7 @@ LayoutUnit FinalStackingOffset(LayoutUnit forward_offset,
 // (`LayoutUnit::Min()` or `LayoutUnit::Max()`), so it does not depend on the
 // container's final size.
 TrackOpeningCoordinates EmptyOpeningCoordinates(
-    const GridLanesRunningPositions::TrackOpening& opening,
+    const TrackOpening& opening,
     bool is_last,
     const GridLanesGapGeometryState& state) {
   LayoutUnit start = LayoutUnit::Min();
@@ -172,7 +172,7 @@ void GridLanesGapAccumulator::CaptureEmptyOpenings(
         empty_openings.emplace_back();
     // Openings are ordered along the stacking axis, ending with the last
     // opening. Fill-reverse visits them backwards so final offsets increase.
-    const HeapVector<GridLanesRunningPositions::TrackOpening>& openings =
+    const HeapVector<TrackOpening>& openings =
         running_positions.GetTrackOpenings(raw_track_index);
     const wtf_size_t opening_count = openings.size();
 

@@ -44,8 +44,7 @@ class RunningPositionsIterator {
       bool is_reverse_direction,
       wtf_size_t auto_placement_cursor,
       wtf_size_t span_size,
-      HeapVector<HeapVector<GridLanesRunningPositions::TrackOpening>>&
-          track_collection_openings)
+      HeapVector<HeapVector<TrackOpening>>& track_collection_openings)
       : is_reverse_track_direction_(is_reverse_direction),
         max_index_(track_collection_openings.size() - span_size) {
     InitializeIterator(auto_placement_cursor, span_size);
@@ -140,27 +139,6 @@ ItemIndexPath NewItemIndexPath(const ItemIndexPath& item_below_index_path,
 }
 
 }  // namespace
-
-GridLanesRunningPositions::AlignmentCandidate::AlignmentCandidate(
-    GridItemData* item,
-    AlignmentSpace* alignment_space,
-    LayoutUnit original_stacking_size,
-    wtf_size_t item_index,
-    GridLayoutSubtree* layout_subtree,
-    const ItemIndexPath* item_index_path)
-    : item(item),
-      alignment_space(alignment_space),
-      layout_subtree(layout_subtree),
-      original_stacking_size(original_stacking_size) {
-  CHECK(alignment_space);
-  if (item_index_path) {
-    CHECK(!item_index_path->empty());
-    this->item_index_path = *item_index_path;
-  } else {
-    CHECK_NE(item_index, kNotFound);
-    this->item_index_path.push_back(item_index);
-  }
-}
 
 // TODO(celestepan): Depending on how
 // https://github.com/w3c/csswg-drafts/issues/12803 resolves, we may want to
@@ -354,7 +332,7 @@ GridLanesRunningPositions::AlignmentCandidateIterator::
   DCHECK(running_positions_.is_stacking_axis_alignment_set_);
 }
 
-std::optional<GridLanesRunningPositions::AlignmentCandidate>
+std::optional<AlignmentCandidate>
 GridLanesRunningPositions::AlignmentCandidateIterator::Next() {
   const auto& openings = running_positions_.track_collection_openings_;
 
