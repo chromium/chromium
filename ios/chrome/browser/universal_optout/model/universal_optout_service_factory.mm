@@ -33,7 +33,7 @@ UniversalOptOutServiceFactory::UniversalOptOutServiceFactory(PassKey key)
 std::unique_ptr<KeyedService>
 UniversalOptOutServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (!features::IsUniversalOptOutEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kUniversalOptOut)) {
     return nullptr;
   }
 
