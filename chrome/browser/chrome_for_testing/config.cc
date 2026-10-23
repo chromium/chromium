@@ -8,12 +8,12 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/time/time_delta_from_string.h"
@@ -97,7 +97,7 @@ void OverrideRequiredComponentsDir(PrefService* pref_service) {
 }
 
 bool IsKnownKey(std::string_view key) {
-  static const base::NoDestructor<base::flat_set<std::string_view>> kKnownKeys({
+  static constexpr auto kKnownKeys = base::MakeFixedFlatSet<std::string_view>({
       keys::kEnableUserEducationUI,
       keys::kEnableSearchEngineChoiceDialog,
       keys::kEnableVirtualClipboard,
@@ -105,7 +105,7 @@ bool IsKnownKey(std::string_view key) {
       keys::kRequiredComponentsDir,
       keys::kRequiredComponentsUpdateTimeout,
   });
-  return kKnownKeys->contains(key);
+  return kKnownKeys.contains(key);
 }
 
 }  // namespace
