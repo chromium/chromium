@@ -68,7 +68,7 @@ class LeakTracker {
 // If leak tracking is enabled we track where the object was allocated from.
 
 template <typename T>
-class LeakTracker : public base::LinkNode<LeakTracker<T>> {
+class LeakTracker : public base::UnsafeLinkNode<LeakTracker<T>> {
  public:
   LeakTracker() { instances()->Append(this); }
 
@@ -83,7 +83,7 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
     // information will be available in mini-dump.
     std::array<base::debug::StackTrace, 3> stacktraces;
 
-    for (base::LinkNode<LeakTracker<T>>* node = instances()->head();
+    for (base::UnsafeLinkNode<LeakTracker<T>>* node = instances()->head();
          node != instances()->end(); node = node->next()) {
       base::debug::StackTrace& allocation_stack =
           node->value()->allocation_stack_;
@@ -113,7 +113,7 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
   static int NumLiveInstances() {
     // Walk the allocation list and count how many entries it has.
     int count = 0;
-    for (base::LinkNode<LeakTracker<T>>* node = instances()->head();
+    for (base::UnsafeLinkNode<LeakTracker<T>>* node = instances()->head();
          node != instances()->end(); node = node->next()) {
       ++count;
     }
@@ -122,8 +122,8 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
 
  private:
   // Each specialization of LeakTracker gets its own static storage.
-  static base::LinkedList<LeakTracker<T>>* instances() {
-    static base::LinkedList<LeakTracker<T>> list;
+  static base::UnsafeLinkedList<LeakTracker<T>>* instances() {
+    static base::UnsafeLinkedList<LeakTracker<T>> list;
     return &list;
   }
 

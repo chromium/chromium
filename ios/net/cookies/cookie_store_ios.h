@@ -126,7 +126,7 @@ class CookieStoreIOS : public net::CookieStore,
   using CookieChangeCallbackList =
       base::RepeatingCallbackList<void(const CookieChangeInfo&)>;
 
-  class Subscription : public base::LinkNode<Subscription>,
+  class Subscription : public base::UnsafeLinkNode<Subscription>,
                        public CookieChangeSubscription {
    public:
     explicit Subscription(base::CallbackListSubscription subscription);
@@ -301,7 +301,7 @@ class CookieStoreIOS : public net::CookieStore,
            std::unique_ptr<CookieChangeCallbackList>>
       hook_map_;
 
-  base::LinkedList<Subscription> all_subscriptions_;
+  base::UnsafeLinkedList<Subscription> all_subscriptions_;
 
   CookieChangeDispatcherIOS change_dispatcher_;
 
