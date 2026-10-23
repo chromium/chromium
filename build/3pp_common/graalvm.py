@@ -22,7 +22,9 @@ import common
 # Uses the latest release of this major version. Packages that use this module
 # should pass version_strings_func=graalvm.version_strings to common.main() so
 # that they are rebuilt when a new release comes out.
+# LINT.IfChange(jdk_major_version)
 _GRAALVM_MAJOR_VERSION = 25
+# LINT.ThenChange(//third_party/jdk/3pp/3pp.py:jdk_major_version)
 _GRAALVM_URL = (
     'https://download.oracle.com/graalvm/{v}/latest/'
     'graalvm-jdk-{v}_linux-x64_bin.tar.gz'
