@@ -173,6 +173,12 @@
     'android_omnibox': {
       'filepath': 'chrome/browser/ui/android/omnibox/',
     },
+    'android_popup_windows': {
+      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImpl.java' \
+                  '|chrome/android/javatests/src/org/chromium/chrome/browser/popups/PopupMultiwindowPTTest.java' \
+                  '|chrome/android/junit/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImplUnitTest.java' \
+                  '|chrome/browser/android/customtabs/java/src/org/chromium/chrome/browser/customtabs/PopupCreator.java',
+    },
     'android_search_widget': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/locale/' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/searchwidget/'
@@ -2640,6 +2646,8 @@
     'android_ntp_customization': ['hanxi+watch@chromium.org'],
     'android_omnibox': ['ender+watch@chromium.org',
                         'skym+watch@chromium.org'],
+    'android_popup_windows': ['jthiesen+watch@chromium.org',
+                              'linyuh+watch@google.com'],
     'android_search_widget': ['yusufo+watch@chromium.org'],
     'android_side_panel': ['clhager@google.com',
                            'linyuh+watch@google.com',
