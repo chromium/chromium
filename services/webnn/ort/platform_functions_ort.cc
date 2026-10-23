@@ -75,11 +75,12 @@ PlatformFunctions* PlatformFunctions::GetInstance() {
 // static
 bool PlatformFunctions::InitializeFromPath(
     const base::FilePath& ort_library_path) {
-  base::ScopedNativeLibrary ort_library = base::ScopedNativeLibrary(
-      base::LoadNativeLibrary(ort_library_path, nullptr));
+  base::NativeLibraryLoadError error;
+  base::ScopedNativeLibrary ort_library(
+      base::LoadNativeLibrary(ort_library_path, &error));
   if (!ort_library.is_valid()) {
-    LOG(ERROR) << "[WebNN] Failed to load ONNX Runtime library from the path: "
-               << ort_library_path;
+    LOG(ERROR) << "[WebNN] Failed to load ONNX Runtime library from: "
+               << ort_library_path << ", error: " << error.ToString();
     return false;
   }
 
