@@ -16,12 +16,10 @@ class GnConfigsImpl:
     # TODO: Consider switching to enum.Flag rather than a bool.
     def __init__(self, use_remoteexec) -> None:
         self.remoteexec_args = [
-            'use_reclient=false',
             'use_remoteexec=true',
             'use_siso=true',
         ]
         self.localexec_args = [
-            'use_reclient=false',
             'use_remoteexec=false',
             'use_siso=true',
         ]

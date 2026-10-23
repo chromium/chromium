@@ -13,7 +13,7 @@ $ autoninja -C out/Debug -v chrome | tee /tmp/build_log
 $ analyze_includes.py --target=chrome --revision=$(git rev-parse --short HEAD) \
     --json-out=/tmp/include-analysis.js /tmp/build_log
 
-(If you have reclient access, add use_reclient=true to the gn args, but not on
+(If you have RBE access, add use_remoteexec=true to the gn args, but not on
 Windows due to crbug.com/1223741#c9)
 
 The script takes roughly half an hour on a fast machine for the chrome build
