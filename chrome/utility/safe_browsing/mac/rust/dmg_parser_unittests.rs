@@ -13,8 +13,11 @@ use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::Engine as _;
 use bytemuck::Zeroable;
 use dmg_parser::hfs::{
-    HfsError, HfsForkReadStream, HfsIterator, HfsPlusExtentDescriptor, HfsPlusForkData,
-    MAX_EXTENT_BUFFER_SIZE,
+    FndrFileInfo, HfsBTreeEntry, HfsBTreeIterator, HfsCatalogRecord, HfsError, HfsForkReadStream,
+    HfsIterator, HfsPlusBsdInfo, HfsPlusCatalogFile, HfsPlusCatalogFolder, HfsPlusExtentDescriptor,
+    HfsPlusForkData, HfsPlusVolumeHeader, HARD_LINK_FILE_TYPE, HFSX_SIG_WORD, HFS_PLUS_CREATOR,
+    HFS_PLUS_SIG_WORD, MAX_EXTENT_BUFFER_SIZE, S_IFLNK, UF_COMPRESSED, VOLUME_HEADER_OFFSET,
+    VOLUME_HEADER_SIZE,
 };
 use dmg_parser::udif::{
     parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkType, UdifBlockData, UdifError,
@@ -73,10 +76,304 @@ fn build_koly_trailer(
     bytemuck::cast(trailer)
 }
 
-#[gtest(RustHfsIteratorTest, EmptyStreamFailsToOpen)]
-fn test_empty_hfs_stream_fails_to_open() {
+fn make_volume_image(signature: u16, block_size: u32) -> Vec<u8> {
+    let mut image = vec![0u8; (VOLUME_HEADER_OFFSET as usize) + VOLUME_HEADER_SIZE];
+    let header = &mut image[VOLUME_HEADER_OFFSET as usize..];
+    header[0..2].copy_from_slice(&signature.to_be_bytes());
+    header[40..44].copy_from_slice(&block_size.to_be_bytes());
+    // Populate catalogFile (offset 272..352 within HFSPlusVolumeHeader).
+    let catalog = &mut header[272..352];
+    catalog[0..8].copy_from_slice(&0x0000_0000_0002_0000u64.to_be_bytes());
+    // Extent 0: start_block = 10, block_count = 32.
+    catalog[16..20].copy_from_slice(&10u32.to_be_bytes());
+    catalog[20..24].copy_from_slice(&32u32.to_be_bytes());
+    // Extent 7: start_block = 99, block_count = 4.
+    catalog[72..76].copy_from_slice(&99u32.to_be_bytes());
+    catalog[76..80].copy_from_slice(&4u32.to_be_bytes());
+    image
+}
+
+fn utf16(s: &str) -> Vec<u16> {
+    s.encode_utf16().collect()
+}
+
+#[gtest(RustHfsIteratorTest, EmptyOrShortStreamFailsToOpen)]
+fn test_empty_or_short_hfs_stream_fails_to_open() {
+    let empty_stream = SharedStream::new(Cursor::new(Vec::<u8>::new()));
+    expect_eq!(HfsIterator::open(empty_stream).err(), Some(HfsError::IoError));
+
+    let short_stream = SharedStream::new(Cursor::new(vec![
+        0u8;
+        (VOLUME_HEADER_OFFSET as usize)
+            + VOLUME_HEADER_SIZE
+            - 1
+    ]));
+    expect_eq!(HfsIterator::open(short_stream).err(), Some(HfsError::IoError));
+}
+
+#[gtest(RustHfsIteratorTest, InvalidVolumeHeaderRejected)]
+fn test_invalid_volume_header_rejected() {
+    // Classic HFS signature ('BD' = 0x4244) must be rejected.
+    let bad_sig_stream = SharedStream::new(Cursor::new(make_volume_image(0x4244, 4096)));
+    expect_eq!(HfsIterator::open(bad_sig_stream).err(), Some(HfsError::InvalidVolumeHeader));
+
+    // Zero block_size must be rejected even with a valid HFS+ signature.
+    let zero_block_stream = SharedStream::new(Cursor::new(make_volume_image(HFS_PLUS_SIG_WORD, 0)));
+    expect_eq!(HfsIterator::open(zero_block_stream).err(), Some(HfsError::InvalidVolumeHeader));
+}
+
+#[gtest(RustHfsIteratorTest, ValidVolumeHeaderParsedAndReachesCatalogInit)]
+fn test_valid_volume_header_parsed_and_reaches_catalog_init() {
+    let image = make_volume_image(HFS_PLUS_SIG_WORD, 4096);
+    let header_bytes: &[u8; VOLUME_HEADER_SIZE] = image[VOLUME_HEADER_OFFSET as usize..]
+        .first_chunk()
+        .expect("`image` has `VOLUME_HEADER_SIZE` bytes starting at `VOLUME_HEADER_OFFSET`");
+    let parsed = HfsPlusVolumeHeader::from_big_endian_bytes(header_bytes);
+    expect_eq!(parsed.signature, HFS_PLUS_SIG_WORD);
+    expect_eq!(parsed.block_size, 4096);
+    expect_eq!(parsed.catalog_file.logical_size, 0x20000);
+    expect_eq!(
+        parsed.catalog_file.extents[0],
+        HfsPlusExtentDescriptor { start_block: 10, block_count: 32 }
+    );
+    expect_eq!(
+        parsed.catalog_file.extents[1],
+        HfsPlusExtentDescriptor { start_block: 0, block_count: 0 }
+    );
+    expect_eq!(
+        parsed.catalog_file.extents[7],
+        HfsPlusExtentDescriptor { start_block: 99, block_count: 4 }
+    );
+
+    // Both HFS+ ('H+') and HFSX ('HX') signatures pass volume header validation
+    // and reach HfsBTreeIterator::new (currently stubbed as Unimplemented).
+    let hfs_plus_stream = SharedStream::new(Cursor::new(image));
+    expect_eq!(HfsIterator::open(hfs_plus_stream).err(), Some(HfsError::Unimplemented));
+
+    let hfsx_stream = SharedStream::new(Cursor::new(make_volume_image(HFSX_SIG_WORD, 8192)));
+    expect_eq!(HfsIterator::open(hfsx_stream).err(), Some(HfsError::Unimplemented));
+}
+
+#[gtest(RustHfsIteratorTest, NextSkipsThreadsAndUnexportedItems)]
+fn test_next_skips_threads_and_unexported_items() {
+    let entries = vec![
+        HfsBTreeEntry { path: utf16(""), unexported: false, record: HfsCatalogRecord::Thread },
+        HfsBTreeEntry {
+            path: utf16(".HFS+ Private Directory Data\r"),
+            unexported: true,
+            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder::default()),
+        },
+        HfsBTreeEntry {
+            path: utf16(".HFS+ Private Directory Data\r/secret"),
+            unexported: true,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile::default()),
+        },
+        HfsBTreeEntry {
+            path: utf16("Applications"),
+            unexported: false,
+            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder::default()),
+        },
+        HfsBTreeEntry {
+            path: utf16("Applications"),
+            unexported: false,
+            record: HfsCatalogRecord::Thread,
+        },
+        HfsBTreeEntry {
+            path: utf16("Applications/App.app"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile::default()),
+        },
+    ];
+
     let stream = SharedStream::new(Cursor::new(Vec::<u8>::new()));
-    expect_eq!(HfsIterator::open(stream).err(), Some(HfsError::Unimplemented));
+    let mut iter = HfsIterator::new_for_testing(
+        stream,
+        4096,
+        HfsBTreeIterator::from_entries_for_testing(entries),
+    );
+
+    expect_true!(iter.next_item());
+    expect_true!(iter.is_directory());
+    expect_false!(iter.is_file());
+    expect_eq!(iter.path(), utf16("Applications").as_slice());
+
+    expect_true!(iter.next_item());
+    expect_false!(iter.is_directory());
+    expect_true!(iter.is_file());
+    expect_eq!(iter.path(), utf16("Applications/App.app").as_slice());
+
+    expect_false!(iter.next_item());
+}
+
+#[gtest(RustHfsIteratorTest, ItemMetadataAndReadStream)]
+fn test_item_metadata_and_read_stream() {
+    let entries = vec![
+        // 1. Regular directory.
+        HfsBTreeEntry {
+            path: utf16("dir"),
+            unexported: false,
+            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder {
+                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o040755 },
+            }),
+        },
+        // 2. Symbolic link directory record.
+        HfsBTreeEntry {
+            path: utf16("dir_symlink"),
+            unexported: false,
+            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder {
+                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: S_IFLNK | 0o755 },
+            }),
+        },
+        // 3. Regular file.
+        HfsBTreeEntry {
+            path: utf16("dir/regular.txt"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
+                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o100644 },
+                user_info: FndrFileInfo { fd_type: 0, fd_creator: 0 },
+                data_fork: HfsPlusForkData::default(),
+            }),
+        },
+        // 4. Symbolic link file record.
+        HfsBTreeEntry {
+            path: utf16("dir/file_symlink"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
+                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: S_IFLNK | 0o777 },
+                user_info: FndrFileInfo::default(),
+                data_fork: HfsPlusForkData::default(),
+            }),
+        },
+        // 5. Hard link file record.
+        HfsBTreeEntry {
+            path: utf16("dir/hardlink"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
+                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o100644 },
+                user_info: FndrFileInfo {
+                    fd_type: HARD_LINK_FILE_TYPE,
+                    fd_creator: HFS_PLUS_CREATOR,
+                },
+                data_fork: HfsPlusForkData::default(),
+            }),
+        },
+        // 6. File with matching fd_type but non-matching fd_creator (not a hard link).
+        HfsBTreeEntry {
+            path: utf16("dir/not_hardlink"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
+                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o100644 },
+                user_info: FndrFileInfo { fd_type: HARD_LINK_FILE_TYPE, fd_creator: 0x1234_5678 },
+                data_fork: HfsPlusForkData::default(),
+            }),
+        },
+        // 7. decmpfs-compressed file record.
+        HfsBTreeEntry {
+            path: utf16("dir/compressed"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
+                bsd_info: HfsPlusBsdInfo { owner_flags: UF_COMPRESSED, file_mode: 0o100644 },
+                user_info: FndrFileInfo::default(),
+                data_fork: HfsPlusForkData::default(),
+            }),
+        },
+    ];
+
+    let stream = SharedStream::new(Cursor::new(Vec::<u8>::new()));
+    let mut iter = HfsIterator::new_for_testing(
+        stream,
+        4096,
+        HfsBTreeIterator::from_entries_for_testing(entries),
+    );
+
+    struct Expected {
+        path: &'static str,
+        is_dir: bool,
+        is_file: bool,
+        is_symlink: bool,
+        is_hardlink: bool,
+        is_compressed: bool,
+        has_stream: bool,
+    }
+
+    let expectations = [
+        Expected {
+            path: "dir",
+            is_dir: true,
+            is_file: false,
+            is_symlink: false,
+            is_hardlink: false,
+            is_compressed: false,
+            has_stream: false,
+        },
+        Expected {
+            path: "dir_symlink",
+            is_dir: true,
+            is_file: false,
+            is_symlink: true,
+            is_hardlink: false,
+            is_compressed: false,
+            has_stream: false,
+        },
+        Expected {
+            path: "dir/regular.txt",
+            is_dir: false,
+            is_file: true,
+            is_symlink: false,
+            is_hardlink: false,
+            is_compressed: false,
+            has_stream: true,
+        },
+        Expected {
+            path: "dir/file_symlink",
+            is_dir: false,
+            is_file: true,
+            is_symlink: true,
+            is_hardlink: false,
+            is_compressed: false,
+            has_stream: true,
+        },
+        Expected {
+            path: "dir/hardlink",
+            is_dir: false,
+            is_file: true,
+            is_symlink: false,
+            is_hardlink: true,
+            is_compressed: false,
+            has_stream: false,
+        },
+        Expected {
+            path: "dir/not_hardlink",
+            is_dir: false,
+            is_file: true,
+            is_symlink: false,
+            is_hardlink: false,
+            is_compressed: false,
+            has_stream: true,
+        },
+        Expected {
+            path: "dir/compressed",
+            is_dir: false,
+            is_file: true,
+            is_symlink: false,
+            is_hardlink: false,
+            is_compressed: true,
+            has_stream: true,
+        },
+    ];
+
+    for exp in expectations {
+        expect_true!(iter.next_item(), "for path {}", exp.path);
+        expect_eq!(iter.path(), utf16(exp.path).as_slice(), "for path {}", exp.path);
+        expect_eq!(iter.is_directory(), exp.is_dir, "for path {}", exp.path);
+        expect_eq!(iter.is_file(), exp.is_file, "for path {}", exp.path);
+        expect_eq!(iter.is_symbolic_link(), exp.is_symlink, "for path {}", exp.path);
+        expect_eq!(iter.is_hard_link(), exp.is_hardlink, "for path {}", exp.path);
+        expect_eq!(iter.is_decmpfs_compressed(), exp.is_compressed, "for path {}", exp.path);
+        expect_eq!(iter.read_stream().is_some(), exp.has_stream, "for path {}", exp.path);
+    }
+
+    expect_false!(iter.next_item());
 }
 
 #[gtest(RustSharedStreamTest, InterleavedPositionalReads)]
@@ -533,7 +830,7 @@ fn test_parse_fork_data_from_big_endian() {
     raw[72..76].copy_from_slice(&99u32.to_be_bytes());
     raw[76..80].copy_from_slice(&4u32.to_be_bytes());
 
-    let fork = HfsPlusForkData::from_be_bytes(&raw);
+    let fork = HfsPlusForkData::from_big_endian_bytes(&raw);
     expect_eq!(fork.logical_size, 0x1_2345);
     expect_eq!(fork.clump_size, 0x4000);
     expect_eq!(fork.total_blocks, 36);
