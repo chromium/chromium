@@ -3045,6 +3045,91 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIn('dropped (obsolete in v37)',
                       roll_protobuf.FormatRollStateReport(final_state))
 
+    def testResumeRollReconcilesManualApplyAndDropCommitsAndFinishesRoll(self):
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                _PLAN_CONFLICT_PATH:
+                _NumberedLines('conflict', line6='conflict line 6 (manual)')
+            },
+        )
+        _RunGitCommand(
+            self.repository_root,
+            ['add', '--', f'third_party/protobuf/{_PLAN_CONFLICT_PATH}'])
+        _RunGitCommand(self.repository_root, [
+            'commit', '--quiet', '-m', f'Apply patches/{_PLAN_CONFLICT_PATCH}'
+        ])
+        refreshed = _RunGitCommand(
+            self.repository_root,
+            ['diff', 'HEAD~1', 'HEAD', '--relative=third_party/protobuf'])
+        pathlib.Path(self.fixture.protobuf_directory, 'patches',
+                     _PLAN_CONFLICT_PATCH).write_text(refreshed + '\n',
+                                                      encoding='utf-8',
+                                                      newline='\n')
+        _RunGitCommand(
+            self.repository_root,
+            [
+                'commit', '--quiet', '--amend', '--no-edit',
+                f'third_party/protobuf/patches/{_PLAN_CONFLICT_PATCH}'
+            ],
+        )
+        _RunGitCommand(
+            self.repository_root,
+            [
+                'rm', '--quiet',
+                f'third_party/protobuf/patches/{_PLAN_MISSING_FILE_PATCH}'
+            ],
+        )
+        _RunGitCommand(
+            self.repository_root,
+            [
+                'commit', '--quiet', '-m',
+                f'Drop patches/{_PLAN_MISSING_FILE_PATCH} (file removed upstream)'
+            ],
+        )
+
+        state = roll_protobuf.ResumeRoll(self.fixture.protobuf_directory)
+
+        self.assertEqual(('replayed', 5), (state.phase, state.current_index))
+        self.assertEqual(
+            [
+                ('CLEAN', 2, None),
+                ('EMPTY', None, None),
+                ('CLEAN', 2, None),
+                ('DROPPED', None, 'file removed upstream'),
+                ('CLEAN', 3, None),
+            ],
+            [(
+                result.status.value,
+                result.changed_line_count_after,
+                result.error_message,
+            ) for result in state.patch_results],
+        )
+
+    def testResumeRollRejectsDirtyWorkingTreeAndUnexpectedCommitSubjects(self):
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Working tree has uncommitted changes'):
+            roll_protobuf.ResumeRoll(self.fixture.protobuf_directory)
+
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', 'HEAD'])
+        _RunGitCommand(
+            self.repository_root,
+            ['commit', '--quiet', '--allow-empty', '-m', 'Wrong subject'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Unexpected commit subject'):
+            roll_protobuf.ResumeRoll(self.fixture.protobuf_directory)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1660,6 +1660,101 @@ def DropCurrentPatch(
     return _ReplayRemainingPatches(checkout, next_state)
 
 
+def ResumeRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
+    """Reconciles state.json with manual Apply/Drop commits and continues."""
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    state = LoadRollState(checkout.protobuf_directory)
+    if state is None or state.phase == 'prepared':
+        raise RollProtobufError(
+            'No active protobuf roll to resume; run `roll_protobuf.py start` '
+            'first.')
+    dirty_status = _RunScratchGit(checkout.repository_root, 'status',
+                                  '--porcelain',
+                                  '--ignore-submodules=all').stdout.strip()
+    leftover_rejects = tuple(
+        path
+        for path in _ListRegularFilesInDirectory(checkout.protobuf_directory)
+        if path.endswith(('.rej', '.orig')))
+    if dirty_status or leftover_rejects:
+        raise RollProtobufError(
+            'Working tree has uncommitted changes or .rej/.orig files; '
+            'finish committing the manual step (or run '
+            '`roll_protobuf.py continue`) before running '
+            '`roll_protobuf.py resume`.')
+    ancestry = _RunScratchGit(checkout.repository_root,
+                              'merge-base',
+                              '--is-ancestor',
+                              state.start_commit,
+                              'HEAD',
+                              accepted_return_codes=(0, 1))
+    commit_lines = _RunScratchGit(
+        checkout.repository_root, 'log', '--reverse', '--format=%H%x00%s',
+        f'{state.start_commit}..HEAD').stdout.decode(
+            'utf-8', errors='replace').splitlines() if (ancestry.returncode
+                                                        == 0) else []
+    if not commit_lines:
+        raise RollProtobufError(
+            f'HEAD does not descend from roll start commit '
+            f'{state.start_commit}; run `roll_protobuf.py abort` to reset.')
+    _, import_subject = commit_lines[0].split('\0', 1)
+    expected_import = f'Import upstream protobuf {state.new_revision} (unmodified)'
+    if import_subject != expected_import:
+        raise RollProtobufError(
+            f'Expected first roll commit {expected_import!r}, found '
+            f'{import_subject!r}.')
+    patch_commits = commit_lines[1:]
+    if len(patch_commits) > len(state.patches):
+        raise RollProtobufError(
+            f'Found {len(patch_commits)} patch commit(s) after import, but '
+            f'the roll only has {len(state.patches)} patch(es).')
+    reconciled_results = []
+    for index, line in enumerate(patch_commits):
+        commit_sha, subject = line.split('\0', 1)
+        chain_patch = state.patches[index]
+        drop_match = re.match(
+            rf'^Drop patches/{re.escape(chain_patch.patch_name)}'
+            r'(?:\s+\((.+)\))?$', subject)
+        if subject == f'Apply patches/{chain_patch.patch_name}':
+            numstat = _RunScratchGit(checkout.protobuf_directory,
+                                     '--no-literal-pathspecs', 'diff',
+                                     '--numstat', '-z', '--no-renames',
+                                     '--no-ext-diff', f'{commit_sha}~1',
+                                     commit_sha, '--', '.',
+                                     ':(exclude)patches').stdout
+            reconciled_results.append(
+                PatchReplayResult(
+                    chain_patch.patch_name,
+                    PatchReplayStatus.CLEAN,
+                    chain_patch.changed_line_count,
+                    changed_line_count_after=_CountChangedLines(numstat)))
+        elif drop_match:
+            reason = (drop_match.group(1) or '').strip() or 'dropped by hand'
+            status = (PatchReplayStatus.EMPTY if reason == 'already upstream'
+                      else PatchReplayStatus.DROPPED)
+            reconciled_results.append(
+                PatchReplayResult(chain_patch.patch_name,
+                                  status,
+                                  chain_patch.changed_line_count,
+                                  error_message=None if status
+                                  is PatchReplayStatus.EMPTY else reason))
+        else:
+            raise RollProtobufError(
+                f'Unexpected commit subject {subject!r} at patch '
+                f'[{index + 1}/{len(state.patches)}]; expected '
+                f'"Apply patches/{chain_patch.patch_name}" or '
+                f'"Drop patches/{chain_patch.patch_name} (...)".')
+    current_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                                  'HEAD').stdout.decode().strip()
+    resumed_state = dataclasses.replace(
+        state,
+        expected_head=current_head,
+        current_index=len(reconciled_results),
+        conflict_files=(),
+        patch_results=tuple(reconciled_results))
+    _SaveRollState(checkout, resumed_state)
+    return _ReplayRemainingPatches(checkout, resumed_state)
+
+
 def StartRoll(to_revision: str,
               protobuf_directory: str = _PROTOBUF_DIRECTORY,
               upstream_repository_path: str | None = None,
