@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor.ui;
+package org.chromium.chrome.browser.actor.pip;
 
-import static org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayProperties.STATUS_TEXT;
-import static org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayProperties.TITLE;
-import static org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayProperties.VISIBLE;
+import static org.chromium.chrome.browser.actor.pip.ActorPictureInPictureOverlayProperties.STATUS_TEXT;
+import static org.chromium.chrome.browser.actor.pip.ActorPictureInPictureOverlayProperties.TITLE;
+import static org.chromium.chrome.browser.actor.pip.ActorPictureInPictureOverlayProperties.VISIBLE;
 
 import android.view.View;
 

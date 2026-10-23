@@ -4,7 +4,7 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayView
+<org.chromium.chrome.browser.actor.pip.ActorPictureInPictureOverlayView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -37,4 +37,4 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextSmall.Primary"
         android:gravity="center_horizontal"/>
 
-</org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayView>
+</org.chromium.chrome.browser.actor.pip.ActorPictureInPictureOverlayView>

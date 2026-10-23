@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor.ui;
+package org.chromium.chrome.browser.actor.pip;
 
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The Mediator for the Actor Picture-in-Picture overlay. */

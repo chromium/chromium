@@ -10,7 +10,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorMetrics.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelper.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskId.java",
@@ -28,6 +27,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarController.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactory.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationService.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureController.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureOverlayMediator.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureOverlayProperties.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureOverlayView.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureOverlayViewBinder.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlMediator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlStateTracker.java",
@@ -39,11 +44,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayProperties.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayView.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewBinder.java",
-    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayCoordinator.java",
-    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayMediator.java",
-    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayProperties.java",
-    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayView.java",
-    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayViewBinder.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabController.java",
     "java/src/org/chromium/chrome/browser/actor/ui/InnerGlowDrawable.java",
     "java/src/org/chromium/chrome/browser/actor/ui/PeekViewUiState.java",
@@ -171,7 +171,6 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorMetricsTest.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskTimeoutManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskTimeoutParametersTest.java",
@@ -185,10 +184,11 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactoryTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationServiceTest.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureControllerTest.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureOverlayCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialogTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
-    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/InnerGlowDrawableTest.java",
   ]
@@ -286,10 +286,10 @@ android_library("unit_device_javatests") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorBackgroundActuationIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorTabStateHelperIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationClickIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/actor/pip/ActorPictureInPictureIntegrationTest.java",
   ]
   deps = [
     ":java",

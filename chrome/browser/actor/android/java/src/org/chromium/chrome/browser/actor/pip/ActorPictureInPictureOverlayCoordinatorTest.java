@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor.ui;
+package org.chromium.chrome.browser.actor.pip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,6 +19,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ui.R;
 
 /** Tests for {@link ActorPictureInPictureOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -92,8 +93,7 @@ public class ActorPictureInPictureOverlayCoordinatorTest {
         mCoordinator.updateStatus(ActorTaskState.CANCELLED);
 
         TextView statusTextView = mParentView.findViewById(R.id.pip_status);
-        String expectedStatus =
-                mActivity.getString(R.string.actor_notification_title_task_stopped);
+        String expectedStatus = mActivity.getString(R.string.actor_notification_title_task_stopped);
         assertEquals(expectedStatus, statusTextView.getText().toString());
     }
 
