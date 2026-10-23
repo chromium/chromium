@@ -2006,6 +2006,134 @@ class RollProtobufPlanTest(unittest.TestCase):
                          (patch_result.status, 'No valid patches in input'
                           in (patch_result.error_message or '')))
 
+    def _PlanRoll(self,
+                  to_revision: str | None = None) -> roll_protobuf.RollPlan:
+        return roll_protobuf.PlanRoll(
+            to_revision=to_revision or self.fixture.new_commit,
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+
+    def testPlanRollReplaysPatchChainOntoNewUpstream(self):
+        roll_plan = self._PlanRoll()
+
+        self.assertEqual(3, roll_plan.copied_blob_count)
+        self.assertEqual(
+            (
+                roll_protobuf.PatchReplayResult(
+                    patch_name=_PLAN_CLEAN_PATCH,
+                    status=roll_protobuf.PatchReplayStatus.CLEAN,
+                    changed_line_count_before=4,
+                    changed_line_count_after=2,
+                ),
+                roll_protobuf.PatchReplayResult(
+                    patch_name=_PLAN_EMPTY_PATCH,
+                    status=roll_protobuf.PatchReplayStatus.EMPTY,
+                    changed_line_count_before=2,
+                ),
+                roll_protobuf.PatchReplayResult(
+                    patch_name=_PLAN_CONFLICT_PATCH,
+                    status=roll_protobuf.PatchReplayStatus.CONFLICT,
+                    changed_line_count_before=2,
+                    conflicted_files=(roll_protobuf.ConflictedFile(
+                        path=_PLAN_CONFLICT_PATH, conflict_region_count=1), ),
+                ),
+                roll_protobuf.PatchReplayResult(
+                    patch_name=_PLAN_MISSING_FILE_PATCH,
+                    status=roll_protobuf.PatchReplayStatus.MISSING_FILE,
+                    changed_line_count_before=2,
+                    missing_files=(_PLAN_RENAMED_PATH, ),
+                ),
+                roll_protobuf.PatchReplayResult(
+                    patch_name=_PLAN_STACKED_PATCH,
+                    status=roll_protobuf.PatchReplayStatus.CLEAN,
+                    changed_line_count_before=3,
+                    changed_line_count_after=3,
+                ),
+            ),
+            roll_plan.patch_results,
+        )
+
+    def testPlanRollReportsUpstreamFileAddedToFileLists(self):
+        roll_plan = self._PlanRoll()
+
+        self.assertEqual(
+            {
+                'added_files': [{
+                    'path': _PLAN_ADDED_PATH,
+                    'upstream_lists': ['libprotobuf_srcs'],
+                    'chromium_sibling_count': 3,
+                }],
+                'removed_files': [_PLAN_RENAMED_PATH],
+            }, roll_plan.file_lists_diff.ToDictionary())
+
+    def testPlanRollSkipsFileListsReportWhenNewUpstreamLacksFileListsCmake(
+            self):
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['rm', '--quiet', 'src/file_lists.cmake'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '-m', 'Drop file_lists.cmake'])
+        to_revision = _RunGitCommand(self.fixture.upstream_directory,
+                                     ['rev-parse', 'HEAD'])
+
+        roll_plan = self._PlanRoll(to_revision)
+
+        self.assertIsNone(roll_plan.file_lists_diff)
+
+    def testPlanRollLeavesProtobufDirectoryAndUpstreamRepositoryUntouched(
+            self):
+
+        def SnapshotRepository(repository_directory: str) -> tuple[str, str]:
+            return (
+                _RunGitCommand(repository_directory,
+                               ['status', '--porcelain', '-uall']),
+                _RunGitCommand(repository_directory, ['for-each-ref']),
+            )
+
+        protobuf_before = SnapshotRepository(self.fixture.protobuf_directory)
+        upstream_before = SnapshotRepository(self.fixture.upstream_directory)
+
+        self._PlanRoll()
+
+        self.assertEqual((protobuf_before, upstream_before),
+                         (SnapshotRepository(self.fixture.protobuf_directory),
+                          SnapshotRepository(self.fixture.upstream_directory)))
+
+    @_SkipOnWindows('Git hooks need an executable shell script.')
+    def testPlanRollIgnoresDeveloperGlobalGitConfiguration(self):
+        hooks_directory = os.path.join(self.temporary_directory, 'hooks')
+        for hook_name in ('pre-commit', 'commit-msg', 'pre-applypatch'):
+            hook_path = os.path.join(hooks_directory, hook_name)
+            _WriteFilesToDirectory(hooks_directory,
+                                   {hook_name: '#!/bin/sh\nexit 1\n'})
+            os.chmod(hook_path, 0o755)
+        global_config_path = os.path.join(self.temporary_directory,
+                                          'gitconfig')
+        _WriteFilesToDirectory(
+            self.temporary_directory,
+            {
+                'gitconfig': ('[core]\n'
+                              f'\thooksPath = {hooks_directory}\n'
+                              '[commit]\n\tgpgsign = true\n'
+                              '[diff]\n\tnoprefix = true\n'
+                              '[merge]\n\tconflictStyle = diff3\n'
+                              '[apply]\n\twhitespace = error-all\n'),
+            },
+        )
+        baseline_plan = self._PlanRoll()
+
+        with mock.patch.dict(
+                os.environ, {
+                    'GIT_CONFIG_GLOBAL': global_config_path,
+                    'GIT_CONFIG_COUNT': '1',
+                    'GIT_CONFIG_KEY_0': 'core.autocrlf',
+                    'GIT_CONFIG_VALUE_0': 'true',
+                    'GIT_CONFIG_PARAMETERS': "'diff.noprefix'='true'",
+                }):
+            configured_plan = self._PlanRoll()
+
+        self.assertEqual(baseline_plan, configured_plan)
+
 
 if __name__ == '__main__':
     unittest.main()

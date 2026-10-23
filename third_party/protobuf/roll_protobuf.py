@@ -23,6 +23,7 @@ occurred, 2 for invalid usage (argparse).
 
 from collections.abc import Collection, Iterable, Sequence
 import argparse
+import collections
 import dataclasses
 import enum
 import filecmp
@@ -36,8 +37,11 @@ import sys
 import tarfile
 import tempfile
 
+import check_file_lists
+
 _PROTOBUF_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 _README_FILENAME = 'README.chromium'
+_UPSTREAM_FILE_LISTS_PATH = 'src/file_lists.cmake'
 _REQUESTED_REVISION_REF = 'refs/protobuf-roll/requested'
 UPSTREAM_REPOSITORY_URL = 'https://github.com/protocolbuffers/protobuf.git'
 EXIT_CODE_SUCCESS = 0
@@ -876,6 +880,134 @@ def ApplyChainPatchThreeWay(
     return result(PatchReplayStatus.ERROR,
                   error_message=apply_process.stderr.decode(
                       'utf-8', errors='replace').strip())
+
+
+@dataclasses.dataclass(frozen=True)
+class RollPlan:
+    """Dry-run result of rolling //third_party/protobuf to a new version."""
+
+    old_revision: str  # README.chromium's Revision.
+    old_commit: str
+    new_revision: str  # As passed to `plan --to`.
+    new_commit: str
+    patch_results: tuple[PatchReplayResult, ...]  # In patches/ order.
+    # Preimage blobs copied into the replay repository; a roll in the
+    # checkout copies the same blobs into Chromium's object store.
+    copied_blob_count: int
+    # Upstream library files added or removed that GN does not follow yet, or
+    # None if either version lacks src/file_lists.cmake.
+    file_lists_diff: check_file_lists.FileListsDiff | None
+
+    def CountPatchesByStatus(self) -> dict[PatchReplayStatus, int]:
+        return dict(
+            collections.Counter(patch_result.status
+                                for patch_result in self.patch_results))
+
+    def ToDictionary(self) -> dict[str, object]:
+        return {
+            'old_revision':
+            self.old_revision,
+            'old_commit':
+            self.old_commit,
+            'new_revision':
+            self.new_revision,
+            'new_commit':
+            self.new_commit,
+            'patch_counts': {
+                status.value: count
+                for status, count in self.CountPatchesByStatus().items()
+            },
+            'patches':
+            [result.ToDictionary() for result in self.patch_results],
+            'copied_blob_count':
+            self.copied_blob_count,
+            'file_lists': (self.file_lists_diff.ToDictionary()
+                           if self.file_lists_diff is not None else None),
+        }
+
+
+def _ComputeUpstreamFileListsDiff(
+        protobuf_directory: str, patch_chain: PatchChain,
+        replay_directory: str) -> check_file_lists.FileListsDiff | None:
+    """Diffs src/file_lists.cmake of old and new upstream against GN.
+
+    The new tree is the replay repository after the CLEAN patches, so files a
+    patch adds are on disk and do not show up as removed.
+    """
+    old_cmake = _RunScratchGit(
+        patch_chain.repository_directory,
+        'show',
+        f'{patch_chain.base_commit}:{_UPSTREAM_FILE_LISTS_PATH}',
+        accepted_return_codes=(0, 128))
+    new_cmake_path = os.path.join(replay_directory,
+                                  *_UPSTREAM_FILE_LISTS_PATH.split('/'))
+    if old_cmake.returncode != 0 or not os.path.isfile(new_cmake_path):
+        return None
+    with open(new_cmake_path, encoding='utf-8') as new_cmake_file:
+        new_cmake_text = new_cmake_file.read()
+    return check_file_lists.ComputeFileListsDiff(
+        old_cmake_text=old_cmake.stdout.decode('utf-8'),
+        new_cmake_text=new_cmake_text,
+        chromium_gn_files=check_file_lists.ReadChromiumGnSourceFiles(
+            protobuf_directory),
+        new_tree_directory=replay_directory)
+
+
+def PlanRoll(to_revision: str,
+             protobuf_directory: str = _PROTOBUF_DIRECTORY,
+             upstream_repository_path: str | None = None,
+             cache_directory: str | None = None,
+             build_directory: str | None = None,
+             upstream_url: str = UPSTREAM_REPOSITORY_URL) -> RollPlan:
+    """Sizes a roll to to_revision without touching the checkout.
+
+    Builds the patch chain on README.chromium's Revision and replays it onto
+    to_revision in a second scratch repository, all in a temporary directory.
+    CLEAN patches are committed and every other patch is skipped (reset), so
+    later patches are measured against new upstream plus CLEAN patches only.
+    Taking the patch side of conflicts instead gave the same classification
+    for all 24 patches in the prototype (https://crbug.com/568074498), and
+    skipping invents no content. The other arguments are as for
+    EnsureUpstreamCommitCached.
+    """
+    protobuf_directory = os.path.abspath(protobuf_directory)
+    upstream_arguments = (upstream_repository_path, cache_directory,
+                          build_directory, upstream_url)
+    old_revision = ReadReadmeRevision(protobuf_directory)
+    repository_path, old_commit = EnsureUpstreamCommitCached(
+        old_revision, *upstream_arguments)
+    _, new_commit = EnsureUpstreamCommitCached(to_revision,
+                                               *upstream_arguments)
+    with tempfile.TemporaryDirectory(
+            prefix='protobuf_roll_plan_') as temporary_directory:
+        patch_chain = BuildPatchChain(
+            repository_path, old_commit,
+            ListTopLevelPatchPaths(protobuf_directory),
+            os.path.join(temporary_directory, 'chain'))
+        replay_directory = os.path.join(temporary_directory, 'replay')
+        _CreateScratchRepository(repository_path, new_commit, replay_directory)
+        patch_results = []
+        copied_blob_count = 0
+        for chain_patch in patch_chain.patches:
+            copied_blob_count += len(
+                CopyPreimageBlobs(patch_chain.repository_directory,
+                                  replay_directory,
+                                  chain_patch.preimage_blobs.values()))
+            patch_result = ApplyChainPatchThreeWay(replay_directory,
+                                                   chain_patch)
+            if patch_result.status is PatchReplayStatus.CLEAN:
+                _RunScratchGit(replay_directory, 'commit', '--quiet',
+                               '--no-verify', '-m',
+                               f'Apply patches/{chain_patch.patch_name}')
+            else:
+                _RunScratchGit(replay_directory, 'reset', '--quiet', '--hard',
+                               'HEAD')
+                _RunScratchGit(replay_directory, 'clean', '-ffdxq')
+            patch_results.append(patch_result)
+        file_lists_diff = _ComputeUpstreamFileListsDiff(
+            protobuf_directory, patch_chain, replay_directory)
+    return RollPlan(old_revision, old_commit, to_revision, new_commit,
+                    tuple(patch_results), copied_blob_count, file_lists_diff)
 
 
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
