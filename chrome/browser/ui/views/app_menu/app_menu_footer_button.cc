@@ -313,5 +313,12 @@ AppMenuFooterButton::GetActionViewInterface() {
   return std::make_unique<AppMenuFooterButtonViewInterface>(this);
 }
 
+void AppMenuFooterButton::OnGestureEvent(ui::GestureEvent* event) {
+  if (GetSubmenuItem()) {
+    return;
+  }
+  views::Button::OnGestureEvent(event);
+}
+
 BEGIN_METADATA(AppMenuFooterButton)
 END_METADATA

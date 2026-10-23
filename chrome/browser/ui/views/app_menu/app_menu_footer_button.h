@@ -58,6 +58,7 @@ class AppMenuFooterButton : public views::Button {
 
   // views::Button:
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
  protected:
   // views::Button:

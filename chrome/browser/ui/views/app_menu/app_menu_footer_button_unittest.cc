@@ -279,4 +279,24 @@ TEST_F(AppMenuFooterButtonTest, ReEnablingButtonReEnablesSubmenuItem) {
   EXPECT_TRUE(submenu_item->GetEnabled());
 }
 
+TEST_F(AppMenuFooterButtonTest, TapWithSubmenuLeavesEventUnhandled) {
+  CreateSubmenuButton();
+
+  ui::GestureEvent event(0, 0, 0, base::TimeTicks::Now(),
+                         ui::GestureEventDetails(ui::EventType::kGestureTap));
+  button_->OnGestureEvent(&event);
+
+  EXPECT_FALSE(event.handled());
+}
+
+TEST_F(AppMenuFooterButtonTest, TapWithoutSubmenuHandlesEvent) {
+  CreatePillButton();
+
+  ui::GestureEvent event(0, 0, 0, base::TimeTicks::Now(),
+                         ui::GestureEventDetails(ui::EventType::kGestureTap));
+  button_->OnGestureEvent(&event);
+
+  EXPECT_TRUE(event.handled());
+}
+
 }  // namespace
