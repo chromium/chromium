@@ -5,7 +5,9 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_delegate_android_impl.h"
 
 #include <optional>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -735,12 +737,8 @@ class TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest
  public:
   static std::vector<CreditCard> GetCardsToSuggest(
       std::vector<const CreditCard*> credit_cards) {
-    std::vector<CreditCard> cards_to_suggest;
-    cards_to_suggest.reserve(credit_cards.size());
-    for (const CreditCard* card : credit_cards) {
-      cards_to_suggest.push_back(*card);
-    }
-    return cards_to_suggest;
+    return base::ToVector(credit_cards,
+                          [](const CreditCard* card) { return *card; });
   }
 
  protected:

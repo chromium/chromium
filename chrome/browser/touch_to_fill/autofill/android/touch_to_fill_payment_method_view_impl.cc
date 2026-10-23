@@ -127,30 +127,29 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
     return false;
   }
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggestions_array;
-  suggestions_array.reserve(suggestions.size());
-  for (const Suggestion& suggestion : suggestions) {
-    CHECK_GT(suggestion.labels.size(), 0U);
-    CHECK_EQ(suggestion.labels[0].size(), 1U);
-    std::u16string secondarySubLabel =
-        suggestion.labels.size() > 1 && suggestion.labels[1].size() > 0 &&
-                !suggestion.labels[1][0].value.empty()
-            ? suggestion.labels[1][0].value
-            : u"";
-    std::u16string minor_text = base::JoinString(
-        base::ToVector(suggestion.minor_texts, &Suggestion::Text::value), u" ");
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggestions_array =
+      base::ToVector(suggestions, [&](const Suggestion& suggestion) {
+        CHECK_GT(suggestion.labels.size(), 0U);
+        CHECK_EQ(suggestion.labels[0].size(), 1U);
+        std::u16string secondarySubLabel =
+            suggestion.labels.size() > 1 && suggestion.labels[1].size() > 0 &&
+                    !suggestion.labels[1][0].value.empty()
+                ? suggestion.labels[1][0].value
+                : u"";
+        std::u16string minor_text = base::JoinString(
+            base::ToVector(suggestion.minor_texts, &Suggestion::Text::value),
+            u" ");
 
-    Suggestion::PaymentsPayload payments_payload =
-        suggestion.GetPayload<Suggestion::PaymentsPayload>();
-    const Suggestion::CustomIconUrl* custom_icon_url =
-        std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
-    int android_icon_id = 0;
-    if (suggestion.icon != Suggestion::Icon::kNoIcon) {
-      android_icon_id =
-          controller->GetJavaResourceId(GetIconResourceID(suggestion.icon));
-    }
-    suggestions_array.push_back(
-        Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
+        Suggestion::PaymentsPayload payments_payload =
+            suggestion.GetPayload<Suggestion::PaymentsPayload>();
+        const Suggestion::CustomIconUrl* custom_icon_url =
+            std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
+        int android_icon_id = 0;
+        if (suggestion.icon != Suggestion::Icon::kNoIcon) {
+          android_icon_id =
+              controller->GetJavaResourceId(GetIconResourceID(suggestion.icon));
+        }
+        return Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
             env, suggestion.main_text.value, minor_text,
             suggestion.labels[0][0].value, secondarySubLabel,
             std::to_underlying(suggestion.type),
@@ -158,8 +157,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
                                   env, custom_icon_url->value())
                             : url::GURLAndroid::EmptyGURL(env),
             android_icon_id, !suggestion.IsSelectable(),
-            payments_payload.CreateJavaObject()));
-  }
+            payments_payload.CreateJavaObject());
+      });
   Java_TouchToFillPaymentMethodViewBridge_showPaymentMethods(
       env, java_object_, std::move(suggestions_array),
       Java_TouchToFillDisplayOptions_create(env, options.show_scan_credit_card,
@@ -175,12 +174,10 @@ bool TouchToFillPaymentMethodViewImpl::ShowIbans(
     return false;
   }
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> ibans_array;
-  ibans_array.reserve(ibans_to_suggest.size());
-  for (const Iban& iban : ibans_to_suggest) {
-    ibans_array.push_back(
-        PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, iban));
-  }
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> ibans_array =
+      base::ToVector(ibans_to_suggest, [&](const Iban& iban) {
+        return PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, iban);
+      });
   Java_TouchToFillPaymentMethodViewBridge_showIbans(env, java_object_,
                                                     std::move(ibans_array));
   return true;
@@ -227,13 +224,13 @@ bool TouchToFillPaymentMethodViewImpl::OnPurchaseAmountExtracted(
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<base::android::ScopedJavaLocalRef<jobject>> issuer_context_array;
-  issuer_context_array.reserve(bnpl_issuer_contexts.size());
   if (app_locale.has_value()) {
-    for (const payments::BnplIssuerContext& issuer_context :
-         bnpl_issuer_contexts) {
-      issuer_context_array.push_back(CreateJavaBnplIssuerContextFromNative(
-          env, issuer_context, *app_locale));
-    }
+    issuer_context_array =
+        base::ToVector(bnpl_issuer_contexts,
+                       [&](const payments::BnplIssuerContext& issuer_context) {
+                         return CreateJavaBnplIssuerContextFromNative(
+                             env, issuer_context, *app_locale);
+                       });
   }
 
   Java_TouchToFillPaymentMethodViewBridge_onPurchaseAmountExtracted(
@@ -267,13 +264,12 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> issuer_context_array;
-  issuer_context_array.reserve(bnpl_issuer_contexts.size());
-  for (const payments::BnplIssuerContext& issuer_context :
-       bnpl_issuer_contexts) {
-    issuer_context_array.push_back(
-        CreateJavaBnplIssuerContextFromNative(env, issuer_context, app_locale));
-  }
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> issuer_context_array =
+      base::ToVector(bnpl_issuer_contexts,
+                     [&](const payments::BnplIssuerContext& issuer_context) {
+                       return CreateJavaBnplIssuerContextFromNative(
+                           env, issuer_context, app_locale);
+                     });
 
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuers(
       env, java_object_, std::move(issuer_context_array));
