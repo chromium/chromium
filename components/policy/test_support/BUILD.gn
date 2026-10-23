@@ -57,7 +57,7 @@ static_library("test_support") {
     "test_server_helpers.cc",
     "test_server_helpers.h",
   ]
-  if (is_chromeos || (is_linux && !is_cfi)) {
+  if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
     sources += [
       "fake_dmserver.cc",
       "fake_dmserver.h",
@@ -84,13 +84,20 @@ static_library("test_support") {
     "//third_party/re2",
   ]
 
-  if (is_chromeos || (is_linux && !is_cfi)) {
+  if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
     public_deps += [ ":remote_commands_service_castcore" ]
     deps += [ "//components/policy:generated_testonly" ]
+    data_deps = [ "//third_party/protobuf:protoc($host_toolchain)" ]
+    data = [
+      "//components/policy/proto/device_management_backend.proto",
+      "//third_party/private_membership/src/private_membership.proto",
+      "//third_party/private_membership/src/private_membership_rlwe.proto",
+      "//third_party/shell-encryption/src/serialization.proto",
+    ]
   }
   if (is_chromeos) {
     public_deps += [ "//third_party/private_membership" ]
-    data = [
+    data += [
       # TODO(crbug.com/40248354): Script should create binarypb from textpb.
       # Required for policy/enrollment/psm/rlwe_test_support.cc
       "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
@@ -99,7 +106,7 @@ static_library("test_support") {
   }
 }
 
-if (is_chromeos || (is_linux && !is_cfi)) {
+if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
   cast_core_grpc_library("remote_commands_service") {
     testonly = true
     sources = [ "remote_commands_service.proto" ]
@@ -160,7 +167,7 @@ source_set("unittests") {
     "simple_request_handler_unittest.cc",
   ]
 
-  if (is_chromeos || (is_linux && !is_cfi)) {
+  if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
     sources += [ "fake_dmserver_unittest.cc" ]
   }
   if (is_chromeos) {
