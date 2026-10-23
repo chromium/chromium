@@ -764,8 +764,9 @@ BEGIN_METADATA(PaintCountView)
 END_METADATA
 
 // Test that a child widget is only added to its parent NSWindow when the
-// parent is on the active space. Otherwise, it may cause a space transition.
-// See https://crbug.com/866760.
+// parent is on the active space. Otherwise, it may cause a space transition
+// or order an unattached transient child window onto the currently active
+// space. See https://crbug.com/866760 and http://b/565454675.
 TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
   NativeWidgetMacTestWindow* parent_window;
   NativeWidgetMacTestWindow* child_window;
@@ -779,13 +780,22 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
   parent_window.fakeOnInactiveSpace = YES;
 
   init_params.parent = parent->GetNativeView();
-  CreateWidgetWithTestWindow(std::move(init_params), &child_window);
+  Widget* child =
+      CreateWidgetWithTestWindow(std::move(init_params), &child_window);
 
   EXPECT_EQ(nil, child_window.parentWindow);
+  EXPECT_FALSE([child_window isVisible]);
+
+  child->Activate();
+  EXPECT_EQ(nil, child_window.parentWindow);
+  EXPECT_FALSE([child_window isVisible]);
 
   parent_window.fakeOnInactiveSpace = NO;
-  parent->Show();
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
+                    object:NSWorkspace.sharedWorkspace];
   EXPECT_EQ(parent_window, child_window.parentWindow);
+  EXPECT_TRUE([child_window isVisible]);
 
   parent->CloseNow();
 }
