@@ -30,7 +30,7 @@ class CookieChangeSubscriptionProto;
 // The included linked list node and service worker registration ID are used by
 // CookieStoreManager. They are ignored when comparing instances.
 class CookieChangeSubscription
-    : public base::LinkNode<CookieChangeSubscription> {
+    : public base::UnsafeLinkNode<CookieChangeSubscription> {
  public:
   // Used to read a service worker's subscriptions from the persistent store.
   //

@@ -210,7 +210,7 @@ class CONTENT_EXPORT CookieStoreManager
   // with a map from eTLD+1 to registration IDs, which would not have required
   // linked lists. However, the current approach is more amenable to future
   // optimizations, such as partitioning by (eTLD+1, cookie name).
-  std::map<std::string, base::LinkedList<CookieChangeSubscription>>
+  std::map<std::string, base::UnsafeLinkedList<CookieChangeSubscription>>
       subscriptions_by_url_key_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to look up and modify service worker registration data.

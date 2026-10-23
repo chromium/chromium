@@ -505,7 +505,7 @@ void CookieStoreManager::ActivateSubscriptions(
   std::string url_key = net::registry_controlled_domains::GetDomainAndRegistry(
       subscriptions[0]->url(),
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  base::LinkedList<CookieChangeSubscription>& url_key_subscriptions_list =
+  base::UnsafeLinkedList<CookieChangeSubscription>& url_key_subscriptions_list =
       subscriptions_by_url_key_[url_key];
 
   for (auto& subscription : subscriptions) {
@@ -607,8 +607,9 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
   if (it == subscriptions_by_url_key_.end())
     return;
   std::set<int64_t> interested_registration_ids;
-  const base::LinkedList<CookieChangeSubscription>& subscriptions = it->second;
-  for (const base::LinkNode<CookieChangeSubscription>* node =
+  const base::UnsafeLinkedList<CookieChangeSubscription>& subscriptions =
+      it->second;
+  for (const base::UnsafeLinkNode<CookieChangeSubscription>* node =
            subscriptions.head();
        node != subscriptions.end(); node = node->next()) {
     const CookieChangeSubscription* subscription = node->value();
