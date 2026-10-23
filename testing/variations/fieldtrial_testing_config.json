@@ -13989,21 +13989,6 @@
             ]
         }
     ],
-    "PictureInPictureMovesToolbarAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PictureInPictureMovesToolbarAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "PinExtensionJourney": [
         {
             "platforms": [

@@ -1348,10 +1348,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPersistAcrossRebootsDebugLogs =
             newCachedFlag(PERSIST_ACROSS_REBOOTS_DEBUG_LOGS, false);
     public static final CachedFlag sPictureInPictureMovesToolbarAndroid =
-            newCachedFlag(
-                    PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sProtectRecentlyVisibleTab =
             newCachedFlag(PROTECT_RECENTLY_VISIBLE_TAB, false);
