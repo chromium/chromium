@@ -1155,9 +1155,8 @@ bool ChromePermissionsClient::IsActorOperatingOnWebContents(
     return false;
   }
 
-  const auto* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
+  return actor_service->GetActingActorTaskForWebContents(web_contents) !=
+         nullptr;
 }
 
 url::Origin ChromePermissionsClient::GetEmbeddingOrigin(

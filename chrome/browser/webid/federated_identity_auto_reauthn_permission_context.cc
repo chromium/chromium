@@ -59,11 +59,9 @@ bool FederatedIdentityAutoReauthnPermissionContext::
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  const auto* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
   auto* actor_service = actor::ActorKeyedService::Get(profile);
-  return tab_interface && actor_service &&
-         actor_service->IsActiveOnTab(*tab_interface);
+  return actor_service && actor_service->GetActingActorTaskForWebContents(
+                              web_contents) != nullptr;
 }
 
 void FederatedIdentityAutoReauthnPermissionContext::RecordEmbargoForAutoReauthn(

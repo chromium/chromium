@@ -1872,9 +1872,8 @@ bool ChromePasswordManagerClient::IsActorTaskActive() {
     return false;
   }
 
-  const tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
+  return actor_service->GetActingActorTaskForWebContents(web_contents()) !=
+         nullptr;
 }
 
 ChromePasswordManagerClient::ChromePasswordManagerClient(
