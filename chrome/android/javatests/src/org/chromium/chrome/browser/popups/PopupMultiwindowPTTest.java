@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.popups;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import android.app.Activity;
@@ -28,19 +29,23 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.popups.testhtmls.PopupLauncherPageStation;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.BasePageStation.Builder;
 import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -56,9 +61,7 @@ import java.util.function.Supplier;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(reason = "Safer to not batch as we are using multiple Android tasks")
 @EnableFeatures(BlinkFeatures.ANDROID_DESKTOP_WEB_PREFS_LARGE_DISPLAYS)
-@MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
 public class PopupMultiwindowPTTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
@@ -78,19 +81,69 @@ public class PopupMultiwindowPTTest {
     @Before
     public void setUp() {
         mEntryPage = mCtaTestRule.startOnBlankPage();
-        assumeTrue(
-                "The test suite requires the APK to be the default browser. "
-                        + "Please run "
-                        + "'adb shell cmd role add-role-holder android.app.role.BROWSER "
-                        + ContextUtils.getApplicationContext().getPackageName()
-                        + "'",
-                hasBrowserRole());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testBasic() {
+        forceUnflaggedLaunchPath();
+        PopupOnClickPageStation page =
+                PopupOnClickPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), mEntryPage);
+
+        int initialTabCount = mCtaTestRule.tabsCount(/* incognito= */ false);
+
+        CctPageStation popup = page.clickLinkToOpenPopupWithBoundsExpectNewWindow();
+
+        // Assert that no tab has been created in lieu of a window
+        assertEquals(
+                "The number of tabs in the original window is unexpected",
+                initialTabCount,
+                mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        TransitAsserts.assertFinalDestinations(page, popup);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisabledTest(message = "crbug.com/568762355")
+    public void testBasicIncognito() {
+        forceUnflaggedLaunchPath();
+        final IncognitoNewTabPageStation incognitoEntryPoint =
+                mEntryPage.openNewIncognitoTabOrWindowFast();
+
+        final PopupOnClickPageStation page =
+                PopupOnClickPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), incognitoEntryPoint);
+        assertTrue(page.isIncognito());
+
+        final int initialTabCount = mCtaTestRule.tabsCount(/* incognito= */ true);
+
+        final CctPageStation popup = page.clickLinkToOpenPopupWithBoundsExpectNewWindow();
+
+        // Assert that no tab has been created in lieu of a window
+        assertEquals(
+                "The number of tabs in the original window is unexpected",
+                initialTabCount,
+                mCtaTestRule.tabsCount(/* incognito= */ true));
+
+        if (page.getActivity().isIncognitoWindow()) {
+            TransitAsserts.assertFinalDestinations(mEntryPage, page, popup);
+        } else {
+            TransitAsserts.assertFinalDestinations(page, popup);
+        }
+        assertTrue(popup.isIncognito());
     }
 
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupOpensIfInFreeformWindowing() {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -110,7 +163,9 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     public void testPopupDoesNotOpenIfInFullscreen() {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -149,7 +204,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupOpensWithLaunchBounds() {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -181,7 +239,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupOpensWithLaunchBounds_osWindowSizeLimit() {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -213,8 +274,11 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     @DisableIf.Build(product_name_includes = "brya", message = "See crbug.com/527558324")
     public void testPopupOpensWithLaunchBounds_osWindowSizeLimit2() {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -235,7 +299,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupClosesOnWindowClose() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -255,7 +322,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupFocusesOnWindowFocus() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -277,7 +347,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupMovesOnWindowMoveTo() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -307,7 +380,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupMovesOnWindowMoveBy() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -337,7 +413,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testPopupResizesOnWindowResizeTo() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -378,7 +457,10 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     public void testNoOpOnWindowResizeTo_osWindowSizeLimit() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -412,8 +494,11 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/545583117
     @DisableIf.Build(product_name_includes = "brya", message = "See crbug.com/527558324")
     public void testPopupResizesOnWindowResizeBy() throws Exception {
+        assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
@@ -438,6 +523,20 @@ public class PopupMultiwindowPTTest {
         page.clickResizePopupBy().withContext(popup).arriveAt(resizedPopup);
 
         TransitAsserts.assertFinalDestinations(page, resizedPopup);
+    }
+
+    private static void forceUnflaggedLaunchPath() {
+        PopupCreatorImpl.setSetMovableTaskRequiredForPopupsForTesting(false);
+    }
+
+    private static void assumeHasBrowserRole() {
+        assumeTrue(
+                "This test requires the APK to be the default browser. "
+                        + "Please run "
+                        + "'adb shell cmd role add-role-holder android.app.role.BROWSER "
+                        + ContextUtils.getApplicationContext().getPackageName()
+                        + "'",
+                hasBrowserRole());
     }
 
     private static boolean hasBrowserRole() {
