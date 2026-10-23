@@ -328,9 +328,8 @@ class ChromePasswordProtectionServiceTest
 
     service_ = NewMockPasswordProtectionService();
     fake_user_event_service_ = static_cast<syncer::FakeUserEventService*>(
-        browser_sync::UserEventServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(browser_context(),
-                                      GetFakeUserEventServiceFactory()));
+        UserEventServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser_context(), GetFakeUserEventServiceFactory()));
 #if !BUILDFLAG(IS_ANDROID)
     test_event_router_ =
         extensions::CreateAndUseTestEventRouter(browser_context());

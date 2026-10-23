@@ -22,8 +22,6 @@
 #include "components/sync_user_events/user_event_service_impl.h"
 #include "components/sync_user_events/user_event_sync_bridge.h"
 
-namespace browser_sync {
-
 // static
 UserEventServiceFactory* UserEventServiceFactory::GetInstance() {
   static base::NoDestructor<UserEventServiceFactory> instance;
@@ -76,5 +74,3 @@ UserEventServiceFactory::BuildServiceInstanceForBrowserContext(
       SessionSyncServiceFactory::GetForProfile(profile)->GetGlobalIdMapper());
   return std::make_unique<syncer::UserEventServiceImpl>(std::move(bridge));
 }
-
-}  // namespace browser_sync

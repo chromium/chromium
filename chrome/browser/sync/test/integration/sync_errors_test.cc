@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest,
 
   GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
   const sync_pb::UserEventSpecifics specifics =
       CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(kUserEventTimeUsec)));
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest,
                   .Wait())
       << "Non-tombstone entities: "
       << GetTypeNonTombstoneEntitiesCount(
-             browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0))
+             UserEventServiceFactory::GetForProfile(GetProfile(0))
                  ->GetControllerDelegate()
                  .get());
 }

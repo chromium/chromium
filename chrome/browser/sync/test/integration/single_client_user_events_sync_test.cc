@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, Sanity) {
       0u,
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::USER_EVENTS).size());
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
   const UserEventSpecifics specifics = CreateTestEvent(base::Time());
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(specifics));
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, RetrySequential) {
   const UserEventSpecifics specifics2 =
       CreateTestEvent(base::Time() + base::Microseconds(2));
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   GetFakeServer()->OverrideResponseType(
       base::BindRepeating(&BounceType, CommitResponse::TRANSIENT_ERROR));
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, RetryParallel) {
       CreateTestEvent(base::Time() + base::Microseconds(2));
 
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   // Set up the server so that the first commit attempt of `specifics1` results
   // in a transient error.
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, NoHistory) {
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(test_event1));
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, NoSessions) {
   ASSERT_TRUE(
       GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kTabs));
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(specifics));
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, Encryption) {
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(test_event1));
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetAuthError().IsPersistentError());
 
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
   event_service->RecordUserEvent(
       std::make_unique<UserEventSpecifics>(test_event));
 
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, NoQuotaApplied) {
   ASSERT_TRUE(SetupSync());
   // Add enough user events that would deplete quota in the initial cycle.
   syncer::UserEventService* event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   std::vector<UserEventSpecifics> expected_specifics;
   base::Time zero;

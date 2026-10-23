@@ -14,8 +14,6 @@ namespace syncer {
 class UserEventService;
 }  // namespace syncer
 
-namespace browser_sync {
-
 class UserEventServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static syncer::UserEventService* GetForProfile(Profile* profile);
@@ -34,7 +32,5 @@ class UserEventServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_USER_EVENT_SERVICE_FACTORY_H_

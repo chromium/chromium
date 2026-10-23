@@ -51,7 +51,7 @@ SyncInternalsUI::SyncInternalsUI(content::WebUI* web_ui)
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
       SyncInvalidationsServiceFactory::GetForProfile(profile),
-      browser_sync::UserEventServiceFactory::GetForProfile(profile),
+      UserEventServiceFactory::GetForProfile(profile),
       chrome::GetChannelName(chrome::WithExtendedStable(true))));
 }
 

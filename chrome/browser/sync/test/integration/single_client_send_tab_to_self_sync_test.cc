@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   // because it may simply not have reached the server yet. Send
   // something else through the system to wait on before checking.
   syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+      UserEventServiceFactory::GetForProfile(GetProfile(0));
   user_event_service->RecordUserEvent(
       std::make_unique<sync_pb::UserEventSpecifics>(
           user_events_helper::CreateTestEvent(base::Time::Now())));

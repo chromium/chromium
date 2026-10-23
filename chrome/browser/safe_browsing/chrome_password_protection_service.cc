@@ -805,7 +805,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
   }
 
   syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(profile_);
+      UserEventServiceFactory::GetForProfile(profile_);
   if (!user_event_service)
     return;
 
@@ -852,7 +852,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
   }
 
   syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(profile_);
+      UserEventServiceFactory::GetForProfile(profile_);
   if (!user_event_service)
     return;
 
@@ -881,7 +881,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupResult(
   }
 
   syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(profile_);
+      UserEventServiceFactory::GetForProfile(profile_);
   if (!user_event_service)
     return;
 
@@ -946,7 +946,7 @@ void ChromePasswordProtectionService::
     }
   } else {
     syncer::UserEventService* user_event_service =
-        browser_sync::UserEventServiceFactory::GetForProfile(profile_);
+        UserEventServiceFactory::GetForProfile(profile_);
     if (!user_event_service)
       return;
 
@@ -1577,7 +1577,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordCapture(bool did_log_in) {
     return;
 
   syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(profile_);
+      UserEventServiceFactory::GetForProfile(profile_);
   if (!user_event_service)
     return;
 

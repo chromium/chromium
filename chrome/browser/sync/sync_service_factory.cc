@@ -291,8 +291,7 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
       supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           profile->GetProfileKey()));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  builder.SetUserEventService(
-      browser_sync::UserEventServiceFactory::GetForProfile(profile));
+  builder.SetUserEventService(UserEventServiceFactory::GetForProfile(profile));
   builder.SetSkillsService(
 #if BUILDFLAG(IS_ANDROID)
       nullptr
@@ -561,7 +560,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(autofill::EntitySuppressionManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
-  DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(CrossDeviceThemeTrackerFactory::GetInstance());
@@ -597,6 +595,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(TabContextSyncServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(TrustedVaultServiceFactory::GetInstance());
+  DependsOn(UserEventServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(NtpAndroidCustomBackgroundServiceFactory::GetInstance());
 #endif  // BUILDFLAG(IS_ANDROID)
