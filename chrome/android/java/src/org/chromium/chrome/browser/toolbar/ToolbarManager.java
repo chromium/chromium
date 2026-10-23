@@ -3774,7 +3774,18 @@ public class ToolbarManager
             return;
         }
 
-        mIphController.showBottomToolbarIph(mControlContainer.findViewById(R.id.location_bar));
+        View locationBarView = mControlContainer.findViewById(R.id.location_bar);
+        if (BottomBarConfigUtils.isBottomBarEnabled(mActivity)
+                && BottomBarConfigUtils.isEducationAddressBarIphEnabled()) {
+            if (mBrowserControlsSizer.getControlsPosition() == ControlsPosition.TOP
+                    && (mToolbarPositionController == null
+                            || !mToolbarPositionController.doesPrefMismatchPosition())) {
+                mIphController.showBottomBarAddressBarIph(locationBarView);
+            }
+            return;
+        }
+
+        mIphController.showBottomToolbarIph(locationBarView);
     }
 
     /**

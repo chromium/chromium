@@ -1996,6 +1996,9 @@ public abstract class ChromeFeatureList {
     // inflated.
     public static final BooleanCachedFeatureParam sAndroidBottomBarDefaultUserEnabled =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "default_user_enabled", true);
+    public static final BooleanCachedFeatureParam sAndroidBottomBarEducationAddressBarIphEnabled =
+            newBooleanCachedFeatureParam(
+                    ANDROID_BOTTOM_BAR, "education_address_bar_iph_enabled", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarEducationEnabled =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_enabled", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarEducationGeminiFocused =
@@ -2392,6 +2395,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppRatingPromptBypassChecks,
                     sAndroidBottomBarAlwaysUseFilledGlicIcon,
                     sAndroidBottomBarDefaultUserEnabled,
+                    sAndroidBottomBarEducationAddressBarIphEnabled,
                     sAndroidBottomBarEducationEnabled,
                     sAndroidBottomBarEducationGeminiFocused,
                     sAndroidBottomBarHeightDp,

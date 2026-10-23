@@ -76,4 +76,17 @@ public class ToolbarIphControllerUnitTest {
         assertEquals(FeatureConstants.BOTTOM_TOOLBAR_FEATURE, cmd.featureName);
         assertEquals(mAnchorView, cmd.anchorView);
     }
+
+    @Test
+    public void testShowBottomBarAddressBarIph() {
+        mController.showBottomBarAddressBarIph(mAnchorView);
+
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand cmd = mIphCommandCaptor.getValue();
+        assertNotNull(cmd);
+        assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_ADDRESS_BAR, cmd.featureName);
+        assertEquals(mAnchorView, cmd.anchorView);
+        assertEquals(R.string.bottom_bar_education_tooltip_address_bar, cmd.stringId);
+        assertEquals(R.string.bottom_bar_education_tooltip_address_bar, cmd.accessibilityStringId);
+    }
 }

@@ -798,6 +798,35 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAndroidBottomBarAddressBar.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+
+    // IPH can show even if other IPHs have shown this session.
+    config.session_rate = kNoRestrictions;
+
+    // Show at most 3 times in 360 days, and at most once per 7 days.
+    config.trigger =
+        EventConfig("android_bottom_bar_address_bar_trigger",
+                    Comparator(LESS_THAN, 3), /*window=*/360, /*storage=*/360);
+    config.event_configs.insert(
+        EventConfig("android_bottom_bar_address_bar_trigger",
+                    Comparator(LESS_THAN, 1), /*window=*/7, /*storage=*/360));
+
+    // Require that the bottom bar education flow has been shown at least once.
+    config.event_configs.insert(EventConfig(
+        "android_bottom_bar_education_trigger",
+        Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/360, /*storage=*/360));
+
+    // Stop showing once the user interacts with the address bar long-press
+    // menu.
+    config.used =
+        EventConfig("bottom_toolbar_menu_triggered", Comparator(EQUAL, 0),
+                    /*window=*/360, /*storage=*/360);
+    return config;
+  }
+
   if (kIPHAndroidBottomBarEducation.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

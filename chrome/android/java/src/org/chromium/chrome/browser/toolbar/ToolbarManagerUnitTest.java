@@ -15,6 +15,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -71,6 +73,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -181,6 +184,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -202,6 +206,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -1588,5 +1593,57 @@ public class ToolbarManagerUnitTest {
 
         tabObserver.onLoadStopped(backgroundTab, /* toDifferentDocument= */ true);
         verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":education_enabled/true/education_address_bar_iph_enabled/true")
+    public void testMaybeShowBottomToolbarIph_EducationAddressBarIph_TopPosition() {
+        triggerMaybeShowBottomToolbarIph(ControlsPosition.TOP);
+
+        verify(mTracker, atLeastOnce())
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_ADDRESS_BAR);
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(eq(FeatureConstants.BOTTOM_TOOLBAR_FEATURE), any());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":education_enabled/true/education_address_bar_iph_enabled/true")
+    public void testMaybeShowBottomToolbarIph_EducationAddressBarIph_BottomPosition() {
+        triggerMaybeShowBottomToolbarIph(ControlsPosition.BOTTOM);
+
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_ADDRESS_BAR);
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(eq(FeatureConstants.BOTTOM_TOOLBAR_FEATURE), any());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":education_enabled/true/education_address_bar_iph_enabled/false")
+    public void
+            testMaybeShowBottomToolbarIph_EducationAddressBarIphDisabled_ShowsBottomToolbarIph() {
+        triggerMaybeShowBottomToolbarIph(ControlsPosition.TOP);
+
+        verify(mTracker, atLeastOnce())
+                .shouldTriggerHelpUi(eq(FeatureConstants.BOTTOM_TOOLBAR_FEATURE), any());
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_ADDRESS_BAR);
+    }
+
+    private void triggerMaybeShowBottomToolbarIph(@ControlsPosition int controlsPosition) {
+        MockitoHelper.doCallback((Callback<Boolean> callback) -> callback.onResult(true))
+                .when(mTracker)
+                .addOnInitializedCallback(any());
+        when(mControlsSizer.getControlsPosition()).thenReturn(controlsPosition);
+        clearInvocations(mTracker);
+
+        Tab webTab = mockTab(/* isNtp= */ false);
+        mActivityTabProvider.setForTesting(webTab);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

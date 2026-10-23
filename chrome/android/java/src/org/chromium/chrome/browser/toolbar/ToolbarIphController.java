@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -35,21 +36,47 @@ public class ToolbarIphController {
         mEducationHelper = educationHelper;
     }
 
+    /**
+     * Attempts to show the price drop in-product help bubble.
+     *
+     * @param anchorView The view to anchor the IPH bubble on.
+     */
     @VisibleForTesting
     public void showPriceDropIph(View anchorView) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
     }
 
+    /**
+     * Attempts to show the bottom toolbar in-product help bubble.
+     *
+     * @param anchorView The view to anchor the IPH bubble on.
+     */
     @VisibleForTesting
     public void showBottomToolbarIph(View anchorView) {
+        showAddressBarIph(
+                anchorView,
+                FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
+                R.string.toolbar_long_press_options_iph);
+    }
+
+    /**
+     * Attempts to show the bottom bar education address bar in-product help bubble.
+     *
+     * @param anchorView The view to anchor the IPH bubble on.
+     */
+    public void showBottomBarAddressBarIph(View anchorView) {
+        showAddressBarIph(
+                anchorView,
+                FeatureConstants.ANDROID_BOTTOM_BAR_ADDRESS_BAR,
+                R.string.bottom_bar_education_tooltip_address_bar);
+    }
+
+    private void showAddressBarIph(
+            View anchorView, @FeatureConstants String featureName, @StringRes int stringId) {
         int yInset = mContext.getResources().getDimensionPixelOffset(R.dimen.toolbar_iph_y_inset);
         mEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mContext.getResources(),
-                                FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
-                                R.string.toolbar_long_press_options_iph,
-                                R.string.toolbar_long_press_options_iph)
+                new IphCommandBuilder(mContext.getResources(), featureName, stringId, stringId)
                         .setInsetRect(new Rect(0, 0, 0, yInset))
                         .setAnchorView(anchorView)
                         .setDelayedDismissOnTouch(MIN_DELAY_BEFORE_TOUCH_DISMISS_MS)

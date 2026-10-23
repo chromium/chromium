@@ -361,6 +361,9 @@ BASE_FEATURE(kIPHExtensionsPinnedByDefaultFeature,
 BASE_FEATURE(kIPHAccountSettingsHistorySync,
              "IPH_AccountSettingsHistorySync",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAndroidBottomBarAddressBar,
+             "IPH_AndroidBottomBarAddressBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAndroidBottomBarEducation,
              "IPH_AndroidBottomBarEducation",
              base::FEATURE_DISABLED_BY_DEFAULT);

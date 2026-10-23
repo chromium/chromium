@@ -212,6 +212,14 @@ public class BottomBarConfigUtils {
         return ChromeFeatureList.sAndroidBottomBarEducationEnabled.getValue();
     }
 
+    /**
+     * Returns whether the bottom bar user education flow should show the address bar position IPH.
+     */
+    public static boolean isEducationAddressBarIphEnabled() {
+        return isEducationEnabled()
+                && ChromeFeatureList.sAndroidBottomBarEducationAddressBarIphEnabled.getValue();
+    }
+
     /** Whether the bottom bar user education flow should use the Gemini-focused variant. */
     public static boolean isEducationGeminiFocused() {
         return ChromeFeatureList.sAndroidBottomBarEducationGeminiFocused.getValue();
