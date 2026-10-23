@@ -19,8 +19,9 @@ class OmniboxPopupTest : public WebUIMochaBrowserTest {
   OmniboxPopupTest() {
     set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
     scoped_feature_list_.InitWithFeatures(
-        {omnibox::internal::kWebUIOmniboxPopup},
-        {omnibox::internal::kWebUIOmniboxFullPopup, omnibox::kAimUsePecApi});
+        /*enabled_features=*/{omnibox::internal::kWebUIOmniboxPopup},
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup,
+                               omnibox::kAimUsePecApi});
   }
 
  private:
@@ -29,10 +30,6 @@ class OmniboxPopupTest : public WebUIMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupTest, App) {
   RunTest("omnibox_popup/app_test.js", "mocha.run();");
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxPopupTest, Searchbox) {
-  RunTest("omnibox_popup/omnibox_popup_searchbox_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupTest, TextfieldModel) {
@@ -47,11 +44,15 @@ class OmniboxPopupFullTest : public WebUIMochaBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      omnibox::internal::kWebUIOmniboxFullPopup};
+      /*enable_feature=*/omnibox::internal::kWebUIOmniboxFullPopup};
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, App) {
   RunTest("omnibox_popup/full_app_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, Searchbox) {
+  RunTest("omnibox_popup/omnibox_popup_searchbox_test.js", "mocha.run();");
 }
 
 class OmniboxPopupAimTest : public WebUIMochaBrowserTest {

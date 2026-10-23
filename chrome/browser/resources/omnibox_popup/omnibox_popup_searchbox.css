@@ -315,12 +315,12 @@ omnibox-popup-contextual-entrypoint {
 }
 
 #composeButton {
-  --cr-button-height: 24px;
+  --cr-button-height: var(--cr-searchbox-input-height);
   align-self: center;
 }
 
 #composeButton::part(glow-container) {
-  height: 24px;
+  height: var(--cr-searchbox-input-height);
   /* .glow-container in searchbox_compose_button.css adds
    * padding-inline: 2px, so subtract 2px to place the button's edge at
    * --location-bar-trailing-decoration-aim-edge-padding. */
@@ -410,7 +410,7 @@ omnibox-popup-contextual-entrypoint {
 :host([aim-button-icon-only_]) #composeButton::part(compose-button) {
   border-radius: 50%;
   padding: 0;
-  /* Match width to height (24px) for a 1:1 circular icon button. */
+  /* Match width to height for a 1:1 circular icon button. */
   min-width: var(--cr-button-height);
   width: var(--cr-button-height);
 }
