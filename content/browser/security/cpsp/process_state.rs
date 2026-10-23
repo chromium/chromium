@@ -9,7 +9,7 @@ chromium::import! {
 }
 
 use std::collections::hash_map::Entry;
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use common_id_types::ChildProcessId;
 use cxx::UniquePtr;
@@ -86,6 +86,9 @@ pub(crate) mod ffi {
         fn set_process_is_used(child_id: ChildProcessId);
         fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<CppProcessLock>;
 
+        fn grant_commit_origin(child_id: ChildProcessId, origin: UniquePtr<Origin>);
+        fn grant_request_origin(child_id: ChildProcessId, origin: UniquePtr<Origin>);
+
         fn grant_commit_scheme(child_id: ChildProcessId, scheme: &str);
         fn grant_request_scheme(child_id: ChildProcessId, scheme: &str);
 
@@ -157,6 +160,20 @@ fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<ffi::CppProcessLock> 
         ffi::clone(state.process_lock())
     } else {
         ffi::create_invalid()
+    }
+}
+
+fn grant_commit_origin(child_id: ChildProcessId, origin: UniquePtr<ffi::Origin>) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_mut(&child_id) {
+        state.grant_commit_origin(origin);
+    }
+}
+
+fn grant_request_origin(child_id: ChildProcessId, origin: UniquePtr<ffi::Origin>) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_mut(&child_id) {
+        state.grant_request_origin(origin);
     }
 }
 
@@ -414,6 +431,13 @@ pub(crate) struct ProcessState {
     /// Maps URL schemes to commit/request policies the child process has been
     /// granted. There is no provision for revoking.
     scheme_map: HashMap<String, CommitRequestPolicy>,
+    /// The map of URL origins to commit/request policies the child process has
+    /// been granted. There is no provision for revoking.
+    ///
+    /// Stored as a BTreeMap rather than a HashMap (which the C++ version uses)
+    /// to avoid dealing with hash functions for url::Origin. The ordering is
+    /// based on the C++ url::Origin comparison operators.
+    origin_map: BTreeMap<UniquePtr<ffi::Origin>, CommitRequestPolicy>,
     /// Whether a child process can host WebUI pages with bindings.
     has_web_ui_bindings: bool,
     /// The set of origins in Android WebView and <webview> tags that are
@@ -436,6 +460,7 @@ impl ProcessState {
         ProcessState {
             process_lock: StatefulProcessLock::default(),
             scheme_map: HashMap::new(),
+            origin_map: BTreeMap::new(),
             has_web_ui_bindings: false,
             webview_origin_exemption_set: BTreeSet::new(),
             midi_permission: MidiPermission::CannotSendMidi,
@@ -444,6 +469,21 @@ impl ProcessState {
 
     fn process_lock(&self) -> &ffi::CppProcessLock {
         self.process_lock.as_ffi()
+    }
+
+    // TODO(crbug.com/522872468): Call from `ProcessState::can_commit_url` once
+    // ported to Rust.
+    #[allow(dead_code)]
+    fn can_commit_origin(&self, origin: &UniquePtr<ffi::Origin>) -> bool {
+        self.origin_map.get(origin) == Some(&CommitRequestPolicy::CommitAndRequest)
+    }
+
+    // TODO(crbug.com/522872468): Call from `ProcessState::can_request_url` once
+    // ported to Rust.
+    #[allow(dead_code)]
+    fn can_request_origin(&self, origin: &UniquePtr<ffi::Origin>) -> bool {
+        // Anything in `origin_map` must have at least request permissions.
+        self.origin_map.contains_key(origin)
     }
 
     // TODO(crbug.com/522872468): Call from `ProcessState::can_commit_url` once
@@ -516,6 +556,23 @@ impl MutableProcessState {
     fn set_process_is_used(&mut self) {
         let old_lock = std::mem::take(&mut self.0.process_lock);
         self.0.process_lock = old_lock.set_is_used();
+    }
+
+    fn grant_commit_origin(&mut self, origin: UniquePtr<ffi::Origin>) {
+        if origin.opaque() {
+            return;
+        }
+        self.0.origin_map.insert(origin, CommitRequestPolicy::CommitAndRequest);
+    }
+
+    fn grant_request_origin(&mut self, origin: UniquePtr<ffi::Origin>) {
+        if origin.opaque() {
+            return;
+        }
+        // Anything already in `origin_map` must have at least request
+        // permission. Use `or_insert()` to avoid downgrading an existing
+        // `CommitAndRequest` permission.
+        self.0.origin_map.entry(origin).or_insert(CommitRequestPolicy::RequestOnly);
     }
 
     fn grant_commit_scheme(&mut self, scheme: &str) {

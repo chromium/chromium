@@ -1719,6 +1719,23 @@ void ChildProcessSecurityPolicyImpl::GrantSendMidiSysExMessage_Cpp(
 void ChildProcessSecurityPolicyImpl::GrantCommitOrigin(
     int child_id,
     const url::Origin& origin) {
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    rust::child_process_security_policy::grant_commit_origin(
+        ChildProcessId::FromUnsafeValue(child_id),
+        std::make_unique<url::Origin>(origin));
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since ProcessState::CanCommitURL and
+  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
+  // they are supported in Rust, this should be combined into a
+  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  GrantCommitOrigin_Cpp(child_id, origin);
+}
+
+void ChildProcessSecurityPolicyImpl::GrantCommitOrigin_Cpp(
+    int child_id,
+    const url::Origin& origin) {
   base::AutoLock lock(lock_);
 
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
@@ -1729,6 +1746,23 @@ void ChildProcessSecurityPolicyImpl::GrantCommitOrigin(
 }
 
 void ChildProcessSecurityPolicyImpl::GrantRequestOrigin(
+    int child_id,
+    const url::Origin& origin) {
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    rust::child_process_security_policy::grant_request_origin(
+        ChildProcessId::FromUnsafeValue(child_id),
+        std::make_unique<url::Origin>(origin));
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since ProcessState::CanCommitURL and
+  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
+  // they are supported in Rust, this should be combined into a
+  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  GrantRequestOrigin_Cpp(child_id, origin);
+}
+
+void ChildProcessSecurityPolicyImpl::GrantRequestOrigin_Cpp(
     int child_id,
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
