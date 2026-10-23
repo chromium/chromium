@@ -66,9 +66,6 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   // Returns the number of extensions included in the button.
   size_t GetExtensionsCount() const;
 
-  // ToolbarButton:
-  bool ShouldShowInkdropAfterIphInteraction() override;
-
   // Accessors used by tests:
   std::vector<extensions::ExtensionId> GetExtensionIdsForTesting() {
     return extension_ids_;

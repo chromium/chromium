@@ -49,7 +49,6 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
       const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  bool ShouldShowInkdropAfterIphInteraction() override;
 
   void UpdateCachedTooltipText(
       ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state);

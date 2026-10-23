@@ -183,12 +183,6 @@ class ToolbarButton : public views::LabelButton,
   // Returns if menu should be shown. Override this to change default behavior.
   virtual bool ShouldShowMenu();
 
-  // Returns if the button inkdrop should persist after the user interacts with
-  // IPH for the button. Override this to change default behavior.
-  // TODO(crbug.com/40258442): Investigate if this is still needed and if so how
-  // it can be applied to all Buttons rather than just ToolbarButtons.
-  virtual bool ShouldShowInkdropAfterIphInteraction();
-
   // Function to show the dropdown menu.
   virtual void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);
 
@@ -215,11 +209,6 @@ class ToolbarButton : public views::LabelButton,
   // Retuns true if the background highlight color should be blended
   // with the toolbar color.
   virtual bool ShouldBlendHighlightColor() const;
-
-  // Returns whether to directly use the highlight as background instead
-  // of blending it with the toolbar colors.
-  // TODO(shibalik): remove this method after fixing for profile button.
-  virtual bool ShouldDirectlyUseHighlightAsBackground() const;
 
   // Virtual method to explicitly set the highlighted text color instead of the
   // default behavior of the HighlightColorAnimation.

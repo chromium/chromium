@@ -293,10 +293,6 @@ bool ToolbarButton::ShouldBlendHighlightColor() const {
   return false;
 }
 
-bool ToolbarButton::ShouldDirectlyUseHighlightAsBackground() const {
-  return true;
-}
-
 std::optional<SkColor> ToolbarButton::GetHighlightTextColor() const {
   return std::nullopt;
 }
@@ -571,10 +567,6 @@ void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
 
 bool ToolbarButton::ShouldShowMenu() {
   return model_ != nullptr;
-}
-
-bool ToolbarButton::ShouldShowInkdropAfterIphInteraction() {
-  return true;
 }
 
 void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {

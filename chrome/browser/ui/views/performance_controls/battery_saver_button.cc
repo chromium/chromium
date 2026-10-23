@@ -83,10 +83,6 @@ void BatterySaverButton::OnBubbleHidden() {
   bubble_ = nullptr;
 }
 
-bool BatterySaverButton::ShouldShowInkdropAfterIphInteraction() {
-  return false;
-}
-
 void BatterySaverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ToolbarButton::OnBoundsChanged(previous_bounds);
 

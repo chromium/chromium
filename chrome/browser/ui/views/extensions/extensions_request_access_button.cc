@@ -124,10 +124,6 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
   return confirmation_origin_ == origin;
 }
 
-bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
-  return false;
-}
-
 void ExtensionsRequestAccessButton::VisibilityChanged(
     views::View* starting_from,
     bool is_visible) {

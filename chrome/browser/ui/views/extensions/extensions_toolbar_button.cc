@@ -143,10 +143,6 @@ void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   extensions_toolbar_->OnMenuClosed();
 }
 
-bool ExtensionsToolbarButton::ShouldShowInkdropAfterIphInteraction() {
-  return false;
-}
-
 void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   if (extensions_menu_coordinator_ &&
       extensions_menu_coordinator_->IsShowing()) {

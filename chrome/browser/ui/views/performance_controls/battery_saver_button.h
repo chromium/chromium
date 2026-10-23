@@ -47,7 +47,6 @@ class BatterySaverButton : public ToolbarButton,
   void OnBubbleHidden() override;
 
   // ToolbarButton:
-  bool ShouldShowInkdropAfterIphInteraction() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
