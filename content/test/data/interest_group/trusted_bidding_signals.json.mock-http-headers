@@ -1,5 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: Application/JSON
-Ad-Auction-Allowed: true
-Ad-Auction-Bidding-Signals-Format-Version: 2
-Cache-Control: max-age=60

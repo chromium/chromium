@@ -1,4 +1,0 @@
-{
-  "renderUrls": {"https://example.com/render": "foo" },
-  "adComponentRenderURLs": {"https://example.com/render-component": 1 }
-}
