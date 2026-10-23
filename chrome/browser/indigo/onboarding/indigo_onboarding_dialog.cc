@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -27,7 +28,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -63,7 +63,10 @@ constexpr gfx::Size kMaxSize{448, 960};
 
 class OnboardingWebView : public views::WebView {
  public:
-  using WebView::WebView;
+  explicit OnboardingWebView(content::BrowserContext* context = nullptr)
+      : WebView(context) {
+    SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
+  }
 
   void SetOnCloseCallback(base::OnceClosure close_callback) {
     close_callback_ = std::move(close_callback);
@@ -88,13 +91,6 @@ class OnboardingWebView : public views::WebView {
                       const blink::mojom::FileChooserParams& params) override {
     FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                      params);
-  }
-
-  bool HandleKeyboardEvent(
-      content::WebContents* web_contents,
-      const input::NativeWebKeyboardEvent& event) override {
-    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, GetFocusManager());
   }
 
   content::WebContents* OpenURLFromTab(
@@ -130,7 +126,6 @@ class OnboardingWebView : public views::WebView {
 
   base::RepeatingCallback<BrowserWindowInterface*()> browser_window_callback_;
   base::OnceClosure close_callback_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace
