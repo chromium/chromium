@@ -23,4 +23,10 @@ TransportHandler::SendUpstreamMessage(
   return session_->SendUpstreamMessage(payload_type, message);
 }
 
+void TransportHandler::CloseSession() {
+  if (session_) {
+    session_->Close();
+  }
+}
+
 }  // namespace browser_actuator::transport

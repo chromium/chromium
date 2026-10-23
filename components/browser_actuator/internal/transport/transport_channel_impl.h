@@ -94,6 +94,7 @@ class TransportChannelImpl : public TransportChannel,
 
   // TransportSessionRegistry::Observer:
   void OnSessionRegistered(TransportSession* session) override;
+  void OnSessionRemoved(std::string_view session_id) override;
 
   DownstreamConnectionState downstream_connection_state() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

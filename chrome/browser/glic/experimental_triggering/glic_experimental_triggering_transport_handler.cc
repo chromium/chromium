@@ -25,6 +25,35 @@
 
 namespace glic {
 
+namespace {
+
+bool IsTerminalResponse(const ExperimentalTriggeringResponse& response) {
+  if (response.task_update.has_value()) {
+    switch (response.task_update->state) {
+      case TaskUpdate::State::kComplete:
+      case TaskUpdate::State::kStopped:
+      case TaskUpdate::State::kFailed:
+        return true;
+      case TaskUpdate::State::kUnknown:
+      case TaskUpdate::State::kStarting:
+      case TaskUpdate::State::kRunning:
+      case TaskUpdate::State::kPaused:
+      case TaskUpdate::State::kYield:
+      case TaskUpdate::State::kResumed:
+        return false;
+    }
+  }
+  if (response.execute_actions_response.has_value()) {
+    return true;
+  }
+  if (response.device_opt_in_result.has_value()) {
+    return *response.device_opt_in_result != DeviceOptInResult::kAccepted;
+  }
+  return false;
+}
+
+}  // namespace
+
 using GlicExperimentalTriggering =
     components_sharing_message::GlicExperimentalTriggering;
 
@@ -103,6 +132,7 @@ void GlicExperimentalTriggeringTransportHandler::OnMessage(
 
 void GlicExperimentalTriggeringTransportHandler::SendResponse(
     ExperimentalTriggeringResponse response) {
+  const bool is_terminal = IsTerminalResponse(response);
   components_sharing_message::GlicExperimentalTriggering triggering =
       ResponseToTriggeringProto(response);
 
@@ -121,6 +151,11 @@ void GlicExperimentalTriggeringTransportHandler::SendResponse(
   if (!send_result.has_value()) {
     DLOG(ERROR) << "Failed to send experimental triggering response: "
                 << static_cast<int>(send_result.error());
+  }
+  if (is_terminal) {
+    // WARNING: `CloseSession()` may destroy the owning `TransportSession` and
+    // `this` handler. Do not access any member variables after this call.
+    CloseSession();
   }
 }
 

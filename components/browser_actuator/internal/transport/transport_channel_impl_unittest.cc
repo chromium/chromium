@@ -1076,5 +1076,83 @@ TEST_F(TransportChannelImplTest,
   EXPECT_TRUE(handler_destroyed);
 }
 
+TEST_F(TransportChannelImplTest,
+       SessionCloseSendsUpstreamCloseSessionAndDisconnectsWhenLastSession) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+
+  TransportSession* session = channel_->GetSessionRegistry()->GetSession("s1");
+  ASSERT_NE(session, nullptr);
+  session->Close();
+
+  EXPECT_EQ(channel_->GetSessionRegistry()->GetSession("s1"), nullptr);
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+
+  ASSERT_EQ(observer.received.size(), 1u);
+  const ActuatorUpstreamMessage& upstream = observer.received[0].second;
+  EXPECT_EQ(upstream.session_id(), "s1");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+  ASSERT_EQ(upstream.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  ControlCommand command;
+  ASSERT_TRUE(command.ParseFromString(
+      upstream.typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(command.has_close_session());
+
+  // A subsequent downstream CloseSession (or late message) for "s1" must not
+  // resurrect the closed session or reconnect the stream.
+  ControlCommand downstream_close;
+  downstream_close.mutable_close_session();
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 2,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        downstream_close.SerializeAsString()}}));
+  fake_client_->Dispatch(SerializedDownstream("s1", 3));
+
+  EXPECT_EQ(channel_->GetSessionRegistry()->GetSession("s1"), nullptr);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+}
+
+TEST_F(TransportChannelImplTest,
+       SessionRemovalReconnectsStreamWhenOtherSessionsRemainActive) {
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s2", 1));
+  EXPECT_EQ(fake_client_->connect_count(), 2);
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+
+  TransportSession* s1 = channel_->GetSessionRegistry()->GetSession("s1");
+  ASSERT_NE(s1, nullptr);
+  s1->Close();
+
+  // Because "s2" is still active, the stream reconnects watching only "s2".
+  EXPECT_EQ(fake_client_->disconnect_count(), 2);
+  EXPECT_EQ(fake_client_->connect_count(), 3);
+  WatchSessionsRequest body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s2");
+
+  // Closing the last remaining session ("s2") disconnects the stream without
+  // reconnecting.
+  TransportSession* s2 = channel_->GetSessionRegistry()->GetSession("s2");
+  ASSERT_NE(s2, nullptr);
+  s2->Close();
+  EXPECT_EQ(fake_client_->disconnect_count(), 3);
+  EXPECT_EQ(fake_client_->connect_count(), 3);
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+
 }  // namespace
 }  // namespace browser_actuator::transport

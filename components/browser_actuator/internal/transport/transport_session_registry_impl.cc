@@ -83,7 +83,12 @@ void TransportSessionRegistryImpl::DestroySession(std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = sessions_.find(session_id);
   if (it != sessions_.end()) {
+    std::string removed_session_id = it->first;
     sessions_.erase(it);
+    for (auto& observer : observers_) {
+      observer.OnSessionRemoved(removed_session_id);
+    }
+    closed_session_ids_.Put(std::move(removed_session_id));
   }
 }
 
@@ -93,6 +98,12 @@ TransportSessionImpl* TransportSessionRegistryImpl::GetOrCreateSession(
   TransportSessionImpl* existing_session = GetSessionImpl(session_id);
   if (existing_session) {
     return existing_session;
+  }
+  if (closed_session_ids_.Get(std::string(session_id)) !=
+      closed_session_ids_.end()) {
+    DVLOG(1) << "Ignoring GetOrCreateSession for already-closed session: "
+             << session_id;
+    return nullptr;
   }
   return CreateSession(session_id);
 }
@@ -127,6 +138,7 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
 void TransportSessionRegistryImpl::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sessions_.clear();
+  closed_session_ids_.Clear();
 }
 
 base::WeakPtr<TransportSessionRegistryImpl>

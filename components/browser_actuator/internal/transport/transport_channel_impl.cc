@@ -112,6 +112,15 @@ void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
   ReconnectStream();
 }
 
+void TransportChannelImpl::OnSessionRemoved(std::string_view) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_registry_->GetAllSessionImpls().empty()) {
+    Disconnect();
+  } else {
+    ReconnectStream();
+  }
+}
+
 void TransportChannelImpl::ReconnectStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (stream_client_) {

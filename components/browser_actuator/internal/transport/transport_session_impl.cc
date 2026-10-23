@@ -24,6 +24,7 @@
 #include "components/browser_actuator/public/transport/transport_handler.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
 namespace browser_actuator::transport {
@@ -117,6 +118,24 @@ void TransportSessionImpl::OnMessage(PayloadType payload_type,
   if (!result.has_value()) {
     DLOG(WARNING) << "Failed to process payload error: "
                   << static_cast<int>(result.error());
+  }
+}
+
+void TransportSessionImpl::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!channel_) {
+    return;
+  }
+  const std::string session_id = session_id_;
+  ControlCommand command;
+  command.mutable_close_session();
+  channel_->SendUpstreamMessage(session_id, PayloadType::kControl, command,
+                                /*responding_to_sequence_number=*/std::nullopt);
+  if (!channel_) {
+    return;
+  }
+  if (TransportSessionRegistry* registry = channel_->GetSessionRegistry()) {
+    registry->DestroySession(session_id);
   }
 }
 

@@ -108,6 +108,7 @@ class MockTransportSession
               (browser_actuator::transport::PayloadType payload_type,
                std::string_view serialized_payload),
               (override));
+  MOCK_METHOD(void, Close, (), (override));
 };
 
 TEST_F(BrowserActuatorMessageHandlerTest, HandlesActuatorDownstreamMessage) {

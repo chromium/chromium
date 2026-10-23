@@ -31,6 +31,7 @@ class MockTransportSession : public TransportSession {
               OnMessage,
               (PayloadType payload_type, std::string_view serialized_payload),
               (override));
+  MOCK_METHOD(void, Close, (), (override));
 };
 
 class TestTransportHandler : public TransportHandler {
@@ -42,6 +43,7 @@ class TestTransportHandler : public TransportHandler {
   void OnMessage(PayloadType payload_type,
                  std::string_view serialized_payload) override {}
 
+  using TransportHandler::CloseSession;
   using TransportHandler::SendUpstreamMessage;
 };
 
@@ -67,6 +69,19 @@ TEST(TransportHandlerTest, SendUpstreamMessageFailsWhenSessionNull) {
   auto result = handler.SendUpstreamMessage(PayloadType::kControl, command);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), SendUpstreamMessageError::kChannelDisconnected);
+}
+
+TEST(TransportHandlerTest, CloseSessionDelegatesToSession) {
+  MockTransportSession session;
+  TestTransportHandler handler(&session);
+
+  EXPECT_CALL(session, Close()).Times(1);
+  handler.CloseSession();
+}
+
+TEST(TransportHandlerTest, CloseSessionNoOpWhenSessionNull) {
+  TestTransportHandler handler(nullptr);
+  handler.CloseSession();
 }
 
 }  // namespace

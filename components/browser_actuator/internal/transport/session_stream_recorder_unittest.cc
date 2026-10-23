@@ -42,6 +42,7 @@ class FakeTransportSession : public TransportSession {
   }
   void OnMessage(PayloadType payload_type,
                  std::string_view serialized_payload) override {}
+  void Close() override {}
 
  private:
   std::string session_id_;

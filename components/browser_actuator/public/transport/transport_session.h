@@ -32,6 +32,11 @@ class TransportSession {
   // Dispatches an incoming message to handlers registered for payload_type.
   virtual void OnMessage(PayloadType payload_type,
                          std::string_view serialized_payload) = 0;
+
+  // Closes and destroys this session locally.
+  // WARNING: May destroy `this` and all `TransportHandler`s owned by this
+  // session; callers must not access `this` after calling `Close()`.
+  virtual void Close() = 0;
 };
 
 }  // namespace browser_actuator::transport

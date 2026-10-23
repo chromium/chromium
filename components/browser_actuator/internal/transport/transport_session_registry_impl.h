@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -27,6 +28,8 @@ class TransportChannel;
 // TransportChannel.
 class TransportSessionRegistryImpl : public TransportSessionRegistry {
  public:
+  static constexpr size_t kMaxClosedSessionsHistory = 100;
+
   explicit TransportSessionRegistryImpl(
       base::WeakPtr<TransportChannel> channel);
   TransportSessionRegistryImpl(base::WeakPtr<TransportChannel> channel,
@@ -43,10 +46,10 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   void RemoveObserver(Observer* observer) override;
   TransportSessionImpl* GetOrCreateSession(
       std::string_view session_id) override;
+  void DestroySession(std::string_view session_id) override;
 
   // Concrete methods for session lookup and management.
   TransportSessionImpl* GetSessionImpl(std::string_view session_id);
-  void DestroySession(std::string_view session_id);
   std::vector<TransportSessionImpl*> GetAllSessionImpls();
 
   // Clears all active sessions from the sessions_ map.
@@ -70,6 +73,11 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
                      std::unique_ptr<TransportSessionImpl>,  // Session instance
                      std::less<>>;                           // comparator
   SessionMap sessions_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Tracks recently destroyed session IDs so late downstream messages do not
+  // resurrect already-closed sessions via GetOrCreateSession().
+  base::LRUCacheSet<std::string> closed_session_ids_
+      GUARDED_BY_CONTEXT(sequence_checker_){kMaxClosedSessionsHistory};
 
   base::WeakPtrFactory<TransportSessionRegistryImpl> weak_ptr_factory_{this};
 };

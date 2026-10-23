@@ -60,6 +60,8 @@ class FakeTransportSession
   void OnMessage(browser_actuator::transport::PayloadType payload_type,
                  std::string_view serialized_payload) override {}
 
+  void Close() override {}
+
   const std::vector<browser_actuator::transport::PayloadType>&
   sent_payload_types() const {
     return sent_payload_types_;

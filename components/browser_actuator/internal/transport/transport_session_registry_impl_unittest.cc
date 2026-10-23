@@ -304,6 +304,10 @@ class MockSessionRegistryObserver : public TransportSessionRegistry::Observer {
               OnSessionRegistered,
               (TransportSession * session),
               (override));
+  MOCK_METHOD(void,
+              OnSessionRemoved,
+              (std::string_view session_id),
+              (override));
 };
 
 }  // namespace
@@ -321,6 +325,50 @@ TEST(TransportSessionRegistryImplTest, NotifiesObserversOnSessionRegistered) {
   TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
 
   EXPECT_EQ(created_session, session1);
+}
+
+TEST(TransportSessionRegistryImplTest, NotifiesObserversOnSessionRemoved) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
+  MockSessionRegistryObserver observer;
+  registry.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnSessionRegistered).Times(1);
+  ASSERT_NE(registry.GetOrCreateSession("session_1"), nullptr);
+
+  EXPECT_CALL(observer, OnSessionRemoved(std::string_view("session_1")))
+      .Times(1);
+  registry.DestroySession("session_1");
+
+  // Destroying a non-existent or already-destroyed session does not notify.
+  EXPECT_CALL(observer, OnSessionRemoved).Times(0);
+  registry.DestroySession("session_1");
+}
+
+TEST(TransportSessionRegistryImplTest,
+     GetOrCreateSessionDoesNotResurrectDestroyedSessionUntilCleared) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
+  MockSessionRegistryObserver observer;
+  registry.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnSessionRegistered).Times(1);
+  ASSERT_NE(registry.GetOrCreateSession("session_1"), nullptr);
+
+  EXPECT_CALL(observer, OnSessionRemoved(std::string_view("session_1")))
+      .Times(1);
+  registry.DestroySession("session_1");
+  EXPECT_EQ(registry.GetSession("session_1"), nullptr);
+
+  // Subsequent GetOrCreateSession for the destroyed ID must return nullptr and
+  // not notify OnSessionRegistered.
+  EXPECT_CALL(observer, OnSessionRegistered).Times(0);
+  EXPECT_EQ(registry.GetOrCreateSession("session_1"), nullptr);
+
+  // After Clear(), the closed history is reset.
+  registry.Clear();
+  EXPECT_CALL(observer, OnSessionRegistered).Times(1);
+  EXPECT_NE(registry.GetOrCreateSession("session_1"), nullptr);
 }
 
 TEST(TransportSessionRegistryImplTest,

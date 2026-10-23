@@ -35,6 +35,7 @@ class TestTransportSession : public TransportSession {
   }
   void OnMessage(PayloadType payload_type,
                  std::string_view serialized_payload) override {}
+  void Close() override {}
 
  private:
   std::string session_id_;
@@ -56,6 +57,7 @@ class MockTransportSession : public TransportSession {
               OnMessage,
               (PayloadType payload_type, std::string_view serialized_payload),
               (override));
+  MOCK_METHOD(void, Close, (), (override));
 
  private:
   std::string session_id_;

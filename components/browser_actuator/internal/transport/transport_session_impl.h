@@ -70,6 +70,8 @@ class TransportSessionImpl : public TransportSession,
   void OnMessage(PayloadType payload_type,
                  std::string_view serialized_payload) override;
 
+  void Close() override;
+
   // TransportHandlerFactoryRegistry::Observer implementation.
   void OnFactoryUnregistered(FactoryId factory_id) override;
   void OnRegistryDestroyed() override;

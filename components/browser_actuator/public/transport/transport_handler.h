@@ -64,6 +64,11 @@ class TransportHandler {
       PayloadType payload_type,
       const google::protobuf::MessageLite& message);
 
+  // Closes and destroys the owning session locally.
+  // WARNING: May destroy `this` (since the session owns its handlers); callers
+  // must not access `this` after calling `CloseSession()`.
+  void CloseSession();
+
   TransportSession* session() const { return session_.get(); }
 
  private:

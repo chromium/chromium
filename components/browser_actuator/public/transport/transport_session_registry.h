@@ -22,6 +22,9 @@ class TransportSessionRegistry {
 
     // Called when a new session is registered in the registry.
     virtual void OnSessionRegistered(TransportSession* session) {}
+
+    // Called when a session is removed from the registry.
+    virtual void OnSessionRemoved(std::string_view session_id) {}
   };
 
   virtual ~TransportSessionRegistry() = default;
@@ -36,6 +39,9 @@ class TransportSessionRegistry {
   // exist. Returns nullptr if session creation fails (e.g. max capacity
   // reached).
   virtual TransportSession* GetOrCreateSession(std::string_view session_id) = 0;
+
+  // Destroys the session identified by `session_id` if it exists.
+  virtual void DestroySession(std::string_view session_id) = 0;
 };
 
 }  // namespace browser_actuator::transport
