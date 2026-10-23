@@ -443,8 +443,6 @@ TEST_F(FileSystemContextTest, IsolatedFileSystemsTypesHandled) {
       file_system_context->GetFileSystemBackend(kFileSystemTypeIsolated));
   EXPECT_TRUE(
       file_system_context->GetFileSystemBackend(kFileSystemTypeDragged));
-  EXPECT_TRUE(file_system_context->GetFileSystemBackend(
-      kFileSystemTypeForTransientFile));
   EXPECT_TRUE(file_system_context->GetFileSystemBackend(kFileSystemTypeLocal));
   EXPECT_TRUE(file_system_context->GetFileSystemBackend(
       kFileSystemTypeLocalForPlatformApp));

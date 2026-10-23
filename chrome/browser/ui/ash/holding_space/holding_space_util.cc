@@ -46,8 +46,6 @@ HoldingSpaceFile::FileSystemType ToHoldingSpaceFileSystemType(
       return HoldingSpaceFile::FileSystemType::kDriveFs;
     case storage::FileSystemType::kFileSystemTypeExternal:
       return HoldingSpaceFile::FileSystemType::kExternal;
-    case storage::FileSystemType::kFileSystemTypeForTransientFile:
-      return HoldingSpaceFile::FileSystemType::kForTransientFile;
     case storage::FileSystemType::kFileSystemTypeFuseBox:
       return HoldingSpaceFile::FileSystemType::kFuseBox;
     case storage::FileSystemType::kFileSystemTypeIsolated:

@@ -72,7 +72,6 @@ class IsolatedFileSystemBackend : public FileSystemBackend {
 
   std::unique_ptr<AsyncFileUtilAdapter> isolated_file_util_;
   std::unique_ptr<AsyncFileUtilAdapter> dragged_file_util_;
-  std::unique_ptr<AsyncFileUtilAdapter> transient_file_util_;
 };
 
 }  // namespace storage

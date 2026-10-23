@@ -32,7 +32,7 @@ struct ASH_PUBLIC_EXPORT HoldingSpaceFile {
     kSyncable = 11,
     kSyncableForInternalSync = 12,
     kLocalForPlatformApp = 13,
-    kForTransientFile = 14,
+    // kForTransientFile = 14,
     kProvided = 15,
     kDeviceMediaAsFileStorage = 16,
     kArcContent = 17,

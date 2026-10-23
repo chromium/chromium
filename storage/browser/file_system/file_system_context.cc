@@ -120,7 +120,6 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     // Following types are only accessed via IsolatedFileSystem, and
     // don't have their own permission policies.
     case kFileSystemTypeDragged:
-    case kFileSystemTypeForTransientFile:
     case kFileSystemTypeInMemory:
       return FILE_PERMISSION_ALWAYS_DENY;
 

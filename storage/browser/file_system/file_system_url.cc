@@ -142,7 +142,6 @@ bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
     case kFileSystemTypeDeviceMedia:
     case kFileSystemTypeSyncable:
     case kFileSystemTypeSyncableForInternalSync:
-    case kFileSystemTypeForTransientFile:
     case kFileSystemTypeProvided:
     case kFileSystemTypeDeviceMediaAsFileStorage:
     case kFileSystemTypeArcContent:

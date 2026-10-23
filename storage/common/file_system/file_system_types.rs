@@ -37,8 +37,6 @@ pub mod ffi {
         SyncableForInternalSync = 107,
         #[cxx_name = "kFileSystemTypeLocalForPlatformApp"]
         LocalForPlatformApp = 108,
-        #[cxx_name = "kFileSystemTypeForTransientFile"]
-        ForTransientFile = 109,
         #[cxx_name = "kFileSystemTypeProvided"]
         Provided = 110,
         #[cxx_name = "kFileSystemTypeDeviceMediaAsFileStorage"]

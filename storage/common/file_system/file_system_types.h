@@ -99,13 +99,6 @@ enum FileSystemType {
   // the handlers of kFileSystemTypeExternal.
   kFileSystemTypeLocalForPlatformApp = 108,
 
-  // Indicates an isolated filesystem which is supposed to contain one
-  // temporary which is supposed to go away when the last reference of
-  // its snapshot is dropped.
-  // This type is useful for creating a blob reference for a temporary
-  // file which must go away when the blob's last reference is dropped.
-  kFileSystemTypeForTransientFile = 109,
-
   // A filesystem that is mounted via the FileSystemProvider API.
   kFileSystemTypeProvided = 110,
 

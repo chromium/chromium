@@ -166,7 +166,6 @@ TEST_F(HoldingSpaceUtilTest, GetAllFileSystemTypes) {
       case HoldingSpaceFile::FileSystemType::kDragged:
       case HoldingSpaceFile::FileSystemType::kDriveFs:
       case HoldingSpaceFile::FileSystemType::kExternal:
-      case HoldingSpaceFile::FileSystemType::kForTransientFile:
       case HoldingSpaceFile::FileSystemType::kFuseBox:
       case HoldingSpaceFile::FileSystemType::kIsolated:
       case HoldingSpaceFile::FileSystemType::kLocal:
@@ -245,9 +244,6 @@ TEST_F(HoldingSpaceUtilTest, FileSystemTypeToString) {
         break;
       case HoldingSpaceFile::FileSystemType::kExternal:
         expected_string = "External";
-        break;
-      case HoldingSpaceFile::FileSystemType::kForTransientFile:
-        expected_string = "ForTransientFile";
         break;
       case HoldingSpaceFile::FileSystemType::kFuseBox:
         expected_string = "FuseBox";

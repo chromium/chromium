@@ -264,8 +264,6 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "Syncable";
     case kFileSystemTypeLocalForPlatformApp:
       return "LocalForPlatformApp";
-    case kFileSystemTypeForTransientFile:
-      return "TransientFile";
     case kFileSystemTypeProvided:
       return "Provided";
     case kFileSystemTypeDeviceMediaAsFileStorage:

@@ -100,7 +100,6 @@ base::flat_set<HoldingSpaceFile::FileSystemType> GetAllFileSystemTypes() {
       HoldingSpaceFile::FileSystemType::kDragged,
       HoldingSpaceFile::FileSystemType::kDriveFs,
       HoldingSpaceFile::FileSystemType::kExternal,
-      HoldingSpaceFile::FileSystemType::kForTransientFile,
       HoldingSpaceFile::FileSystemType::kFuseBox,
       HoldingSpaceFile::FileSystemType::kIsolated,
       HoldingSpaceFile::FileSystemType::kLocal,
@@ -217,8 +216,6 @@ std::string ToString(HoldingSpaceFile::FileSystemType type) {
       return "DriveFs";
     case HoldingSpaceFile::FileSystemType::kExternal:
       return "External";
-    case HoldingSpaceFile::FileSystemType::kForTransientFile:
-      return "ForTransientFile";
     case HoldingSpaceFile::FileSystemType::kFuseBox:
       return "FuseBox";
     case HoldingSpaceFile::FileSystemType::kIsolated:

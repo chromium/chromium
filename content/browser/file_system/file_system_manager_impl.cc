@@ -186,7 +186,6 @@ blink::mojom::FileSystemType ToMojoFileSystemType(
     case storage::FileSystemType::kFileSystemTypeSyncable:
     case storage::FileSystemType::kFileSystemTypeSyncableForInternalSync:
     case storage::FileSystemType::kFileSystemTypeLocalForPlatformApp:
-    case storage::FileSystemType::kFileSystemTypeForTransientFile:
     case storage::FileSystemType::kFileSystemTypeProvided:
     case storage::FileSystemType::kFileSystemTypeDeviceMediaAsFileStorage:
     case storage::FileSystemType::kFileSystemTypeArcContent:
