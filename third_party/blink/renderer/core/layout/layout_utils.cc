@@ -5,12 +5,13 @@
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
-#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 
 namespace blink {
 
@@ -119,6 +120,13 @@ bool SizeMayChange(const BlockNode& node,
                    const LayoutResult& layout_result) {
   DCHECK_EQ(new_space.IsFixedInlineSize(), old_space.IsFixedInlineSize());
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
+
+  // The root of an SVG document embedded through a frame takes the size of
+  // the frame instead of its own width and height (see ComputeReplacedSize).
+  if (const auto* svg_root = DynamicTo<LayoutSVGRoot>(node.GetLayoutBox());
+      svg_root && svg_root->IsEmbeddedThroughFrameContainingSVGDocument()) {
+    return true;
+  }
 
   const ComputedStyle& style = node.Style();
 
