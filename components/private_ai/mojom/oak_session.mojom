@@ -41,3 +41,62 @@ interface OakSession {
   // Should be called only after successful handshake completion.
   Decrypt(array<uint8> input) => (array<uint8>? output);
 };
+
+// Represents an error encountered during the TLS 1.3 handshake.
+enum TlsHandshakeError {
+  // The server certificate chain failed verification against the TCA root.
+  kCertVerificationFailed,
+
+  // A protocol, parsing, or BoringSSL engine error occurred during the
+  // handshake.
+  kProtocolError,
+};
+
+// Represents the result of a successful TLS handshake step.
+struct TlsHandshake {
+  // Outgoing TLS frame to be sent to the peer. May be empty if no response
+  // frame is needed for this step.
+  array<uint8> outgoing_frame;
+
+  // True if the TLS handshake has completed and the session is established.
+  bool is_ready;
+};
+
+// Sandboxed service interface for establishing an Oak TLS 1.3 session and
+// encrypting/decrypting application frames.
+//
+// Called from the browser process. Hosted in a sandboxed utility process on
+// Content platforms, and runs in-process on the browser sequence on iOS.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface OakTlsSession {
+  // Initiates a TLS 1.3 handshake with the given expected server name (SNI)
+  // and the PEM-encoded TCA root certificate (trust anchor), exactly as
+  // published; the service decodes it.
+  // Generates the initial ClientHello TLS frame in `outgoing_frame`.
+  StartHandshake(string expected_server_name, string tca_root_cert_pem)
+      => result<TlsHandshake, TlsHandshakeError>;
+
+  // Feeds incoming server TLS frame(s) into BoringSSL engine and retrieves
+  // any response frame (e.g. client Finished).
+  ProcessHandshakeFrame(array<uint8> incoming_frame)
+      => result<TlsHandshake, TlsHandshakeError>;
+
+  // Encrypts data that will be sent to the server.
+  //
+  // Should be called only after successful handshake completion.
+  Encrypt(array<uint8> input) => (array<uint8>? output);
+
+  // Decrypts data received from the server.
+  //
+  // Should be called only after successful handshake completion.
+  // `input` contains raw TLS ciphertext received from the network transport.
+  // If `input` contains a partial TLS record or a post-handshake control
+  // message (e.g. NewSessionTicket), BoringSSL buffers the input and returns
+  // an empty (non-null) vector to indicate that more data is expected from the
+  // stream.
+  // `output` is null if decryption fails (e.g. invalid MAC or bad record).
+  // `peer_closed` is true if the peer sent a TLS close_notify shutdown alert
+  // (currently always false until Oak exposes peer shutdown; see
+  // crbug.com/576736338).
+  Decrypt(array<uint8> input) => (array<uint8>? output, bool peer_closed);
+};

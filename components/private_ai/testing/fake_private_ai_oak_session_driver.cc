@@ -12,11 +12,20 @@ FakePrivateAiOakSessionDriver::FakePrivateAiOakSessionDriver(
     mojo::Remote<mojom::OakSession> service)
     : service_(std::move(service)) {}
 
+FakePrivateAiOakSessionDriver::FakePrivateAiOakSessionDriver(
+    mojo::Remote<mojom::OakTlsSession> tls_service)
+    : tls_service_(std::move(tls_service)) {}
+
 FakePrivateAiOakSessionDriver::~FakePrivateAiOakSessionDriver() = default;
 
 mojo::Remote<mojom::OakSession>
 FakePrivateAiOakSessionDriver::BindOakSessionService() {
   return std::move(service_);
+}
+
+mojo::Remote<mojom::OakTlsSession>
+FakePrivateAiOakSessionDriver::BindOakTlsSessionService() {
+  return std::move(tls_service_);
 }
 
 }  // namespace private_ai

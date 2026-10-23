@@ -16,12 +16,16 @@ class FakePrivateAiOakSessionDriver : public PrivateAiOakSessionDriver {
   FakePrivateAiOakSessionDriver();
   explicit FakePrivateAiOakSessionDriver(
       mojo::Remote<mojom::OakSession> service);
+  explicit FakePrivateAiOakSessionDriver(
+      mojo::Remote<mojom::OakTlsSession> tls_service);
   ~FakePrivateAiOakSessionDriver() override;
 
   mojo::Remote<mojom::OakSession> BindOakSessionService() override;
+  mojo::Remote<mojom::OakTlsSession> BindOakTlsSessionService() override;
 
  private:
   mojo::Remote<mojom::OakSession> service_;
+  mojo::Remote<mojom::OakTlsSession> tls_service_;
 };
 
 }  // namespace private_ai

@@ -62,12 +62,20 @@ proto_library("proto_attestation_reference_value_proto") {
 
 config("oak_session_tls_config") {
   include_dirs = [ "src" ]
+
+  # oak_session_tls.h has stray semicolons after inline member function
+  # definitions, which trip -Wextra-semi in chromium_code dependents.
+  if (is_clang) {
+    cflags = [ "-Wno-extra-semi" ]
+  }
 }
 
 source_set("oak_session_tls") {
   sources = [
     "src/oak_session/tls/oak_session_tls.cc",
     "src/oak_session/tls/oak_session_tls.h",
+    "src/oak_session/tls/util.cc",
+    "src/oak_session/tls/util.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

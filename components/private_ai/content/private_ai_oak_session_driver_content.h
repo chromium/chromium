@@ -24,6 +24,7 @@ class PrivateAiOakSessionDriverContent : public PrivateAiOakSessionDriver {
 
   // PrivateAiOakSessionDriver overrides:
   mojo::Remote<mojom::OakSession> BindOakSessionService() override;
+  mojo::Remote<mojom::OakTlsSession> BindOakTlsSessionService() override;
 };
 
 }  // namespace private_ai

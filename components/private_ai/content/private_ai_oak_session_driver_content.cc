@@ -16,4 +16,12 @@ PrivateAiOakSessionDriverContent::BindOakSessionService() {
           .Pass());
 }
 
+mojo::Remote<mojom::OakTlsSession>
+PrivateAiOakSessionDriverContent::BindOakTlsSessionService() {
+  return content::ServiceProcessHost::Launch<mojom::OakTlsSession>(
+      content::ServiceProcessHost::Options()
+          .WithDisplayName("Oak TLS Session Service")
+          .Pass());
+}
+
 }  // namespace private_ai

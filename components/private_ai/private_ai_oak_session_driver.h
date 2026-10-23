@@ -19,6 +19,10 @@ class PrivateAiOakSessionDriver {
   // Launches or binds the OakSessionService, abstracting the platform-specific
   // process.
   virtual mojo::Remote<mojom::OakSession> BindOakSessionService() = 0;
+
+  // Launches or binds the OakTlsSessionService, abstracting the
+  // platform-specific process.
+  virtual mojo::Remote<mojom::OakTlsSession> BindOakTlsSessionService() = 0;
 };
 
 }  // namespace private_ai

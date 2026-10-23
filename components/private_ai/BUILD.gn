@@ -180,6 +180,7 @@ source_set("unit_tests") {
     "//components/private_ai/common",
     "//components/private_ai/common:unit_tests",
     "//components/private_ai/crypto:unit_tests",
+    "//components/private_ai/oak_session_service:unit_tests",
     "//components/signin/public/identity_manager:test_support",
   ]
   if (!use_blink) {

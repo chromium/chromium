@@ -16,7 +16,8 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
-#include "components/private_ai/oak_session_service/oak_session_service.h"  // nogncheck
+#include "components/private_ai/oak_session_service/oak_session_service.h"
+#include "components/private_ai/oak_session_service/oak_tls_session_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
@@ -247,6 +248,12 @@ auto RunSystemSignalsService(
 auto RunOakSessionService(
     mojo::PendingReceiver<private_ai::mojom::OakSession> receiver) {
   return std::make_unique<private_ai::OakSessionService>(std::move(receiver));
+}
+
+auto RunOakTlsSessionService(
+    mojo::PendingReceiver<private_ai::mojom::OakTlsSession> receiver) {
+  return std::make_unique<private_ai::OakTlsSessionService>(
+      std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -503,6 +510,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(ContentBookmarkParser);
   services.Add(RunPassageEmbeddingsService);
   services.Add(RunOakSessionService);
+  services.Add(RunOakTlsSessionService);
 
 #if BUILDFLAG(IS_ANDROID)
   services.Add(RunReadAloudPlaybackControllerFactory);

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -73,6 +74,20 @@ TEST_F(PrivateAiOakSessionDriverIOSTest, MultipleConcurrentSessions) {
 
   // 6. Verify all sessions are cleaned up.
   EXPECT_EQ(driver_.GetActiveSessionsCountForTesting(), 0u);
+}
+
+TEST_F(PrivateAiOakSessionDriverIOSTest, SingleTlsSessionLifecycle) {
+  EXPECT_EQ(driver_.GetActiveSessionsCountForTesting(), 0u);
+
+  mojo::Remote<mojom::OakTlsSession> remote =
+      driver_.BindOakTlsSessionService();
+  EXPECT_TRUE(remote.is_bound());
+  EXPECT_EQ(driver_.GetActiveSessionsCountForTesting(), 1u);
+
+  remote.reset();
+  EXPECT_FALSE(remote.is_bound());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return driver_.GetActiveSessionsCountForTesting() == 0u; }));
 }
 
 }  // namespace private_ai

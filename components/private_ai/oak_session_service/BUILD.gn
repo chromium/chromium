@@ -6,11 +6,35 @@ source_set("oak_session_service") {
   sources = [
     "oak_session_service.cc",
     "oak_session_service.h",
+    "oak_tls_session_service.cc",
+    "oak_tls_session_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/private_ai/mojom",
   ]
   deps = [
-    "//base",
     "//components/private_ai/crypto",
-    "//components/private_ai/mojom",
     "//mojo/public/cpp/system",
+    "//third_party/boringssl",
+    "//third_party/oak:oak_session_tls",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "oak_tls_session_service_unittest.cc" ]
+  deps = [
+    ":oak_session_service",
+    "//base",
+    "//base/test:test_support",
+    "//components/private_ai/mojom",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/oak:oak_session_tls",
   ]
 }

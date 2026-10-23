@@ -55,6 +55,7 @@ include_rules = [
   "+components/mirroring/mojom",
   "+components/mirroring/service",
   "+components/private_ai/oak_session_service/oak_session_service.h",
+  "+components/private_ai/oak_session_service/oak_tls_session_service.h",
   "+components/paint_preview/buildflags",
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",
