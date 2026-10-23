@@ -180,6 +180,7 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
     // store a single entry for the whole fragment and build up its
     // `row_gap_count` as each main gap is placed.
     if (!is_column_) {
+      DCHECK_GE(global_line_index, first_unprocessed_row_gap_index_);
       // For row flex, count this main gap in the fragment's single entry. The
       // first main gap creates the entry; later ones add to it.
       if (row_gap_break_token_data_.empty()) {

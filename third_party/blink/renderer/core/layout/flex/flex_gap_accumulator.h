@@ -246,6 +246,13 @@ class CORE_EXPORT FlexGapAccumulator {
     effective_gap_between_lines_ = effective_gap;
   }
 
+  // Sets the index of the first row gap that a previous fragment of a row flex
+  // container did not record. A row gap must be recorded in only one fragment.
+  void SetFirstUnprocessedRowGapIndex(wtf_size_t index) {
+    CHECK(!is_column_);
+    first_unprocessed_row_gap_index_ = index;
+  }
+
   // Increases the fragment-relative `row_gap_count` for the entry at
   // `row_gap_data_index`. This counts only the row gaps that land in the
   // current fragment (not the container's unfragmented total). Row flex passes
@@ -302,6 +309,9 @@ class CORE_EXPORT FlexGapAccumulator {
   // Tracks the index of the first row-flex line processed within the current
   // fragment.
   wtf_size_t first_row_flex_line_index_ = kNotFound;
+
+  // See `SetFirstUnprocessedRowGapIndex()`.
+  wtf_size_t first_unprocessed_row_gap_index_ = 0;
 
   // The current fragment's row gap info, built during placement. Column flex
   // containers store one entry per absolute flex line while row flex

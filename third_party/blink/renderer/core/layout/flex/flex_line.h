@@ -105,6 +105,10 @@ struct FlexLine {
   // These fields are only used/populated during fragmentation.
   LayoutUnit item_offset_adjustment;
   bool has_seen_all_children = false;
+  // Set at the end of each fragmentainer. True if an item in this line has
+  // in-flow content that continues in the next fragmentainer. False if the
+  // line continues only for overflow, or does not continue.
+  bool has_inflow_continuation = false;
   HeapVector<FlexItemData> line_items_data;
 };
 

@@ -1352,6 +1352,13 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     if (IsBreakInside(GetBreakToken()) && gap_accumulator) {
       gap_accumulator->SetEffectiveGapBetweenLines(
           current_gap_data.effective_gap_between_lines);
+      if (!is_column_ && !previous_gap_data->gap_data_for_rows.empty()) {
+        const FlexRowGapBreakTokenData& previous_row_gap_data =
+            previous_gap_data->gap_data_for_rows.front();
+        gap_accumulator->SetFirstUnprocessedRowGapIndex(
+            previous_row_gap_data.first_row_gap_index +
+            previous_row_gap_data.row_gap_count);
+      }
     }
 
     LayoutResult::EStatus status =
@@ -2183,6 +2190,13 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     bool is_last_item_in_line =
         flex_item_idx == flex_line.line_items_data.size() - 1;
 
+    // A row with no in-flow content left completed in an earlier
+    // fragmentainer, and its items are only revisited to lay out overflow. Its
+    // gaps were built in that fragmentainer, so it must not build any here.
+    const bool row_completed_in_previous_fragmentainer =
+        !is_column_ && item_break_token && item_break_token->IsAtBlockEnd() &&
+        !flex_line.has_inflow_continuation;
+
     bool is_first_line = flex_line_idx == 0;
     bool is_last_line = flex_line_idx == flex_lines->size() - 1;
 
@@ -2647,7 +2661,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
     container_builder_.AddResult(*layout_result, offset);
-    if (gap_accumulator) {
+    if (gap_accumulator && !row_completed_in_previous_fragmentainer) {
       LayoutUnit container_main_end =
           is_column_
               ? fragmentainer_space
@@ -2718,6 +2732,11 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
     last_line_idx_to_process_first_child_ = flex_line_idx;
+  }
+
+  for (wtf_size_t i = 0; i < flex_lines->size(); ++i) {
+    (*flex_lines)[i].has_inflow_continuation =
+        has_inflow_child_break_inside_line[i];
   }
 
   if (needs_earlier_break_in_column ||
