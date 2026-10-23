@@ -9,6 +9,7 @@ import bisect
 import code
 import collections
 import contextlib
+import gc
 import itertools
 import logging
 import os
@@ -613,6 +614,10 @@ def Run(args, on_config_error):
     if not path.endswith('.size') and not path.endswith('.sizediff'):
       on_config_error('All inputs must end with ".size" or ".sizediff"')
 
+  # Loading creates millions of long-lived objects, which makes cyclic GC
+  # passes slow.
+  gc.disable()
+
   size_infos = []
   for path in args.inputs:
     logging.warning('Loading %s', path)
@@ -629,11 +634,15 @@ def Run(args, on_config_error):
     logging.info('Running query from command-line.')
     session.Eval(args.query)
   else:
+    # Re-enable GC for interactive sessions, but exclude already-loaded objects
+    # from future collections.
+    gc.freeze()
+    gc.enable()
     logging.info('Entering interactive console.')
     session.GoInteractive()
 
   # Exit without running GC, which can save multiple seconds due the large
-  # number of objects created. It meants atexit and __del__ calls are not
+  # number of objects created. It means atexit and __del__ calls are not
   # made, but this shouldn't matter for console.
   sys.stdout.flush()
   sys.stderr.flush()
