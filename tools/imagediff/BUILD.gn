@@ -43,8 +43,6 @@ if (current_toolchain == imagediff_toolchain) {
       "image_diff_png.h",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     deps = [
       "//base",
       "//build/win:default_exe_manifest",

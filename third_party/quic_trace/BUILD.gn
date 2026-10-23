@@ -17,6 +17,4 @@ proto_library("quic_trace_proto") {
   # net/third_party/quiche expects quic_trace/quic_trace.pb.h to be in include
   # paths
   proto_out_dir = "quic_trace"
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
