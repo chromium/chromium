@@ -1438,6 +1438,36 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
             SensitiveDirectoryResult::kAllowed);
 }
 
+// Verifies that hypervisor host-share UNC paths (Parallels, VMware, VirtualBox)
+// are blocked by `MaybeIsLocalUNCPath()`.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_HypervisorHostShareUNC) {
+  static constexpr const base::FilePath::CharType* kBlockedPaths[] = {
+      FILE_PATH_LITERAL("\\\\Mac\\Home"),
+      FILE_PATH_LITERAL("\\\\MAC\\home"),
+      FILE_PATH_LITERAL("\\\\Mac.\\Home"),
+      FILE_PATH_LITERAL("\\\\Mac\\AllFiles"),
+      FILE_PATH_LITERAL("\\\\Mac\\Home\\.ssh\\id_rsa"),
+      FILE_PATH_LITERAL("\\\\Mac\\Home\\.zshenv"),
+      FILE_PATH_LITERAL("\\\\psf\\Home"),
+      FILE_PATH_LITERAL("\\\\psf.\\Home"),
+      FILE_PATH_LITERAL("\\\\vmware-host\\Shared Folders"),
+      FILE_PATH_LITERAL("\\\\vmware-host.\\Shared Folders"),
+      FILE_PATH_LITERAL("\\\\.host\\Shared Folders"),
+      FILE_PATH_LITERAL("\\\\.host.\\Shared Folders"),
+      FILE_PATH_LITERAL("\\\\vboxsvr\\share"),
+      FILE_PATH_LITERAL("\\\\vboxsvr.\\share"),
+      FILE_PATH_LITERAL("\\\\vboxsrv\\share"),
+  };
+  for (const auto* path : kBlockedPaths) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(path), HandleType::kDirectory,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort)
+        << "Expected blocked path: " << path;
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Testing that the */.git/hooks are all blocked.
