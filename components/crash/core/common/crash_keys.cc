@@ -32,8 +32,9 @@ namespace {
 
 #if !BUILDFLAG(USE_CRASHPAD_ANNOTATION)
 // When using Crashpad, the crash reporting client ID is the responsibility of
-// Crashpad. It is not set directly by Chrome. When using Breakpad instead of
-// Crashpad, the crash reporting client ID is the same as the metrics client ID.
+// Crashpad. It is not set directly by Chrome. When using Breakpad (on CastOS)
+// instead of Crashpad, the crash reporting client ID is the same as the metrics
+// client ID.
 const char kMetricsClientId[] = "guid";
 
 crash_reporter::CrashKeyString<40> client_id_key(kMetricsClientId);
@@ -55,10 +56,10 @@ void SetMetricsClientIdFromGUID(const std::string& metrics_client_guid) {
 }
 
 void ClearMetricsClientId() {
-  // Breakpad cannot be enabled or disabled without an application restart, and
-  // it needs to use the metrics client ID as its stable crash client ID, so
-  // leave its client ID intact even when metrics reporting is disabled while
-  // the application is running.
+  // Breakpad (used on CastOS) cannot be enabled or disabled without an
+  // application restart, and it needs to use the metrics client ID as its
+  // stable crash client ID, so leave its client ID intact even when metrics
+  // reporting is disabled while the application is running.
 }
 
 using SwitchesCrashKeys = std::deque<crash_reporter::CrashKeyString<64>>;

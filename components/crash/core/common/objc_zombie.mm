@@ -54,9 +54,6 @@ namespace {
 // the amount of memory required to track zombies, so should be kept as
 // small as is useful.  Unfortunately, too small and it won't poke through
 // deep autorelease and event loop stacks.
-// NOTE(shess): Breakpad currently restricts values to 255 bytes.  The
-// trace is hex-encoded with "0x" prefix and " " separators, meaning
-// the maximum number of 32-bit items which can be encoded is 23.
 const size_t kBacktraceDepth = 20;
 
 // The original implementation for |-[NSObject dealloc]|.
@@ -230,11 +227,11 @@ void ZombieObjectCrash(id object, SEL aSelector, SEL viaSelector) {
     base::StringAppendF(&aString, " (via -%s)", viaName);
   }
 
-  // Set a value for breakpad to report.
+  // Set a value for Crashpad to report.
   static crash_reporter::CrashKeyString<256> zombie_key("zombie");
   zombie_key.Set(aString);
 
-  // Encode trace into a breakpad key.
+  // Encode trace into a crash key.
   static crash_reporter::CrashKeyString<1024> zombie_trace_key(
       "zombie_dealloc_bt");
   if (found) {

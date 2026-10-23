@@ -18,9 +18,9 @@
 #include "components/crash/core/common/crash_export.h"
 
 // The crash key interface exposed by this file is the same as the Crashpad
-// Annotation interface. Because not all platforms use Crashpad yet, a
-// source-compatible interface is provided on top of the older Breakpad
-// storage mechanism.
+// Annotation interface. For CastOS (which still uses the older Breakpad storage
+// mechanism) and Fuchsia (which uses no-op stubs), a source-compatible
+// interface is provided.
 //
 // See https://cs.chromium.org/chromium/src/docs/debugging_with_crash_keys.md
 // for more information on using this.
@@ -248,7 +248,7 @@ CRASH_KEY_EXPORT void InitializeCrashKeysForTesting();
 
 // Resets crash key state and, depending on the platform, de-initializes
 // the system.
-// WARNING: this does not work on Breakpad, which is used by Chrome on Linux
+// WARNING: this does not work on Breakpad, which is used on CastOS
 // (crbug.com/1041106).
 CRASH_KEY_EXPORT void ResetCrashKeysForTesting();
 #endif

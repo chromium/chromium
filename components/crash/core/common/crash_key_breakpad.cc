@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// NOTE: This file is only compiled when Crashpad is not used as the crash
-// reproter.
+// NOTE: This file is only compiled on CastOS, which still uses Breakpad as the
+// crash reporter (Fuchsia uses crash_key_stubs.cc instead).
 
 #include <string_view>
 

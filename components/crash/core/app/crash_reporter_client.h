@@ -83,8 +83,9 @@ class CrashReporterClient {
   // |client_guid| may either be a full GUID or a GUID that was already stripped
   // from its dashes.
   //
-  // On macOS, Windows, and Android this is the responsibility of Crashpad, and
-  // can not be set directly by the client.
+  // When using Crashpad (all platforms except CastOS, which uses Breakpad),
+  // this is the responsibility of Crashpad and cannot be set directly by the
+  // client.
   virtual void SetCrashReporterClientIdFromGUID(const std::string& client_guid);
 #endif
 
@@ -225,7 +226,8 @@ class CrashReporterClient {
   // The default implementation returns false.
   virtual bool ShouldMonitorCrashHandlerExpensively();
 
-  // Returns true if breakpad should run in the given process type.
+  // Returns true if Breakpad should run in the given process type (used only on
+  // CastOS).
   virtual bool EnableBreakpadForProcess(const std::string& process_type);
 
   // Returns a list of read-only shared memory regions containing user streams.

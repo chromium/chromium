@@ -22,10 +22,11 @@ When a crash key is set, the specified value is copied to its internal storage.
 And if the process subsequently crashes, the name-value tuple is uploaded as
 POST form-multipart data when the crash report minidump is uploaded to the
 Google crash reporting system. (The data therefore are only accessible to those
-with access to crash reports internally at Google). For platforms that use
-[Crashpad](https://crashpad.chromium.org) as the crash reporting platform, the
-crash keys are also stored in the minidump file itself. For platforms that use
-Breakpad, the keys are only available at upload.
+with access to crash reports internally at Google). On all platforms that
+support crash keys except CastOS, Chromium uses
+[Crashpad](https://crashpad.chromium.org) and the crash keys are also stored in
+the minidump file itself. On CastOS, which still uses Breakpad, the keys are
+only available at upload. (On Fuchsia, crash keys are stubbed out as no-ops.)
 
 The crash key system is used to report some common pieces of data, not just
 things that happen in exceptional cases: the URL of the webpage, command line

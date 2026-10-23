@@ -37,9 +37,9 @@ namespace breakpad {
 
 struct BreakpadInfo;
 
-// This is the host for processes which run breakpad inside the sandbox on
-// Linux or Android. We perform the crash dump from the browser because it
-// allows us to be outside the sandbox.
+// This is the host for processes which run Breakpad inside the sandbox on
+// CastOS. We perform the crash dump from the browser because it allows us to
+// be outside the sandbox.
 //
 // Processes signal that they need to be dumped by sending a datagram over a
 // UNIX domain socket. All processes of the same type share the client end of

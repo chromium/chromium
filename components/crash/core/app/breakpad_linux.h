@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Public interface for enabling Breakpad on Linux systems.
+// Public interface for enabling Breakpad on CastOS (Linux-based) systems.
 
 #ifndef COMPONENTS_CRASH_CORE_APP_BREAKPAD_LINUX_H_
 #define COMPONENTS_CRASH_CORE_APP_BREAKPAD_LINUX_H_
