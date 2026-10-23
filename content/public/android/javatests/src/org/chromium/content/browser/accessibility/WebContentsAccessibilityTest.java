@@ -1830,6 +1830,120 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(mActivityTestRule.mWcax.hasAnyPendingTimersForTesting());
     }
 
+    /**
+     * Tests that requesting an AccessibilityNodeProvider initializes native accessibility only when
+     * an accessibility service or password manager is enabled (e.g. not when only UiAutomation
+     * queries the view hierarchy).
+     */
+    @Test
+    @SmallTest
+    public void testGetAccessibilityNodeProvider_initializesNativeOnlyWithClients() {
+        mActivityTestRule.launchContentShellWithUrl(
+                UrlUtils.encodeHtmlDataUri("<p>This is a test</p>"));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.mockWebContentsAccessibilityImpl();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsAccessibilityImpl wcax =
+                            mActivityTestRule.getWebContentsAccessibility();
+                    mActivityTestRule.mWcax = wcax;
+                    wcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
+
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    Assert.assertNull(wcax.getAccessibilityNodeProviderCompat());
+                    Assert.assertFalse(wcax.isNativeInitialized());
+
+                    // Returns null since the root manager is not connected yet.
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(true);
+                    Assert.assertNull(wcax.getAccessibilityNodeProviderCompat());
+                    Assert.assertTrue(wcax.isNativeInitialized());
+                });
+    }
+
+    /**
+     * Tests that once accessibility is auto-disabled and no accessibility services or password
+     * managers are enabled, neither refreshing native state nor requesting an
+     * AccessibilityNodeProvider re-enables renderer accessibility or sets an AXMode.
+     */
+    @Test
+    @SmallTest
+    public void testAutoDisableAccessibility_noClientsDoesNotReEnableOrSetAXMode()
+            throws Throwable {
+        setupTestWithHTML("<p>This is a test</p>");
+        waitForNodeMatching(sTextMatcher, "This is a test");
+
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL)
+                        .build();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsAccessibilityImpl wcax = mActivityTestRule.mWcax;
+                    wcax.forceAutoDisableAccessibilityForTesting();
+                    Assert.assertFalse(wcax.hasScopedAXModeForTesting());
+
+                    // The state change refreshes native state, which must not restore an AXMode.
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    Assert.assertFalse(wcax.hasScopedAXModeForTesting());
+
+                    // Nor may requesting the node provider.
+                    Assert.assertNull(wcax.getAccessibilityNodeProviderCompat());
+                    Assert.assertFalse(wcax.hasScopedAXModeForTesting());
+                });
+
+        histogramWatcher.assertExpected();
+
+        // Non-candidates (e.g. WebView) re-enable and restore basic AXMode even without services.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+                    mActivityTestRule.mWcax.getAccessibilityNodeProviderCompat();
+                    Assert.assertTrue(mActivityTestRule.mWcax.hasScopedAXModeForTesting());
+                });
+    }
+
+    /**
+     * Tests that re-enabling renderer accessibility after an auto-disable restores the AXMode that
+     * was cleared when disabling.
+     */
+    @Test
+    @SmallTest
+    public void testAutoDisableAccessibility_reEnableRestoresAXMode() throws Throwable {
+        setupTestWithHTML("<p>This is a test</p>");
+        waitForNodeMatching(sTextMatcher, "This is a test");
+
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsAccessibilityImpl wcax = mActivityTestRule.mWcax;
+                    wcax.forceAutoDisableAccessibilityForTesting();
+                    Assert.assertFalse(wcax.hasScopedAXModeForTesting());
+
+                    // Refreshing native state while auto-disabled (even with a service enabled)
+                    // must not restore the AXMode before renderer accessibility is re-enabled.
+                    // Note: AccessibilityStateTestHelper notifies AccessibilityState listeners
+                    // (and thus calls refreshNativeState()) synchronously on the calling thread.
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
+                    Assert.assertFalse(wcax.hasScopedAXModeForTesting());
+
+                    // Requesting the node provider re-enables renderer accessibility and restores
+                    // the AXMode.
+                    wcax.getAccessibilityNodeProviderCompat();
+                    Assert.assertTrue(wcax.hasScopedAXModeForTesting());
+                });
+    }
+
     // ------------------ Tests of AccessibilityNodeInfo caching mechanism ------------------ //
 
     /**

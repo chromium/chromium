@@ -141,7 +141,9 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
                         bool is_known_screen_reader_enabled,
                         bool is_complex_accessibility_service_enabled,
                         bool is_form_controls_candidate,
-                        bool is_on_screen_mode_candidate);
+                        bool is_on_screen_mode_candidate,
+                        bool is_any_accessibility_service_enabled,
+                        bool is_auto_disable_candidate = true);
 
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
@@ -394,6 +396,8 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
 
   // Call the BrowserAccessibilityManager to trigger an kEndOfTest event.
   void SignalEndOfTestForTesting(JNIEnv* env);
+
+  bool HasScopedAXModeForTesting(JNIEnv* env);
 
   // Helper methods to wrap strings with a JNI-friendly cache.
   // Note: This cache is only meant for common strings that might be shared

@@ -444,7 +444,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 assert mNativeObj != 0
                                         : "Native code is not initialized, but disable was called.";
                                 TraceEvent.begin(
-                                        "WebContentsAccessibilityImpl.AutoDisableAccessibilityHandler.onDisabled");
+                                        "WebContentsAccessibilityImpl."
+                                                + "AutoDisableAccessibilityHandler.onDisabled");
                                 mHistogramRecorder.onDisableCalled(mAutoDisableUsageCounter == 0);
                                 // If the Auto-disable timer has expired, begin disabling the
                                 // renderer, and clearing the Java-side caches. Changing AXModes
@@ -455,7 +456,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 mNodeInfoCache.clear();
                                 mIsCurrentlyAutoDisabled = true;
                                 TraceEvent.end(
-                                        "WebContentsAccessibilityImpl.AutoDisableAccessibilityHandler.onDisabled");
+                                        "WebContentsAccessibilityImpl."
+                                                + "AutoDisableAccessibilityHandler.onDisabled");
                             }
                         });
 
@@ -740,6 +742,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     public boolean hasAnyPendingTimersForTesting() {
         return mAutoDisableAccessibilityHandler.hasPendingTimer();
+    }
+
+    public boolean hasScopedAXModeForTesting() {
+        return WebContentsAccessibilityImplJni.get()
+                .hasScopedAXModeForTesting(mNativeObj); // IN-TEST
     }
 
     public void signalEndOfTestForTesting() {
@@ -1055,18 +1062,28 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
+    /** Updates the browser-level AXMode based on running applications. */
+    private void updateBrowserAXMode() {
+        WebContentsAccessibilityImplJni.get()
+                .setBrowserAXMode(
+                        mNativeObj,
+                        AccessibilityState.isKnownScreenReaderEnabled(),
+                        AccessibilityState.isComplexUserInteractionServiceEnabled(),
+                        AccessibilityState.isOnlyPasswordManagersEnabled(),
+                        AccessibilityState.getNumberOfRunningServices() == 1,
+                        AccessibilityState.isAnyAccessibilityServiceEnabled(),
+                        mIsAutoDisableAccessibilityCandidate);
+    }
+
     private void refreshNativeState() {
         try (TraceEvent te = TraceEvent.scoped("WebContentsAccessibilityImpl.refreshNativeState")) {
             if (!isNativeInitialized()) return;
 
-            // Update the browser-level AXMode based on running applications.
-            WebContentsAccessibilityImplJni.get()
-                    .setBrowserAXMode(
-                            mNativeObj,
-                            AccessibilityState.isKnownScreenReaderEnabled(),
-                            AccessibilityState.isComplexUserInteractionServiceEnabled(),
-                            AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.getNumberOfRunningServices() == 1);
+            // Do not update the browser AXMode while auto-disabled; it will be restored when
+            // getAccessibilityNodeProviderCompat() re-enables renderer accessibility.
+            if (!mIsCurrentlyAutoDisabled) {
+                updateBrowserAXMode();
+            }
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
@@ -1136,6 +1153,20 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProviderCompat() {
         if (shouldPreventNativeEngineUse()) return null;
 
+        // On auto-disable candidates, do not initialize or re-enable renderer accessibility when
+        // neither an accessibility service nor a password manager is enabled (e.g. only
+        // UiAutomation is connected).
+        //
+        // Note: isOnlyPasswordManagersEnabled() must be called first because it populates
+        // AccessibilityState's internal State via updateAccessibilityServices() when uninitialized,
+        // whereas isAnyAccessibilityServiceEnabled() falls back to AccessibilityManager#isEnabled()
+        // (which is true when UiAutomation is connected) if State has not been populated yet.
+        if (mIsAutoDisableAccessibilityCandidate
+                && !AccessibilityState.isOnlyPasswordManagersEnabled()
+                && !AccessibilityState.isAnyAccessibilityServiceEnabled()) {
+            return null;
+        }
+
         // If the Auto-Disable feature is on, and accessibility has been disabled, when the
         // Android Framework calls this method, it is a signal to re-enable renderer accessibility.
         // This must be done before we try to verify/reconnect the root manager, since doing so
@@ -1147,6 +1178,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     .reEnableRendererAccessibility(mNativeObj, mDelegate.getWebContents());
             mIsCurrentlyAutoDisabled = false;
             mAutoDisableUsageCounter++;
+            // Per the native contract, re-enable must be followed by SetBrowserAXMode.
+            updateBrowserAXMode();
             TraceEvent.end("WebContentsAccessibilityImpl.reEnableRendererAccessibility");
         }
 
@@ -1262,7 +1295,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
      * Deep equality check of two {@link AccessibilityNodeInfoCompat} nodes.
      *
      * <p>Requires API level 33 (Tiramisu) for deprecation of {@link
-     * AccessibilityNodeInfo.recycle()}, prior to which the serialization used by this check was
+     * AccessibilityNodeInfo#recycle()}, prior to which the serialization used by this check was
      * destructive.
      *
      * @return true if both are null or both are non-null and have all fields equal.
@@ -2383,9 +2416,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         // If focus changed to the root or frame root (e.g. because an element became
         // disabled or blurred), do not reset virtual accessibility focus to the root if a
-        // web element currently has accessibility focus and that node is still valid in the AX tree.
-        // This prevents TalkBack from jumping all the way back to the top of the web content.
-        // If the element was removed from the DOM or is no longer valid, we must allow
+        // web element currently has accessibility focus and that node is still valid in the
+        // AX tree. This prevents TalkBack from jumping all the way back to the top of the web
+        // content. If the element was removed from the DOM or is no longer valid, we must allow
         // accessibility focus to move to the root.
         if (isRootOrFrameRoot
                 && mAccessibilityFocusId != View.NO_ID
@@ -2883,7 +2916,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 boolean isKnownScreenReaderEnabled,
                 boolean isComplexAccessibilityServiceEnabled,
                 boolean isFormControlsCandidate,
-                boolean isOnScreenModeCandidate);
+                boolean isOnScreenModeCandidate,
+                boolean isAnyAccessibilityServiceEnabled,
+                boolean isAutoDisableCandidate);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityBase);
 
@@ -3030,6 +3065,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         int getMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityBase);
 
         void signalEndOfTestForTesting(long nativeWebContentsAccessibilityBase);
+
+        boolean hasScopedAXModeForTesting( // IN-TEST
+                long nativeWebContentsAccessibilityBase);
 
         void setAllowImageDescriptions(
                 long nativeWebContentsAccessibilityBase, boolean allowImageDescriptions);
