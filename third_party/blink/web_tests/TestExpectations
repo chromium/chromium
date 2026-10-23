@@ -2005,7 +2005,6 @@ crbug.com/530645748 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/co
 # WebDriver WPT tests
 
 # Cross-platform
-crbug.com/575782124 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/image_size.py [ Failure ]
 crbug.com/575779609 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]  # Randomized context ID
 crbug.com/571887196 external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Failure ]
 crbug.com/365046210 external/wpt/webdriver/tests/bidi/browsing_context/print/shrink_to_fit.py [ Failure ]
@@ -2073,7 +2072,7 @@ crbug.com/443773822 external/wpt/webdriver/tests/classic/take_element_screenshot
 
 # Linux / Debug
 crbug.com/575780008 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/activate/activate.py [ Failure Pass ]
-crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]  # Randomized context ID
+crbug.com/571157929 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]  # Randomized context ID
 crbug.com/576634461 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]
 crbug.com/575784421 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/window_open.py [ Failure ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
@@ -2081,8 +2080,8 @@ crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetoo
 crbug.com/575786126 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic/simulate_characteristic.py [ Failure Pass ]
 crbug.com/575786126 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic_response/invalid.py [ Failure Pass ]
 crbug.com/573052731 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/invalid.py [ Timeout ]
-crbug.com/553259600 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
-crbug.com/553259600 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
+crbug.com/576967791 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
+crbug.com/576967791 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
 crbug.com/574485364 [ Linux ] external/wpt/webdriver/tests/bidi/session/capabilities/unhandled_prompt_behavior/file/ignore.py [ Failure ]
 crbug.com/551991920 [ Debug Linux ] external/wpt/webdriver/tests/classic/back/user_prompts.py [ Failure Pass ]
 crbug.com/550287316 [ Debug Linux ] external/wpt/webdriver/tests/classic/close_window/user_prompts.py [ Failure Pass ]
