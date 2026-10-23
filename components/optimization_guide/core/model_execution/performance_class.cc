@@ -21,7 +21,7 @@
 #include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"

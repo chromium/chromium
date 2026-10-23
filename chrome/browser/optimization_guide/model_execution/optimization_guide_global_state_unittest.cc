@@ -15,7 +15,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/override_manifest_asset_manager_delegate.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"

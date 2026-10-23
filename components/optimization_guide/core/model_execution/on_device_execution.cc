@@ -11,7 +11,6 @@
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"

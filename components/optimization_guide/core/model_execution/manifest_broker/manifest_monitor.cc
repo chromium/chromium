@@ -18,8 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -60,7 +59,9 @@ DeviceCategory GetDeviceCategory(const PerformanceClassifier& classifier) {
 
 bool IsAllowedByPolicy(const PrefService& local_state) {
   return features::IsOnDeviceExecutionEnabled() &&
-         GetGenAILocalFoundationalModelEnterprisePolicySettings(&local_state) ==
+         model_execution::prefs::
+                 GetGenAILocalFoundationalModelEnterprisePolicySettings(
+                     &local_state) ==
              model_execution::prefs::
                  GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
 }

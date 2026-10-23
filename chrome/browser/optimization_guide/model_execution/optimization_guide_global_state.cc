@@ -28,7 +28,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/override_manifest_asset_manager_delegate.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/unzip/content/unzip_service.h"

@@ -42,10 +42,9 @@
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -1839,7 +1838,7 @@ std::optional<blink::mojom::ModelAvailabilityCheckResult>
 AIManager::GetPrefBlockedResult() {
   PrefService* local_state = g_browser_process->local_state();
   // chromeenterprise.google/policies/#GenAILocalFoundationalModelSettings
-  if (optimization_guide::
+  if (optimization_guide::model_execution::prefs::
           GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
       optimization_guide::model_execution::prefs::
           GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {

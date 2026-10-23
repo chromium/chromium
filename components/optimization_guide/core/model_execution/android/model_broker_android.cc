@@ -13,12 +13,11 @@
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -72,7 +71,7 @@ std::optional<AICoreFeature> GetAICoreFeatureFor(
 
 bool IsModelAllowed(PrefService* local_state) {
   return features::IsOnDeviceExecutionEnabled() &&
-         optimization_guide::
+         model_execution::prefs::
                  GetGenAILocalFoundationalModelEnterprisePolicySettings(
                      local_state) ==
              model_execution::prefs::

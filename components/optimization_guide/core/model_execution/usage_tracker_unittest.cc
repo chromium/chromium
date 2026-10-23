@@ -10,8 +10,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

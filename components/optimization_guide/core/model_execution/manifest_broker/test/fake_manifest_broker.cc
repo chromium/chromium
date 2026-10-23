@@ -6,7 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "base/trace_event/trace_event.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

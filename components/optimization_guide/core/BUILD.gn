@@ -70,8 +70,6 @@ component("features") {
 
     # TODO(crbug.com/514743962): This is mostly on-device model things,
     # with a couple stray remote model execution things.
-    "model_execution/model_execution_prefs.cc",
-    "model_execution/model_execution_prefs.h",
     "model_execution/on_device_features.cc",
     "model_execution/on_device_features.h",
 
@@ -277,6 +275,8 @@ source_set("ondevice") {
   sources = [
     "model_execution/on_device_capability.cc",
     "model_execution/on_device_capability.h",
+    "model_execution/on_device_prefs.cc",
+    "model_execution/on_device_prefs.h",
   ]
   deps = [
     ":core_util",
@@ -308,8 +308,6 @@ source_set("ondevice") {
       "model_execution/model_broker_client.h",
       "model_execution/model_broker_impl.cc",
       "model_execution/model_broker_impl.h",
-      "model_execution/model_execution_util.cc",
-      "model_execution/model_execution_util.h",
       "model_execution/multimodal_message.cc",
       "model_execution/multimodal_message.h",
       "model_execution/on_device_context.cc",

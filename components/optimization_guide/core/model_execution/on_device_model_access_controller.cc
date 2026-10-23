@@ -5,9 +5,9 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"

@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"

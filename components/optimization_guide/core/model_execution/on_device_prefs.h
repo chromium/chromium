@@ -2,13 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
-
-#include "base/component_export.h"
-#include "base/time/time.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
-#include "components/prefs/prefs_export.h"
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_PREFS_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_PREFS_H_
 
 class PrefRegistrySimple;
 class PrefService;
@@ -25,47 +20,31 @@ enum class GenAILocalFoundationalModelEnterprisePolicySettings {
 
 namespace localstate {
 
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelChromeVersion[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelCrashCount[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelValidationResult[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClass[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClassVersion[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceVramMb[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClassGPUId[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastUsageByFeature[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kGenAILocalFoundationalModelEnterprisePolicySettings[];
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsLocalFoundationalModelEnterprisePolicyAllowed();
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceAiUserSettingsEnabled[];
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceAiAutoRemoveUnusedModelsEnabled[];
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kEmbeddingApiModelDownloadEligible[];
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kManifestAssetLedger[];
 
 }  // namespace localstate
 
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+// Returns the value of the GenAILocalFoundationalModelEnterprisePolicySettings
+// pref from `local_state`.
+GenAILocalFoundationalModelEnterprisePolicySettings
+GetGenAILocalFoundationalModelEnterprisePolicySettings(
+    const PrefService* local_state);
 
 }  // namespace optimization_guide::model_execution::prefs
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_PREFS_H_

@@ -35,8 +35,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
@@ -173,7 +172,7 @@ void RegisterAIEmbeddingsComponent(
     return;
   }
 
-  if (optimization_guide::
+  if (optimization_guide::model_execution::prefs::
           GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
       optimization_guide::model_execution::prefs::
           GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {
@@ -192,7 +191,7 @@ void ManageAIEmbeddingsComponentRegistration(ComponentUpdateService* cus,
   if (!local_state->GetBoolean(
           optimization_guide::model_execution::prefs::localstate::
               kOnDeviceAiUserSettingsEnabled) ||
-      optimization_guide::
+      optimization_guide::model_execution::prefs::
               GetGenAILocalFoundationalModelEnterprisePolicySettings(
                   local_state) ==
           optimization_guide::model_execution::prefs::

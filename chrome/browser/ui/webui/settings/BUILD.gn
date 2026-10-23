@@ -716,7 +716,7 @@ if (!is_android) {
 
     if (is_chrome_branded) {
       sources += [ "on_device_ai_settings_handler_unittest.cc" ]
-      deps += [ "//components/optimization_guide/core:features" ]
+      deps += [ "//components/optimization_guide/core:ondevice" ]
     }
 
     if (toolkit_views && !is_chromeos) {

@@ -44,8 +44,6 @@
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "device/vr/buildflags/buildflags.h"

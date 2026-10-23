@@ -4,8 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/android/model_downloader_android.h"
 

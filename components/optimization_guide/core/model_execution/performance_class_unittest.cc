@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "services/on_device_model/public/cpp/cpu.h"

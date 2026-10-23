@@ -54,7 +54,7 @@
 #import "components/optimization_guide/core/delivery/prefs.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/optimization_guide/core/hints/prefs.h"
-#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#import "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #import "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"

@@ -10,8 +10,7 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
@@ -65,7 +64,7 @@ base::DictValue OnDeviceAiSettingsHandler::GetOnDeviceAiState() {
   using optimization_guide::model_execution::prefs::
       GenAILocalFoundationalModelEnterprisePolicySettings;
   bool allowedByPolicy =
-      optimization_guide::
+      optimization_guide::model_execution::prefs::
           GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
       GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
   result.Set("allowedByPolicy", allowedByPolicy);
@@ -89,7 +88,7 @@ void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
   using optimization_guide::model_execution::prefs::
       GenAILocalFoundationalModelEnterprisePolicySettings;
   bool disallowed_by_policy =
-      optimization_guide::
+      optimization_guide::model_execution::prefs::
           GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
       GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed;
   if (disallowed_by_policy) {

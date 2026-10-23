@@ -7,7 +7,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"

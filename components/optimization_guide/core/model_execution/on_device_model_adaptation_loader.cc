@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
@@ -15,13 +16,13 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
@@ -33,6 +34,22 @@
 namespace optimization_guide {
 
 namespace {
+
+std::unique_ptr<proto::OnDeviceModelExecutionConfig>
+ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
+  TRACE_EVENT("optimization_guide", "ReadOnDeviceModelExecutionConfig");
+  // Unpack and verify model config file.
+  std::string binary_config_pb;
+  if (!base::ReadFileToString(config_path, &binary_config_pb)) {
+    return nullptr;
+  }
+
+  auto config = std::make_unique<proto::OnDeviceModelExecutionConfig>();
+  if (!config->ParseFromString(binary_config_pb)) {
+    return nullptr;
+  }
+  return config;
+}
 
 void RecordAdaptationModelAvailability(
     mojom::OnDeviceFeature feature,

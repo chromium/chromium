@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -96,6 +97,14 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(localstate::kEmbeddingApiModelDownloadEligible,
                                 false);
   registry->RegisterDictionaryPref(localstate::kManifestAssetLedger);
+}
+
+GenAILocalFoundationalModelEnterprisePolicySettings
+GetGenAILocalFoundationalModelEnterprisePolicySettings(
+    const PrefService* local_state) {
+  return static_cast<GenAILocalFoundationalModelEnterprisePolicySettings>(
+      local_state->GetInteger(
+          localstate::kGenAILocalFoundationalModelEnterprisePolicySettings));
 }
 
 }  // namespace optimization_guide::model_execution::prefs
