@@ -5697,8 +5697,9 @@ TEST_F(NetworkContextResolveHostTest, NetworkAnonymizationKey) {
             raw_resolver->last_request_network_anonymization_key());
 }
 
-// Revoke fenced frame network but the resolve request is without the
-// NetworkAnonymizationKey. The request should succeed.
+// Revoke network access for a given `network_restrictions_id`, but the resolve
+// request is given an empty NetworkAnonymizationKey. The request should
+// succeed.
 TEST_F(NetworkContextResolveHostTest,
        SchemeHostPortRestrictNetworkWithoutNetworkAnonymizationKey) {
   const GURL url = GURL("https://sync.test");
@@ -10180,23 +10181,6 @@ TEST_F(NetworkContextTest,
   // Since the split_auth_cache_by_network_anonymization_key is being set to
   // false expect this to also be false.
   ASSERT_FALSE(cache->key_server_entries_by_network_anonymization_key());
-}
-
-TEST_F(NetworkContextTest, EnableTrustTokensForFledge) {
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  EXPECT_TRUE(network_context->trust_token_store());
-
-  base::RunLoop run_loop;
-  bool success = false;
-  network_context->trust_token_store()->ExecuteOrEnqueue(
-      base::BindLambdaForTesting([&](TrustTokenStore* store) {
-        success = !!store;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  EXPECT_TRUE(success);
 }
 
 TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
