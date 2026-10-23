@@ -43,6 +43,8 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
+constexpr bool kIsIOS = !!BUILDFLAG(IS_IOS);
+
 // Used to populate the URLDatabase.
 struct TestURLData {
   raw_ptr<const TemplateURL> search_provider;
@@ -317,7 +319,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
     // Enable local history zero-prefix suggestions beyond NTP.
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP},
+        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP,
+                              omnibox::kZeroSuggestPrefetchingOnSRP},
         /*disabled_features=*/{});
 #if BUILDFLAG(IS_IOS)
     StartProviderAndWaitUntilDone(
@@ -335,6 +338,69 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
     ExpectMatches(
         {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
   }
+}
+
+TEST_P(LocalHistoryZeroSuggestProviderTest, SearchResultsRequirePrefetching) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureStates(
+      {{omnibox::kLocalHistoryZeroSuggestBeyondNTP, true},
+       {omnibox::kZeroSuggestPrefetchingOnSRP, GetParam()},
+       {omnibox::kZeroSuggestPrefetchingOnWeb, !GetParam()}});
+  LoadURLs({{default_search_provider(), "hello world", "", 1}});
+
+  const std::string url = "https://www.google.com/search?q=foo";
+  StartProviderAndWaitUntilDone(
+      kIsIOS ? url : "", metrics::OmniboxFocusType::INTERACTION_FOCUS,
+      OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT, url);
+
+  if (GetParam()) {
+    ExpectMatches(
+        {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
+  } else {
+    ExpectMatches({});
+  }
+}
+
+TEST_P(LocalHistoryZeroSuggestProviderTest, WebPagesRequirePrefetching) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureStates(
+      {{omnibox::kLocalHistoryZeroSuggestBeyondNTP, true},
+       {omnibox::kZeroSuggestPrefetchingOnSRP, !GetParam()},
+       {omnibox::kZeroSuggestPrefetchingOnWeb, GetParam()}});
+  LoadURLs({{default_search_provider(), "hello world", "", 1}});
+
+  const std::string url = "https://example.com/";
+  StartProviderAndWaitUntilDone(kIsIOS ? url : "",
+                                metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                OmniboxEventProto::OTHER, url);
+
+  if (GetParam()) {
+    ExpectMatches(
+        {{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
+  } else {
+    ExpectMatches({});
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(Prefetching,
+                         LocalHistoryZeroSuggestProviderTest,
+                         testing::Bool());
+
+TEST_F(LocalHistoryZeroSuggestProviderTest,
+       NtpAndOmniboxEverywhereDoNotRequirePrefetching) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({omnibox::kLocalHistoryZeroSuggestBeyondNTP},
+                            {omnibox::kZeroSuggestPrefetchingOnSRP,
+                             omnibox::kZeroSuggestPrefetchingOnWeb});
+  LoadURLs({{default_search_provider(), "hello world", "", 1}});
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
+
+  StartProviderAndWaitUntilDone("",
+                                metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                OmniboxEventProto::OMNIBOX_EVERYWHERE);
+  ExpectMatches({{"hello world", omnibox::kLocalHistoryZeroSuggestRelevance}});
 }
 
 // Tests that search terms are extracted from the default search provider's

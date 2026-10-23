@@ -86,6 +86,12 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
     // Allow local history zero-suggest where remote zero-suggest is eligible.
     const auto [result_type, _] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client, input);
+    if (result_type == ZeroSuggestProvider::ResultType::kRemoteSendURL) {
+      return base::FeatureList::IsEnabled(
+          omnibox::IsSearchResultsPage(input.current_page_classification())
+              ? omnibox::kZeroSuggestPrefetchingOnSRP
+              : omnibox::kZeroSuggestPrefetchingOnWeb);
+    }
     return result_type != ZeroSuggestProvider::ResultType::kNone;
   }
 

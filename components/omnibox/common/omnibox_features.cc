@@ -76,6 +76,8 @@ BASE_FEATURE(kHideSuggestionGroupHeaders,
 
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
+// On SRPs and web pages, the corresponding zero-suggest prefetching feature
+// must also be enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP, DISABLED);
 
 // Enables showing tabs from other devices in zero-prefix suggest.
