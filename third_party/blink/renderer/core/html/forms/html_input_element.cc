@@ -2439,6 +2439,12 @@ OpaqueRange* HTMLInputElement::createValueRange(
                                               exception_state);
 }
 
+void HTMLInputElement::ClosePopupView() {
+  if (input_type_view_) {
+    input_type_view_->ClosePopupView();
+  }
+}
+
 bool HTMLInputElement::SetupDateTimeChooserParameters(
     DateTimeChooserParameters& parameters) {
   if (!GetDocument().View())

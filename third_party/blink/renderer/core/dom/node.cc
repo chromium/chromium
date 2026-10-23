@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
@@ -3018,6 +3019,14 @@ ExecutionContext* Node::GetExecutionContext() const {
 void Node::WillMoveToNewDocument(Document& new_document) {
   Document& old_document = GetDocument();
   DCHECK_NE(&old_document, &new_document);
+
+  // A disconnected <input> can have an open popup via showPicker() that is not
+  // closed by RemovedFrom() or DetachLayoutTree(). Close it here rather than in
+  // HTMLInputElement::DidMoveToNewDocument() so popup teardown (such as
+  // AXObjectCache cleanup) runs while GetDocument() is still `old_document`.
+  if (auto* input = DynamicTo<HTMLInputElement>(this)) {
+    input->ClosePopupView();
+  }
 
   // In rare situations, this node may be the focused element of the old
   // document. In this case, we need to clear the focused element of the old

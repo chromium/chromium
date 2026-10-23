@@ -4,9 +4,15 @@
 
 #include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/trees/layer_tree_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -16,18 +22,26 @@
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 
@@ -270,6 +284,284 @@ TEST_F(InternalPopupMenuTest, DisconnectDuringPopupUpdate) {
   document.View()->UpdateAllLifecyclePhasesForTest();
 
   web_view->UpdatePagePopup();
+}
+
+namespace {
+class ShowPickerOnEventListener final : public NativeEventListener {
+ public:
+  ShowPickerOnEventListener(WebViewImpl* web_view, HTMLInputElement* input)
+      : web_view_(web_view), input_(input) {}
+  void Invoke(ExecutionContext*, Event*) override {
+    if (!input_) {
+      return;
+    }
+    LocalFrame::NotifyUserActivation(
+        input_->GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kTest);
+    DummyExceptionStateForTesting exception_state;
+    input_->showPicker(exception_state);
+    if (web_view_) {
+      opened_popup_ = web_view_->GetPagePopup();
+      web_view_ = nullptr;
+    }
+  }
+  WebPagePopupImpl* OpenedPopup() const { return opened_popup_.get(); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(input_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  raw_ptr<WebViewImpl> web_view_;
+  Member<HTMLInputElement> input_;
+  scoped_refptr<WebPagePopupImpl> opened_popup_;
+};
+}  // namespace
+
+// See crbug.com/566377256.
+TEST_F(InternalPopupMenuTest, OpenPopupDuringPagehideOnWebViewClose) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <div style="display: none">
+      <input id="color" type="color">
+      <input id="date" type="date">
+    </div>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Persistent<HTMLInputElement> color =
+      To<HTMLInputElement>(document.getElementById(AtomicString("color")));
+  ASSERT_TRUE(color);
+  Persistent<HTMLInputElement> date =
+      To<HTMLInputElement>(document.getElementById(AtomicString("date")));
+  ASSERT_TRUE(date);
+
+  auto* color_listener =
+      MakeGarbageCollected<ShowPickerOnEventListener>(web_view, color);
+  auto* date_listener =
+      MakeGarbageCollected<ShowPickerOnEventListener>(web_view, date);
+  document.domWindow()->addEventListener(event_type_names::kPagehide,
+                                         color_listener);
+  document.domWindow()->addEventListener(event_type_names::kPagehide,
+                                         date_listener);
+
+  web_view_helper.Reset();
+  EXPECT_FALSE(color->IsPickerVisible());
+  EXPECT_FALSE(date->IsPickerVisible());
+  {
+    ScopedWebTestMode web_test_mode(false);
+    if (WebPagePopupImpl* popup = color_listener->OpenedPopup()) {
+      popup->LayerTreeHostForTesting()->CompositeForTest(
+          base::TimeTicks::Now(), false, base::DoNothing());
+    }
+    if (WebPagePopupImpl* popup = date_listener->OpenedPopup()) {
+      popup->LayerTreeHostForTesting()->CompositeForTest(
+          base::TimeTicks::Now(), false, base::DoNothing());
+    }
+  }
+  test::RunPendingTasks();
+  color.Clear();
+  date.Clear();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+// See crbug.com/566377256.
+TEST_F(InternalPopupMenuTest, OpenPopupDuringChangeOnWebViewClose) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  if (web_view->GetChromeClient().UseExternalPopupMenus()) {
+    return;
+  }
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+    <div style="display: none">
+      <input id="color" type="color">
+    </div>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+  Persistent<HTMLInputElement> color =
+      To<HTMLInputElement>(document.getElementById(AtomicString("color")));
+  ASSERT_TRUE(color);
+
+  select->ShowPopup();
+  EXPECT_TRUE(select->PopupIsVisible());
+
+  WebPagePopupImpl* popup = web_view->GetPagePopup();
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+
+  select->ProvisionalSelectionChanged(1);
+  auto* listener =
+      MakeGarbageCollected<ShowPickerOnEventListener>(web_view, color);
+  select->addEventListener(event_type_names::kChange, listener);
+
+  web_view_helper.Reset();
+  EXPECT_FALSE(color->IsPickerVisible());
+  if (WebPagePopupImpl* opened_popup = listener->OpenedPopup()) {
+    ScopedWebTestMode web_test_mode(false);
+    opened_popup->LayerTreeHostForTesting()->CompositeForTest(
+        base::TimeTicks::Now(), false, base::DoNothing());
+  }
+  test::RunPendingTasks();
+}
+
+// See crbug.com/566377256.
+TEST_F(InternalPopupMenuTest, CompositePopupAfterWebViewClosed) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <select id="sel">
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML",
+                                     base_url);
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* sel =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("sel")));
+  ASSERT_TRUE(sel);
+  auto* menu = MakeGarbageCollected<InternalPopupMenu>(
+      MakeGarbageCollected<EmptyChromeClient>(), *sel);
+
+  scoped_refptr<WebPagePopupImpl> popup = web_view->OpenPagePopup(menu);
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+
+  web_view->CleanupPagePopup();
+  web_view_helper.Reset();
+
+  {
+    ScopedWebTestMode web_test_mode(false);
+    popup->LayerTreeHostForTesting()->CompositeForTest(
+        base::TimeTicks::Now(), false, base::DoNothing());
+  }
+  popup->ClosePopup();
+}
+
+// See crbug.com/566377256.
+TEST_F(InternalPopupMenuTest, DetachedInputPopupClosedOnDocumentDetach) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <div style="display: none">
+      <input id="color" type="color">
+    </div>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Persistent<HTMLInputElement> color =
+      To<HTMLInputElement>(document.getElementById(AtomicString("color")));
+  ASSERT_TRUE(color);
+  color->remove();
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  color->showPicker(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(color->IsPickerVisible());
+  EXPECT_TRUE(web_view->GetPagePopup());
+
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(), "<!DOCTYPE html><p>Next page</p>", base_url);
+  EXPECT_FALSE(color->IsPickerVisible());
+  EXPECT_FALSE(web_view->GetPagePopup());
+}
+
+// See crbug.com/566377256.
+TEST_F(InternalPopupMenuTest, DetachedInputPopupClosedOnAdoptNode) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <div style="display: none">
+      <input id="color" type="color">
+      <input id="color2" type="color">
+    </div>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  AXContext ax_context(document, ui::kAXModeComplete);
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Persistent<HTMLInputElement> color =
+      To<HTMLInputElement>(document.getElementById(AtomicString("color")));
+  ASSERT_TRUE(color);
+  Persistent<HTMLInputElement> color2 =
+      To<HTMLInputElement>(document.getElementById(AtomicString("color2")));
+  ASSERT_TRUE(color2);
+  color->remove();
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  color->showPicker(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(color->IsPickerVisible());
+  EXPECT_TRUE(web_view->GetPagePopup());
+
+  Document* other_document =
+      Document::CreateForTest(*document.GetExecutionContext());
+  other_document->adoptNode(color, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(color->IsPickerVisible());
+  EXPECT_FALSE(web_view->GetPagePopup());
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  color2->showPicker(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(color2->IsPickerVisible());
+  EXPECT_TRUE(web_view->GetPagePopup());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

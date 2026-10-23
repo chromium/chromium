@@ -660,6 +660,7 @@ WebViewImpl::WebViewImpl(
 
 WebViewImpl::~WebViewImpl() {
   DCHECK(!page_);
+  DCHECK(!page_popup_);
 }
 
 void WebViewImpl::SetTabKeyCyclesThroughElements(bool value) {
@@ -1152,8 +1153,11 @@ void WebViewImpl::ClosePagePopup(PagePopup* popup) {
 }
 
 void WebViewImpl::CleanupPagePopup() {
-  page_popup_ = nullptr;
-  DisablePopupMouseWheelEventListener();
+  if (page_popup_) {
+    page_popup_->ClearOpenerWebView();
+    page_popup_ = nullptr;
+    DisablePopupMouseWheelEventListener();
+  }
 }
 
 void WebViewImpl::UpdatePagePopup() {
@@ -1184,13 +1188,13 @@ void WebViewImpl::DisablePopupMouseWheelEventListener() {
   // TODO(kenrb): Concerns the same as in enablePopupMouseWheelEventListener.
   // See https://crbug.com/566130
   DCHECK(popup_mouse_wheel_event_listener_);
+  EventListener* listener = popup_mouse_wheel_event_listener_.Release();
   Document* document =
       local_root_with_empty_mouse_wheel_listener_->GetDocument();
   if (document) {
     // Document may have already removed the event listener, for instance, due
     // to a navigation, but remove it anyway.
-    document->removeEventListener(event_type_names::kMousewheel,
-                                  popup_mouse_wheel_event_listener_.Release(),
+    document->removeEventListener(event_type_names::kMousewheel, listener,
                                   false);
   }
   local_root_with_empty_mouse_wheel_listener_ = nullptr;

@@ -355,6 +355,7 @@ class CORE_EXPORT HTMLInputElement
   HTMLImageLoader& EnsureImageLoader();
 
   bool SetupDateTimeChooserParameters(DateTimeChooserParameters&);
+  void ClosePopupView();
 
   bool SupportsInputModeAttribute() const;
 

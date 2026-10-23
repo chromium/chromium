@@ -1049,11 +1049,11 @@ gfx::Rect WebPagePopupImpl::ViewportVisibleRect() {
 }
 
 KURL WebPagePopupImpl::GetURLForDebugTrace() {
-  if (!page_) {
+  if (!page_ || !opener_web_view_) {
     return {};
   }
   WebFrame* main_frame = opener_web_view_->MainFrame();
-  if (main_frame->IsWebLocalFrame()) {
+  if (main_frame && main_frame->IsWebLocalFrame()) {
     return main_frame->ToWebLocalFrame()->GetDocument().Url();
   }
   return {};
@@ -1087,6 +1087,10 @@ void WebPagePopupImpl::Close() {
         controller->ClearPagePopupClient();
       }
       DestroyPage();
+      if (opener_web_view_) {
+        opener_web_view_->CleanupPagePopup();
+        opener_web_view_ = nullptr;
+      }
     }
   }
 
@@ -1146,7 +1150,10 @@ void WebPagePopupImpl::ClosePopup() {
   // owner of itself. Note however that WebViewImpl may briefly extend the
   // lifetime of this object since it owns a reference, but it should only be
   // to call HasSamePopupClient().
-  opener_web_view_->CleanupPagePopup();
+  if (opener_web_view_) {
+    opener_web_view_->CleanupPagePopup();
+    opener_web_view_ = nullptr;
+  }
 }
 
 LocalDOMWindow* WebPagePopupImpl::Window() {

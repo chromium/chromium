@@ -98,6 +98,10 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // Only HasSamePopupClient() may still be called after ClosePopup() runs.
   void ClosePopup();
 
+  // Clears the back-pointer to the opener WebViewImpl when the popup is
+  // disowned or the opener WebViewImpl is being destroyed.
+  void ClearOpenerWebView() { opener_web_view_ = nullptr; }
+
   // Returns whether another WebPagePopupImpl has the same PopupClient as this
   // instance. May be called after ClosePopup() has run still, in order to
   // determine if a popup sharing the same client was created immediately after
@@ -262,7 +266,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void DestroyPage();
   void MainFrameDetached();
   void SetRootLayer(scoped_refptr<cc::Layer>);
-  void SetWebView(WebViewImpl* web_view);
 
   gfx::Rect WindowRectInScreen() const;
 
@@ -275,8 +278,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void DidSetBounds();
 
   // This is the WebView that opened the popup.
-  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged>
-      opener_web_view_ = nullptr;
+  raw_ptr<WebViewImpl, UnprotectedInRelease> opener_web_view_ = nullptr;
   Persistent<PagePopupChromeClient> chrome_client_;
   Persistent<EmptyLocalFrameClient> local_frame_client_;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
