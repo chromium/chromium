@@ -774,8 +774,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                               base::Unretained(ui)));
   MockContextualTasksComposeboxHandler* mock_handler =
       mock_composebox_handler.get();
-  ui->SetComposeboxHandlerForTesting(std::move(mock_composebox_handler));
   coordinator->Close();
+  ui->SetComposeboxHandlerForTesting(std::move(mock_composebox_handler));
 
   // Define expectations on the mock handler.
   using SuggestedTabInfo = contextual_tasks::SuggestedTabInfo;
@@ -783,12 +783,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   base::RunLoop initial_run_loop;
   EXPECT_CALL(*mock_handler, UpdateSuggestedTabContext(
                                  Pointee(Field(&SuggestedTabInfo::url, foo))))
-      .WillRepeatedly(
-          [&](const SuggestedTabInfo* tab_info) { initial_run_loop.Quit(); });
+      .WillRepeatedly([&initial_run_loop](const SuggestedTabInfo* tab_info) {
+        initial_run_loop.Quit();
+      });
 
+  bool switched_tabs = false;
   base::RunLoop tab_switch_run_loop;
   EXPECT_CALL(*mock_handler, UpdateSuggestedTabContext(testing::IsNull()))
-      .WillOnce([&]() { tab_switch_run_loop.Quit(); });
+      .WillRepeatedly([&switched_tabs, &tab_switch_run_loop](
+                          const SuggestedTabInfo* tab_info) {
+        if (switched_tabs) {
+          tab_switch_run_loop.Quit();
+        }
+      });
 
   RunTestSequence(
       // 1. Open side panel.
@@ -805,6 +812,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       Check([&]() { return ui->IsActiveTabContextSuggestionShowing(); }),
       // 2. Switch tabs to another tab.
       Do([&]() {
+        switched_tabs = true;
         TabListInterface* tab_list = TabListInterface::From(browser());
         tab_list->ActivateTab(tab_list->GetTab(2)->GetHandle());
       }),
