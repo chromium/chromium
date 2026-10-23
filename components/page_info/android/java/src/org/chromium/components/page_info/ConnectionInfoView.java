@@ -27,6 +27,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -45,6 +49,9 @@ import org.chromium.ui.widget.ButtonCompat;
 /** Java side of Android implementation of the page info UI. */
 @NullMarked
 public class ConnectionInfoView implements OnClickListener {
+    @JniType("::ConnectionInfoViewAndroid")
+    interface NativeConnectionInfoViewAndroid extends JniTypeToken {}
+
     private static final String TAG = "ConnectionInfoView";
 
     private static final String HELP_URL =
@@ -56,7 +63,7 @@ public class ConnectionInfoView implements OnClickListener {
     private final WebContents mWebContents;
     private final int mPaddingSides;
     private final int mPaddingVertical;
-    private long mNativeConnectionInfoView;
+    private @Nullable JniUniquePtr<NativeConnectionInfoViewAndroid> mNativeConnectionInfoView;
     private final CertificateViewer mCertificateViewer;
     private @Nullable TextView mCertificateViewerTextView;
     private @Nullable TextView mMoreInfoLink;
@@ -211,7 +218,7 @@ public class ConnectionInfoView implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (mResetCertDecisionsButton == v && mNativeConnectionInfoView != 0) {
+        if (mResetCertDecisionsButton == v && mNativeConnectionInfoView != null) {
             ConnectionInfoViewJni.get().resetCertDecisions(mNativeConnectionInfoView, mWebContents);
             mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
         }
@@ -227,10 +234,10 @@ public class ConnectionInfoView implements OnClickListener {
         // Guard against double-free: onDismiss() can be called more than once if the dialog is
         // dismissed while a WebContentsObserver callback (e.g. webContentsDestroyed) also triggers
         // dismissal. Zero the pointer before calling destroy to prevent re-entrant calls.
-        if (mNativeConnectionInfoView == 0) return;
-        long nativePtr = mNativeConnectionInfoView;
-        mNativeConnectionInfoView = 0;
-        ConnectionInfoViewJni.get().destroy(nativePtr);
+        if (mNativeConnectionInfoView == null) return;
+        JniUniquePtr<NativeConnectionInfoViewAndroid> nativePtr = mNativeConnectionInfoView;
+        mNativeConnectionInfoView = null;
+        nativePtr.destroy();
     }
 
     private void showConnectionSecurityInfo() {
@@ -333,10 +340,10 @@ public class ConnectionInfoView implements OnClickListener {
 
     @NativeMethods
     interface Natives {
-        long init(ConnectionInfoView popup, WebContents webContents);
+        JniUniquePtr<NativeConnectionInfoViewAndroid> init(
+                ConnectionInfoView popup, WebContents webContents);
 
-        void destroy(long nativeConnectionInfoViewAndroid);
-
-        void resetCertDecisions(long nativeConnectionInfoViewAndroid, WebContents webContents);
+        void resetCertDecisions(
+                JniPtr<NativeConnectionInfoViewAndroid> self, WebContents webContents);
     }
 }

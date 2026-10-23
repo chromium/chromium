@@ -35,7 +35,6 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
       delete;
 
   ~ConnectionInfoViewAndroid() override;
-  void Destroy(JNIEnv* env);
 
   // Revokes any current user exceptions for bypassing SSL error interstitials
   // on this page.

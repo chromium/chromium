@@ -19,6 +19,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -31,16 +32,16 @@ using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
 // static
-static int64_t JNI_ConnectionInfoView_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& java_web_contents) {
+static jni_zero::JniUniquePtr<ConnectionInfoViewAndroid>
+JNI_ConnectionInfoView_Init(JNIEnv* env,
+                            const JavaRef<jobject>& obj,
+                            const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
 
-  return reinterpret_cast<intptr_t>(
-      new ConnectionInfoViewAndroid(env, obj, web_contents));
+  return jni_zero::MakeUnique<ConnectionInfoViewAndroid>(env, obj,
+                                                         web_contents);
 }
 
 ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
@@ -65,10 +66,6 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
 }
 
 ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() = default;
-
-void ConnectionInfoViewAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ConnectionInfoViewAndroid::ResetCertDecisions(
     JNIEnv* env,
