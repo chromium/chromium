@@ -11,6 +11,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_close_button_controller.h",
     "contextual_tasks_close_tab_button.h",
     "contextual_tasks_ephemeral_button_controller.h",
+    "contextual_tasks_ephemeral_button_menu_model.h",
     "contextual_tasks_ephemeral_button_utils.h",
   ]
 
@@ -33,6 +34,7 @@ source_set("impl") {
     "contextual_tasks_close_button_controller.cc",
     "contextual_tasks_close_tab_button.cc",
     "contextual_tasks_ephemeral_button_controller.cc",
+    "contextual_tasks_ephemeral_button_menu_model.cc",
     "contextual_tasks_ephemeral_button_utils.cc",
   ]
 

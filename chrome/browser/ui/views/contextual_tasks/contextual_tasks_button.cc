@@ -10,13 +10,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -28,9 +25,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -213,35 +210,7 @@ class ContextualTasksButtonHighlightPathGenerator
   const raw_ptr<ContextualTasksButton> button_;
 };
 
-enum ContextualTasksButtonContextMenuCommand {
-  kCommandRemoveForCurrentTask = 1,
-  kCommandPinToToolbar = 2,
-  kCommandUnpinFromToolbar = 3,
-  kCommandCustomizeToolbar = 4,
-};
-
-constexpr size_t kPinnedActionMenuPinIndex = 0;
-constexpr size_t kPinnedActionMenuUnpinIndex = 1;
-constexpr size_t kPinnedActionMenuCustomizeIndex = 2;
-
-std::optional<size_t> GetPinnedActionMenuIndexForCommand(int command_id) {
-  switch (command_id) {
-    case kCommandPinToToolbar:
-      return kPinnedActionMenuPinIndex;
-    case kCommandUnpinFromToolbar:
-      return kPinnedActionMenuUnpinIndex;
-    case kCommandCustomizeToolbar:
-      return kPinnedActionMenuCustomizeIndex;
-    default:
-      return std::nullopt;
-  }
-}
-
 }  // namespace
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
-    ContextualTasksButton,
-    kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
 
 ContextualTasksButton::ContextualTasksButton(
     BrowserWindowInterface* browser_window_interface)
@@ -250,12 +219,12 @@ ContextualTasksButton::ContextualTasksButton(
                               base::Unretained(this)),
           base::FeatureList::IsEnabled(
               contextual_tasks::kContextualTasksEphemeralButtonContextMenu)
-              ? std::make_unique<ui::SimpleMenuModel>(this)
+              ? std::make_unique<ContextualTasksEphemeralButtonMenuModel>(
+                    browser_window_interface)
               : nullptr,
           nullptr,
           /*trigger_menu_on_long_press=*/false),
       browser_window_interface_(browser_window_interface) {
-  UpdateContextMenu();
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   // The contextual tasks button is ephemeral and starts hidden until an active
@@ -524,59 +493,6 @@ void ContextualTasksButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
   }
 }
 
-bool ContextualTasksButton::IsCommandIdEnabled(int command_id) const {
-  if (std::optional<size_t> index =
-          GetPinnedActionMenuIndexForCommand(command_id);
-      index.has_value()) {
-    return IsPinningEligible() && pinned_action_menu_model_ &&
-           pinned_action_menu_model_->IsEnabledAt(*index);
-  }
-  return true;
-}
-
-bool ContextualTasksButton::IsCommandIdVisible(int command_id) const {
-  if (std::optional<size_t> index =
-          GetPinnedActionMenuIndexForCommand(command_id);
-      index.has_value()) {
-    return IsPinningEligible() && pinned_action_menu_model_ &&
-           pinned_action_menu_model_->IsVisibleAt(*index);
-  }
-  return true;
-}
-
-void ContextualTasksButton::ExecuteCommand(int command_id, int event_flags) {
-  if (command_id == kCommandRemoveForCurrentTask) {
-    auto* const controller = ContextualTasksEphemeralButtonController::From(
-        browser_window_interface_);
-    if (!controller) {
-      return;
-    }
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "RemoveByContextMenu"));
-    base::UmaHistogramBoolean(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "RemoveByContextMenu",
-        true);
-    controller->RemoveEphemeralButtonForCurrentTask();
-    return;
-  }
-  if (std::optional<size_t> index =
-          GetPinnedActionMenuIndexForCommand(command_id);
-      index.has_value() && IsPinningEligible() && pinned_action_menu_model_) {
-    if (command_id == kCommandPinToToolbar) {
-      base::RecordAction(base::UserMetricsAction(
-          "ContextualTasks.EphemeralToolbarButton.UserAction."
-          "PinByContextMenu"));
-      base::UmaHistogramBoolean(
-          "ContextualTasks.EphemeralToolbarButton.UserAction."
-          "PinByContextMenu",
-          true);
-    }
-    pinned_action_menu_model_->ActivatedAt(*index, event_flags);
-  }
-}
-
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
   MaybeUpdateVisibility();
 }
@@ -586,61 +502,10 @@ void ContextualTasksButton::OnEligibilityChange(bool is_eligible) {
   MaybeUpdateVisibility();
 }
 
-bool ContextualTasksButton::IsPinningEligible() const {
-  return browser_window_interface_ &&
-         contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-             browser_window_interface_->GetProfile());
-}
-
 void ContextualTasksButton::UpdateContextMenu() {
-  auto* simple_menu_model = static_cast<ui::SimpleMenuModel*>(menu_model());
-  if (!simple_menu_model) {
-    return;
-  }
-
-  const bool is_pinning_eligible = IsPinningEligible();
-  if (simple_menu_model->GetItemCount() > 0 &&
-      (simple_menu_model->GetItemCount() > 1) == is_pinning_eligible) {
-    return;
-  }
-
-  simple_menu_model->Clear();
-  const int close_label_id =
-      contextual_tasks::ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
-          ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE
-          : IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE;
-  simple_menu_model->AddItemWithStringIdAndIcon(
-      kCommandRemoveForCurrentTask, close_label_id,
-      ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
-                                            : vector_icons::kCloseOldIcon,
-          ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
-  simple_menu_model->SetElementIdentifierAt(
-      0, kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
-
-  if (is_pinning_eligible) {
-    simple_menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-
-    if (!pinned_action_menu_model_) {
-      pinned_action_menu_model_ =
-          std::make_unique<PinnedActionToolbarButtonMenuModel>(
-              browser_window_interface_, kActionSidePanelShowContextualTasks);
-    }
-    constexpr std::pair<int, size_t> kPinnedMenuCommands[] = {
-        {kCommandPinToToolbar, kPinnedActionMenuPinIndex},
-        {kCommandUnpinFromToolbar, kPinnedActionMenuUnpinIndex},
-        {kCommandCustomizeToolbar, kPinnedActionMenuCustomizeIndex},
-    };
-    for (const auto& [command_id, index] : kPinnedMenuCommands) {
-      simple_menu_model->AddItemWithIcon(
-          command_id, pinned_action_menu_model_->GetLabelAt(index),
-          pinned_action_menu_model_->GetIconAt(index));
-      simple_menu_model->SetElementIdentifierAt(
-          simple_menu_model->GetItemCount() - 1,
-          pinned_action_menu_model_->GetElementIdentifierAt(index));
-    }
-  } else {
-    pinned_action_menu_model_.reset();
+  if (auto* const contextual_tasks_menu_model =
+          static_cast<ContextualTasksEphemeralButtonMenuModel*>(menu_model())) {
+    contextual_tasks_menu_model->UpdateItems();
   }
 }
 

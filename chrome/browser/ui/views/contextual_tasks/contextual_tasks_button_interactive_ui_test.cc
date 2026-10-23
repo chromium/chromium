@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
@@ -536,8 +537,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       // Right-click the ephemeral toolbar button and select Unpin/Remove.
       MoveMouseTo(kContextualTasksEphemeralToolbarButtonElementId),
       ClickMouse(ui_controls::RIGHT),
-      SelectMenuItem(ContextualTasksButton::
-                         kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
+      SelectMenuItem(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
@@ -2360,24 +2361,21 @@ IN_PROC_BROWSER_TEST_F(
                }),
       MoveMouseTo(kContextualTasksEphemeralToolbarButtonElementId),
       ClickMouse(ui_controls::RIGHT),
-      WaitForShow(ContextualTasksButton::
-                      kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
+      WaitForShow(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       WaitForShow(kPinnedActionToolbarPinElementId),
       WaitForShow(kPinnedActionToolbarCustomizeElementId),
-      CheckView(
-          ContextualTasksButton::
-              kContextualTasksEphemeralButtonRemoveForTaskMenuItem,
-          [](views::MenuItemView* menu_item) {
-            return !menu_item->GetIcon().IsEmpty();
-          }),
+      CheckView(ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem,
+                [](views::MenuItemView* menu_item) {
+                  return !menu_item->GetIcon().IsEmpty();
+                }),
       CheckViewProperty(
-          ContextualTasksButton::
-              kContextualTasksEphemeralButtonRemoveForTaskMenuItem,
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem,
           &views::MenuItemView::title,
           l10n_util::GetStringUTF16(
               IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE)),
-      SelectMenuItem(ContextualTasksButton::
-                         kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
+      SelectMenuItem(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
@@ -2445,8 +2443,8 @@ IN_PROC_BROWSER_TEST_F(
       ClickMouse(ui_controls::RIGHT),
       WaitForShow(kPinnedActionToolbarUnpinElementId),
       WaitForShow(kPinnedActionToolbarCustomizeElementId),
-      EnsureNotPresent(ContextualTasksButton::
-                           kContextualTasksEphemeralButtonRemoveForTaskMenuItem));
+      EnsureNotPresent(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2466,13 +2464,13 @@ IN_PROC_BROWSER_TEST_F(
                }),
       MoveMouseTo(kContextualTasksEphemeralToolbarButtonElementId),
       ClickMouse(ui_controls::RIGHT),
-      WaitForShow(ContextualTasksButton::
-                      kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
+      WaitForShow(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       EnsureNotPresent(kPinnedActionToolbarPinElementId),
       EnsureNotPresent(kPinnedActionToolbarUnpinElementId),
       EnsureNotPresent(kPinnedActionToolbarCustomizeElementId),
-      SelectMenuItem(ContextualTasksButton::
-                         kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
+      SelectMenuItem(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
 }
 

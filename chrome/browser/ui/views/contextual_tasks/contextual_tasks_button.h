@@ -19,12 +19,9 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/menus/simple_menu_model.h"
 
 class BrowserWindowInterface;
-class PinnedActionToolbarButtonMenuModel;
 class PinnedToolbarButtonStatusIndicator;
 
 namespace ui {
@@ -36,14 +33,10 @@ class LayerOwner;
 class ContextualTasksButton
     : public ToolbarButton,
       public contextual_tasks::ContextualTasksPanelController::Observer,
-      public ImmersiveModeController::Observer,
-      public ui::SimpleMenuModel::Delegate {
+      public ImmersiveModeController::Observer {
   METADATA_HEADER(ContextualTasksButton, ToolbarButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
-      kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
-
   explicit ContextualTasksButton(
       BrowserWindowInterface* browser_window_interface);
   ~ContextualTasksButton() override;
@@ -80,11 +73,6 @@ class ContextualTasksButton
   // views::View:
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
 
-  // ui::SimpleMenuModel::Delegate:
-  bool IsCommandIdEnabled(int command_id) const override;
-  bool IsCommandIdVisible(int command_id) const override;
-  void ExecuteCommand(int command_id, int event_flags) override;
-
  protected:
   bool ShouldShowMenu() override;
   void UpdateColorsAndInsets() override;
@@ -94,7 +82,6 @@ class ContextualTasksButton
   void OnShouldUpdatePosition();
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
-  bool IsPinningEligible() const;
   void UpdateContextMenu();
   void MaybeUpdateVisibility();
   void UpdateHighlight();
@@ -115,7 +102,6 @@ class ContextualTasksButton
   base::CallbackListSubscription vertical_tabs_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
   raw_ptr<PinnedToolbarButtonStatusIndicator> status_indicator_ = nullptr;
-  std::unique_ptr<PinnedActionToolbarButtonMenuModel> pinned_action_menu_model_;
 
   std::optional<Button::ScopedAnchorHighlight> anchor_highlight_;
 
