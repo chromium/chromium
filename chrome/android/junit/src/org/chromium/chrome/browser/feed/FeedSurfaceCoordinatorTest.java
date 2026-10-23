@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.os.SystemClock;
@@ -644,6 +645,13 @@ public class FeedSurfaceCoordinatorTest {
         assertTrue(rootView.isFocused());
         assertFalse(otherView.isFocused());
         downEvent.recycle();
+    }
+
+    @Test
+    public void testHasDrawnFrame() {
+        assertFalse(mCoordinator.hasDrawnFrame());
+        mCoordinator.getView().draw(new Canvas());
+        assertTrue(mCoordinator.hasDrawnFrame());
     }
 
     private boolean hasStreamBound() {

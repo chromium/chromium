@@ -69,6 +69,9 @@ public interface FeedSurfaceProvider {
     /** Captures the contents of this provider into the specified output. */
     void captureThumbnail(Canvas canvas);
 
+    /** Whether the surface's root view has drawn at least one frame. */
+    boolean hasDrawnFrame();
+
     /**
      * @return The surface's FeedReliabilityLogger which may be null.
      */

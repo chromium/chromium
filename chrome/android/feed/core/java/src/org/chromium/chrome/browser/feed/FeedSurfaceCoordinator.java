@@ -169,6 +169,7 @@ public class FeedSurfaceCoordinator
     private @Nullable HomepageStateListener mHomepageStateListener;
     private @Nullable ItemDecoration mItemDecoration;
     private @Nullable OnScrollListener mOnScrollListener;
+    private boolean mHasDrawnFrame;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -179,6 +180,12 @@ public class FeedSurfaceCoordinator
             super(context);
             setFocusable(true);
             setFocusableInTouchMode(true);
+        }
+
+        @Override
+        protected void dispatchDraw(Canvas canvas) {
+            super.dispatchDraw(canvas);
+            mHasDrawnFrame = true;
         }
 
         @Override
@@ -763,6 +770,11 @@ public class FeedSurfaceCoordinator
     public void captureThumbnail(Canvas canvas) {
         ViewUtils.captureBitmap(mRootView, canvas);
         mMediator.onThumbnailCaptured();
+    }
+
+    @Override
+    public boolean hasDrawnFrame() {
+        return mHasDrawnFrame;
     }
 
     @Override

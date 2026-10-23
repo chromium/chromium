@@ -1251,6 +1251,11 @@ public class NewTabPage
 
     @Override
     public boolean shouldCaptureThumbnail() {
+        // A newly created (e.g. unfrozen) NTP must not overwrite the cached thumbnail until it has
+        // been drawn for display; otherwise the capture is blank, e.g. when restoring directly
+        // into the Hub after activity recreation.
+        if (!mFeedSurfaceProvider.hasDrawnFrame()) return false;
+
         return mNewTabPageCoordinator.shouldCaptureThumbnail()
                 || mFeedSurfaceProvider.shouldCaptureThumbnail()
                 || mSnapshotSingleTabCardChanged;
