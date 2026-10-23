@@ -430,15 +430,24 @@ public class ProfileDataCache
 
     /**
      * Updates the cached profile data of a single account and notifies the observers about it.
-     * Observers are not notified about the account list: with IdentityManager as the source of
-     * accounts, new accounts are added by {@link #addToCache(AccountInfo)}; with
-     * AccountManagerFacade, the list is rebuilt by onAccountsChanged().
+     * onAccountsUpdated() is only called if MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS flag is
+     * enabled and the {@link #getAccounts()} Promise is fulfilled. onProfileDataUpdated() is always
+     * called.
+     *
+     * <p>TODO(crbug.com/571803558): updateCache() and addToCache() methods have similar logic and
+     * should be unified after the MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS flag cleanup.
      */
     private void updateCache(final AccountInfo accountInfo) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            assert mAccountsCache.containsKey(accountInfo.getId());
+        }
         var profileData = toDisplayableProfileData(accountInfo);
         mAccountsCache.put(accountInfo.getId(), profileData);
         refreshAccountsPromiseIfFulfilled();
-        // TODO(crbug.com/570481489) : Notify onAccountsUpdated() as well.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+                && mAccountsPromise.isFulfilled()) {
+            fireOnAccountsUpdated(mAccountsPromise.getResult());
+        }
         fireOnProfileDataUpdated(profileData);
     }
 
@@ -446,13 +455,16 @@ public class ProfileDataCache
      * Adds a new account to the cache and notifies the observers about the updated account list and
      * the profile data of the added account. Must only be called once the account list has been
      * loaded, i.e. the {@link #getAccounts()} Promise is fulfilled.
+     *
+     * <p>TODO(crbug.com/571803558): updateCache() and addToCache() methods have similar logic and
+     * should be unified after the MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS flag cleanup.
      */
     private void addToCache(final AccountInfo accountInfo) {
         assert !mAccountsCache.containsKey(accountInfo.getId());
         assert mAccountsPromise.isFulfilled();
         var profileData = toDisplayableProfileData(accountInfo);
         mAccountsCache.put(accountInfo.getId(), profileData);
-        refreshAccountsPromiseIfFulfilled();
+        mAccountsPromise = Promise.fulfilled(new ArrayList<>(mAccountsCache.values()));
         fireOnAccountsUpdated(mAccountsPromise.getResult());
         fireOnProfileDataUpdated(profileData);
     }

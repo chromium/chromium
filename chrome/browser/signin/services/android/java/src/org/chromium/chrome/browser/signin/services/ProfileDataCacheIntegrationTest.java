@@ -9,6 +9,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
@@ -60,32 +62,16 @@ import java.util.Set;
 @RunWith(BaseJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Integration test suite that changes the list of accounts")
 public class ProfileDataCacheIntegrationTest {
-    /** Counts the calls of each {@link ProfileDataCache.Observer} method. */
-    private static class CountingObserver implements ProfileDataCache.Observer {
-        private int mAccountsUpdatedCount;
-        private int mProfileDataUpdatedCount;
-
-        @Override
-        public void onAccountsUpdated(List<DisplayableProfileData> accounts) {
-            mAccountsUpdatedCount++;
-        }
-
-        @Override
-        public void onProfileDataUpdated(DisplayableProfileData profileData) {
-            mProfileDataUpdatedCount++;
-        }
-    }
-
     private static final int LARGE_ACCOUNTS_LIST_SIZE = 10;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtils;
+    @Mock private ProfileDataCache.Observer mObserver;
 
     private final List<AccountInfo> mLargeAccountsList =
             createAccountsList(LARGE_ACCOUNTS_LIST_SIZE);
-    private final CountingObserver mObserver = new CountingObserver();
 
     private IdentityManager mIdentityManager;
     private ProfileDataCache mProfileDataCache;
@@ -248,7 +234,7 @@ public class ProfileDataCacheIntegrationTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
     public void
-            testUpdateExistingAccountShouldNotifyAboutUpdatedAccountChange_withIdentityManagerSourceOfTruth() {
+            testUpdateExistingAccountShouldNotifyAboutAccountsListAndUpdatedAccountChange_withIdentityManagerSourceOfTruth() {
         addAccounts(mLargeAccountsList);
         createProfileDataCache();
 
@@ -260,9 +246,7 @@ public class ProfileDataCacheIntegrationTest {
                 () -> newFullName.equals(mProfileDataCache.getById(account.getId()).getFullName()),
                 "The cache wasn't updated with the new full name");
 
-        // The account info update only refreshes the updated account. The following refresh token
-        // updates are ignored, as all the accounts are already known.
-        assertAccountsUpdatedCount(0);
+        assertAccountsUpdatedCount(1);
         assertProfileDataUpdatedCount(1);
     }
 
@@ -297,7 +281,7 @@ public class ProfileDataCacheIntegrationTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
     public void
-            testExtendedAccountInfoUpdateShouldNotifyOnlyAboutUpdatedAccount_withIdentityManagerSourceOfTruth() {
+            testExtendedAccountInfoUpdateShouldNotifyAboutAccountsListAndUpdatedAccount_withIdentityManagerSourceOfTruth() {
         addAccounts(mLargeAccountsList);
         createProfileDataCache();
 
@@ -316,7 +300,7 @@ public class ProfileDataCacheIntegrationTest {
                             mProfileDataCache.getById(accountId).getFullName());
                 });
 
-        assertAccountsUpdatedCount(0);
+        assertAccountsUpdatedCount(1);
         assertProfileDataUpdatedCount(1);
     }
 
@@ -551,19 +535,11 @@ public class ProfileDataCacheIntegrationTest {
 
     private void assertAccountsUpdatedCount(int expected) {
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        assertEquals(
-                                "Unexpected number of onAccountsUpdated() calls",
-                                expected,
-                                mObserver.mAccountsUpdatedCount));
+                () -> verify(mObserver, times(expected)).onAccountsUpdated(any()));
     }
 
     private void assertProfileDataUpdatedCount(int expected) {
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        assertEquals(
-                                "Unexpected number of onProfileDataUpdated() calls",
-                                expected,
-                                mObserver.mProfileDataUpdatedCount));
+                () -> verify(mObserver, times(expected)).onProfileDataUpdated(any()));
     }
 }
