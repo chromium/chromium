@@ -1972,42 +1972,6 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(views::InkDrop::Get(search_field)->GetMode(),
             views::InkDropHost::InkDropMode::ON);
 
-  // The search bar is active and focused initially when added to the menu.
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(search_field->GetCursorEnabled());
-
-  // Pressing Down arrow deactivates search bar focus for menu navigation.
-  ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);
-  search_bar->HandleKeyEvent(&down_key);
-  EXPECT_FALSE(search_bar->is_active_for_testing());
-
-  // Mouse press re-focuses the textfield and enables the cursor.
-  EXPECT_TRUE(search_field->OnMousePressed(ui::MouseEvent(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON)));
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(search_field->GetCursorEnabled());
-
-  // Type text: icon remains visible and text appears.
-  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
-  key_event.set_character('a');
-  search_bar->HandleKeyEvent(&key_event);
-  EXPECT_EQ(search_bar->GetText(), u"a");
-  EXPECT_TRUE(icon->GetVisible());
-
-  // Hitting Enter should do nothing and not trigger any action.
-  ui::KeyEvent enter_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
-                           ui::EF_NONE);
-  search_bar->HandleKeyEvent(&enter_event);
-  EXPECT_EQ(search_bar->GetText(), u"a");
-
-  // Hitting Backspace deletes the text.
-  ui::KeyEvent backspace_event(ui::EventType::kKeyPressed, ui::VKEY_BACK,
-                               ui::EF_NONE);
-  search_bar->HandleKeyEvent(&backspace_event);
-  EXPECT_EQ(search_bar->GetText(), u"");
-  EXPECT_TRUE(icon->GetVisible());
-
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
@@ -2140,7 +2104,6 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
   EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
   EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
-  EXPECT_TRUE(search_bar->is_active_for_testing());
 
   // Clicking a result runs its action.
   EXPECT_CALL(mock_action_invoked_,
@@ -2334,7 +2297,6 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   search_bar->SetText(u"Downloads");
   ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
   ASSERT_FALSE(search_bar->GetText().empty());
-  ASSERT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
   ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
 
   views::test::ButtonTestApi(GetBackButton(search_bar))
@@ -2343,7 +2305,6 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->GetText().empty());
-  EXPECT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
   EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 

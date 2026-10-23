@@ -83,76 +83,46 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
 }
 
 TEST_F(AppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
-  auto search_bar = std::make_unique<AppMenuSearchBarView>();
-  views::Textfield* search_field = GetSearchField(search_bar.get());
-  views::View* icon = GetSearchIcon(search_bar.get());
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  widget->Show();
 
-  // Mouse press activates focus and enables cursor.
+  views::Textfield* search_field = GetSearchField(search_bar);
+  views::View* icon = GetSearchIcon(search_bar);
+
+  // Starts unfocused when added to a widget so menu mnemonics remain active.
+  EXPECT_FALSE(search_field->HasFocus());
+
+  // Mouse press focuses the search field.
   EXPECT_TRUE(search_field->OnMousePressed(ui::MouseEvent(
       ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON)));
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(search_field->GetCursorEnabled());
+  EXPECT_TRUE(search_field->HasFocus());
 
-  // Type characters into search bar.
-  ui::KeyEvent key_a(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
-  key_a.set_character('a');
-  search_bar->HandleKeyEvent(&key_a);
-  EXPECT_EQ(search_bar->GetText(), u"a");
+  // Insert text and verify Backspace deletes the previous character.
+  search_field->InsertOrReplaceText(u"ab");
+  EXPECT_EQ(search_bar->GetText(), u"ab");
   EXPECT_TRUE(icon->GetVisible());
 
-  ui::KeyEvent key_b(ui::EventType::kKeyPressed, ui::VKEY_B, ui::EF_NONE);
-  key_b.set_character('b');
-  search_bar->HandleKeyEvent(&key_b);
-  EXPECT_EQ(search_bar->GetText(), u"ab");
-
-  // Hitting Enter should do nothing and preserve text.
-  ui::KeyEvent enter_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
-                           ui::EF_NONE);
-  search_bar->HandleKeyEvent(&enter_event);
-  EXPECT_EQ(search_bar->GetText(), u"ab");
-
-  // Hitting Backspace deletes previous character.
   ui::KeyEvent backspace_event(ui::EventType::kKeyPressed, ui::VKEY_BACK,
                                ui::EF_NONE);
-  search_bar->HandleKeyEvent(&backspace_event);
+  EXPECT_TRUE(
+      static_cast<views::View*>(search_field)->OnKeyPressed(backspace_event));
   EXPECT_EQ(search_bar->GetText(), u"a");
 
-  search_bar->HandleKeyEvent(&backspace_event);
-  EXPECT_EQ(search_bar->GetText(), u"");
-}
-
-TEST_F(AppMenuSearchBarViewTest, InactiveIgnoresTyping) {
-  auto search_bar = std::make_unique<AppMenuSearchBarView>();
-  EXPECT_FALSE(search_bar->is_active_for_testing());
-
-  ui::KeyEvent key_a(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
-  key_a.set_character('a');
-  search_bar->HandleKeyEvent(&key_a);
-  EXPECT_FALSE(key_a.handled());
+  // Pressing Escape when text is non-empty clears the text and consumes the key
+  // so the hosting menu stays open.
+  ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                            ui::EF_NONE);
+  EXPECT_TRUE(
+      static_cast<views::View*>(search_field)->OnKeyPressed(escape_event));
   EXPECT_TRUE(search_bar->GetText().empty());
-}
 
-TEST_F(AppMenuSearchBarViewTest, ActiveOnAddedToWidget) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* search_bar =
-      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
-}
-
-TEST_F(AppMenuSearchBarViewTest, DownArrowDeactivatesFocus) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* search_bar =
-      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-
-  ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);
-  search_bar->HandleKeyEvent(&down_key);
-  EXPECT_FALSE(search_bar->is_active_for_testing());
-  EXPECT_FALSE(GetSearchField(search_bar)->GetCursorEnabled());
-  // Down key should be unhandled so MenuController can process it.
-  EXPECT_FALSE(down_key.handled());
+  // Pressing Escape when text is already empty is not consumed so the hosting
+  // menu can close.
+  EXPECT_FALSE(
+      static_cast<views::View*>(search_field)->OnKeyPressed(escape_event));
 }
 
 TEST_F(AppMenuSearchBarViewTest, LeadingIconToggles) {
@@ -164,6 +134,7 @@ TEST_F(AppMenuSearchBarViewTest, LeadingIconToggles) {
 
   EXPECT_TRUE(icon->GetVisible());
   EXPECT_FALSE(back_button->GetVisible());
+  EXPECT_EQ(back_button->GetFocusBehavior(), views::View::FocusBehavior::NEVER);
 
   search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
   EXPECT_FALSE(icon->GetVisible());
@@ -178,12 +149,11 @@ TEST_F(AppMenuSearchBarViewTest, BackPressClearsText) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* search_bar =
       widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  widget->Show();
   search_bar->SetText(u"downloads");
   search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
 
   EXPECT_FALSE(search_bar->GetText().empty());
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
 
   views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
@@ -192,8 +162,7 @@ TEST_F(AppMenuSearchBarViewTest, BackPressClearsText) {
                                   ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_TRUE(search_bar->GetText().empty());
-  EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
+  EXPECT_TRUE(GetSearchField(search_bar)->HasFocus());
 }
 
 TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesTextChanged) {

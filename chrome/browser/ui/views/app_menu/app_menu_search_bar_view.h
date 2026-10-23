@@ -13,10 +13,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
-namespace ui {
-class KeyEvent;
-}  // namespace ui
-
 // Search bar placed at the top of the Block Style ChroMenu.
 class AppMenuSearchBarView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuSearchBarView, views::BoxLayoutView)
@@ -45,10 +41,6 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   // cleared.
   [[nodiscard]] base::CallbackListSubscription AddBackPressedCallback(
       base::RepeatingClosure callback);
-
-  bool is_active_for_testing() const;
-
-  void HandleKeyEvent(ui::KeyEvent* event);
 
  private:
   // The textfield, with the focus and key handling it needs inside the menu.

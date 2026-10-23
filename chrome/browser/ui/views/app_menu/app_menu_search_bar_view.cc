@@ -18,7 +18,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
-#include "ui/events/event_observer.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -28,10 +28,9 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/event_monitor.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -49,12 +48,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kBackButtonElementId);
 
 class AppMenuSearchBarView::SearchField : public views::Textfield,
-                                          public ui::EventObserver {
+                                          public views::TextfieldController {
   METADATA_HEADER(SearchField, views::Textfield)
 
  public:
-  using views::Textfield::OnEvent;
-
   SearchField();
   SearchField(const SearchField&) = delete;
   SearchField& operator=(const SearchField&) = delete;
@@ -65,34 +62,26 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
   [[nodiscard]] base::CallbackListSubscription AddBackPressedCallback(
       base::RepeatingClosure callback);
 
-  bool is_active() const { return is_active_; }
-
-  void HandleKeyEvent(ui::KeyEvent* event);
-
-  // ui::EventObserver:
-  void OnEvent(const ui::Event& event) override;
-
   // views::Textfield:
-  void AddedToWidget() override;
-  void RemovedFromWidget() override;
   void Layout(PassKey) override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
+
+  // views::TextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override;
 
  private:
-  void SetTextfieldFocused(bool focused);
-
   // Notifies `back_pressed_callbacks_`, then clears the query.
   void OnBackPressed();
 
-  bool is_active_ = false;
   LeadingIcon leading_icon_ = LeadingIcon::kSearch;
   raw_ptr<views::ImageView> search_icon_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
-  std::unique_ptr<views::EventMonitor> event_monitor_;
   base::RepeatingClosureList back_pressed_callbacks_;
 };
 
 AppMenuSearchBarView::SearchField::SearchField() {
+  set_controller(this);
+
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
@@ -108,7 +97,6 @@ AppMenuSearchBarView::SearchField::SearchField() {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kVerticalPadding, left_inset, kVerticalPadding, kIconPadding)));
   SetBackgroundColor(SK_ColorTRANSPARENT);
-  SetCursorEnabled(true);
 
   auto search_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -129,6 +117,7 @@ AppMenuSearchBarView::SearchField::SearchField() {
       l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetVisible(false);
+  back_button->SetFocusBehavior(FocusBehavior::NEVER);
   back_button->SetProperty(views::kElementIdentifierKey, kBackButtonElementId);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button_ = AddChildView(std::move(back_button));
@@ -144,20 +133,6 @@ AppMenuSearchBarView::SearchField::SearchField() {
 }
 
 AppMenuSearchBarView::SearchField::~SearchField() = default;
-
-void AppMenuSearchBarView::SearchField::AddedToWidget() {
-  views::Textfield::AddedToWidget();
-  SetTextfieldFocused(true);
-  if (GetWidget()) {
-    event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
-        this, GetWidget()->GetNativeWindow(), {ui::EventType::kKeyPressed});
-  }
-}
-
-void AppMenuSearchBarView::SearchField::RemovedFromWidget() {
-  event_monitor_.reset();
-  views::Textfield::RemovedFromWidget();
-}
 
 void AppMenuSearchBarView::SearchField::Layout(PassKey) {
   LayoutSuperclass<views::Textfield>(this);
@@ -188,67 +163,20 @@ AppMenuSearchBarView::SearchField::AddBackPressedCallback(
 void AppMenuSearchBarView::SearchField::OnBackPressed() {
   back_pressed_callbacks_.Notify();
   SetText(std::u16string());
-  SetTextfieldFocused(true);
+  RequestFocus();
 }
 
-bool AppMenuSearchBarView::SearchField::OnMousePressed(
-    const ui::MouseEvent& event) {
-  SetTextfieldFocused(true);
-  return views::Textfield::OnMousePressed(event);
-}
-
-void AppMenuSearchBarView::SearchField::SetTextfieldFocused(bool focused) {
-  is_active_ = focused;
-  SetCursorEnabled(focused);
-  if (focused) {
-    RequestFocus();
-  } else if (GetFocusManager()) {
-    GetFocusManager()->ClearFocus();
+bool AppMenuSearchBarView::SearchField::HandleKeyEvent(
+    views::Textfield* sender,
+    const ui::KeyEvent& key_event) {
+  if (key_event.type() == ui::EventType::kKeyPressed &&
+      key_event.key_code() == ui::VKEY_ESCAPE && !key_event.IsShiftDown() &&
+      !key_event.IsControlDown() && !key_event.IsAltDown() &&
+      !key_event.IsCommandDown() && !GetText().empty()) {
+    SetText(std::u16string());
+    return true;
   }
-  SchedulePaint();
-}
-
-void AppMenuSearchBarView::SearchField::OnEvent(const ui::Event& event) {
-  if (event.IsKeyEvent()) {
-    ui::KeyEvent key_event = *event.AsKeyEvent();
-    HandleKeyEvent(&key_event);
-  }
-}
-
-void AppMenuSearchBarView::SearchField::HandleKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::EventType::kKeyPressed) {
-    return;
-  }
-
-  // Only handle keys when the search bar is active/focused.
-  if (!is_active_) {
-    return;
-  }
-
-  const ui::KeyboardCode key_code = event->key_code();
-
-  // Down Arrow clears focus from search bar and lets menu navigate down.
-  if (key_code == ui::VKEY_DOWN) {
-    SetTextfieldFocused(false);
-    return;
-  }
-
-  // Leave menu action/dismissal keys for MenuController.
-  if (key_code == ui::VKEY_ESCAPE || key_code == ui::VKEY_RETURN ||
-      key_code == ui::VKEY_UP) {
-    return;
-  }
-
-  // Typing and cursor editing (Backspace, Delete, Left/Right arrow).
-  ui::TextEditCommand command = GetCommandForKeyEvent(*event);
-  if (command != ui::TextEditCommand::INVALID_COMMAND) {
-    ExecuteTextEditCommand(command);
-  } else if (event->GetCharacter() != 0) {
-    InsertChar(*event);
-  }
-
-  event->StopPropagation();
-  event->SetHandled();
+  return false;
 }
 
 BEGIN_METADATA(AppMenuSearchBarView, SearchField)
@@ -287,14 +215,6 @@ base::CallbackListSubscription AppMenuSearchBarView::AddTextChangedCallback(
 base::CallbackListSubscription AppMenuSearchBarView::AddBackPressedCallback(
     base::RepeatingClosure callback) {
   return search_field_->AddBackPressedCallback(std::move(callback));
-}
-
-bool AppMenuSearchBarView::is_active_for_testing() const {
-  return search_field_->is_active();
-}
-
-void AppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
-  search_field_->HandleKeyEvent(event);
 }
 
 BEGIN_METADATA(AppMenuSearchBarView)
