@@ -3895,3 +3895,33 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
   EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
               testing::ElementsAreArray(expected));
 }
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest,
+       PasswordFieldMenu_EmptySelectionOrder) {
+  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
+  params.page_url = GURL("https://www.example.com/");
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  std::vector<int> expected;
+  if (ui::IsEmojiPanelSupported()) {
+    expected.push_back(IDC_CONTENT_CONTEXT_EMOJI);
+    expected.push_back(kSeparatorId);
+  }
+  expected.push_back(IDC_CONTENT_CONTEXT_UNDO);
+  expected.push_back(IDC_CONTENT_CONTEXT_REDO);
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_CUT);
+  expected.push_back(IDC_CONTENT_CONTEXT_COPY);
+  expected.push_back(IDC_CONTENT_CONTEXT_PASTE);
+  expected.push_back(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE);
+#if BUILDFLAG(IS_CHROMEOS)
+  expected.push_back(IDC_CONTENT_PASTE_FROM_CLIPBOARD);
+#endif
+  expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAreArray(expected));
+}
