@@ -53,6 +53,7 @@ source_set("selection") {
     "//chrome/browser/resources/lens/overlay:resources_grit",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui:webui_util",

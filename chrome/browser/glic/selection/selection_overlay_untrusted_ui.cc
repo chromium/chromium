@@ -55,6 +55,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       {"bottomLeftSliderAriaLabel",
        IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
       {"close", IDS_CLOSE},
+      {"settings", IDS_SETTINGS_SETTINGS},
       {"askGemini", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
       {"askGeminiMore", IDS_GLIC_SELECTION_ASK_GEMINI_MORE},
       {"submitPrompt", IDS_GLIC_SELECTION_SUBMIT_PROMPT},

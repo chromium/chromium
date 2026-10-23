@@ -121,6 +121,10 @@ interface SelectionOverlayPageHandler {
   ExecuteSuggestedAction(
       mojo_base.mojom.UnguessableToken action_id,
       mojo_base.mojom.GenericPendingAssociatedReceiver? channel);
+
+  // Opens the inline cue menu settings page in a new tab, dismissing the
+  // selection overlay and closing this Mojo pipe.
+  OpenSettings();
 };
 
 // `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives

@@ -30,12 +30,14 @@
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
@@ -1198,6 +1200,14 @@ void SelectionOverlayController::ExecuteSuggestedAction(
       }
       matched_suggestion->Execute(std::move(channel));
       return;
+  }
+}
+
+void SelectionOverlayController::OpenSettings() {
+  Close();
+  if (BrowserWindowInterface* browser = tab_->GetBrowserWindowInterface()) {
+    chrome::ShowContentSettingsExceptions(browser,
+                                          ContentSettingsType::INLINE_CUE_MENU);
   }
 }
 

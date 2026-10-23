@@ -102,12 +102,12 @@ export function getHtml(this: GlicSelectionOverlayElement) {
             </cr-button>
           `)}
           ${!this.enableSelectionOverlayPromptBox ? html`
-            <cr-button id="closeRegionButton"
-                class="close-region-button"
-                title="$i18n{close}"
-                aria-label="$i18n{close}"
-                @click="${this.onCloseRegionClick}">
-              <div class="close-region-icon"></div>
+            <cr-button id="settingsButton"
+                class="settings-button"
+                title="$i18n{settings}"
+                aria-label="$i18n{settings}"
+                @click="${this.onSettingsClick}">
+              <div class="settings-icon"></div>
             </cr-button>
           ` : ''}
         </div>
