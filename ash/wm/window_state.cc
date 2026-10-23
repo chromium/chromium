@@ -64,9 +64,11 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"
@@ -1153,17 +1155,13 @@ void WindowState::SetBoundsDirectAnimated(
     return;
   }
 
-  // Use bounds animation if only the location changes (unless the window is in
-  // the middle of a cross-fade animation, in which case its visual size is
-  // different from its actual size so we should continue using cross-fade), or
-  // if it's zero tween.
-  // TODO(crbug.com/252543343): Use transform animation for fallback bounds
-  // animation.
-  if (animation_params.type == BoundsChangeAnimationParams::Type::kBounds ||
-      (animation_params.type == BoundsChangeAnimationParams::Type::kCrossFade &&
-       features::IsCrossFadeBoundsChangeAnimationEnabled() &&
-       window_->bounds().size() == bounds_in_parent.size() &&
-       !HasCrossFadeAnimation(window_)) ||
+  // Use bounds animation if `kCrossFadeBoundsChangeAnimation` is disabled with
+  // `Type::kBounds`, if `Type::kBounds` is explicitly requested for a size
+  // change, or if it's zero tween (e.g. holding old bounds for a delay before
+  // snapping to target).
+  if ((animation_params.type == BoundsChangeAnimationParams::Type::kBounds &&
+       (!features::IsCrossFadeBoundsChangeAnimationEnabled() ||
+        window_->bounds().size() != bounds_in_parent.size())) ||
       animation_params.tween_type == gfx::Tween::ZERO) {
     if (HasCrossFadeAnimation(window_)) {
       window_->layer()->GetAnimator()->StopAnimating();
@@ -1171,11 +1169,9 @@ void WindowState::SetBoundsDirectAnimated(
     ui::Layer* layer = window_->layer();
     ui::ScopedLayerAnimationSettings slide_settings(layer->GetAnimator());
     std::optional<ui::AnimationThroughputReporter> reporter;
-    // Only record `histogram_name` if the animation type did not change (i.e.
-    // `kBounds` was requested), as smoothness metrics are typically defined to
-    // measure a specific animation type.
-    if (animation_params.type == BoundsChangeAnimationParams::Type::kBounds &&
-        !animation_params.histogram_name.empty()) {
+    // Intentionally record the same `histogram_name` even if a different
+    // animation scheme is used behind the scenes.
+    if (!animation_params.histogram_name.empty()) {
       reporter.emplace(
           slide_settings.GetAnimator(),
           metrics_util::ForSmoothnessV3(base::BindRepeating(
@@ -1190,6 +1186,27 @@ void WindowState::SetBoundsDirectAnimated(
     slide_settings.SetTransitionDuration(
         animation_params.duration.value_or(kBoundsChangeSlideDuration));
     SetBoundsDirect(bounds_in_parent);
+    return;
+  }
+
+  // Use position animation if only the location changes (unless cross-fade was
+  // requested while already cross-fading, in which case its visual size differs
+  // from its actual size so we should continue using cross-fade).
+  if (features::IsCrossFadeBoundsChangeAnimationEnabled() &&
+      window_->bounds().size() == bounds_in_parent.size() &&
+      (animation_params.type == BoundsChangeAnimationParams::Type::kBounds ||
+       (animation_params.type ==
+            BoundsChangeAnimationParams::Type::kCrossFade &&
+        !HasCrossFadeAnimation(window_)))) {
+    if (HasCrossFadeAnimation(window_)) {
+      window_->layer()->GetAnimator()->StopAnimating();
+    }
+    const gfx::Point old_origin = window_->bounds().origin();
+    SetBoundsDirect(bounds_in_parent);
+    // `PositionAnimation` intentionally records
+    // `animation_params.histogram_name` even though a transform animation
+    // scheme is used behind the scenes.
+    PositionAnimation(window_, old_origin, animation_params);
     return;
   }
 

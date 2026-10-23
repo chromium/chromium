@@ -19,6 +19,10 @@ namespace aura {
 class Window;
 }
 
+namespace gfx {
+class Point;
+}
+
 namespace ui {
 class Layer;
 class LayerTreeOwner;
@@ -104,6 +108,16 @@ ASH_EXPORT void CrossFadeAnimation(
 
 // Returns true if `window` is currently animating with a cross-fade animation.
 ASH_EXPORT bool HasCrossFadeAnimation(aura::Window* window);
+
+// Animates `window` from `old_origin` (in parent coordinates) to `window`'s
+// current origin using a layer transform animation. `window` must not be
+// currently cross-fading (`!HasCrossFadeAnimation(window)`). Uses `duration`
+// (defaulting to `kDefaultDuration`), `tween_type`, and `histogram_name` (if
+// non-empty) from `animation_params`.
+ASH_EXPORT void PositionAnimation(
+    aura::Window* window,
+    const gfx::Point& old_origin,
+    const BoundsChangeAnimationParams& animation_params = {});
 
 ASH_EXPORT bool AnimateOnChildWindowVisibilityChanged(aura::Window* window,
                                                       bool visible);

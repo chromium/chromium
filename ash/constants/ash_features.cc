@@ -398,8 +398,9 @@ BASE_FEATURE(kCrosPrivacyHub, base::FEATURE_ENABLED_BY_DEFAULT);
 // output of on-device gen ai models.
 BASE_FEATURE(kCrosSafetyService, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Uses cross-fade animation instead of bounds animation when animating a
-// window to a different size via `WindowState::SetBoundsDirectAnimated()`.
+// Uses cross-fade animation (for size changes) and transform animation (for
+// position-only changes) instead of bounds animation when animating window
+// bounds via `WindowState::SetBoundsDirectAnimated()`.
 BASE_FEATURE(kCrossFadeBoundsChangeAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables syncing attestation certificates to cryptauth for use by Cross Device

@@ -536,7 +536,13 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeToBounds);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, SetBoundsDirectAnimated);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
+                           SetBoundsDirectAnimatedPositionInterrupted);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
                            SetBoundsDirectAnimatedFallbackParams);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
+                           SetBoundsDirectAnimatedBoundsParams);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
+                           SetBoundsDirectAnimatedFeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
                            SetBoundsDirectAnimatedHistograms);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,

@@ -246,7 +246,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   EXPECT_EQ(grow_transform, old_layer->GetTargetTransform());
   // New layer animates in to the identity transform.
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
-  EXPECT_EQ(gfx::Transform(), window->layer()->GetTargetTransform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
 
   // Run the animations to completion.
   old_layer->GetAnimator()->Step(base::TimeTicks::Now() + base::Seconds(1));
@@ -268,7 +268,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   EXPECT_EQ(shrink_transform, old_layer->GetTargetTransform());
   // New layer animates in to the identity transform.
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
-  EXPECT_EQ(gfx::Transform(), window->layer()->GetTargetTransform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
 
   old_layer->GetAnimator()->Step(base::TimeTicks::Now() + base::Seconds(1));
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
@@ -301,7 +301,7 @@ TEST_F(WindowAnimationsTest, CrossFadeInterrupted) {
   initial_in_transform.Translate(5.f, 10.f);
   initial_in_transform.Scale(320.f / 640.f, 240.f / 480.f);
   EXPECT_EQ(initial_in_transform, second_layer->transform());
-  EXPECT_EQ(gfx::Transform(), second_layer->GetTargetTransform());
+  EXPECT_TRUE(second_layer->GetTargetTransform().IsIdentity());
 
   // Step the first cross-fade animation halfway through.
   ui::LayerAnimatorTestController test_controller(second_layer->GetAnimator());
@@ -352,12 +352,93 @@ TEST_F(WindowAnimationsTest, CrossFadeInterrupted) {
   expected_new_initial_transform.Scale(interrupted_bounds.width() / 400.f,
                                        interrupted_bounds.height() / 300.f);
   EXPECT_EQ(expected_new_initial_transform, third_layer->transform());
-  EXPECT_EQ(gfx::Transform(), third_layer->GetTargetTransform());
+  EXPECT_TRUE(third_layer->GetTargetTransform().IsIdentity());
   EXPECT_EQ(1.0f, third_layer->GetTargetOpacity());
 
   third_layer->GetAnimator()->StopAnimating();
   EXPECT_TRUE(second_layer_checker.destroyed());
-  EXPECT_EQ(gfx::Transform(), third_layer->transform());
+  EXPECT_TRUE(third_layer->transform().IsIdentity());
+}
+
+TEST_F(WindowAnimationsTest, PositionAnimation) {
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({10, 20, 400, 300});
+  window->Show();
+  window->layer()->GetAnimator()->StopAnimating();
+
+  Layer* layer = window->layer();
+  gfx::Point old_origin = window->bounds().origin();
+  window->SetBounds({30, 50, 400, 300});
+  PositionAnimation(window.get(), old_origin);
+
+  EXPECT_EQ(layer, window->layer());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-20.f, -30.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+
+  // Step halfway through (visual origin (20, 35)) and interrupt with a new
+  // position animation to {60, 80, 400, 300}.
+  {
+    ui::LayerAnimatorTestController test_controller(
+        window->layer()->GetAnimator());
+    test_controller.StartThreadedAnimationsIfNeeded(
+        window->layer()->GetAnimator()->last_step_time());
+    ui::LayerAnimationSequence* sequence = test_controller.GetRunningSequence(
+        ui::LayerAnimationElement::TRANSFORM);
+    ASSERT_TRUE(sequence);
+    test_controller.Step(sequence->FirstElement()->duration() / 2);
+  }
+  old_origin = window->bounds().origin();
+  window->SetBounds({60, 80, 400, 300});
+  PositionAnimation(window.get(), old_origin, kFloatCrossFadeAnimationParams);
+
+  EXPECT_EQ(layer, window->layer());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-40.f, -45.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+  {
+    ui::LayerAnimatorTestController test_controller(
+        window->layer()->GetAnimator());
+    ui::LayerAnimationSequence* sequence = test_controller.GetRunningSequence(
+        ui::LayerAnimationElement::TRANSFORM);
+    ASSERT_TRUE(sequence);
+    EXPECT_EQ(gfx::Tween::ACCEL_30_DECEL_20_85,
+              sequence->FirstElement()->tween_type());
+    EXPECT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
+                  BoundsChangeAnimationParams::kFloatUnfloatDuration,
+              sequence->FirstElement()->duration());
+  }
+
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Calling with unchanged origin does not start a no-op animation.
+  PositionAnimation(window.get(), window->bounds().origin());
+  EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+
+  // Interrupting an ongoing position animation when the new target origin
+  // matches the mid-flight visual origin resets the transform to identity
+  // without starting a new animation.
+  old_origin = window->bounds().origin();
+  window->SetBounds({80, 100, 400, 300});
+  PositionAnimation(window.get(), old_origin);
+  {
+    ui::LayerAnimatorTestController test_controller(
+        window->layer()->GetAnimator());
+    test_controller.StartThreadedAnimationsIfNeeded(
+        window->layer()->GetAnimator()->last_step_time());
+    ui::LayerAnimationSequence* sequence = test_controller.GetRunningSequence(
+        ui::LayerAnimationElement::TRANSFORM);
+    ASSERT_TRUE(sequence);
+    test_controller.Step(sequence->FirstElement()->duration() / 2);
+  }
+  old_origin = window->bounds().origin();
+  window->SetBounds({70, 90, 400, 300});
+  PositionAnimation(window.get(), old_origin);
+  EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(window->layer()->transform().IsIdentity());
 }
 
 TEST_F(WindowAnimationsTest, SetBoundsDirectAnimated) {
@@ -381,7 +462,7 @@ TEST_F(WindowAnimationsTest, SetBoundsDirectAnimated) {
   EXPECT_NE(old_layer, second_layer);
   EXPECT_FALSE(old_layer_checker.destroyed());
   EXPECT_EQ(gfx::Rect(400, 300), window->bounds());
-  EXPECT_EQ(gfx::Transform(), second_layer->GetTargetTransform());
+  EXPECT_TRUE(second_layer->GetTargetTransform().IsIdentity());
 
   // Interrupting an ongoing cross-fade animation with the same target size
   // still uses cross-fade animation and deletes the previous old layer.
@@ -396,15 +477,89 @@ TEST_F(WindowAnimationsTest, SetBoundsDirectAnimated) {
   EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
   EXPECT_TRUE(second_layer_checker.destroyed());
 
-  // Animating only position (same size) when not currently cross-fading does
-  // not cross-fade or recreate layer.
+  // Animating only position (same size) when not currently cross-fading uses a
+  // transform animation without cross-fading or recreating the layer.
   old_layer = window->layer();
   WindowState::Get(window.get())->SetBoundsDirectAnimated({20, 30, 400, 300});
   EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
   EXPECT_EQ(old_layer, window->layer());
-  EXPECT_EQ(gfx::Rect(20, 30, 400, 300), window->layer()->GetTargetBounds());
+  EXPECT_EQ((gfx::Rect{20, 30, 400, 300}), window->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-10.f, -10.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
 
   window->layer()->GetAnimator()->StopAnimating();
+
+  // Calling with identical bounds when not animating does not start a no-op
+  // animation.
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({20, 30, 400, 300});
+  EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+}
+
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedPositionInterrupted) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kCrossFadeBoundsChangeAnimation};
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({10, 20, 400, 300});
+  window->Show();
+  window->layer()->GetAnimator()->StopAnimating();
+
+  Layer* old_layer = window->layer();
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({20, 30, 400, 300});
+  ASSERT_FALSE(HasCrossFadeAnimation(window.get()));
+
+  // Step the transform animation halfway through (visual origin (15, 25)) and
+  // interrupt with another position-only animation.
+  {
+    ui::LayerAnimatorTestController test_controller(
+        window->layer()->GetAnimator());
+    test_controller.StartThreadedAnimationsIfNeeded(
+        window->layer()->GetAnimator()->last_step_time());
+    ui::LayerAnimationSequence* sequence = test_controller.GetRunningSequence(
+        ui::LayerAnimationElement::TRANSFORM);
+    ASSERT_TRUE(sequence);
+    const base::TimeDelta duration = sequence->FirstElement()->duration();
+    test_controller.Step(duration / 2);
+  }
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({50, 60, 400, 300});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(old_layer, window->layer());
+  EXPECT_EQ((gfx::Rect{50, 60, 400, 300}), window->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-35.f, -35.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+
+  // Step halfway through again (visual origin (32.5, 42.5)) and interrupt with
+  // a resize animation, which should cross-fade from the interrupted position.
+  {
+    ui::LayerAnimatorTestController test_controller(
+        window->layer()->GetAnimator());
+    test_controller.StartThreadedAnimationsIfNeeded(
+        window->layer()->GetAnimator()->last_step_time());
+    ui::LayerAnimationSequence* sequence = test_controller.GetRunningSequence(
+        ui::LayerAnimationElement::TRANSFORM);
+    ASSERT_TRUE(sequence);
+    const base::TimeDelta duration = sequence->FirstElement()->duration();
+    test_controller.Step(duration / 2);
+  }
+  LayerDestroyedChecker third_layer_checker(old_layer);
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 500, 400});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_NE(old_layer, window->layer());
+  EXPECT_FALSE(third_layer_checker.destroyed());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-17.5f, -17.5f),
+            old_layer->transform());
+  gfx::Transform expected_in_transform;
+  expected_in_transform.Translate(22.5f, 22.5f);
+  expected_in_transform.Scale(400.f / 500.f, 300.f / 400.f);
+  EXPECT_EQ(expected_in_transform, window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+
+  window->layer()->GetAnimator()->StopAnimating();
+  EXPECT_TRUE(third_layer_checker.destroyed());
 }
 
 TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedFallbackParams) {
@@ -418,26 +573,164 @@ TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedFallbackParams) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  // Animating only position (same size) with float params falls back to bounds
-  // animation while preserving the float duration and tween type.
+  // Animating only position (same size) with float params falls back to
+  // transform animation while preserving the float duration and tween type.
   Layer* old_layer = window->layer();
   WindowState::Get(window.get())
       ->SetBoundsDirectAnimated({30, 40, 400, 300},
                                 kFloatCrossFadeAnimationParams);
   EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
   EXPECT_EQ(old_layer, window->layer());
-  EXPECT_EQ(gfx::Rect(30, 40, 400, 300), window->layer()->GetTargetBounds());
+  EXPECT_EQ((gfx::Rect{30, 40, 400, 300}), window->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-10.f, -10.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
   {
     ui::LayerAnimatorTestController test_controller(
         window->layer()->GetAnimator());
-    ui::LayerAnimationElement* bounds_element =
-        test_controller.GetRunningSequence(ui::LayerAnimationElement::BOUNDS)
-            ->FirstElement();
-    EXPECT_EQ(gfx::Tween::ACCEL_30_DECEL_20_85, bounds_element->tween_type());
+    ui::LayerAnimationSequence* sequence = test_controller.GetRunningSequence(
+        ui::LayerAnimationElement::TRANSFORM);
+    ASSERT_TRUE(sequence);
+    ui::LayerAnimationElement* transform_element = sequence->FirstElement();
+    EXPECT_EQ(gfx::Tween::ACCEL_30_DECEL_20_85,
+              transform_element->tween_type());
     EXPECT_EQ(gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
                   BoundsChangeAnimationParams::kFloatUnfloatDuration,
-              bounds_element->duration());
+              transform_element->duration());
   }
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Moving a newly shown window while its show animation (opacity + scale
+  // transform) is still in flight preserves the opacity animation to 1.0f.
+  std::unique_ptr<Window> shown_window(
+      CreateTestWindowInShell({.window_id = 1}));
+  shown_window->SetBounds({20, 30, 400, 300});
+  shown_window->Show();
+  ASSERT_TRUE(shown_window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::OPACITY));
+  WindowState::Get(shown_window.get())
+      ->SetBoundsDirectAnimated({40, 50, 400, 300});
+  EXPECT_EQ(1.0f, shown_window->layer()->GetTargetOpacity());
+  EXPECT_EQ((gfx::Rect{40, 50, 400, 300}), shown_window->bounds());
+  EXPECT_TRUE(shown_window->layer()->GetTargetTransform().IsIdentity());
+}
+
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedBoundsParams) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kCrossFadeBoundsChangeAnimation};
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({30, 40, 400, 300});
+  window->Show();
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Animating only position (same size) with `Type::kBounds` also uses
+  // `PositionAnimation` (transform animation rather than `BOUNDS` animation).
+  Layer* old_layer = window->layer();
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated({50, 70, 400, 300}, kBoundsAnimationParams);
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(old_layer, window->layer());
+  EXPECT_FALSE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::BOUNDS));
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_EQ((gfx::Rect{50, 70, 400, 300}), window->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-20.f, -30.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Interrupting an ongoing cross-fade animation with `Type::kBounds` and the
+  // same target size stops the cross-fade and uses `PositionAnimation`.
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({50, 70, 500, 400});
+  ASSERT_TRUE(HasCrossFadeAnimation(window.get()));
+  Layer* cross_fade_layer = window->layer();
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated({80, 110, 500, 400}, kBoundsAnimationParams);
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(cross_fade_layer, window->layer());
+  EXPECT_FALSE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::BOUNDS));
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_EQ((gfx::Rect{80, 110, 500, 400}), window->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(-30.f, -40.f),
+            window->layer()->transform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // `gfx::Tween::ZERO` still uses `BOUNDS` animation so the old bounds are held
+  // until the end of the delay.
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated(
+          {100, 120, 500, 400},
+          {.type = BoundsChangeAnimationParams::Type::kBounds,
+           .tween_type = gfx::Tween::ZERO});
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::BOUNDS));
+  EXPECT_FALSE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_EQ((gfx::Rect{80, 110, 500, 400}), window->bounds());
+  EXPECT_EQ((gfx::Rect{100, 120, 500, 400}),
+            window->layer()->GetTargetBounds());
+  window->layer()->GetAnimator()->StopAnimating();
+}
+
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kCrossFadeBoundsChangeAnimation);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({30, 40, 400, 300});
+  window->Show();
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // When `kCrossFadeBoundsChangeAnimation` is disabled, position-only changes
+  // with default params (or `kBoundsAnimationParams`) use `BOUNDS` animation
+  // rather than `PositionAnimation`.
+  Layer* old_layer = window->layer();
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({50, 70, 400, 300});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(old_layer, window->layer());
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::BOUNDS));
+  EXPECT_FALSE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_EQ((gfx::Rect{30, 40, 400, 300}), window->bounds());
+  EXPECT_EQ((gfx::Rect{50, 70, 400, 300}), window->layer()->GetTargetBounds());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated({80, 110, 400, 300}, kBoundsAnimationParams);
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::BOUNDS));
+  EXPECT_FALSE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_EQ((gfx::Rect{50, 70, 400, 300}), window->bounds());
+  EXPECT_EQ((gfx::Rect{80, 110, 400, 300}), window->layer()->GetTargetBounds());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Size changes with default params also use `BOUNDS` animation.
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({80, 110, 500, 400});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::BOUNDS));
+  EXPECT_EQ((gfx::Rect{80, 110, 500, 400}), window->layer()->GetTargetBounds());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Explicit `Type::kCrossFade` still uses cross-fade animation even when only
+  // position changes.
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated({100, 120, 500, 400},
+                                kCrossFadeAnimationParams);
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
   window->layer()->GetAnimator()->StopAnimating();
 }
 
@@ -483,21 +776,34 @@ TEST_F(WindowAnimationsTest, MAYBE_SetBoundsDirectAnimatedHistograms) {
       ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(100));
   histogram_tester.ExpectTotalCount(kTestBoundsHistogram, 1);
 
-  // Falling back from `kCrossFade` to bounds animation (same size) does not
-  // record `histogram_name` since the animation type changed.
-  constexpr char kTestFallbackHistogram[] = "Ash.Test.FallbackSmoothness";
+  // Using `PositionAnimation` behind the scenes (same size) still intentionally
+  // records `histogram_name` for both `kCrossFade` and `kBounds`.
+  constexpr char kTestPositionHistogram[] = "Ash.Test.PositionSmoothness";
   WindowState::Get(window.get())
       ->SetBoundsDirectAnimated(
           {30, 40, 500, 400},
           {.type = BoundsChangeAnimationParams::Type::kCrossFade,
            .duration = base::Milliseconds(2000),
-           .histogram_name = kTestFallbackHistogram});
+           .histogram_name = kTestPositionHistogram});
   EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
   ui::LayerAnimationStoppedWaiter().Wait(window->layer());
   compositor->ScheduleFullRedraw();
   std::ignore =
       ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(100));
-  histogram_tester.ExpectTotalCount(kTestFallbackHistogram, 0);
+  histogram_tester.ExpectTotalCount(kTestPositionHistogram, 1);
+
+  WindowState::Get(window.get())
+      ->SetBoundsDirectAnimated(
+          {40, 50, 500, 400},
+          {.type = BoundsChangeAnimationParams::Type::kBounds,
+           .duration = base::Milliseconds(2000),
+           .histogram_name = kTestBoundsHistogram});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  ui::LayerAnimationStoppedWaiter().Wait(window->layer());
+  compositor->ScheduleFullRedraw();
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(100));
+  histogram_tester.ExpectTotalCount(kTestBoundsHistogram, 2);
 }
 
 TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedEmptyBounds) {
@@ -901,11 +1207,11 @@ TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
   // Original layer fades away. Transform is updated as the animation steps.
   EXPECT_EQ(0.f, old_layer->GetTargetOpacity());
   EXPECT_EQ(gfx::Rect(10, 10, 200, 200), old_layer->bounds());
-  EXPECT_EQ(gfx::Transform(), old_layer->GetTargetTransform());
+  EXPECT_TRUE(old_layer->GetTargetTransform().IsIdentity());
 
   // New layer animates in to the identity transform.
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
-  EXPECT_EQ(gfx::Transform(), window->layer()->GetTargetTransform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
 
   // Start the animations, then set the bounds of the new window during the
   // animation.
@@ -917,11 +1223,11 @@ TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
   window->SetBounds(gfx::Rect(80, 80, 200, 200));
   WaitForMilliseconds(100);
   EXPECT_EQ(gfx::Rect(10, 10, 200, 200), old_layer->bounds());
-  EXPECT_NE(gfx::Transform(), old_layer->GetTargetTransform());
+  EXPECT_FALSE(old_layer->GetTargetTransform().IsIdentity());
 
   // New layer targets remain the same.
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
-  EXPECT_EQ(gfx::Transform(), window->layer()->GetTargetTransform());
+  EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
 
   ui::LayerAnimationStoppedWaiter().Wait(window->layer());
   EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());

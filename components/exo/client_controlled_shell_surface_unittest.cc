@@ -4,6 +4,7 @@
 
 #include "components/exo/client_controlled_shell_surface.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
@@ -58,6 +59,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/decoration/decoration.h"
@@ -70,6 +72,7 @@
 #include "ui/events/event_targeter.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/test/test_widget_builder.h"
@@ -2052,9 +2055,22 @@ TEST_F(ClientControlledShellSurfaceTest, SetPipWindowBoundsAnimates) {
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->GetTargetBounds());
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
+  EXPECT_TRUE(window->layer()->transform().IsIdentity());
   window->SetBounds(gfx::Rect(10, 10, 256, 256));
   EXPECT_EQ(gfx::Rect(8, 10, 256, 256), window->layer()->GetTargetBounds());
-  EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
+  if (ash::features::IsCrossFadeBoundsChangeAnimationEnabled()) {
+    EXPECT_EQ((gfx::Rect{8, 10, 256, 256}), window->layer()->bounds());
+    EXPECT_TRUE(window->layer()->GetAnimator()->IsAnimatingProperty(
+        ui::LayerAnimationElement::TRANSFORM));
+    EXPECT_EQ(gfx::Transform::MakeTranslation(0.f, -2.f),
+              window->layer()->transform());
+    EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
+
+    ui::LayerAnimationStoppedWaiter().Wait(window->layer());
+    EXPECT_TRUE(window->layer()->transform().IsIdentity());
+  } else {
+    EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
+  }
 }
 
 TEST_F(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {

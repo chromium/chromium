@@ -37,6 +37,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -45,8 +46,10 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
@@ -283,6 +286,7 @@ void CrossFadeAnimationInternal(
   auto new_layer = [window]() -> ui::Layer* { return window->layer(); };
 
   DCHECK(old_layer);
+  old_layer->GetAnimator()->AbortAllAnimations();
   const gfx::Rect old_bounds(old_layer->bounds());
   CHECK(!old_bounds.IsEmpty());
 
@@ -307,7 +311,6 @@ void CrossFadeAnimationInternal(
 
   // Scale up the old layer while translating to new position.
   {
-    old_layer->GetAnimator()->AbortAllAnimations();
     old_layer->SetTransform(old_transform);
     old_layer->SetOpacity(kWindowAnimation_ShowOpacity);
     ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
@@ -651,6 +654,56 @@ void CrossFadeAnimation(aura::Window* window,
 
 bool HasCrossFadeAnimation(aura::Window* window) {
   return window->GetProperty(kHasCrossFadeAnimationKey);
+}
+
+void PositionAnimation(aura::Window* window,
+                       const gfx::Point& old_origin,
+                       const BoundsChangeAnimationParams& animation_params) {
+  CHECK(!HasCrossFadeAnimation(window));
+  if (::wm::WindowAnimationsDisabled(window)) {
+    return;
+  }
+
+  if (ui::LayerAnimator* animator = window->layer()->GetAnimator();
+      animator->IsAnimatingProperty(ui::LayerAnimationElement::TRANSFORM)) {
+    // Abort any ongoing transform animation to preserve the mid-flight visual
+    // position without affecting other properties (such as opacity).
+    ui::ScopedLayerAnimationSettings abort_settings(animator);
+    abort_settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    animator->StartAnimation(new ui::LayerAnimationSequence(
+        ui::LayerAnimationElement::CreatePauseElement(
+            ui::LayerAnimationElement::TRANSFORM, base::TimeDelta())));
+  }
+
+  gfx::Transform in_transform = window->layer()->transform();
+  in_transform.PostTranslate(
+      gfx::Vector2dF(old_origin - window->bounds().origin()));
+  window->layer()->SetTransform(in_transform);
+  // If the computed transform is identity, the window is already at the target
+  // position so we can skip the animation.
+  if (in_transform.IsIdentity()) {
+    return;
+  }
+
+  ui::ScopedLayerAnimationSettings slide_settings(
+      window->layer()->GetAnimator());
+  std::optional<ui::AnimationThroughputReporter> reporter;
+  if (!animation_params.histogram_name.empty()) {
+    reporter.emplace(slide_settings.GetAnimator(),
+                     metrics_util::ForSmoothnessV3(base::BindRepeating(
+                         [](const std::string& histogram_name, int smoothness) {
+                           base::UmaHistogramPercentage(histogram_name,
+                                                        smoothness);
+                         },
+                         std::string(animation_params.histogram_name))));
+  }
+  slide_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  slide_settings.SetTweenType(animation_params.tween_type);
+  slide_settings.SetTransitionDuration(animation_params.duration.value_or(
+      BoundsChangeAnimationParams::kDefaultDuration));
+  window->layer()->SetTransform(gfx::Transform());
 }
 
 bool AnimateOnChildWindowVisibilityChanged(aura::Window* window, bool visible) {
