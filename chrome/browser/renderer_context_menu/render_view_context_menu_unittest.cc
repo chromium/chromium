@@ -3541,6 +3541,29 @@ TEST_F(RenderViewContextMenuOrderTest, SelectedTextMenu_UrlTextOrder) {
                   kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, LinkAndSelectionMenu_Order) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::LINK | MenuItem::SELECTION);
+  params.page_url = GURL("https://www.example.com/");
+  params.selection_text = u"selected link text";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAre(
+                  IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                  IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                  IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                  IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, kSeparatorId,
+                  IDC_CONTENT_CONTEXT_SAVELINKAS,
+                  IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+                  IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+                  IDC_CONTENT_CONTEXT_SEARCHWEBFOR, IDC_PRINT,
+#if !BUILDFLAG(IS_CHROMEOS)
+                  IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+#endif
+                  kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
@@ -3635,4 +3658,28 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
                   kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest, LinkAndSelectionMenu_Order) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::LINK | MenuItem::SELECTION);
+  params.page_url = GURL("https://www.example.com/");
+  params.selection_text = u"selected link text";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+          IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+          IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+          IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, kSeparatorId,
+          IDC_CONTENT_CONTEXT_SAVELINKAS, IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+          IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, kSeparatorId,
+          IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+          IDC_CONTENT_CONTEXT_SEARCHWEBFOR, IDC_PRINT,
+#if !BUILDFLAG(IS_CHROMEOS)
+          IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+#endif
+          kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
