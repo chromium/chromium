@@ -27,9 +27,14 @@ _ts_files = [
 # imports, and that these and the NTP modules they import match
 # ntp_modules.txt.
 _ntp_entry_points = [
+  "action_chips/action_chips.js",
+  "lens_upload_dialog.js",
   "logo.js",
+  "metrics_utils.js",
   "new_tab_page_proxy.js",
+  "ntp_composebox.js",
   "ntp_searchbox.js",
+  "window_proxy.js",
 ]
 
 # Collects the NTP modules the extension depends on and checks them against
@@ -108,6 +113,9 @@ build_webui("build") {
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/search:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

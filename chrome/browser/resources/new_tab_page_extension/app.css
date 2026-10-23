@@ -7,7 +7,7 @@
  * #scheme=chrome
  * #css_wrapper_metadata_end */
 
-/* Searchbox variables mirror chrome/browser/resources/new_tab_page/app.css. */
+/* Styles below mirror chrome/browser/resources/new_tab_page/app.css. */
 :host {
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
   --cr-searchbox-height: 48px;
@@ -18,8 +18,14 @@
   --cr-searchbox-min-width: var(--ntp-search-box-width);
   --cr-searchbox-results-search-icon-size: 20px;
   --ntp-search-box-width: 337px;
+  --ntp-scrim-opacity_: 1;
   display: block;
   min-height: 100vh;
+}
+
+:host([ntp-realbox-next-enabled_]) {
+  --cr-searchbox-height: 56px;
+  --ntp-scrim-opacity_: 0.5;
 }
 
 @media (min-width: 560px) {
@@ -34,8 +40,16 @@
   }
 }
 
+/* Use a larger width if the secondary side can be shown. */
+:host([realbox-can-show-secondary-side]) {
+  --ntp-search-box-width: 746px;
+}
+
 #content {
   align-items: center;
+  /* <ntp-action-chips> sizes itself with @container rhsWrapper queries, as
+   * on chrome://new-tab-page where #rhsWrapper is the query container. */
+  container: rhsWrapper / inline-size;
   display: flex;
   flex-direction: column;
   padding-top: 72px;
@@ -43,6 +57,12 @@
 
 #logo {
   margin-bottom: var(--ntp-logo-margin-bottom, 38px);
+}
+
+:host([show-composebox_]) #logo,
+:host([show-voice-search_]) #logo,
+:host([ntp-realbox-next-enabled_][show-scrim_]) #logo {
+  z-index: 2;
 }
 
 #searchboxContainer {
@@ -54,11 +74,227 @@
 }
 
 /* As on chrome://new-tab-page, the searchbox is hidden until it is shown,
- * e.g. while the theme is loading. */
+ * e.g. while the theme is loading or the composebox or the Lens upload dialog
+ * is showing. */
 ntp-searchbox {
   visibility: hidden;
 }
 
 ntp-searchbox[shown] {
   visibility: visible;
+}
+
+#composebox {
+  --color-composebox-submit-button-background: var(
+    --color-new-tab-page-composebox-submit-button-background);
+  --cr-composebox-background-color: var(--color-composebox-background);
+  --cr-composebox-expanded-border-radius: 28px;
+  --cr-composebox-input-placeholder-color: var(
+    --color-new-tab-page-common-input-placeholder);
+  --cr-composebox-submit-border-radius: 100px;
+  --cr-composebox-submit-height: 36px;
+  --cr-composebox-submit-icon-size: 24px;
+  --cr-composebox-submit-icon-offset: 0;
+  --cr-composebox-submit-width: 48px;
+  --cr-composebox-width: var(--ntp-search-box-width);
+  --text-input-inline-end-spacing: 90px;
+}
+
+#composebox::part(cancel-icon) {
+  inset-inline-end: 16px;
+}
+
+/* Adjust voice-icon to maintain 12px gap from cancel-icon (which is 24px wide
+   with inset-inline-end of 16px). 16px + 24px + 12px = 52px). */
+#composebox::part(voice-icon) {
+  inset-inline-end: 52px;
+}
+
+#composebox,
+ntp-lens-upload-dialog {
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 101;
+}
+
+#scrim {
+  background: var(--color-composebox-scrim-background);
+  inset: 0;
+  opacity: var(--ntp-scrim-opacity_);
+  position: fixed;
+  transition: all 250ms ease;
+  z-index: 1;
+}
+
+#dialogAnchor {
+  anchor-name: --dialog-anchor;
+  inset-inline-start: 0;
+  position: absolute;
+  top: 0;
+}
+
+#composeboxDialog {
+  background: transparent;
+  border: none;
+  inset-inline-start: anchor(start);
+  margin: 0;
+  overflow: visible;
+  position: absolute;
+  position-anchor: --dialog-anchor;
+  top: anchor(top);
+  z-index: 100;
+}
+
+#voiceSearchDialog {
+  --color-composebox-submit-button-background: var(
+      --color-new-tab-page-composebox-submit-button-background);
+  --color-composebox-submit-button-icon: white;
+  --cr-composebox-submit-border-radius: 100px;
+  --cr-composebox-submit-height: 36px;
+  --cr-composebox-submit-icon-offset: 0;
+  --cr-composebox-submit-icon-size: 24px;
+  --cr-composebox-submit-width: 48px;
+  --voice-search-wave-top: 49px;
+  background: var(--color-composebox-background);
+  border: none;
+  border-radius: 28px;
+  bottom: auto;
+  box-shadow: var(--cr-searchbox-shadow);
+  font-family: inherit;
+  height: 128px;
+  inset-inline-start: anchor(start);
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  position-anchor: --dialog-anchor;
+  top: anchor(top);
+  transition: height 200ms ease-in-out, min-height 200ms ease-in-out;
+  width: var(--ntp-search-box-width);
+}
+
+#voiceSearchDialog:has(
+    #voiceSearch[live-transcript-enabled]:not([audio-wave-enabled])) {
+  height: auto;
+  max-height: 254px;
+  min-height: 128px;
+}
+
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled]) {
+  --voice-search-wave-top: 49px;
+  height: 168px;
+  min-height: 168px;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='2']) {
+  --transcript-lines: 2;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='3']) {
+  --transcript-lines: 3;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='4']) {
+  --transcript-lines: 4;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='5']) {
+  --transcript-lines: 5;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='6']) {
+  --transcript-lines: 6;
+}
+
+#voiceSearchDialog:has(#voiceSearch[transcript-lines='7']) {
+  --transcript-lines: 7;
+}
+
+#voiceSearchDialog:has(#voiceSearch[has-multiline-transcript]) {
+  --voice-search-wave-top: min(
+      198px, calc(30px + var(--transcript-lines, 2) * 24px));
+  height: min(310px, calc(142px + var(--transcript-lines, 2) * 24px));
+  min-height: min(310px, calc(142px + var(--transcript-lines, 2) * 24px));
+}
+
+/* Disable default scrim and use custom scrim instead. */
+#voiceSearchDialog::backdrop {
+  display: none;
+}
+
+#voiceSearchCardContainer {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+#voiceSearchDialog:has(
+    #voiceSearch[live-transcript-enabled]:not([audio-wave-enabled]))
+    #voiceSearchCardContainer {
+  height: auto;
+}
+
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
+    #voiceSearchCardContainer {
+  height: 100%;
+}
+
+#voiceSearch {
+  height: 100%;
+  width: 100%;
+  --composebox-voice-search-top-padding: 9px;
+  --composebox-cancel-button-top: 10px;
+  --voice-bottom-actions-bottom: 12px;
+  --voice-bottom-actions-inset-inline-end: 12px;
+  /* Minimum height used for error modes, etc., where 'composebox_voice_search'
+   * determines the composebox height. In normal voice search mode, 'search-animated-glow'
+   * determines the composebox height and min-height is ignored.
+   */
+  --voice-search-minimum-height: 128px;
+}
+
+#voiceSearch[live-transcript-enabled]:not([audio-wave-enabled]) {
+  height: auto;
+  inset: auto;
+  position: static;
+}
+
+/* In audio-wave mode, overlay #voiceSearch directly over #voiceSearchGlow. */
+#voiceSearch[audio-wave-enabled] {
+  --voice-bottom-actions-bottom: 16px;
+  --voice-bottom-actions-inset-inline-end: 16px;
+  --voice-search-minimum-height: 168px;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+}
+
+#voiceSearch::part(voice-stop-button) {
+  position: relative;
+}
+
+#voiceSearch::part(submit) {
+  position: relative;
+}
+
+#voiceSearchGlow {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#voiceSearchGlow::part(full-container-overlay) {
+  min-block-size: 0;
+  position: absolute;
+}
+
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
+    #voiceSearchGlow::part(full-container-overlay) {
+  height: 48px;
+  inset-inline: 0;
+  padding: 0;
+  top: var(--voice-search-wave-top);
+  transition: top 200ms ease-in-out;
 }

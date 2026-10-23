@@ -1,19 +1,39 @@
 # The chrome://new-tab-page modules that the NTP extension depends on: the NTP
 # modules it imports (see `_ntp_entry_points` in BUILD.gn) and the NTP modules
 # they transitively import. The build fails if this list doesn't match.
+action_chips.mojom-webui.js
+action_chips/action_chips.css.js
+action_chips/action_chips.html.js
+action_chips/action_chips.js
+action_chips/action_chips_proxy.js
+action_chips/icons.html.js
 doodle_icons.html.js
 doodle_share_dialog.css.js
 doodle_share_dialog.html.js
 doodle_share_dialog.js
+image_processor.js
+lens_form.css.js
+lens_form.html.js
+lens_form.js
+lens_upload_dialog.css.js
+lens_upload_dialog.html.js
+lens_upload_dialog.js
+lens_upload_dialog_icons.html.js
 logo.css.js
 logo.html.js
 logo.js
+metrics_utils.js
 new_tab_page.mojom-webui.js
 new_tab_page_proxy.js
+ntp_composebox.css.js
+ntp_composebox.html.js
+ntp_composebox.js
+ntp_composebox_context_menu.html.js
 ntp_microsoft_auth_shared_ui.mojom-webui.js
 ntp_searchbox.css.js
 ntp_searchbox.html.js
 ntp_searchbox.js
 ntp_searchbox_contextual_entrypoint.html.js
+transparency.js
 utils.js
 window_proxy.js

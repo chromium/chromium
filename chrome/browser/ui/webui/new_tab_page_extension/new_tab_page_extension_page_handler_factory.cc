@@ -15,6 +15,9 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
@@ -42,6 +45,17 @@ void NewTabPageExtensionPageHandlerFactory::Bind(
 void NewTabPageExtensionPageHandlerFactory::Bind(
     mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver) {
   searchbox_receiver_.Bind(std::move(receiver));
+}
+
+void NewTabPageExtensionPageHandlerFactory::Bind(
+    mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
+  composebox_receiver_.Bind(std::move(receiver));
+}
+
+void NewTabPageExtensionPageHandlerFactory::Bind(
+    mojo::PendingReceiver<action_chips::mojom::ActionChipsHandlerFactory>
+        receiver) {
+  action_chips_receiver_.Bind(std::move(receiver));
 }
 
 void NewTabPageExtensionPageHandlerFactory::CreatePageHandler(
@@ -78,6 +92,42 @@ void NewTabPageExtensionPageHandlerFactory::CreatePageHandler(
                           base::Unretained(this)));
 }
 
+void NewTabPageExtensionPageHandlerFactory::CreatePageHandler(
+    mojo::PendingReceiver<composebox::mojom::PageHandler> handler,
+    mojo::PendingRemote<searchbox::mojom::Page> searchbox_page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> searchbox_handler) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  // Unretained is safe: `this` owns `composebox_handler_`.
+  composebox_handler_ = std::make_unique<ComposeboxHandler>(
+      std::move(handler), std::move(searchbox_handler),
+      std::move(searchbox_page), profile, web_contents,
+      base::BindRepeating(&NewTabPageExtensionPageHandlerFactory::
+                              GetOrCreateContextualSessionHandle,
+                          base::Unretained(this)),
+      base::BindRepeating(
+          &NewTabPageExtensionPageHandlerFactory::ClearContextualSessionHandle,
+          base::Unretained(this)));
+}
+
+void NewTabPageExtensionPageHandlerFactory::CreateActionChipsHandler(
+    mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler,
+    mojo::PendingRemote<action_chips::mojom::Page> page) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  // Unretained is safe: `this` owns `action_chips_handler_`.
+  action_chips_handler_ = std::make_unique<ActionChipsHandler>(
+      std::move(handler), std::move(page), profile, web_contents,
+      std::make_unique<ActionChipsGeneratorImpl>(profile),
+      base::BindRepeating(&NewTabPageExtensionPageHandlerFactory::
+                              GetOrCreateContextualSessionHandle,
+                          base::Unretained(this)));
+}
+
 contextual_search::ContextualSearchSessionHandle*
 NewTabPageExtensionPageHandlerFactory::GetOrCreateContextualSessionHandle() {
   if (!shared_session_handle_) {
@@ -95,4 +145,8 @@ NewTabPageExtensionPageHandlerFactory::GetOrCreateContextualSessionHandle() {
     }
   }
   return shared_session_handle_.get();
+}
+
+void NewTabPageExtensionPageHandlerFactory::ClearContextualSessionHandle() {
+  shared_session_handle_.reset();
 }
