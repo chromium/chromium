@@ -1,0 +1,21 @@
+monorail {
+  component: "Tests"
+}
+
+agentic_review {
+  capability_groups {
+    path_expression: "chrome/browser/ui/.*browsertest\\.(cc|h)"
+    path_expression: "chrome/browser/ui/.*interactive_uitest\\.(cc|h)"
+    path_expression_exclusion: ".*_unittest\\.(cc|h)"
+
+    review_capability_skills: [
+      "agents/skills/kombucha-testing/resources/review-checklist.md"
+    ]
+
+    content_patterns: [
+      "InteractiveTest",
+      "RunTestSequence",
+      "InProcessBrowserTest"
+    ]
+  }
+}

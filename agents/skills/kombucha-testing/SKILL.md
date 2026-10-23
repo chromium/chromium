@@ -173,6 +173,12 @@ auto OpenDownloadsPage() {
 Give custom verbs a description (`AddDescriptionPrefix` / `SetDescription`) so
 the nested step stack in failure output is readable.
 
+### Step 5: Review the tests locally
+
+Use
+[`references/review-checklist.md`](/agents/skills/kombucha-testing/references/review-checklist.md)
+to review the tests for likely errors and adherence to best practices.
+
 ______________________________________________________________________
 
 ## 4. Contexts
