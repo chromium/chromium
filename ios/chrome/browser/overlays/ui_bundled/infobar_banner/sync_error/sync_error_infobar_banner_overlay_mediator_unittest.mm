@@ -93,30 +93,27 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
 // Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
 // consumer with correct messages.
-// TODO(crbug.com/422441504): re-enable.
-TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
-       DISABLED_SetUpConsumerWithMessages) {
-  mediator_.consumer = consumer_mock_;
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessages) {
   // Verify that the infobar's text fields was set up properly.
   OCMExpect([consumer_mock_ setTitleText:base::SysUTF16ToNSString(kTitleText)]);
   OCMExpect(
       [consumer_mock_ setSubtitleText:base::SysUTF16ToNSString(kMessageText)]);
   OCMExpect([consumer_mock_
       setButtonText:base::SysUTF16ToNSString(kButtonLabelText)]);
+  mediator_.consumer = consumer_mock_;
 }
 
 // Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
 // consumer's icon using SF symbol.
-// TODO(crbug.com/422441504): re-enable.
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
-       DISABLED_SetUpConsumerWithIconSettingsUseSFSymbol) {
-  mediator_.consumer = consumer_mock_;
+       SetUpConsumerWithIconSettingsUseSFSymbol) {
   // Verify that the infobar's icon was set up properly.
   OCMExpect([consumer_mock_
-      setIconImageTintColor:[UIColor colorNamed:kTextPrimaryColor]]);
+      setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]]);
   OCMExpect([consumer_mock_
       setIconBackgroundColor:[UIColor colorNamed:kRed500Color]]);
   OCMExpect([consumer_mock_ setUseIconBackgroundTint:true]);
+  mediator_.consumer = consumer_mock_;
 }
 
 // Tests that when the main button is pressed it calls 'Accept()'.
