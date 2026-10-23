@@ -154,11 +154,11 @@ void ClientImpl::SendRequest(proto::FeatureName feature_name,
 
   connection_manager_->GetConnection(feature_name)
       ->Send(std::move(private_ai_request), options.timeout,
-             base::BindOnce(&ClientImpl::OnReponseReceived,
+             base::BindOnce(&ClientImpl::OnResponseReceived,
                             weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ClientImpl::OnReponseReceived(
+void ClientImpl::OnResponseReceived(
     OnRequestCompletedCallback cb,
     base::expected<proto::PrivateAiResponse, StatusCode> private_ai_response) {
   if (private_ai_response.has_value()) {

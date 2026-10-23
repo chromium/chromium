@@ -62,7 +62,7 @@ class ClientImpl : public Client {
                    OnRequestCompletedCallback callback,
                    const RequestOptions& options);
 
-  void OnReponseReceived(
+  void OnResponseReceived(
       OnRequestCompletedCallback cb,
       base::expected<proto::PrivateAiResponse, StatusCode> private_ai_response);
 
