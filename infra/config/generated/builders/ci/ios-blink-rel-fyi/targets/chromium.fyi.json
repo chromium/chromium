@@ -1979,8 +1979,6 @@
       },
       {
         "args": [
-          "--test-launcher-bot-mode",
-          "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.midi_unittests.filter",
           "--use-simulator-cache",
           "--platform",
           "iPhone 16",

@@ -101,8 +101,9 @@ class FakeMidiManagerFactory : public MidiService::ManagerFactory {
   }
 
   base::WeakPtr<FakeMidiManager> manager() {
-#if BUILDFLAG(IS_MAC)
-    // To avoid Core MIDI issues, MidiManager won't be destructed on macOS.
+#if BUILDFLAG(IS_APPLE)
+    // MidiService retains the manager until shutdown on Apple platforms to
+    // avoid Core MIDI issues. Treat the retained idle manager as absent.
     // See https://crbug.com/718140.
     if (!manager_ ||
         (!manager_->GetClientCount() && !manager_->GetPendingClientCount())) {
