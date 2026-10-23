@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -70,7 +71,7 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
         blink::mojom::blink::StreamDevicesSet::New();
     stream_devices_set->stream_devices.emplace_back(stream_devices_.Clone());
     std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
-                            String("dummy") + String::Number(request_id_),
+                            Format("dummy{}", request_id_),
                             std::move(stream_devices_set),
                             /*pan_tilt_zoom_allowed=*/false);
   }
@@ -91,17 +92,17 @@ void MockMojoMediaStreamDispatcherHost::GetOpenDevice(
         blink::mojom::blink::StreamDevicesSet::New();
     stream_devices_set->stream_devices.emplace_back(stream_devices_.Clone());
     if (stream_devices_.video_device) {
-      std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
-                              mojom::blink::GetOpenDeviceResponse::New(
-                                  String("dummy") + String::Number(request_id_),
-                                  *stream_devices_.video_device,
-                                  /*pan_tilt_zoom_allowed=*/false));
+      std::move(callback).Run(
+          mojom::blink::MediaStreamRequestResult::OK,
+          mojom::blink::GetOpenDeviceResponse::New(
+              Format("dummy{}", request_id_), *stream_devices_.video_device,
+              /*pan_tilt_zoom_allowed=*/false));
     } else if (stream_devices_.audio_device) {
-      std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
-                              mojom::blink::GetOpenDeviceResponse::New(
-                                  String("dummy") + String::Number(request_id_),
-                                  *stream_devices_.audio_device,
-                                  /*pan_tilt_zoom_allowed=*/false));
+      std::move(callback).Run(
+          mojom::blink::MediaStreamRequestResult::OK,
+          mojom::blink::GetOpenDeviceResponse::New(
+              Format("dummy{}", request_id_), *stream_devices_.audio_device,
+              /*pan_tilt_zoom_allowed=*/false));
     } else {
       std::move(callback).Run(
           mojom::blink::MediaStreamRequestResult::INVALID_STATE, nullptr);
@@ -147,8 +148,8 @@ void MockMojoMediaStreamDispatcherHost::OpenDevice(
   device.id = device_id.Utf8();
   device.type = type;
   device.set_session_id(session_id_);
-  std::move(callback).Run(true /* success */,
-                          "dummy" + String::Number(request_id), device);
+  std::move(callback).Run(true /* success */, Format("dummy{}", request_id),
+                          device);
 }
 
 std::string MockMojoMediaStreamDispatcherHost::MaybeAppendSessionId(

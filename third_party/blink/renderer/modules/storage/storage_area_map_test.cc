@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_area_map.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -106,7 +107,7 @@ TEST(StorageAreaMapTest, Iteration) {
 
   // Fill the map with some data.
   for (int i = 0; i < kNumTestItems; ++i)
-    EXPECT_TRUE(map.SetItem("key" + String::Number(i), "val", nullptr));
+    EXPECT_TRUE(map.SetItem(Format("key{}", i), "val", nullptr));
   EXPECT_EQ(unsigned{kNumTestItems}, map.GetLength());
 
   Vector<String> keys(kNumTestItems);

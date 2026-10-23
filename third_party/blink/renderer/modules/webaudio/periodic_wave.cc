@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "v8/include/v8-isolate.h"
 
 namespace blink {
@@ -54,9 +54,9 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
   if (real.size() != imag.size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"length of real array (", String::Number(real.size()),
-                ") and length of imaginary array (",
-                String::Number(imag.size()), ") must match."}));
+        Format("length of real array ({}) and length of imaginary array ({}) "
+               "must match.",
+               real.size(), imag.size()));
     return nullptr;
   }
 

@@ -151,6 +151,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -9219,7 +9220,7 @@ String AXObject::ToString(bool verbose) const {
   bool cached_values_only = !AXObjectCache().IsFrozen();
 
   if (AXObjectCache().HasBeenDisposed() || AXObjectCache().IsDisposing()) {
-    return StrCat({role, " (doc shutdown) #", String::Number(AXObjectID())});
+    return Format("{} (doc shutdown) #{}", role, AXObjectID());
   }
 
   StringBuilder string_builder;

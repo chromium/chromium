@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -116,10 +117,9 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   if (buffer->sampleRate() != Context()->sampleRate()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"The buffer sample rate of ",
-                String::Number(buffer->sampleRate()),
-                " does not match the context rate of ",
-                String::Number(Context()->sampleRate()), " Hz."}));
+        Format("The buffer sample rate of {:g} does not match the context "
+               "rate of {:g} Hz.",
+               buffer->sampleRate(), Context()->sampleRate()));
     return;
   }
 
@@ -136,8 +136,8 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   if (!is_channel_count_good) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"The buffer must have 1, 2, or 4 channels, not ",
-                String::Number(number_of_channels)}));
+        Format("The buffer must have 1, 2, or 4 channels, not {}",
+               number_of_channels));
     return;
   }
 

@@ -354,10 +354,8 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   if (!render_target) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"startRendering failed to create AudioBuffer(",
-                String::Number(number_of_channels), ", ",
-                String::Number(buffer_size), ", ", String::Number(sample_rate),
-                ")"}));
+        Format("startRendering failed to create AudioBuffer({}, {}, {:g})",
+               number_of_channels, buffer_size, sample_rate));
     return EmptyPromise();
   }
 
@@ -409,8 +407,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   if (when < 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        StrCat({"negative suspend time (", String::Number(when),
-                ") is not allowed"}));
+        Format("negative suspend time ({:g}) is not allowed", when));
     return EmptyPromise();
   }
 
@@ -421,13 +418,12 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     if (total_render_duration <= when) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          StrCat({"cannot schedule a suspend at ",
-                  String::NumberToStringEcmaScript(when),
-                  " seconds because it is greater than or equal to the "
-                  "total render duration of ",
-                  String::Number(total_render_frames_.value()), " frames (",
-                  String::NumberToStringEcmaScript(total_render_duration),
-                  " seconds)"}));
+          Format("cannot schedule a suspend at {} seconds because it is "
+                 "greater than or equal to the total render duration of {} "
+                 "frames ({} seconds)",
+                 String::NumberToStringEcmaScript(when),
+                 total_render_frames_.value(),
+                 String::NumberToStringEcmaScript(total_render_duration)));
       return EmptyPromise();
     }
   }
@@ -452,11 +448,9 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     }
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        StrCat({"suspend(", String::Number(when),
-                ") failed to suspend at frame ", String::Number(frame),
-                " because it is earlier than the current frame of ",
-                String::Number(current_frame_clamped), " (",
-                String::Number(current_time_clamped), " seconds)"}));
+        Format("suspend({:g}) failed to suspend at frame {} because it is "
+               "earlier than the current frame of {} ({:g} seconds)",
+               when, frame, current_frame_clamped, current_time_clamped));
     return EmptyPromise();
   }
 
@@ -472,9 +466,9 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     if (scheduled_suspends_.Contains(frame)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          StrCat({"cannot schedule more than one suspend at frame ",
-                  String::Number(frame), " (", String::Number(when),
-                  " seconds)"}));
+          Format("cannot schedule more than one suspend at frame {} ({:g} "
+                 "seconds)",
+                 frame, when));
       return EmptyPromise();
     }
 

@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -994,8 +995,8 @@ void WebSocketChannelImpl::DidFailLoadingBlob(FileErrorCode error_code) {
     return;
   }
   // FIXME: Generate human-friendly reason message.
-  FailAsError(StrCat({"Failed to load Blob: error code = ",
-                      String::Number(static_cast<int>(error_code))}));
+  FailAsError(Format("Failed to load Blob: error code = {}",
+                     static_cast<int>(error_code)));
 }
 
 void WebSocketChannelImpl::TearDownFailedConnection() {

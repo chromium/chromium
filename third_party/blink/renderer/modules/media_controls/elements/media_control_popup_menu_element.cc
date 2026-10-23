@@ -228,7 +228,7 @@ void MediaControlPopupMenuElement::SetPosition() {
   // corner.
   static constexpr int kPopupMenuMarginPx = 4;
   static const char kImportant[] = "important";
-  static const char kPx[] = "px";
+  static constexpr char kFormatPx[] = "{:g}px";
 
   DOMRect* bounding_client_rect = PopupAnchor()->GetBoundingClientRect();
   LocalDOMWindow* dom_window = GetDocument().domWindow();
@@ -236,14 +236,12 @@ void MediaControlPopupMenuElement::SetPosition() {
   DCHECK(bounding_client_rect);
   DCHECK(dom_window);
 
-  String bottom_str_value = StrCat(
-      {String::Number(dom_window->innerHeight() -
-                      bounding_client_rect->bottom() + kPopupMenuMarginPx),
-       kPx});
-  String right_str_value = StrCat(
-      {String::Number(dom_window->innerWidth() - bounding_client_rect->right() +
-                      kPopupMenuMarginPx),
-       kPx});
+  String bottom_str_value = Format(
+      kFormatPx, dom_window->innerHeight() - bounding_client_rect->bottom() +
+                     kPopupMenuMarginPx);
+  String right_str_value =
+      Format(kFormatPx, dom_window->innerWidth() -
+                            bounding_client_rect->right() + kPopupMenuMarginPx);
 
   style()->setProperty(dom_window, "bottom", bottom_str_value, kImportant,
                        ASSERT_NO_EXCEPTION);

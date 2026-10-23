@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -77,9 +78,9 @@ static constexpr char kScopeExtensionsTypeKey[] = "type";
 static constexpr char kScopeExtensionsOriginKey[] = "origin";
 static constexpr char kOriginWildcardPrefix[] = "%2A.";
 // Keep in sync with web_app_origin_association_task.cc.
-static wtf_size_t kMaxScopeExtensionsSize = 10;
-static wtf_size_t kMaxShortcutsSize = 10;
-static wtf_size_t kMaxOriginLength = 2000;
+static constexpr wtf_size_t kMaxScopeExtensionsSize = 10;
+static constexpr wtf_size_t kMaxShortcutsSize = 10;
+static constexpr wtf_size_t kMaxOriginLength = 2000;
 
 // The max number of file extensions an app can handle via the File Handling
 // API.
@@ -1342,10 +1343,10 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
 
   for (wtf_size_t i = 0; i < shortcuts_list->size(); ++i) {
     if (i == kMaxShortcutsSize) {
-      AddErrorInfo(StrCat({"property 'shortcuts' contains more than ",
-                           String::Number(kMaxShortcutsSize),
-                           " valid elements, only the first ",
-                           String::Number(kMaxShortcutsSize), " are parsed."}));
+      AddErrorInfo(
+          Format("property 'shortcuts' contains more than {} valid "
+                 "elements, only the first {} are parsed.",
+                 kMaxShortcutsSize, kMaxShortcutsSize));
       break;
     }
 
@@ -1939,11 +1940,10 @@ ManifestParser::ParseScopeExtensions(const JSONObject* from) {
 
   for (wtf_size_t i = 0; i < extensions_list->size(); ++i) {
     if (i == kMaxScopeExtensionsSize) {
-      AddErrorInfo(
-          StrCat({"property 'scope_extensions' contains more than ",
-                  String::Number(kMaxScopeExtensionsSize),
-                  " valid elements, only the first ",
-                  String::Number(kMaxScopeExtensionsSize), " are parsed."}));
+      AddErrorInfo(Format(
+          "property 'scope_extensions' contains more than {} valid elements, "
+          "only the first {} are parsed.",
+          kMaxScopeExtensionsSize, kMaxScopeExtensionsSize));
       break;
     }
 
@@ -2006,9 +2006,9 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
 
   if (origin_string.length() > kMaxOriginLength) {
     AddErrorInfo(
-        StrCat({"scope_extensions entry ignored, 'origin' exceeds maximum "
-                "character length of ",
-                String::Number(kMaxOriginLength), " ."}));
+        Format("scope_extensions entry ignored, 'origin' exceeds maximum "
+               "character length of {} .",
+               kMaxOriginLength));
     return std::nullopt;
   }
 

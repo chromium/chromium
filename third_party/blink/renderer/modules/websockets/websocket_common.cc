@@ -240,9 +240,9 @@ std::optional<uint16_t> WebSocketCommon::ValidateCloseCodeAndReason(
                WebSocketChannel::kCloseEventCodeMaximumUserDefined))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
-          StrCat(
-              {"The close code must be either 1000, or between 3000 and 4999. ",
-               String::Number(close_code), " is neither."}));
+          Format("The close code must be either 1000, or between 3000 and "
+                 "4999. {} is neither.",
+                 close_code));
       return code;
     }
   } else if (!reason.empty()) {
@@ -255,8 +255,8 @@ std::optional<uint16_t> WebSocketCommon::ValidateCloseCodeAndReason(
   if (utf8.size() > kMaxReasonSizeInBytes) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        StrCat({"The close reason must not be greater than ",
-                String::Number(kMaxReasonSizeInBytes), " UTF-8 bytes."}));
+        Format("The close reason must not be greater than {} UTF-8 bytes.",
+               kMaxReasonSizeInBytes));
     return code;
   }
   return code;

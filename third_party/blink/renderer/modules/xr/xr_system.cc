@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -1353,9 +1354,10 @@ ScriptPromise<XRSession> XRSystem::requestSession(
       DCHECK(image->hasWidthInMeters()) << "required in IDL";
       if (std::isnan(image->widthInMeters()) ||
           image->widthInMeters() <= 0.0f) {
-        String message =
-            StrCat({"trackedImages[", String::Number(index),
-                    "].widthInMeters invalid, must be a positive number."});
+        String message = Format(
+            "trackedImages[{}].widthInMeters invalid, must be a positive "
+            "number.",
+            index);
         query->RejectWithTypeError(message, &exception_state);
         return promise;
       }

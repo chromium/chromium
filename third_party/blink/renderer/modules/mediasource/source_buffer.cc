@@ -891,9 +891,9 @@ void SourceBuffer::Remove_Locked(
   if (end <= start || std::isnan(end)) {
     MediaSource::LogAndThrowTypeError(
         *exception_state,
-        StrCat({"The end value provided (", String::Number(end),
-                ") must be greater than the start value provided (",
-                String::Number(start), ")."}));
+        Format("The end value provided ({:g}) must be greater than the start "
+               "value provided ({:g}).",
+               end, start));
     return;
   }
 

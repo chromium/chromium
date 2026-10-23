@@ -66,8 +66,7 @@ void MLGraphTransformPipeline::Run(MLNamedOperands& named_outputs) {
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
     if (is_recording_enabled) {
       dumper->RecordGraph(
-          StrCat({String::Number(++transform_index), "_", transformer->Name()})
-              .Utf8(),
+          Format("{}_{}", ++transform_index, transformer->Name()).Utf8(),
           named_outputs);
     }
 #endif

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -34,8 +35,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
   LocalDOMWindow* window = frame->DomWindow();
   reporting_proxy_ = std::make_unique<MainThreadWorkletReportingProxy>(window);
 
-  String global_scope_name =
-      StrCat({"PaintWorklet #", String::Number(global_scope_number)});
+  String global_scope_name = Format("PaintWorklet {}", global_scope_number);
 
   LocalFrameClient* frame_client = frame->Client();
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(

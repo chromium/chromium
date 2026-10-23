@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_offer_options_platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -444,8 +444,7 @@ void RTCPeerConnectionTracerImpl::OnIceCandidateError(
   if (port) {
     port_value = static_cast<uint16_t>(port);
   }
-  String host_candidate =
-      StrCat({String::FromUtf8(address), ":", String::Number(port)});
+  String host_candidate = Format("{}:{}", String::FromUtf8(address), port);
   PostToTracker(CrossThreadBindOnce(
       [](String address, std::optional<uint16_t> port, String host_candidate,
          String url, int error_code, String error_text,

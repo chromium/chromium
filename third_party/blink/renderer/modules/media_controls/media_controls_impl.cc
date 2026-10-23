@@ -111,7 +111,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -1588,8 +1588,7 @@ void MediaControlsImpl::UpdateOverflowMenuItemCSSClass() const {
       continue;
     }
 
-    AtomicString css_class =
-        AtomicString(StrCat({"animated-", AtomicString::Number(id++)}));
+    AtomicString css_class = AtomicString(Format("animated-{}", id++));
     if (!class_list.contains(css_class))
       class_list.setValue(css_class);
   }

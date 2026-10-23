@@ -152,12 +152,10 @@ void AudioWorkletGlobalScope::registerProcessor(
       if ((default_value < min_value) || (default_value > max_value)) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kInvalidStateError,
-            StrCat({"The default value, ", String::Number(default_value),
-                    ", in \"", new_param_name,
-                    "\" parameterDescriptors() from the AudioWorkletProcessor "
-                    "is out of the range [",
-                    String::Number(min_value), ", ", String::Number(max_value),
-                    "]."}));
+            Format("The default value, {:g}, in \"{}\" parameterDescriptors() "
+                   "from the AudioWorkletProcessor is out of the range [{:g}, "
+                   "{:g}].",
+                   default_value, new_param_name, min_value, max_value));
         return;
       }
 

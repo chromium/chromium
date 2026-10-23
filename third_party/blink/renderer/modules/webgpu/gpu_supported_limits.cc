@@ -98,10 +98,9 @@ bool GPUSupportedLimits::Populate(
     if (!value.IsValid() || value.ValueOrDie() == UndefinedLimitValue<T>()) { \
       resolver->RejectWithDOMException(                                       \
           DOMExceptionCode::kOperationError,                                  \
-          StrCat(                                                             \
-              {"Required " #name " limit (",                                  \
-               String::Number(limitRawIntegerValue),                          \
-               ") exceeds the maximum representable value for its type."}));  \
+          Format("Required {} limit ({}) exceeds the maximum representable "  \
+                 "value for its type.",                                       \
+                 #name, limitRawIntegerValue));                               \
       return false;                                                           \
     }                                                                         \
     out->name = value.ValueOrDie();                                           \

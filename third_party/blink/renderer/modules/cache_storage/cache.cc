@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -79,8 +80,8 @@ String NonOkResponseReason(const Response* response) {
     case network::mojom::FetchResponseType::kBasic:
     case network::mojom::FetchResponseType::kCors:
     case network::mojom::FetchResponseType::kDefault:
-      return StrCat({"Response status ", String::Number(response->status()),
-                     " is not a successful status (200-299)."});
+      return Format("Response status {} is not a successful status (200-299).",
+                    response->status());
   }
   NOTREACHED();
 }

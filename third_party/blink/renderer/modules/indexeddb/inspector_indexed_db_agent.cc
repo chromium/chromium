@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using blink::protocol::Array;
@@ -1102,8 +1103,8 @@ class GetMetadata final : public ExecutableWithDatabase<GetMetadataCallback> {
     if (exception_state.HadException()) {
       ExceptionCode ec = exception_state.Code();
       request_callback_->sendFailure(protocol::Response::ServerError(
-          StrCat({"Could not count entries in object store '",
-                  object_store_name_, "': ", String::Number(ec)})
+          Format("Could not count entries in object store '{}': {}",
+                 object_store_name_, ec)
               .Utf8()));
       return;
     }
@@ -1328,8 +1329,8 @@ class ClearObjectStore final
     if (exception_state.HadException()) {
       ExceptionCode ec = exception_state.Code();
       request_callback_->sendFailure(protocol::Response::ServerError(
-          StrCat({"Could not clear object store '", object_store_name_,
-                  "': ", String::Number(ec)})
+          Format("Could not clear object store '{}': {}", object_store_name_,
+                 ec)
               .Utf8()));
       return;
     }

@@ -101,10 +101,11 @@ void AudioParam::WarnIfOutsideRange(const String& param_method, float value) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            StrCat({Handler().GetParamName(), ".", param_method, " ",
-                    String::Number(value), " outside nominal range [",
-                    String::Number(minValue()), ", ",
-                    String::Number(maxValue()), "]; value will be clamped."})));
+            Format(
+                "{}.{} {:g} outside nominal range [{:g}, {:g}]; value will be "
+                "clamped.",
+                Handler().GetParamName(), param_method, value, minValue(),
+                maxValue())));
   }
 }
 

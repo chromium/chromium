@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -78,8 +78,8 @@ void ChannelSplitterHandler::SetChannelCount(unsigned channel_count,
   if (channel_count != NumberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        StrCat({"ChannelSplitter: channelCount cannot be changed from ",
-                String::Number(NumberOfOutputs())}));
+        Format("ChannelSplitter: channelCount cannot be changed from {}",
+               NumberOfOutputs()));
   }
 }
 

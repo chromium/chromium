@@ -59,20 +59,13 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
-
-namespace {
-
-String StrFloatCat(StringView leading, float value, StringView trailing) {
-  return StrCat({leading, String::Number(value), trailing});
-}
-
-}  // namespace
 
 void CanvasPath::closePath() {
   if (IsEmpty()) [[unlikely]] {
@@ -233,7 +226,7 @@ void CanvasPath::arcTo(double double_x1,
   if (r < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrFloatCat("The radius provided (", r, ") is negative."));
+        Format("The radius provided ({:g}) is negative.", r));
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
@@ -444,7 +437,7 @@ void CanvasPath::arc(double double_x,
   if (radius < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrFloatCat("The radius provided (", radius, ") is negative."));
+        Format("The radius provided ({:g}) is negative.", radius));
     return;
   }
 
@@ -502,15 +495,13 @@ void CanvasPath::ellipse(double double_x,
   if (radius_x < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrFloatCat("The major-axis radius provided (", radius_x,
-                    ") is negative."));
+        Format("The major-axis radius provided ({:g}) is negative.", radius_x));
     return;
   }
   if (radius_y < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrFloatCat("The minor-axis radius provided (", radius_y,
-                    ") is negative."));
+        Format("The minor-axis radius provided ({:g}) is negative.", radius_y));
     return;
   }
 
@@ -575,8 +566,8 @@ void CanvasPath::roundRect(
   const int num_radii = radii.size();
   if (num_radii < 1 || num_radii > kMaxRadii) [[unlikely]] {
     exception_state.ThrowRangeError(
-        StrCat({String::Number(num_radii),
-                " radii provided. Between one and four radii are necessary."}));
+        Format("{} radii provided. Between one and four radii are necessary.",
+               num_radii));
     return;
   }
 
@@ -607,12 +598,12 @@ void CanvasPath::roundRect(
         }
         if (r_x < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              StrFloatCat("X-radius value ", r_x, " is negative."));
+              Format("X-radius value {:g} is negative.", r_x));
           return;
         }
         if (r_y < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              StrFloatCat("Y-radius value ", r_y, " is negative."));
+              Format("Y-radius value {:g} is negative.", r_y));
           return;
         }
         r[i] = gfx::SizeF(base::saturated_cast<float>(p->x()),
@@ -628,7 +619,7 @@ void CanvasPath::roundRect(
         }
         if (a < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              StrFloatCat("Radius value ", a, " is negative."));
+              Format("Radius value {:g} is negative.", a));
           return;
         }
         r[i] = gfx::SizeF(a, a);

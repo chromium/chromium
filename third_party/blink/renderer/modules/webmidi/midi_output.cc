@@ -58,9 +58,9 @@ DOMUint8Array* ConvertUnsignedDataToUint8Array(
   auto array_data = array->ByteSpan();
   for (wtf_size_t i = 0; i < unsigned_data.size(); ++i) {
     if (unsigned_data[i] > 0xff) {
-      exception_state.ThrowTypeError(StrCat(
-          {"The value at index ", String::Number(i), " (",
-           String::Number(unsigned_data[i]), ") is greater than 0xFF."}));
+      exception_state.ThrowTypeError(
+          Format("The value at index {} ({}) is greater than 0xFF.", i,
+                 unsigned_data[i]));
       return nullptr;
     }
     array_data[i] = static_cast<uint8_t>(unsigned_data[i]);
@@ -235,9 +235,8 @@ class MessageValidator {
   }
 
   String GetPositionString() const {
-    return StrCat({"at index ", String::Number(offset_), " (",
-                   String::Number(static_cast<uint16_t>(data_[offset_])),
-                   ")."});
+    return Format("at index {} ({}).", offset_,
+                  static_cast<uint16_t>(data_[offset_]));
   }
 
   base::span<const uint8_t> data_;

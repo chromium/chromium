@@ -112,7 +112,7 @@ PaymentShippingOption* BuildShippingOptionForTest(
     if (modification_type == kPaymentTestOverwriteValue)
       shipping_option->setId(value_to_use);
   } else {
-    shipping_option->setId("id" + String::Number(g_unique_id++));
+    shipping_option->setId(Format("id{}", g_unique_id++));
   }
   SetValues(shipping_option, data, modification_type, value_to_use);
   return shipping_option;

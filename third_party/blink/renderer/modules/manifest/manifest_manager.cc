@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -249,9 +250,9 @@ void ManifestManager::OnManifestFetchComplete(
   if (response.HttpStatusCode() >= 200 && response.HttpStatusCode() < 400) {
     ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
   } else {
-    const String message = StrCat(
-        {"Manifest fetch from ", response.CurrentRequestUrl().GetString(),
-         " failed, code ", String::Number(response.HttpStatusCode())});
+    const String message = Format("Manifest fetch from {} failed, code {}",
+                                  response.CurrentRequestUrl().GetString(),
+                                  response.HttpStatusCode());
 
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

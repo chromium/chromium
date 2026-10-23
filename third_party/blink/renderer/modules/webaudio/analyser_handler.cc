@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -101,8 +102,7 @@ void AnalyserHandler::SetFftSize(unsigned size,
   if (!std::has_single_bit(size)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The value provided (", String::Number(size),
-                ") is not a power of two."}));
+        Format("The value provided ({}) is not a power of two.", size));
     return;
   }
   if (!analyser_.SetFftSize(size)) {
@@ -143,9 +143,10 @@ void AnalyserHandler::SetMinMaxDecibels(double min_decibels,
   if (min_decibels >= max_decibels) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"maxDecibels (", String::Number(max_decibels),
-                ") must be greater than or equal to minDecibels ( ",
-                String::Number(min_decibels), ")."}));
+        Format(
+            "maxDecibels ({:g}) must be greater than or equal to minDecibels "
+            "({:g}).",
+            max_decibels, min_decibels));
     return;
   }
   analyser_.SetMinDecibels(min_decibels);

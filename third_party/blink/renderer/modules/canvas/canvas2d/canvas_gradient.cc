@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -140,8 +141,8 @@ void CanvasGradient::addColorStop(double value,
   if (!(value >= 0 && value <= 1.0)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"The provided value (", String::Number(value),
-                ") is outside the range (0.0, 1.0)."}));
+        Format("The provided value ({:g}) is outside the range (0.0, 1.0).",
+               value));
     return;
   }
 

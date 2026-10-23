@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -188,20 +188,18 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   if (number_of_input_channels > BaseAudioContext::MaxNumberOfChannels()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat({"number of input channels (",
-                String::Number(number_of_input_channels), ") exceeds maximum (",
-                String::Number(BaseAudioContext::MaxNumberOfChannels()),
-                ")."}));
+        Format("number of input channels ({}) exceeds maximum ({}).",
+               number_of_input_channels,
+               BaseAudioContext::MaxNumberOfChannels()));
     return nullptr;
   }
 
   if (number_of_output_channels > BaseAudioContext::MaxNumberOfChannels()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        StrCat(
-            {"number of output channels (",
-             String::Number(number_of_output_channels), ") exceeds maximum (",
-             String::Number(BaseAudioContext::MaxNumberOfChannels()), ")."}));
+        Format("number of output channels ({}) exceeds maximum ({}).",
+               number_of_output_channels,
+               BaseAudioContext::MaxNumberOfChannels()));
     return nullptr;
   }
 
@@ -237,8 +235,9 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     default:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          StrCat({"buffer size (", String::Number(requested_buffer_size),
-                  ") must be 0 or a power of two between 256 and 16384."}));
+          Format("buffer size ({}) must be 0 or a power of two between 256 and "
+                 "16384.",
+                 requested_buffer_size));
       return nullptr;
   }
 
@@ -246,9 +245,9 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   if (render_quantum_size == 0 || buffer_size % render_quantum_size != 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"buffer size (", String::Number(buffer_size),
-                ") must be a multiple of the context render quantum size (",
-                String::Number(render_quantum_size), ")."}));
+        Format("buffer size ({}) must be a multiple of the context render "
+               "quantum size ({}).",
+               buffer_size, render_quantum_size));
     return nullptr;
   }
 

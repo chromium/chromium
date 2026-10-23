@@ -95,9 +95,8 @@ bool IsNonNegativeAudioParamTime(double time,
     return true;
   }
 
-  exception_state.ThrowRangeError(StrCat(
-      {message,
-       " must be a finite non-negative number: ", String::Number(time)}));
+  exception_state.ThrowRangeError(
+      Format("{} must be a finite non-negative number: {:g}", message, time));
   return false;
 }
 
@@ -108,8 +107,8 @@ bool IsPositiveAudioParamTime(double time,
     return true;
   }
 
-  exception_state.ThrowRangeError(StrCat(
-      {message, " must be a finite positive number: ", String::Number(time)}));
+  exception_state.ThrowRangeError(
+      Format("{} must be a finite positive number: {:g}", message, time));
   return false;
 }
 
@@ -432,8 +431,7 @@ double AudioParamHandler::ClampedToCurrentTime(double time) {
 String AudioParamHandler::EventToString(const ParamEvent& event) const {
   // The default arguments for most automation methods is the value and the
   // time.
-  String args = StrCat(
-      {String::Number(event.Value()), ", ", String::Number(event.Time(), 16)});
+  String args = Format("{:g}, {:.16g}", event.Value(), event.Time());
 
   // Get a nice printable name for the event and update the args if necessary.
   String s;
@@ -450,13 +448,12 @@ String AudioParamHandler::EventToString(const ParamEvent& event) const {
     case ParamEvent::Type::kSetTarget:
       s = "setTargetAtTime";
       // This has an extra time constant arg
-      args = StrCat({args, ", ", String::Number(event.TimeConstant(), 16)});
+      args = Format("{}, {:.16g}", args, event.TimeConstant());
       break;
     case ParamEvent::Type::kSetValueCurve:
       s = "setValueCurveAtTime";
       // Replace the default arg, using "..." to denote the curve argument.
-      args = StrCat({"..., ", String::Number(event.Time(), 16), ", ",
-                     String::Number(event.Duration(), 16)});
+      args = Format("..., {:.16g}, {:.16g}", event.Time(), event.Duration());
       break;
     case ParamEvent::Type::kCancelValues:
     case ParamEvent::Type::kSetValueCurveEnd:
@@ -760,11 +757,11 @@ void AudioParamHandler::ExponentialRampToValueAtTime(
   }
 
   if (!value) {
-    exception_state.ThrowRangeError(StrCat(
-        {"The float target value provided (", String::Number(value),
-         ") should not be in the range (",
-         String::Number(-std::numeric_limits<float>::denorm_min()), ", ",
-         String::Number(std::numeric_limits<float>::denorm_min()), ")."}));
+    exception_state.ThrowRangeError(
+        Format("The float target value provided ({:g}) should not be in the "
+               "range ({:g}, {:g}).",
+               value, -std::numeric_limits<float>::denorm_min(),
+               std::numeric_limits<float>::denorm_min()));
     return;
   }
 
