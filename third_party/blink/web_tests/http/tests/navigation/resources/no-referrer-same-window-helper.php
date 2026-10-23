@@ -6,7 +6,7 @@
 
 <html><body>
 The Referrer displayed below should be empty.<br/>
-<div id="referrer">Referrer: <?php echo $_SERVER['HTTP_REFERER']; ?></div>
+<div id="referrer">Referrer: <?php echo $_SERVER['HTTP_REFERER'] ?? ""; ?></div>
 <div id="console"></div>
 <script>
     var line = document.createElement('div');

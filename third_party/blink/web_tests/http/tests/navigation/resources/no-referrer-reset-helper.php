@@ -6,7 +6,7 @@
 
 <html><body>
 <div id="referrer">
-Referrer: <?php echo $_SERVER['HTTP_REFERER']; ?>
+Referrer: <?php echo $_SERVER['HTTP_REFERER'] ?? ""; ?>
 </div>
 <br/>
 <a id="noreferrer-link" href="no-referrer-reset-helper.php" rel="noreferrer">Doesn't send referrer</a>

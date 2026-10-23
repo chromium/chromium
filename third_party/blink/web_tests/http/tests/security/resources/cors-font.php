@@ -7,7 +7,7 @@ header('Last-Modified: ' . gmdate("D, d M Y H:i:s", filemtime($font)) . " GMT");
 header("Content-Type: font/truetype");
 header("Content-Length: " . filesize($font));
 
-$cors_arg = strtolower($_GET["cors"]);
+$cors_arg = strtolower($_GET["cors"] ?? "");
 if ($cors_arg != "false") {
     if ($cors_arg == "" || $cors_arg == "true") {
         header("Access-Control-Allow-Origin: http://127.0.0.1:8000");
@@ -15,12 +15,14 @@ if ($cors_arg != "false") {
         header("Access-Control-Allow-Origin: " . $cors_arg . "");
     }
 }
-if (strtolower($_GET["credentials"]) == "true") {
+if (strtolower($_GET["credentials"] ?? "") == "true") {
     header("Access-Control-Allow-Credentials: true");
 }
 
 header("Timing-Allow-Origin: *");
-ob_clean();
+if (ob_get_level()) {
+    ob_clean();
+}
 flush();
 readfile($font);
 

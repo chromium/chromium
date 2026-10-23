@@ -1,5 +1,5 @@
 <?php
-parse_str($_SERVER["QUERY_STRING"]);
+$queryfunction = $_GET["queryfunction"] ?? "";
 
 function deleteCookie($value, $name)
 {
@@ -7,7 +7,7 @@ function deleteCookie($value, $name)
 }
 
 if ($queryfunction == "deleteCookies") {
-    array_walk($_COOKIE, deleteCookie);
+    array_walk($_COOKIE, "deleteCookie");
     echo "Deleted all cookies";
     return;
 }
@@ -34,7 +34,7 @@ function echoCookie($value, $name)
 function echoAllCookies()
 {
     echo "Cookies are:\n";
-    array_walk($_COOKIE, echoCookie);    
+    array_walk($_COOKIE, "echoCookie");
 }
 
 ?>

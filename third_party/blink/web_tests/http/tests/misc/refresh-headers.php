@@ -2,13 +2,13 @@
   $gotMaxAge=false;
   $gotNoCache=false;
 
-  if (0 == strcasecmp($_SERVER["HTTP_CACHE_CONTROL"], "max-age=0"))
+  if (0 == strcasecmp($_SERVER["HTTP_CACHE_CONTROL"] ?? "", "max-age=0"))
   {
     $gotMaxAge = true;
   }
     
-  if ((0 == strcasecmp($_SERVER["HTTP_CACHE_CONTROL"], "no-cache")) ||
-      (0 == strcasecmp($_SERVER["HTTP_PRAGMA"], "no-cache")))
+  if ((0 == strcasecmp($_SERVER["HTTP_CACHE_CONTROL"] ?? "", "no-cache")) ||
+      (0 == strcasecmp($_SERVER["HTTP_PRAGMA"] ?? "", "no-cache")))
   {
     $gotNoCache = true;
   }
