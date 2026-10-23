@@ -1315,8 +1315,14 @@ void ExtensionPrefs::RemoveDesiredActivePermissions(
 
 void ExtensionPrefs::SetWithholdingPermissions(const ExtensionId& extension_id,
                                                bool should_withhold) {
+  if (GetWithholdingPermissions(extension_id) == should_withhold) {
+    return;
+  }
   UpdateExtensionPref(extension_id, kPrefWithholdingPermissions,
                       base::Value(should_withhold));
+  for (auto& observer : observer_list_) {
+    observer.OnExtensionWithholdingPermissionsChanged(extension_id);
+  }
 }
 
 bool ExtensionPrefs::GetWithholdingPermissions(

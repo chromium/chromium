@@ -80,7 +80,8 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                                      const base::flat_set<int>& disable_reasons,
                                      bool incognito_enabled,
                                      bool remote_install,
-                                     const GURL& update_url)
+                                     const GURL& update_url,
+                                     std::optional<bool> withhold_permissions)
     : ExtensionSyncData(extension,
                         enabled,
                         disable_reasons,
@@ -89,7 +90,8 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                         update_url,
                         StringOrdinal(),
                         StringOrdinal(),
-                        LaunchType::kInvalid) {}
+                        LaunchType::kInvalid,
+                        withhold_permissions) {}
 
 ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                                      bool enabled,
@@ -99,7 +101,8 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                                      const GURL& update_url,
                                      const StringOrdinal& app_launch_ordinal,
                                      const StringOrdinal& page_ordinal,
-                                     LaunchType launch_type)
+                                     LaunchType launch_type,
+                                     std::optional<bool> withhold_permissions)
     : is_app_(extension.is_app()),
       id_(extension.id()),
       uninstalled_(false),
@@ -108,6 +111,7 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
       disable_reasons_(disable_reasons),
       incognito_enabled_(incognito_enabled),
       remote_install_(remote_install),
+      withhold_permissions_(withhold_permissions),
       version_(extension.version()),
       update_url_(update_url),
       name_(extension.non_localized_name()),
@@ -181,6 +185,9 @@ void ExtensionSyncData::ToExtensionSpecifics(
 
   specifics->set_incognito_enabled(incognito_enabled_);
   specifics->set_remote_install(remote_install_);
+  if (withhold_permissions_.has_value()) {
+    specifics->set_withhold_permissions(*withhold_permissions_);
+  }
 }
 
 void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
@@ -252,6 +259,11 @@ bool ExtensionSyncData::PopulateFromExtensionSpecifics(
   supports_disable_reasons_ = specifics.has_disable_reasons();
   incognito_enabled_ = specifics.incognito_enabled();
   remote_install_ = specifics.remote_install();
+  if (specifics.has_withhold_permissions()) {
+    withhold_permissions_ = specifics.withhold_permissions();
+  } else {
+    withhold_permissions_.reset();
+  }
 
   // Deserialize disable reasons. Older clients (< M135) only send the bitflag.
   // Newer clients send the bitflag and the list. Since bitflag will be

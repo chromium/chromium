@@ -19,6 +19,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -63,9 +65,12 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_blocklist.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -785,6 +790,8 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataFilter) {
 }
 
 TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionInstallSiteAccessOptions);
   InitializeEmptyExtensionService();
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   const Extension* extension = registry()->GetInstalledExtension(kGoodCrx);
@@ -803,6 +810,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
     ASSERT_TRUE(data.get());
     EXPECT_TRUE(data->enabled());
     EXPECT_FALSE(data->incognito_enabled());
+    EXPECT_FALSE(data->withhold_permissions().value());
   }
 
   registrar()->DisableExtension(
@@ -816,9 +824,13 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
     ASSERT_TRUE(data.get());
     EXPECT_FALSE(data->enabled());
     EXPECT_FALSE(data->incognito_enabled());
+    EXPECT_FALSE(data->withhold_permissions().value());
   }
 
   extensions::util::SetIsIncognitoEnabled(kGoodCrx, profile(), true);
+  extensions::ScriptingPermissionsModifier(
+      profile(), registry()->GetInstalledExtension(kGoodCrx))
+      .SetWithholdHostPermissions(true);
   {
     syncer::SyncDataList list =
         extension_sync_service()->GetAllSyncDataForTesting(syncer::EXTENSIONS);
@@ -828,9 +840,13 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
     ASSERT_TRUE(data.get());
     EXPECT_FALSE(data->enabled());
     EXPECT_TRUE(data->incognito_enabled());
+    EXPECT_TRUE(data->withhold_permissions().value());
   }
 
   registrar()->EnableExtension(kGoodCrx);
+  extensions::ScriptingPermissionsModifier(
+      profile(), registry()->GetInstalledExtension(kGoodCrx))
+      .SetWithholdHostPermissions(false);
   {
     syncer::SyncDataList list =
         extension_sync_service()->GetAllSyncDataForTesting(syncer::EXTENSIONS);
@@ -840,6 +856,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
     ASSERT_TRUE(data.get());
     EXPECT_TRUE(data->enabled());
     EXPECT_TRUE(data->incognito_enabled());
+    EXPECT_FALSE(data->withhold_permissions().value());
   }
 }
 
@@ -2574,3 +2591,194 @@ TEST_F(ExtensionSyncServiceTest, DisableReasonsChangedDuringLoad) {
   }
   EXPECT_TRUE(found_enabled_change);
 }
+
+class ExtensionSyncServiceWithholdPermissionsTest
+    : public base::test::WithFeatureOverride,
+      public ExtensionSyncServiceTest {
+ public:
+  ExtensionSyncServiceWithholdPermissionsTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kExtensionInstallSiteAccessOptions) {}
+};
+
+TEST_P(ExtensionSyncServiceWithholdPermissionsTest, SyncWithholdPermissions) {
+  InitializeEmptyExtensionService();
+  service()->Init();
+  ASSERT_TRUE(extension_system()->is_ready());
+
+  auto processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+  syncer::FakeSyncChangeProcessor* processor_raw = processor.get();
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(), std::move(processor));
+
+  // Install an extension with withheld permissions ("On click").
+  const Extension* extension = InstallCRX(
+      data_dir().AppendASCII("good.crx"), ManifestLocation::kInternal,
+      INSTALL_NEW, Extension::WITHHOLD_PERMISSIONS);
+  ASSERT_TRUE(extension);
+  const std::string id = extension->id();
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
+
+  ASSERT_EQ(1u, processor_raw->changes().size());
+  {
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(
+            processor_raw->changes()[0].sync_data());
+    ASSERT_TRUE(data);
+    EXPECT_EQ(id, data->id());
+    EXPECT_EQ(
+        IsParamFeatureEnabled() ? std::optional<bool>(true) : std::nullopt,
+        data->withhold_permissions());
+  }
+  processor_raw->changes().clear();
+
+  // Grant host permissions ("Always on all sites") locally and verify sync
+  // is notified iff the feature is enabled.
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(false);
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
+  if (IsParamFeatureEnabled()) {
+    ASSERT_EQ(1u, processor_raw->changes().size());
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(
+            processor_raw->changes()[0].sync_data());
+    ASSERT_TRUE(data);
+    EXPECT_FALSE(data->withhold_permissions().value());
+    processor_raw->changes().clear();
+  } else {
+    EXPECT_TRUE(processor_raw->changes().empty());
+  }
+
+  // Receive incoming sync change setting `withhold_permissions` to true.
+  {
+    ExtensionSyncData sync_data(
+        *extension, /*enabled=*/true, /*disable_reasons=*/{},
+        /*incognito_enabled=*/false, /*remote_install=*/false,
+        extension_urls::GetWebstoreUpdateUrl(),
+        /*withhold_permissions=*/true);
+    SyncChangeList list(1, sync_data.GetSyncChange(SyncChange::ACTION_UPDATE));
+    extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              permissions_manager->HasWithheldHostPermissions(*extension));
+    EXPECT_TRUE(processor_raw->changes().empty());
+  }
+
+  // Receive legacy incoming sync change where `withhold_permissions` is
+  // unset. The local state should be preserved.
+  {
+    ExtensionSyncData legacy_sync_data(
+        *extension, /*enabled=*/true, /*disable_reasons=*/{},
+        /*incognito_enabled=*/false, /*remote_install=*/false,
+        extension_urls::GetWebstoreUpdateUrl(),
+        /*withhold_permissions=*/std::nullopt);
+    SyncChangeList list(
+        1, legacy_sync_data.GetSyncChange(SyncChange::ACTION_UPDATE));
+    extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              permissions_manager->HasWithheldHostPermissions(*extension));
+    EXPECT_TRUE(processor_raw->changes().empty());
+  }
+
+  // Receive incoming sync change from an older version of the extension
+  // (`state == INSTALLED_NEWER`). It should not overwrite the local state.
+  {
+    sync_pb::EntitySpecifics specifics;
+    sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+    ext_specifics->set_id(id);
+    ext_specifics->set_version("0.1");
+    ext_specifics->set_enabled(true);
+    ext_specifics->set_withhold_permissions(!IsParamFeatureEnabled());
+    SyncChangeList list =
+        MakeSyncChangeList(id, specifics, SyncChange::ACTION_UPDATE);
+    extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              permissions_manager->HasWithheldHostPermissions(*extension));
+    EXPECT_TRUE(processor_raw->changes().empty());
+  }
+
+  // Receive incoming sync change explicitly setting `withhold_permissions` to
+  // false.
+  {
+    ExtensionSyncData sync_data(
+        *extension, /*enabled=*/true, /*disable_reasons=*/{},
+        /*incognito_enabled=*/false, /*remote_install=*/false,
+        extension_urls::GetWebstoreUpdateUrl(),
+        /*withhold_permissions=*/false);
+    SyncChangeList list(1, sync_data.GetSyncChange(SyncChange::ACTION_UPDATE));
+    extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+    EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
+    EXPECT_TRUE(processor_raw->changes().empty());
+  }
+
+  // Receive incoming sync change for a not-yet-installed extension with
+  // `withhold_permissions` = true, and verify ExtensionPrefs records the
+  // withholding preference iff the feature is enabled.
+  {
+    sync_pb::EntitySpecifics specifics;
+    sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+    ext_specifics->set_id(kGood0);
+    ext_specifics->set_version("1.0.0.0");
+    ext_specifics->set_enabled(true);
+    ext_specifics->set_withhold_permissions(true);
+    SyncChangeList list =
+        MakeSyncChangeList(kGood0, specifics, SyncChange::ACTION_ADD);
+    extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+    EXPECT_EQ(
+        IsParamFeatureEnabled(),
+        ExtensionPrefs::Get(profile())->GetWithholdingPermissions(kGood0));
+  }
+}
+
+TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
+       SyncWithholdPermissionsMergePreservesLocalState) {
+  InitializeEmptyExtensionService();
+  service()->Init();
+  ASSERT_TRUE(extension_system()->is_ready());
+
+  // Install an extension locally with withheld permissions ("On click") before
+  // starting sync.
+  const Extension* extension = InstallCRX(
+      data_dir().AppendASCII("good.crx"), ManifestLocation::kInternal,
+      INSTALL_NEW, Extension::WITHHOLD_PERMISSIONS);
+  ASSERT_TRUE(extension);
+  const std::string id = extension->id();
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
+
+  // Clear NeedsSync to simulate that the extension was already synced
+  // previously so that MergeDataAndStartSyncing applies incoming server data.
+  ExtensionPrefs::Get(profile())->SetNeedsSync(id, false);
+
+  // Start sync with server data that does not have `withhold_permissions` set
+  // (e.g. committed by an older client or a device with the flag disabled).
+  ExtensionSyncData server_sync_data(
+      *extension, /*enabled=*/true, /*disable_reasons=*/{},
+      /*incognito_enabled=*/false, /*remote_install=*/false,
+      extension_urls::GetWebstoreUpdateUrl(),
+      /*withhold_permissions=*/std::nullopt);
+  syncer::SyncDataList initial_sync_data;
+  initial_sync_data.push_back(server_sync_data.GetSyncData());
+
+  auto processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+  syncer::FakeSyncChangeProcessor* processor_raw = processor.get();
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, initial_sync_data, std::move(processor));
+
+  // The local withheld permissions state should be preserved, and pushed to
+  // sync iff the feature is enabled.
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
+  ASSERT_EQ(1u, processor_raw->changes().size());
+  std::unique_ptr<ExtensionSyncData> data =
+      ExtensionSyncData::CreateFromSyncData(
+          processor_raw->changes()[0].sync_data());
+  ASSERT_TRUE(data);
+  EXPECT_EQ(id, data->id());
+  EXPECT_EQ(IsParamFeatureEnabled() ? std::optional<bool>(true) : std::nullopt,
+            data->withhold_permissions());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ExtensionSyncServiceWithholdPermissionsTest);

@@ -38,9 +38,12 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -336,6 +339,15 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   bool incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile_);
   bool remote_install = extension_prefs->HasDisableReason(
       id, extensions::disable_reason::DISABLE_REMOTE_INSTALL);
+  std::optional<bool> withhold_permissions;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionInstallSiteAccessOptions)) {
+    auto* permissions_manager = extensions::PermissionsManager::Get(profile_);
+    if (permissions_manager->CanAffectExtension(extension)) {
+      withhold_permissions =
+          permissions_manager->HasWithheldHostPermissions(extension);
+    }
+  }
   AppSorting* app_sorting = system_->app_sorting();
 
   ExtensionManagement* extension_management =
@@ -353,7 +365,8 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
                 app_sorting->GetPageOrdinal(id),
                 extensions::GetLaunchTypePrefValue(extension_prefs, id))
           : ExtensionSyncData(extension, enabled, syncable_disable_reasons,
-                              incognito_enabled, remote_install, update_url);
+                              incognito_enabled, remote_install, update_url,
+                              withhold_permissions);
 
   // If there's a pending update, send the new version to sync instead of the
   // installed one.
@@ -549,6 +562,34 @@ void ExtensionSyncService::ApplySyncData(
     // 3. Add the incoming disable reasons.
     disable_reasons = base::STLSetUnion<base::flat_set<int>>(
         disable_reasons, cleaned_incoming_disable_reasons_set);
+  }
+
+  // Update the withheld permissions state if kExtensionInstallSiteAccessOptions
+  // is enabled, `withhold_permissions` is present in the incoming sync data,
+  // and the incoming sync data is not from an older version of the extension
+  // than the locally installed one.
+  // If `withhold_permissions` is not set (e.g. from an older client or when the
+  // feature flag was disabled on the committing device), preserve the local
+  // state (which defaults to false for newly installed extensions).
+  // TODO(crbug.com/577174336): When `state == INSTALLED_OUTDATED` and
+  // `withhold_permissions` is false, defer granting host permissions until the
+  // extension finishes updating to the synced version (similar to
+  // `PendingUpdate::grant_permissions`), so an older local version with broader
+  // host permissions is not granted access prematurely.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionInstallSiteAccessOptions) &&
+      extension_sync_data.withhold_permissions().has_value() &&
+      state != INSTALLED_NEWER) {
+    bool should_withhold = *extension_sync_data.withhold_permissions();
+    if (extension) {
+      if (extensions::PermissionsManager::Get(profile_)->CanAffectExtension(
+              *extension)) {
+        extensions::ScriptingPermissionsModifier(profile_, extension)
+            .SetWithholdHostPermissions(should_withhold);
+      }
+    } else {
+      extension_prefs->SetWithholdingPermissions(id, should_withhold);
+    }
   }
 
   // Enable/disable the extension.
@@ -815,6 +856,19 @@ void ExtensionSyncService::OnExtensionDisableReasonsChanged(
     // the first update coming in, or once the extension is loaded in
     // OnExtensionLoaded().
     ExtensionPrefs::Get(profile_)->SetNeedsSync(extension_id, true);
+  }
+}
+
+void ExtensionSyncService::OnExtensionWithholdingPermissionsChanged(
+    const extensions::ExtensionId& extension_id) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionInstallSiteAccessOptions)) {
+    return;
+  }
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
+  const Extension* extension = registry->GetInstalledExtension(extension_id);
+  if (extension) {
+    SyncExtensionChangeIfNeeded(*extension);
   }
 }
 

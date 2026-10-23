@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_SYNC_EXTENSION_SYNC_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -51,7 +52,8 @@ class ExtensionSyncData {
                     const base::flat_set<int>& disable_reasons,
                     bool incognito_enabled,
                     bool remote_install,
-                    const GURL& update_url);
+                    const GURL& update_url,
+                    std::optional<bool> withhold_permissions = std::nullopt);
   // App constructor.
   ExtensionSyncData(const Extension& extension,
                     bool enabled,
@@ -61,7 +63,8 @@ class ExtensionSyncData {
                     const GURL& update_url,
                     const syncer::StringOrdinal& app_launch_ordinal,
                     const syncer::StringOrdinal& page_ordinal,
-                    extensions::LaunchType launch_type);
+                    extensions::LaunchType launch_type,
+                    std::optional<bool> withhold_permissions = std::nullopt);
   ExtensionSyncData(const ExtensionSyncData& other);
   ~ExtensionSyncData();
 
@@ -92,6 +95,9 @@ class ExtensionSyncData {
   }
   bool incognito_enabled() const { return incognito_enabled_; }
   bool remote_install() const { return remote_install_; }
+  std::optional<bool> withhold_permissions() const {
+    return withhold_permissions_;
+  }
 
   // Version-dependent properties (i.e., should be used only when the
   // version of the currently-installed extension matches `version`).
@@ -155,6 +161,7 @@ class ExtensionSyncData {
 
   bool incognito_enabled_;
   bool remote_install_;
+  std::optional<bool> withhold_permissions_;
   base::Version version_;
   GURL update_url_;
   std::string name_;

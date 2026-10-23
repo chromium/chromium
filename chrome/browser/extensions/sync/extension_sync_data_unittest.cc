@@ -54,6 +54,11 @@ void ProtobufToSyncDataEqual(const sync_pb::EntitySpecifics& entity) {
   EXPECT_EQ(input.enabled(), output.enabled());
   EXPECT_EQ(input.incognito_enabled(), output.incognito_enabled());
   EXPECT_EQ(input.remote_install(), output.remote_install());
+  EXPECT_EQ(input.has_withhold_permissions(),
+            output.has_withhold_permissions());
+  if (input.has_withhold_permissions()) {
+    EXPECT_EQ(input.withhold_permissions(), output.withhold_permissions());
+  }
   EXPECT_EQ(input.disable_reasons(), output.disable_reasons());
 
   EXPECT_EQ(input.disable_reasons_list_size(),
@@ -76,6 +81,7 @@ void SyncDataToProtobufEqual(const ExtensionSyncData& input) {
   EXPECT_EQ(input.enabled(), output->enabled());
   EXPECT_EQ(input.incognito_enabled(), output->incognito_enabled());
   EXPECT_EQ(input.remote_install(), output->remote_install());
+  EXPECT_EQ(input.withhold_permissions(), output->withhold_permissions());
   EXPECT_EQ(input.version(), output->version());
   EXPECT_EQ(input.update_url(), output->update_url());
   EXPECT_EQ(input.name(), output->name());
@@ -95,6 +101,7 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   extension_specifics->set_enabled(false);
   extension_specifics->set_incognito_enabled(true);
   extension_specifics->set_remote_install(false);
+  extension_specifics->set_withhold_permissions(true);
   extension_specifics->set_version(kVersion);
 
   // Populate disable reasons (biflag and the list).
@@ -119,6 +126,7 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   EXPECT_FALSE(extension_sync_data.enabled());
   EXPECT_EQ(true, extension_sync_data.incognito_enabled());
   EXPECT_FALSE(extension_sync_data.remote_install());
+  EXPECT_EQ(true, extension_sync_data.withhold_permissions());
   EXPECT_EQ(base::Version(kVersion), extension_sync_data.version());
   EXPECT_THAT(
       extension_sync_data.disable_reasons(),
@@ -129,11 +137,21 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
 
   // Flip a bit and verify the result is correct.
   extension_specifics->set_incognito_enabled(false);
+  extension_specifics->set_withhold_permissions(false);
   ProtobufToSyncDataEqual(entity);
 
   extension_sync_data.PopulateFromExtensionSpecifics(*extension_specifics);
   EXPECT_FALSE(extension_sync_data.incognito_enabled());
+  EXPECT_EQ(false, extension_sync_data.withhold_permissions());
 
+  SyncDataToProtobufEqual(extension_sync_data);
+  ProtobufToSyncDataEqual(entity);
+
+  // Clear `withhold_permissions` to simulate legacy sync data and verify it is
+  // deserialized as std::nullopt.
+  extension_specifics->clear_withhold_permissions();
+  extension_sync_data.PopulateFromExtensionSpecifics(*extension_specifics);
+  EXPECT_EQ(std::nullopt, extension_sync_data.withhold_permissions());
   SyncDataToProtobufEqual(extension_sync_data);
   ProtobufToSyncDataEqual(entity);
 }

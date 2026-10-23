@@ -851,6 +851,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ExtensionSpecifics& proto) {
   VISIT(all_urls_enabled);
   VISIT(disable_reasons);
   VISIT_REP(disable_reasons_list);
+  VISIT(withhold_permissions);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::GetUpdateTriggers& proto) {

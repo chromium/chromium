@@ -61,4 +61,8 @@ message ExtensionSpecifics {
   // == false. The bitmask above will be deprecated in favor of this field. See
   // crbug.com/372186532.
   repeated int32 disable_reasons_list = 11;
+
+  // Whether or not host permissions for the extension should be withheld
+  // ("On click" vs. "Always on all sites").
+  optional bool withhold_permissions = 12;
 }

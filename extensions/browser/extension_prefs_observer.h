@@ -53,6 +53,10 @@ class ExtensionPrefsObserver : public base::CheckedObserver {
   virtual void OnExtensionRuntimePermissionsChanged(
       const ExtensionId& extension_id) {}
 
+  // Called when an extension's withholding permissions setting has changed.
+  virtual void OnExtensionWithholdingPermissionsChanged(
+      const ExtensionId& extension_id) {}
+
   // Called when an extension's last-launch-time has changed.
   virtual void OnExtensionLastLaunchTimeChanged(
       const ExtensionId& extension_id,
