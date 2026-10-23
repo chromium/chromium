@@ -4,9 +4,6 @@
 
 #include "chrome/browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_api.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/enterprise_networking_attributes.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -16,6 +13,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_util.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_context.h"
 
 namespace extensions {
 namespace {
@@ -25,17 +23,17 @@ constexpr char kErrorUserNotAffiliated[] =
 constexpr char kErrorNetworkNotConnected[] =
     "Device is not connected to a network.";
 
-bool IsAccessAllowed(Profile* profile) {
-  if (ash::IsSigninBrowserContext(profile)) {
+bool IsAccessAllowed(content::BrowserContext* context) {
+  if (ash::IsSigninBrowserContext(context)) {
     return true;
   }
 
-  if (profile->IsOffTheRecord()) {
+  if (context->IsOffTheRecord()) {
     return false;
   }
 
   const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
   if (!user) {
     return false;
   }
@@ -52,10 +50,7 @@ EnterpriseNetworkingAttributesGetNetworkDetailsFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseNetworkingAttributesGetNetworkDetailsFunction::Run() {
-  // TODO(crbug.com/354842935): Use Profile returned by browser_context().
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (!IsAccessAllowed(profile)) {
+  if (!IsAccessAllowed(browser_context())) {
     return RespondNow(Error(kErrorUserNotAffiliated));
   }
 

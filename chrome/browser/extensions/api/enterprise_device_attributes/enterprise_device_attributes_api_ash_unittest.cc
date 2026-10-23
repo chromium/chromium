@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api.h"
-#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +28,7 @@ namespace extensions {
 namespace {
 
 constexpr char kAccountId[] = "test_1@example.com";
+constexpr char kSecondaryAccountId[] = "test_2@example.com";
 constexpr char kFakeDirectoryApiId[] = "fake directory API ID";
 constexpr char kFakeSerialNumber[] = "fake serial number";
 constexpr char kFakeHostname[] = "fake-hostname";
@@ -36,7 +38,9 @@ constexpr char kFakeAnnotatedLocation[] = "fake annotated location";
 enum class TestProfileChoice {
   kSigninProfile,
   kNonAffiliatedProfile,
-  kAffiliatedProfile
+  kAffiliatedProfile,
+  kNonAffiliatedSecondaryProfile,
+  kAffiliatedSecondaryProfile,
 };
 
 std::string ParamToString(
@@ -48,6 +52,10 @@ std::string ParamToString(
       return "NonAffiliatedUser";
     case TestProfileChoice::kAffiliatedProfile:
       return "AffiliatedUser";
+    case TestProfileChoice::kNonAffiliatedSecondaryProfile:
+      return "NonAffiliatedSecondaryUser";
+    case TestProfileChoice::kAffiliatedSecondaryProfile:
+      return "AffiliatedSecondaryUser";
   }
 }
 
@@ -68,22 +76,25 @@ class EnterpriseDeviceAttributesApiAshTest
 
     DeviceSettingsTestBase::SetUp();
 
-    testing_profile_ = profile_manager_.CreateTestingProfile(kAccountId);
-
     switch (GetParam()) {
       case TestProfileChoice::kSigninProfile:
-        TestingProfile* signin_profile;
-        signin_profile = static_cast<TestingProfile*>(
+        testing_profile_ = static_cast<TestingProfile*>(
             ash::ProfileHelper::GetSigninProfile());
-        EXPECT_TRUE(profile_util::GetPrimaryUserProfile()->IsSameOrParent(
-            signin_profile));
-        ASSERT_EQ(signin_profile, profile_util::GetPrimaryUserProfile());
         break;
       case TestProfileChoice::kNonAffiliatedProfile:
-        AddUser(/*is_affiliated=*/false);
+        testing_profile_ = AddUser(kAccountId, /*is_affiliated=*/false);
         break;
       case TestProfileChoice::kAffiliatedProfile:
-        AddUser(/*is_affiliated=*/true);
+        testing_profile_ = AddUser(kAccountId, /*is_affiliated=*/true);
+        break;
+      case TestProfileChoice::kNonAffiliatedSecondaryProfile:
+        AddUser(kAccountId, /*is_affiliated=*/true);
+        testing_profile_ =
+            AddUser(kSecondaryAccountId, /*is_affiliated=*/false);
+        break;
+      case TestProfileChoice::kAffiliatedSecondaryProfile:
+        AddUser(kAccountId, /*is_affiliated=*/false);
+        testing_profile_ = AddUser(kSecondaryAccountId, /*is_affiliated=*/true);
         break;
     }
 
@@ -95,20 +106,24 @@ class EnterpriseDeviceAttributesApiAshTest
     ash::LoginState::Shutdown();
   }
 
-  void AddUser(bool is_affiliated = true) {
-    AccountId account_id = AccountId::FromUserEmail(kAccountId);
+  TestingProfile* AddUser(std::string_view account_id, bool is_affiliated) {
+    TestingProfile* profile =
+        profile_manager_.CreateTestingProfile(std::string(account_id));
+    AccountId id = AccountId::FromUserEmail(account_id);
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::UserType::kRegular,
-        testing_profile_);
-    user_manager_->LoginUser(account_id);
+        id, is_affiliated, user_manager::UserType::kRegular, profile);
+    user_manager_->LoginUser(id);
+    return profile;
   }
 
   bool IsSigninProfileOrBelongsToAffiliatedUser() {
     switch (GetParam()) {
       case TestProfileChoice::kSigninProfile:
       case TestProfileChoice::kAffiliatedProfile:
+      case TestProfileChoice::kAffiliatedSecondaryProfile:
         return true;
       case TestProfileChoice::kNonAffiliatedProfile:
+      case TestProfileChoice::kNonAffiliatedSecondaryProfile:
         return false;
     }
   }
@@ -204,6 +219,8 @@ INSTANTIATE_TEST_SUITE_P(
     EnterpriseDeviceAttributesApiAshTest,
     ::testing::Values(TestProfileChoice::kSigninProfile,
                       TestProfileChoice::kAffiliatedProfile,
-                      TestProfileChoice::kNonAffiliatedProfile),
+                      TestProfileChoice::kNonAffiliatedProfile,
+                      TestProfileChoice::kNonAffiliatedSecondaryProfile,
+                      TestProfileChoice::kAffiliatedSecondaryProfile),
     &ParamToString);
 }  // namespace extensions

@@ -21,9 +21,8 @@ source_set("enterprise_device_attributes") {
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//components/user_manager",
+    "//content/public/browser",
   ]
 }

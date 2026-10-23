@@ -10,31 +10,23 @@
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_context.h"
 
 namespace {
 
-bool IsAccessAllowed() {
-  // TODO(crbug.com/354842935): this check looks incorrect, because APIs are
-  // running under a certain profile, while this looks at primary user profile.
-  // Also GetPrimaryUserProfile has known issue (crbug.com/40227502).
-  // We should respect the Profile which can be taken by
-  // `Profile::FromBrowserContext(ExtensionFunction::browser_context())`.
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (ash::IsSigninBrowserContext(profile)) {
+bool IsAccessAllowed(content::BrowserContext* context) {
+  if (ash::IsSigninBrowserContext(context)) {
     return true;
   }
-  if (profile->IsOffTheRecord()) {
+  if (context->IsOffTheRecord()) {
     return false;
   }
 
   const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
   if (!user) {
     return false;
   }
@@ -57,7 +49,7 @@ template <std::invocable F>
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesBase::RespondWithCheck(F&& f) {
   return RespondNow(WithArguments(
-      IsAccessAllowed()
+      IsAccessAllowed(browser_context())
           ? f()
           :
           // We intentionally drop the error message here because the
