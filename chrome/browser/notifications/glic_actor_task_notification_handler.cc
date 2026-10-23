@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -142,7 +143,12 @@ void GlicActorTaskNotificationHandler::OnClick(
                                 notification_id);
   }
 
-  if (auto* activity_manager = glic::LegacyGlicActivityManager::Get(profile)) {
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    if (auto* activity_manager = glic::GlicActivityManager::Get(profile)) {
+      activity_manager->MarkActivitySeen(task_id);
+    }
+  } else if (auto* activity_manager =
+                 glic::LegacyGlicActivityManager::Get(profile)) {
     activity_manager->ProcessRowInTaskListBubble(task_id);
   }
 

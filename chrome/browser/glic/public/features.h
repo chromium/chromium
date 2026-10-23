@@ -254,9 +254,10 @@ BASE_DECLARE_FEATURE(kGlicClientDataStorage);
 
 BASE_DECLARE_FEATURE(kGlicShowNotTellTutorials);
 extern const base::FeatureParam<int> kGlicShowNotTellTutorialsArm;
-
 // Enables the Send Tab to Self APIs in Glic.
 BASE_DECLARE_FEATURE(kGlicSendTabToSelf);
+
+BASE_DECLARE_FEATURE(kGlicActivityHub);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

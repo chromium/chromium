@@ -52,6 +52,7 @@ namespace glic {
 
 class AuthController;
 class ContextualCueingService;
+class GlicActivityManager;
 class LegacyGlicActivityManager;
 class GlicActorPolicyChecker;
 class GlicEnabling;
@@ -283,6 +284,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   bool HasActorPolicyChecker() const { return !!actor_policy_checker_; }
 
+  GlicActivityManager& activity_manager();
   LegacyGlicActivityManager& legacy_activity_manager();
 
  private:
@@ -328,6 +330,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicClientDataStorage> client_data_storage_;
   // Is a GlicInstanceCoordinatorImpl.
   std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
+  std::unique_ptr<GlicActivityManager> activity_manager_;
   std::unique_ptr<LegacyGlicActivityManager> legacy_activity_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
 

@@ -57,6 +57,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
@@ -194,9 +195,15 @@ GlicKeyedService::GlicKeyedService(
           this,
           enabling_.get(),
           contextual_cueing_service)),
+      activity_manager_(base::FeatureList::IsEnabled(features::kGlicActivityHub)
+                            ? std::make_unique<GlicActivityManager>(profile_)
+                            : nullptr),
       legacy_activity_manager_(
-          std::make_unique<LegacyGlicActivityManager>(profile_,
-                                                      actor_keyed_service)),
+          base::FeatureList::IsEnabled(features::kGlicActivityHub)
+              ? nullptr
+              : std::make_unique<LegacyGlicActivityManager>(
+                    profile_,
+                    actor_keyed_service)),
       is_no_webview_enabled_(
           base::FeatureList::IsEnabled(features::kGlicNoWebview) ||
           provider_spec().RequiresNoWebview()),
@@ -333,8 +340,18 @@ void GlicKeyedService::Shutdown() {
   }
   experimental_triggering_state_subscription_ = {};
   instance_coordinator().Shutdown();
-  legacy_activity_manager_->Shutdown();
+  if (activity_manager_) {
+    activity_manager_->Shutdown();
+  }
+  if (legacy_activity_manager_) {
+    legacy_activity_manager_->Shutdown();
+  }
   client_data_storage_->Flush();
+}
+
+GlicActivityManager& GlicKeyedService::activity_manager() {
+  CHECK(activity_manager_);
+  return *activity_manager_;
 }
 
 LegacyGlicActivityManager& GlicKeyedService::legacy_activity_manager() {
