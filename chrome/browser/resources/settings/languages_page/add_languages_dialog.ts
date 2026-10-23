@@ -129,6 +129,7 @@ export class SettingsAddLanguagesDialogElement extends
     } else {
       this.languagesToAdd_.delete(languageCode);
     }
+    this.requestUpdate();
 
     this.disableActionButton_ = !this.languagesToAdd_.size;
   }

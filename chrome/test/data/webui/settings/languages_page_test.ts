@@ -216,7 +216,8 @@ suite('LanguagesPage', function() {
       assertTrue(!!searchInput);
 
       const getItems = function() {
-        return dialog.shadowRoot.querySelectorAll('cr-checkbox:not([hidden])');
+        return dialog.shadowRoot.querySelectorAll<CrCheckboxElement>(
+            'cr-checkbox:not([hidden])');
       };
 
       // Expecting a few languages to be displayed when no query exists.
@@ -226,11 +227,35 @@ suite('LanguagesPage', function() {
       searchInput.setValue('greek');
       await microtasksFinished();
       assertEquals(1, getItems().length);
+      assertFalse(getItems()[0]!.checked);
+      getItems()[0]!.click();
+      await microtasksFinished();
+      assertTrue(getItems()[0]!.checked);
+
+      // Issue query that matches another language and check it as well.
+      searchInput.setValue('hebrew');
+      await microtasksFinished();
+      assertEquals(1, getItems().length);
+      assertFalse(getItems()[0]!.checked);
+      getItems()[0]!.click();
+      await microtasksFinished();
+      assertTrue(getItems()[0]!.checked);
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('Ελληνικά');
       await microtasksFinished();
       assertEquals(1, getItems().length);
+      assertTrue(getItems()[0]!.checked);
+
+      // Clear search query and verify only the checked languages are checked.
+      searchInput.setValue('');
+      await microtasksFinished();
+      const checkedItems =
+          dialog.shadowRoot.querySelectorAll<CrCheckboxElement>(
+              'cr-checkbox[checked]');
+      assertEquals(2, checkedItems.length);
+      assertEquals('el', checkedItems[0]!.dataset['code']);
+      assertEquals('he', checkedItems[1]!.dataset['code']);
 
       // Issue query that does not match any language.
       searchInput.setValue('egaugnal');
