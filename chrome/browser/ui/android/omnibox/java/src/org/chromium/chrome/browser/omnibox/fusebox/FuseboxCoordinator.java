@@ -8,11 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.ComponentCallbacks;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +18,6 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsCompat.Type;
-import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -33,8 +27,6 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -64,12 +56,10 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.AsyncLayoutInflater;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
-import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.function.Supplier;
@@ -569,89 +559,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         return !mIsForcedPhoneStyleOmnibox && OmniboxCapabilities.isDesktopPlatform()
                 ? FuseboxLayoutMode.SUGGESTIONS_POPOVER
                 : FuseboxLayoutMode.TOOLBAR;
-    }
-
-    /**
-     * Provider of the viewport for the fusebox popup window. This implementation treats the entire
-     * window as available, ignoring e.g. ime insets which can reduce the available height to a very
-     * small quantity using PopupWindow's default viewport rect.
-     */
-    static class ViewportRectProvider extends RectProvider
-            implements ComponentCallbacks,
-                    View.OnLayoutChangeListener,
-                    InsetObserver.WindowInsetObserver {
-        private final Activity mActivity;
-        private final @Nullable InsetObserver mInsetObserver;
-        private final View mView;
-
-        public ViewportRectProvider(
-                Activity activity, @Nullable InsetObserver insetObserver, View view) {
-            mActivity = activity;
-            mInsetObserver = insetObserver;
-            if (mInsetObserver != null) {
-                mInsetObserver.addObserver(this);
-            }
-            mView = view;
-            mActivity.registerComponentCallbacks(this);
-            mView.addOnLayoutChangeListener(this);
-            updateRect();
-        }
-
-        @Override
-        public void onInsetChanged() {
-            updateRect();
-        }
-
-        @Override
-        public void onConfigurationChanged(Configuration configuration) {
-            updateRect();
-        }
-
-        @Override
-        public void onLayoutChange(
-                View v,
-                int left,
-                int top,
-                int right,
-                int bottom,
-                int oldLeft,
-                int oldTop,
-                int oldRight,
-                int oldBottom) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateRect);
-        }
-
-        private int getTopInset() {
-            if (mInsetObserver == null) return 0;
-
-            @Nullable WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
-            if (insets == null) return 0;
-
-            int topInset = insets.getInsets(Type.systemBars()).top;
-            return topInset;
-        }
-
-        private void updateRect() {
-            var windowMetrics =
-                    WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
-            var bounds = windowMetrics.getBounds();
-            Rect newRect = new Rect(0, getTopInset(), bounds.width(), bounds.height());
-            if (!newRect.equals(mRect)) {
-                mRect.set(newRect);
-                notifyRectChanged();
-            }
-        }
-
-        @Override
-        public void onLowMemory() {}
-
-        public void destroy() {
-            mActivity.unregisterComponentCallbacks(this);
-            mView.removeOnLayoutChangeListener(this);
-            if (mInsetObserver != null) {
-                mInsetObserver.removeObserver(this);
-            }
-        }
     }
 
     public @Nullable PropertyModel getModelForTesting() {
