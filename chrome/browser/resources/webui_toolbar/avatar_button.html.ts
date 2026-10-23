@@ -15,7 +15,7 @@ export function getHtml(this: AvatarButtonElement) {
     ?has-border="${this.shouldPaintBorder()}"
     ?has-linear-gradient-ring="${this.state.hasLinearGradientRing}"
     .disabled="${!this.state.enabled}" .tooltip="${this.getTooltip_() || ''}"
-    .ariaLabel="${this.state.accessibilityName || ''}" .ariaHasPopup="menu"
+    .ariaLabel="${this.state.accessibilityName || ''}" .ariaHasPopup="${'menu'}"
     .ariaDescription="${this.state.accessibilityDescription || ''}"
     @click="${this.onClick_}"
     @pointerdown="${this.highlightTracker.onPointerdown}"
