@@ -183,7 +183,11 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
         {ukm::kUkmFeature},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
-        {features::kHttpsUpgrades});
+        // Disable InitialWebUI/WebUIReloadButton by default so background
+        // top-chrome WebUI navigations do not pollute global navigation
+        // histograms; tests for InitialWebUI override these in subclasses.
+        {features::kHttpsUpgrades, features::kInitialWebUI,
+         features::kWebUIReloadButton});
   }
 
   PageLoadMetricsBrowserTest(const PageLoadMetricsBrowserTest&) = delete;
