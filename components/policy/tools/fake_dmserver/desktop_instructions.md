@@ -9,16 +9,28 @@ manually start `fake_dmserver`.
 Create a simple JSON file with the policies you want to test (e.g.,
 `$HOME/dmserver_data/policies.json`).
 
-Here is a minimal example, where you log into Chromium as alice@acme.com and
+> **Important**: Desktop Chrome and Chromium validate cloud policy signatures
+> against Google's production verification key compiled into the browser binary.
+> `fake_dmserver` includes pre-computed production key signatures for three
+> domains only:
+> - `example.com`
+> - `chromepolicytest.com`
+> - `managedchrome.com`
+>
+> You must set `policy_user` to an address using one of these three domains
+> (for example, `alice@example.com`). Other domains will fail validation or
+> cause `fake_dmserver` to return an HTTP 400 error.
+
+Here is a minimal example, where you log into Chromium as alice@example.com and
 want both machine-level and user-level policies.
 
 ```json
 {
-  "policy_user": "alice@acme.com",
+  "policy_user": "alice@example.com",
   "machine": {
     "AllowDinosaurEasterEgg": true,
     "ExtensionInstallForcelist": [
-      "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx"
+      "eimadpbcbfnmbkopoojfekhnkhdbieeh;https://clients2.google.com/service/update2/crx"
     ]
   },
   "user": {
@@ -97,8 +109,9 @@ define the actual policies to be applied.
     * `reasons`: (Array of String enums) elements can be `"blocked_category"`
       or `"risk_score"`
 *   `policy_user`: (String) The user ID (e.g., email address) to embed in
-    policy responses. This must match the user on the ChromeOS device, or the
-    policy will be rejected.
+    policy responses. On desktop, this must use one of the supported signature
+    domains (`example.com`, `chromepolicytest.com`, or `managedchrome.com`). For
+    user policies, it must also match the signed-in profile account.
 *   `managed_users`: (Array of Strings) A list of users that the server should
     treat as managed. Use `"*"` to treat all users as managed.
 *   `device_affiliation_ids`: (Array of Strings) A list of affiliation IDs for
@@ -111,8 +124,12 @@ define the actual policies to be applied.
 *   `allow_set_device_attributes`: (Boolean) If `true`, allows device
     attributes to be set by the client. Defaults to `true`.
 *   `use_universal_signing_keys`: (Boolean) If `true`, the server will use a
-    universal test key to sign policy blobs. This is recommended for most local
-    testing scenarios.
+    universal test key to sign policy blobs with a wildcard signature. Do **not**
+    set this for local desktop Chrome or Chromium testing; standard browser
+    binaries validate against Google's production verification key and will reject
+    test signatures. This option is intended only for ChromeOS test images (with
+    `--disable-policy-key-verification`) or automated test suites (with
+    `--policy-verification-key`).
 *   `current_key_index`: (Integer) The index of the signing key to use.
 *   `request_errors`: (Object) A dictionary to simulate server errors. The keys
     are request types (e.g., `"register"`, `"policy"`) and the values are HTTP
@@ -129,7 +146,7 @@ More complete example showcasing some of `fake_dmserver`'s features:
   "policy_user": "alice@example.com",
   "managed_users": ["alice@example.com", "bob@example.com"],
   "user": {
-    "AllowDinosaurEasterEgg": true,
+    "AllowDinosaurEasterEgg": true
   },
   "machine": {
     "ShowHomeButton": true,
@@ -138,15 +155,14 @@ More complete example showcasing some of `fake_dmserver`'s features:
     "URLBlocklist": [
       "example.com",
       "unwanted-site.org"
-    ],
+    ]
   },
   "machine-extension-install": {
     "abcdefghijklmnopabcdefghijklmnop@1.0.0": {
       "action": "block",
       "reasons": ["risk_score"]
     }
-  },
-  "use_universal_signing_keys": true
+  }
 }
 ```
 
