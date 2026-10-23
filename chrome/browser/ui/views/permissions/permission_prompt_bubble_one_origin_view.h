@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/media_preview/permission_prompt_previews_coordinator.h"
 #include "components/media_effects/media_device_info.h"
 
 namespace content {
@@ -52,10 +51,6 @@ class PermissionPromptBubbleOneOriginView :
   void RunButtonCallback(int button_id) override;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  const std::optional<PermissionPromptPreviewsCoordinator>&
-  GetMediaPreviewsForTesting() const {
-    return media_previews_;
-  }
   const raw_ptr<views::Label> GetCameraPermissionLabelForTesting() const {
     return camera_permission_label_;
   }
@@ -73,10 +68,7 @@ class PermissionPromptBubbleOneOriginView :
                       std::size_t index);
 
   // Adds Media (Camera / Mic) live preview feeds.
-  void MaybeAddMediaPreview(
-      std::vector<std::string> requested_audio_capture_device_id,
-      std::vector<std::string> requested_video_capture_device_id,
-      size_t index);
+  void MaybeAddMediaPreview(size_t index);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // media_effects::MediaDeviceInfo::Observer overrides.
@@ -86,7 +78,6 @@ class PermissionPromptBubbleOneOriginView :
   void OnVideoDevicesChanged(
       const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
           device_infos) override;
-  std::optional<PermissionPromptPreviewsCoordinator> media_previews_;
   raw_ptr<views::Label> camera_permission_label_ = nullptr;
   raw_ptr<views::Label> ptz_camera_permission_label_ = nullptr;
   raw_ptr<views::Label> mic_permission_label_ = nullptr;

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -123,8 +122,6 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     PermissionPromptStyle prompt_style)
     : PermissionPromptBubbleBaseView(web_contents, delegate, prompt_style) {
-  std::vector<std::string> requested_audio_capture_device_ids;
-  std::vector<std::string> requested_video_capture_device_ids;
   std::vector<permissions::PermissionRequest*> visible_requests =
       GetVisibleRequests(*delegate.get());
 
@@ -150,22 +147,9 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
 
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
-    if (visible_requests[i]->request_type() ==
-            permissions::RequestType::kCameraStream ||
-        visible_requests[i]->request_type() ==
-            permissions::RequestType::kCameraPanTiltZoom) {
-      requested_video_capture_device_ids =
-          visible_requests[i]->GetRequestedVideoCaptureDeviceIds();
-    } else if (visible_requests[i]->request_type() ==
-               permissions::RequestType::kMicStream) {
-      requested_audio_capture_device_ids =
-          visible_requests[i]->GetRequestedAudioCaptureDeviceIds();
-    }
   }
 
-  MaybeAddMediaPreview(requested_audio_capture_device_ids,
-                       requested_video_capture_device_ids,
-                       visible_requests.size());
+  MaybeAddMediaPreview(visible_requests.size());
 }
 
 PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
@@ -176,9 +160,7 @@ void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
   auto button = GetPermissionDialogButton(button_id);
   if (button == PermissionDialogButton::kAccept ||
       button == PermissionDialogButton::kAcceptOnce) {
-    if (media_previews_.has_value()) {
-      media_previews_->UpdateDevicePreferenceRanking();
-    }
+    UpdateMediaDevicePreferenceRanking();
   }
 #endif
   PermissionPromptBubbleBaseView::RunButtonCallback(button_id);
@@ -231,25 +213,14 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
   }
 }
 
-void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
-    std::vector<std::string> requested_audio_capture_device_ids,
-    std::vector<std::string> requested_video_capture_device_ids,
-    size_t index) {
+void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(size_t index) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  // Unit tests call this without initializing the host window, but this should
-  // not happen in production code.
-  if (!GetNativeWindow()) {
-    CHECK_IS_TEST();
-    return;
-  }
-
-  if (requested_audio_capture_device_ids.empty() &&
-      requested_video_capture_device_ids.empty()) {
-    return;
-  }
-
   if (!camera_permission_label_ && !mic_permission_label_ &&
       !ptz_camera_permission_label_) {
+    return;
+  }
+
+  if (!PermissionPromptBaseView::MaybeAddMediaPreview(index)) {
     return;
   }
 
@@ -263,11 +234,6 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     // Initialize mic label with the current number of cached audio devices.
     OnAudioDevicesChanged(cached_device_info->GetAudioDeviceInfos());
   }
-
-  media_previews_.emplace(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), this,
-      index, requested_audio_capture_device_ids,
-      requested_video_capture_device_ids);
 #endif
 }
 

@@ -64,8 +64,9 @@ if (toolkit_views) {
     ]
 
     if (!is_chromeos) {
-      # permission_prompt_bubble_one_origin_view.h guards both of these
-      # includes with the same #if !BUILDFLAG(IS_CHROMEOS) block:
+      # permission_prompt_base_view.h and
+      # permission_prompt_bubble_one_origin_view.h guard these includes
+      # with #if !BUILDFLAG(IS_CHROMEOS) blocks:
       # media_preview/permission_prompt_previews_coordinator.h and
       # media_effects/media_device_info.h. media_preview itself asserts
       # is_win || is_mac || is_linux (a strict subset of !is_chromeos on

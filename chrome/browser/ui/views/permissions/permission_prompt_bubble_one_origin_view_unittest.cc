@@ -255,10 +255,14 @@ class PermissionPromptBubbleOneOriginViewTestMediaPreview
   }
 
   void InitializePermissionPrompt(
-      const std::vector<permissions::RequestType>& request_types) {
+      const std::vector<permissions::RequestType>& request_types,
+      const std::vector<std::string>& requested_audio_capture_device_ids =
+          {kMicId},
+      const std::vector<std::string>& requested_video_capture_device_ids = {
+          kCameraId}) {
     test_delegate_.emplace(GURL("https://test.origin"), request_types,
-                           std::vector<std::string>{kMicId},
-                           std::vector<std::string>{kCameraId});
+                           requested_audio_capture_device_ids,
+                           requested_video_capture_device_ids);
     permission_prompt_ = std::make_unique<PermissionPromptBubbleOneOriginView>(
         web_contents_.get(), test_delegate_->GetWeakPtr(),
         PermissionPromptStyle::kBubbleOnly);
@@ -459,6 +463,9 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(mic_label->GetRenderedTooltipText(gfx::Point()),
             base::UTF8ToUTF16(std::string(kMicName2)));
+
+  permission_prompt_->RunButtonCallback(static_cast<int>(
+      PermissionPromptBubbleBaseView::PermissionDialogButton::kAccept));
 }
 
 // Verify there is no preview created when there is no camera or mic permissions
@@ -470,6 +477,18 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
   ASSERT_FALSE(permission_prompt_->GetPtzCameraPermissionLabelForTesting());
   ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
+}
+
+// Verify there is no preview created in PermissionPromptBubbleOneOriginView
+// when requested device ID lists are empty.
+TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
+       MediaPreviewEmptyDeviceIds) {
+  InitializePermissionPrompt(
+      {permissions::RequestType::kMicStream,
+       permissions::RequestType::kCameraStream},
+      /*requested_audio_capture_device_ids=*/{},
+      /*requested_video_capture_device_ids=*/{});
+  EXPECT_FALSE(permission_prompt_->GetMediaPreviewsForTesting());
 }
 
 #endif
