@@ -316,7 +316,7 @@ class GnParser:
             # metadata (`crate_header`, `crate_namespace`, `rust_target`).
             self.crubit_rust_target = None
             self.source_stem = None
-            self.crate_header_rel_path = None
+            self.source_subdir = None
             self.cpp_namespace = None
 
             self.java_jar_excluded_patterns = []
@@ -719,10 +719,13 @@ class GnParser:
             # GN target.
             pass
         elif target.type == 'crubit_cpp_from_rust':
-            target.crate_header_rel_path = metadata["crate_header"][0]
-            target.source_stem = target.crate_header_rel_path.split("/")[
-                -1
-            ].removesuffix(".h")
+            crate_header_rel_path = metadata["crate_header"][0]
+            target.source_subdir = (
+                os.path.dirname(crate_header_rel_path) or None
+            )
+            target.source_stem = os.path.basename(
+                crate_header_rel_path
+            ).removesuffix(".h")
             if "crate_namespace" in metadata and metadata["crate_namespace"]:
                 target.cpp_namespace = metadata["crate_namespace"][0]
             # Parse the underlying Rust library target to obtain its crate_name

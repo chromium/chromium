@@ -711,6 +711,7 @@ class CrubitModule(Module):
         'namespace',
         'stem',
         'source_stem',
+        'source_subdir',
         'rustlibs',
         'min_sdk_version',
     }
@@ -724,6 +725,7 @@ class CrubitModule(Module):
         self.namespace = None
         self.stem = None
         self.source_stem = None
+        self.source_subdir = None
         self.rustlibs = set()
         self.min_sdk_version = None
         self._initialize_targets(RustTarget)

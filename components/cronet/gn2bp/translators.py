@@ -1696,56 +1696,9 @@ def _create_initial_modules(
         module.namespace = target.cpp_namespace
         module.stem = f"lib{module.crate_name}"
         module.source_stem = target.source_stem
+        module.source_subdir = target.source_subdir
         module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
         module.apex_available.add(common.tethering_apex)
-
-        # Soong's `crubit_cpp_from_rust` outputs `<source_stem>.h` at the root
-        # of its module genDir (and stdlib bindings `lib{core,alloc,std}_crubit`
-        # output `{core,alloc,std}.h`). However, Chromium C++ code `#include`s
-        # Crubit headers by their full GN `root_gen_dir`-relative path (e.g.
-        # `"build/rust/tests/test_cpp_api_from_rust/rust_lib.h"` and
-        # `"third_party/crubit/support/rs_std/rs_{core,alloc,std}.h"`). Create
-        # a companion `cc_genrule` to expose the generated header and stdlib
-        # forwarding headers at the paths expected by Chromium `#include`s.
-        header_module = soong_ast.create_module(
-            'cc_genrule',
-            bp_module_name + '__headers',
-            gn_target_name,
-            context,
-            is_test=is_test_target,
-        )
-        header_module.srcs.add(f":{module.name}")
-        header_module.cmd = [
-            f'for f in $(locations :{module.name}); do',
-            'if [[ "$$f" == *.h ]]; then',
-            (
-                f'mkdir -p $$(dirname $(genDir)/{target.crate_header_rel_path})'
-                f' && cp "$$f" $(genDir)/{target.crate_header_rel_path};'
-            ),
-            'fi;',
-            'done;',
-            'mkdir -p $(genDir)/third_party/crubit/support/rs_std;',
-            'for std in core alloc std; do',
-            (
-                'printf "#pragma once\\n#include <$$std.h>\\n"'
-                ' > $(genDir)/third_party/crubit/support/rs_std/rs_$$std.h;'
-            ),
-            'done',
-        ]
-        header_module.out.update(
-            [
-                target.crate_header_rel_path,
-                'third_party/crubit/support/rs_std/rs_core.h',
-                'third_party/crubit/support/rs_std/rs_alloc.h',
-                'third_party/crubit/support/rs_std/rs_std.h',
-            ]
-        )
-        header_module.export_include_dirs.add(".")
-        _configure_rust_properties(header_module, target)
-        _configure_common_properties(header_module, target, context)
-        blueprint.add_module(header_module)
-
-        module.genrule_headers.add(header_module.name)
         modules = (module,)
     else:
         # Note we don't have to handle `group` targets because parse_gn_desc() never
@@ -2016,16 +1969,13 @@ def _resolve_dependencies(
             ]
 
             if dep_module.type == 'crubit_cpp_from_rust':
-                # In Soong, `crubit_cpp_from_rust` compiles both the C++ thunk
-                # and the Rust thunk into a static library that C++ targets
-                # link via `static_libs` (along with its companion `__headers`
-                # genrule), while also providing `CrubitInfo` and rlib metadata
-                # to dependent Crubit/Rust targets via `rustlibs`.
+                # In Soong, `crubit_cpp_from_rust` compiles the Rust thunk into
+                # an rlib and exports its generated C++ headers (`source_subdir`
+                # / `source_stem`) and stdlib headers to C++ targets via
+                # `static_libs`, while also providing `CrubitInfo` and rlib
+                # metadata to dependent Crubit/Rust targets via `rustlibs`.
                 if module_is_cc:
                     module_target.static_libs.add(dep_module.name)
-                    module_target.generated_headers.update(
-                        dep_module.genrule_headers
-                    )
                 elif module.type in (
                     'crubit_cpp_from_rust',
                     'rust_ffi_static',
