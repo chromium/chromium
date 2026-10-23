@@ -5,3 +5,19 @@ team_email: "chrome-signin-team@google.com"
 buganizer_public: {
   component_id: 1456393
 }
+agentic_review: {
+  capability_groups: {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm|m|java)"
+    rules: "components/signin/agents/knowledge_base/rules/check-are-refresh-tokens-loaded-for-async-account-list.md"
+    rules: "components/signin/agents/knowledge_base/rules/document-privacy-approval-when-storing-pii-in-prefs.md"
+    rules: "components/signin/agents/knowledge_base/rules/do-not-branch-behavior-on-signin-access-point.md"
+    rules: "components/signin/agents/knowledge_base/rules/do-not-log-account-pii.md"
+    rules: "components/signin/agents/knowledge_base/rules/do-not-use-deprecated-consent-level-ksync.md"
+    rules: "components/signin/agents/knowledge_base/rules/handle-primary-account-disappearing-during-async-operations.md"
+    rules: "components/signin/agents/knowledge_base/rules/prefer-access-tokens-over-cookies-for-browser-features.md"
+    rules: "components/signin/agents/knowledge_base/rules/prefer-cpp-over-java-or-objc-for-shared-logic.md"
+    rules: "components/signin/agents/knowledge_base/rules/prefer-gaia-id-class-over-raw-string.md"
+    rules: "components/signin/agents/knowledge_base/rules/prefer-get-accounts-with-refresh-tokens-over-cookie-jar.md"
+    rules: "components/signin/agents/knowledge_base/rules/use-gaia-id-instead-of-email-for-account-identity.md"
+  }
+}
