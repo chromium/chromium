@@ -729,6 +729,99 @@ TEST(TransportSessionImplTest, OnMessage) {
   session.OnMessage(PayloadType::kControl, command);
 }
 
+TEST(TransportSessionImplTest,
+     OnMessageSerializedPayloadSetsZeroSequenceForControlReplies) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory control_factory({PayloadType::kControl});
+  MockTransportHandlerFactory triggering_factory(
+      {PayloadType::kExperimentalTriggering},
+      FactoryId::kExperimentalTriggering);
+  registry.RegisterFactory(&control_factory);
+  registry.RegisterFactory(&triggering_factory);
+
+  auto control_handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* control_handler_ptr = control_handler.get();
+  auto triggering_handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* triggering_handler_ptr = triggering_handler.get();
+
+  EXPECT_CALL(control_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(control_handler)));
+  EXPECT_CALL(triggering_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(triggering_handler)));
+
+  ControlCommand start_cmd;
+  start_cmd.mutable_start_session();
+  const std::string serialized_start = start_cmd.SerializeAsString();
+
+  EXPECT_CALL(*control_handler_ptr,
+              OnMessage(PayloadType::kControl, serialized_start))
+      .WillOnce([&](PayloadType, std::string_view) {
+        ControlCommand ack;
+        ack.mutable_start_session_ack();
+        EXPECT_TRUE(session.SendUpstreamMessage(PayloadType::kControl, ack)
+                        .has_value());
+      });
+  EXPECT_CALL(channel,
+              SendUpstreamMessage("test_session", PayloadType::kControl,
+                                  testing::_, std::optional<int64_t>(0)));
+
+  session.OnMessage(PayloadType::kControl, serialized_start);
+
+  // Subsequent non-control payload in the same wake bundle does not populate
+  // `responding_to_sequence_number`.
+  EXPECT_CALL(*triggering_handler_ptr,
+              OnMessage(PayloadType::kExperimentalTriggering, "trigger-bytes"))
+      .WillOnce([&](PayloadType, std::string_view) {
+        ControlCommand reply;
+        EXPECT_TRUE(session
+                        .SendUpstreamMessage(
+                            PayloadType::kExperimentalTriggering, reply)
+                        .has_value());
+      });
+  EXPECT_CALL(channel, SendUpstreamMessage(
+                           "test_session", PayloadType::kExperimentalTriggering,
+                           testing::_, std::optional<int64_t>(std::nullopt)));
+
+  session.OnMessage(PayloadType::kExperimentalTriggering, "trigger-bytes");
+
+  // Unsolicited control message sent outside `OnMessage()` has `std::nullopt`.
+  ControlCommand unsolicited;
+  EXPECT_CALL(channel, SendUpstreamMessage(
+                           "test_session", PayloadType::kControl, testing::_,
+                           std::optional<int64_t>(std::nullopt)));
+  EXPECT_TRUE(session.SendUpstreamMessage(PayloadType::kControl, unsolicited)
+                  .has_value());
+}
+
+TEST(TransportSessionImplTest,
+     OnMessageSerializedPayloadHandlesSessionDestructionSafely) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  auto session = std::make_unique<TransportSessionImpl>("test_session",
+                                                        channel.GetWeakPtr());
+  TransportSessionImpl* session_ptr = session.get();
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  auto handler = std::make_unique<CallbackTransportHandler>(base::BindOnce(
+      [](std::unique_ptr<TransportSessionImpl>* s) { s->reset(); }, &session));
+  EXPECT_CALL(factory, OnNewSession(session_ptr))
+      .WillOnce(testing::Return(std::move(handler)));
+
+  session_ptr->OnMessage(PayloadType::kControl, "close-bytes");
+  EXPECT_EQ(session, nullptr);
+}
+
 TEST(TransportSessionImplTest, StartTimeReturnsCreationTimestamp) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);

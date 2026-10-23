@@ -103,17 +103,29 @@ TransportSessionImpl::SendUpstreamMessage(
 void TransportSessionImpl::OnMessage(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message) {
-  // This entry point exists for the FCM wake-up path, which receives an
-  // already-parsed proto because the sharing stack parses the enclosing
-  // SharingMessage before this layer ever sees it. Handlers consume bytes, so
-  // serialize here rather than give every handler a second, parsed overload to
-  // implement. The round-trip is confined to wake-ups, which arrive at most
-  // once per session.
-  // TODO(crbug.com/538161953): Once the FCM flow delivers an
-  // ActuatorDownstreamMessage through ProcessDownstreamMessage, this method
-  // and its round-trip can be deleted along with TransportSession::OnMessage.
-  const std::string serialized_payload = message.SerializeAsString();
-  std::ignore = ProcessPayload(payload_type, serialized_payload);
+  // TODO(crbug.com/572959192): Remove this overload once callers pass
+  // serialized payload bytes directly.
+  OnMessage(payload_type, message.SerializeAsString());
+}
+
+void TransportSessionImpl::OnMessage(PayloadType payload_type,
+                                     std::string_view serialized_payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This entry point exists for the out-of-band FCM wake-up path, which
+  // carries `sequence_number = 0`. Setting `dispatching_sequence_number_ = 0`
+  // ensures synchronous control replies (e.g. `StartSessionAck`) populate
+  // `responding_to_sequence_number = 0`.
+  base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
+  dispatching_sequence_number_ = 0;
+  base::expected<void, ProcessPayloadError> result =
+      ProcessPayload(payload_type, serialized_payload);
+  if (weak_this) {
+    dispatching_sequence_number_.reset();
+  }
+  if (!result.has_value()) {
+    DLOG(WARNING) << "Failed to process payload error: "
+                  << static_cast<int>(result.error());
+  }
 }
 
 base::expected<void, TransportSessionImpl::ProcessPayloadError>
