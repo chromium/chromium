@@ -615,14 +615,6 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
       CanPerformFullURLLookupWithToken(off_the_record_rt_service.get()));
 }
 
-TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanCheckUrl_IPAddresses) {
-  EXPECT_TRUE(
-      enterprise_rt_service()->CanCheckUrl(GURL("https://google.com/")));
-  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://192.168.1.1")));
-  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://172.16.2.2")));
-  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://127.0.0.1")));
-}
-
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        CheckShouldOverrideKnownSafeUrlDecision) {
   EXPECT_TRUE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
@@ -636,9 +628,56 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
       GURL("chrome://omnibox-popup.top-chrome/")));
   EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
-      GURL("https://www.google.com/search/warmup.html")));
-  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
       GURL("http://example.com/")));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanCheckUrl) {
+  // Standard URLs and private IP addresses are always checked.
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckUrl(GURL("https://google.com/")));
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckUrl(GURL("http://example.com/")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://192.168.1.1")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://172.16.2.2")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://127.0.0.1")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("about:srcdoc")));
+
+  // chrome:// URLs delegate to ShouldOverrideKnownSafeUrlDecision.
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("chrome://flags/")));
+  EXPECT_FALSE(enterprise_rt_service()->CanCheckUrl(GURL("chrome://newtab/")));
+  EXPECT_FALSE(
+      enterprise_rt_service()->CanCheckUrl(GURL("chrome://new-tab-page/")));
+  EXPECT_FALSE(enterprise_rt_service()->CanCheckUrl(
+      GURL("chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html")));
+  EXPECT_FALSE(enterprise_rt_service()->CanCheckUrl(
+      GURL("chrome://omnibox-popup.top-chrome/")));
+
+  // Non-chrome:// skiplist URLs when feature is disabled:
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        kEnterpriseRealTimeUrlCheckUrlSkiplist);
+    EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("about:blank")));
+    EXPECT_TRUE(
+        enterprise_rt_service()->CanCheckUrl(GURL("chrome-native://newtab/")));
+    EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(
+        GURL("https://www.google.com/search/warmup.html")));
+  }
+
+  // Non-chrome:// skiplist URLs when feature is enabled:
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        kEnterpriseRealTimeUrlCheckUrlSkiplist);
+    EXPECT_EQ(enterprise_rt_service()->CanCheckUrl(GURL("about:blank")),
+              !BUILDFLAG(IS_ANDROID));
+    EXPECT_FALSE(
+        enterprise_rt_service()->CanCheckUrl(GURL("chrome-native://newtab/")));
+    EXPECT_FALSE(
+        enterprise_rt_service()->CanCheckUrl(GURL("chrome-native://newtab")));
+    EXPECT_FALSE(enterprise_rt_service()->CanCheckUrl(
+        GURL("https://www.google.com/search/warmup.html")));
+  }
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,

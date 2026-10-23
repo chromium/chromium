@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_utils.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #include "components/enterprise/data_protection/utils.h"
@@ -345,8 +344,7 @@ void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
           : nullptr;
 #endif
   if (lookup_service && IsEnterpriseLookupEnabled(profile) &&
-      (!original_url.SchemeIs(content::kChromeUIScheme) ||
-       lookup_service->ShouldOverrideKnownSafeUrlDecision(original_url))) {
+      lookup_service->CanCheckUrl(original_url)) {
     auto lookup_callback = base::BindOnce(
         [](const std::string& identifier,
            DataProtectionNavigationObserver::Callback callback,
@@ -466,8 +464,7 @@ bool DataProtectionNavigationObserver::ShouldPerformRealTimeUrlCheck(
     content::BrowserContext* browser_context,
     const GURL& url) const {
   return lookup_service_ && IsEnterpriseLookupEnabled(browser_context) &&
-         (!url.SchemeIs(content::kChromeUIScheme) ||
-          lookup_service_->ShouldOverrideKnownSafeUrlDecision(url));
+         lookup_service_->CanCheckUrl(url);
 }
 
 void DataProtectionNavigationObserver::DidRedirectNavigation(

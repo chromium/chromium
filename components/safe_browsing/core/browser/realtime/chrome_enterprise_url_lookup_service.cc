@@ -41,6 +41,7 @@ namespace {
 // From chrome/common/webui_url_constants.h
 inline constexpr char kChromeUINewTabPageURL[] = "chrome://new-tab-page/";
 inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
+inline constexpr char kChromeNativeNewTabURL[] = "chrome-native://newtab/";
 inline constexpr char kChromeUIOmniboxPopupAimURL[] =
     "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html";
 inline constexpr char kChromeUIOmniboxPopupURL[] =
@@ -247,28 +248,50 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
 
 bool ChromeEnterpriseRealTimeUrlLookupService::
     ShouldOverrideKnownSafeUrlDecision(const GURL& url) const {
-  static constexpr auto kSkippedUrls =
+  static constexpr auto kSkippedChromeUIUrls =
       base::MakeFixedFlatSet<std::string_view>({
           kChromeUINewTabPageURL,
           kChromeUINewTabURL,
           kChromeUIOmniboxPopupAimURL,
           kChromeUIOmniboxPopupURL,
-          kWarmupURL,
       });
 
-  // Override safe chrome:// scheme decisions unless url is on skiplist.
-  // `GURL::spec()` must not be called on invalid URLs.
+  // Override safe chrome:// scheme decisions unless one of
+  // kSkippedChromeUIUrls. `GURL::spec()` must not be called on invalid URLs.
   return url.is_valid() && url.SchemeIs(kChromeUIScheme) &&
-         !kSkippedUrls.contains(url.spec());
+         !kSkippedChromeUIUrls.contains(url.spec());
 }
 
+// LINT.IfChange(CanCheckUrl)
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
-  // Any URL can be checked in the enterprise case since URLs that might return
-  // false when passed to `safe_browsing::CanGetReputationOfUrl` could still
-  // trigger DLP rules. For example, this includes publicly routable IP
-  // addresses.
+  // Any URL not on kSkippedChromeUIUrls or kSkippedUrls can be checked
+  // in the enterprise case since URLs that might return false when passed to
+  // `safe_browsing::CanGetReputationOfUrl` could still trigger DLP rules. For
+  // example, this includes publicly routable IP addresses.
+  if (url.SchemeIs(kChromeUIScheme)) {
+    return ShouldOverrideKnownSafeUrlDecision(url);
+  }
+  if (base::FeatureList::IsEnabled(kEnterpriseRealTimeUrlCheckUrlSkiplist)) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(b/568906444): validate kEnterpriseRealTimeUrlCheckUrlSkiplist and
+    // clean up this check
+    if (url.IsAboutBlank()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    static constexpr auto kSkippedUrls =
+        base::MakeFixedFlatSet<std::string_view>({
+            kChromeNativeNewTabURL,
+            kWarmupURL,
+        });
+
+    // `GURL::spec()` must not be called on invalid URLs.
+    return url.is_valid() && !kSkippedUrls.contains(url.spec());
+  }
   return true;
 }
+// LINT.ThenChange(//chrome/browser/enterprise/data_protection/data_protection_navigation_observer_unittest.cc:CanCheckUrl)
 
 bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
     const {
