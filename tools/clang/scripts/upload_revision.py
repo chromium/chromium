@@ -76,6 +76,7 @@ Cq-Include-Trybots: chromium/try:linux-chromeos-dbg
 Cq-Include-Trybots: chromium/try:linux-swangle-try-x64,win-swangle-try-x86
 Cq-Include-Trybots: chromium/try:linux-v4l2-codec-rel
 Cq-Include-Trybots: chromium/try:linux-wayland-mutter-rel
+Cq-Include-Trybots: chromium/try:linux-x64-libfuzzer-msan-rel-tests
 Cq-Include-Trybots: chromium/try:linux_chromium_cfi_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
