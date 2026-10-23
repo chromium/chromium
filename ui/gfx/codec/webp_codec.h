@@ -42,8 +42,12 @@ class CODEC_EXPORT WebpCodec {
   // quality: an integer in the range 0-100, where 100 is the highest quality.
   //          Since this currently only supports lossy encoding, a higher
   //          quality means a higher visual quality.
+  //
+  // method: the libwebp compression method in the range 0-6. Lower values
+  //         encode faster into larger files. -1 selects the default.
   static std::optional<std::vector<uint8_t>> Encode(const SkBitmap& input,
-                                                    int quality);
+                                                    int quality,
+                                                    int method = -1);
 
   // Encodes the pixmap 'frames' as an animated WebP image. Returns the encoded
   // data on success, or std::nullopt on failure.

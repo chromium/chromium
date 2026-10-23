@@ -59,9 +59,10 @@ std::optional<std::vector<uint8_t>> EncodeBitmapAsJpeg(int quality,
 }
 
 std::optional<std::vector<uint8_t>> EncodeBitmapAsWebp(int quality,
+                                                       int method,
                                                        const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsWebp");
-  return gfx::WebpCodec::Encode(bitmap, quality);
+  return gfx::WebpCodec::Encode(bitmap, quality, method);
 }
 
 std::variant<protocol::Response, BitmapEncoder>
@@ -76,8 +77,17 @@ GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
   }
   if (format == ScreenshotParams::FormatEnum::Jpeg)
     return base::BindRepeating(&EncodeBitmapAsJpeg, quality);
-  if (format == ScreenshotParams::FormatEnum::Webp)
-    return base::BindRepeating(&EncodeBitmapAsWebp, quality);
+  if (format == ScreenshotParams::FormatEnum::Webp) {
+    // Same choice as Page.captureScreenshot, see
+    // content/browser/devtools/protocol/page_handler.cc.
+    int method;
+    if (quality == 100) {
+      method = optimize_for_speed ? 0 : 1;
+    } else {
+      method = optimize_for_speed ? 2 : 3;
+    }
+    return base::BindRepeating(&EncodeBitmapAsWebp, quality, method);
+  }
   return protocol::Response::InvalidParams("Invalid image format");
 }
 

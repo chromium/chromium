@@ -1,0 +1,4 @@
+Tests screenshot produced by beginFrame honors optimizeForSpeed for WEBP encoding
+requested url: http://example.com/
+PASSED: slowly encoded lossless webp is smaller than quickly encoded
+PASSED: slowly encoded lossy webp is smaller than quickly encoded

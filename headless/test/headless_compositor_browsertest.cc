@@ -164,6 +164,8 @@ HEADLESS_COMPOSITOR_TEST(MAYBE_RendererOpacityAnimation,
 HEADLESS_COMPOSITOR_TEST(ScreenshotWebp, "virtual-time/screenshot-webp.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotOptimizeForSpeed,
                          "virtual-time/screenshot-optimize-for-speed.js")
+HEADLESS_COMPOSITOR_TEST(ScreenshotWebpOptimizeForSpeed,
+                         "virtual-time/screenshot-webp-optimize-for-speed.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
                          "virtual-time/screenshot-after-metrics-override.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotDeviceScaleFactor,

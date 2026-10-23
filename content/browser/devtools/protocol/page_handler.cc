@@ -126,9 +126,10 @@ std::optional<std::vector<uint8_t>> EncodeBitmapAsJpeg(int quality,
 }
 
 std::optional<std::vector<uint8_t>> EncodeBitmapAsWebp(int quality,
+                                                       int method,
                                                        const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsWebp");
-  return gfx::WebpCodec::Encode(bitmap, quality);
+  return gfx::WebpCodec::Encode(bitmap, quality, method);
 }
 
 std::variant<protocol::Response, BitmapEncoder>
@@ -145,7 +146,17 @@ GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
     return base::BindRepeating(&EncodeBitmapAsJpeg, quality);
   }
   if (format == protocol::Page::CaptureScreenshot::FormatEnum::Webp) {
-    return base::BindRepeating(&EncodeBitmapAsWebp, quality);
+    // Quality 100 is lossless. There, method 1 is several times smaller than
+    // method 0 at a small cost. For lossy, method 2 takes about half the time
+    // of method 3 and is a few percent bigger. Higher methods are much slower
+    // for little or no gain.
+    int method;
+    if (quality == 100) {
+      method = optimize_for_speed ? 0 : 1;
+    } else {
+      method = optimize_for_speed ? 2 : 3;
+    }
+    return base::BindRepeating(&EncodeBitmapAsWebp, quality, method);
   }
   return protocol::Response::InvalidParams("Invalid image format");
 }
