@@ -36,6 +36,23 @@ namespace pdf {
 
 class PdfAccessibilityTreeBuilder;
 
+// One nesting level of the list being built: the top-level list, or a sublist
+// inside an item of the level above. A level stays active, accepting new items,
+// until a marker outdents past it or a non-list block ends the list.
+//
+// Levels are determined only by marker indentation, not by glyph, so a marker
+// whose glyph changes (e.g. "•" to "‣") at the same indent is a sibling item.
+struct ListLevel {
+  raw_ptr<ui::AXNodeData> list;
+  // The x-coordinate, in page pixels, of this level's first marker. Only
+  // markers that start a new line are compared against it; mid-line bullets
+  // stay in the current item's text.
+  float marker_x = 0.0f;
+  // The most recent `kListItem` at this level. A deeper marker opens a
+  // nested list inside it.
+  raw_ptr<ui::AXNodeData> last_item;
+};
+
 // Heuristic-based accessibility tree building for untagged PDFs.
 //
 // This file contains functions used to build accessibility trees from untagged
@@ -182,11 +199,19 @@ class PdfAccessibilityTreeBuilderHeuristic {
       const HeuristicPageProperties& page_properties,
       const chrome_pdf::AccessibilityFormGraphicInfo* graphic);
 
+  // Creates a `kListItem` node for `run_context`, updating `list_levels_` to
+  // open a new list, nest inside the previous item, or pop outdented levels.
+  // `item_font_size` is the font size of the item's text, which may differ
+  // from the marker's.
+  ui::AXNodeData* CreateListItemNode(const TextRunContext& run_context,
+                                     float item_font_size,
+                                     std::vector<ListLevel> levels);
+
   ui::AXNodeData* CreateLineBreakingNode(ax::mojom::Role role,
                                          const std::string& language);
 
   // Appends a list marker node with `name` and `bounds` to `item_node` and
-  // updates the bounds of `item_node` and `current_list_node_`.
+  // updates the bounds of `item_node` and the innermost list level.
   void AddListMarkerToNode(const std::string& name,
                            const gfx::RectF& bounds,
                            ui::AXNodeData* item_node);
@@ -248,14 +273,9 @@ class PdfAccessibilityTreeBuilderHeuristic {
   raw_ptr<ui::AXNodeData> current_block_node_ = nullptr;
   std::vector<raw_ptr<ui::AXNodeData>> current_block_static_text_nodes_;
 
-  // The `kList` node that new `kListItem` blocks are appended to, or nullptr if
-  // the current block is not in a list.
-  raw_ptr<ui::AXNodeData> current_list_node_ = nullptr;
-
-  // The x-coordinate, in page pixels, of the first marker in
-  // `current_list_node_`. Lines starting further left end the current list
-  // item.
-  float current_list_indent_ = 0.0f;
+  // List levels from outermost to innermost. Empty if the current block is not
+  // in a list.
+  std::vector<ListLevel> list_levels_;
 };
 
 }  // namespace pdf

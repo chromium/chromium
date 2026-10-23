@@ -254,6 +254,88 @@ void CheckParagraph(const ui::AXNode* node, std::string_view expected_text) {
             static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
+void CheckListItem(const ui::AXNode* item,
+                   std::string_view expected_text,
+                   std::string_view expected_marker_name = "• ") {
+  ASSERT_NE(nullptr, item);
+  EXPECT_EQ(ax::mojom::Role::kListItem, item->GetRole());
+  EXPECT_EQ("li",
+            item->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_TRUE(
+      item->GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
+  ASSERT_EQ(2u, item->GetChildCount());
+
+  const ui::AXNode* marker = item->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, marker);
+  EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
+  EXPECT_EQ("::marker",
+            marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ(expected_marker_name,
+            marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(0u, marker->GetChildCount());
+  EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
+
+  const ui::AXNode* item_static_text = item->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, item_static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, item_static_text->GetRole());
+  EXPECT_EQ(expected_text, item_static_text->GetStringAttribute(
+                               ax::mojom::StringAttribute::kName));
+  ASSERT_GE(item_static_text->GetChildCount(), 1u);
+  EXPECT_EQ(ax::mojom::Role::kInlineTextBox,
+            item_static_text->GetChildAtIndex(0u)->GetRole());
+}
+
+const ui::AXNode* CheckListItemWithNestedList(
+    const ui::AXNode* item,
+    std::string_view expected_text,
+    std::string_view expected_marker_name = "• ") {
+  if (!item) {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  EXPECT_EQ(ax::mojom::Role::kListItem, item->GetRole());
+  EXPECT_EQ("li",
+            item->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_TRUE(
+      item->GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
+  if (item->GetChildCount() != 3u) {
+    ADD_FAILURE() << "Expected 3 children, got " << item->GetChildCount();
+    return nullptr;
+  }
+
+  // The child count check above guarantees non-null children.
+  const ui::AXNode* marker = item->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
+  EXPECT_EQ("::marker",
+            marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ(expected_marker_name,
+            marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(0u, marker->GetChildCount());
+  EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
+
+  const ui::AXNode* item_static_text = item->GetChildAtIndex(1u);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, item_static_text->GetRole());
+  EXPECT_EQ(expected_text, item_static_text->GetStringAttribute(
+                               ax::mojom::StringAttribute::kName));
+  if (item_static_text->GetChildCount() == 0u) {
+    ADD_FAILURE() << "Expected static text to have inline text boxes";
+    return nullptr;
+  }
+  EXPECT_EQ(ax::mojom::Role::kInlineTextBox,
+            item_static_text->GetChildAtIndex(0u)->GetRole());
+
+  const ui::AXNode* nested_list = item->GetChildAtIndex(2u);
+  if (nested_list->GetRole() != ax::mojom::Role::kList) {
+    ADD_FAILURE() << "Expected third child to be a nested list";
+    return nullptr;
+  }
+  EXPECT_EQ("ul", nested_list->GetStringAttribute(
+                      ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_TRUE(nested_list->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject));
+  return nested_list;
+}
+
 void CheckUnorderedList(
     const ui::AXNode* list,
     base::span<const std::string_view> expected_items,
@@ -268,39 +350,14 @@ void CheckUnorderedList(
   ASSERT_EQ(expected_items.size(), expected_marker_names.size());
 
   for (size_t i = 0; i < expected_items.size(); ++i) {
-    const ui::AXNode* item = list->GetChildAtIndex(i);
-    ASSERT_NE(nullptr, item);
-    EXPECT_EQ(ax::mojom::Role::kListItem, item->GetRole());
-    EXPECT_EQ("li",
-              item->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
-    EXPECT_TRUE(item->GetBoolAttribute(
-        ax::mojom::BoolAttribute::kIsLineBreakingObject));
-    ASSERT_EQ(2u, item->GetChildCount());
-
-    const ui::AXNode* marker = item->GetChildAtIndex(0u);
-    ASSERT_NE(nullptr, marker);
-    EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
-    EXPECT_EQ("::marker",
-              marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
-    EXPECT_EQ(expected_marker_names[i],
-              marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
-    EXPECT_EQ(0u, marker->GetChildCount());
-    EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
-
-    const ui::AXNode* item_static_text = item->GetChildAtIndex(1u);
-    ASSERT_NE(nullptr, item_static_text);
-    EXPECT_EQ(ax::mojom::Role::kStaticText, item_static_text->GetRole());
-    EXPECT_EQ(expected_items[i], item_static_text->GetStringAttribute(
-                                     ax::mojom::StringAttribute::kName));
-    ASSERT_GE(item_static_text->GetChildCount(), 1u);
-    EXPECT_EQ(ax::mojom::Role::kInlineTextBox,
-              item_static_text->GetChildAtIndex(0u)->GetRole());
+    CheckListItem(list->GetChildAtIndex(i), expected_items[i],
+                  expected_marker_names[i]);
   }
 }
 
 void CheckUnorderedList(const ui::AXNode* list,
                         base::span<const std::string_view> expected_items,
-                        std::string_view expected_marker_name) {
+                        std::string_view expected_marker_name = "• ") {
   std::vector<std::string_view> marker_names(expected_items.size(),
                                              expected_marker_name);
   CheckUnorderedList(list, expected_items, marker_names);
@@ -5394,6 +5451,338 @@ TEST_F(PdfAccessibilityTreeTest,
   ASSERT_EQ(1u, page->GetChildCount());
 
   CheckParagraph(page->GetChildAtIndex(0u), "•••Item 1");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "A", "◦", "A1", "◦", "A2", "•", "B"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),    // Item A marker (x = 30)
+          gfx::RectF(45.0f, 40.0f, 50.0f, 12.0f),  // "A"
+          gfx::RectF(50.0f, 57.0f, 4.0f, 4.0f),    // Item A1 marker (x = 50)
+          gfx::RectF(65.0f, 53.0f, 50.0f, 12.0f),  // "A1"
+          gfx::RectF(50.0f, 70.0f, 4.0f, 4.0f),    // Item A2 marker (x = 50)
+          gfx::RectF(65.0f, 66.0f, 50.0f, 12.0f),  // "A2"
+          gfx::RectF(30.0f, 83.0f, 4.0f, 4.0f),    // Item B marker (x = 30)
+          gfx::RectF(45.0f, 79.0f, 50.0f, 12.0f),  // "B"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ(ax::mojom::Role::kList, top_list->GetRole());
+  EXPECT_EQ("ul",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(2u, top_list->GetChildCount());
+
+  // Item A: [kListMarker, kStaticText "A", kList{A1, A2}]
+  const ui::AXNode* item_a = top_list->GetChildAtIndex(0u);
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(item_a, "A");
+  CheckUnorderedList(nested_list, {"A1", "A2"}, "◦ ");
+
+  // Item B: has no nested list
+  CheckListItem(top_list->GetChildAtIndex(1u), "B");
+
+  // A's bounds contain A1 and A2.
+  ASSERT_NE(nullptr, nested_list);
+  ASSERT_EQ(2u, nested_list->GetChildCount());
+  EXPECT_TRUE(item_a->data().relative_bounds.bounds.Contains(
+      nested_list->GetChildAtIndex(0u)->data().relative_bounds.bounds));
+  EXPECT_TRUE(item_a->data().relative_bounds.bounds.Contains(
+      nested_list->GetChildAtIndex(1u)->data().relative_bounds.bounds));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListThreeLevels) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Level 1", "◦", "Level 2", "▪", "Level 3", "•", "Level 1 sibling"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(70.0f, 70.0f, 4.0f, 4.0f),
+          gfx::RectF(85.0f, 66.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 83.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 79.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ(ax::mojom::Role::kList, top_list->GetRole());
+  EXPECT_EQ("ul",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(2u, top_list->GetChildCount());
+
+  const ui::AXNode* level_2_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Level 1");
+  ASSERT_NE(nullptr, level_2_list);
+  ASSERT_EQ(1u, level_2_list->GetChildCount());
+
+  const ui::AXNode* level_3_list = CheckListItemWithNestedList(
+      level_2_list->GetChildAtIndex(0u), "Level 2", "◦ ");
+  CheckUnorderedList(level_3_list, {"Level 3"}, "▪ ");
+
+  CheckListItem(top_list->GetChildAtIndex(1u), "Level 1 sibling");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListWrappedChild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item 1", "◦", "Nested line 1", "Nested line 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 50.0f, 12.0f),
+          gfx::RectF(50.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 53.0f, 80.0f, 12.0f),
+          gfx::RectF(65.0f, 66.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(1u, top_list->GetChildCount());
+
+  const ui::AXNode* nested_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Item 1");
+  CheckUnorderedList(nested_list, {"Nested line 1Nested line 2"}, "◦ ");
+}
+
+// Nesting follows marker indentation only, so glyph changes at the same indent
+// stay siblings.
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListMixedMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Produce", "◦", "Fruit", "▪", "Apples",
+                                 "‣", "Veggies", "⁃", "Dairy"},
+                                {
+                                    gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+                                    gfx::RectF(50.0f, 57.0f, 4.0f, 4.0f),
+                                    gfx::RectF(65.0f, 53.0f, 60.0f, 12.0f),
+                                    gfx::RectF(70.0f, 70.0f, 4.0f, 4.0f),
+                                    gfx::RectF(85.0f, 66.0f, 60.0f, 12.0f),
+                                    gfx::RectF(50.0f, 83.0f, 4.0f, 4.0f),
+                                    gfx::RectF(65.0f, 79.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 96.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 92.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+
+  const ui::AXNode* produce_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Produce");
+  ASSERT_NE(nullptr, produce_list);
+  ASSERT_EQ(2u, produce_list->GetChildCount());
+  const ui::AXNode* fruit_list = CheckListItemWithNestedList(
+      produce_list->GetChildAtIndex(0u), "Fruit", "◦ ");
+  CheckUnorderedList(fruit_list, {"Apples"}, "▪ ");
+  CheckListItem(produce_list->GetChildAtIndex(1u), "Veggies", "‣ ");
+
+  CheckListItem(top_list->GetChildAtIndex(1u), "Dairy", "⁃ ");
+}
+
+// Nesting is measured in the item text's font size, so a small standalone
+// marker does not shrink the maximum nesting indent.
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListSmallMarkerFont) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The nested marker is indented 30 px: more than 4 em at the 6 pt marker
+  // size, but less than 4 em at the 12 pt text size.
+  const std::vector<std::string> words = {"•",     "Parent", "•",
+                                          "Child", "•",      "Sibling"};
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{6.0f, 12.0f, 6.0f, 12.0f, 6.0f, 12.0f},
+      std::vector<chrome_pdf::AccessibilityTextStyleInfo>(words.size(),
+                                                          CreateNormalStyle()),
+      MakeCharVector(words),
+      /*bounds=*/
+      {
+          gfx::RectF(30.0f, 44.0f, 2.0f, 2.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(60.0f, 57.0f, 2.0f, 2.0f),
+          gfx::RectF(75.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 70.0f, 2.0f, 2.0f),
+          gfx::RectF(45.0f, 66.0f, 60.0f, 12.0f),
+      });
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+
+  const ui::AXNode* nested_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Parent");
+  CheckUnorderedList(nested_list, {"Child"});
+  CheckListItem(top_list->GetChildAtIndex(1u), "Sibling");
+}
+
+// Bullets in the middle of a line stay in the item's text rather than starting
+// nested items.
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListIgnoresMidLineMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Food:", "•", "Apple", "•", "Orange"},
+                                {
+                                    gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 40.0f, 30.0f, 12.0f),
+                                    gfx::RectF(80.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(90.0f, 40.0f, 30.0f, 12.0f),
+                                    gfx::RectF(125.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(135.0f, 40.0f, 30.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Food:•Apple•Orange"});
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicUnorderedListColumnJumpStartsNewList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // An item at x = 30, then a marker at x = 330 (> 4 em at 12 pt), after an
+  // upward jump in y. The lists are in different columns, so they keep stream
+  // order.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Column 1 item", "•", "Column 2 item"},
+                                {
+                                    gfx::RectF(30.0f, 100.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 96.0f, 80.0f, 12.0f),
+                                    gfx::RectF(330.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(345.0f, 40.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Column 1 item"}, "• ");
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"Column 2 item"}, "• ");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicUnorderedListOutdentBeyondFirstMarker) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // First marker at x = 50, second marker at x = 30 with a wrapped line at
+  // x = 40 (left of the first marker, but right of the second marker).
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "First item", "•", "Second item", "wrapped line"},
+      {
+          gfx::RectF(50.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(40.0f, 66.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u),
+                     {"First item", "Second itemwrapped line"}, "• ");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListMarkerInGraphicIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_info_.bounds = gfx::Rect(0, 0, 200, 200);
+  chrome_pdf::AccessibilityFormGraphicInfo graphic;
+  graphic.bounds = gfx::RectF(50.0f, 60.0f, 100.0f, 40.0f);
+  graphic.text_range.index = 2;
+  graphic.text_range.count = 1;
+  page_objects_.graphics.push_back(graphic);
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Item before graphic", "• Plataformas"},
+                                {
+                                    gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 40.0f, 100.0f, 12.0f),
+                                    gfx::RectF(60.0f, 70.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item before graphic"}, "• ");
+  const ui::AXNode* figure = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, figure);
+  EXPECT_EQ(ax::mojom::Role::kFigure, figure->GetRole());
+  ASSERT_EQ(1u, figure->GetChildCount());
+  EXPECT_EQ("• Plataformas", figure->GetChildAtIndex(0u)->GetStringAttribute(
+                                 ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListAfterParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // A paragraph followed by a list marker on the next line with normal line
+  // spacing (13 px line pitch, below paragraph spacing threshold).
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"Intro paragraph", "•", "List item 1"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 100.0f, 12.0f),
+                                    gfx::RectF(30.0f, 57.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 53.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* paragraph = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, paragraph);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph->GetRole());
+  ASSERT_EQ(1u, paragraph->GetChildCount());
+  EXPECT_EQ("Intro paragraph",
+            paragraph->GetChildAtIndex(0u)->GetStringAttribute(
+                ax::mojom::StringAttribute::kName));
+
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"List item 1"}, "• ");
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicSortBlockNodesByVerticalBands) {

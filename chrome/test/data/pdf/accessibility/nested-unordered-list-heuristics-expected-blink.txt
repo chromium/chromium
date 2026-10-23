@@ -1,0 +1,28 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='Introductory paragraph line one. Introductory paragraph line two. ' restriction=readOnly
+++++++++inlineTextBox name='Introductory paragraph line one. ' restriction=readOnly
+++++++++inlineTextBox name='Introductory paragraph line two. ' restriction=readOnly
+++++list restriction=readOnly
+++++++listItem restriction=readOnly
+++++++++listMarker name='• ' restriction=readOnly
+++++++++staticText name='First list item line one. First list item line two. ' restriction=readOnly
+++++++++++inlineTextBox name='First list item line one. ' restriction=readOnly
+++++++++++inlineTextBox name='First list item line two. ' restriction=readOnly
+++++++++list restriction=readOnly
+++++++++++listItem restriction=readOnly
+++++++++++++listMarker name='• ' restriction=readOnly
+++++++++++++staticText name='Nested list item one. ' restriction=readOnly
+++++++++++++++inlineTextBox name='Nested list item one. ' restriction=readOnly
+++++++++++listItem restriction=readOnly
+++++++++++++listMarker name='• ' restriction=readOnly
+++++++++++++staticText name='Nested list item two. ' restriction=readOnly
+++++++++++++++inlineTextBox name='Nested list item two. ' restriction=readOnly
+++++++listItem restriction=readOnly
+++++++++listMarker name='• ' restriction=readOnly
+++++++++staticText name='Second list item. ' restriction=readOnly
+++++++++++inlineTextBox name='Second list item. ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Trailing paragraph after list.' restriction=readOnly
+++++++++inlineTextBox name='Trailing paragraph after list.' restriction=readOnly

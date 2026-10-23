@@ -1,0 +1,98 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 300 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+  /Encoding /WinAnsiEncoding
+>>
+endobj
+5 0 obj <<
+  /Length 618
+>>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 10 260 Tm
+(Introductory paragraph line one.) Tj
+1 0 0 1 10 245 Tm
+(Introductory paragraph line two.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 20 220 Tm
+(\225) Tj
+1 0 0 1 35 220 Tm
+(First list item line one.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 35 205 Tm
+(First list item line two.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 25 185 Tm
+(\225) Tj
+1 0 0 1 40 185 Tm
+(Nested list item one.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 25 165 Tm
+(\225) Tj
+1 0 0 1 40 165 Tm
+(Nested list item two.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 20 145 Tm
+(\225) Tj
+1 0 0 1 35 145 Tm
+(Second list item.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 115 Tm
+(Trailing paragraph after list.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000157 00000 n 
+0000000283 00000 n 
+0000000390 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 6
+>>
+startxref
+1061
+%%EOF
