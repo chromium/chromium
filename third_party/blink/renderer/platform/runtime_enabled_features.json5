@@ -1775,14 +1775,14 @@
       // The 'flow-start' and 'flow-end' box alignment keywords.
       // https://github.com/w3c/csswg-drafts/issues/14052
       name: "CSSFlowStartAndEnd",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Serialize 'flex-start' and 'flex-end' as 'flow-start' and 'flow-end'
       // in computed styles.
       // https://github.com/w3c/csswg-drafts/issues/14052
       name: "CSSFlowStartAndEndSerialization",
-      status: "experimental",
+      status: "stable",
       depends_on: ["CSSFlowStartAndEnd"],
     },
     {
