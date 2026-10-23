@@ -256,12 +256,6 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // resetting these structs.
   void ResetState(SyncStopMetadataFate metadata_fate);
 
-  // Adds metadata to all data returned by the bridge.
-  // TODO(jkrcal): Mark as const (together with functions it depends on such as
-  // GetEntityForStorageKey, GetEntityForClientTagHash and maybe more).
-  void MergeDataWithMetadataForDebugging(AllNodesCallback callback,
-                                         std::unique_ptr<DataBatch> batch);
-
   // Verifies that the persisted DataTypeState (in `entity_tracker_`) is valid.
   // May modify the state (incl. the persisted data) or even clear it entirely
   // if it is invalid.

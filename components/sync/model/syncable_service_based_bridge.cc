@@ -228,10 +228,9 @@ SyncableServiceBasedBridge::SyncableServiceBasedBridge(
     SyncableService* syncable_service)
     : DataTypeSyncBridge(std::move(change_processor)),
       type_(type),
-      syncable_service_(syncable_service) {
+      syncable_service_(syncable_service),
+      init_start_time_(base::Time::Now()) {
   DCHECK(syncable_service_);
-
-  init_start_time_ = base::Time::Now();
 
   std::move(store_factory)
       .Run(type_, base::BindOnce(&SyncableServiceBasedBridge::OnStoreCreated,

@@ -209,7 +209,7 @@ class ProcessorEntity {
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
 
-  const EntityData& GetCommitDataForTesting() { return *commit_data_; }
+  const EntityData& GetCommitDataForTesting() const { return *commit_data_; }
 
  private:
   ProcessorEntity(const std::string& storage_key,

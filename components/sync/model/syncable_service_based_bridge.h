@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
@@ -111,7 +112,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   InMemoryStore in_memory_store_;
 
   // Time when this object was created, and store creation/loading was started.
-  base::Time init_start_time_;
+  const base::Time init_start_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
