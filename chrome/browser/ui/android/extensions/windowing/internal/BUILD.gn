@@ -62,7 +62,10 @@ android_library("java") {
 }
 
 generate_jni("jni") {
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/browser/ui/android/extensions/windowing/test:*",
+  ]
   sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java" ]
   deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
 }

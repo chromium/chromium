@@ -9,6 +9,9 @@ import android.util.ArrayMap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -25,6 +28,8 @@ import java.util.Map;
 /** Implements {@link ExtensionWindowControllerBridge}. */
 @NullMarked
 final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowControllerBridge {
+    @JniType("::ExtensionWindowControllerBridge")
+    interface NativeExtensionWindowControllerBridge extends JniTypeToken {}
 
     /**
      * Events received by the native singleton {@code WindowControllerListObserverForTesting}.
@@ -75,19 +80,16 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         sExtensionInternalEventsForTesting.put(extensionWindowId, events);
     }
 
-    private long mNativeExtensionWindowControllerBridge;
+    private @Nullable JniUniquePtr<NativeExtensionWindowControllerBridge> mNative;
 
     ExtensionWindowControllerBridgeImpl() {}
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
         ThreadUtils.assertOnUiThread();
-        assert mNativeExtensionWindowControllerBridge == 0
-                : "ExtensionWindowControllerBridge is already added to a task.";
+        assert mNative == null : "ExtensionWindowControllerBridge is already added to a task.";
 
-        mNativeExtensionWindowControllerBridge =
-                ExtensionWindowControllerBridgeImplJni.get()
-                        .create(/* caller= */ this, initInfo.nativeBrowserWindow);
+        mNative = ExtensionWindowControllerBridgeImplJni.get().create(initInfo.nativeBrowserWindow);
     }
 
     @Override
@@ -99,41 +101,34 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
     @Override
     public void onTaskBoundsChanged(int displayId, Rect newBoundsInDp, Rect newBoundsInPx) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeExtensionWindowControllerBridge != 0) {
-            ExtensionWindowControllerBridgeImplJni.get()
-                    .onTaskBoundsChanged(mNativeExtensionWindowControllerBridge);
+        if (mNative != null) {
+            ExtensionWindowControllerBridgeImplJni.get().onTaskBoundsChanged(mNative);
         }
     }
 
     @Override
     public void onTaskFocusChanged(boolean hasFocus) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeExtensionWindowControllerBridge != 0) {
-            ExtensionWindowControllerBridgeImplJni.get()
-                    .onTaskFocusChanged(mNativeExtensionWindowControllerBridge, hasFocus);
+        if (mNative != null) {
+            ExtensionWindowControllerBridgeImplJni.get().onTaskFocusChanged(mNative, hasFocus);
         }
     }
 
-    long getNativePtrForTesting() {
-        return mNativeExtensionWindowControllerBridge;
+    @Nullable JniPtr<NativeExtensionWindowControllerBridge> getNativePtrForTesting() {
+        return mNative;
     }
 
     int getExtensionWindowIdForTesting() {
-        assert mNativeExtensionWindowControllerBridge != 0;
+        assert mNative != null;
         return ExtensionWindowControllerBridgeImplJni.get()
-                .getExtensionWindowIdForTesting(mNativeExtensionWindowControllerBridge); // IN-TEST
+                .getExtensionWindowIdForTesting(mNative); // IN-TEST
     }
 
     private void destroyNativeExtensionWindowControllerBridge() {
-        if (mNativeExtensionWindowControllerBridge != 0) {
-            ExtensionWindowControllerBridgeImplJni.get()
-                    .destroy(mNativeExtensionWindowControllerBridge);
+        if (mNative != null) {
+            mNative.destroy();
+            mNative = null;
         }
-    }
-
-    @CalledByNative
-    private void clearNativePtr() {
-        mNativeExtensionWindowControllerBridge = 0;
     }
 
     @NativeMethods
@@ -141,27 +136,24 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         /**
          * Creates a native {@code ExtensionWindowControllerBridge}.
          *
-         * @param caller The Java object calling this method.
          * @param browserWindow The native {@code BrowserWindowInterface}.
          */
-        long create(
-                ExtensionWindowControllerBridgeImpl caller,
+        JniUniquePtr<NativeExtensionWindowControllerBridge> create(
                 @Nullable JniPtr<NativeBrowserWindowInterface> browserWindow);
 
-        void destroy(long nativeExtensionWindowControllerBridge);
-
         /** Called when the window (Task) bounds have changed. */
-        void onTaskBoundsChanged(long nativeExtensionWindowControllerBridge);
+        void onTaskBoundsChanged(JniPtr<NativeExtensionWindowControllerBridge> self);
 
         /** Called when the window (Task) focus has changed. */
-        void onTaskFocusChanged(long nativeExtensionWindowControllerBridge, boolean hasFocus);
+        void onTaskFocusChanged(
+                JniPtr<NativeExtensionWindowControllerBridge> self, boolean hasFocus);
 
         /**
-         * Returns the extension internal window ID for the given {@code
-         * nativeExtensionWindowControllerBridge}, as in {@code
+         * Returns the extension internal window ID for the given {@code self}, as in {@code
          * extensions::WindowController::GetWindowId()}.
          */
-        int getExtensionWindowIdForTesting(long nativeExtensionWindowControllerBridge); // IN-TEST
+        int getExtensionWindowIdForTesting( // IN-TEST
+                JniPtr<NativeExtensionWindowControllerBridge> self);
 
         /**
          * Add the native singleton {@code WindowControllerListObserverForTesting} for tests to

@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include "base/android/jni_weak_ref.h"
-#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
 
@@ -23,18 +21,13 @@ enum class ExtensionInternalWindowEventForTesting;
 // it.
 class ExtensionWindowControllerBridge final {
  public:
-  ExtensionWindowControllerBridge(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& java_bridge,
+  explicit ExtensionWindowControllerBridge(
       BrowserWindowInterface* browser_window);
   ExtensionWindowControllerBridge(const ExtensionWindowControllerBridge&) =
       delete;
   ExtensionWindowControllerBridge& operator=(
       const ExtensionWindowControllerBridge&) = delete;
   ~ExtensionWindowControllerBridge();
-
-  // Implements Java |ExtensionWindowControllerBridgeImpl.Natives#destroy|.
-  void Destroy(JNIEnv* env);
 
   // Implements Java
   // |ExtensionWindowControllerBridgeImpl.Natives#onTaskBoundsChanged|.
@@ -61,8 +54,6 @@ class ExtensionWindowControllerBridge final {
   static void RecordExtensionInternalEventForTesting(
       extensions::WindowController* window_controller,
       ExtensionInternalWindowEventForTesting event);
-
-  JavaObjectWeakGlobalRef java_bridge_;
 
   extensions::BrowserExtensionWindowController extension_window_controller_;
 

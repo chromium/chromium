@@ -74,9 +74,8 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
   }
 
   ExtensionWindowControllerBridge* InvokeJavaGetNativePtrForTesting() const {
-    return reinterpret_cast<ExtensionWindowControllerBridge*>(
-        Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeGetNativePtrForTesting(
-            AttachCurrentThread(), java_test_support_));
+    return Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeGetNativePtrForTesting(
+        AttachCurrentThread(), java_test_support_);
   }
 
  private:

@@ -7,7 +7,6 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -15,23 +14,21 @@
 #include "chrome/browser/ui/android/extensions/windowing/internal/jni/ExtensionWindowControllerBridgeImpl_jni.h"
 #include "chrome/browser/ui/android/extensions/windowing/internal/window_controller_list_observer_for_testing.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace {
 using base::android::AttachCurrentThread;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 using extensions::BrowserExtensionWindowController;
 using extensions::WindowController;
 using extensions::WindowControllerList;
 }  // namespace
 
 // Implements Java |ExtensionWindowControllerBridgeImpl.Natives#create|
-static int64_t JNI_ExtensionWindowControllerBridgeImpl_Create(
+static jni_zero::JniUniquePtr<ExtensionWindowControllerBridge>
+JNI_ExtensionWindowControllerBridgeImpl_Create(
     JNIEnv* env,
-    const JavaRef<jobject>& caller,
     BrowserWindowInterface* browser_window) {
-  return reinterpret_cast<intptr_t>(
-      new ExtensionWindowControllerBridge(env, caller, browser_window));
+  return jni_zero::MakeUnique<ExtensionWindowControllerBridge>(browser_window);
 }
 
 // Implements the Java |addWindowControllerListObserverForTesting()| method in
@@ -62,26 +59,11 @@ void ExtensionWindowControllerBridge::RecordExtensionInternalEventForTesting(
 }
 
 ExtensionWindowControllerBridge::ExtensionWindowControllerBridge(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& java_bridge,
     BrowserWindowInterface* browser_window)
-    : java_bridge_(env, java_bridge),
-      extension_window_controller_(
+    : extension_window_controller_(
           BrowserExtensionWindowController(browser_window)) {}
 
-ExtensionWindowControllerBridge::~ExtensionWindowControllerBridge() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_bridge = java_bridge_.get(env);
-  CHECK(java_bridge)
-      << "Java ExtensionWindowControllerBridge is the sole owner of "
-         "C++ ExtensionWindowControllerBridge, so the Java object "
-         "shouldn't be destroyed before the C++ object";
-  Java_ExtensionWindowControllerBridgeImpl_clearNativePtr(env, java_bridge);
-}
-
-void ExtensionWindowControllerBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
+ExtensionWindowControllerBridge::~ExtensionWindowControllerBridge() = default;
 
 void ExtensionWindowControllerBridge::OnTaskBoundsChanged(JNIEnv* env) {
   extension_window_controller_.NotifyWindowBoundsChanged();

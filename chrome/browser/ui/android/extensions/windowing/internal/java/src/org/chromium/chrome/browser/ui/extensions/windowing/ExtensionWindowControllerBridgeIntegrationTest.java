@@ -4,8 +4,8 @@
 package org.chromium.chrome.browser.ui.extensions.windowing;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -455,13 +455,13 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
                 getExtensionWindowControllerBridge(
                         taskId, mFreshCtaTransitTestRule.getActivityTab().getProfile());
         assertNotNull(extensionWindowControllerBridge);
-        assertNotEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(extensionWindowControllerBridge.getNativePtrForTesting());
 
         // Act.
         mFreshCtaTransitTestRule.finishActivity();
 
         // Assert.
-        assertEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNull(extensionWindowControllerBridge.getNativePtrForTesting());
     }
 
     @Test
@@ -476,13 +476,13 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
                 getExtensionWindowControllerBridge(
                         taskId, mCustomTabActivityTestRule.getActivityTab().getProfile());
         assertNotNull(extensionWindowControllerBridge);
-        assertNotEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(extensionWindowControllerBridge.getNativePtrForTesting());
 
         // Act.
         mCustomTabActivityTestRule.finishActivity();
 
         // Assert.
-        assertEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNull(extensionWindowControllerBridge.getNativePtrForTesting());
     }
 
     @Test
@@ -506,17 +506,15 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
         assertNotNull(chromeTabbedActivityExtensionWindowControllerBridge);
         assertNotNull(customTabExtensionWindowControllerBridge);
-        assertNotEquals(
-                0, chromeTabbedActivityExtensionWindowControllerBridge.getNativePtrForTesting());
-        assertNotEquals(0, customTabExtensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(chromeTabbedActivityExtensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(customTabExtensionWindowControllerBridge.getNativePtrForTesting());
 
         // Act.
         mCustomTabActivityTestRule.finishActivity();
 
         // Assert.
-        assertNotEquals(
-                0, chromeTabbedActivityExtensionWindowControllerBridge.getNativePtrForTesting());
-        assertEquals(0, customTabExtensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(chromeTabbedActivityExtensionWindowControllerBridge.getNativePtrForTesting());
+        assertNull(customTabExtensionWindowControllerBridge.getNativePtrForTesting());
     }
 
     @Test
@@ -529,13 +527,13 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
                 getExtensionWindowControllerBridge(
                         taskId, mWebappActivityTestRule.getActivityTab().getProfile());
         assertNotNull(extensionWindowControllerBridge);
-        assertNotEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(extensionWindowControllerBridge.getNativePtrForTesting());
 
         // Act.
         mWebappActivityTestRule.finishActivity();
 
         // Assert.
-        assertEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNull(extensionWindowControllerBridge.getNativePtrForTesting());
     }
 
     @Test
@@ -549,13 +547,13 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
                 getExtensionWindowControllerBridge(
                         taskId, mCustomTabActivityTestRule.getActivityTab().getProfile());
         assertNotNull(extensionWindowControllerBridge);
-        assertNotEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNotNull(extensionWindowControllerBridge.getNativePtrForTesting());
 
         // Act.
         mCustomTabActivityTestRule.finishActivity();
 
         // Assert.
-        assertEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+        assertNull(extensionWindowControllerBridge.getNativePtrForTesting());
     }
 
     @Test
