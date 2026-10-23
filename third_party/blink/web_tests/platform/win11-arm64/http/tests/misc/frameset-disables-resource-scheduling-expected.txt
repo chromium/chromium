@@ -1,0 +1,14 @@
+
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+PASS is_dom_content_loaded is false
+PASS is_image_done is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Notice: ob_flush(): Failed to flush buffer. No buffer to flush in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\misc\resources\slow-frame-with-image.php on line 43
+

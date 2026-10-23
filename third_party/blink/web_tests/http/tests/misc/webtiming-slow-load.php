@@ -23,9 +23,7 @@ shouldBe("timing.responseEnd", "0");
 <?php
     echo str_repeat(" ", 100000);
     flush();
-    if (ob_get_level()) {
-        ob_flush();
-    }
+    ob_flush();
     sleep(1);
 ?>
 </body>

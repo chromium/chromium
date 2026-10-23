@@ -1,0 +1,7 @@
+CONSOLE ERROR: Access to script at 'http://localhost:8000/security/resources/cors-script.php?value=ran' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+CONSOLE ERROR: Uncaught Error: assert_unreached: Script error. Reached unreachable code
+This is a testharness.js-based test.
+[FAIL] SRI on cross origin CORS enabled script
+  Uncaught Error: assert_unreached: Script error. Reached unreachable code
+Harness: the test ran to completion.
+

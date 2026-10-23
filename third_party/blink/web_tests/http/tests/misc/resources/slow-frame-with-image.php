@@ -40,9 +40,7 @@ var successfullyParsed = true;
 <div id="console"></div>
 <img src="compass.jpg" onload="imageDone()">
 <?php
-if (ob_get_level()) {
-    ob_flush();
-}
+ob_flush();
 flush();
 sleep(2);
 ?>

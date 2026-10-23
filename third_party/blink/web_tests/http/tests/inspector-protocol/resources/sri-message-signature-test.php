@@ -2,13 +2,13 @@
   header("Content-Type: application/json");
   header("Access-Control-Allow-Origin: *");
 
-  if (!empty($_GET["digest"])) {
+  if ($_GET["digest"]) {
     header("Unencoded-Digest: {$_GET["digest"]}");
   }
-  if (!empty($_GET["signature"])) {
+  if ($_GET["signature"]) {
     header("Signature: {$_GET["signature"]}");
   }
-  if (!empty($_GET["input"])) {
+  if ($_GET["input"]) {
     header("Signature-Input: {$_GET["input"]}");
   }
 
