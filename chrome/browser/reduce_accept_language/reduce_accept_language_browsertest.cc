@@ -56,7 +56,6 @@ struct ReduceAcceptLanguageTestOptions {
   std::optional<std::string> content_language_in_child;
   std::optional<std::string> avail_language_in_child;
   std::optional<std::string> vary_in_child;
-  bool is_fenced_frame = false;
 };
 
 const char kLargeLanguages[] =
@@ -271,9 +270,6 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       base::StrAppend(&headers, {"Content-Type: text/html\r\n"});
     }
 
-    if (test_options_.is_fenced_frame) {
-      base::StrAppend(&headers, {"Supports-Loading-Mode: fenced-frame\r\n"});
-    }
     static constexpr auto kSubresourcePaths =
         base::MakeFixedFlatSet<std::string_view>({
             "/subframe_iframe_basic.html",

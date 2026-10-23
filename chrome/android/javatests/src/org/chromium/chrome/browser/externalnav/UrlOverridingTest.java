@@ -234,8 +234,6 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_bfcache-1.html";
     private static final String NAVIGATION_FROM_PRERENDER =
             BASE_PATH + "navigation_from_prerender.html";
-    private static final String NAVIGATION_FROM_FENCED_FRAME =
-            BASE_PATH + "navigation_from_fenced_frame.html";
     private static final String NAVIGATION_FROM_LONG_TIMEOUT =
             BASE_PATH + "navigation_from_long_timeout.html";
     private static final String NAVIGATION_FROM_PAGE_SHOW =

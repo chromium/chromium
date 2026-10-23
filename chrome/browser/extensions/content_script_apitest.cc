@@ -2432,16 +2432,6 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingMV3Test, SpeculationRules) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-
-
-// Inject two extensions with matching rules. Only the extension
-// that matches the outermost extension's content_scripts should
-// get injected.
-// The documentIdle extension should execute (sending 'done').
-// The documentStart extension should not-execute (sending 'fail') since it
-// isn't the parent extension of the fenced frame.
-
-
 class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(::switches::kEnableExtensionActivityLogging);
