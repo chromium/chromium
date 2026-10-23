@@ -132,7 +132,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_AfterLoad) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -149,7 +149,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Change) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -162,7 +162,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
   // Check that the element has the background color provided by the global
   // variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 
@@ -198,7 +198,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Override_RemoveGlobal) {
 
   // Check that the element has the background color provided by the global
   // variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 
@@ -226,7 +226,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Preset) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -236,7 +236,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Remove) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 
@@ -293,7 +293,7 @@ TEST_F(StyleEnvironmentVariablesTest, NavigateToClear) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has no background color.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kNoColor, target->ComputedStyleRef().VisitedDependentColor(
                           GetCSSPropertyBackgroundColor()));
 }
@@ -307,7 +307,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_AfterLoad) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -324,7 +324,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Change) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -360,7 +360,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Preset) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -370,7 +370,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Remove) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 
@@ -539,7 +539,7 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_BasicResolve) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -556,7 +556,7 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_UpdateValue) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 
@@ -582,7 +582,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the fallback.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -600,7 +600,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the fallback.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -617,7 +617,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the fallback.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -637,7 +637,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
   // Check that the element has no cascaded background color.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kNoColor, target->ComputedStyleRef().VisitedDependentColor(
                           GetCSSPropertyBackgroundColor()));
 }
@@ -655,7 +655,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
   // Check that the element has no cascaded background color.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kNoColor, target->ComputedStyleRef().VisitedDependentColor(
                           GetCSSPropertyBackgroundColor()));
 }
@@ -675,7 +675,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
   // Check that the element has no cascaded background color.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kNoColor, target->ComputedStyleRef().VisitedDependentColor(
                           GetCSSPropertyBackgroundColor()));
 }
@@ -693,7 +693,7 @@ TEST_F(StyleEnvironmentVariablesTest,
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
   // Check that the element has the background color provided by the fallback.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
@@ -710,7 +710,7 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_Removal) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the element has the background color provided by the variable.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 
@@ -820,8 +820,8 @@ TEST_F(StyleEnvironmentVariablesTest, TargetedInvalidation) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
-  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Element* target1 = GetElementById("target1");
+  Element* target2 = GetElementById("target2");
   ASSERT_TRUE(target1);
   ASSERT_TRUE(target2);
 

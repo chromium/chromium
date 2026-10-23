@@ -32,10 +32,8 @@ TEST_F(ContainerNodeTest, CanFindTextNodesWithBreakInBetween) {
       GetDocument().FindAllTextNodesMatchingRegex("(.|\n)*");
 
   EXPECT_EQ(nodes->length(), 2U);
-  EXPECT_EQ(nodes->item(0),
-            GetDocument().getElementById(AtomicString("id"))->firstChild());
-  EXPECT_EQ(nodes->item(1),
-            GetDocument().getElementById(AtomicString("id"))->lastChild());
+  EXPECT_EQ(nodes->item(0), GetElementById("id")->firstChild());
+  EXPECT_EQ(nodes->item(1), GetElementById("id")->lastChild());
 }
 
 TEST_F(ContainerNodeTest, CanFindTextNodesWithCommentInBetween) {
@@ -46,10 +44,8 @@ TEST_F(ContainerNodeTest, CanFindTextNodesWithCommentInBetween) {
       GetDocument().FindAllTextNodesMatchingRegex("(.|\n)*");
 
   EXPECT_EQ(nodes->length(), 2U);
-  EXPECT_EQ(nodes->item(0),
-            GetDocument().getElementById(AtomicString("id"))->firstChild());
-  EXPECT_EQ(nodes->item(1),
-            GetDocument().getElementById(AtomicString("id"))->lastChild());
+  EXPECT_EQ(nodes->item(0), GetElementById("id")->firstChild());
+  EXPECT_EQ(nodes->item(1), GetElementById("id")->lastChild());
 }
 
 TEST_F(ContainerNodeTest, CanFindTextNodeWithOnlyText) {
@@ -59,8 +55,7 @@ TEST_F(ContainerNodeTest, CanFindTextNodeWithOnlyText) {
   StaticNodeList* nodes = GetDocument().FindAllTextNodesMatchingRegex("(.)*");
 
   ASSERT_EQ(nodes->length(), 1U);
-  EXPECT_EQ(nodes->item(0),
-            GetDocument().getElementById(AtomicString("id"))->firstChild());
+  EXPECT_EQ(nodes->item(0), GetElementById("id")->firstChild());
 }
 
 TEST_F(ContainerNodeTest, CannotFindTextNodesIfTheMatcherRejectsIt) {
@@ -138,10 +133,8 @@ TEST_F(ContainerNodeTest, CanFindOnlyTextNodesThatMatch) {
   StaticNodeList* nodes = GetDocument().FindAllTextNodesMatchingRegex(
       "(\\s|\n)*(Text number 3|Text number 4)(\\s|\n)*");
   ASSERT_EQ(nodes->length(), 2U);
-  EXPECT_EQ(nodes->item(0),
-            GetDocument().getElementById(AtomicString("id_1"))->firstChild());
-  EXPECT_EQ(nodes->item(1),
-            GetDocument().getElementById(AtomicString("id_2"))->firstChild());
+  EXPECT_EQ(nodes->item(0), GetElementById("id_1")->firstChild());
+  EXPECT_EQ(nodes->item(1), GetElementById("id_2")->firstChild());
 }
 
 }  // namespace blink

@@ -44,7 +44,7 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedAcrossIframes) {
   EXPECT_EQ(TouchAction::kNone,
             target->GetComputedStyle()->EffectiveTouchAction());
 
-  Element* owner = GetDocument().getElementById(AtomicString("owner"));
+  Element* owner = GetElementById("owner");
   owner->setAttribute(html_names::kStyleAttr,
                       AtomicString("touch-action: auto"));
   UpdateAllLifecyclePhasesForTest();
@@ -63,7 +63,7 @@ TEST_F(StyleAdjusterTest, TouchActionPanningReEnabledByScrollers) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(TouchAction::kManipulation | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
@@ -80,20 +80,19 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 
-  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
+  Element* ancestor = GetElementById("ancestor");
   ancestor->setAttribute(html_names::kStyleAttr,
                          AtomicString("touch-action: pan-y"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 
-  Element* potential_scroller =
-      GetDocument().getElementById(AtomicString("potential-scroller"));
+  Element* potential_scroller = GetElementById("potential-scroller");
   potential_scroller->setAttribute(html_names::kStyleAttr,
                                    AtomicString("overflow: scroll"));
   UpdateAllLifecyclePhasesForTest();
@@ -112,12 +111,12 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(TouchAction::kPanRight | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 
-  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* parent = GetElementById("parent");
   parent->setAttribute(html_names::kStyleAttr,
                        AtomicString("touch-action: auto"));
   UpdateAllLifecyclePhasesForTest();
@@ -144,35 +143,26 @@ TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("editable1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("input1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("textarea1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
-            GetDocument()
-                .getElementById(AtomicString("editable2"))
-                ->GetComputedStyle()
-                ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
-            GetDocument()
-                .getElementById(AtomicString("input2"))
-                ->GetComputedStyle()
-                ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
-            GetDocument()
-                .getElementById(AtomicString("textarea2"))
-                ->GetComputedStyle()
-                ->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("editable1")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("input1")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("textarea1")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+      GetElementById("editable2")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+      GetElementById("input2")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+      GetElementById("textarea2")->GetComputedStyle()->EffectiveTouchAction());
 
-  Element* target = GetDocument().getElementById(AtomicString("editable1"));
+  Element* target = GetElementById("editable1");
   target->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
@@ -192,7 +182,7 @@ TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 
@@ -216,7 +206,7 @@ TEST_F(StyleAdjusterTest, TouchActionNotWritableReEnabledByScrollers) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE((target->GetComputedStyle()->EffectiveTouchAction() &
                TouchAction::kInternalNotWritable) != TouchAction::kNone);
 }
@@ -238,22 +228,18 @@ TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("editable1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("input1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("password1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
-  EXPECT_EQ(TouchAction::kAuto, GetDocument()
-                                    .getElementById(AtomicString("textarea1"))
-                                    ->GetComputedStyle()
-                                    ->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("editable1")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("input1")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("password1")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      TouchAction::kAuto,
+      GetElementById("textarea1")->GetComputedStyle()->EffectiveTouchAction());
 
   TouchAction expected_input_action =
       (TouchAction::kAuto & ~TouchAction::kInternalNotWritable);
@@ -263,26 +249,20 @@ TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
     expected_pwd_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
-  EXPECT_EQ(expected_input_action,
-            GetDocument()
-                .getElementById(AtomicString("editable2"))
-                ->GetComputedStyle()
-                ->EffectiveTouchAction());
-  EXPECT_EQ(expected_input_action, GetDocument()
-                                       .getElementById(AtomicString("input2"))
-                                       ->GetComputedStyle()
-                                       ->EffectiveTouchAction());
-  EXPECT_EQ(expected_pwd_action, GetDocument()
-                                     .getElementById(AtomicString("password2"))
-                                     ->GetComputedStyle()
-                                     ->EffectiveTouchAction());
-  EXPECT_EQ(expected_input_action,
-            GetDocument()
-                .getElementById(AtomicString("textarea2"))
-                ->GetComputedStyle()
-                ->EffectiveTouchAction());
+  EXPECT_EQ(
+      expected_input_action,
+      GetElementById("editable2")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      expected_input_action,
+      GetElementById("input2")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      expected_pwd_action,
+      GetElementById("password2")->GetComputedStyle()->EffectiveTouchAction());
+  EXPECT_EQ(
+      expected_input_action,
+      GetElementById("textarea2")->GetComputedStyle()->EffectiveTouchAction());
 
-  Element* target = GetDocument().getElementById(AtomicString("editable1"));
+  Element* target = GetElementById("editable1");
   target->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(expected_input_action,
@@ -390,10 +370,8 @@ TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
 <use id="use1" xlink:href="#text5" class="class1" />
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* text = GetDocument()
-                      .getElementById(AtomicString("use1"))
-                      ->GetShadowRoot()
-                      ->getElementById(AtomicString("text5"));
+  Element* text = GetElementById("use1")->GetShadowRoot()->getElementById(
+      AtomicString("text5"));
   EXPECT_EQ(EDominantBaseline::kHanging,
             text->GetComputedStyle()->CssDominantBaseline());
 }

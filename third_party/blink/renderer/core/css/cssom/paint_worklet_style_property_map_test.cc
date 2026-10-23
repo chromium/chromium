@@ -121,7 +121,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
       "<div id='target' style='--x:50'></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* node = GetDocument().getElementById(AtomicString("target"));
+  Element* node = GetElementById("target");
   node->GetLayoutObject()->GetMutableForPainting().EnsureId();
   CompositorPaintWorkletInput::PropertyKeys input_property_keys;
   auto data = PaintWorkletStylePropertyMap::BuildCrossThreadData(
@@ -171,7 +171,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
       "0)'></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* node = GetDocument().getElementById(AtomicString("target"));
+  Element* node = GetElementById("target");
   node->GetLayoutObject()->GetMutableForPainting().EnsureId();
   Vector<std::unique_ptr<CrossThreadStyleValue>> input_arguments;
   CompositorPaintWorkletInput::PropertyKeys input_property_keys;
@@ -218,7 +218,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnsupportedCrossThreadData) {
       "--bar:15;'></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* node = GetDocument().getElementById(AtomicString("target"));
+  Element* node = GetElementById("target");
   node->GetLayoutObject()->GetMutableForPainting().EnsureId();
 
   Vector<std::unique_ptr<CrossThreadStyleValue>> input_arguments;

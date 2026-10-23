@@ -45,7 +45,7 @@ TEST_F(StyleImageCacheTest, DuplicateBackgroundImageURLs) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
 
@@ -73,7 +73,7 @@ TEST_F(StyleImageCacheTest, DifferingFragmentsBackgroundImageURLs) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
 
@@ -103,7 +103,7 @@ TEST_F(StyleImageCacheTest, CustomPropertyURL) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   StyleImage* initial_image =
       target->ComputedStyleRef().BackgroundLayers().GetImage();
@@ -127,8 +127,8 @@ TEST_F(StyleImageCacheTest, ComputedValueRelativePath) {
     <div id="target2"></div>
   )HTML");
 
-  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
-  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Element* target1 = GetElementById("target1");
+  Element* target2 = GetElementById("target2");
 
   // Resolves to the same absolute url. Can share the underlying
   // ImageResourceContent since the computed value is the absolute url.
@@ -164,7 +164,7 @@ TEST_F(StyleImageCacheTest, WeakReferenceGC) {
   EXPECT_TRUE(FetchedImageMap().Contains("http://test.com/url2.png"));
   EXPECT_EQ(FetchedImageMap().size(), 2u);
 
-  Element* sheet = GetDocument().getElementById(AtomicString("sheet"));
+  Element* sheet = GetElementById("sheet");
   ASSERT_TRUE(sheet);
   sheet->remove();
   UpdateAllLifecyclePhasesForTest();
@@ -214,7 +214,7 @@ TEST_F(StyleImageCacheWithLoadingTest, DuplicateBackgroundImageURLs) {
   url_test_helpers::RegisterMockedURLLoad(
       url_test_helpers::ToKURL("http://test.com/background_image.png"),
       test::CoreTestDataPath(kTestResourceFilename), kTestResourceMimeType);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
 
@@ -246,7 +246,7 @@ TEST_F(StyleImageCacheWithLoadingTest, LoadFailedBackgroundImageURL) {
   const auto image_url =
       url_test_helpers::ToKURL("http://test.com/background_image.png");
   url_test_helpers::RegisterMockedErrorURLLoad(image_url);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
   target->setAttribute(html_names::kClassAttr, AtomicString("rule1"));

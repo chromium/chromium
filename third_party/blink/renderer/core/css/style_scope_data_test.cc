@@ -441,7 +441,7 @@ TEST_F(StyleScopeDataTest, AdoptedStylesheet) {
   auto* sheet = CSSStyleSheet::Create(GetDocument(), init, exception_state);
   sheet->replaceSync("@scope { * { color: blue; } }", exception_state);
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ASSERT_TRUE(host);
   ASSERT_TRUE(host->GetShadowRoot());
 

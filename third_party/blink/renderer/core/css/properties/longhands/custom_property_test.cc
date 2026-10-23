@@ -33,7 +33,7 @@ class CustomPropertyTest : public PageTestBase {
   }
 
   const ComputedStyle& GetComputedStyle() {
-    Element* node = GetDocument().getElementById(AtomicString("target"));
+    Element* node = GetElementById("target");
     return node->ComputedStyleRef();
   }
 

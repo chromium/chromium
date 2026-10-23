@@ -4465,7 +4465,7 @@ TEST_F(StyleCascadeTest, FlipToAnchorInvalid) {
 
 TEST_F(StyleCascadeTest, AutoBaseValueShorthand) {
   SetBodyInnerHTML("<select id=select></select>");
-  Element* select = GetDocument().getElementById(AtomicString("select"));
+  Element* select = GetElementById("select");
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
@@ -4484,7 +4484,7 @@ TEST_F(StyleCascadeTest, AutoBaseValueShorthand) {
 
 TEST_F(StyleCascadeTest, RevertInAutoBaseValue) {
   SetBodyInnerHTML("<select id=select></select>");
-  Element* select = GetDocument().getElementById(AtomicString("select"));
+  Element* select = GetElementById("select");
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
@@ -4502,7 +4502,7 @@ TEST_F(StyleCascadeTest, RevertInAutoBaseValue) {
 
 TEST_F(StyleCascadeTest, EnvInAutoBaseValue) {
   SetBodyInnerHTML("<select id=select></select>");
-  Element* select = GetDocument().getElementById(AtomicString("select"));
+  Element* select = GetElementById("select");
   ASSERT_TRUE(select);
 
   // UA styles don't use var(), but they could conceivably use env().
@@ -4521,7 +4521,7 @@ TEST_F(StyleCascadeTest, EnvInAutoBaseValue) {
 
 TEST_F(StyleCascadeTest, AutoBaseCycle) {
   SetBodyInnerHTML("<select id=select></select>");
-  Element* select = GetDocument().getElementById(AtomicString("select"));
+  Element* select = GetElementById("select");
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
@@ -4544,7 +4544,7 @@ TEST_F(StyleCascadeTest, RevertRuleInInternalAutoBase_NoBase) {
   ScopedCSSRevertRuleForTest revert_rule_feature(false);
 
   SetBodyInnerHTML("<select id=select></select>");
-  Element* select = GetDocument().getElementById(AtomicString("select"));
+  Element* select = GetElementById("select");
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* ua_set = css_test_helpers::ParseDeclarationBlock(
@@ -4570,7 +4570,7 @@ TEST_F(StyleCascadeTest, RevertRuleInInternalAutoBase_Base) {
   ScopedCSSRevertRuleForTest revert_rule_feature(false);
 
   SetBodyInnerHTML("<select id=select></select>");
-  Element* select = GetDocument().getElementById(AtomicString("select"));
+  Element* select = GetElementById("select");
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* ua_set = css_test_helpers::ParseDeclarationBlock(

@@ -213,7 +213,7 @@ class DynamicPseudoExtractorBasic
   void SetUp() override {
     PageTestBase::SetUp();
     SetHtmlInnerHTML("<div id=a class=b></div>");
-    originating_element_ = GetDocument().getElementById(AtomicString("a"));
+    originating_element_ = GetElementById("a");
     CHECK(originating_element_);
   }
 

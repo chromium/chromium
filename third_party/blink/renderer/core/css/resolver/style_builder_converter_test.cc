@@ -80,7 +80,7 @@ TEST_F(StyleBuilderConverterPageTest, PaletteMix_ZeroCombinedPercentage) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   const FontPalette* palette =
       target->ComputedStyleRef().GetFontDescription().GetFontPalette();
