@@ -24,6 +24,7 @@
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
 #include "components/enterprise/net/core/utils.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/base/auth.h"
@@ -470,9 +471,16 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
   const size_t new_count = refreshing_managers_.size();
 
   if (old_count == 0 && new_count > 0) {
+    VLOG_POLICY(1, ENTERPRISE_PROXY)
+        << "Enterprise proxy configuration refresh in progress; pausing "
+           "network traffic.";
     net_log_.BeginEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   } else if (old_count > 0 && new_count == 0) {
+    LOG_POLICY(INFO, ENTERPRISE_PROXY)
+        << "Enterprise proxy configuration refresh completed ("
+        << GetDynamicRoutingConfig().routing_rules.size()
+        << " active routing rule(s)).";
     net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
@@ -481,11 +489,19 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
 void EnterpriseProxyService::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   if (type != net::NetworkChangeNotifier::CONNECTION_NONE) {
+    if (!provisioning_domain_managers_.empty()) {
+      VLOG_POLICY(1, ENTERPRISE_PROXY)
+          << "Network connection changed; refreshing all provisioning domains.";
+    }
     ForceRefreshAllConfigs();
   }
 }
 
 void EnterpriseProxyService::OnAccountStateChanged() {
+  if (!provisioning_domain_managers_.empty()) {
+    VLOG_POLICY(1, ENTERPRISE_PROXY)
+        << "Account state changed; refreshing all provisioning domains.";
+  }
   ForceRefreshAllConfigs();
 }
 
@@ -520,6 +536,11 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     const base::ListValue& policy_domains) {
   const net::ProxyConfig::DynamicRoutingConfig old_routing_config =
       GetDynamicRoutingConfig();
+  if (!provisioning_domain_managers_.empty() || !policy_domains.empty()) {
+    LOG_POLICY(INFO, ENTERPRISE_PROXY)
+        << "ProxyProvisioningDomains policy updated with "
+        << policy_domains.size() << " domain(s).";
+  }
 
   // If managers were currently refreshing, close the pause NetLog event before
   // destroying them, since manager destruction does not trigger
@@ -563,8 +584,15 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     update->Remove(key);
   }
 
-  // TODO(crbug.com/573663900): Add policy logging on proxy config changes.
-  if (GetDynamicRoutingConfig() != old_routing_config) {
+  const net::ProxyConfig::DynamicRoutingConfig new_routing_config =
+      GetDynamicRoutingConfig();
+  if (new_routing_config.routing_rules != old_routing_config.routing_rules) {
+    LOG_POLICY(INFO, ENTERPRISE_PROXY)
+        << "Dynamic proxy routing configuration updated ("
+        << new_routing_config.routing_rules.size()
+        << " active routing rule(s)).";
+  }
+  if (new_routing_config != old_routing_config) {
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
 }

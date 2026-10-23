@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/values.h"
@@ -18,6 +19,10 @@
 class PrefService;
 
 namespace enterprise_net {
+
+// Returns a string representation of a `ProvisioningDomainProxyConfig::State`.
+std::string_view ProvisioningDomainStateToString(
+    ProvisioningDomainProxyConfig::State state);
 
 // Parses a Provisioning Domain proxy protocol string (e.g., "socks5",
 // "http-connect", "https-connect") to the corresponding

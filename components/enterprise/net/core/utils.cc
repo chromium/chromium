@@ -85,23 +85,6 @@ std::string AuthTypeToString(AuthType type) {
   }
 }
 
-std::string StateToString(ProvisioningDomainProxyConfig::State state) {
-  switch (state) {
-    case ProvisioningDomainProxyConfig::State::kRefreshNeeded:
-      return "RefreshNeeded";
-    case ProvisioningDomainProxyConfig::State::kFetching:
-      return "Fetching";
-    case ProvisioningDomainProxyConfig::State::kValid:
-      return "Valid";
-    case ProvisioningDomainProxyConfig::State::kFailedTransient:
-      return "FailedTransient";
-    case ProvisioningDomainProxyConfig::State::kFailedBlocked:
-      return "FailedBlocked";
-    case ProvisioningDomainProxyConfig::State::kFailedPermanent:
-      return "FailedPermanent";
-  }
-}
-
 std::string HeaderTypeToString(ProxyExtraHeader::HeaderType type) {
   switch (type) {
     case ProxyExtraHeader::HeaderType::kConstant:
@@ -321,6 +304,24 @@ void WidenDomainsToSubdomains(std::vector<std::string>& domains) {
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
+
+std::string_view ProvisioningDomainStateToString(
+    ProvisioningDomainProxyConfig::State state) {
+  switch (state) {
+    case ProvisioningDomainProxyConfig::State::kRefreshNeeded:
+      return "RefreshNeeded";
+    case ProvisioningDomainProxyConfig::State::kFetching:
+      return "Fetching";
+    case ProvisioningDomainProxyConfig::State::kValid:
+      return "Valid";
+    case ProvisioningDomainProxyConfig::State::kFailedTransient:
+      return "FailedTransient";
+    case ProvisioningDomainProxyConfig::State::kFailedBlocked:
+      return "FailedBlocked";
+    case ProvisioningDomainProxyConfig::State::kFailedPermanent:
+      return "FailedPermanent";
+  }
+}
 
 std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     const base::DictValue& match_dict) {
@@ -631,7 +632,7 @@ base::DictValue ProvisioningDomainProxyConfigToDict(
     const ProvisioningDomainProxyConfig& proxy_config) {
   base::DictValue dict;
   dict.Set(kIdentifierKey, proxy_config.pvd_id);
-  dict.Set("state", StateToString(proxy_config.state));
+  dict.Set("state", ProvisioningDomainStateToString(proxy_config.state));
   if (!proxy_config.expires.is_null()) {
     dict.Set(kExpiresKey, net::HttpUtil::TimeFormatHTTP(proxy_config.expires));
   }

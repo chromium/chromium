@@ -68,6 +68,7 @@
 #define OIDC_ENROLLMENT ::policy::PolicyLogger::Log::Source::kOidcEnrollment
 #define EXTENSIBLE_SSO ::policy::PolicyLogger::Log::Source::kExtensibleSSO
 #define REPORTING ::policy::PolicyLogger::Log::Source::kReporting
+#define ENTERPRISE_PROXY ::policy::PolicyLogger::Log::Source::kEnterpriseProxy
 
 namespace policy {
 
@@ -88,7 +89,8 @@ class POLICY_EXPORT PolicyLogger {
       kOidcEnrollment,
       kExtensibleSSO,
       kReporting,
-      kMaxValue = kReporting,
+      kEnterpriseProxy,
+      kMaxValue = kEnterpriseProxy,
     };
     enum class Severity {
       kInfo,

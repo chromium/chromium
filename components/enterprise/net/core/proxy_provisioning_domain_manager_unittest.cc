@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/auth_scope_metadata.h"
@@ -19,6 +20,7 @@
 #include "components/enterprise/net/core/timer_utils.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/enterprise/net/core/utils.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -102,12 +104,23 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
   }
 
   void SetUp() override {
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
     scoped_allowed_domains_ =
         std::make_unique<ScopedExtraAllowedDomainsForTesting>(
             std::vector<std::string>{"example.com"});
   }
 
+  void TearDown() override {
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  }
+
  protected:
+  base::ListValue GetPolicyLogs() {
+    base::test::TestFuture<base::ListValue> future;
+    policy::PolicyLogger::GetInstance()->GetAsList(future.GetCallback());
+    return future.Take();
+  }
+
   std::unique_ptr<EnterpriseNetworkAuthService> CreateAuthService() {
     return std::make_unique<EnterpriseNetworkAuthService>(
         identity_test_env_.identity_manager(), &pref_service_,
@@ -1061,6 +1074,80 @@ TEST_F(ProxyProvisioningDomainManagerTest,
   EXPECT_TRUE(manager->IsExpirationTimerRunningForTesting());
   EXPECT_EQ(1u, manager->fetched_config().proxy_endpoints.size());
   EXPECT_EQ(1u, manager->fetched_config().routing_rules.size());
+}
+
+TEST_F(ProxyProvisioningDomainManagerTest, EmitsPolicyLogsForErrors) {
+  auto auth_service = CreateAuthService();
+
+  // 1. Invalid policy entry logs an ERROR.
+  {
+    base::DictValue malformed_policy;
+    malformed_policy.Set("invalid_key", "invalid_value");
+    auto url_loader_factory_callback = base::BindRepeating(
+        [](network::TestURLLoaderFactory* test_url_loader_factory)
+            -> scoped_refptr<network::SharedURLLoaderFactory> {
+          return test_url_loader_factory->GetSafeWeakWrapper();
+        },
+        &test_url_loader_factory_);
+    auto manager = std::make_unique<ProxyProvisioningDomainManager>(
+        base::Value(std::move(malformed_policy)),
+        /*cached_config_dict=*/nullptr, auth_service.get(),
+        std::move(url_loader_factory_callback));
+  }
+
+  // 2. Token fetch error without primary account logs an ERROR with
+  // TokenFetchError(no_primary_account) and FailedBlocked state.
+  {
+    auto manager = CreateManager(CreateTestPolicyConfigWithAuthAndHeaders(),
+                                 auth_service.get());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return manager->state() ==
+             ProvisioningDomainProxyConfig::State::kFailedBlocked;
+    }));
+  }
+
+  // 3. Transient HTTP 500 error logs a WARNING, and blocked JSON parse error
+  // logs an ERROR.
+  {
+    auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+    SimulateHttpError(500);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+              manager->state());
+
+    manager->ForceRefresh();
+    ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kTestUrl, "{ not valid json }", net::HTTP_OK);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
+              manager->state());
+  }
+
+  base::ListValue logs = GetPolicyLogs();
+  std::vector<std::string> messages;
+  for (const auto& entry : logs) {
+    ASSERT_TRUE(entry.is_dict());
+    EXPECT_EQ("Enterprise Proxy", *entry.GetDict().FindString("logSource"));
+    messages.push_back(*entry.GetDict().FindString("message"));
+  }
+
+  EXPECT_THAT(
+      messages,
+      testing::IsSupersetOf({
+          testing::HasSubstr(
+              "Invalid ProxyProvisioningDomains policy entry. Transitioning to "
+              "FailedPermanent."),
+          testing::HasSubstr(
+              "Failed to fetch configuration for PvD 'api.example.com': "
+              "TokenFetchError (no_primary_account). Transitioning to "
+              "FailedBlocked."),
+          testing::HasSubstr(
+              "Transient failure fetching configuration for PvD "
+              "'api.example.com' (attempt 1/5): HttpError (net_error: "
+              "ERR_FAILED). Transitioning to FailedTransient."),
+          testing::HasSubstr(
+              "Failed to fetch configuration for PvD 'api.example.com': "
+              "ParseError. Transitioning to FailedBlocked."),
+      }));
 }
 
 }  // namespace

@@ -24,6 +24,7 @@
 #include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/enterprise/net/core/utils.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -166,6 +167,7 @@ class EnterpriseProxyServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
     scoped_allowed_domains_ =
         std::make_unique<ScopedExtraAllowedDomainsForTesting>(
             std::vector<std::string>{"example.com"});
@@ -178,6 +180,13 @@ class EnterpriseProxyServiceTest : public testing::Test {
     service_.reset();
     auth_service_.reset();
     scoped_allowed_domains_.reset();
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  }
+
+  base::ListValue GetPolicyLogs() {
+    base::test::TestFuture<base::ListValue> future;
+    policy::PolicyLogger::GetInstance()->GetAsList(future.GetCallback());
+    return future.Take();
   }
 
   void SetUpPrimaryAccount(const std::string& email = "user@managed.com") {
@@ -1091,6 +1100,53 @@ TEST_F(EnterpriseProxyServiceTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest, LogsPolicyAndRoutingConfigChanges) {
+  CreateService();
+
+  // No logs should be emitted on startup when no policy is configured.
+  EXPECT_TRUE(GetPolicyLogs().empty());
+
+  SetPolicyDomains({kTestDomain1});
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+
+  // Clearing the policy logs the policy update and synchronous routing change.
+  SetPolicyDomains({});
+
+  base::ListValue logs = GetPolicyLogs();
+  std::vector<std::string> messages;
+  for (const auto& entry : logs) {
+    ASSERT_TRUE(entry.is_dict());
+    EXPECT_EQ("Enterprise Proxy", *entry.GetDict().FindString("logSource"));
+    messages.push_back(*entry.GetDict().FindString("message"));
+  }
+
+  EXPECT_THAT(
+      messages,
+      testing::IsSupersetOf({
+          testing::HasSubstr(
+              "ProxyProvisioningDomains policy updated with 1 domain(s)."),
+          testing::HasSubstr(
+              "Enterprise proxy configuration refresh in progress"),
+          testing::HasSubstr(
+              "Successfully fetched configuration for PvD "
+              "'domain1.example.com' (1 proxy endpoint(s), 1 routing "
+              "rule(s))."),
+          testing::HasSubstr(
+              "Enterprise proxy configuration refresh completed (1 active "
+              "routing rule(s))."),
+          testing::HasSubstr(
+              "ProxyProvisioningDomains policy updated with 0 domain(s)."),
+          testing::HasSubstr(
+              "Dynamic proxy routing configuration updated (0 active routing "
+              "rule(s))."),
+      }));
 }
 
 class EnterpriseProxyServiceAuthChallengeTest

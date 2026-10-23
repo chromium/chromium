@@ -76,6 +76,8 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Extensible SSO";
     case PolicyLogger::Log::Source::kReporting:
       return "Reporting";
+    case PolicyLogger::Log::Source::kEnterpriseProxy:
+      return "Enterprise Proxy";
   }
 }
 
