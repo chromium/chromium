@@ -9,7 +9,6 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/float/float_test_api.h"
 #include "ash/wm/window_state.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"

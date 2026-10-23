@@ -12,7 +12,6 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/session_manager/core/session.h"

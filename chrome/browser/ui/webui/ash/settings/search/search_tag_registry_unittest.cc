@@ -11,7 +11,6 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
