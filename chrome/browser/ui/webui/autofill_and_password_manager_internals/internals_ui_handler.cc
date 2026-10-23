@@ -65,8 +65,9 @@
 
 namespace autofill {
 
-void CreateAndAddInternalsHTMLSource(Profile* profile,
-                                     const std::string& source_name) {
+content::WebUIDataSource& CreateAndAddInternalsHTMLSource(
+    Profile* profile,
+    const std::string& source_name) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::CreateAndAdd(profile, source_name);
   source->OverrideContentSecurityPolicy(
@@ -86,6 +87,7 @@ void CreateAndAddInternalsHTMLSource(Profile* profile,
   source->AddString(version_ui::kCL, version_info::GetLastChange());
   source->AddString(version_ui::kUserAgent, embedder_support::GetUserAgent());
   source->AddString("app_locale", g_browser_process->GetApplicationLocale());
+  return CHECK_DEREF(source);
 }
 
 AutofillCacheResetter::AutofillCacheResetter(

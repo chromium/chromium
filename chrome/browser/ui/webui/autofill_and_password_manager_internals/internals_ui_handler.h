@@ -28,6 +28,7 @@ class LogRouter;
 
 namespace content {
 class BrowserContext;
+class WebUIDataSource;
 }  // namespace content
 
 class Profile;
@@ -43,8 +44,9 @@ inline constexpr char kClearAutofillAiEntitySuppressionsDone[] =
     "Done. All AutofillAI Personal Context entity suppressions have been "
     "cleared.";
 
-void CreateAndAddInternalsHTMLSource(Profile* profile,
-                                     const std::string& source_name);
+content::WebUIDataSource& CreateAndAddInternalsHTMLSource(
+    Profile* profile,
+    const std::string& source_name);
 
 // Class that wipes responses from the Autofill server from the HTTP cache.
 class AutofillCacheResetter : public content::BrowsingDataRemover::Observer {

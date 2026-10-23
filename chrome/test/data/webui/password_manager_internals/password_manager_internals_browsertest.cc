@@ -128,6 +128,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsBrowserTest, AutoScroll) {
       /*skip_test_loader=*/true));
 }
 
+// Tests that wiggling the cursor changes it to the Password Manager logo.
+IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsBrowserTest, CursorWiggle) {
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(RunTestOnWebContents(
+      web_contents,
+      "password_manager_internals/password_manager_internals_test.js",
+      "runMochaTest('PasswordManagerInternals', 'CursorWiggle')",
+      /*skip_test_loader=*/true));
+}
+
 class PasswordManagerInternalsIncognitoBrowserTest
     : public PasswordManagerInternalsBrowserTest {
  protected:

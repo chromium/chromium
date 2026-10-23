@@ -22,6 +22,8 @@ source_set("autofill_and_password_manager_internals") {
 
   deps = [
     "//base:i18n",
+    "//build:branding_buildflags",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles:profile",
@@ -44,6 +46,7 @@ source_set("autofill_and_password_manager_internals") {
     deps += [ "//chrome/browser/password_manager/android:utils" ]
   } else {
     deps += [
+      "//chrome/browser/resources/password_manager:resources_grit",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/autofill/content/browser",

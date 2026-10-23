@@ -301,6 +301,7 @@ function setUpPasswordManagerInternals() {
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
+  setUpCursorWiggle();
 
   const overrideContainer =
       getRequiredElement('password-change-override-container');
@@ -312,6 +313,68 @@ function setUpPasswordManagerInternals() {
   overrideButton.addEventListener('click', () => {
     chrome.send('setPasswordChangeOverrideUrl', [overrideInput.value]);
     overrideInput.value = '';
+  });
+}
+
+// Temporarily changes the cursor to the password manager logo when the user
+// wiggles the cursor rapidly.
+function setUpCursorWiggle() {
+  const kMinMoveDistance = 10;
+  const kWiggleWindowMs = 500;
+  const kMinReversals = 3;
+  const kCursorRevertDelayMs = 1000;
+
+  let lastX: number|undefined;
+  let lastY: number|undefined;
+  let lastMoveTime = 0;
+  let lastDx = 0;
+  let lastDy = 0;
+  let reversalTimestamps: number[] = [];
+  let revertTimer: number|undefined;
+
+  document.addEventListener('mousemove', (e: MouseEvent) => {
+    const now = performance.now();
+    if (lastX === undefined || lastY === undefined ||
+        now - lastMoveTime > kWiggleWindowMs) {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      lastMoveTime = now;
+      lastDx = 0;
+      lastDy = 0;
+      reversalTimestamps = [];
+      return;
+    }
+
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    if (Math.hypot(dx, dy) < kMinMoveDistance) {
+      return;
+    }
+
+    if (lastDx !== 0 || lastDy !== 0) {
+      if (dx * lastDx + dy * lastDy < 0) {
+        reversalTimestamps.push(now);
+        reversalTimestamps =
+            reversalTimestamps.filter(t => now - t <= kWiggleWindowMs);
+        if (reversalTimestamps.length >= kMinReversals ||
+            document.body.classList.contains('password-manager-cursor')) {
+          document.body.classList.add('password-manager-cursor');
+          if (revertTimer !== undefined) {
+            window.clearTimeout(revertTimer);
+          }
+          revertTimer = window.setTimeout(() => {
+            document.body.classList.remove('password-manager-cursor');
+            revertTimer = undefined;
+          }, kCursorRevertDelayMs);
+        }
+      }
+    }
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastMoveTime = now;
+    lastDx = dx;
+    lastDy = dy;
   });
 }
 
