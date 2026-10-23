@@ -10279,6 +10279,32 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Search with Google Lens
       </message>
 
+      <!-- Contextual Tasks side panel identity -->
+      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_BODY" desc="Body text of the identity tooltip in the Contextual Tasks side panel informing the user which Google Account they are signed in to Search with.">
+        You're signed in to Search with your <ph name="USER_EMAIL">$1<ex>account@gmail.com</ex></ph> account
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screen reader announcement for the identity tooltip in the Contextual Tasks side panel informing the user which Google Account they are signed in to Search with.">
+        You're signed in to Search with your <ph name="USER_EMAIL">$1<ex>account@gmail.com</ex></ph> account
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_MANAGE_ACCOUNT_BUTTON" desc="Label for the button in the Contextual Tasks side panel identity tooltip that opens the user's Google Account page.">
+        Manage account
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_CLOSE_BUTTON" desc="Accessible label and tooltip for the close button on the Contextual Tasks side panel identity tooltip.">
+        Close
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_BUTTON_TOOLTIP" desc="Tooltip and accessible label for the account avatar button in the Contextual Tasks side panel toolbar showing the signed-in user's name and email.">
+        Google Account: <ph name="USER_NAME">$1<ex>Jane Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>account@gmail.com</ex></ph>)
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_BUTTON_EMAIL_ONLY_TOOLTIP" desc="Tooltip and accessible label for the account avatar button in the Contextual Tasks side panel toolbar showing the signed-in user's email.">
+        Google Account: <ph name="USER_EMAIL">$1<ex>account@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_BUTTON_SIGNED_OUT_TOOLTIP" desc="Tooltip and accessible label for the account avatar indicator in the Contextual Tasks side panel toolbar when the user is signed out of Search.">
+        Signed out
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_MENU_SIGN_IN" desc="The 'Sign in' option in the Contextual Tasks 3-dot overflow menu shown when the user is signed out.">
+        Sign in
+      </message>
+
       <!--Tooltip strings -->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">
         Click to go back, hold to see history
