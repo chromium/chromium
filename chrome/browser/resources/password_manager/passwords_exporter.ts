@@ -15,7 +15,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExportPasswordsResult, ExportProgressStatus, PasswordManagerImpl} from './password_manager_proxy.js';
+import {ExportPasswordsResult, ExportProgressStatus} from './password_manager.mojom-webui.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_exporter.html.js';
 
 export interface PasswordsExporterElement {

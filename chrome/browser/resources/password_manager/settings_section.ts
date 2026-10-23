@@ -35,8 +35,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
+import {PasswordManagerActionableError} from './password_manager.mojom-webui.js';
 import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener} from './password_manager_proxy.js';
-import {PasswordManagerActionableError, PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';

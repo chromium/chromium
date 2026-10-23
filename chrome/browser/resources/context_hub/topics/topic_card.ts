@@ -10,10 +10,12 @@ import './topic_feedback_controls.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TopicFeedback} from '../context_hub.mojom-webui.js';
+
 import {getCss} from './topic_card.css.js';
 import {getHtml} from './topic_card.html.js';
 import {getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, isCrIcon, isTopicsFishfoodFeedbackEnabled} from './topic_utils.js';
-import type {TopicFeedback, TopicItem} from './topic_utils.js';
+import type {TopicItem} from './topic_utils.js';
 
 // TODO(crbug.com/558572977): Use internationalized strings once GRD
 // strings are added.

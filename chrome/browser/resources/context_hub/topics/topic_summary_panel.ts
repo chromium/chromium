@@ -10,11 +10,13 @@ import './topic_collection_carousel.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TopicCollectionFeedback, TopicFeedback, TopicQueryFeedback} from '../context_hub.mojom-webui.js';
+
 import type {CollectionFeedbackChangeEvent} from './topic_collection_carousel.js';
 import {getCss} from './topic_summary_panel.css.js';
 import {getHtml} from './topic_summary_panel.html.js';
 import {getOpenableUrls, getTopicQueries, isTopicsFishfoodFeedbackEnabled, setCollectionFeedback} from './topic_utils.js';
-import type {Collection, TopicCollectionFeedback, TopicFeedback, TopicItem, TopicQuery, TopicQueryFeedback} from './topic_utils.js';
+import type {Collection, TopicItem, TopicQuery} from './topic_utils.js';
 
 // Fired with the rated queries whenever the rater rates one.
 export type QueryFeedbacksChangeEvent =

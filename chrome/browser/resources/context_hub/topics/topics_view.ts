@@ -10,10 +10,11 @@ import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+import type {TopicFeedback} from '../context_hub.mojom-webui.js';
 
 import type {TopicFeedbackChangeEvent} from './topic_feedback_controls.js';
 import {isTopicFeedbackEmpty, isTopicsEnabled, isTopicsFishfoodFeedbackEnabled, toTopicItem} from './topic_utils.js';
-import type {TopicFeedback, TopicItem} from './topic_utils.js';
+import type {TopicItem} from './topic_utils.js';
 import {getCss} from './topics_view.css.js';
 import {getHtml} from './topics_view.html.js';
 

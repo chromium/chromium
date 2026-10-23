@@ -13,11 +13,12 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {TopicDefectCategory, TopicRating} from '../context_hub.mojom-webui.js';
+import type {TopicFeedback} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_feedback_controls.css.js';
 import {getHtml} from './topic_feedback_controls.html.js';
 import {createEmptyTopicFeedback, createTopicSnapshot, formatTopicFeedbackComment, hasSameRating, hasTopicFeedbackCommentText, isTopicFeedbackValid, normalizeTopicFeedbackComment, parseTopicFeedbackComment, TOPIC_DEFECT_CATEGORIES, TOPIC_SUGGESTION_FIELDS} from './topic_utils.js';
-import type {TopicFeedback, TopicItem, TopicSuggestionField} from './topic_utils.js';
+import type {TopicItem, TopicSuggestionField} from './topic_utils.js';
 
 // Fired with the feedback to store whenever the rater's edits are valid.
 export type TopicFeedbackChangeEvent = CustomEvent<{feedback: TopicFeedback}>;

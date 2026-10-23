@@ -12,8 +12,6 @@ import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 
 import {getHostnameOrUrl} from './tab_delegate_utils.js';
 
-export type {ForeignTab};
-
 export class ForeignTabsDelegate implements
     OrganizerListSectionDelegate<ForeignTab> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();

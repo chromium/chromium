@@ -6,10 +6,6 @@ import './history_sync_optin_app.js';
 
 import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
 
-export {PageCallbackRouter, PageRemote} from './history_sync_optin.mojom-webui.js';
-export type {PageHandlerInterface} from './history_sync_optin.mojom-webui.js';
-export {HistorySyncOptinAppElement} from './history_sync_optin_app.js';
-
 function initialize() {
   const historySyncOptInBrowserProxy =
       HistorySyncOptInBrowserProxyImpl.getInstance();

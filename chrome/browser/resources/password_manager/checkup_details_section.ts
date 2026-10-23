@@ -19,8 +19,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './checkup_details_section.html.js';
 import type {CheckupListItemElement} from './checkup_list_item.js';
+import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
-import {PasswordAutomaticChangeState, PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
 import {CheckupSubpage, Page, RouteObserverMixin, Router} from './router.js';
 

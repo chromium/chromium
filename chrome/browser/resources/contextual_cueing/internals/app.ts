@@ -8,8 +8,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {CueLog} from './browser_proxy.js';
 import {BrowserProxy} from './browser_proxy.js';
+import type {CueLog} from './contextual_cueing_internals.mojom-webui.js';
 
 export class ContextualCueingInternalsAppElement extends CrLitElement {
   static get is() {

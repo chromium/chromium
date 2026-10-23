@@ -13,8 +13,6 @@ import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webu
 import {TopicDefectCategory, TopicRating} from '../context_hub.mojom-webui.js';
 import type {DuplicateTopicSnapshot, Topic, TopicCollection, TopicCollectionFeedback, TopicCollectionItem, TopicContinuationQuery, TopicFeedback, TopicSnapshot, TopicVisit} from '../context_hub.mojom-webui.js';
 
-export type {TopicCollectionFeedback, TopicContinuationQuery, TopicFeedback, TopicQueryFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
-
 // A page in a `Collection`, as rendered on its carousel card.
 export interface CollectionItem {
   title: string;

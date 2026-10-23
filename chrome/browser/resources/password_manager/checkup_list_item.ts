@@ -19,7 +19,8 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './checkup_list_item.html.js';
-import {PasswordAutomaticChangeState, PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {ShowPasswordMixinInterface} from './show_password_mixin.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
 

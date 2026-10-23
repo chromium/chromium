@@ -6,24 +6,10 @@ import '//resources/js/cr.js';
 
 import {BrowserControlsService} from '/shared/browser_controls_api.mojom-webui.js';
 import type {BrowserControlsServiceInterface} from '/shared/browser_controls_api.mojom-webui.js';
-import {EventDispositionFlag} from '/shared/browser_controls_api_data_model.mojom-webui.js';
 import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
 import {ToolbarUIObserverCallbackRouter, ToolbarUIService} from '/shared/toolbar_ui_api.mojom-webui.js';
 import type {ToolbarUIServiceInterface, ToolbarUIServiceRemote} from '/shared/toolbar_ui_api.mojom-webui.js';
-import {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import type {BackForwardButtonState, FocusRequestTarget, OmniboxViewState, ReloadControlState, ToolbarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-
-export {
-  ContextMenuType,
-  EventDispositionFlag,
-};
-export type {
-  BackForwardButtonState,
-  IconUpdate,
-  OmniboxViewState,
-  ReloadControlState,
-  ToolbarState,
-};
+import type {FocusRequestTarget, ToolbarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 export type ToolbarStateListener = (icons: IconUpdate[], state: ToolbarState) =>
     void;

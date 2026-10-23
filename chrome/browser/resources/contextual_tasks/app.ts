@@ -29,12 +29,14 @@ import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip
 // clang-format on
 
 
+
 import '//resources/cr_elements/cr_button/cr_button.js';
 import './error_dialog.js';
 import './error_page.js';
 import './ghost_loader.js';
 import './top_toolbar.js';
 
+import type {LoadAbortEvent, LoadEvent, NewWindowEvent, PermissionRequestEvent} from '/shared/guest_view/slim_webview.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -56,7 +58,7 @@ import type {Rect} from './post_message_handler.js';
 import {recordAction} from './utils.js';
 import {getNonOccludedClipPath} from './utils/clip_path.js';
 import {isFullWebView} from './web_view_type.js';
-import type {LoadAbortEvent, LoadEvent, NewWindowEvent, PermissionRequestEvent, WebViewType} from './web_view_type.js';
+import type {WebViewType} from './web_view_type.js';
 import {WindowManager} from './window_manager.js';
 
 

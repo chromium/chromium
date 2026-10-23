@@ -18,11 +18,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, TopicRating} from '../context_hub.mojom-webui.js';
-import type {TopicsFeedbackExportDomain, TopicsFeedbackExportOptions, TopicsFeedbackExportPreview, TopicsFeedbackExportUrl} from '../context_hub.mojom-webui.js';
+import type {TopicFeedback, TopicsFeedbackExportDomain, TopicsFeedbackExportOptions, TopicsFeedbackExportPreview, TopicsFeedbackExportUrl} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_feedback_export_dialog.css.js';
 import {getHtml} from './topic_feedback_export_dialog.html.js';
-import type {TopicFeedback, TopicItem} from './topic_utils.js';
+import type {TopicItem} from './topic_utils.js';
 
 export interface TopicFeedbackExportDialogElement {
   $: {

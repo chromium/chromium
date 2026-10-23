@@ -19,6 +19,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, TopicDefectCategory} from '../context_hub.mojom-webui.js';
+import type {TopicFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_details.css.js';
 import {getHtml} from './topic_details.html.js';
@@ -26,7 +27,7 @@ import type {TopicFeedbackChangeEvent} from './topic_feedback_controls.js';
 import type {TopicSitesDialogElement} from './topic_sites_dialog.js';
 import type {CollectionFeedbacksChangeEvent, QueryFeedbacksChangeEvent} from './topic_summary_panel.js';
 import {createDuplicateTopicSnapshot, createEmptyTopicFeedback, createTopicSnapshot, getOpenableUrls, getTopicQueries, getTopicSites, isCrIcon, isTopicFeedbackEmpty, isTopicsEnabled, isTopicsFishfoodFeedbackEnabled, toTopicItem} from './topic_utils.js';
-import type {TopicFeedback, TopicItem, TopicVisit} from './topic_utils.js';
+import type {TopicItem} from './topic_utils.js';
 import type {RejectedVisitsChangeEvent} from './topic_visits_panel.js';
 
 const MAX_URLS_TO_OPEN = 10;

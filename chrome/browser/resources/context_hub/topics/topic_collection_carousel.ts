@@ -13,11 +13,12 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, TopicRating} from '../context_hub.mojom-webui.js';
+import type {TopicCollectionFeedback} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_collection_carousel.css.js';
 import {getHtml} from './topic_collection_carousel.html.js';
 import {createEmptyCollectionFeedback, isTopicsFishfoodFeedbackEnabled, isVisitRejected, setVisitsRejected, toTopicRating} from './topic_utils.js';
-import type {Collection, CollectionItem, TopicCollectionFeedback} from './topic_utils.js';
+import type {Collection, CollectionItem} from './topic_utils.js';
 
 // Size of the favicon drawn in a card's image area.
 const CARD_FAVICON_SIZE = 32;

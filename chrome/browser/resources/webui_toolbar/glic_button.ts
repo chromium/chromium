@@ -11,9 +11,10 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
+import {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {GlicButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
-import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {CollapsibleLabelButtonMixin} from './collapsible_label_button.js';
 import {getCss} from './glic_button.css.js';

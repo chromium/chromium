@@ -11,9 +11,7 @@ import '/shared/guest_view/slim_webview.js';
 // </if>
 // Importing a type doesn't have a runtime effect, because these imports are
 // removed at compile time. We add this import just to satisfy the type checker.
-import type {LoadAbortEvent, LoadEvent, NewWindowEvent, PermissionRequestEvent, SlimWebviewElement} from '/shared/guest_view/slim_webview.js';
-
-export type {LoadAbortEvent, LoadEvent, NewWindowEvent, PermissionRequestEvent};
+import type {SlimWebviewElement} from '/shared/guest_view/slim_webview.js';
 export type WebViewType = chrome.webviewTag.WebView|SlimWebviewElement;
 
 declare global {

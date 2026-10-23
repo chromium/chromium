@@ -13,10 +13,12 @@ import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TopicFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
+
 import {getCss} from './topic_sites_dialog.css.js';
 import {getHtml} from './topic_sites_dialog.html.js';
 import {getDisplayDomain, getTopicSites, isTopicsFishfoodFeedbackEnabled, isVisitRejected, setVisitsRejected} from './topic_utils.js';
-import type {TopicFeedback, TopicItem, TopicVisit} from './topic_utils.js';
+import type {TopicItem} from './topic_utils.js';
 
 export interface TopicSitesDialogElement {
   $: {

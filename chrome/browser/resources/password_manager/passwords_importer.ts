@@ -59,8 +59,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ImportEntry, ImportResults, PasswordManagerProxy} from './password_manager_proxy.js';
-import {ImportEntryStatus, ImportResultsStatus, PasswordManagerImpl} from './password_manager_proxy.js';
+import type {ImportEntry, ImportResults} from './password_manager.mojom-webui.js';
+import {ImportEntryStatus, ImportResultsStatus} from './password_manager.mojom-webui.js';
+import type {PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_importer.html.js';
 import {Page, Router} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';

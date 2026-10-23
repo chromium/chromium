@@ -5,8 +5,6 @@
 import type {PageHandlerInterface} from './contextual_cueing_internals.mojom-webui.js';
 import {PageHandler} from './contextual_cueing_internals.mojom-webui.js';
 
-export type {CueLog} from './contextual_cueing_internals.mojom-webui.js';
-
 export class BrowserProxy {
   readonly handler: PageHandlerInterface;
 

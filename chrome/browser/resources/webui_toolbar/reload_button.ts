@@ -16,11 +16,13 @@ import {ReloadInputType} from '/shared/browser_controls_api.mojom-webui.js';
 import type {ReloadInteractionMetadata} from '/shared/browser_controls_api.mojom-webui.js';
 import {TimerHelper} from '/shared/timer_helper.js';
 import {BUTTON_LEFT, getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from '/shared/toolbar_button.js';
+import {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import type {ReloadControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
-import type {BrowserProxy, ReloadControlState} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 import {ReloadButtonInputType} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';

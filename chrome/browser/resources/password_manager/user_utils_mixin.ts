@@ -8,7 +8,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerActionableError, PasswordManagerImpl, toMojoActionableError} from './password_manager_proxy.js';
+import {PasswordManagerActionableError} from './password_manager.mojom-webui.js';
+import {PasswordManagerImpl, toMojoActionableError} from './password_manager_proxy.js';
 import type {AccountInfo, SyncInfo} from './sync_browser_proxy.js';
 import {SyncBrowserProxyImpl} from './sync_browser_proxy.js';
 

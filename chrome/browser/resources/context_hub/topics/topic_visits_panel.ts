@@ -10,8 +10,10 @@ import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TopicFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
+
 import {formatTopicTime, getDisplayDomain, isVisitRejected, setVisitsRejected} from './topic_utils.js';
-import type {TopicFeedback, TopicItem, TopicVisit} from './topic_utils.js';
+import type {TopicItem} from './topic_utils.js';
 import {getCss} from './topic_visits_panel.css.js';
 import {getHtml} from './topic_visits_panel.html.js';
 
