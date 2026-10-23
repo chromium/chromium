@@ -207,6 +207,7 @@ id<GREYMatcher> NavigationBarAddButton() {
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey removeFirstRunSentinel];
   [NewTabPageAppInterface resetSetUpListPrefs];
+  [NewTabPageAppInterface resetPinnedSites];
   [super tearDownHelper];
 }
 
@@ -377,9 +378,8 @@ TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"SetUpList item Default Browser not completed.");
 
-  // Completed Set Up List items last one impression
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
+  // Open a new NTP so the completed Set Up List item rotates out of the
+  // compacted Magic Stack module.
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
@@ -393,9 +393,8 @@ TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
   // Dismiss Notification opt-in screen.
   TapPromoStyleSecondaryActionButton();
 
-  // Completed Set Up List items last one impression
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
+  // Open a new NTP so the completed Set Up List item rotates out of the
+  // compacted Magic Stack module.
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
@@ -414,9 +413,8 @@ TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"SetUpList item Safari Import not completed.");
 
-  // Completed Set Up List items last one impression
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
+  // Open a new NTP so the completed Set Up List item rotates out of the
+  // compacted Magic Stack module.
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
@@ -628,15 +626,10 @@ TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
 
 // Tests the "Edit" action of the Most Visited context menu.
 - (void)testMostVisitedEditPinnedSite {
-  [self setupMostVisitedTileLongPress];
-  // Pin the site and dismiss the snackbar.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
-      performAction:grey_tap()];
-  // Long press again and tap on "Edit Site".
+  [NewTabPageAppInterface
+      addPinnedSiteWithTitle:base::SysUTF8ToNSString(kPageTitle)
+                         URL:@"https://example.com"];
+  // Long press the pinned site and tap on "Edit Site".
   NSString* pinnedLabel = l10n_util::GetNSStringF(
       IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
       base::UTF8ToUTF16(std::string_view(kPageTitle)));
@@ -676,28 +669,7 @@ TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
   NSArray<NSString*>* URLs =
       @[ @"https://first_url.com", @"https://second_url.com" ];
   for (int i = 0; i < 2; i++) {
-    ScrollMostVisitedToRightEdge();
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       AccessibilityIdentifierForMostVisitedCellAtIndex(-1))]
-        performAction:grey_tap()];
-    // Fill out form elements.
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME)),
-                       grey_kindOfClassName(@"UITextField"), nil)]
-        performAction:grey_replaceText(titles[i])];
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     grey_accessibilityValue(
-                                         @"https://example.com"),
-                                     grey_kindOfClassName(@"UITextField"), nil)]
-        performAction:grey_replaceText(URLs[i])];
-    id<GREYMatcher> saveButton = NavigationBarAddButton();
-    [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
-        performAction:grey_tap()];
+    [NewTabPageAppInterface addPinnedSiteWithTitle:titles[i] URL:URLs[i]];
   }
 
   NSMutableArray<NSString*>* tileAccessibilityIDs = [NSMutableArray array];
@@ -756,17 +728,18 @@ TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
 - (void)testMostVisitedPinEightSites {
   id<GREYMatcher> addSiteButton = grey_accessibilityID(
       AccessibilityIdentifierForMostVisitedCellAtIndex(-1));
-  // Add 8 pinned sites. Before pinning each, verify that the "Add site" button
-  // is still visible.
-  for (int i = 0; i < 8; ++i) {
+  // Pre-populate the first 7 pinned sites; add the 8th site through the UI to
+  // verify the 8-site capacity boundary of the "Add site" button.
+  for (int i = 0; i < 7; ++i) {
     NSString* title = [NSString stringWithFormat:@"site %d", i];
     NSString* URL = [NSString stringWithFormat:@"http://page%d.com", i];
-    GREYAssert([self addPinnedSiteWithTitle:title URL:URL],
-               @"Add pinned site form not dismissed.");
-    // Dismiss the snackbar after it appears.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
-        performAction:grey_tap()];
+    [NewTabPageAppInterface addPinnedSiteWithTitle:title URL:URL];
   }
+  GREYAssert([self addPinnedSiteWithTitle:@"site 7" URL:@"http://page7.com"],
+             @"Add pinned site form not dismissed.");
+  // Dismiss the snackbar after it appears.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
   // After 8 sites, the "+" button should be gone.
   ScrollMostVisitedToRightEdge();
   [[EarlGrey selectElementWithMatcher:addSiteButton]

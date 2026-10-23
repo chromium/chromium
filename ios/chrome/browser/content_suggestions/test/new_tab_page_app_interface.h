@@ -64,6 +64,13 @@
 // Returns the width of the first cell in the Magic Stack.
 + (CGFloat)magicStackFirstCellWidth;
 
+// Initializes custom links if needed and adds a pinned site with `title` and
+// `URL` in preferences, notifying any active Most Visited Tiles observer.
++ (void)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL;
+
+// Uninitializes and clears all pinned sites in preferences.
++ (void)resetPinnedSites;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TEST_NEW_TAB_PAGE_APP_INTERFACE_H_

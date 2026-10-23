@@ -100,6 +100,7 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
+    "//components/ntp_tiles",
     "//components/ntp_tiles:pref_names",
     "//components/prefs",
     "//ios/chrome/browser/content_suggestions/public:constants",
@@ -111,6 +112,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/ntp_tiles/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

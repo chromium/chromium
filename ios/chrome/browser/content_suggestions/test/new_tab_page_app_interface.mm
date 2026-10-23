@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/ntp_tiles/custom_links_manager.h"
+#import "components/ntp_tiles/ntp_tile.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
@@ -18,6 +21,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp_tiles/model/ios_custom_links_manager_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -25,6 +29,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
 
 using content_suggestions::SearchFieldWidth;
 using set_up_list_prefs::SetUpListItemState;
@@ -146,6 +151,24 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
     return cell.bounds.size.width;
   }
   return -1;
+}
+
++ (void)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL {
+  std::unique_ptr<ntp_tiles::CustomLinksManager> customLinksManager =
+      IOSCustomLinksManagerFactory::NewForProfile(
+          chrome_test_util::GetOriginalProfile());
+  if (!customLinksManager->IsInitialized()) {
+    customLinksManager->Initialize(ntp_tiles::NTPTilesVector());
+  }
+  CHECK(customLinksManager->AddLink(GURL(base::SysNSStringToUTF8(URL)),
+                                    base::SysNSStringToUTF16(title)));
+}
+
++ (void)resetPinnedSites {
+  std::unique_ptr<ntp_tiles::CustomLinksManager> customLinksManager =
+      IOSCustomLinksManagerFactory::NewForProfile(
+          chrome_test_util::GetOriginalProfile());
+  customLinksManager->Uninitialize();
 }
 
 @end
