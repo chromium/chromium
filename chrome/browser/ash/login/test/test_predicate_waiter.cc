@@ -12,7 +12,7 @@ namespace ash {
 namespace test {
 namespace {
 
-const base::TimeDelta kPredicateCheckFrequency = base::Milliseconds(200);
+const base::TimeDelta kPredicateCheckFrequency = base::Milliseconds(10);
 
 }  // anonymous namespace
 
