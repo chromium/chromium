@@ -55,8 +55,7 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
  protected:
   void InvokeJavaOnAddedToTask() const {
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnAddedToTask(
-        AttachCurrentThread(), java_test_support_,
-        reinterpret_cast<intptr_t>(mock_browser_.get()));
+        AttachCurrentThread(), java_test_support_, mock_browser_.get());
   }
 
   void InvokeJavaOnFeatureRemoved() const {

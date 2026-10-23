@@ -64,6 +64,7 @@ android_library("java") {
 generate_jni("jni") {
   visibility = [ ":*" ]
   sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java" ]
+  deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
 }
 
 java_cpp_enum("java_enum_srcjar") {

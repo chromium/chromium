@@ -20,4 +20,5 @@ android_library("native_unit_test_support_java") {
 generate_jni("native_unit_test_support_jni") {
   testonly = true
   sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeNativeUnitTestSupport.java" ]
+  deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
 }

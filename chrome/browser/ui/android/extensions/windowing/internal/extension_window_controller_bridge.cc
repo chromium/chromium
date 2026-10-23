@@ -29,10 +29,7 @@ using extensions::WindowControllerList;
 static int64_t JNI_ExtensionWindowControllerBridgeImpl_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
-    int64_t native_browser_window_ptr) {
-  BrowserWindowInterface* browser_window =
-      reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr);
-
+    BrowserWindowInterface* browser_window) {
   return reinterpret_cast<intptr_t>(
       new ExtensionWindowControllerBridge(env, caller, browser_window));
 }

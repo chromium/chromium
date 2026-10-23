@@ -8,8 +8,10 @@ import android.graphics.Rect;
 import android.view.Display;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /**
@@ -38,11 +40,11 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     }
 
     @CalledByNative
-    private void invokeOnAddedToTask(long nativeBrowserWindowPtr) {
+    private void invokeOnAddedToTask(JniPtr<NativeBrowserWindowInterface> browserWindow) {
         mExtensionWindowControllerBridge.onAddedToTask(
                 new InitInfo(
-                        nativeBrowserWindowPtr,
-                        /* nativeBrowserWindow= */ null,
+                        /* nativeBrowserWindowPtr= */ 0,
+                        browserWindow,
                         /* isVisible= */ true,
                         new Rect(),
                         new Rect(),
