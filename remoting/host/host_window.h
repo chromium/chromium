@@ -34,6 +34,12 @@ class HostWindow {
   static std::unique_ptr<HostWindow> CreateAutoHidingDisconnectWindow(
       std::unique_ptr<LocalInputMonitor> local_input_monitor);
 
+  // Creates a platform-specific instance of the privacy overlay which covers
+  // all local displays during a remote session while excluding itself from
+  // screen capture, and reveals a disconnect button on local input.
+  static std::unique_ptr<HostWindow> CreatePrivacyOverlay(
+      std::unique_ptr<LocalInputMonitor> local_input_monitor);
+
   // Starts the UI state machine. |client_session_control| will be used to
   // notify the caller about the local user's actions.
   virtual void Start(
