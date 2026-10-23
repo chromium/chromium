@@ -103,7 +103,7 @@ suite('PaymentsPagePayOverTime', function() {
             '#payOverTimeToggle');
     assertTrue(!!payOverTimeToggle);
 
-    const link = payOverTimeToggle.shadowRoot!.querySelector('a');
+    const link = payOverTimeToggle.shadowRoot.querySelector('a');
     assertTrue(!!link);
     link.click();
 

@@ -499,6 +499,7 @@ suite('PaymentsPage', function() {
     const expectations = getDefaultExpectations();
     assertTrue(!!mandatoryAuthToggle);
     mandatoryAuthToggle.click();
+    await microtasksFinished();
     expectations.authenticateUserAndFlipMandatoryAuthToggle = 1;
     (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
         .assertExpectations(expectations);
@@ -530,6 +531,7 @@ suite('PaymentsPage', function() {
     const expectations = getDefaultExpectations();
     assertTrue(!!mandatoryAuthToggle);
     mandatoryAuthToggle.click();
+    await microtasksFinished();
     expectations.authenticateUserAndFlipMandatoryAuthToggle = 1;
     paymentsManager.assertExpectations(expectations);
   });
@@ -852,7 +854,7 @@ suite('PaymentsPage', function() {
             '#cardBenefitsToggle');
     assertTrue(!!cardBenefitsToggle);
 
-    const link = cardBenefitsToggle.shadowRoot!.querySelector('a');
+    const link = cardBenefitsToggle.shadowRoot.querySelector('a');
     assertTrue(!!link);
     link.click();
 

@@ -1159,7 +1159,7 @@ suite('ContactInfoPageUiTest', function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const {page, toggle} = await createContactInfoPageForGmailOtpFilling();
 
-    const toggleLink = toggle.shadowRoot!.querySelector('a');
+    const toggleLink = toggle.shadowRoot.querySelector('a');
     assertTrue(!!toggleLink);
     assertEquals(
         loadTimeData.getString('gmailOtpFillingLearnMoreA11yLabel'),
@@ -2257,6 +2257,7 @@ suite('ContactInfoPageAddressTests', function() {
 
     // Test that toggling the button off records the correct metric.
     button.click();
+    await microtasksFinished();
     assertEquals(metricsTracker.count('Autofill.Address.IsEnabled.Change'), 1);
     assertEquals(
         metricsTracker.count(
@@ -2266,6 +2267,7 @@ suite('ContactInfoPageAddressTests', function() {
 
     // Test that toggling the button on records the correct metric.
     button.click();
+    await microtasksFinished();
     assertEquals(metricsTracker.count('Autofill.Address.IsEnabled.Change'), 2);
     assertEquals(
         metricsTracker.count(

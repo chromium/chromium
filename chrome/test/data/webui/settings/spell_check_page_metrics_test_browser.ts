@@ -65,6 +65,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
     spellCheckPage = document.createElement('settings-spell-check-page');
     document.body.appendChild(spellCheckPage);
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -74,6 +75,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
   suite('Metrics', function() {
     test('records when disabling spellCheck globally', async () => {
       prefService.setPrefValue('browser.enable_spellchecking', true);
+      await microtasksFinished();
       const spellCheckToggle = spellCheckPage.$.enableSpellcheckingToggle;
       spellCheckToggle.click();
       await microtasksFinished();
@@ -85,6 +87,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
     test('records when enabling spellCheck globally', async () => {
       prefService.setPrefValue('browser.enable_spellchecking', false);
+      await microtasksFinished();
 
       const spellCheckToggle = spellCheckPage.$.enableSpellcheckingToggle;
       spellCheckToggle.click();

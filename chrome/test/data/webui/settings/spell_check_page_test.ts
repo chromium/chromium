@@ -167,7 +167,7 @@ suite('SpellCheck', function() {
 
       // The policy indicator should be present.
       assertTrue(
-          !!triggerRow.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+          !!triggerRow.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
       // Force-enable spellchecking via policy, and ensure that the policy
       // indicator is not present. |enable_spellchecking| can be forced to

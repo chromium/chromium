@@ -4,53 +4,48 @@
 
 /**
  * @fileoverview
- * A behavior to help controls that handle a boolean preference, such as
- * checkbox and toggle button.
+ * A mixin to help controls that handle a boolean preference, such as
+ * checkbox and toggle button, in Lit.
  */
 
-import type {CrPolicyPrefMixinInterface} from '/shared/settings/controls/cr_policy_pref_mixin.js';
-import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
-import type {PrefKeyObserverMixinInterface} from '/shared/settings/prefs2/pref_key_observer_mixin.js';
-import {PrefKeyObserverMixin} from '/shared/settings/prefs2/pref_key_observer_mixin.js';
+import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrPolicyPrefMixinLitInterface} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
+import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
+import type {PrefKeyObserverMixinLitInterface} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
+import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export const DEFAULT_UNCHECKED_VALUE = 0;
 export const DEFAULT_CHECKED_VALUE = 1;
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const SettingsBooleanControlMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
+export const SettingsBooleanControlMixin =
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<SettingsBooleanControlMixinInterface> => {
       const superClassBase =
-          CrPolicyPrefMixin(PrefKeyObserverMixin(superClass));
+          CrPolicyPrefMixinLit(PrefKeyObserverMixinLit(superClass));
 
-      class SettingsBooleanControlMixin extends superClassBase {
+      class SettingsBooleanControlMixin extends superClassBase implements
+          SettingsBooleanControlMixinInterface {
         static get properties() {
           return {
             /** Whether the control should represent the inverted value. */
-            inverted: {
-              type: Boolean,
-              value: false,
-            },
+            inverted: {type: Boolean},
 
             /** Whether the control is checked. */
             checked: {
               type: Boolean,
-              value: false,
               notify: true,
-              reflectToAttribute: true,
+              reflect: true,
             },
 
             /** Disabled property for the element. */
             disabled: {
               type: Boolean,
-              value: false,
               notify: true,
-              reflectToAttribute: true,
+              reflect: true,
             },
 
             /**
@@ -58,22 +53,13 @@ export const SettingsBooleanControlMixin = dedupingMixin(
              * allows the container to confirm the change first then call either
              * sendPrefChange or resetToPrefValue accordingly.
              */
-            noSetPref: {
-              type: Boolean,
-              value: false,
-            },
+            noSetPref: {type: Boolean},
 
             /** The main label. */
-            label: {
-              type: String,
-              value: '',
-            },
+            label: {type: String},
 
             /** Additional (optional) sub-label. */
-            subLabel: {
-              type: String,
-              value: '',
-            },
+            subLabel: {type: String},
 
             /**
              * For numeric prefs only. The integer values equivalent to the
@@ -82,45 +68,45 @@ export const SettingsBooleanControlMixin = dedupingMixin(
              * values in the array. When sendPrefChange() is called the *first*
              * value in this array will be sent to the backend.
              */
-            numericUncheckedValues: {
-              type: Array,
-              value: () => [DEFAULT_UNCHECKED_VALUE],
-            },
+            numericUncheckedValues: {type: Array},
 
             /**
              * For numeric prefs only, the integer value equivalent to the
              * checked state. This is the value sent to prefs if the user
              * checked the control.
              */
-            numericCheckedValue: {
-              type: Number,
-              value: DEFAULT_CHECKED_VALUE,
-            },
+            numericCheckedValue: {type: Number},
           };
         }
 
-        static get observers() {
-          return ['prefValueChanged_(pref.value, numericUncheckedValues.*)'];
+        accessor inverted: boolean = false;
+        accessor checked: boolean = false;
+        accessor disabled: boolean = false;
+        accessor noSetPref: boolean = false;
+        accessor label: string = '';
+        accessor subLabel: string = '';
+        accessor numericUncheckedValues: number[] = [DEFAULT_UNCHECKED_VALUE];
+        accessor numericCheckedValue: number = DEFAULT_CHECKED_VALUE;
+
+        override willUpdate(changedProperties: PropertyValues<this>) {
+          super.willUpdate(changedProperties);
+
+          if (changedProperties.has('pref') ||
+              changedProperties.has('numericUncheckedValues')) {
+            if (this.pref === undefined) {
+              return;
+            }
+            this.checked = this.getNewValue_(this.pref.value);
+          }
         }
 
-        declare inverted: boolean;
-        declare checked: boolean;
-        declare disabled: boolean;
-        declare noSetPref: boolean;
-        declare label: string;
-        declare subLabel: string;
-        declare numericUncheckedValues: number[];
-        declare numericCheckedValue: number;
-
-        notifyChangedByUserInteraction() {
-          this.dispatchEvent(new CustomEvent(
-              'settings-boolean-control-change',
-              {bubbles: true, composed: true}));
-
-          if (!this.pref || this.noSetPref) {
-            return;
+        async notifyChangedByUserInteraction() {
+          if (this.pref && !this.noSetPref) {
+            this.sendPrefChange();
           }
-          this.sendPrefChange();
+
+          await this.updateComplete;
+          this.fire('settings-boolean-control-change');
         }
 
         /** Reset the checked state to match the current pref value. */
@@ -152,13 +138,6 @@ export const SettingsBooleanControlMixin = dedupingMixin(
               this.prefKey, this.inverted ? !this.checked : this.checked);
         }
 
-        private prefValueChanged_() {
-          if (this.pref === undefined) {
-            return;
-          }
-          this.checked = this.getNewValue_(this.pref.value);
-        }
-
         /**
          * @return The value as a boolean, inverted if |inverted| is true.
          */
@@ -179,10 +158,10 @@ export const SettingsBooleanControlMixin = dedupingMixin(
       }
 
       return SettingsBooleanControlMixin;
-    });
+    };
 
 export interface SettingsBooleanControlMixinInterface extends
-    PrefKeyObserverMixinInterface, CrPolicyPrefMixinInterface {
+    PrefKeyObserverMixinLitInterface, CrPolicyPrefMixinLitInterface {
   inverted: boolean;
   checked: boolean;
   disabled: boolean;

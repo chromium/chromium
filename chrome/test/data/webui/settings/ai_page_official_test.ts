@@ -126,7 +126,7 @@ suite('settings ai page official', function() {
     assertTrue(toggle.$.control.disabled);
     assertFalse(toggle.checked);
     const policyIndicator =
-        toggle.shadowRoot!.querySelector('cr-policy-pref-indicator');
+        toggle.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!policyIndicator);
     assertTrue(isVisible(policyIndicator));
   });

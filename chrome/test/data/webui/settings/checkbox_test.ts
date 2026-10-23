@@ -4,7 +4,6 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,6 +40,7 @@ suite('SettingsCheckbox', function() {
     testElement = document.createElement('settings-checkbox');
     testElement.prefKey = 'test';
     document.body.appendChild(testElement);
+    await microtasksFinished();
   });
 
   test('value changes on click', async function() {
@@ -81,6 +81,7 @@ suite('SettingsCheckbox', function() {
   test('does not change when disabled', async function() {
     testElement.checked = false;
     testElement.setAttribute('disabled', '');
+    await microtasksFinished();
     assertTrue(testElement.disabled);
     assertTrue(testElement.$.checkbox.disabled);
 
@@ -96,6 +97,7 @@ suite('SettingsCheckbox', function() {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 1,
     }]);
+    await microtasksFinished();
     assertTrue(testElement.checked);
 
     testElement.$.checkbox.click();
@@ -109,18 +111,18 @@ suite('SettingsCheckbox', function() {
     assertEquals(1, prefService.getPref<number>('test').value);
   });
 
-  test('sub label should be able to have an id', () => {
+  test('sub label should be able to have an id', async () => {
     testElement.subLabelHtml = '<a id="subLabelWithLink"></a>';
-    flush();
+    await microtasksFinished();
 
     const actionLink =
         testElement.$.subLabel.querySelector('#subLabelWithLink');
     assertTrue(!!actionLink);
   });
 
-  test('sub label should be able to have an aria-label', () => {
+  test('sub label should be able to have an aria-label', async () => {
     testElement.subLabelHtml = '<a aria-label="Label"></a>';
-    flush();
+    await microtasksFinished();
 
     const actionLink = testElement.$.subLabel.querySelector('a');
     assertTrue(!!actionLink);
@@ -131,7 +133,7 @@ suite('SettingsCheckbox', function() {
       'click on sub label link should not toggle the button', async function() {
         testElement.checked = true;
         testElement.subLabelHtml = '<a href="#"></a>';
-        flush();
+        await microtasksFinished();
 
         const actionLink = testElement.$.subLabel.querySelector('a');
         assertTrue(!!actionLink);
@@ -147,7 +149,7 @@ suite('SettingsCheckbox', function() {
   test('click on sub label text should toggle the button', async function() {
     testElement.checked = true;
     testElement.subLabelHtml = '<a href="#"></a>';
-    flush();
+    await microtasksFinished();
 
     assertTrue(testElement.checked);
 
@@ -159,7 +161,7 @@ suite('SettingsCheckbox', function() {
 
   test('click on sub label link should fire a custom event', async function() {
     testElement.subLabelHtml = '<a href="#" id="subLabelWithLink"></a>';
-    flush();
+    await microtasksFinished();
 
     const actionLink = testElement.$.subLabel.querySelector('a');
     assertTrue(!!actionLink);
@@ -171,13 +173,13 @@ suite('SettingsCheckbox', function() {
     assertEquals('subLabelWithLink', clickEvent.detail.id);
   });
 
-  test('click on sub label text should not fire a custom event', () => {
+  test('click on sub label text should not fire a custom event', async () => {
     testElement.subLabelHtml = '<a href="#" id="subLabelWithLink"></a>';
     testElement.addEventListener('sub-label-link-clicked', () => {
       assertNotReached(
           'custom event should not be triggered for non action link clicks.');
     });
-    flush();
+    await microtasksFinished();
 
     testElement.$.subLabel.click();
   });

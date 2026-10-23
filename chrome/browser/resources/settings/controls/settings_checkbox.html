@@ -1,45 +1,18 @@
-<style include="cr-shared-style">
-  #outerRow {
-    align-items: center;
-    display: flex;
-    min-height: var(--cr-section-two-line-min-height);
-    width: 100%;
-  }
-
-  #outerRow[noSubLabel] {
-    min-height: var(--cr-section-min-height);
-  }
-
-  cr-checkbox {
-    /* Additional margin in case subLabel needs more than one line. */
-    margin-bottom: 4px;
-    margin-top: var(--settings-checkbox-margin-top, 4px);
-    width: 100%;
-  }
-
-  cr-policy-pref-indicator {
-    margin-inline-start: var(--cr-controlled-by-spacing);
-  }
-
-  /* Style links that can appear within #subLabel. */
-  a {
-    color: var(--cr-link-color);
-  }
-</style>
-<div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelHtml)]]">
-  <cr-checkbox id="checkbox" checked="{{checked}}"
-      on-change="notifyChangedByUserInteraction"
-      disabled="[[controlDisabled(disabled, pref.*)]]"
-      aria-label="[[label]]">
-    <div id="label">[[label]] <slot></slot></div>
+<div id="outerRow" ?no-sub-label="${!this.hasSubLabel_()}">
+  <cr-checkbox id="checkbox" ?checked="${this.checked}"
+      @change="${this.onChange_}"
+      ?disabled="${this.controlDisabled()}"
+      aria-label="${this.label}">
+    <div id="label">${this.label} <slot></slot></div>
     <div id="subLabel" class="cr-secondary-text">
-      <div inner-h-t-m-l="[[sanitizeInnerHtml_(subLabelHtml)]]"
-          on-click="onSubLabelClick_"></div>
-      [[subLabel]]
+      <div .innerHTML="${this.sanitizeInnerHtml_()}"
+          @click="${this.onSubLabelClick_}"></div>
+      ${this.subLabel}
     </div>
   </cr-checkbox>
-  <template is="dom-if" if="[[pref.controlledBy]]">
-    <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
+  ${this.pref?.controlledBy ? html`
+    <cr-policy-pref-indicator .pref="${this.pref}"
+        icon-aria-label="${this.label}">
     </cr-policy-pref-indicator>
-  </template>
+  ` : ''}
 </div>

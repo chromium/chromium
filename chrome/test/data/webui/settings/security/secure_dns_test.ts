@@ -214,8 +214,8 @@ suite('SettingsSecureDns', function() {
         'none',
         getComputedStyle(testElement.$.secureDnsInputContainer).display);
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator'));
+    assertFalse(
+        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 
   test('SecureDnsAutomatic', async function() {
@@ -227,8 +227,8 @@ suite('SettingsSecureDns', function() {
     await microtasksFinished();
     assertResolverSelectShown();
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator'));
+    assertFalse(
+        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertEquals(
         SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
@@ -242,8 +242,8 @@ suite('SettingsSecureDns', function() {
     await microtasksFinished();
     assertResolverSelectShown();
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator'));
+    assertFalse(
+        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertEquals('0', testElement.$.resolverSelect.value);
   });
 
@@ -258,10 +258,10 @@ suite('SettingsSecureDns', function() {
     assertTrue(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);
     assertEquals(managedEnvironmentDescription, secureDnsToggle.subLabel);
-    assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator'));
     assertTrue(
-        secureDnsToggle.shadowRoot!.querySelector('cr-policy-pref-indicator')!
+        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
+    assertTrue(
+        secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')!
             .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
@@ -276,10 +276,10 @@ suite('SettingsSecureDns', function() {
     assertTrue(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);
     assertEquals(parentalControlDescription, secureDnsToggle.subLabel);
-    assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator'));
     assertTrue(
-        secureDnsToggle.shadowRoot!.querySelector('cr-policy-pref-indicator')!
+        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
+    assertTrue(
+        secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')!
             .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
@@ -302,10 +302,10 @@ suite('SettingsSecureDns', function() {
     assertTrue(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
-        'cr-policy-pref-indicator'));
+    assertTrue(
+        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertFalse(
-        secureDnsToggle.shadowRoot!.querySelector('cr-policy-pref-indicator')!
+        secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')!
             .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 });

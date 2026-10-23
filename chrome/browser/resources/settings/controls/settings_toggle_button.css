@@ -1,0 +1,67 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_actionable_row_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/action_link_lit.css.js
+ * #include=cr-shared-style-lit cr-actionable-row-style-lit action-link-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-icon-button-margin-end: 20px;
+  padding: 0 var(--cr-section-padding);
+}
+
+:host([elide-label]),
+:host([elide-label]) #outerRow,
+:host([elide-label]) #outerRow > div.flex {
+  min-width: 0;
+}
+
+:host([elide-label]) .label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+div.flex {
+  flex: 1;
+}
+
+#outerRow {
+  align-items: center;
+  display: flex;
+  min-height: var(--cr-section-two-line-min-height);
+  width: 100%;
+}
+
+#outerRow[no-sub-label] {
+  min-height: var(--cr-section-min-height);
+}
+
+#icon {
+  margin-inline-end: var(--cr-icon-button-margin-end);
+}
+
+#labelWrapper {
+  padding: var(--cr-section-vertical-padding) 0;
+}
+
+#labelWrapper,
+::slotted([slot='more-actions']) {
+  margin-inline-end: 20px !important;
+}
+
+cr-policy-pref-indicator {
+  margin-inline-end: var(--cr-controlled-by-spacing);
+}
+
+/* Style #learn-more or other links that can appear within
+   #sub-label-text-with-link. */
+a {
+  color: var(--cr-link-color);
+}

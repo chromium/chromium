@@ -236,9 +236,6 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     PrefService.getInstance().whenInitialized().then(() => {
       this.setUpDataTypeOptionLists_();
-      // Wait for checkbox lists to be populated before checking if the delete
-      // button should be disabled.
-      this.updateComplete.then(() => this.updateDeleteButtonState_());
     });
   }
 
@@ -301,6 +298,9 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     this.expandedBrowsingDataTypeOptionsList_ = expandedOptionsList;
     this.moreBrowsingDataTypeOptionsList_ = moreOptionsList;
+    this.isNoDatatypeSelected_ = !expandedOptionsList.some(
+        option =>
+            PrefService.getInstance().getPref<boolean>(option.prefKey).value);
   }
 
   /**

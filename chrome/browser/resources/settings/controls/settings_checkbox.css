@@ -1,0 +1,37 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#outerRow {
+  align-items: center;
+  display: flex;
+  min-height: var(--cr-section-two-line-min-height);
+  width: 100%;
+}
+
+#outerRow[no-sub-label] {
+  min-height: var(--cr-section-min-height);
+}
+
+cr-checkbox {
+  /* Additional margin in case subLabel needs more than one line. */
+  margin-bottom: 4px;
+  margin-top: var(--settings-checkbox-margin-top, 4px);
+  width: 100%;
+}
+
+cr-policy-pref-indicator {
+  margin-inline-start: var(--cr-controlled-by-spacing);
+}
+
+/* Style links that can appear within #subLabel. */
+a {
+  color: var(--cr-link-color);
+}

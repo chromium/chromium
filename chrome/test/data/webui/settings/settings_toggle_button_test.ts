@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE, loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 
@@ -57,6 +56,7 @@ suite('SettingsToggleButton', () => {
     testElement = document.createElement('settings-toggle-button');
     testElement.prefKey = 'test';
     document.body.appendChild(testElement);
+    await microtasksFinished();
   });
 
   test('value changes on click', () => {
@@ -142,9 +142,10 @@ suite('SettingsToggleButton', () => {
     assertEquals(3, counter);
   });
 
-  test('does not change when disabled', () => {
+  test('does not change when disabled', async () => {
     testElement.checked = false;
     testElement.setAttribute('disabled', '');
+    await microtasksFinished();
     assertTrue(testElement.disabled);
     assertTrue(testElement.$.control.disabled);
 
@@ -219,12 +220,13 @@ suite('SettingsToggleButton', () => {
     assertFalse(testElement.checked);
   });
 
-  test('numerical pref', () => {
+  test('numerical pref', async () => {
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: DEFAULT_CHECKED_VALUE,
     }]);
+    await microtasksFinished();
     assertTrue(testElement.checked);
 
     testElement.click();
@@ -238,7 +240,7 @@ suite('SettingsToggleButton', () => {
         DEFAULT_CHECKED_VALUE, prefService.getPref<number>('test').value);
   });
 
-  test('numerical pref with custom values', () => {
+  test('numerical pref with custom values', async () => {
     const UNCHECKED_VALUE_1 = 1;
     const UNCHECKED_VALUE_2 = 2;
     const CHECKED_VALUE = 3;
@@ -252,6 +254,7 @@ suite('SettingsToggleButton', () => {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: UNCHECKED_VALUE_2,
     }]);
+    await microtasksFinished();
     assertFalse(testElement.checked);
     assertEquals(UNCHECKED_VALUE_2, prefService.getPref<number>('test').value);
 
@@ -268,7 +271,7 @@ suite('SettingsToggleButton', () => {
 
   const UNKNOWN_VALUE = 3;
 
-  test('numerical pref with unknown initial value', () => {
+  test('numerical pref with unknown initial value', async () => {
     const CUSTOM_UNCHECKED_VALUE = 5;
     const CUSTOM_CHECKED_VALUE = 2;
 
@@ -280,6 +283,7 @@ suite('SettingsToggleButton', () => {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: UNKNOWN_VALUE,
     }]);
+    await microtasksFinished();
 
     // Unknown value should still count as checked.
     assertTrue(testElement.checked);
@@ -300,9 +304,9 @@ suite('SettingsToggleButton', () => {
         CUSTOM_CHECKED_VALUE, prefService.getPref<number>('test').value);
   });
 
-  test('shows controlled indicator when pref is controlled', () => {
+  test('shows controlled indicator when pref is controlled', async () => {
     assertFalse(
-        !!testElement.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+        !!testElement.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
       key: 'test',
@@ -311,15 +315,15 @@ suite('SettingsToggleButton', () => {
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertTrue(
-        !!testElement.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+        !!testElement.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 
-  test('no indicator with no-extension-indicator flag', () => {
+  test('no indicator with no-extension-indicator flag', async () => {
     assertFalse(
-        !!testElement.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+        !!testElement.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
     testElement.noExtensionIndicator = true;
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
@@ -329,13 +333,13 @@ suite('SettingsToggleButton', () => {
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
     }]);
-    flush();
+    await microtasksFinished();
 
     assertFalse(
-        !!testElement.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+        !!testElement.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 
-  test('user control disabled pref', () => {
+  test('user control disabled pref', async () => {
     assertFalse(testElement.$.control.disabled);
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
       key: 'test',
@@ -343,23 +347,22 @@ suite('SettingsToggleButton', () => {
       value: false,
       userControlDisabled: true,
     }]);
-    flush();
+    await microtasksFinished();
     assertTrue(testElement.$.control.disabled);
   });
 
-  test('click on learn more link should not toggle the button', () => {
+  test('click on learn more link should not toggle the button', async () => {
     let learnMoreLink =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#learn-more');
+        testElement.shadowRoot.querySelector<HTMLElement>('#learn-more');
     assertFalse(!!learnMoreLink);
-    testElement.set('learnMoreUrl', 'www.google.com');
-    flush();
+    testElement.learnMoreUrl = 'www.google.com';
+    await microtasksFinished();
 
     learnMoreLink =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#learn-more');
+        testElement.shadowRoot.querySelector<HTMLElement>('#learn-more');
     assertTrue(!!learnMoreLink);
 
     assertTrue(testElement.checked);
-    flush();
 
     // Prevent the link from opening a new tab. The relative URL resolves to
     // chrome://settings/www.google.com, which would load the full Settings page
@@ -369,49 +372,53 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
   });
 
-  test('learn more link should indicate it opens in new tab', () => {
-    testElement.set('learnMoreUrl', 'www.google.com');
-    flush();
+  test('learn more link should indicate it opens in new tab', async () => {
+    testElement.learnMoreUrl = 'www.google.com';
+    await microtasksFinished();
     const learnMoreLink =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#learn-more');
+        testElement.shadowRoot.querySelector<HTMLElement>('#learn-more');
     assertTrue(!!learnMoreLink);
     assertEquals(
         learnMoreLink.getAttribute('aria-description'),
         loadTimeData.getString('opensInNewTab'));
   });
 
-  test('set label text should update aria-label of toggle', () => {
+  test('set label text should update aria-label of toggle', async () => {
     const testLabelText = 'test label text';
     testElement.setAttribute('label', testLabelText);
-
-    const crToggle = testElement.shadowRoot!.querySelector('#control');
-    assertTrue(!!crToggle);
-    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
+    await microtasksFinished();
+    assertEquals(
+        testElement.$.control.getAttribute('aria-label'), testLabelText);
 
     const testLabelTextAlt = 'test label text alt';
     testElement.setAttribute('label', testLabelTextAlt);
-    assertEquals(crToggle.getAttribute('aria-label'), testLabelTextAlt);
+    await microtasksFinished();
+    assertEquals(
+        testElement.$.control.getAttribute('aria-label'), testLabelTextAlt);
   });
 
-  test('set aria-label attribute should override aria-label of toggle', () => {
-    const testLabelText = 'test label text';
-    testElement.setAttribute('label', testLabelText);
+  test(
+      'set aria-label attribute should override aria-label of toggle',
+      async () => {
+        const testLabelText = 'test label text';
+        testElement.setAttribute('label', testLabelText);
+        await microtasksFinished();
+        assertEquals(
+            testElement.$.control.getAttribute('aria-label'), testLabelText);
 
-    const crToggle = testElement.shadowRoot!.querySelector('#control');
-    assertTrue(!!crToggle);
-    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
+        const testAriaLabel = 'test aria label';
+        testElement.setAttribute('aria-label', testAriaLabel);
+        await microtasksFinished();
+        assertEquals(
+            testElement.$.control.getAttribute('aria-label'), testAriaLabel);
+      });
 
-    const testAriaLabel = 'test aria label';
-    testElement.setAttribute('aria-label', testAriaLabel);
-    assertEquals(crToggle.getAttribute('aria-label'), testAriaLabel);
-  });
-
-  test('sub label with action link should have proper role', () => {
+  test('sub label with action link should have proper role', async () => {
     testElement.subLabelWithLink = '<a is="action-link"></a>';
-    flush();
+    await microtasksFinished();
 
     const subLabelTextWithLink =
-        testElement.shadowRoot!.querySelector<HTMLElement>(
+        testElement.shadowRoot.querySelector<HTMLElement>(
             '#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
 
@@ -420,12 +427,12 @@ suite('SettingsToggleButton', () => {
     assertEquals(actionLink.getAttribute('role'), 'link');
   });
 
-  test('sub label should be able to have aria-label', () => {
+  test('sub label should be able to have aria-label', async () => {
     testElement.subLabelWithLink = '<a aria-label="Label"></a>';
-    flush();
+    await microtasksFinished();
 
     const subLabelTextWithLink =
-        testElement.shadowRoot!.querySelector<HTMLElement>(
+        testElement.shadowRoot.querySelector<HTMLElement>(
             '#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
 
@@ -434,14 +441,14 @@ suite('SettingsToggleButton', () => {
     assertEquals(actionLink.getAttribute('aria-label'), 'Label');
   });
 
-  test('shows more-actions-after slot content', () => {
+  test('shows more-actions-after slot content', async () => {
     const slottedContent = document.createElement('div');
     slottedContent.setAttribute('slot', 'more-actions-after');
     slottedContent.textContent = 'Slotted content';
     testElement.appendChild(slottedContent);
-    flush();
+    await microtasksFinished();
 
-    const slot = testElement.shadowRoot!.querySelector<HTMLSlotElement>(
+    const slot = testElement.shadowRoot.querySelector<HTMLSlotElement>(
         'slot[name="more-actions-after"]');
     assertTrue(!!slot);
     const assignedNodes = slot.assignedNodes({flatten: true});
@@ -451,43 +458,44 @@ suite('SettingsToggleButton', () => {
   });
 
   // <if expr="is_chromeos">
-  test('click on sub label link should not toggle the button', () => {
+  test('click on sub label link should not toggle the button', async () => {
     let subLabelTextWithLink =
-        testElement.shadowRoot!.querySelector('#sub-label-text-with-link');
+        testElement.shadowRoot.querySelector('#sub-label-text-with-link');
     assertFalse(!!subLabelTextWithLink);
-    testElement.set('subLabelWithLink', '<a href="#"></a>');
-    flush();
+    testElement.subLabelWithLink = '<a href="#"></a>';
+    await microtasksFinished();
 
     subLabelTextWithLink =
-        testElement.shadowRoot!.querySelector('#sub-label-text-with-link');
+        testElement.shadowRoot.querySelector('#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
     const link = subLabelTextWithLink.querySelector('a');
     assertTrue(!!link);
 
     assertTrue(testElement.checked);
-    flush();
 
     link.click();
     assertTrue(testElement.checked);
   });
 
-  test('click on sub label with link text should toggle the button', () => {
-    let subLabelTextWithLink =
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-            '#sub-label-text-with-link');
-    assertFalse(!!subLabelTextWithLink);
-    testElement.set('subLabelWithLink', '<a href="#"></a>');
-    flush();
+  test(
+      'click on sub label with link text should toggle the button',
+      async () => {
+        let subLabelTextWithLink =
+            testElement.shadowRoot.querySelector<HTMLElement>(
+                '#sub-label-text-with-link');
+        assertFalse(!!subLabelTextWithLink);
+        testElement.subLabelWithLink = '<a href="#"></a>';
+        await microtasksFinished();
 
-    subLabelTextWithLink = testElement.shadowRoot!.querySelector<HTMLElement>(
-        '#sub-label-text-with-link');
-    assertTrue(!!subLabelTextWithLink);
+        subLabelTextWithLink =
+            testElement.shadowRoot.querySelector<HTMLElement>(
+                '#sub-label-text-with-link');
+        assertTrue(!!subLabelTextWithLink);
 
-    assertTrue(testElement.checked);
-    flush();
+        assertTrue(testElement.checked);
 
-    subLabelTextWithLink.click();
-    assertFalse(testElement.checked);
-  });
+        subLabelTextWithLink.click();
+        assertFalse(testElement.checked);
+      });
   // </if>
 });

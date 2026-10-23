@@ -6,21 +6,19 @@
  * @fileoverview
  * `settings-toggle-button` is a toggle that controls a supplied preference.
  */
-import '//resources/cr_elements/cr_actionable_row_style.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/action_link.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
-import {getTemplate} from './settings_toggle_button.html.js';
+import {getCss} from './settings_toggle_button.css.js';
+import {getHtml} from './settings_toggle_button.html.js';
 
 
 export interface SettingsToggleButtonElement {
@@ -31,7 +29,7 @@ export interface SettingsToggleButtonElement {
 }
 
 const SettingsToggleButtonElementBase =
-    SettingsBooleanControlMixin(PolymerElement);
+    SettingsBooleanControlMixin(CrLitElement);
 
 export class SettingsToggleButtonElement extends
     SettingsToggleButtonElementBase {
@@ -39,88 +37,63 @@ export class SettingsToggleButtonElement extends
     return 'settings-toggle-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      ariaLabel: {
-        type: String,
-        reflectToAttribute: false,  // Handled by #control.
-        observer: 'onAriaLabelSet_',
-        value: '',
-      },
-
-      ariaShowLabel: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-      },
-
-      ariaShowSublabel: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-      },
+      ariaLabel: {type: String},
+      ariaShowLabel: {type: Boolean},
+      ariaShowSublabel: {type: Boolean},
 
       elideLabel: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      learnMoreUrl: {
-        type: String,
-        reflectToAttribute: true,
-      },
-
-      subLabelWithLink: {
-        type: String,
-        reflectToAttribute: true,
-      },
-
-      learnMoreAriaLabel: {
-        type: String,
-        value: '',
-      },
-
-      icon: String,
-
-      subLabelIcon: String,
+      learnMoreUrl: {type: String},
+      subLabelWithLink: {type: String},
+      learnMoreAriaLabel: {type: String},
+      icon: {type: String},
+      subLabelIcon: {type: String},
 
       /**
        * If true, the host element does not get a click event handler and the
        * client is responsible for determining their own click logic. Thus when
        * true, clicking on the setting row does not toggle the setting pref.
-       * Note, this boolean is only used on ready() callback, and any changes
-       * after that have no effect.
+       * Note, this boolean is only used on firstUpdated() callback, and any
+       * changes after that have no effect.
        */
-      noToggleOnHostClick: {
-        type: Boolean,
-        value: false,
-      },
+      noToggleOnHostClick: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return [
-      'onDisableOrPrefChange_(disabled, pref.*)',
-    ];
+  override accessor ariaLabel: string = '';
+  accessor ariaShowLabel: boolean = false;
+  accessor ariaShowSublabel: boolean = false;
+  accessor elideLabel: boolean = false;
+  accessor icon: string = '';
+  accessor learnMoreAriaLabel: string = '';
+  accessor learnMoreUrl: string = '';
+  accessor subLabelWithLink: string = '';
+  accessor subLabelIcon: string = '';
+  accessor noToggleOnHostClick: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('ariaLabel')) {
+      this.onAriaLabelSet_();
+    }
   }
 
-  declare ariaLabel: string;
-  declare ariaShowLabel: boolean;
-  declare ariaShowSublabel: boolean;
-  declare elideLabel: boolean;
-  declare icon: string;
-  declare learnMoreAriaLabel: string;
-  declare learnMoreUrl: string;
-  declare subLabelWithLink: string;
-  declare subLabelIcon: string;
-  declare noToggleOnHostClick: boolean;
-
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
 
     // If the settings toggle is noToggleOnHostClick then do not update the
     // setting pref on click. Instead let parent code use a custom click
@@ -130,9 +103,12 @@ export class SettingsToggleButtonElement extends
     }
   }
 
-  private fire_(eventName: string, detail?: unknown) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {detail, bubbles: true, composed: true}));
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('disabled') || changedProperties.has('pref')) {
+      this.toggleAttribute('effectively-disabled_', this.controlDisabled());
+    }
   }
 
   override focus() {
@@ -150,23 +126,17 @@ export class SettingsToggleButtonElement extends
     }
   }
 
-  private getAriaLabel_(): string {
+  protected getAriaLabel_(): string {
     return this.ariaLabel || this.label;
   }
 
-  private getLearnMoreAriaLabelledBy_(): string {
+  protected getLearnMoreAriaLabelledBy_(): string {
     return this.learnMoreAriaLabel ? 'learn-more-aria-label' :
                                      'sub-label-text learn-more';
   }
 
-  getBubbleAnchor() {
-    const anchor = this.shadowRoot!.querySelector<HTMLElement>('#control');
-    assert(anchor);
-    return anchor;
-  }
-
-  private onDisableOrPrefChange_() {
-    this.toggleAttribute('effectively-disabled_', this.controlDisabled());
+  getBubbleAnchor(): HTMLElement {
+    return this.$.control;
   }
 
   /**
@@ -182,15 +152,15 @@ export class SettingsToggleButtonElement extends
     this.updateCheckedAndNotify_(!this.checked);
   }
 
-  private onLearnMoreClick_(e: CustomEvent<boolean>) {
+  protected onLearnMoreClick_(e: Event) {
     e.stopPropagation();
-    this.fire_('learn-more-clicked');
+    this.fire('learn-more-clicked');
   }
 
   /**
    * Set up the contents of sub label with link.
    */
-  private getSubLabelWithLinkContent_(): TrustedHTML {
+  protected getSubLabelWithLinkContent_(): TrustedHTML {
     return sanitizeInnerHtml(this.subLabelWithLink, {
       attrs: [
         'id',
@@ -204,16 +174,16 @@ export class SettingsToggleButtonElement extends
     });
   }
 
-  private onSubLabelTextWithLinkClick_(e: Event) {
+  protected onSubLabelTextWithLinkClick_(e: Event) {
     const target = e.target as HTMLElement;
     if (target.tagName === 'A') {
-      this.fire_('sub-label-link-clicked', target.id);
+      this.fire('sub-label-link-clicked', target.id);
       e.preventDefault();
       e.stopPropagation();
     }
   }
 
-  private onChange_(e: CustomEvent<boolean>) {
+  protected onChange_(e: CustomEvent<boolean>) {
     // Prevent cr-toggle's change event from propagating to the parent since
     // this element fires its own 'change' event.
     e.stopPropagation();
@@ -223,7 +193,7 @@ export class SettingsToggleButtonElement extends
   private updateCheckedAndNotify_(checked: boolean) {
     this.checked = checked;
     this.notifyChangedByUserInteraction();
-    this.fire_('change', this.checked);
+    this.fire('change', this.checked);
   }
 }
 

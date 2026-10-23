@@ -91,6 +91,7 @@ suite('SiteSettingsPage', function() {
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);
     flush();
+    await flushTasks();
   }
 
   setup(setupPage);

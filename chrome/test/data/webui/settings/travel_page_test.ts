@@ -196,7 +196,7 @@ suite('TravelPage', function() {
         }]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
         const extensionControlledIndicator =
             page.shadowRoot.querySelector('#autofillExtensionIndicator');
@@ -226,7 +226,7 @@ suite('TravelPage', function() {
         }]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
         const extensionControlledIndicator =
             page.shadowRoot.querySelector('#autofillExtensionIndicator');
@@ -282,7 +282,7 @@ suite('TravelPage', function() {
         }]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
 
         assertTrue(!!policyIndicator);
@@ -308,7 +308,7 @@ suite('TravelPage', function() {
         }]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
 
         assertFalse(!!policyIndicator);
@@ -331,7 +331,7 @@ suite('TravelPage', function() {
             [{url_pattern: '*', blocked_types: ['travel']}]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
 
         assertTrue(!!policyIndicator);
@@ -361,7 +361,7 @@ suite('TravelPage', function() {
             [{url_pattern: '*', blocked_types: ['all']}]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
 
         assertTrue(!!policyIndicator);
@@ -390,7 +390,7 @@ suite('TravelPage', function() {
             [{url_pattern: '*', blocked_types: ['travel']}]);
 
         const page = await setupPage();
-        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+        const policyIndicator = page.$.optInToggle.shadowRoot.querySelector(
             'cr-policy-pref-indicator');
 
         assertFalse(!!policyIndicator);

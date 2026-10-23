@@ -161,6 +161,7 @@ suite('A11yPage', () => {
 
     a11yPage = document.createElement('settings-a11y-page');
     document.body.appendChild(a11yPage);
+    await microtasksFinished();
   });
 
   test('ax tree fixing toggle and pref', async () => {

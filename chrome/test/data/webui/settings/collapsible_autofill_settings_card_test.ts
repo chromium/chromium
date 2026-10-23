@@ -347,7 +347,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
             card.shadowRoot.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         const getPolicyIcon = () =>
-            card.$.optInToggle.shadowRoot!
+            card.$.optInToggle.shadowRoot
                 .querySelector<CrPolicyPrefIndicatorElement>(
                     'cr-policy-pref-indicator');
 
@@ -376,7 +376,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
         assertTrue(card.$.optInToggle.checked);
         assertFalse(card.$.optInToggle.controlDisabled());
-        assertEquals('none', getPolicyIcon()!.style.display);
+        assertFalse(!!getPolicyIcon());
         assertFalse(!!getLoggingBullet());
       });
 
@@ -391,7 +391,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         await microtasksFinished();
 
         const getPolicyIcon = () =>
-            card.$.optInToggle.shadowRoot!
+            card.$.optInToggle.shadowRoot
                 .querySelector<CrPolicyPrefIndicatorElement>(
                     'cr-policy-pref-indicator');
 
@@ -424,7 +424,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
         assertTrue(card.$.optInToggle.checked);
         assertFalse(card.$.optInToggle.disabled);
-        assertEquals('none', getPolicyIcon()!.style.display);
+        assertFalse(!!getPolicyIcon());
       });
 
   test(

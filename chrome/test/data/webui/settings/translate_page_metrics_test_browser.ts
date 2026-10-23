@@ -76,6 +76,7 @@ suite('TranslatePageMetricsBrowser', function() {
 
   test('records when disabling translate.enable toggle', async () => {
     prefService.setPrefValue('translate.enabled', true);
+    await microtasksFinished();
     translatePage.shadowRoot
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
     await microtasksFinished();
@@ -87,6 +88,7 @@ suite('TranslatePageMetricsBrowser', function() {
 
   test('records when enabling translate.enable toggle', async () => {
     prefService.setPrefValue('translate.enabled', false);
+    await microtasksFinished();
     translatePage.shadowRoot
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
     await microtasksFinished();

@@ -36,6 +36,7 @@ suite('MsbbFragment', function() {
 
     fragment = document.createElement('privacy-guide-msbb-fragment');
     document.body.appendChild(fragment);
+    await microtasksFinished();
   });
 
   async function assertMsbbMetrics({
@@ -49,6 +50,7 @@ suite('MsbbFragment', function() {
   }) {
     prefService.setPrefValue(
         'url_keyed_anonymized_data_collection.enabled', msbbStartOn);
+    await microtasksFinished();
 
     // The fragment is informed that it becomes visible by a receiving
     // a view-enter-start event.

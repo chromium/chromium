@@ -7,16 +7,16 @@
  * `settings-checkbox` is a checkbox that controls a supplied preference.
  */
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
-import {getTemplate} from './settings_checkbox.html.js';
+import {getCss} from './settings_checkbox.css.js';
+import {getHtml} from './settings_checkbox.html.js';
 
 export interface SettingsCheckboxElement {
   $: {
@@ -25,36 +25,40 @@ export interface SettingsCheckboxElement {
   };
 }
 
-const SettingsCheckboxElementBase = SettingsBooleanControlMixin(PolymerElement);
+const SettingsCheckboxElementBase = SettingsBooleanControlMixin(CrLitElement);
 
 export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   static get is() {
     return 'settings-checkbox';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Alternative source for the sub-label that can contain html markup.
        * Only use with trusted input.
        */
-      subLabelHtml: {
-        type: String,
-        value: '',
-      },
+      subLabelHtml: {type: String},
     };
   }
 
-  declare subLabelHtml: string;
+  accessor subLabelHtml: string = '';
 
-  static get observers() {
-    return [
-      'onSubLabelChanged_(subLabel, subLabelHtml)',
-    ];
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('subLabel') ||
+        changedProperties.has('subLabelHtml')) {
+      this.$.checkbox.ariaDescription = this.$.subLabel.textContent;
+    }
   }
 
   /** Focus on the inner cr-checkbox. */
@@ -62,20 +66,17 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
     this.$.checkbox.focus();
   }
 
-  private onSubLabelChanged_() {
-    this.$.checkbox.ariaDescription = this.$.subLabel.textContent!;
+  protected onChange_(e: CustomEvent<boolean>) {
+    this.checked = e.detail;
+    this.notifyChangedByUserInteraction();
   }
 
-  private stopPropagation_(event: Event) {
-    event.stopPropagation();
+  protected hasSubLabel_(): boolean {
+    return !!this.subLabel || !!this.subLabelHtml;
   }
 
-  private hasSubLabel_(subLabel: string, subLabelHtml: string): boolean {
-    return !!subLabel || !!subLabelHtml;
-  }
-
-  private sanitizeInnerHtml_(rawString: string): TrustedHTML {
-    return sanitizeInnerHtml(rawString, {
+  protected sanitizeInnerHtml_(): TrustedHTML {
+    return sanitizeInnerHtml(this.subLabelHtml, {
       attrs: [
         'id',
         'aria-label',
@@ -83,12 +84,10 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
     });
   }
 
-  private onSubLabelClick_(e: Event) {
+  protected onSubLabelClick_(e: Event) {
     const target = e.target as HTMLElement;
     if (target.tagName === 'A') {
-      this.dispatchEvent(new CustomEvent(
-          'sub-label-link-clicked',
-          {bubbles: true, composed: true, detail: {id: target.id}}));
+      this.fire('sub-label-link-clicked', {id: target.id});
       e.preventDefault();
 
       // Don't let link click events from the sub-label reach the checkbox.
