@@ -829,8 +829,9 @@ suite('ComposeboxMixinTest', () => {
       assertEquals(0, closeCount);
       assertEquals(null, element.result);
 
-      // 4. For kHint actions, clicking the match executes handleFuseboxAction,
-      // restores the original typed input, and re-queries autocomplete.
+      // 4. For kHint actions, selecting the match keeps the typed input, and
+      // clicking it executes handleFuseboxAction without re-querying
+      // autocomplete.
       element.files.clear();
       const originalInput = 'original typed input';
       await showFuseboxMatches(
@@ -841,7 +842,7 @@ suite('ComposeboxMixinTest', () => {
           originalInput, 'hint suggestion');
       dropdown.selectIndex(1);
       await microtasksFinished();
-      assertEquals('hint suggestion', element.input);
+      assertEquals(originalInput, element.input);
       const initialQueryCount =
           searchboxHandler.getCallCount('queryAutocomplete');
       clickActionMatch();
@@ -857,7 +858,7 @@ suite('ComposeboxMixinTest', () => {
       assertEquals(-1, element.activeQueryId);
 
       // Verify that late async autocomplete responses do not overwrite the
-      // restored user input since activeQueryId is -1.
+      // typed input since activeQueryId is -1.
       searchboxCallbackRouterRemote.autocompleteResultChanged(
           createAutocompleteResultForTesting({
             input: originalInput,
@@ -951,6 +952,100 @@ suite('ComposeboxMixinTest', () => {
       element.handleFuseboxAction = originalHandler;
     }
   });
+
+  test('kHint matches keep the typed input with zero suggest', async () => {
+    element.showZps = true;
+    const typedInput = 'typed input';
+    const hintAction = createFuseboxActionRequest({
+                         queryActionOverride: QueryActionOverride.kHint,
+                       }).fuseboxAction;
+    const dropdown = element.getDropdownElement();
+
+    // Embedders that do not handle suggestion fusebox actions treat kHint
+    // matches as regular suggestions, so selecting one previews its text.
+    await showFuseboxMatches(hintAction, typedInput, 'hint suggestion');
+    dropdown.selectIndex(1);
+    await microtasksFinished();
+    assertEquals('hint suggestion', element.input);
+
+    element.suggestionFuseboxActionsEnabled = true;
+    await showFuseboxMatches(hintAction, typedInput, 'hint suggestion');
+    dropdown.selectIndex(1);
+    await microtasksFinished();
+    assertEquals(typedInput, element.input);
+
+    // Accepting the hint re-queries zero suggest for the current tool. The
+    // query and the input must both use the typed text, not the hint.
+    const queryCount = searchboxHandler.getCallCount('queryAutocomplete');
+    const matchEl =
+        dropdown.shadowRoot.querySelectorAll('cr-composebox-match')[1]!;
+    matchEl.dispatchEvent(new MouseEvent(
+        'click', {button: 0, bubbles: true, cancelable: true, composed: true}));
+    await microtasksFinished();
+    await element.updateComplete;
+
+    assertEquals(
+        queryCount + 1, searchboxHandler.getCallCount('queryAutocomplete'));
+    assertEquals(
+        typedInput, searchboxHandler.getArgs('queryAutocomplete').at(-1)![2]);
+    assertEquals(typedInput, element.input);
+    assertEquals(typedInput, element.lastQueriedInput);
+    assertEquals('hint suggestion', element.inputPlaceholder);
+  });
+
+  test(
+      'clicking an action match drops the preview of another selected match',
+      async () => {
+        element.showZps = true;
+        element.suggestionFuseboxActionsEnabled = true;
+        const typedInput = 'typed input';
+        element.input = typedInput;
+        element.lastQueriedInput = typedInput;
+        element.result = {
+          input: typedInput,
+          matches: [
+            createAutocompleteMatch(
+                {allowedToBeDefaultMatch: true, fillIntoEdit: typedInput}),
+            createAutocompleteMatch({fillIntoEdit: 'other suggestion'}),
+            createAutocompleteMatch({
+              fillIntoEdit: 'hint suggestion',
+              suggestTemplate: createSuggestTemplateInfo({
+                fuseboxAction: createFuseboxActionRequest({
+                                 queryActionOverride: QueryActionOverride.kHint,
+                               }).fuseboxAction,
+              }),
+            }),
+          ],
+        } as AutocompleteResult;
+        await microtasksFinished();
+
+        // Keyboard-select a regular match so its text is previewed, then click
+        // the kHint match with the mouse, which does not change the selection.
+        const dropdown = element.getDropdownElement();
+        dropdown.selectIndex(1);
+        await microtasksFinished();
+        assertEquals('other suggestion', element.input);
+
+        const queryCount = searchboxHandler.getCallCount('queryAutocomplete');
+        const matchEl =
+            dropdown.shadowRoot.querySelectorAll('cr-composebox-match')[2]!;
+        matchEl.dispatchEvent(new MouseEvent('click', {
+          button: 0,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        await element.updateComplete;
+
+        assertEquals(
+            queryCount + 1, searchboxHandler.getCallCount('queryAutocomplete'));
+        assertEquals(
+            typedInput,
+            searchboxHandler.getArgs('queryAutocomplete').at(-1)![2]);
+        assertEquals(typedInput, element.input);
+        assertEquals('hint suggestion', element.inputPlaceholder);
+      });
 
   test('clearAutocompleteMatches preserves typed draft input', async () => {
     element.input = 'Draft text';
@@ -2239,6 +2334,9 @@ suite('ComposeboxMixinTest', () => {
     await element.updateComplete;
     assertTrue(isInputFocused());
     assertEquals('pasted text', element.state!.text);
+    const inputElement = inputComponent.inputElement as HTMLTextAreaElement;
+    assertEquals(0, inputElement.selectionStart);
+    assertEquals('pasted text'.length, inputElement.selectionEnd);
   });
 
   test('handleFuseboxAction dispatches input sources', async () => {

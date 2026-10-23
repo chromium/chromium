@@ -386,6 +386,7 @@ export const ComposeboxEmbedderMixin =
             TabSuggestionsState.NOT_STARTED;
         accessor transcript: string = '';
         private fuseboxChipHint_: string|null = null;
+        private selectAllOnStateUpdate_: boolean = false;
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         // Tracks the latest query sent for autocompletion. Used to filter out
@@ -405,8 +406,6 @@ export const ComposeboxEmbedderMixin =
         // `resetDelayedTabContextRequests_()` to cancel them.
         private pendingDelayedTabRequests_: Set<object> = new Set();
         private smartComposeAnnounceTimeout_: number|null = null;
-        private updateStateComplete_: Promise<void> = Promise.resolve();
-        private userInputGeneration_: number = 0;
         // <if expr="not is_android">
         private smartTabSharingUpdateGeneration_: number = 0;
         // </if>
@@ -672,18 +671,16 @@ export const ComposeboxEmbedderMixin =
           const changedPrivateProperties =
               changedProperties as Map<PropertyKey, unknown>;
           if (changedPrivateProperties.has('selectedMatchIndex')) {
-            const isImageSuggestion = this.richImageSuggestionsEnabled &&
-                this.selectedMatch?.suggestTemplate.style ===
-                    SuggestStyle.kRichImage;
-            if (this.selectedMatch && !isImageSuggestion) {
+            if (this.selectedMatch &&
+                this.shouldPreviewMatchInInput_(this.selectedMatch)) {
               // Update the input.
               if (this.input !== this.selectedMatch.fillIntoEdit) {
                 this.getInputElement().resetHeight();
                 this.input = this.selectedMatch.fillIntoEdit;
               }
             } else if (!this.lastQueriedInput) {
-              // This is for cases when focus leaves the matches/input or an
-              // image suggestion is selected in zero-state.
+              // This is for cases when focus leaves the matches/input or a
+              // match that is not previewed is selected in zero-state.
               // If there was already text in the input do not clear it.
               // Only clear input when not empty, otherwise this impacts
               // suggestions getting fetched for zero state.
@@ -692,7 +689,8 @@ export const ComposeboxEmbedderMixin =
               }
             } else {
               // For typed queries reset the input back to typed value when
-              // focus leaves the match or an image suggestion is selected.
+              // focus leaves the match or a match that is not previewed is
+              // selected.
               if (this.input !== this.lastQueriedInput) {
                 this.getInputElement().resetHeight();
                 this.input = this.lastQueriedInput;
@@ -721,7 +719,7 @@ export const ComposeboxEmbedderMixin =
             }
           }
           if (changedPrivateProperties.has('state') && this.state) {
-            this.updateStateComplete_ = this.updateState(this.state);
+            this.updateState(this.state);
           }
         }
 
@@ -988,10 +986,7 @@ export const ComposeboxEmbedderMixin =
             // change (and therefore `selectedMatch` does not get updated since
             // `onSelectedMatchIndexChanged_` is not called).
             this.selectedMatch = this.result.matches[this.selectedMatchIndex]!;
-            const isImageSuggestion = this.richImageSuggestionsEnabled &&
-                this.selectedMatch.suggestTemplate.style ===
-                    SuggestStyle.kRichImage;
-            if (!isImageSuggestion) {
+            if (this.shouldPreviewMatchInInput_(this.selectedMatch)) {
               this.input = this.selectedMatch.fillIntoEdit;
             }
           } else {
@@ -1137,7 +1132,6 @@ export const ComposeboxEmbedderMixin =
         }
 
         onInputInput(_e: CustomEvent<Event>) {
-          this.userInputGeneration_++;
           // Clear suggestInventory when the user edits query.
           this.suggestInventory = null;
           const newInput = this.getInputElement().input;
@@ -1733,7 +1727,6 @@ export const ComposeboxEmbedderMixin =
         async handleFuseboxAction(request: ComposeboxFuseboxActionRequest) {
           const action = request.fuseboxAction;
           let text = request.suggestion;
-          let selectAllInput = false;
           if (action?.queryActionOverride) {
             switch (action.queryActionOverride) {
               case QueryActionOverride.kHint:
@@ -1743,7 +1736,6 @@ export const ComposeboxEmbedderMixin =
                 break;
               case QueryActionOverride.kPaste:
                 this.focusInput();
-                selectAllInput = true;
                 break;
               default:
                 break;
@@ -1759,7 +1751,10 @@ export const ComposeboxEmbedderMixin =
             smartTabSharingActive: false,
             // </if>
           };
+          this.selectAllOnStateUpdate_ =
+              action?.queryActionOverride === QueryActionOverride.kPaste;
           this.state = fuseboxActionState;
+
           if (action?.preselectedInputSource) {
             switch (action.preselectedInputSource) {
               case InputSource.kInputSourceGallery:
@@ -1776,21 +1771,6 @@ export const ComposeboxEmbedderMixin =
                 break;
               default:
                 break;
-            }
-          }
-          // TODO(crbug.com/565508610): Handle state updates in a more robust
-          // way to avoid this race condition.
-          if (selectAllInput) {
-            // The pasted text is applied by updateState(), which runs from
-            // updated(), and only shows up in the input after the following
-            // render. Selecting any earlier would be undone when the input is
-            // updated.
-            await this.updateComplete;
-            await this.updateStateComplete_;
-            await this.updateComplete;
-            // Bail out if a newer action has replaced this one.
-            if (this.state === fuseboxActionState) {
-              this.getInputElement().selectAll();
             }
           }
         }
@@ -1823,6 +1803,8 @@ export const ComposeboxEmbedderMixin =
         }
 
         async updateState(state: Partial<ComposeboxState>) {
+          const selectAll = this.selectAllOnStateUpdate_;
+          this.selectAllOnStateUpdate_ = false;
           if (!this.inputState) {
             // Block submission across the `getInputState()` await when the
             // state carries delayed tabs; their own guards start only below.
@@ -1915,6 +1897,12 @@ export const ComposeboxEmbedderMixin =
           this.updateInputPlaceholder();
 
           await this.updateComplete;
+          if (selectAll && state === this.state) {
+            await this.getInputElement().updateComplete;
+            if (state === this.state) {
+              this.getInputElement().selectAll();
+            }
+          }
         }
 
         async onContextMenuClosed() {
@@ -2513,6 +2501,18 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        // kHint matches only set the placeholder when accepted, and rich image
+        // matches are not text queries, so neither replaces the user's input.
+        private shouldPreviewMatchInInput_(match: AutocompleteMatch): boolean {
+          if (this.richImageSuggestionsEnabled &&
+              match.suggestTemplate.style === SuggestStyle.kRichImage) {
+            return false;
+          }
+          return !this.shouldHandleSuggestionFuseboxActions() ||
+              match.suggestTemplate.fuseboxAction?.queryActionOverride !==
+              QueryActionOverride.kHint;
+        }
+
         private maybeHandleSuggestionFuseboxAction_(
             match: AutocompleteMatch, event?: Event): boolean {
           const action = match.suggestTemplate.fuseboxAction;
@@ -2526,48 +2526,15 @@ export const ComposeboxEmbedderMixin =
             recordRichImageSuggestClicked(this.composeboxSource);
           }
 
-          const isHint =
-              action.queryActionOverride === QueryActionOverride.kHint;
-          const originalInput = isHint ? this.lastQueriedInput : null;
           const request: ComposeboxFuseboxActionRequest = {
             suggestion: match.fillIntoEdit,
             files: [],
             fuseboxAction: action,
           };
           event?.preventDefault();
-          void this.executeSuggestionFuseboxAction_(
-              request, originalInput, this.userInputGeneration_);
+          this.clearAutocompleteMatches();
+          void this.handleFuseboxAction(request);
           return true;
-        }
-
-        private async executeSuggestionFuseboxAction_(
-            request: ComposeboxFuseboxActionRequest, originalInput: string|null,
-            userInputGeneration: number) {
-          this.clearAutocompleteMatches();
-          const handlerComplete = this.handleFuseboxAction(request);
-          const actionState = this.state;
-          const canRestoreInput = () =>
-              this.userInputGeneration_ === userInputGeneration &&
-              this.state === actionState;
-          await handlerComplete;
-          if (originalInput === null || !canRestoreInput()) {
-            return;
-          }
-          await this.updateComplete;
-          if (!canRestoreInput()) {
-            return;
-          }
-          const updateStateComplete = this.updateStateComplete_;
-          await updateStateComplete;
-          if (!canRestoreInput()) {
-            return;
-          }
-          this.clearAutocompleteMatches();
-          await this.updateComplete;
-          if (!canRestoreInput()) {
-            return;
-          }
-          this.input = originalInput;
         }
 
         cacheSubmittedTabs() {
@@ -2690,6 +2657,11 @@ export const ComposeboxEmbedderMixin =
           this.showDropdown = false;
           this.result = null;
           this.getDropdownElement().unselect();
+          // Mirror the unselect now rather than waiting for the dropdown's
+          // change event, so that any match preview is dropped in the same
+          // update as state set by the caller.
+          this.selectedMatchIndex = -1;
+          this.selectedMatch = null;
           this.getSearchboxHandler().stopAutocomplete(/*clearResult=*/ true);
           // Autocomplete sends updates once it is stopped. Invalidate those
           // results by setting `activeQueryId` to -1.
