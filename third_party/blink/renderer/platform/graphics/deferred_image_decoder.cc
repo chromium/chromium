@@ -69,8 +69,14 @@ std::unique_ptr<DeferredImageDecoder> DeferredImageDecoder::Create(
     bool data_complete,
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior color_behavior) {
+  // High-bit-depth images are decoded to half float (CreateGenerator()
+  // promotes them to kRGBA_F16_SkColorType, which makes ImageDecoderWrapper
+  // decode with kHighBitDepthToHalfFloat). The metadata decoder must be
+  // configured the same way: for some formats the reported color space
+  // depends on the output bit depth, and it must match the color space of
+  // the actually decoded pixels.
   std::unique_ptr<ImageDecoder> metadata_decoder = ImageDecoder::Create(
-      data, data_complete, alpha_option, ImageDecoder::kDefaultBitDepth,
+      data, data_complete, alpha_option, ImageDecoder::kHighBitDepthToHalfFloat,
       color_behavior, cc::AuxImage::kDefault,
       Platform::GetMaxDecodedImageBytes());
   if (!metadata_decoder)

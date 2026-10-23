@@ -629,6 +629,7 @@
 ../../web_tests/images/resources/large-gif-checkerboard.gif
 ../../web_tests/images/resources/large-size-image-crash.jpeg
 ../../web_tests/images/resources/large.webp
+../../web_tests/images/resources/lossy_16bit_icc.jxl
 ../../web_tests/images/resources/missing-eoi.jpg
 ../../web_tests/images/resources/missing-plte-before-trns.png
 ../../web_tests/images/resources/motion-jpeg-single-frame.jpg
