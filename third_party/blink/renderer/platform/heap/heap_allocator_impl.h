@@ -167,7 +167,7 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T>
-  static void TraceBackingStoreIfMarked(T* object) {
+  static void TraceBackingStoreStrongly(T* object) {
     HeapConsistency::WriteBarrierParams params;
     if (HeapConsistency::GetWriteBarrierType(object, params) ==
         HeapConsistency::WriteBarrierType::kMarking) {

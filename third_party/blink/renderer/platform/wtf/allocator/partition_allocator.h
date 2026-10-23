@@ -97,7 +97,7 @@ class WTF_EXPORT PartitionAllocator {
   }
 
   template <typename T>
-  static void TraceBackingStoreIfMarked(T*) {}
+  static void TraceBackingStoreStrongly(T*) {}
   template <typename T>
   static void BackingWriteBarrier(T**) {}
 
