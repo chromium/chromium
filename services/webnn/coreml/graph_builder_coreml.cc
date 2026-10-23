@@ -3000,40 +3000,33 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
 
   CoreML::Specification::MILSpec::Operation* op = &block.emplace_back();
   op->set_type(op_type_name);
-  std::optional<mojom::ErrorPtr> set_input_error;
-  std::visit(
+  RETURN_IF_ERROR(std::visit(
       absl::Overload{[&](OperandId lhs_operand_id) {
-                       auto result = SetInputFromOperand(
-                           *op->mutable_inputs(), kOpParamX, lhs_operand_id);
-                       if (!result.has_value()) {
-                         set_input_error = std::move(result.error());
-                       }
+                       return SetInputFromOperand(*op->mutable_inputs(),
+                                                  kOpParamX, lhs_operand_id);
                      },
-                     [&](CoreML::Specification::MILSpec::Value lhs_value) {
+                     [&](CoreML::Specification::MILSpec::Value lhs_value)
+                         -> base::expected<void, mojom::ErrorPtr> {
                        SetInputWithValue(*op->mutable_inputs(), kOpParamX,
                                          lhs_value);
+                       return base::ok();
                      }},
-      lhs_operand);
-  std::visit(
+      lhs_operand));
+  RETURN_IF_ERROR(std::visit(
       absl::Overload{[&](OperandId rhs_operand_id) {
                        const OperandInfo& rhs_operand_info =
                            GetOperandInfo(rhs_operand_id);
                        CHECK_EQ(mil_data_type, rhs_operand_info.mil_data_type);
-                       auto result = SetInputFromOperand(
-                           *op->mutable_inputs(), kOpParamY, rhs_operand_id);
-                       if (!result.has_value()) {
-                         set_input_error = std::move(result.error());
-                       }
+                       return SetInputFromOperand(*op->mutable_inputs(),
+                                                  kOpParamY, rhs_operand_id);
                      },
-                     [&](CoreML::Specification::MILSpec::Value rhs_value) {
+                     [&](CoreML::Specification::MILSpec::Value rhs_value)
+                         -> base::expected<void, mojom::ErrorPtr> {
                        SetInputWithValue(*op->mutable_inputs(), kOpParamY,
                                          rhs_value);
+                       return base::ok();
                      }},
-      rhs_operand);
-
-  if (set_input_error) {
-    return base::unexpected<mojom::ErrorPtr>(*std::move(set_input_error));
-  }
+      rhs_operand));
   if (IsLogicalElementWiseBinary(kind)) {
     // The output of logical binary ops need to be cast from a boolean
     // tensor that CoreML provides to an UInt8 that WebNN expects.
