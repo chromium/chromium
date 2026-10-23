@@ -3130,6 +3130,66 @@ class RollProtobufStartTest(unittest.TestCase):
                                     r'Unexpected commit subject'):
             roll_protobuf.ResumeRoll(self.fixture.protobuf_directory)
 
+    def testMainContinueAndDropCompleteRollEndToEnd(self):
+        start_code, _, _ = _RunMain('start', '--to', 'v37.0', '--protobuf-dir',
+                                    self.fixture.protobuf_directory,
+                                    '--upstream-repo',
+                                    self.fixture.upstream_directory)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                _PLAN_CONFLICT_PATH:
+                _NumberedLines('conflict', line6='conflict line 6 (cli)'),
+                'src/extra_cli.cc':
+                'extra\n'
+            })
+        continue_code, continue_stdout, _ = _RunMain(
+            'continue', '--allow-extra-files', '--protobuf-dir',
+            self.fixture.protobuf_directory)
+        drop_code, drop_stdout, _ = _RunMain('drop', '--reason',
+                                             'no longer needed in v37',
+                                             '--protobuf-dir',
+                                             self.fixture.protobuf_directory,
+                                             '--json')
+        drop_payload = json.loads(drop_stdout)
+
+        self.assertEqual((roll_protobuf.EXIT_CODE_CONFLICT,
+                          roll_protobuf.EXIT_CODE_CONFLICT,
+                          roll_protobuf.EXIT_CODE_SUCCESS),
+                         (start_code, continue_code, drop_code))
+        self.assertIn(f'Stopped at [4/5] patches/{_PLAN_MISSING_FILE_PATCH}.',
+                      continue_stdout)
+        self.assertIn('`roll_protobuf.py drop --reason "<why>"`',
+                      continue_stdout)
+        self.assertEqual(
+            ('replayed', 'no longer needed in v37'),
+            (drop_payload['phase'], drop_payload['patch_results'][3]['error']))
+
+    def testMainResumeFinishesRollAfterManualCommit(self):
+        _RunMain('start', '--to', 'v37.0', '--protobuf-dir',
+                 self.fixture.protobuf_directory, '--upstream-repo',
+                 self.fixture.upstream_directory)
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', 'HEAD'])
+        resume_outcomes = []
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            _RunGitCommand(self.repository_root, [
+                'rm', '--quiet', f'third_party/protobuf/patches/{patch_name}'
+            ])
+            _RunGitCommand(self.repository_root, [
+                'commit', '--quiet', '-m',
+                f'Drop patches/{patch_name} (manual drop)'
+            ])
+            resume_outcomes.append(
+                _RunMain('resume', '--protobuf-dir',
+                         self.fixture.protobuf_directory))
+
+        self.assertEqual([
+            roll_protobuf.EXIT_CODE_CONFLICT, roll_protobuf.EXIT_CODE_SUCCESS
+        ], [code for code, _, _ in resume_outcomes])
+        self.assertIn(f'Stopped at [4/5] patches/{_PLAN_MISSING_FILE_PATCH}.',
+                      resume_outcomes[0][1])
+        self.assertIn('Replayed all 5 patch(es).', resume_outcomes[1][1])
+
 
 if __name__ == '__main__':
     unittest.main()

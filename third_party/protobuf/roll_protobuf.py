@@ -29,12 +29,20 @@ Subcommands:
     (https://crbug.com/568074155).
   status: Reports where an in-progress roll is and which commands are valid
     next.
+  continue [--allow-extra-files]: Commits a resolved patch conflict, refreshes
+    its .patch file, and continues replaying remaining patches
+    (https://crbug.com/568074254).
+  drop --reason <why>: Discards the current conflicting patch, deletes its
+    .patch file, and continues replaying remaining patches.
+  resume: Reconciles GITDIR/protobuf-roll/state.json with manual Apply/Drop
+    commits and continues replaying remaining patches.
   abort: Resets the branch to the commit recorded by `start` and removes
     GITDIR/protobuf-roll/.
 
 Exit codes: 0 when the step finished (for `plan`, whatever the per-patch
-classification), 2 when `start` stopped on a conflict (or for invalid CLI
-arguments), 1 when verification failed or an error occurred.
+classification), 2 when `start`, `continue`, `drop`, or `resume` stopped on a
+conflict (or for invalid CLI arguments), 1 when verification failed or an error
+occurred.
 """
 
 from collections.abc import Collection, Iterable, Sequence
@@ -1881,9 +1889,11 @@ def FormatRollStateReport(state: RollState) -> str:
             '',
             f'Stopped at [{state.current_index + 1}/{total}] '
             f'patches/{state.patches[state.current_index].patch_name}.',
-            'Resolve the conflict in the checkout (see "Doing it by hand" in '
-            'README.chromium), or run `roll_protobuf.py abort` to reset to '
-            f'{state.start_commit}.',
+            'Resolve the conflict in the checkout and run '
+            '`roll_protobuf.py continue`, drop the patch with '
+            '`roll_protobuf.py drop --reason "<why>"`, finish by hand (see '
+            '"Doing it by hand" in README.chromium), or run '
+            f'`roll_protobuf.py abort` to reset to {state.start_commit}.',
         ]
     else:
         lines += ['', f'Replayed all {total} patch(es).']
@@ -1931,6 +1941,27 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         'status',
         help='Show where an in-progress roll is and which commands are valid '
         'next.')
+    continue_parser = subparsers.add_parser(
+        'continue',
+        help='Commit a resolved patch conflict, refresh its .patch file, and '
+        'continue replaying remaining patches.')
+    continue_parser.add_argument(
+        '--allow-extra-files',
+        action='store_true',
+        help='Allow committing modified files that the conflicting patch did '
+        'not originally touch.')
+    drop_parser = subparsers.add_parser(
+        'drop',
+        help='Discard the current conflicting patch, delete its .patch file, '
+        'and continue replaying remaining patches.')
+    drop_parser.add_argument(
+        '--reason',
+        required=True,
+        help='Reason for dropping the patch (recorded in the commit message).')
+    subparsers.add_parser(
+        'resume',
+        help='Reconcile roll state after manual Apply/Drop commits and '
+        'continue replaying remaining patches.')
     subparsers.add_parser(
         'abort',
         help='Reset the branch to the commit before start and delete '
@@ -1998,6 +2029,24 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             result = StartRoll(arguments.to_revision,
                                arguments.protobuf_directory,
                                *upstream_arguments)
+            report = FormatRollStateReport(result)
+            exit_code = (EXIT_CODE_CONFLICT
+                         if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
+        elif arguments.subcommand == 'continue':
+            result = ContinueRoll(
+                arguments.protobuf_directory,
+                allow_extra_files=arguments.allow_extra_files)
+            report = FormatRollStateReport(result)
+            exit_code = (EXIT_CODE_CONFLICT
+                         if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
+        elif arguments.subcommand == 'drop':
+            result = DropCurrentPatch(arguments.reason,
+                                      arguments.protobuf_directory)
+            report = FormatRollStateReport(result)
+            exit_code = (EXIT_CODE_CONFLICT
+                         if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
+        elif arguments.subcommand == 'resume':
+            result = ResumeRoll(arguments.protobuf_directory)
             report = FormatRollStateReport(result)
             exit_code = (EXIT_CODE_CONFLICT
                          if result.phase == 'conflict' else EXIT_CODE_SUCCESS)

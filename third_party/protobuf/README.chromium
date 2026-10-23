@@ -140,9 +140,12 @@ Notes (hints) for the next roll(er):
   commit the unmodified upstream release, and replay `patches/*.patch` one
   commit at a time with `git apply -3`. CLEAN patches are committed and their
   `.patch` files regenerated; EMPTY patches (already upstream) are deleted and
-  dropped in their own commit; and CONFLICT stops with exit code 2 so you can
-  finish by hand (see "Doing it by hand" below). `roll_protobuf.py status
-  [--json]` shows where the roll is, `roll_protobuf.py prepare --to <version>`
+  dropped in their own commit; and CONFLICT stops with exit code 2 (see "When a
+  patch conflicts" and "Doing it by hand" below). `roll_protobuf.py status
+  [--json]` shows where the roll is, `roll_protobuf.py continue` commits a
+  resolved conflict and moves on, `roll_protobuf.py drop --reason "<why>"`
+  discards a patch that is no longer needed, `roll_protobuf.py resume` takes
+  back control after manual commits, `roll_protobuf.py prepare --to <version>`
   populates `GITDIR/protobuf-roll/` without modifying the working tree, and
   `roll_protobuf.py abort` resets the branch to the commit before `start`.
 * Run
@@ -160,13 +163,38 @@ Notes (hints) for the next roll(er):
   least if there are breaking changes in protobuf's python bindings. See
   https://chromium.googlesource.com/infra/infra/+/refs/heads/main/infra/tools/dockerbuild/README.wheels.md
 
+When a patch conflicts:
+
+When `start`, `continue`, `drop` or `resume` hits a patch that does not merge
+cleanly, it stops with exit code 2 and leaves only that patch partly applied in
+the working tree. Resolve the `<<<<<<<` markers in place (keeping the patch's
+documented intent from "Description of the patches" below and any
+`patches/NNNN-name.md` file; you can build and run tests first), then run one
+of:
+
+* `third_party/protobuf/roll_protobuf.py continue`: verifies that no conflict
+  markers, `.rej` or `.orig` files remain under `third_party/protobuf` and that
+  `HEAD` has not moved, commits `"Apply patches/NNNN-name.patch"`, rewrites
+  `patches/NNNN-name.patch` from that commit alone, and continues replaying the
+  remaining patches. It refuses if you modified files the patch did not touch
+  (pass `--allow-extra-files` when a resolution genuinely needs to touch another
+  file, such as after an upstream file split or rename).
+* `third_party/protobuf/roll_protobuf.py drop --reason "<why>"`: discards the
+  conflicting patch's uncommitted changes, deletes `patches/NNNN-name.patch`,
+  commits `"Drop patches/NNNN-name.patch (<why>)"`, and continues with the next
+  patch. Once all patches have replayed, remove any dropped patch descriptions
+  (and any companion `patches/NNNN-name.md` files) at the bottom of this file.
+* `third_party/protobuf/roll_protobuf.py abort`: resets the branch to the commit
+  before `start` and deletes `GITDIR/protobuf-roll/`.
+
 Doing it by hand:
 
 `roll_protobuf.py start` records all of its state in git commits on your local
 branch and under `GITDIR/protobuf-roll/` (`GITDIR` is `git rev-parse
---git-dir`). If `start` stops on a conflicting patch, you can finish that patch
-and any remaining files in `GITDIR/protobuf-roll/chain/` (in sorted order) with
-plain git:
+--git-dir`). You can switch between the script and plain git at any point during
+patch replay, and hand control back to the script with
+`third_party/protobuf/roll_protobuf.py resume`. To apply or drop patches by
+hand (in sorted order of `GITDIR/protobuf-roll/chain/`):
 
 1. Apply the patch (skip the `git apply` command for the patch that already
    conflicted during `start`). If `git apply` leaves conflicts, resolve the
