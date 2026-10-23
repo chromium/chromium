@@ -1036,7 +1036,7 @@
     },
 
     'remoteexec': {
-      'gn_args': 'use_remoteexec=true use_reclient=false',
+      'gn_args': 'use_remoteexec=true',
     },
 
     # windows cross. crbug.com/1213717 crbug.com/1407983

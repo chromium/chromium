@@ -11,7 +11,6 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -28,7 +27,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -44,7 +42,6 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -58,7 +55,6 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -77,7 +73,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -96,7 +91,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "x64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -113,7 +107,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -128,7 +121,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -144,7 +136,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -159,7 +150,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -178,7 +168,6 @@
       "use_alloc_token": false,
       "use_partition_alloc_as_malloc": false,
       "use_raw_ptr_backup_ref_impl": false,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -190,7 +179,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -201,7 +189,6 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -211,7 +198,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -220,7 +206,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -230,7 +215,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -242,7 +226,6 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -253,7 +236,6 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -264,7 +246,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -274,7 +255,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -286,7 +266,6 @@
       "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -297,7 +276,6 @@
       "is_official_build": true,
       "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -306,7 +284,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   }
