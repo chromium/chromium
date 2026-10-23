@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/features.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -124,6 +125,33 @@ bool ContextHubDatabase::UpdateMemoryBankEntryAnnotations(
   return memory_bank_table_.UpdateEntryAnnotations(id, tags, note, collection);
 }
 
+bool ContextHubDatabase::AddOrUpdateMemoryBankEmbeddings(
+    int64_t entry_id,
+    base::span<const passage_embeddings::Embedding> embeddings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return false;
+  }
+  return memory_bank_table_.AddOrUpdateEmbeddings(entry_id, embeddings);
+}
+
+std::vector<int64_t>
+ContextHubDatabase::GetMemoryBankEntryIdsWithoutEmbeddings() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return {};
+  }
+  return memory_bank_table_.GetEntryIdsWithoutEmbeddings();
+}
+
+bool ContextHubDatabase::SetMemoryBankEmbeddingsVersion(int64_t version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return false;
+  }
+  return memory_bank_table_.SetEmbeddingsVersion(version);
+}
+
 std::optional<MemoryBankEntry> ContextHubDatabase::GetMemoryBankEntry(
     int64_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -205,6 +233,8 @@ bool ContextHubDatabase::MigrateToVersion(int version) {
           .MigrateToVersion2AddNoteAndCollectionColumns();
     case 3:
       return memory_bank_table_.MigrateToVersion3AddImageUrlColumn();
+    case 4:
+      return memory_bank_table_.MigrateToVersion4AddEmbeddingsTables();
     default:
       return false;
   }

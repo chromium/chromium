@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace sql {
 class Database;
@@ -19,8 +20,8 @@ class Database;
 
 namespace context_hub {
 
-// This class manages the table storing memory bank entries within the
-// SQLite database passed to initialization.
+// This class manages the tables storing memory bank entries and their
+// embeddings within the SQLite database passed to initialization.
 //
 // Schema:
 // -----------------------------------------------------------------------------
@@ -44,6 +45,26 @@ namespace context_hub {
 //                                      belongs to.
 //   image_url                          TEXT The source URL of the image when
 //                                      the entry is of type kImage.
+//
+// memory_bank_embeddings
+//
+//   entry_id                           INTEGER PRIMARY KEY NOT NULL The id of
+//                                      the memory_bank_entries row these
+//                                      embeddings were computed from.
+//   embedding_blob                     BLOB NOT NULL All passage embedding
+//                                      vectors for the entry: a native-endian
+//                                      uint32 dimension followed by each
+//                                      vector's floats, packed back to back.
+//                                      The vector count is (blob size - 4) /
+//                                      (4 * dimension). Changing this format
+//                                      requires a migration that clears this
+//                                      table so embeddings are recomputed.
+//
+// memory_bank_embeddings_meta
+//
+//   name                               TEXT PRIMARY KEY NOT NULL The metadata
+//                                      key, e.g. "embeddings_version".
+//   value                              INTEGER NOT NULL The metadata value.
 // -----------------------------------------------------------------------------
 class MemoryBankTable {
  public:
@@ -69,6 +90,10 @@ class MemoryBankTable {
   // adding the image_url column. Returns true on success.
   bool MigrateToVersion3AddImageUrlColumn();
 
+  // Migrates the database to version 4 by creating the memory_bank_embeddings
+  // and memory_bank_embeddings_meta tables. Returns true on success.
+  bool MigrateToVersion4AddEmbeddingsTables();
+
   // Inserts or replaces a record in memory_bank_entries. Returns the entry's
   // ID on success, or std::nullopt on failure.
   std::optional<int64_t> AddOrUpdateEntry(const MemoryBankEntry& entry);
@@ -79,6 +104,27 @@ class MemoryBankTable {
                               const std::vector<std::string>& tags,
                               const std::optional<std::string>& note,
                               const std::optional<std::string>& collection);
+
+  // Inserts or replaces the passage embeddings for the given entry ID. Returns
+  // true on success; returns false if `embeddings` is empty, the embeddings do
+  // not all share the same non-zero dimension, or the entry does not exist.
+  bool AddOrUpdateEmbeddings(
+      int64_t entry_id,
+      base::span<const passage_embeddings::Embedding> embeddings);
+
+  // Retrieves the IDs of all memory_bank_entries rows that do not yet have a
+  // corresponding memory_bank_embeddings row.
+  std::vector<int64_t> GetEntryIdsWithoutEmbeddings();
+
+  // Returns the version under which the stored embeddings were computed, or
+  // std::nullopt if none has been set.
+  std::optional<int64_t> GetEmbeddingsVersion();
+
+  // Records `version` as the embeddings version. If it differs from the stored
+  // version, all stored embeddings are deleted in the same transaction, since
+  // embeddings from different versions are not comparable. No-op if
+  // unchanged. Returns true on success.
+  bool SetEmbeddingsVersion(int64_t version);
 
   // Retrieves a single entry by ID. Returns std::nullopt if not found.
   std::optional<MemoryBankEntry> GetEntry(int64_t id);

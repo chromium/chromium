@@ -19,6 +19,7 @@ source_set("storage") {
     "//chrome/browser/context_hub/memory_bank",
     "//components/database_utils",
     "//components/keyed_service/core",
+    "//components/passage_embeddings/core",
     "//sql",
     "//url",
   ]
@@ -37,6 +38,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/context_hub:features",
+    "//components/passage_embeddings/core",
     "//sql",
     "//sql:test_support",
     "//testing/gtest",

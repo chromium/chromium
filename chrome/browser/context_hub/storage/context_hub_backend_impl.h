@@ -42,6 +42,14 @@ class ContextHubBackendImpl : public ContextHubBackend {
       GetEntriesCallback callback) const override;
   void GetAllMemoryBankTags(GetStringsCallback callback) const override;
   void GetAllMemoryBankCollections(GetStringsCallback callback) const override;
+  void AddOrUpdateMemoryBankEmbeddings(
+      int64_t entry_id,
+      std::vector<passage_embeddings::Embedding> embeddings,
+      OperationCompleteCallback callback) override;
+  void GetMemoryBankEntryIdsWithoutEmbeddings(GetIdsCallback callback) override;
+  void SetMemoryBankEmbeddingsVersion(
+      int64_t version,
+      OperationCompleteCallback callback) override;
 
  private:
   enum class DbState {

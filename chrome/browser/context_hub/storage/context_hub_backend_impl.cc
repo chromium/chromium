@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/storage/context_hub_database.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace context_hub {
 
@@ -199,6 +200,69 @@ void ContextHubBackendImpl::GetAllMemoryBankCollections(
       break;
     case DbState::kFailed:
       std::move(const_cast<GetStringsCallback&>(callback)).Run({});
+      break;
+  }
+}
+
+void ContextHubBackendImpl::AddOrUpdateMemoryBankEmbeddings(
+    int64_t entry_id,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    OperationCompleteCallback callback) {
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &ContextHubBackendImpl::AddOrUpdateMemoryBankEmbeddings,
+          weak_ptr_factory_.GetWeakPtr(), entry_id, std::move(embeddings),
+          std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::AddOrUpdateMemoryBankEmbeddings)
+          .WithArgs(entry_id, std::move(embeddings))
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(false);
+      break;
+  }
+}
+
+void ContextHubBackendImpl::GetMemoryBankEntryIdsWithoutEmbeddings(
+    GetIdsCallback callback) {
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &ContextHubBackendImpl::GetMemoryBankEntryIdsWithoutEmbeddings,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::GetMemoryBankEntryIdsWithoutEmbeddings)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run({});
+      break;
+  }
+}
+
+void ContextHubBackendImpl::SetMemoryBankEmbeddingsVersion(
+    int64_t version,
+    OperationCompleteCallback callback) {
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &ContextHubBackendImpl::SetMemoryBankEmbeddingsVersion,
+          weak_ptr_factory_.GetWeakPtr(), version, std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::SetMemoryBankEmbeddingsVersion)
+          .WithArgs(version)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(false);
       break;
   }
 }

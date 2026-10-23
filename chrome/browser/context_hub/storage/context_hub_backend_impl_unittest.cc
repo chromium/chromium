@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -217,6 +218,57 @@ TEST_F(ContextHubBackendImplTest, GetAllMemoryBankCollections) {
   base::test::TestFuture<const std::vector<std::string>&> coll_future;
   backend_->GetAllMemoryBankCollections(coll_future.GetCallback());
   EXPECT_THAT(coll_future.Get(), testing::ElementsAre("Recipes", "Research"));
+}
+
+TEST_F(ContextHubBackendImplTest, AddMemoryBankEmbeddings) {
+  MemoryBankEntry entry;
+  entry.type = MemoryBankType::kTab;
+  entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry.url = GURL("https://example.com");
+  entry.tab_title = "Example";
+
+  base::test::TestFuture<std::optional<int64_t>> save_future;
+  backend_->AddOrUpdateMemoryBankEntry(entry, save_future.GetCallback());
+  ASSERT_THAT(save_future.Get(), testing::Optional(1));
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
+  backend_->GetAllMemoryBankEntries(get_entries_future.GetCallback());
+  std::vector<MemoryBankEntry> entries = get_entries_future.Get();
+  ASSERT_EQ(1u, entries.size());
+  int64_t entry_id = entries[0].id;
+
+  base::test::TestFuture<std::vector<int64_t>> missing_embeddings_future1;
+  backend_->GetMemoryBankEntryIdsWithoutEmbeddings(
+      missing_embeddings_future1.GetCallback());
+  EXPECT_THAT(missing_embeddings_future1.Get(), testing::ElementsAre(entry_id));
+
+  base::test::TestFuture<bool> version_future1;
+  backend_->SetMemoryBankEmbeddingsVersion(1, version_future1.GetCallback());
+  ASSERT_TRUE(version_future1.Get());
+
+  std::vector<passage_embeddings::Embedding> embeddings = {
+      passage_embeddings::Embedding(std::vector<float>{0.6f, 0.8f}),
+      passage_embeddings::Embedding(std::vector<float>{0.8f, 0.6f}),
+  };
+  base::test::TestFuture<bool> add_emb_future;
+  backend_->AddOrUpdateMemoryBankEmbeddings(entry_id, embeddings,
+                                            add_emb_future.GetCallback());
+  ASSERT_TRUE(add_emb_future.Get());
+
+  base::test::TestFuture<std::vector<int64_t>> missing_embeddings_future2;
+  backend_->GetMemoryBankEntryIdsWithoutEmbeddings(
+      missing_embeddings_future2.GetCallback());
+  EXPECT_TRUE(missing_embeddings_future2.Get().empty());
+
+  // Changing the embeddings version drops stored embeddings.
+  base::test::TestFuture<bool> version_future2;
+  backend_->SetMemoryBankEmbeddingsVersion(2, version_future2.GetCallback());
+  ASSERT_TRUE(version_future2.Get());
+
+  base::test::TestFuture<std::vector<int64_t>> missing_embeddings_future3;
+  backend_->GetMemoryBankEntryIdsWithoutEmbeddings(
+      missing_embeddings_future3.GetCallback());
+  EXPECT_THAT(missing_embeddings_future3.Get(), testing::ElementsAre(entry_id));
 }
 
 }  // namespace context_hub

@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/features.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -77,6 +78,12 @@ TEST_F(ContextHubDatabaseTest, InitializeEmptyToCurrent) {
     EXPECT_TRUE(
         connection.DoesColumnExist("memory_bank_entries", "collection"));
     EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "image_url"));
+    EXPECT_TRUE(connection.DoesTableExist("memory_bank_embeddings"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_embeddings", "entry_id"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_embeddings", "embedding_blob"));
+    EXPECT_TRUE(connection.DoesTableExist("memory_bank_embeddings_meta"));
   }
 }
 
@@ -165,7 +172,8 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
 }
 
 // Tests that an older database at version 2 (without image_url) is cleanly
-// migrated to version 3, preserving existing data and adding the new column.
+// migrated to the current version, preserving existing data and adding the new
+// column.
 TEST_F(ContextHubDatabaseTest, MigrateVersion2ToVersion3PreservesData) {
   {
     sql::Database connection(sql::test::kTestTag);
@@ -199,7 +207,7 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion2ToVersion3PreservesData) {
   }
 
   // Initialize with ContextHubDatabase which detects user_version 2 and
-  // migrates to version 3.
+  // migrates to the current version.
   ASSERT_TRUE(db_->Init(GetDbPath()));
 
   // Verify that the pre-existing row survived the migration intact.
@@ -225,7 +233,8 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion2ToVersion3PreservesData) {
   // to release the exclusive file lock.
   db_.reset();
 
-  // Verify the migrated table has the image_url column and is at version 3.
+  // Verify the migrated table has the image_url column and is at the current
+  // version.
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(GetDbPath()));
@@ -237,6 +246,89 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion2ToVersion3PreservesData) {
     EXPECT_EQ(ContextHubDatabase::kCurrentVersionNumber,
               get_user_version_stm.ColumnInt(0));
     EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "image_url"));
+  }
+}
+
+// Tests that an older database at version 3 is cleanly migrated to version 4,
+// adding the memory_bank_embeddings and memory_bank_embeddings_meta tables
+// while preserving existing entries.
+TEST_F(ContextHubDatabaseTest, MigrateVersion3ToVersion4PreservesData) {
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDbPath()));
+
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE memory_bank_entries ("
+                           "id INTEGER PRIMARY KEY,"
+                           "type INTEGER NOT NULL,"
+                           "timestamp INTEGER NOT NULL,"
+                           "url TEXT NOT NULL,"
+                           "tab_title TEXT NOT NULL,"
+                           "selected_text TEXT,"
+                           "tags TEXT,"
+                           "note TEXT,"
+                           "collection TEXT,"
+                           "image_url TEXT)"));
+    ASSERT_TRUE(
+        connection.Execute("CREATE INDEX memory_bank_entries_timestamp ON "
+                           "memory_bank_entries(timestamp)"));
+    ASSERT_TRUE(connection.Execute(
+        "CREATE INDEX memory_bank_entries_url ON memory_bank_entries(url)"));
+    ASSERT_TRUE(connection.Execute("PRAGMA user_version=3"));
+
+    // Insert an existing version 3 row.
+    sql::Statement statement(connection.GetUniqueStatement(
+        "INSERT INTO memory_bank_entries (id, type, timestamp, url, "
+        "tab_title, selected_text, tags, note, collection, image_url) VALUES "
+        "(1, 0, 1000, 'https://example.com', 'Title', 'Text', '[\"tag1\"]', "
+        "'My Note', 'Work', NULL)"));
+    ASSERT_TRUE(statement.Run());
+  }
+
+  // Initialize with ContextHubDatabase which detects user_version 3 and
+  // migrates to version 4.
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  // Verify that the pre-existing row survived the migration intact.
+  std::optional<MemoryBankEntry> entry = db_->GetMemoryBankEntry(1);
+  ASSERT_TRUE(entry.has_value());
+  EXPECT_EQ("Title", entry->tab_title);
+  EXPECT_EQ(GURL("https://example.com"), entry->url);
+  EXPECT_EQ("My Note", entry->note.value_or(""));
+  EXPECT_EQ("Work", entry->collection.value_or(""));
+
+  // Verify storing passage embeddings works.
+  EXPECT_THAT(db_->GetMemoryBankEntryIdsWithoutEmbeddings(),
+              testing::ElementsAre(1));
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      1, {passage_embeddings::Embedding(std::vector<float>{0.6f, 0.8f})}));
+  EXPECT_TRUE(db_->GetMemoryBankEntryIdsWithoutEmbeddings().empty());
+
+  // Close ContextHubDatabase before opening a direct sql::Database connection.
+  db_.reset();
+
+  // Verify the embeddings tables exist and the database is at the current
+  // version.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDbPath()));
+
+    sql::Statement get_user_version_stm(
+        connection.GetUniqueStatement("PRAGMA user_version"));
+    ASSERT_TRUE(get_user_version_stm.is_valid());
+    ASSERT_TRUE(get_user_version_stm.Step());
+    EXPECT_EQ(ContextHubDatabase::kCurrentVersionNumber,
+              get_user_version_stm.ColumnInt(0));
+    EXPECT_TRUE(connection.DoesTableExist("memory_bank_embeddings"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_embeddings", "entry_id"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_embeddings", "embedding_blob"));
+    EXPECT_TRUE(connection.DoesTableExist("memory_bank_embeddings_meta"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_embeddings_meta", "name"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_embeddings_meta", "value"));
   }
 }
 
@@ -275,6 +367,10 @@ TEST_F(ContextHubDatabaseTest, CallMemoryBankMethodsBeforeInit) {
   EXPECT_TRUE(db_->GetMemoryBankEntriesByIds({1}).empty());
   EXPECT_TRUE(db_->GetAllMemoryBankEntries().empty());
   EXPECT_FALSE(db_->DeleteMemoryBankEntries({1}));
+  EXPECT_FALSE(db_->AddOrUpdateMemoryBankEmbeddings(
+      1, {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})}));
+  EXPECT_TRUE(db_->GetMemoryBankEntryIdsWithoutEmbeddings().empty());
+  EXPECT_FALSE(db_->SetMemoryBankEmbeddingsVersion(1));
 }
 
 // Tests retrieving memory bank entries by IDs.
@@ -476,6 +572,99 @@ TEST_F(ContextHubDatabaseTest, GetAllMemoryBankCollections) {
 
   std::vector<std::string> collections = db_->GetAllMemoryBankCollections();
   EXPECT_THAT(collections, testing::ElementsAre("Recipes", "Research"));
+}
+
+// Tests retrieving entry IDs that do not yet have embeddings.
+TEST_F(ContextHubDatabaseTest, GetMemoryBankEntryIdsWithoutEmbeddings) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  MemoryBankEntry entry1 = CreateTestData();
+  entry1.url = GURL("https://example.com/1");
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+
+  MemoryBankEntry entry2 = CreateTestData();
+  entry2.url = GURL("https://example.com/2");
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+
+  std::vector<MemoryBankEntry> entries = db_->GetAllMemoryBankEntries();
+  ASSERT_EQ(2u, entries.size());
+  int64_t id1 = entries[0].id;
+  int64_t id2 = entries[1].id;
+
+  // Both entries lack embeddings initially.
+  EXPECT_THAT(db_->GetMemoryBankEntryIdsWithoutEmbeddings(),
+              testing::UnorderedElementsAre(id1, id2));
+
+  // Add embeddings for the first entry.
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      id1, {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})}));
+
+  // Only the second entry lacks embeddings now.
+  EXPECT_THAT(db_->GetMemoryBankEntryIdsWithoutEmbeddings(),
+              testing::ElementsAre(id2));
+
+  // Add embeddings for the second entry.
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      id2, {passage_embeddings::Embedding(std::vector<float>{0.0f, 1.0f})}));
+
+  EXPECT_TRUE(db_->GetMemoryBankEntryIdsWithoutEmbeddings().empty());
+}
+
+// Tests that deleting a memory bank entry also removes its embeddings.
+TEST_F(ContextHubDatabaseTest, DeleteMemoryBankEntryDeletesEmbeddings) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  MemoryBankEntry entry = CreateTestData();
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry));
+
+  std::vector<MemoryBankEntry> entries = db_->GetAllMemoryBankEntries();
+  ASSERT_EQ(1u, entries.size());
+  int64_t entry_id = entries[0].id;
+
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      entry_id,
+      {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})}));
+  EXPECT_TRUE(db_->GetMemoryBankEntryIdsWithoutEmbeddings().empty());
+
+  // Delete the entry.
+  EXPECT_TRUE(db_->DeleteMemoryBankEntries({entry_id}));
+  EXPECT_FALSE(db_->GetMemoryBankEntry(entry_id).has_value());
+
+  // Close ContextHubDatabase before opening a direct sql::Database connection.
+  db_.reset();
+
+  // The embeddings row should be gone along with its entry.
+  sql::Database connection(sql::test::kTestTag);
+  ASSERT_TRUE(connection.Open(GetDbPath()));
+  sql::Statement count_statement(connection.GetUniqueStatement(
+      "SELECT COUNT(*) FROM memory_bank_embeddings"));
+  ASSERT_TRUE(count_statement.Step());
+  EXPECT_EQ(0, count_statement.ColumnInt(0));
+}
+
+// Tests that the embeddings version persists across reopening the database and
+// that changing it drops stale embeddings.
+TEST_F(ContextHubDatabaseTest, MemoryBankEmbeddingsVersionPersistsAndResets) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+  ASSERT_TRUE(db_->AddOrUpdateMemoryBankEntry(CreateTestData()));
+  int64_t entry_id = db_->GetAllMemoryBankEntries()[0].id;
+
+  ASSERT_TRUE(db_->SetMemoryBankEmbeddingsVersion(1));
+  ASSERT_TRUE(db_->AddOrUpdateMemoryBankEmbeddings(
+      entry_id,
+      {passage_embeddings::Embedding(std::vector<float>{1.0f, 0.0f})}));
+
+  // Reopen the database; the version and embeddings should be preserved.
+  db_ = std::make_unique<ContextHubDatabase>();
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+  EXPECT_TRUE(db_->SetMemoryBankEmbeddingsVersion(1));
+  EXPECT_TRUE(db_->GetMemoryBankEntryIdsWithoutEmbeddings().empty());
+
+  // A new version drops the stale embeddings and reports the entry for
+  // recomputation.
+  EXPECT_TRUE(db_->SetMemoryBankEmbeddingsVersion(2));
+  EXPECT_THAT(db_->GetMemoryBankEntryIdsWithoutEmbeddings(),
+              testing::ElementsAre(entry_id));
 }
 
 }  // namespace context_hub
