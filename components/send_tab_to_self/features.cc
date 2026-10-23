@@ -59,9 +59,6 @@ BASE_FEATURE(kSendTabToSelfSwitchToParentOnBack,
 BASE_FEATURE(kSendTabToSelfIOSShareSheetDeviceList,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfIOSLimitToRegularBrowsers,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSTabReminders, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool AreIOSTabRemindersEnabled() {
