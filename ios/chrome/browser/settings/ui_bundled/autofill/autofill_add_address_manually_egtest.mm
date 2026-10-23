@@ -104,6 +104,10 @@ void OpenAddressSettings() {
     [ChromeEarlGreyUI
         tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
   }
+  // The Addresses page can be pushed after EarlGrey already reports the app as
+  // idle, so wait for it explicitly before interacting with its toolbar.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsProfileMatcher()];
 }
 
 // Gets the top presented view controller, in this case the bottom sheet view
