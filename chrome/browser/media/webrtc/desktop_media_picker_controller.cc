@@ -52,7 +52,9 @@ void DesktopMediaPickerController::Show(
     base::OnceClosure on_show_picker) {
   CHECK(!std::ranges::contains(sources, DesktopMediaList::Type::kNone),
         base::NotFatalUntil::M161);
-  CHECK(!done_callback_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/576416893): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!done_callback_);
 
   done_callback_ = std::move(done_callback);
   on_show_picker_ = std::move(on_show_picker);
