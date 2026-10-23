@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -137,8 +136,8 @@ ToolbarIconContainerView::ToolbarIconContainerView(
 }
 
 ToolbarIconContainerView::~ToolbarIconContainerView() {
-  // As childred might be Observers of |this|, we need to destroy them before
-  // destroying |observers_|.
+  // |this| observes its child buttons and binds callbacks to them in
+  // ObserveButton(), so destroy them while |this| is still intact.
   RemoveAllChildViews();
 }
 
@@ -165,14 +164,6 @@ void ToolbarIconContainerView::ObserveButton(views::Button* button) {
   subscriptions_.push_back(button->AddStateChangedCallback(base::BindRepeating(
       &ToolbarIconContainerView::UpdateHighlight, base::Unretained(this))));
   button->AddObserver(this);
-}
-
-void ToolbarIconContainerView::AddObserver(Observer* obs) {
-  observers_.AddObserver(obs);
-}
-
-void ToolbarIconContainerView::RemoveObserver(const Observer* obs) {
-  observers_.RemoveObserver(obs);
 }
 
 bool ToolbarIconContainerView::GetHighlighted() const {
@@ -285,13 +276,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
     return;
   }
 
-  bool showing_before = border_.layer()->GetTargetOpacity() == 1;
   border_.layer()->SetOpacity(GetHighlighted() ? 1 : 0);
-
-  if (showing_before == (border_.layer()->GetTargetOpacity() == 1)) {
-    return;
-  }
-  observers_.Notify(&Observer::OnHighlightChanged);
 }
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(

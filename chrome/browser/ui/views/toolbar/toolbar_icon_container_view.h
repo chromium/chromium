@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_delegate.h"
@@ -26,11 +25,6 @@ class ToolbarIconContainerView : public views::View,
   METADATA_HEADER(ToolbarIconContainerView, views::View)
 
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnHighlightChanged() = 0;
-  };
-
   explicit ToolbarIconContainerView(bool uses_highlight,
                                     bool use_default_target_layout = true);
   ToolbarIconContainerView(const ToolbarIconContainerView&) = delete;
@@ -46,9 +40,6 @@ class ToolbarIconContainerView : public views::View,
   // Begins observing |button| for changes that should affect the container's
   // highlight state.
   void ObserveButton(views::Button* button);
-
-  void AddObserver(Observer* obs);
-  void RemoveObserver(const Observer* obs);
 
   views::View* main_item() { return main_item_; }
 
@@ -130,8 +121,6 @@ class ToolbarIconContainerView : public views::View,
       widget_observation_{this};
 
   std::list<base::CallbackListSubscription> subscriptions_;
-
-  base::ObserverList<Observer> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ICON_CONTAINER_VIEW_H_
