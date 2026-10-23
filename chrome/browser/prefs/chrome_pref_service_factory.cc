@@ -238,7 +238,7 @@ GetTrackingConfiguration() {
   const SettingsEnforcementGroup enforcement_group =
       GetSettingsEnforcementGroup();
 
-  browser_sync::ChromeSyncablePrefsDatabase syncable_prefs_db;
+  ChromeSyncablePrefsDatabase syncable_prefs_db;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr> result;
   for (size_t i = 0; i < std::size(kTrackedPrefs); ++i) {
     prefs::mojom::TrackedPreferenceMetadataPtr data =

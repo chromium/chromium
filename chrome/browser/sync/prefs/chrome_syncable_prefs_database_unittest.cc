@@ -19,7 +19,7 @@ TEST(ChromeSyncablePrefsDatabaseTest, CheckMetricsEnum) {
       << "Failed to read SyncablePref enum from "
          "tools/metrics/histograms/metadata/sync/enums.xml.";
 
-  browser_sync::ChromeSyncablePrefsDatabase db;
+  ChromeSyncablePrefsDatabase db;
   std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs = db.GetAllSyncablePrefsForTest();
   for (const auto& [pref_name, metadata] : syncable_prefs) {
@@ -31,7 +31,7 @@ TEST(ChromeSyncablePrefsDatabaseTest, CheckMetricsEnum) {
 }
 
 TEST(ChromeSyncablePrefsDatabaseTest, IsPreferenceAlwaysSyncing) {
-  browser_sync::ChromeSyncablePrefsDatabase db;
+  ChromeSyncablePrefsDatabase db;
   EXPECT_TRUE(db.IsPreferenceAlwaysSyncing(
       sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting));
   EXPECT_FALSE(db.IsPreferenceAlwaysSyncing(

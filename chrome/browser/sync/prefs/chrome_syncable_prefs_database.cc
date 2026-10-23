@@ -44,7 +44,6 @@
 #include "extensions/browser/pref_names.h"  // nogncheck
 #endif
 
-namespace browser_sync {
 namespace {
 // Not an enum class to ease cast to int.
 namespace syncable_prefs_ids {
@@ -2269,4 +2268,3 @@ ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;
 }
-}  // namespace browser_sync
