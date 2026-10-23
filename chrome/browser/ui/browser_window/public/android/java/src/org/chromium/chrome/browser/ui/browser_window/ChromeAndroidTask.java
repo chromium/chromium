@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import android.app.Activity;
 import android.graphics.Rect;
 
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.JniTypeToken;
 
@@ -174,8 +175,26 @@ public interface ChromeAndroidTask {
      *     ChromeAndroidTaskFeature} and obtain {@code BrowserWindowInterface} via {@link
      *     ChromeAndroidTaskFeature#onAddedToTask(ChromeAndroidTaskFeature.InitInfo)}.
      */
+    // TODO(crbug.com/40794873): Remove once all callers use the JniPtr variant.
     @Deprecated
     long getOrCreateNativeBrowserWindowPtr(Profile profile);
+
+    /**
+     * Returns the native {@code BrowserWindowInterface} associated with the given {@link Profile}
+     * and the topmost {@code ChromeActivity} in this Task.
+     *
+     * <p>If the native object hasn't been created, this method will create it before returning it.
+     *
+     * @param profile The profile associated with the browser window.
+     * @deprecated Please do <i>not</i> call this method. To (1) obtain the correct native {@code
+     *     BrowserWindowInterface} and (2) ensure the correct destruction order of {@code
+     *     ChromeActivity}, {@code BrowserWindowInterface}, {@link Profile}, and objects managed by
+     *     a client, the client should typically be an implementation of {@link
+     *     ChromeAndroidTaskFeature} and obtain {@code BrowserWindowInterface} via {@link
+     *     ChromeAndroidTaskFeature#onAddedToTask(ChromeAndroidTaskFeature.InitInfo)}.
+     */
+    @Deprecated
+    JniPtr<NativeBrowserWindowInterface> getOrCreateNativeBrowserWindow(Profile profile);
 
     /**
      * Returns the address of the native {@code BrowserWindowInterface} that should be uniquely
@@ -189,8 +208,25 @@ public interface ChromeAndroidTask {
      *     #getOrCreateNativeBrowserWindowPtr} for the preferred way to access a native {@code
      *     BrowserWindowInterface}.
      */
+    // TODO(crbug.com/40794873): Remove once all callers use the JniPtr variant.
     @Deprecated
     long getNativeBrowserWindowPtr(Profile profile, Activity activity);
+
+    /**
+     * Returns the native {@code BrowserWindowInterface} that should be uniquely identifiable via
+     * the given {@link Profile} and the given {@link Activity}.
+     *
+     * <p>If the native object hasn't been created, this method will return null.
+     *
+     * @param profile The profile associated with the browser window.
+     * @param activity The activity associated with the browser window.
+     * @deprecated Please do <i>not</i> call this method. See the deprecation notes of {@link
+     *     #getOrCreateNativeBrowserWindow} for the preferred way to access a native {@code
+     *     BrowserWindowInterface}.
+     */
+    @Deprecated
+    @Nullable JniPtr<NativeBrowserWindowInterface> getNativeBrowserWindow(
+            Profile profile, Activity activity);
 
     /**
      * Returns an array of the all native {@code BrowserWindowInterface} addresses.

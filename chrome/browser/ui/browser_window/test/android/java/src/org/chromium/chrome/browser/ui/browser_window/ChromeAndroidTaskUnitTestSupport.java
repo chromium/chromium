@@ -33,6 +33,7 @@ import android.view.WindowMetrics;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniUniquePtr;
 
 import org.chromium.base.ContextUtils;
@@ -608,6 +609,17 @@ public final class ChromeAndroidTaskUnitTestSupport {
      */
     public static int getNativeAndroidBrowserWindowDestroyCount(long fakePtr) {
         return sNativeAndroidBrowserWindowDestroyCounts.getOrDefault(fakePtr, 0);
+    }
+
+    /**
+     * Returns the fake address assigned to {@code ptr} by the mock from {@link
+     * #createMockAndroidBrowserWindowNatives()}, or 0 if {@code ptr} is null or wasn't created by
+     * that mock.
+     */
+    static long getFakeNativeAndroidBrowserWindowPtr(
+            @Nullable JniPtr<NativeBrowserWindowInterface> ptr) {
+        if (ptr == null) return 0;
+        return sFakeNativeAndroidBrowserWindowPtrs.getOrDefault(ptr, 0L);
     }
 
     /** Mocks {@link PopupCreator}. */

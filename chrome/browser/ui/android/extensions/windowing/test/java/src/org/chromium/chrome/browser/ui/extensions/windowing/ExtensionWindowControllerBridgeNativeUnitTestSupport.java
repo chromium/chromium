@@ -42,6 +42,7 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
         mExtensionWindowControllerBridge.onAddedToTask(
                 new InitInfo(
                         nativeBrowserWindowPtr,
+                        /* nativeBrowserWindow= */ null,
                         /* isVisible= */ true,
                         new Rect(),
                         new Rect(),

@@ -76,6 +76,7 @@ public class ContextualTasksBridgeUnitTest {
         mBridge.onAddedToTask(
                 new InitInfo(
                         TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR,
+                        /* nativeBrowserWindow= */ null,
                         /* isVisible= */ true,
                         new Rect(),
                         new Rect(),

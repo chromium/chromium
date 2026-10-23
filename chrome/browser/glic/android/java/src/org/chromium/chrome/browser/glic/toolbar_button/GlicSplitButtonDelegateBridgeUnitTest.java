@@ -46,6 +46,7 @@ public class GlicSplitButtonDelegateBridgeUnitTest {
     private static InitInfo createInitInfo(long nativeBrowserWindowPtr) {
         return new InitInfo(
                 nativeBrowserWindowPtr,
+                /* nativeBrowserWindow= */ null,
                 /* isVisible= */ true,
                 /* boundsInPx= */ new Rect(),
                 /* boundsInDp= */ new Rect(),

@@ -6,8 +6,12 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import android.graphics.Rect;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 
 /**
  * Represents a Chrome feature whose lifecycle is bound by a {@link ChromeAndroidTask}.
@@ -31,7 +35,18 @@ public interface ChromeAndroidTaskFeature {
          * the same {@code Profile} and {@code ActivityWindowAndroid} in the {@link
          * ChromeAndroidTaskFeatureKey}.
          */
+        // TODO(crbug.com/40794873): Remove once all callers use the JniPtr variant.
         public final long nativeBrowserWindowPtr;
+
+        /**
+         * The native {@code BrowserWindowInterface} matching the feature's {@link
+         * ChromeAndroidTaskFeatureKey}, or null if there is no matching {@code
+         * BrowserWindowInterface}. For a {@code BrowserWindowInterface} to match the {@link
+         * ChromeAndroidTaskFeatureKey}, the {@code BrowserWindowInterface} must be associated with
+         * the same {@code Profile} and {@code ActivityWindowAndroid} in the {@link
+         * ChromeAndroidTaskFeatureKey}.
+         */
+        public final @Nullable JniPtr<NativeBrowserWindowInterface> nativeBrowserWindow;
 
         /** Whether the Task is visible. */
         public final boolean isVisible;
@@ -50,11 +65,13 @@ public interface ChromeAndroidTaskFeature {
 
         public InitInfo(
                 long nativeBrowserWindowPtr,
+                @Nullable JniPtr<NativeBrowserWindowInterface> nativeBrowserWindow,
                 boolean isVisible,
                 Rect boundsInPx,
                 Rect boundsInDp,
                 int displayId) {
             this.nativeBrowserWindowPtr = nativeBrowserWindowPtr;
+            this.nativeBrowserWindow = nativeBrowserWindow;
             this.isVisible = isVisible;
             this.boundsInPx = boundsInPx;
             this.boundsInDp = boundsInDp;

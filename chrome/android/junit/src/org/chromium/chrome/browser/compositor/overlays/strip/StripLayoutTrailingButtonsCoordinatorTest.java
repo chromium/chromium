@@ -173,6 +173,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                             InitInfo info =
                                     new InitInfo(
                                             mBwiPtr,
+                                            /* nativeBrowserWindow= */ null,
                                             /* isVisible= */ true,
                                             new Rect(),
                                             new Rect(),

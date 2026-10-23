@@ -55,6 +55,7 @@ public class TabbedWindowStateTrackerUnitTest {
         InitInfo initInfo =
                 new InitInfo(
                         /* nativeBrowserWindowPtr= */ 0,
+                        /* nativeBrowserWindow= */ null,
                         /* isVisible= */ true,
                         WINDOW_BOUNDS_1,
                         WINDOW_BOUNDS_1,
@@ -78,6 +79,7 @@ public class TabbedWindowStateTrackerUnitTest {
         InitInfo initInfo =
                 new InitInfo(
                         /* nativeBrowserWindowPtr= */ 0,
+                        /* nativeBrowserWindow= */ null,
                         /* isVisible= */ true,
                         WINDOW_BOUNDS_1,
                         WINDOW_BOUNDS_1,
@@ -100,6 +102,7 @@ public class TabbedWindowStateTrackerUnitTest {
         InitInfo initInfo =
                 new InitInfo(
                         /* nativeBrowserWindowPtr= */ 0,
+                        /* nativeBrowserWindow= */ null,
                         /* isVisible= */ true,
                         WINDOW_BOUNDS_1,
                         WINDOW_BOUNDS_1,

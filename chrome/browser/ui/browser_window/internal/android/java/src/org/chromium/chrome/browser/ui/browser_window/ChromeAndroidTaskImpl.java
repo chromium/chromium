@@ -23,6 +23,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
@@ -46,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.chrome.browser.ui.browser_window.WindowStateManager.WindowState;
@@ -826,6 +829,28 @@ final class ChromeAndroidTaskImpl
     // TODO(crbug.com/486858979): Mark this as deprecated and add Activity as a parameter.
     @Override
     public long getOrCreateNativeBrowserWindowPtr(Profile profile) {
+        return getTopmostWindowForNativeAccess(profile).getOrCreateLegacyNativePtr();
+    }
+
+    @Override
+    public JniPtr<NativeBrowserWindowInterface> getOrCreateNativeBrowserWindow(Profile profile) {
+        return getTopmostWindowForNativeAccess(profile).getOrCreateNativePtr();
+    }
+
+    @Override
+    public long getNativeBrowserWindowPtr(Profile profile, Activity activity) {
+        var browserWindow = getWindowForNativeAccess(profile, activity);
+        return browserWindow != null ? browserWindow.getLegacyNativePtr() : 0;
+    }
+
+    @Override
+    public @Nullable JniPtr<NativeBrowserWindowInterface> getNativeBrowserWindow(
+            Profile profile, Activity activity) {
+        var browserWindow = getWindowForNativeAccess(profile, activity);
+        return browserWindow != null ? browserWindow.getNativePtr() : null;
+    }
+
+    private AndroidBrowserWindow getTopmostWindowForNativeAccess(Profile profile) {
         ThreadUtils.assertOnUiThread();
         assert mState == State.PENDING_CREATE
                         || mState == State.IDLE
@@ -833,11 +858,11 @@ final class ChromeAndroidTaskImpl
                 : "This Task is not pending or alive.";
         var browserWindow = getTopmostWindowWithProfile(profile);
         assert browserWindow != null : "No AndroidBrowserWindow found for given Profile.";
-        return browserWindow.getOrCreateLegacyNativePtr();
+        return browserWindow;
     }
 
-    @Override
-    public long getNativeBrowserWindowPtr(Profile profile, Activity activity) {
+    private @Nullable AndroidBrowserWindow getWindowForNativeAccess(
+            Profile profile, Activity activity) {
         ThreadUtils.assertOnUiThread();
         assert mState == State.PENDING_CREATE
                         || mState == State.IDLE
@@ -845,14 +870,10 @@ final class ChromeAndroidTaskImpl
                 : "This Task is not pending or alive.";
         for (var obj : mActivityScopedObjectsDeque) {
             if (obj.mActivityScopedObjects.mActivityWindowAndroid.getActivity().get() == activity) {
-                var browserWindow = obj.mAndroidBrowserWindows.get(profile);
-                if (browserWindow != null) {
-                    return browserWindow.getLegacyNativePtr();
-                }
-                return 0;
+                return obj.mAndroidBrowserWindows.get(profile);
             }
         }
-        return 0;
+        return null;
     }
 
     @Override
@@ -1941,6 +1962,10 @@ final class ChromeAndroidTaskImpl
             }
         }
 
+        JniPtr<NativeBrowserWindowInterface> nativeBrowserWindow =
+                browserWindowForFeature != null
+                        ? browserWindowForFeature.getOrCreateNativePtr()
+                        : null;
         long nativeBrowserWindowPtr =
                 browserWindowForFeature != null
                         ? browserWindowForFeature.getOrCreateLegacyNativePtr()
@@ -1967,6 +1992,7 @@ final class ChromeAndroidTaskImpl
                                     .getDisplayId();
                     return new InitInfo(
                             nativeBrowserWindowPtr,
+                            nativeBrowserWindow,
                             isTaskVisible,
                             mWindowStateManager.getWindowBoundsInPx(),
                             mWindowStateManager.getWindowBoundsInDp(),
@@ -1974,6 +2000,7 @@ final class ChromeAndroidTaskImpl
                 },
                 new InitInfo(
                         nativeBrowserWindowPtr,
+                        nativeBrowserWindow,
                         /* isVisible= */ false,
                         new Rect(),
                         new Rect(),
