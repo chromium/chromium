@@ -28,7 +28,6 @@
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -90,13 +89,6 @@ SkColor GetBitmapMainColor(const SkBitmap& bitmap) {
 // static
 void NtpCustomBackgroundService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterDictionaryPref(
-      prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
-      NtpCustomBackgroundDefaults(),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#endif
-
   registry->RegisterDictionaryPref(prefs::kNtpCustomBackgroundDict,
                                    NtpCustomBackgroundDefaults());
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,

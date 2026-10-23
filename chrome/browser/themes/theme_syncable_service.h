@@ -20,29 +20,12 @@
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 
-class PrefService;
 class Profile;
 class ThemeService;
 
 namespace sync_pb {
 class ThemeSpecifics;
 }
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(ThemePrefInMigration)
-enum class ThemePrefInMigration {
-  kBrowserColorScheme,
-  kUserColor,
-  kBrowserColorVariant,
-  kGrayscaleThemeEnabled,
-  kNtpCustomBackgroundDict,
-  kMaxValue = kNtpCustomBackgroundDict
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:ThemePrefInMigration)
-
-void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs);
 
 class ThemeSyncableService final : public syncer::SyncableService,
                                    public ThemeServiceObserver,
@@ -131,8 +114,6 @@ class ThemeSyncableService final : public syncer::SyncableService,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
  private:
-  class PrefServiceSyncableObserver;
-
   // ThemeLocalDataBatchUploaderDelegate implementation.
   std::optional<sync_pb::ThemeSpecifics> GetSavedLocalTheme() const override;
   bool ApplySavedLocalThemeIfExistsAndClear() override;
@@ -182,8 +163,6 @@ class ThemeSyncableService final : public syncer::SyncableService,
   base::ThreadChecker thread_checker_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  std::unique_ptr<PrefServiceSyncableObserver> pref_service_syncable_observer_;
 
   base::WeakPtrFactory<ThemeSyncableService> weak_ptr_factory_{this};
 };

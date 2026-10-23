@@ -323,7 +323,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/speech/speech_recognition_small_expert_model_installer.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -1169,6 +1168,20 @@ inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
     "safebrowsing.aesb_sync_flow_last_user_interaction_state";
 inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
     "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
+inline constexpr char kSyncingThemePrefsMigratedToNonSyncing[] =
+    "syncing_theme_prefs_migrated_to_non_syncing";
+inline constexpr char kShouldReadIncomingSyncingThemePrefs[] =
+    "should_read_incoming_syncing_theme_prefs";
+inline constexpr char kDeprecatedBrowserColorSchemeDoNotUse[] =
+    "browser.theme.color_scheme";
+inline constexpr char kDeprecatedUserColorDoNotUse[] =
+    "browser.theme.user_color";
+inline constexpr char kDeprecatedBrowserColorVariantDoNotUse[] =
+    "browser.theme.color_variant";
+inline constexpr char kDeprecatedGrayscaleThemeEnabledDoNotUse[] =
+    "browser.theme.is_grayscale";
+inline constexpr char kDeprecatedNtpCustomBackgroundDictDoNotUse[] =
+    "ntp.custom_background_dict";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1668,6 +1681,14 @@ void RegisterProfilePrefsForMigration(
       kTailoredSecuritySyncFlowLastUserInteractionState, 0);
   registry->RegisterTimePref(
       kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp, base::Time());
+  registry->RegisterBooleanPref(kSyncingThemePrefsMigratedToNonSyncing, false);
+  registry->RegisterBooleanPref(kShouldReadIncomingSyncingThemePrefs, true);
+  registry->RegisterIntegerPref(kDeprecatedBrowserColorSchemeDoNotUse, 0);
+  registry->RegisterIntegerPref(kDeprecatedUserColorDoNotUse, 0);
+  registry->RegisterIntegerPref(kDeprecatedBrowserColorVariantDoNotUse, 0);
+  registry->RegisterBooleanPref(kDeprecatedGrayscaleThemeEnabledDoNotUse,
+                                false);
+  registry->RegisterDictionaryPref(kDeprecatedNtpCustomBackgroundDictDoNotUse);
 }
 
 }  // namespace
@@ -2741,13 +2762,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // active; obsolete per-account prefs are cleaned up internally within it.
   SigninPrefs(*profile_prefs).MigrateObsoleteSigninPrefs();
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 08/2024, but DO NOT REMOVE after the usual year.
-  // TODO(crbug.com/356148174): Remove once kMoveThemePrefsToSpecifics has been
-  // enabled for an year.
-  MigrateSyncingThemePrefsToNonSyncingIfNeeded(profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // Added 10/2025.
   profile_prefs->ClearPref(kSessionRestoreTurnOffFromRestartInfoBarTimesShown);
   profile_prefs->ClearPref(kSessionRestoreTurnOffFromSessionInfoBarTimesShown);
@@ -3123,6 +3137,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kTailoredSecuritySyncFlowLastUserInteractionState);
   profile_prefs->ClearPref(
       kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp);
+  profile_prefs->ClearPref(kSyncingThemePrefsMigratedToNonSyncing);
+  profile_prefs->ClearPref(kShouldReadIncomingSyncingThemePrefs);
+  profile_prefs->ClearPref(kDeprecatedBrowserColorSchemeDoNotUse);
+  profile_prefs->ClearPref(kDeprecatedUserColorDoNotUse);
+  profile_prefs->ClearPref(kDeprecatedBrowserColorVariantDoNotUse);
+  profile_prefs->ClearPref(kDeprecatedGrayscaleThemeEnabledDoNotUse);
+  profile_prefs->ClearPref(kDeprecatedNtpCustomBackgroundDictDoNotUse);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

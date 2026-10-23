@@ -12,8 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/fixed_flat_map.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -36,8 +34,6 @@
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/protocol/theme_types.pb.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/themes/ntp_custom_background_service_base.h"
 #include "components/themes/ntp_custom_background_service_constants.h"
 #include "components/themes/theme_utils.h"
@@ -53,34 +49,6 @@
 using std::string;
 
 namespace {
-
-struct ThemePrefNames {
-  std::string_view syncing_pref_name;
-  std::string_view non_syncing_pref_name;
-};
-
-constexpr auto kThemePrefsInMigration =
-    base::MakeFixedFlatMap<ThemePrefInMigration, ThemePrefNames>({
-        {ThemePrefInMigration::kBrowserColorScheme,
-         {prefs::kDeprecatedBrowserColorSchemeDoNotUse,
-          prefs::kBrowserColorScheme}},
-        {ThemePrefInMigration::kUserColor,
-         {prefs::kDeprecatedUserColorDoNotUse, prefs::kUserColor}},
-        {ThemePrefInMigration::kBrowserColorVariant,
-         {prefs::kDeprecatedBrowserColorVariantDoNotUse,
-          prefs::kBrowserColorVariant}},
-        {ThemePrefInMigration::kGrayscaleThemeEnabled,
-         {prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse,
-          prefs::kGrayscaleThemeEnabled}},
-        {ThemePrefInMigration::kNtpCustomBackgroundDict,
-         {prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
-          prefs::kNtpCustomBackgroundDict}},
-    });
-
-static_assert(
-    kThemePrefsInMigration.size() ==
-        static_cast<size_t>(ThemePrefInMigration::kMaxValue) + 1,
-    "ThemePrefInMigration entry missing from kThemePrefsInMigration map.");
 
 bool IsTheme(const extensions::Extension* extension,
              content::BrowserContext* context) {
@@ -109,89 +77,6 @@ bool AreSpecificsNtpBackgroundEquivalent(
 const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
 const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
-void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
-  const bool pref_registered =
-      prefs->FindPreference(prefs::kSyncingThemePrefsMigratedToNonSyncing);
-
-  // TODO(crbug.com/476288050): Investigate why the pref can not be registered
-  // at this point.
-  if (!pref_registered) {
-    base::debug::DumpWithoutCrashing(FROM_HERE);
-    return;
-  }
-  const bool already_migrated =
-      prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing);
-  base::UmaHistogramBoolean("Theme.ThemePrefMigration.AlreadyMigrated",
-                            already_migrated);
-  if (already_migrated) {
-    return;
-  }
-  for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
-    if (const base::Value* value =
-            prefs->GetUserPrefValue(pref_names.syncing_pref_name)) {
-      prefs->Set(pref_names.non_syncing_pref_name, value->Clone());
-      base::UmaHistogramEnumeration("Theme.ThemePrefMigration.MigratedPref",
-                                    pref_in_migration);
-    }
-  }
-
-  prefs->SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
-}
-
-class ThemeSyncableService::PrefServiceSyncableObserver
-    : public sync_preferences::PrefServiceSyncableObserver {
- public:
-  PrefServiceSyncableObserver(sync_preferences::PrefServiceSyncable* prefs,
-                              ThemeSyncableService* theme_syncable_service)
-      : prefs_(prefs), theme_syncable_service_(theme_syncable_service) {
-    observation_.Observe(prefs);
-    // Prefs sync might have already started.
-    OnIsSyncingChanged();
-  }
-
-  void OnIsSyncingChanged() override {
-    CHECK(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-    if (prefs_->IsSyncing()) {
-      observation_.Reset();
-      bool should_notify = false;
-      {
-        // Block self-induced notifications (see crbug.com/375553464).
-        base::AutoReset<bool> processing_changes(
-            &theme_syncable_service_->processing_syncer_changes_, true);
-
-        // Copy over synced pref values to the new theme prefs.
-        for (const auto& [pref_in_migration, pref_names] :
-             kThemePrefsInMigration) {
-          if (const base::Value* value =
-                  prefs_->GetUserPrefValue(pref_names.syncing_pref_name)) {
-            // User color pref needs another pref to be set to be detected.
-            if (pref_in_migration == ThemePrefInMigration::kUserColor) {
-              prefs_->SetString(prefs::kCurrentThemeID,
-                                ThemeService::kUserColorThemeID);
-            }
-            prefs_->Set(pref_names.non_syncing_pref_name, value->Clone());
-            base::UmaHistogramEnumeration(
-                "Theme.ThemePrefMigration.IncomingSyncingPrefApplied",
-                pref_in_migration);
-            should_notify = true;
-          }
-        }
-      }
-      prefs_->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
-      if (should_notify) {
-        theme_syncable_service_->OnThemeChanged();
-      }
-    }
-  }
-
- private:
-  base::ScopedObservation<sync_preferences::PrefServiceSyncable,
-                          sync_preferences::PrefServiceSyncableObserver>
-      observation_{this};
-  raw_ptr<sync_preferences::PrefServiceSyncable> prefs_;
-  raw_ptr<ThemeSyncableService> theme_syncable_service_;
-};
-
 ThemeSyncableService::ThemeSyncableService(Profile* profile,
                                            ThemeService* theme_service)
     : profile_(profile),
@@ -202,30 +87,16 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
   DCHECK(theme_service_);
   theme_service_->AddObserver(this);
 
-  sync_preferences::PrefServiceSyncable* prefs =
-      static_cast<sync_preferences::PrefServiceSyncable*>(profile_->GetPrefs());
   // Listen to NtpCustomBackgroundDict pref changes. This is done because
   // ThemeService doesn't convey ntp background change notifications.
-  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kNtpCustomBackgroundDict,
       base::BindRepeating(&ThemeSyncableService::OnThemeChanged,
                           base::Unretained(this)));
-
-  if (prefs->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs)) {
-    // ThemeSyncableService instance is destroyed upon ThemeService::Shutdown.
-    // So `prefs` outlives this.
-    pref_service_syncable_observer_ =
-        std::make_unique<PrefServiceSyncableObserver>(
-            prefs,
-            // This is okay since `this` outlives
-            // `pref_service_syncable_observer_`.
-            this);
-  }
 }
 
 ThemeSyncableService::~ThemeSyncableService() {
-  pref_service_syncable_observer_.reset();
   theme_service_->RemoveObserver(this);
 }
 
@@ -485,14 +356,6 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     DVLOG(1) << "Applying browser color scheme";
     theme_service_->SetBrowserColorScheme(
         ProtoEnumToBrowserColorScheme(new_specs.browser_color_scheme()));
-
-    // Prior to the ThemeSpecifics migration (crbug.com/356148174),
-    // 'browser_color_scheme' was absent. Post-migration, it's always set. If
-    // this field exists, a newer theme has been synced, making reading the
-    // syncing theme prefs pointless.
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kShouldReadIncomingSyncingThemePrefs, false);
-    pref_service_syncable_observer_.reset();
   }
 
   if (new_specs.use_custom_theme()) {
@@ -795,24 +658,6 @@ bool ThemeSyncableService::HasNonDefaultTheme(
 std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
     syncer::SyncChange::SyncChangeType change_type,
     const sync_pb::ThemeSpecifics& theme_specifics) {
-  // As part of the theme migration strategy, update the old syncing prefs with
-  // the new values.
-  PrefService* prefs = profile_->GetPrefs();
-  for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
-    // Skip setting ntp background pref if the background is currently set
-    // using a local resource.
-    if (pref_in_migration == ThemePrefInMigration::kNtpCustomBackgroundDict &&
-        prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
-      continue;
-    }
-    if (const base::Value* value =
-            prefs->GetUserPrefValue(pref_names.non_syncing_pref_name)) {
-      prefs->Set(pref_names.syncing_pref_name, *value);
-    } else {
-      prefs->ClearPref(pref_names.syncing_pref_name);
-    }
-  }
-
   syncer::SyncChangeList changes;
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);

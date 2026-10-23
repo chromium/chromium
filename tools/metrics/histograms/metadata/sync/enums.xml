@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
   <int value="100013" label="HatsSurveyMetadata"/>
   <int value="100014" label="HomePage"/>
   <int value="100015" label="HomePageIsNewTabPage"/>
-  <int value="100016" label="NtpCustomBackgroundDict"/>
+  <int value="100016" label="(obsolete) NtpCustomBackgroundDict"/>
   <int value="100017" label="LiveCaptionBubbleExpanded"/>
   <int value="100018" label="(Obsolete) LiveCaptionBubblePinned"/>
   <int value="100019" label="LiveCaptionEnabled"/>
@@ -646,10 +646,10 @@ chromium-metrics-reviews@google.com.
   <int value="100216" label="SixPackKeyInsertNotificationsRemaining"/>
   <int value="100217" label="LiveCaptionMaskOffensiveWords"/>
   <int value="100218" label="AshSessionTimeOfLastActivation"/>
-  <int value="100219" label="BrowserColorScheme"/>
-  <int value="100220" label="BrowserColorVariant"/>
-  <int value="100221" label="GrayscaleThemeEnabled"/>
-  <int value="100222" label="UserColor"/>
+  <int value="100219" label="(obsolete) BrowserColorScheme"/>
+  <int value="100220" label="(obsolete) BrowserColorVariant"/>
+  <int value="100221" label="(obsolete) GrayscaleThemeEnabled"/>
+  <int value="100222" label="(obsolete) UserColor"/>
   <int value="100223" label="(Obsolete) BlockAll3pcToggleEnabled"/>
   <int value="100224" label="(Obsolete) TrackingProtectionLevel"/>
   <int value="100225" label="UserSpeakOnMuteDetectionEnabled"/>
@@ -1963,18 +1963,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync_user_events/user_event_service_impl.cc:SyncUserEventType) -->
-
-<!-- LINT.IfChange(ThemePrefInMigration) -->
-
-<enum name="ThemePrefInMigration">
-  <int value="0" label="kBrowserColorScheme"/>
-  <int value="1" label="kUserColor"/>
-  <int value="2" label="kBrowserColorVariant"/>
-  <int value="3" label="kGrayscaleThemeEnabled"/>
-  <int value="4" label="kNtpCustomBackgroundDict"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/themes/theme_syncable_service.h:ThemePrefInMigration) -->
 
 <!-- LINT.IfChange(TriggerRefreshSource) -->
 
