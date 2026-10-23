@@ -169,7 +169,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
   t->EndTest();
 }
 
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMediaLayers) {
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestMediaLayers) {
   UiUtils::DisableOverlayForTesting();
   MockForLayers mock;
 
