@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"

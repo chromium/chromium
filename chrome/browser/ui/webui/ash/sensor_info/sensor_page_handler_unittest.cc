@@ -14,7 +14,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"

@@ -20,7 +20,6 @@
 #include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager.h"

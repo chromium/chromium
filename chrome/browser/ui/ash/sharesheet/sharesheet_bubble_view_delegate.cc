@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "ui/views/widget/widget.h"

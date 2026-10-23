@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "components/app_restore/app_restore_utils.h"
