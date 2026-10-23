@@ -409,6 +409,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSGeminiImageRemixFeature,
 DEFINE_VARIATION_PARAM(kIPHiOSGeminiWhatCanGeminiDo,
                        "IPHiOSGeminiWhatCanGeminiDo");
 DEFINE_VARIATION_PARAM(kIPHiOSNewIAPromoFeature, "IPH_iOSNewIAPromoFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSBottomOmniboxFeature,
+                       "IPH_iOSBottomOmniboxFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSPinMostVisitedSiteFeature,
                        "IPH_iOSPinMostVisitedSiteFeature");
 #endif  // BUILDFLAG(IS_IOS)
@@ -820,6 +822,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSAIHubNewBadge),
         VARIATION_ENTRY(kIPHiOSBackendPromoFeature),
         VARIATION_ENTRY(kIPHiOSBackgroundNewBadge),
+        VARIATION_ENTRY(kIPHiOSBottomOmniboxFeature),
         VARIATION_ENTRY(kIPHiOSContextualPanelPriceInsightsFeature),
         VARIATION_ENTRY(kIPHiOSContextualPanelSampleModelFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBannerPromoFeature),

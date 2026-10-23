@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/bubble/public/in_product_help_type.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -22,6 +23,8 @@
 
 @interface FakeHelpCommandsHandler : NSObject <HelpCommands>
 @property(nonatomic, assign) BOOL presentSendTabToSelfOmniboxCalled;
+// Whether `presentInProductHelpWithType:` was called with `kBottomOmnibox`.
+@property(nonatomic, assign) BOOL presentBottomOmniboxCalled;
 @end
 
 @implementation FakeHelpCommandsHandler
@@ -29,6 +32,8 @@
 - (void)presentInProductHelpWithType:(InProductHelpType)type {
   if (type == InProductHelpType::kSendTabToSelfOmnibox) {
     _presentSendTabToSelfOmniboxCalled = YES;
+  } else if (type == InProductHelpType::kBottomOmnibox) {
+    _presentBottomOmniboxCalled = YES;
   }
 }
 
@@ -70,6 +75,11 @@ class TabBasedIPHBrowserAgentTest : public PlatformTest {
   BrowserViewVisibilityNotifierBrowserAgent* visibility_notifier() {
     return BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(
         browser_.get());
+  }
+
+  // Returns the `UrlLoadingNotifierBrowserAgent` for `browser_`.
+  UrlLoadingNotifierBrowserAgent* url_loading_notifier() {
+    return UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -201,6 +211,70 @@ TEST_F(TabBasedIPHBrowserAgentTest,
       BrowserViewVisibilityState::kVisible,
       BrowserViewVisibilityState::kAppearing);
   EXPECT_FALSE(help_handler_.presentSendTabToSelfOmniboxCalled);
+}
+
+// Tests that the bottom omnibox IPH is presented when navigating using the
+// omnibox to a non-NTP URL.
+TEST_F(TabBasedIPHBrowserAgentTest,
+       BottomOmniboxIPHPresentedOnOmniboxNavigation) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetCurrentURL(GURL(kChromeUINewTabURL));
+  web::FakeWebState* raw_web_state = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  GURL destination_url("https://www.example.com");
+  url_loading_notifier()->TabDidLoadUrl(
+      destination_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      raw_web_state->GetWeakPtr());
+  raw_web_state->SetCurrentURL(destination_url);
+  raw_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_TRUE(help_handler_.presentBottomOmniboxCalled);
+}
+
+// Tests that the bottom omnibox IPH is not presented when navigating to the
+// NTP.
+TEST_F(TabBasedIPHBrowserAgentTest,
+       BottomOmniboxIPHNotPresentedOnNTPNavigation) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  GURL ntp_url(kChromeUINewTabURL);
+  web_state->SetVisibleURL(ntp_url);
+  web::FakeWebState* raw_web_state = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  url_loading_notifier()->TabDidLoadUrl(
+      ntp_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      raw_web_state->GetWeakPtr());
+  raw_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_FALSE(help_handler_.presentBottomOmniboxCalled);
+}
+
+// Tests that the bottom omnibox IPH is not presented when navigating without
+// using the omnibox.
+TEST_F(TabBasedIPHBrowserAgentTest,
+       BottomOmniboxIPHNotPresentedOnLinkNavigation) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  GURL destination_url("https://www.example.com");
+  web_state->SetVisibleURL(destination_url);
+  web::FakeWebState* raw_web_state = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  url_loading_notifier()->TabDidLoadUrl(
+      destination_url, ui::PAGE_TRANSITION_LINK, raw_web_state->GetWeakPtr());
+  raw_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_FALSE(help_handler_.presentBottomOmniboxCalled);
 }
 
 }  // namespace

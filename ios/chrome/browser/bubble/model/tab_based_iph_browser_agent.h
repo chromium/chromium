@@ -103,6 +103,9 @@ class TabBasedIPHBrowserAgent
   void OnModelReady() override;
 
   // UrlLoadingObserver
+  void TabDidPrerenderUrl(const GURL& url,
+                          ui::PageTransition transition_type,
+                          base::WeakPtr<web::WebState> web_state) override;
   void TabDidLoadUrl(const GURL& url,
                      ui::PageTransition transition_type,
                      base::WeakPtr<web::WebState> web_state) override;
@@ -139,6 +142,9 @@ class TabBasedIPHBrowserAgent
 
   // Attempts to present the Send Tab to Self omnibox IPH if eligible.
   void AttemptSendTabToSelfIPH();
+
+  // Attempts to present the bottom omnibox IPH if eligible.
+  void AttemptBottomOmniboxIPH();
 
   // For all IPH features managed by this class, resets their tracker variables
   // to `false`, and remove currently displaying IPH views from the view.
@@ -202,6 +208,9 @@ class TabBasedIPHBrowserAgent
   // Whether the user has just tapped an adjacent tab through the tab grid; will
   // be reset to `false` once the active tab is changed.
   bool tapped_adjacent_tab_ = false;
+  // Whether the user has just navigated from the omnibox; will be reset to
+  // `false` after the navigation has completed.
+  bool loaded_from_omnibox_ = false;
   // Whether the BVC is covered by another view.
   bool is_bvc_covered_ = false;
   // Whether the Send Tab to Self omnibox IPH has been attempted upon startup.

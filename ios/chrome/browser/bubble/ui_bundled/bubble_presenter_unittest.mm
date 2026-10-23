@@ -8,15 +8,22 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -204,6 +211,66 @@ TEST_F(BubblePresenterTest, PresentToolbarSwipeGestureInProductHelpSizeClass) {
                   feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature)))
       .Times(1);
   [bubble_presenter_ presentToolbarSwipeGestureInProductHelp];
+}
+
+// Tests that `presentBottomOmniboxBubble` does not present when preconditions
+// are not met (e.g. omnibox is already at the bottom or page is the NTP).
+TEST_F(BubblePresenterTest, PresentBottomOmniboxBubblePreconditions) {
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list(kChromeNextIa);
+  UIViewController* root_view_controller = [[UIViewController alloc] init];
+  bubble_presenter_.rootViewController = root_view_controller;
+  delegate_.rootViewVisible = YES;
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* raw_web_state = web_state.get();
+  raw_web_state->SetVisibleURL(GURL(kChromeUINewTabURL));
+  web_state_list_->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Should not present on the NTP.
+  [bubble_presenter_ presentBottomOmniboxBubble];
+  EXPECT_EQ(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHiOSBottomOmniboxFeature]);
+
+  // Should not present when omnibox is already in the bottom position.
+  raw_web_state->SetVisibleURL(GURL("https://www.example.com"));
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, true);
+  [bubble_presenter_ presentBottomOmniboxBubble];
+  EXPECT_EQ(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHiOSBottomOmniboxFeature]);
+}
+
+// Tests that `presentBottomOmniboxBubble` creates the bubble presenter when
+// preconditions pass.
+TEST_F(BubblePresenterTest, PresentBottomOmniboxBubble) {
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list(kChromeNextIa);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, false);
+
+  UIViewController* root_view_controller = [[UIViewController alloc] init];
+  bubble_presenter_.rootViewController = root_view_controller;
+  delegate_.rootViewVisible = YES;
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetVisibleURL(GURL("https://www.example.com"));
+  web_state_list_->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  [bubble_presenter_ presentBottomOmniboxBubble];
+  EXPECT_NE(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHiOSBottomOmniboxFeature]);
 }
 
 }  // namespace

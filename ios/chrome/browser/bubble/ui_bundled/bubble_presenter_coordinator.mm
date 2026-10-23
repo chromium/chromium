@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 
 #import "base/notreached.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
@@ -87,6 +88,10 @@
       initWithPrefService:GetApplicationContext()->GetLocalState()
                  prefName:omnibox::kIsOmniboxInBottomPosition];
   [_bottomOmniboxEnabled setObserver:self];
+  if (_bottomOmniboxEnabled.value && engagementTracker) {
+    engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSBottomOmniboxUsed);
+  }
 }
 
 - (void)stop {
@@ -259,6 +264,10 @@
       [_presenter presentSendTabToSelfOmniboxBubble];
       break;
     }
+    case InProductHelpType::kBottomOmnibox: {
+      [_presenter presentBottomOmniboxBubble];
+      break;
+    }
   }
 }
 
@@ -278,6 +287,14 @@
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   if (observableBoolean == _bottomOmniboxEnabled) {
+    if (_bottomOmniboxEnabled.value) {
+      feature_engagement::Tracker* engagementTracker =
+          feature_engagement::TrackerFactory::GetForProfile(self.profile);
+      if (engagementTracker) {
+        engagementTracker->NotifyEvent(
+            feature_engagement::events::kIOSBottomOmniboxUsed);
+      }
+    }
     [_presenter hideBubblesPointingToOmnibox];
   }
 }

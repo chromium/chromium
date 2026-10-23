@@ -58,6 +58,9 @@ enum class InProductHelpType : NSInteger {
   kGeminiExternalAppStoreEvent,
   /// Help bubble pointing to the address bar for Send Tab to Self.
   kSendTabToSelfOmnibox,
+  /// Help bubble pointing to the address bar to inform the user that they can
+  /// move the omnibox to the bottom.
+  kBottomOmnibox,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_
