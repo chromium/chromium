@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -16,7 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -177,6 +180,36 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_ShrinkToFitWindow) {
   EXPECT_EQ(bubble->GetBoundsInScreen().right(),
             anchor_view()->GetWidget()->GetWindowBoundsInScreen().right() -
                 expected_margin);
+  DismissUi();
+}
+
+// Regression test for crbug.com/539976531: if the browser window moves while
+// the toast is animating in (e.g. while the window is being restored at
+// startup), the toast should end up anchored to the window's new position.
+IN_PROC_BROWSER_TEST_F(ToastViewTest, FollowsWindowMovedDuringAnimateIn) {
+  auto rich_animation_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  ShowUi("");
+  toast()->AnimateIn();
+  gfx::LinearAnimation& animation = toast()->height_animation_for_testing();
+  ASSERT_TRUE(animation.is_animating());
+
+  // Move the browser window mid-animation.
+  views::Widget* const browser_widget = anchor_view()->GetWidget();
+  const gfx::Rect old_window_bounds = browser_widget->GetWindowBoundsInScreen();
+  browser_widget->SetBounds(old_window_bounds + gfx::Vector2d(50, 50));
+  ASSERT_NE(old_window_bounds, browser_widget->GetWindowBoundsInScreen());
+
+  // Synchronously finish the animation, without spinning the message loop, so
+  // that no later bounds-changed events can mask the result.
+  gfx::AnimationTestApi(&animation)
+      .Step(base::TimeTicks::Now() + base::Seconds(10));
+  ASSERT_FALSE(animation.is_animating());
+
+  EXPECT_EQ(toast()->GetDesiredWidgetBounds(),
+            toast()->GetWidget()->GetWindowBoundsInScreen());
   DismissUi();
 }
 

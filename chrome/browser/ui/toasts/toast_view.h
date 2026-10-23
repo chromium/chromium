@@ -117,6 +117,9 @@ class ToastView : public views::BubbleDialogDelegateView,
   }
   views::ImageView* icon_view_for_testing() { return icon_view_; }
   views::Throbber* throbber_for_testing() { return throbber_; }
+  gfx::LinearAnimation& height_animation_for_testing() {
+    return height_animation_;
+  }
 
   // Gets the icon/image size from the layout provider.
   static int GetIconSize();
@@ -136,8 +139,12 @@ class ToastView : public views::BubbleDialogDelegateView,
   void OnMenuClosed();
 
   gfx::LinearAnimation height_animation_{this};
-  gfx::Rect starting_widget_bounds_;
-  gfx::Rect target_widget_bounds_;
+  // Vertical offsets, relative to the toast's desired bounds, between which
+  // `height_animation_` interpolates. Offsets are used instead of absolute
+  // screen bounds so the toast follows the browser window if it moves while
+  // the animation is running (e.g. while the window is restored at startup).
+  int starting_y_offset_ = 0;
+  int target_y_offset_ = 0;
   gfx::Tween::Type height_animation_tween_;
 
   const std::u16string toast_text_;

@@ -377,8 +377,9 @@ void ToastView::Init() {
 void ToastView::AnimationProgressed(const gfx::Animation* animation) {
   const double value = gfx::Tween::CalculateValue(
       height_animation_tween_, height_animation_.GetCurrentValue());
-  const gfx::Rect current_bounds = gfx::Tween::RectValueBetween(
-      value, starting_widget_bounds_, target_widget_bounds_);
+  gfx::Rect current_bounds = GetDesiredWidgetBounds();
+  current_bounds.Offset(0, gfx::Tween::IntValueBetween(
+                               value, starting_y_offset_, target_y_offset_));
   GetWidget()->SetBounds(current_bounds);
 }
 
@@ -387,9 +388,8 @@ void ToastView::AnimateIn() {
     return;
   }
 
-  target_widget_bounds_ = GetWidget()->GetWindowBoundsInScreen();
-  starting_widget_bounds_ =
-      target_widget_bounds_ - gfx::Vector2d{0, kAnimationHeightOffset};
+  starting_y_offset_ = -kAnimationHeightOffset;
+  target_y_offset_ = 0;
   height_animation_tween_ = gfx::Tween::ACCEL_5_70_DECEL_90;
   height_animation_.SetDuration(base::Milliseconds(kAnimationEntryDuration));
   height_animation_.Start();
@@ -500,9 +500,8 @@ void ToastView::AnimateOut(base::OnceClosure callback,
   }
 
   if (show_height_animation) {
-    starting_widget_bounds_ = GetWidget()->GetWindowBoundsInScreen();
-    target_widget_bounds_ =
-        starting_widget_bounds_ - gfx::Vector2d{0, kAnimationHeightOffset};
+    starting_y_offset_ = 0;
+    target_y_offset_ = -kAnimationHeightOffset;
     height_animation_tween_ = gfx::Tween::ACCEL_30_DECEL_20_85;
     height_animation_.SetDuration(base::Milliseconds(kAnimationExitDuration));
     height_animation_.Start();
