@@ -18,6 +18,8 @@ class PageContextMonitorViews : public PageContextMonitor {
                           AiOverlayDialogPageHandler& page_handler);
   ~PageContextMonitorViews() override;
 
+  std::optional<gfx::Point> GetCursorPosition() const override;
+
  private:
   void OnActiveTabChanged(BrowserWindowInterface* window);
 

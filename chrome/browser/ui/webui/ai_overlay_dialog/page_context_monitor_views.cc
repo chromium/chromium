@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/display/screen.h"
 
 namespace ttc {
 
@@ -38,6 +40,19 @@ void PageContextMonitorViews::OnActiveTabChanged(
 
   tabs::TabInterface* active_tab = this->window().GetActiveTabInterface();
   OnActiveWebContentsChanged(active_tab ? active_tab->GetContents() : nullptr);
+}
+
+std::optional<gfx::Point> PageContextMonitorViews::GetCursorPosition() const {
+  display::Screen* screen = display::Screen::Get();
+  if (!screen || !web_contents()) {
+    return std::nullopt;
+  }
+  gfx::Point cursor_screen = screen->GetCursorScreenPoint();
+  gfx::Rect tab_bounds = web_contents()->GetContainerBounds();
+  if (!tab_bounds.Contains(cursor_screen)) {
+    return std::nullopt;
+  }
+  return cursor_screen - tab_bounds.OffsetFromOrigin();
 }
 
 }  // namespace ttc

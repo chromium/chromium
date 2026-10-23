@@ -19,6 +19,7 @@
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/gfx/geometry/point.h"
 
 class BrowserWindowInterface;
 
@@ -55,6 +56,8 @@ class PageContextMonitor : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
+
+  virtual std::optional<gfx::Point> GetCursorPosition() const = 0;
 
   std::string GetUrlForHash(const std::string& hash) const;
 

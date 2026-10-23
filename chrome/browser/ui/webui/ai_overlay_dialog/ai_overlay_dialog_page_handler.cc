@@ -52,7 +52,6 @@
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -303,29 +302,13 @@ void AiOverlayDialogPageHandler::OnUsePersonaChanged(bool use_persona) {
 
 void AiOverlayDialogPageHandler::GetCursorPosition(
     GetCursorPositionCallback callback) {
-  display::Screen* screen = display::Screen::Get();
-  if (!screen) {
+  PageContextMonitor* monitor =
+      untrusted_ui_ ? untrusted_ui_->page_context_monitor() : nullptr;
+  if (!monitor) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-  gfx::Point cursor_screen = screen->GetCursorScreenPoint();
-
-  content::WebContents* web_contents =
-      GetActiveWebContentsFromBrowser(browser_);
-
-  if (!web_contents) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  gfx::Rect tab_bounds = web_contents->GetContainerBounds();
-  if (!tab_bounds.Contains(cursor_screen)) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  gfx::Point cursor_local = cursor_screen - tab_bounds.OffsetFromOrigin();
-  std::move(callback).Run(cursor_local);
+  std::move(callback).Run(monitor->GetCursorPosition());
 }
 
 void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
