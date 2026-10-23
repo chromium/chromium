@@ -17,6 +17,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -42,11 +43,6 @@ class ContextualTasksButton
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
-  enum class Shape {
-    kCircle,
-    kFlatEdgeLeft,
-    kFlatEdgeRight,
-  };
 
   explicit ContextualTasksButton(
       BrowserWindowInterface* browser_window_interface);
@@ -54,10 +50,8 @@ class ContextualTasksButton
 
   static constexpr int kShadowOutset = 12;
 
-  Shape GetShape() const;
+  contextual_tasks::EphemeralButtonShape GetShape() const;
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
-  bool IsTrailing() const;
-  bool IsSidePanelRightAligned() const;
   bool IsHighlighted() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
   PinnedToolbarButtonStatusIndicator* GetStatusIndicatorForTesting() const {

@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -465,10 +466,7 @@ void ToolbarView::Init() {
     auto* vts_controller =
         tabs::VerticalTabStripStateController::From(browser_);
     if ((!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) &&
-        !contextual_tasks::IsContextualTasksPinningV2Enabled() &&
-        !(contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-              .Get() &&
-          button->IsSidePanelRightAligned())) {
+        !contextual_tasks::ShouldPlaceCircularButtonBeforeProfile(browser_)) {
       button->SetProperty(views::kMarginsKey, gfx::Insets());
     }
     contextual_tasks_button_ = AddChildViewAt(std::move(button), 0);
@@ -1820,12 +1818,7 @@ void ToolbarView::PositionContextualTasksButton() {
   if (!contextual_tasks_button_) {
     return;
   }
-  auto* button =
-      static_cast<ContextualTasksButton*>(contextual_tasks_button_.get());
-  if (contextual_tasks::IsContextualTasksPinningV2Enabled() ||
-      (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-           .Get() &&
-       button->IsSidePanelRightAligned())) {
+  if (contextual_tasks::ShouldPlaceCircularButtonBeforeProfile(browser_)) {
     const bool is_glic_left_of_profile =
         features::kGlicToolbarButtonLocationParam.Get() ==
             features::GlicToolbarButtonLocation::kLeftOfProfileChip ||
@@ -1855,7 +1848,9 @@ void ToolbarView::PositionContextualTasksButton() {
       }
     }
   }
-  const size_t target_index = button->IsTrailing() ? children().size() : 0;
+  const size_t target_index =
+      contextual_tasks::IsEphemeralButtonTrailing(browser_) ? children().size()
+                                                            : 0;
   ReorderChildView(contextual_tasks_button_, target_index);
 }
 

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -730,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::GetShape,
-                        ContextualTasksButton::Shape::kCircle),
+                        contextual_tasks::EphemeralButtonShape::kCircle),
       Do([&]() {
         // Simulate exiting immersive mode.
         auto* controller = ImmersiveModeController::From(browser());
@@ -1282,7 +1283,7 @@ class ContextualTasksEphemeralButtonPinningV2InteractiveTest
     return CheckView(kContextualTasksEphemeralToolbarButtonElementId,
                      [this](ContextualTasksButton* button) {
                        if (button->GetShape() !=
-                           ContextualTasksButton::Shape::kCircle) {
+                           contextual_tasks::EphemeralButtonShape::kCircle) {
                          return false;
                        }
                        BrowserView* browser_view =
@@ -2056,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(
       CheckView(kContextualTasksEphemeralToolbarButtonElementId,
                 [](ContextualTasksButton* button) {
                   return button->GetShape() ==
-                         ContextualTasksButton::Shape::kCircle;
+                         contextual_tasks::EphemeralButtonShape::kCircle;
                 }),
       CheckView(kContextualTasksEphemeralToolbarButtonElementId,
                 [this](ContextualTasksButton* button) {
@@ -2097,7 +2098,7 @@ IN_PROC_BROWSER_TEST_F(
       CheckView(kContextualTasksEphemeralToolbarButtonElementId,
                 [](ContextualTasksButton* button) {
                   return button->GetShape() ==
-                         ContextualTasksButton::Shape::kFlatEdgeLeft;
+                         contextual_tasks::EphemeralButtonShape::kFlatEdgeLeft;
                 }),
       CheckView(kContextualTasksEphemeralToolbarButtonElementId,
                 [](ContextualTasksButton* button) {

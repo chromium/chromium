@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -299,6 +300,15 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   }
 
   if (!contextual_tasks::IsContextualTasksUIEnabled()) {
+    return false;
+  }
+
+  // The trailing edge is only used when the right-hand ephemeral button param
+  // is enabled.
+  if (!contextual_tasks::ShouldPlaceCircularButtonBeforeProfile(
+          browser_window_interface_) &&
+      contextual_tasks::IsEphemeralButtonTrailing(browser_window_interface_) &&
+      !contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton()) {
     return false;
   }
 

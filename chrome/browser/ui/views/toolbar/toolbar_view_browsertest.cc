@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -662,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewCircularContextualTasksBrowserTest,
 
   auto* contextual_tasks_button = static_cast<ContextualTasksButton*>(button);
   EXPECT_EQ(contextual_tasks_button->GetShape(),
-            ContextualTasksButton::Shape::kCircle);
+            contextual_tasks::EphemeralButtonShape::kCircle);
 
   // Positioned to the left of profile (and glic button if visible).
   views::View* anchor = nullptr;
@@ -716,9 +717,10 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewCircularContextualTasksBrowserTest,
   SetContextualTasksRightAligned(false);
   toolbar()->PositionContextualTasksButton();
 
-  EXPECT_FALSE(contextual_tasks_button->IsSidePanelRightAligned());
+  EXPECT_FALSE(
+      contextual_tasks::IsContextualTasksSidePanelRightAligned(browser()));
   EXPECT_EQ(contextual_tasks_button->GetShape(),
-            ContextualTasksButton::Shape::kFlatEdgeLeft);
+            contextual_tasks::EphemeralButtonShape::kFlatEdgeLeft);
 
   // In LTR, the button is on the leading edge (index 0).
   if (!is_rtl) {

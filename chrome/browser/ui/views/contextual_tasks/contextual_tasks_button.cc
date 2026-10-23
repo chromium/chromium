@@ -12,13 +12,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -27,27 +24,24 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -69,6 +63,8 @@
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+
+using contextual_tasks::EphemeralButtonShape;
 
 namespace {
 
@@ -101,10 +97,10 @@ constexpr int kStatusIndicatorHeight = 2;
 // Spacing between the button's icon and the status indicator.
 constexpr int kStatusIndicatorSpacing = 1;
 
-gfx::Insets GetPillShadowInsets(ContextualTasksButton::Shape shape) {
+gfx::Insets GetPillShadowInsets(EphemeralButtonShape shape) {
   gfx::Insets shadow_insets =
       gfx::Insets::VH(kPillShapeShadowInset, kPillShapeShadowInset);
-  if (shape == ContextualTasksButton::Shape::kFlatEdgeRight) {
+  if (shape == EphemeralButtonShape::kFlatEdgeRight) {
     shadow_insets.set_right(0);
   } else {
     shadow_insets.set_left(0);
@@ -113,11 +109,10 @@ gfx::Insets GetPillShadowInsets(ContextualTasksButton::Shape shape) {
   return shadow_insets;
 }
 
-SkRRect GetPillRRect(const gfx::Rect& rect,
-                     ContextualTasksButton::Shape shape) {
+SkRRect GetPillRRect(const gfx::Rect& rect, EphemeralButtonShape shape) {
   const float radius = rect.height() / 2.0f;
   SkVector radii[4];
-  if (shape == ContextualTasksButton::Shape::kFlatEdgeRight) {
+  if (shape == EphemeralButtonShape::kFlatEdgeRight) {
     radii[0] = {radius, radius};                                // top-left
     radii[1] = {kFlatEdgeTopRadius, kFlatEdgeTopRadius};        // top-right
     radii[2] = {kFlatEdgeBottomRadius, kFlatEdgeBottomRadius};  // bottom-right
@@ -140,7 +135,7 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
  public:
   ContextualTasksButtonBackgroundPainter(SkColor bg_color,
                                          SkColor shadow_color,
-                                         ContextualTasksButton::Shape shape)
+                                         EphemeralButtonShape shape)
       : bg_color_(bg_color), shadow_color_(shadow_color), shape_(shape) {}
   ~ContextualTasksButtonBackgroundPainter() override = default;
 
@@ -165,7 +160,7 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
     button_rect.Inset(gfx::Insets(kShadowOutset));
 
     switch (shape_) {
-      case ContextualTasksButton::Shape::kCircle: {
+      case EphemeralButtonShape::kCircle: {
         gfx::Rect inset_rect = button_rect;
         inset_rect.Inset(gfx::Insets(kCircleShadowInset));
         gfx::RectF fill_rect(gfx::ScaleToEnclosedRect(inset_rect, scale));
@@ -175,8 +170,8 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
         canvas->DrawCircle(center, scaled_radius, flags);
         break;
       }
-      case ContextualTasksButton::Shape::kFlatEdgeRight:
-      case ContextualTasksButton::Shape::kFlatEdgeLeft: {
+      case EphemeralButtonShape::kFlatEdgeRight:
+      case EphemeralButtonShape::kFlatEdgeLeft: {
         gfx::Rect inset_rect = button_rect;
         inset_rect.Inset(GetPillShadowInsets(shape_));
         gfx::Rect fill_rect = gfx::ScaleToEnclosingRect(inset_rect, scale);
@@ -189,7 +184,7 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
  private:
   const SkColor bg_color_;
   const SkColor shadow_color_;
-  const ContextualTasksButton::Shape shape_;
+  const EphemeralButtonShape shape_;
 };
 
 class ContextualTasksButtonHighlightPathGenerator
@@ -202,13 +197,13 @@ class ContextualTasksButtonHighlightPathGenerator
 
   SkPath GetHighlightPath(const views::View* view) override {
     gfx::Rect rect(view->size());
-    const ContextualTasksButton::Shape shape = button_->GetShape();
+    const EphemeralButtonShape shape = button_->GetShape();
     switch (shape) {
-      case ContextualTasksButton::Shape::kCircle:
+      case EphemeralButtonShape::kCircle:
         rect.Inset(gfx::Insets(kCircleShadowInset));
         return SkPath::Oval(gfx::RectToSkRect(rect));
-      case ContextualTasksButton::Shape::kFlatEdgeRight:
-      case ContextualTasksButton::Shape::kFlatEdgeLeft:
+      case EphemeralButtonShape::kFlatEdgeRight:
+      case EphemeralButtonShape::kFlatEdgeLeft:
         rect.Inset(GetPillShadowInsets(shape));
         return SkPath::RRect(GetPillRRect(rect, shape));
     }
@@ -342,25 +337,25 @@ float ContextualTasksButton::GetCornerRadiusFor(
     ToolbarButton::Edge edge) const {
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    const Shape button_shape = GetShape();
+    const EphemeralButtonShape button_shape = GetShape();
     switch (edge) {
       case ToolbarButton::Edge::kTopLeft:
-        if (button_shape == Shape::kFlatEdgeLeft) {
+        if (button_shape == EphemeralButtonShape::kFlatEdgeLeft) {
           return kFlatEdgeTopRadius;
         }
         break;
       case ToolbarButton::Edge::kTopRight:
-        if (button_shape == Shape::kFlatEdgeRight) {
+        if (button_shape == EphemeralButtonShape::kFlatEdgeRight) {
           return kFlatEdgeTopRadius;
         }
         break;
       case ToolbarButton::Edge::kBottomLeft:
-        if (button_shape == Shape::kFlatEdgeLeft) {
+        if (button_shape == EphemeralButtonShape::kFlatEdgeLeft) {
           return kFlatEdgeBottomRadius;
         }
         break;
       case ToolbarButton::Edge::kBottomRight:
-        if (button_shape == Shape::kFlatEdgeRight) {
+        if (button_shape == EphemeralButtonShape::kFlatEdgeRight) {
           return kFlatEdgeBottomRadius;
         }
         break;
@@ -385,82 +380,12 @@ void ContextualTasksButton::OnImmersiveModeControllerDestroyed() {
 }
 
 void ContextualTasksButton::OnButtonPress() {
-  if (auto* const user_ed =
-          BrowserUserEducationInterface::From(browser_window_interface_);
-      user_ed && user_ed->IsFeaturePromoActive(
-                     feature_engagement::
-                         kIPHContextualTasksEphemeralToolbarButtonFeature)) {
-    user_ed->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  }
-
-  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
-      browser_window_interface_);
-  CHECK(controller);
-
-  // When kEphemeralPinningVisibleWhenPermanentlyPinned is enabled, the
-  // ephemeral button remains visible alongside the pinned button, and presses
-  // on this button should always be logged as EphemeralToolbarButton actions.
-  bool is_pinned =
-      !base::FeatureList::IsEnabled(
-          contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned) &&
-      contextual_tasks::GetEffectivePinState(
-          browser_window_interface_->GetProfile());
-
-  if (controller->IsPanelOpenForContextualTask()) {
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.ToolbarButton.UserAction.CloseSidePanel"));
-    base::UmaHistogramBoolean(
-        "ContextualTasks.ToolbarButton.UserAction.CloseSidePanel", true);
-
-    const char* sub_action =
-        is_pinned
-            ? "ContextualTasks.PermanentToolbarButton.UserAction.CloseSidePanel"
-            : "ContextualTasks.EphemeralToolbarButton.UserAction."
-              "CloseSidePanel";
-    base::RecordAction(base::UserMetricsAction(sub_action));
-    base::UmaHistogramBoolean(sub_action, true);
-
-    controller->Close();
-  } else {
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.ToolbarButton.UserAction.OpenSidePanel"));
-    base::UmaHistogramBoolean(
-        "ContextualTasks.ToolbarButton.UserAction.OpenSidePanel", true);
-
-    const char* sub_action =
-        is_pinned
-            ? "ContextualTasks.PermanentToolbarButton.UserAction.OpenSidePanel"
-            : "ContextualTasks.EphemeralToolbarButton.UserAction.OpenSidePanel";
-    base::RecordAction(base::UserMetricsAction(sub_action));
-    base::UmaHistogramBoolean(sub_action, true);
-
-    if (!is_pinned) {
-      RecordShownDuration("Clicked");
-    }
-
-    if (contextual_tasks::kShowEntryPoint.Get() ==
-        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-      controller->Show(
-          /*transition_from_tab=*/false,
-          is_pinned ? omnibox::ChromeAimEntryPoint::
-                          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON
-                    : omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
-          /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
-          is_pinned
-              ? std::nullopt
-              : std::make_optional(
-                    contextual_tasks::ContextualTasksPanelController::
-                        EntrySource::kEphemeralToolbarButton));
-    } else {
-      controller->OpenInZeroState();
-    }
-  }
-}
-
-bool ContextualTasksButton::IsTrailing() const {
-  return IsSidePanelRightAligned() != base::i18n::IsRTL();
+  // `base::Unretained()` is safe because `HandleEphemeralButtonPressed()` runs
+  // the callback synchronously, before it returns, while `this` is still alive.
+  contextual_tasks::HandleEphemeralButtonPressed(
+      browser_window_interface_,
+      base::BindOnce(&ContextualTasksButton::RecordShownDuration,
+                     base::Unretained(this), "Clicked"));
 }
 
 void ContextualTasksButton::OnShouldUpdatePosition() {
@@ -479,8 +404,10 @@ void ContextualTasksButton::OnShouldUpdatePosition() {
       SetImageModel(views::Button::STATE_NORMAL, GetButtonImage());
     } else {
       const gfx::VectorIcon& contextual_tasks_icon =
-          IsSidePanelRightAligned() ? kDockToRightSparkCustomIcon
-                                    : kDockToLeftSparkCustomIcon;
+          contextual_tasks::IsContextualTasksSidePanelRightAligned(
+              browser_window_interface_)
+              ? kDockToRightSparkCustomIcon
+              : kDockToLeftSparkCustomIcon;
       SetVectorIcon(contextual_tasks_icon);
     }
   }
@@ -508,27 +435,27 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
     return;
   }
 
-  const Shape shape = GetShape();
-  if (shape == Shape::kCircle) {
+  const EphemeralButtonShape shape = GetShape();
+  if (shape == EphemeralButtonShape::kCircle) {
     ClearProperty(views::kMarginsKey);
   } else {
     SetProperty(views::kMarginsKey, gfx::Insets());
   }
   gfx::Insets insets;
   switch (shape) {
-    case Shape::kCircle: {
+    case EphemeralButtonShape::kCircle: {
       const int icon_inset = (button_size - GetIconSize()) / 2;
       insets = gfx::Insets(icon_inset);
       break;
     }
-    case Shape::kFlatEdgeRight:
-    case Shape::kFlatEdgeLeft: {
+    case EphemeralButtonShape::kFlatEdgeRight:
+    case EphemeralButtonShape::kFlatEdgeLeft: {
       const int icon_inset = (button_size - kGLogoPillShapeIconSize) / 2;
       constexpr int kIconOffset = 2;
       const int rounded_edge_inset = icon_inset + kIconOffset;
       const int flat_edge_inset = icon_inset - kIconOffset;
       insets =
-          (shape == Shape::kFlatEdgeRight)
+          (shape == EphemeralButtonShape::kFlatEdgeRight)
               ? gfx::Insets::TLBR(0, rounded_edge_inset, 0, flat_edge_inset)
               : gfx::Insets::TLBR(0, flat_edge_inset, 0, rounded_edge_inset);
       break;
@@ -727,28 +654,8 @@ void ContextualTasksButton::OnControllerDestroyed() {
   panel_controller_observation_.Reset();
 }
 
-ContextualTasksButton::Shape ContextualTasksButton::GetShape() const {
-  ImmersiveModeController* const immersive_mode_controller =
-      ImmersiveModeController::From(browser_window_interface_);
-  if (immersive_mode_controller && immersive_mode_controller->IsEnabled()) {
-    return Shape::kCircle;
-  }
-
-  auto* const controller =
-      tabs::VerticalTabStripStateController::From(browser_window_interface_);
-  if (controller && controller->ShouldDisplayVerticalTabs()) {
-    return Shape::kCircle;
-  }
-
-  if (contextual_tasks::IsContextualTasksPinningV2Enabled() ||
-      (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-           .Get() &&
-       IsSidePanelRightAligned())) {
-    return Shape::kCircle;
-  }
-
-  return IsSidePanelRightAligned() ? Shape::kFlatEdgeRight
-                                   : Shape::kFlatEdgeLeft;
+EphemeralButtonShape ContextualTasksButton::GetShape() const {
+  return contextual_tasks::GetEphemeralButtonShape(browser_window_interface_);
 }
 
 bool ContextualTasksButton::IsHighlighted() const {
@@ -760,49 +667,18 @@ ui::Layer* ContextualTasksButton::GetDropShadowLayerForTesting() const {
                                     : nullptr;
 }
 
-bool ContextualTasksButton::IsSidePanelRightAligned() const {
-  if (!browser_window_interface_ || !browser_window_interface_->GetProfile()) {
-    return false;
-  }
-  PrefService* const pref_service =
-      browser_window_interface_->GetProfile()->GetPrefs();
-  if (!pref_service) {
-    return false;
-  }
-  const base::DictValue& overrides =
-      pref_service->GetDict(prefs::kSidePanelAlignmentOverrides);
-  std::optional<bool> override_value = overrides.FindBool(
-      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks));
-  if (override_value.has_value()) {
-    return *override_value;
-  }
-  return pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-}
-
 void ContextualTasksButton::MaybeUpdateVisibility() {
   if (contextual_tasks::kShowEntryPoint.Get() !=
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     return;
   }
 
-  const bool is_button_eligible =
-      contextual_tasks::IsContextualTasksUIEnabled();
-
   ContextualTasksEphemeralButtonController* const controller =
       ContextualTasksEphemeralButtonController::From(browser_window_interface_);
   CHECK(controller);
 
-  const bool matches_dock =
-      contextual_tasks::IsContextualTasksPinningV2Enabled() ||
-      (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-           .Get() &&
-       IsSidePanelRightAligned()) ||
-      !IsTrailing() ||
-      contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton();
-
   const bool was_visible = GetVisible();
-  const bool will_be_visible = matches_dock && is_button_eligible &&
-                               controller->ShouldShowEphemeralButton();
+  const bool will_be_visible = controller->ShouldShowEphemeralButton();
 
   if (!was_visible && will_be_visible) {
     if (layer()) {
@@ -812,10 +688,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     SetVisible(true);
     AnimateShow();
     shown_time_ticks_ = base::TimeTicks::Now();
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.EphemeralToolbarButton.Shown"));
-    base::UmaHistogramBoolean("ContextualTasks.EphemeralToolbarButton.Shown",
-                              true);
+    contextual_tasks::RecordEphemeralButtonShown();
   } else {
     if (!will_be_visible) {
       anchor_highlight_.reset();
@@ -1069,8 +942,8 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                           : omnibox::kSearchSparkOldIcon,
         icon_color_id,
-        GetShape() == Shape::kCircle ? GetIconSize()
-                                     : kGLogoPillShapeIconSize);
+        GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
+                                                    : kGLogoPillShapeIconSize);
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!use_active_indicator &&
@@ -1089,10 +962,10 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
       features::IsRoundedIconsEnabled() ? kChromeProductIcon
                                         : kBrowserLogoOldIcon;
 #endif
-  return ui::ImageModel::FromVectorIcon(contextual_tasks_icon, icon_color_id,
-                                        GetShape() == Shape::kCircle
-                                            ? GetIconSize()
-                                            : kGLogoPillShapeIconSize);
+  return ui::ImageModel::FromVectorIcon(
+      contextual_tasks_icon, icon_color_id,
+      GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
+                                                  : kGLogoPillShapeIconSize);
 }
 
 BEGIN_METADATA(ContextualTasksButton)
