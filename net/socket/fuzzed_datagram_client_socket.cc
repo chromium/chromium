@@ -259,9 +259,7 @@ void FuzzedDatagramClientSocket::OnWriteComplete(
 }
 
 DscpAndEcn FuzzedDatagramClientSocket::GetLastTos() const {
-  uint8_t tos;
-  data_provider_->ConsumeData(&tos, 1);
-  return TosToDscpAndEcn(tos);
+  return TosToDscpAndEcn(data_provider_->ConsumeIntegral<uint8_t>());
 }
 
 }  // namespace net
