@@ -439,12 +439,13 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
   const size_t random_index = random_.RandUint32() % slots_.size();
   std::swap(slots_[random_index], slots_.back());
 
-  // Update stats (not locked).
-  root_->count_.fetch_add(1, std::memory_order_relaxed);
-  root_->size_in_bytes_.fetch_add(slot_size, std::memory_order_relaxed);
-  root_->cumulative_count_.fetch_add(1, std::memory_order_relaxed);
-  root_->cumulative_size_in_bytes_.fetch_add(slot_size,
-                                             std::memory_order_relaxed);
+  // Update stats.
+  ++unpublished_stats_.quarantined_count;
+  unpublished_stats_.quarantined_size_in_bytes += slot_size;
+  if (unpublished_stats_.quarantined_count >= kMaxUnpublishedCount)
+      [[unlikely]] {
+    PublishStats();
+  }
 
   if (enable_zapping_) {
     internal::SecureMemset(
@@ -464,13 +465,16 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
 
   // This is the common case when called from `Quarantine()` while the branch
   // is not full, or at the end of a task that didn't quarantine anything.
-  // Return early, to not pay for the (atomic) stats updates below.
   if (branch_size_in_bytes_ <= target_size_in_bytes) {
+    // A full purge (e.g. at the end of a task) is a good time to publish stats.
+    if (target_size_in_bytes == 0) {
+      PublishStats();
+    }
     return;
   }
 
-  int64_t freed_count = 0;
-  int64_t freed_size_in_bytes = 0;
+  size_t freed_count = 0;
+  size_t freed_size_in_bytes = 0;
 
   // Only needed for entries that the thread cache doesn't take: all entries of
   // a global branch, and entries larger than the thread cache's size limit for
@@ -513,9 +517,40 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
         tcache_);
   }
 
-  root_->size_in_bytes_.fetch_sub(freed_size_in_bytes,
-                                  std::memory_order_relaxed);
-  root_->count_.fetch_sub(freed_count, std::memory_order_relaxed);
+  unpublished_stats_.dequarantined_count += freed_count;
+  unpublished_stats_.dequarantined_size_in_bytes += freed_size_in_bytes;
+  if (target_size_in_bytes == 0) {
+    PublishStats();
+  }
+}
+
+template <bool thread_bound, QuarantineTarget quarantine_target>
+void SchedulerLoopQuarantineBranch<thread_bound,
+                                   quarantine_target>::PublishStats() {
+  UnpublishedStats& stats = unpublished_stats_;
+  if (!stats.quarantined_count && !stats.dequarantined_count) {
+    return;
+  }
+  // The difference wraps around if more entries were dequarantined than
+  // quarantined since the last publication, which is fine: unsigned arithmetic
+  // is modular, and the final values are non-negative.
+  root_->count_.fetch_add(stats.quarantined_count - stats.dequarantined_count,
+                          std::memory_order_relaxed);
+  root_->size_in_bytes_.fetch_add(
+      stats.quarantined_size_in_bytes - stats.dequarantined_size_in_bytes,
+      std::memory_order_relaxed);
+  root_->cumulative_count_.fetch_add(stats.quarantined_count,
+                                     std::memory_order_relaxed);
+  root_->cumulative_size_in_bytes_.fetch_add(stats.quarantined_size_in_bytes,
+                                             std::memory_order_relaxed);
+  stats = UnpublishedStats();
+}
+
+template <bool thread_bound, QuarantineTarget quarantine_target>
+void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::
+    PublishStatsForTesting() {
+  ScopedGuardIfNeeded<kThreadBound> guard(lock_);
+  PublishStats();
 }
 
 // static

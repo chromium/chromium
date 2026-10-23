@@ -125,6 +125,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineRoot {
 
   PartitionRoot& GetAllocatorRoot() { return allocator_root_; }
 
+  // Note: branches publish their stats lazily, so the returned stats may not
+  // account for the most recent operations of each branch (up to 64 quarantined
+  // entries per branch). Branches publish all their stats when fully purged.
   void AccumulateStats(SchedulerLoopQuarantineStats& stats) const {
     stats.count += count_.load(std::memory_order_relaxed);
     stats.size_in_bytes += size_in_bytes_.load(std::memory_order_relaxed);
@@ -182,6 +185,10 @@ class SchedulerLoopQuarantineBranch {
 
   // Determines this list contains an object.
   bool IsQuarantinedForTesting(void* object) PA_LOCKS_EXCLUDED(lock_);
+
+  // The stats of the root are updated lazily, see `UnpublishedStats`. This
+  // forces an update.
+  void PublishStatsForTesting() PA_LOCKS_EXCLUDED(lock_);
 
   bool IsQuarantineTarget(internal::BucketSizeDetails size_details) const;
 
@@ -326,6 +333,9 @@ class SchedulerLoopQuarantineBranch {
                      [[maybe_unused]] bool for_destruction = false)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Publishes `unpublished_stats_` to `root_`.
+  void PublishStats() PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   PartitionRoot* const allocator_root_;
   ThreadCache* const tcache_;
   const base::PlatformThreadId thread_id_;
@@ -373,6 +383,21 @@ class SchedulerLoopQuarantineBranch {
   // still used as a hint to determine safer purge timings for memory
   // optimization.
   uint32_t disallow_scanless_purge_ PA_GUARDED_BY(lock_) = 0;
+
+  // Stats that are not published to `root_` yet. Updating the stats of `root_`
+  // requires atomic read-modify-write operations on cache lines shared by all
+  // the branches, which is costly when done for every quarantined entry.
+  // Instead, stats are accumulated locally and published every
+  // `kMaxUnpublishedCount` quarantined entries, and when the branch is fully
+  // purged (e.g. at the end of a task). See `PublishStats()`.
+  static constexpr size_t kMaxUnpublishedCount = 64;
+  struct UnpublishedStats {
+    size_t quarantined_count = 0;
+    size_t quarantined_size_in_bytes = 0;
+    size_t dequarantined_count = 0;
+    size_t dequarantined_size_in_bytes = 0;
+  };
+  UnpublishedStats unpublished_stats_ PA_GUARDED_BY(lock_);
 
   // Debug and testing data.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
