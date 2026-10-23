@@ -7,15 +7,19 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker.NativeCrossDeviceThemeTrackerAndroid;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataGroup;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
@@ -52,6 +57,7 @@ public class CrossDeviceThemeTrackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private CrossDeviceThemeTracker.Natives mNatives;
+    @Mock private JniRawPtr<NativeCrossDeviceThemeTrackerAndroid> mNativePtr;
     @Mock private Profile mProfile;
 
     private Activity mActivity;
@@ -82,14 +88,13 @@ public class CrossDeviceThemeTrackerUnitTest {
         NtpBackgroundDataColor remoteColor =
                 new NtpBackgroundDataColor(
                         mActivity, PlatformType.DESKTOP, NtpThemeColorId.NTP_COLORS_VIOLET, false);
-        when(mNatives.getThemes(eq(1L), any())).thenReturn(Collections.singletonList(remoteColor));
+        when(mNatives.getThemes(eq(mNativePtr), any()))
+                .thenReturn(Collections.singletonList(remoteColor));
 
-        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
-        createMethod.setAccessible(true);
-        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
 
         assertEquals(Collections.singletonList(remoteColor), tracker.getThemes(mActivity));
-        verify(mNatives).getThemes(1L, mActivity);
+        verify(mNatives).getThemes(mNativePtr, mActivity);
     }
 
     @Test
@@ -97,11 +102,10 @@ public class CrossDeviceThemeTrackerUnitTest {
         NtpBackgroundDataColor remoteColor =
                 new NtpBackgroundDataColor(
                         mActivity, PlatformType.DESKTOP, NtpThemeColorId.NTP_COLORS_VIOLET, false);
-        when(mNatives.getThemes(eq(1L), any())).thenReturn(Collections.singletonList(remoteColor));
+        when(mNatives.getThemes(eq(mNativePtr), any()))
+                .thenReturn(Collections.singletonList(remoteColor));
 
-        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
-        createMethod.setAccessible(true);
-        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
 
         assertTrue(tracker.getHasPendingSyncDataForTesting());
 
@@ -122,11 +126,10 @@ public class CrossDeviceThemeTrackerUnitTest {
         NtpBackgroundDataColor remoteColor =
                 new NtpBackgroundDataColor(
                         mActivity, PlatformType.DESKTOP, NtpThemeColorId.NTP_COLORS_VIOLET, false);
-        when(mNatives.getThemes(eq(1L), any())).thenReturn(Collections.singletonList(remoteColor));
+        when(mNatives.getThemes(eq(mNativePtr), any()))
+                .thenReturn(Collections.singletonList(remoteColor));
 
-        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
-        createMethod.setAccessible(true);
-        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
         tracker.setActivity(mActivity);
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -148,9 +151,7 @@ public class CrossDeviceThemeTrackerUnitTest {
 
     @Test
     public void testNotifyThemesChanged_WithoutActivity_SetsPendingFlag() throws Exception {
-        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
-        createMethod.setAccessible(true);
-        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
 
         // Clear activity.
         tracker.setActivity(null);
@@ -166,9 +167,7 @@ public class CrossDeviceThemeTrackerUnitTest {
 
     @Test
     public void testNotifyThemesChanged_NotifiesObservers() throws Exception {
-        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
-        createMethod.setAccessible(true);
-        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
 
         CrossDeviceThemeTracker.Observer observer = mock(CrossDeviceThemeTracker.Observer.class);
         tracker.addObserver(observer);
@@ -187,27 +186,52 @@ public class CrossDeviceThemeTrackerUnitTest {
                 new NtpBackgroundDataColor(
                         mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_VIOLET, false);
         when(mNatives.getThemeForOsTypeAndFormFactor(
-                        eq(1L), any(), eq(OsType.ANDROID), eq(FormFactor.PHONE)))
+                        eq(mNativePtr), any(), eq(OsType.ANDROID), eq(FormFactor.PHONE)))
                 .thenReturn(remoteColor);
         when(mNatives.getThemeForOsTypeAndFormFactor(
-                        eq(1L), any(), eq(OsType.UNKNOWN), eq(FormFactor.UNKNOWN)))
+                        eq(mNativePtr), any(), eq(OsType.UNKNOWN), eq(FormFactor.UNKNOWN)))
                 .thenReturn(remoteColor);
 
-        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
-        createMethod.setAccessible(true);
-        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
 
         assertEquals(
                 remoteColor,
                 tracker.getThemeForOsTypeAndFormFactor(
                         mActivity, OsType.ANDROID, FormFactor.PHONE));
         verify(mNatives)
-                .getThemeForOsTypeAndFormFactor(1L, mActivity, OsType.ANDROID, FormFactor.PHONE);
+                .getThemeForOsTypeAndFormFactor(
+                        mNativePtr, mActivity, OsType.ANDROID, FormFactor.PHONE);
 
         // Passing null should pass OsType.UNKNOWN and FormFactor.UNKNOWN to native.
         assertEquals(remoteColor, tracker.getThemeForOsTypeAndFormFactor(mActivity, null, null));
         verify(mNatives)
-                .getThemeForOsTypeAndFormFactor(1L, mActivity, OsType.UNKNOWN, FormFactor.UNKNOWN);
+                .getThemeForOsTypeAndFormFactor(
+                        mNativePtr, mActivity, OsType.UNKNOWN, FormFactor.UNKNOWN);
+    }
+
+    @Test
+    public void testGetServiceStatus() {
+        when(mNatives.getServiceStatus(mNativePtr)).thenReturn(ServiceStatus.ACTIVE);
+
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
+
+        assertEquals(ServiceStatus.ACTIVE, tracker.getServiceStatus());
+        verify(mNatives).getServiceStatus(mNativePtr);
+    }
+
+    @Test
+    public void testClearNativePtr() {
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.create(mNativePtr);
+
+        tracker.clearNativePtr();
+        verify(mNativePtr).release();
+
+        assertEquals(Collections.emptyList(), tracker.getThemes(mActivity));
+        assertNull(tracker.getThemeForOsTypeAndFormFactor(mActivity, OsType.ANDROID, null));
+        assertEquals(ServiceStatus.SYNC_DISABLED, tracker.getServiceStatus());
+        verify(mNatives, never()).getThemes(any(), any());
+        verify(mNatives, never()).getThemeForOsTypeAndFormFactor(any(), any(), anyInt(), anyInt());
+        verify(mNatives, never()).getServiceStatus(any());
     }
 
     @Test

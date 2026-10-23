@@ -11,7 +11,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -60,13 +63,16 @@ import java.util.List;
 @JNINamespace("themes")
 @NullMarked
 public class CrossDeviceThemeTracker {
+    @JniType("::themes::CrossDeviceThemeTrackerAndroid")
+    interface NativeCrossDeviceThemeTrackerAndroid extends JniTypeToken {}
+
     public interface Observer {
         void onThemesChanged();
 
         void onStatusChanged(@ServiceStatus int status);
     }
 
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeCrossDeviceThemeTrackerAndroid> mNativePtr;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private @Nullable WeakReference<Activity> mActivityRef;
     private boolean mHasPendingSyncData;
@@ -84,11 +90,13 @@ public class CrossDeviceThemeTracker {
 
     /** Called by C++ to instantiate this Java counterpart. */
     @CalledByNative
-    private static CrossDeviceThemeTracker create(long nativePtr) {
+    @VisibleForTesting
+    static CrossDeviceThemeTracker create(
+            JniRawPtr<NativeCrossDeviceThemeTrackerAndroid> nativePtr) {
         return new CrossDeviceThemeTracker(nativePtr);
     }
 
-    private CrossDeviceThemeTracker(long nativePtr) {
+    private CrossDeviceThemeTracker(JniRawPtr<NativeCrossDeviceThemeTrackerAndroid> nativePtr) {
         mNativePtr = nativePtr;
         mHasPendingSyncData = true;
     }
@@ -123,8 +131,12 @@ public class CrossDeviceThemeTracker {
 
     /** Called by C++ when it is being destroyed to invalidate the weak native pointer. */
     @CalledByNative
-    private void clearNativePtr() {
-        mNativePtr = 0;
+    @VisibleForTesting
+    void clearNativePtr() {
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
         mActivityRef = null;
     }
 
@@ -175,7 +187,7 @@ public class CrossDeviceThemeTracker {
 
     /** Returns the list of synced NTP background data from other devices. */
     public List<NtpBackgroundDataBase> getThemes(Context context) {
-        if (mNativePtr == 0) return Collections.emptyList();
+        if (mNativePtr == null) return Collections.emptyList();
         return CrossDeviceThemeTrackerJni.get().getThemes(mNativePtr, context);
     }
 
@@ -200,7 +212,7 @@ public class CrossDeviceThemeTracker {
             Context context,
             @Nullable @OsType Integer osType,
             @Nullable @FormFactor Integer formFactor) {
-        if (mNativePtr == 0) return null;
+        if (mNativePtr == null) return null;
         return CrossDeviceThemeTrackerJni.get()
                 .getThemeForOsTypeAndFormFactor(
                         mNativePtr,
@@ -211,7 +223,7 @@ public class CrossDeviceThemeTracker {
 
     /** Returns the current service status of the cross-device theme tracker. */
     public @ServiceStatus int getServiceStatus() {
-        if (mNativePtr == 0) return ServiceStatus.SYNC_DISABLED;
+        if (mNativePtr == null) return ServiceStatus.SYNC_DISABLED;
         return CrossDeviceThemeTrackerJni.get().getServiceStatus(mNativePtr);
     }
 
@@ -302,16 +314,16 @@ public class CrossDeviceThemeTracker {
         @Nullable CrossDeviceThemeTracker getForProfile(@JniType("Profile*") Profile profile);
 
         List<NtpBackgroundDataBase> getThemes(
-                long nativeCrossDeviceThemeTrackerAndroid, Context context);
+                JniPtr<NativeCrossDeviceThemeTrackerAndroid> self, Context context);
 
         @Nullable NtpBackgroundDataBase getThemeForOsTypeAndFormFactor(
-                long nativeCrossDeviceThemeTrackerAndroid,
+                JniPtr<NativeCrossDeviceThemeTrackerAndroid> self,
                 Context context,
                 @OsType int osType,
                 @FormFactor int formFactor);
 
         @JniType("ServiceStatus")
         @ServiceStatus
-        int getServiceStatus(long nativeCrossDeviceThemeTrackerAndroid);
+        int getServiceStatus(JniPtr<NativeCrossDeviceThemeTrackerAndroid> self);
     }
 }

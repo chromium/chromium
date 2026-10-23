@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/cross_device_theme_tracker_factory.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/jni_zero/system_jni/List_jni.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
@@ -23,8 +24,8 @@ namespace themes {
 CrossDeviceThemeTrackerAndroid::CrossDeviceThemeTrackerAndroid() {
   JNIEnv* env = AttachCurrentThread();
   // C++ creates and owns the Java counterpart.
-  java_object_.Reset(CrossDeviceThemeTrackerJni::create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_object_.Reset(
+      CrossDeviceThemeTrackerJni::create(env, jni_zero::MakeRaw(this)));
 
   AddObserver(this);
 }
