@@ -1258,6 +1258,91 @@ def PrepareRoll(to_revision: str,
     return state
 
 
+def _UpdateReadmeMetadata(protobuf_directory: str, to_revision: str,
+                          new_commit: str) -> None:
+    version_match = re.match(r'^(?:refs/tags/)?v?(\d+\.\d+\S*)$', to_revision)
+    version = version_match.group(1) if version_match else None
+    version_path = pathlib.Path(protobuf_directory, 'version.json')
+    if version is None and version_path.is_file():
+        match = re.search(r'"protoc_version"\s*:\s*"([^"]+)"',
+                          version_path.read_text(encoding='utf-8'))
+        version = match.group(1) if match else None
+    readme_path = pathlib.Path(protobuf_directory, _README_FILENAME)
+    text = readme_path.read_text(encoding='utf-8')
+    replacements = [('Revision', new_commit)]
+    if version is not None:
+        replacements = [
+            ('Version', version),
+            ('CPEPrefix', f'cpe:/a:google:protobuf:{version}'),
+            *replacements,
+        ]
+    for field, value in replacements:
+        text = re.sub(rf'(?m)^{field}:\s*\S+[ \t]*$',
+                      f'{field}: {value}',
+                      text,
+                      count=1)
+    readme_path.write_text(text, encoding='utf-8', newline='\n')
+
+
+def ImportUpstreamRelease(protobuf_directory: str,
+                          upstream_repository_path: str, to_revision: str,
+                          new_commit: str) -> str:
+    """Replaces upstream files in protobuf_directory and commits step 2a.
+
+    Keeps Chromium-owned files (including top-level patches/*.{patch,md},
+    but not upstream's patches/protobuf_vNN/ subdirectories) and existing
+    bootstrap-generated files, omits compatibility/, pre-generated
+    Well-Known Type .pb.{h,cc} files, and files excluded by .gitignore,
+    updates README.chromium, and commits the result. Returns the new HEAD
+    commit ID.
+    """
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    with tempfile.TemporaryDirectory(
+            prefix='protobuf_roll_import_') as archive_directory:
+        ExtractUpstreamArchive(upstream_repository_path, new_commit,
+                               archive_directory)
+        for relative_path in _ListRegularFilesInDirectory(
+                checkout.protobuf_directory):
+            if (not IsChromiumOwnedFile(relative_path)
+                    and relative_path not in BOOTSTRAP_GENERATED_FILES):
+                os.remove(
+                    os.path.join(checkout.protobuf_directory,
+                                 *relative_path.split('/')))
+        imported_paths = set()
+        for relative_path in sorted(
+                _ListRegularFilesInDirectory(archive_directory)):
+            if (IsChromiumOwnedFile(relative_path)
+                    or IsIntentionallyDeletedUpstreamFile(relative_path)):
+                continue
+            destination_path = os.path.join(checkout.protobuf_directory,
+                                            *relative_path.split('/'))
+            os.makedirs(os.path.dirname(destination_path), exist_ok=True)
+            shutil.copy2(
+                os.path.join(archive_directory, *relative_path.split('/')),
+                destination_path)
+            imported_paths.add(relative_path)
+    for ignored_path in _FindGitIgnoredPaths(checkout.protobuf_directory,
+                                             imported_paths):
+        os.remove(
+            os.path.join(checkout.protobuf_directory,
+                         *ignored_path.split('/')))
+    for current_root, _, filenames in os.walk(checkout.protobuf_directory,
+                                              topdown=False):
+        if '.git' in current_root.split(os.sep):
+            continue
+        if (current_root != checkout.protobuf_directory and not filenames
+                and not os.listdir(current_root)):
+            os.rmdir(current_root)
+    _UpdateReadmeMetadata(checkout.protobuf_directory, to_revision, new_commit)
+    _RunScratchGit(checkout.repository_root, 'add', '--all', '--',
+                   checkout.protobuf_directory)
+    _RunScratchGit(checkout.repository_root, 'commit', '--quiet',
+                   '--no-verify', '--allow-empty', '-m',
+                   f'Import upstream protobuf {to_revision} (unmodified)')
+    return _RunScratchGit(checkout.repository_root, 'rev-parse',
+                          'HEAD').stdout.decode().strip()
+
+
 def main(command_line_arguments: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description='Verifies //third_party/protobuf against upstream plus '

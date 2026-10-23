@@ -2400,6 +2400,93 @@ class RollProtobufStartTest(unittest.TestCase):
                                     r'Corrupt roll state'):
             roll_protobuf.LoadRollState(self.fixture.protobuf_directory)
 
+    def testImportUpstreamReleaseReplacesUpstreamFilesAndUpdatesReadme(self):
+        _WriteFilesToDirectory(
+            self.fixture.upstream_directory,
+            {
+                'compatibility/smoke/Test.java': '// deleted during roll\n',
+                'src/google/protobuf/any.pb.cc': '// deleted WKT\n',
+                'csharp/Google.Protobuf.targets': '<Project/>\n',
+                'version.json': '{"37.x": {"protoc_version": "37.0-dev"}}\n',
+            },
+        )
+        _RunGitCommand(self.fixture.upstream_directory, ['add', '-A', '.'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '--amend', '--no-edit'])
+        new_commit = _RunGitCommand(self.fixture.upstream_directory,
+                                    ['rev-parse', 'HEAD'])
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                'patches/0001-clean.md': '# Notes on 0001\n',
+                'patches/protobuf_v25/0001-bazel.patch': '// old subdir\n',
+                'python/google/protobuf/descriptor_pb2.py': '# bootstrap\n',
+            },
+        )
+
+        import_commit = roll_protobuf.ImportUpstreamRelease(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+            to_revision='v37.0',
+            new_commit=new_commit,
+        )
+
+        present_files = roll_protobuf._ListRegularFilesInDirectory(
+            self.fixture.protobuf_directory)
+        readme_text = pathlib.Path(
+            self.fixture.protobuf_directory,
+            'README.chromium').read_text(encoding='utf-8')
+        commit_subject = _RunGitCommand(self.repository_root,
+                                        ['log', '-1', '--format=%s'])
+
+        self.assertEqual(
+            _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']),
+            import_commit)
+        self.assertEqual('Import upstream protobuf v37.0 (unmodified)',
+                         commit_subject)
+        self.assertIn(_PLAN_ADDED_PATH, present_files)
+        self.assertIn('patches/0001-clean.patch', present_files)
+        self.assertIn('patches/0001-clean.md', present_files)
+        self.assertIn('python/google/protobuf/descriptor_pb2.py',
+                      present_files)
+        self.assertNotIn('compatibility/smoke/Test.java', present_files)
+        self.assertNotIn('src/google/protobuf/any.pb.cc', present_files)
+        self.assertNotIn('patches/protobuf_v25/0001-bazel.patch',
+                         present_files)
+        self.assertNotIn('csharp/Google.Protobuf.targets', present_files)
+        for removed_directory in ('compatibility', 'csharp',
+                                  'patches/protobuf_v25'):
+            self.assertFalse(
+                os.path.exists(
+                    os.path.join(self.fixture.protobuf_directory,
+                                 removed_directory)))
+        self.assertEqual(
+            ('Name: Protocol Buffers\n'
+             'Version: 37.0\n'
+             'CPEPrefix: cpe:/a:google:protobuf:37.0\n'
+             f'Revision: {new_commit}\n'),
+            readme_text,
+        )
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(self.repository_root, 'OTHER_CHROMIUM_FILE')))
+
+    def testImportUpstreamReleaseReadsProtocVersionFromVersionJsonForCommitSha(
+            self):
+        roll_protobuf.ImportUpstreamRelease(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+            to_revision=self.fixture.new_commit,
+            new_commit=self.fixture.new_commit,
+        )
+
+        readme_text = pathlib.Path(
+            self.fixture.protobuf_directory,
+            'README.chromium').read_text(encoding='utf-8')
+
+        self.assertIn('Version: 37.0\nCPEPrefix: cpe:/a:google:protobuf:37.0',
+                      readme_text)
+
 
 if __name__ == '__main__':
     unittest.main()
