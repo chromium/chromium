@@ -1898,7 +1898,10 @@ void MaybeRegisterChromeFeaturePromos(
           dictation::kDictationIphAnchorElementId, IDS_DICTATION_IPH_BODY)
           .SetBubbleTitleText(IDS_DICTATION_IPH_TITLE)
           .SetBubbleIcon(kLightbulbOutlineIcon)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          // The bubble goes below, left, right or above the focused field,
+          // whichever has room first.
+          .SetBubbleArrowCallback(
+              base::BindRepeating(&dictation::GetDictationIphArrow))
           // Promos with buttons take focus by default. Keep focus in the text
           // field so the user can keep typing.
           .OverrideFocusOnShow(false)

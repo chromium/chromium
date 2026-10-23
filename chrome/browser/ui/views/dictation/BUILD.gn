@@ -57,13 +57,19 @@ source_set("dictation") {
   ]
 }
 
-# Identifiers for the dictation IPH.
+# Identifiers and bubble placement for the dictation IPH.
 source_set("iph") {
   public = [ "dictation_iph.h" ]
   sources = [ "dictation_iph.cc" ]
   public_deps = [
     "//base",
+    "//components/user_education/common",
     "//ui/base/interaction",
+  ]
+  deps = [
+    "//base:i18n",
+    "//ui/gfx",
+    "//ui/views",
   ]
 }
 
@@ -71,17 +77,23 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "dictation_bubble_ui_unittest.cc",
+    "dictation_iph_unittest.cc",
     "dictation_overlay_view_unittest.cc",
     "text_field_filter_unittest.cc",
   ]
   deps = [
     ":dictation",
+    ":iph",
     "//base",
     "//base:i18n",
     "//chrome/browser/dictation:test_support",
     "//chrome/test:test_support",
+    "//components/user_education/common",
     "//testing/gtest",
+    "//ui/base/interaction",
+    "//ui/base/interaction:test_support",
     "//ui/events:test_support",
+    "//ui/gfx",
     "//ui/views",
     "//ui/views:test_support",
   ]

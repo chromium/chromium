@@ -45,6 +45,10 @@ class VIEWS_EXPORT ViewSubregionAnchor : public ui::TrackedElement {
 
   // Gets the view associated with this element. The view must exist;
   View& view() {
+    return const_cast<View&>(
+        const_cast<const ViewSubregionAnchor*>(this)->view());
+  }
+  const View& view() const {
     CHECK(host_) << "Host view was previously destroyed. This element should "
                     "not be visible or available through ElementTracker.";
     return *host_.view();
