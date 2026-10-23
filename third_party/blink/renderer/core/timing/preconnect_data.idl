@@ -4,16 +4,12 @@
 
 // https://github.com/WICG/speculative_load_measurement
 
-[
-    RuntimeEnabled=SpeculationMeasurement,
-    Exposed=Window
-]
-interface PreconnectData {
+dictionary PreconnectData {
     // The serialized origin the connection was opened to.
-    readonly attribute USVString origin;
+    required USVString origin;
 
     // The reflected crossorigin attribute value of the preconnect.
-    readonly attribute CrossOriginMode crossorigin;
+    required CrossOriginMode crossorigin;
     // Whether the preconnect was delivered via an Early Hints (103) response.
-    readonly attribute boolean earlyhint;
+    required boolean earlyhint;
 };

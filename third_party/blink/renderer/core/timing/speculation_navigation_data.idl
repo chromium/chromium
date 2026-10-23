@@ -10,13 +10,9 @@ enum SpeculationNavigationType { "prefetch", "prerender", "prerender-until-scrip
 // Represents the eagerness level for speculation rules.
 enum SpeculationEagernessValue { "conservative", "moderate", "eager", "immediate" };
 
-[
-    RuntimeEnabled=SpeculationMeasurement,
-    Exposed=Window
-]
-interface SpeculationNavigationData {
-    readonly attribute SpeculationNavigationType type;
-    readonly attribute USVString url;
-    readonly attribute FrozenArray<DOMString>? tags;
-    readonly attribute SpeculationEagernessValue? eagerness;
+dictionary SpeculationNavigationData {
+    required SpeculationNavigationType type;
+    required USVString url;
+    required sequence<DOMString>? tags;
+    required SpeculationEagernessValue? eagerness;
 };

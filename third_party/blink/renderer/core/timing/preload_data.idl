@@ -12,14 +12,10 @@
 // credentials).
 enum CrossOriginMode { "none", "anonymous", "use-credentials" };
 
-[
-    RuntimeEnabled=SpeculationMeasurement,
-    Exposed=Window
-]
-interface PreloadData {
-    readonly attribute USVString url;
-    readonly attribute DOMString as;
-    readonly attribute CrossOriginMode crossorigin;
-    readonly attribute boolean earlyhint;
-    [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp? used;
+dictionary PreloadData {
+    required USVString url;
+    required DOMString as;
+    required CrossOriginMode crossorigin;
+    required boolean earlyhint;
+    required DOMHighResTimeStamp? used;
 };

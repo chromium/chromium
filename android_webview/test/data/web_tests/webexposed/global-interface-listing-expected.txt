@@ -7604,12 +7604,6 @@ interface PopStateEvent : Event
     getter hasUAVisualTransition
     getter state
     method constructor
-interface PreconnectData
-    attribute @@toStringTag
-    getter crossorigin
-    getter earlyhint
-    getter origin
-    method constructor
 interface PreferenceManager
     attribute @@toStringTag
     getter colorScheme
@@ -7628,14 +7622,6 @@ interface PreferenceObject : EventTarget
     method constructor
     method requestOverride
     setter onchange
-interface PreloadData
-    attribute @@toStringTag
-    getter as
-    getter crossorigin
-    getter earlyhint
-    getter url
-    getter used
-    method constructor
 interface ProcessingInstruction : CharacterData
     attribute @@toStringTag
     getter sheet
@@ -9696,20 +9682,6 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
-interface SpeculationData
-    attribute @@toStringTag
-    getter navigationDestinationURL
-    getter navigations
-    getter preconnects
-    getter preloads
-    method constructor
-interface SpeculationNavigationData
-    attribute @@toStringTag
-    getter eagerness
-    getter tags
-    getter type
-    getter url
-    method constructor
 interface SpeechGrammar
     attribute @@toStringTag
     getter src

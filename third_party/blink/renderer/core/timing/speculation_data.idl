@@ -4,13 +4,9 @@
 
 // https://github.com/WICG/speculative_load_measurement
 
-[
-    RuntimeEnabled=SpeculationMeasurement,
-    Exposed=Window
-]
-interface SpeculationData {
-    readonly attribute FrozenArray<PreloadData> preloads;
-    readonly attribute FrozenArray<PreconnectData> preconnects;
-    readonly attribute FrozenArray<SpeculationNavigationData> navigations;
-    readonly attribute USVString? navigationDestinationURL;
+dictionary SpeculationData {
+    required sequence<PreloadData> preloads;
+    required sequence<PreconnectData> preconnects;
+    required sequence<SpeculationNavigationData> navigations;
+    required USVString? navigationDestinationURL;
 };

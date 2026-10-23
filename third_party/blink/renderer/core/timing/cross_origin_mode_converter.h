@@ -11,7 +11,8 @@
 namespace blink {
 
 // Converts a CrossOriginAttributeValue to the CrossOriginMode enum exposed by
-// the SpeculationMeasurement API (used by PreloadData and PreconnectData).
+// the SpeculationMeasurement API (used by the PreloadData and PreconnectData
+// dictionaries).
 inline V8CrossOriginMode ToV8CrossOriginMode(
     CrossOriginAttributeValue crossorigin) {
   switch (crossorigin) {
