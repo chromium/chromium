@@ -4,10 +4,9 @@
 
 #include "ui/base/ui_base_switches_util.h"
 
-#include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/is_android_web_view.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -16,13 +15,7 @@
 namespace switches {
 
 bool IsElasticOverscrollEnabledOnRoot() {
-#if BUILDFLAG(IS_ANDROID)
-  return IsElasticOverscrollSupported() &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableOverscrollEdgeEffect);
-#else
-  return IsElasticOverscrollSupported();
-#endif
+  return IsElasticOverscrollSupported() && !build::IsAndroidWebView();
 }
 
 bool IsElasticOverscrollSupported() {

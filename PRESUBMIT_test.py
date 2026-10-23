@@ -3255,6 +3255,112 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
         self.assertEqual(1, len(result))
 
 
+class AndroidWebViewOwnersTest(_SecurityOwnersTestCase):
+    _EXPECTED_MESSAGE = (
+        'The following files modify calls to build::IsAndroidWebView(),\n'
+        'which affects behavioral differences between Chrome and WebView,\n'
+        'and need to be reviewed by android_webview/OWNERS. If you have '
+        'questions,\n'
+        'please reach out to android-webview-dev@chromium.org.\n'
+        '  ui/base/foo.cc\n')
+
+    def _mockOwnersFile(self, mock_input_api):
+        return MockAffectedFile(
+            mock_input_api.os_path.join('chromium', 'src', 'android_webview',
+                                        'OWNERS'),
+            [
+                'set noparent',
+                'apple@chromium.org',
+                'orange@chromium.org',
+                '',
+                '# Documentation changes:',
+                'per-file *.md=file://android_webview/docs/OWNERS',
+            ])
+
+    def testOwnersMissing(self):
+        mock_input_api = self._createMockInputApi()
+        self._setupFakeChange(mock_input_api)
+        self._injectFakeChangeOwnerAndReviewers(mock_input_api,
+                                                'owner@chromium.org',
+                                                ['banana@chromium.org'])
+        mock_input_api.is_committing = False
+        mock_input_api.files = [
+            MockAffectedFile('ui/base/foo.cc',
+                             ['  return !build::IsAndroidWebView();']),
+            self._mockOwnersFile(mock_input_api),
+        ]
+        mock_output_api = MockOutputApi()
+        result = PRESUBMIT.CheckAndroidWebViewOwners(mock_input_api,
+                                                     mock_output_api)
+        self.assertEqual(1, len(result))
+        self.assertEqual(result[0].type, 'notify')
+        self.assertEqual(result[0].message, self._EXPECTED_MESSAGE)
+
+    def testOwnersMissingAtCommit(self):
+        mock_input_api = self._createMockInputApi()
+        self._setupFakeChange(mock_input_api)
+        self._injectFakeChangeOwnerAndReviewers(mock_input_api,
+                                                'owner@chromium.org',
+                                                ['banana@chromium.org'])
+        mock_input_api.is_committing = True
+        mock_input_api.dry_run = False
+        mock_input_api.files = [
+            MockAffectedFile('ui/base/foo.cc',
+                             ['  return !build::IsAndroidWebView();']),
+        ]
+        mock_output_api = MockOutputApi()
+        result = PRESUBMIT.CheckAndroidWebViewOwners(mock_input_api,
+                                                     mock_output_api)
+        self.assertEqual(1, len(result))
+        self.assertEqual(result[0].type, 'error')
+        self.assertEqual(result[0].message, self._EXPECTED_MESSAGE)
+
+    def testOwnersPresent(self):
+        mock_input_api = self._createMockInputApi()
+        self._setupFakeChange(mock_input_api)
+        self._injectFakeChangeOwnerAndReviewers(
+            mock_input_api, 'owner@chromium.org',
+            ['apple@chromium.org', 'banana@chromium.org'])
+        mock_input_api.is_committing = False
+        mock_input_api.files = [
+            MockAffectedFile('ui/base/foo.cc',
+                             ['  return !build::IsAndroidWebView();']),
+            self._mockOwnersFile(mock_input_api),
+        ]
+        mock_output_api = MockOutputApi()
+        result = PRESUBMIT.CheckAndroidWebViewOwners(mock_input_api,
+                                                     mock_output_api)
+        self.assertEqual([], result)
+
+    def testOnlyChangedLinesInCppFilesAreChecked(self):
+        mock_input_api = self._createMockInputApi()
+        self._setupFakeChange(mock_input_api)
+        self._injectFakeChangeOwnerAndReviewers(mock_input_api,
+                                                'owner@chromium.org',
+                                                ['banana@chromium.org'])
+        mock_input_api.is_committing = True
+        mock_input_api.dry_run = False
+        # Pre-existing call, not added by this change.
+        unchanged_call = MockAffectedFile('ui/base/foo.cc', [
+            '  return !build::IsAndroidWebView();',
+            '  return true;',
+        ])
+        unchanged_call._changed_contents = [(2, '  return true;')]
+        mock_input_api.files = [
+            unchanged_call,
+            # The definition and the WebView override are exempt.
+            MockAffectedFile('build/is_android_web_view.cc',
+                             ['bool IsAndroidWebView() {']),
+            MockAffectedFile('android_webview/lib/webview_entry_point.cc',
+                             ['bool IsAndroidWebView() {']),
+            # Non-C++ files are not checked.
+            MockAffectedFile('docs/foo.md', ['Call `IsAndroidWebView()`.']),
+        ]
+        mock_output_api = MockOutputApi()
+        result = PRESUBMIT.CheckAndroidWebViewOwners(mock_input_api,
+                                                     mock_output_api)
+        self.assertEqual([], result)
+
 class BannedTypeCheckTest(unittest.TestCase):
 
     def testBannedJsFunctions(self):

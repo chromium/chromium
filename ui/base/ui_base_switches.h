@@ -13,10 +13,6 @@
 namespace switches {
 
 #if BUILDFLAG(IS_ANDROID)
-// Disable overscroll edge effects like those found in Android views.
-inline constexpr char kDisableOverscrollEdgeEffect[] =
-    "disable-overscroll-edge-effect";
-
 // Disable the pull-to-refresh effect when vertically overscrolling content.
 inline constexpr char kDisablePullToRefreshEffect[] =
     "disable-pull-to-refresh-effect";

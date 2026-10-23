@@ -503,6 +503,7 @@ component("base") {
     "//build:android_buildflags",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
+    "//build:is_android_web_view",
     "//net",
     "//third_party/brotli:dec",
     "//third_party/icu",

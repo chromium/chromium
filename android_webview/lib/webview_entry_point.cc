@@ -7,6 +7,16 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "build/is_android_web_view.h"
+
+namespace build {
+
+// Overrides the weak definition from //build.
+bool IsAndroidWebView() {
+  return true;
+}
+
+}  // namespace build
 
 bool NativeInitializationHook(
     base::android::LibraryProcessType library_process_type) {

@@ -4913,16 +4913,17 @@ def _MatchesFile(input_api, patterns, path):
     return False
 
 
-def _ChangeHasSecurityReviewer(input_api, owners_file):
-    """Returns True iff the CL has a reviewer from SECURITY_OWNERS.
+def _ChangeHasReviewerFromOwnersFile(input_api, owners_file):
+    """Returns True iff the CL has a reviewer listed in `owners_file`.
 
     Args:
         input_api: The presubmit input API.
         owners_file: OWNERS file with required reviewers. Typically, this is
-        something like ipc/SECURITY_OWNERS.
+        something like ipc/SECURITY_OWNERS. Only top-level owners are
+        considered; per-file rules are ignored.
 
     Note: if the presubmit is running for commit rather than for upload, this
-    only returns True if a security reviewer has also approved the CL.
+    only returns True if a required reviewer has also approved the CL.
     """
     # Owners-Override should bypass all additional OWNERS enforcement checks.
     # A CR+1 vote will still be required to land this change.
@@ -4941,23 +4942,22 @@ def _ChangeHasSecurityReviewer(input_api, owners_file):
         owners_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
                                              owners_file)
         owners_content = input_api.ReadFile(owners_path)
-        security_owners = set()
+        required_owners = set()
         for line in owners_content.splitlines():
             line = line.split('#')[0].strip()
-            if not line:
+            if not line or line.startswith('per-file '):
                 continue
             if (line.startswith(('file://', 'file:', 'include '))
                     or 'file://' in line):
                 raise ValueError(
                     f'Unexpected recursive pattern "{line}" found in '
-                    f'{owners_file}. Recursive patterns are not expected in '
-                    'security owners files.')
+                    f'{owners_file}. Recursive patterns are not supported.')
             if '@' in line:
-                security_owners.add(line)
+                required_owners.add(line)
     else:
-        security_owners = input_api.owners_client.ListOwners(owners_file)
+        required_owners = input_api.owners_client.ListOwners(owners_file)
 
-    return any(owner in reviewers for owner in security_owners)
+    return any(owner in reviewers for owner in required_owners)
 
 
 @dataclasses.dataclass
@@ -5084,7 +5084,7 @@ def _FindMissingSecurityOwners(
                     newly_covered_files.extend(entry['files'])
 
     missing_reviewer_problems = None
-    if newly_covered_files and not _ChangeHasSecurityReviewer(
+    if newly_covered_files and not _ChangeHasReviewerFromOwnersFile(
             input_api, required_owners_file):
         missing_reviewer_problems = _SecurityProblemWithItems(
             f'Review from an owner in {required_owners_file} is required for '
@@ -5298,7 +5298,7 @@ def CheckSecurityChanges(input_api, output_api):
         return []
 
     owners_file = 'ipc/SECURITY_OWNERS'
-    if _ChangeHasSecurityReviewer(input_api, owners_file):
+    if _ChangeHasReviewerFromOwnersFile(input_api, owners_file):
         return []
 
     msg = ('The following files change calls to security-sensitive functions\n'
@@ -5308,6 +5308,58 @@ def CheckSecurityChanges(input_api, output_api):
         for name in names:
             msg += '    {}\n'.format(name)
         msg += '\n'
+
+    if input_api.is_committing:
+        output = output_api.PresubmitError
+    else:
+        output = output_api.PresubmitNotifyResult
+    return [output(msg)]
+
+
+def _GetFilesModifyingIsAndroidWebView(input_api):
+    """Returns the paths of affected C++ files whose added or modified lines
+    call build::IsAndroidWebView().
+    """
+    files_to_check = (r'.+%s' % _IMPLEMENTATION_EXTENSIONS,
+                      r'.+%s' % _HEADER_EXTENSIONS)
+    files_to_skip = (
+        # The definition and the WebView override.
+        r'^build/is_android_web_view\.(cc|h)$',
+        # Changes under //android_webview already require WebView OWNERS.
+        r'^android_webview/',
+    )
+    file_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=files_to_check, files_to_skip=files_to_skip)
+
+    pattern = input_api.re.compile(r'\bIsAndroidWebView\(\)')
+    files = []
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=file_filter):
+        if any(pattern.search(line) for _, line in f.ChangedContents()):
+            files.append(f.LocalPath())
+    return files
+
+
+def CheckAndroidWebViewOwners(input_api, output_api):
+    """Checks that changes modifying calls to build::IsAndroidWebView() are
+    reviewed by //android_webview OWNERS, since they affect behavioral
+    differences between Chrome and WebView.
+    """
+    files = _GetFilesModifyingIsAndroidWebView(input_api)
+    if not files:
+        return []
+
+    owners_file = 'android_webview/OWNERS'
+    if _ChangeHasReviewerFromOwnersFile(input_api, owners_file):
+        return []
+
+    msg = ('The following files modify calls to build::IsAndroidWebView(),\n'
+           'which affects behavioral differences between Chrome and WebView,\n'
+           'and need to be reviewed by {}. If you have questions,\n'
+           'please reach out to android-webview-dev@chromium.org.\n'.format(
+               owners_file))
+    for path in files:
+        msg += '  {}\n'.format(path)
 
     if input_api.is_committing:
         output = output_api.PresubmitError

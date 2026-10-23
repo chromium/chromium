@@ -138,6 +138,7 @@ source_set("browser") {
     "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
+    "//build:is_android_web_view",
     "//build/config/compiler:compiler_buildflags",
     "//build/util:chromium_git_revision",
     "//cc",

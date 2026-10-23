@@ -472,46 +472,43 @@ All code in `//android_webview` is exclusively used in WebView, and no code in
 `//chrome` is ever used by WebView, so if you can make the change at that level,
 it's guaranteed not to affect the other.
 
-In common code (such as `//content` and `//components`), it is **not** possible
-to use `#if` or similar to add/exclude code just for WebView; the distinction
-must be made at runtime. There is also intentionally no generic API or command
-line flag for "is this WebView" (and if you do find something that looks like
-that, please don't use it!) - it should be explicit exactly what
-behaviour/option is being controlled in each case.
+In common code (such as `//content` and `//components`), you can use one of
+the mechanisms below. Since Chrome and WebView share the same GN `target_os`,
+each of these requires a different strategy to make sure both behaviors are
+unit tested.
 
-*** aside
-All common code is only compiled once for both WebView and Chrome for Android,
-for unavoidable packaging reasons, so there is no `WEBVIEW` or similar macro
-defined. Code can use `#if BUILDFLAG(IS_ANDROID)` to exclude it from other
-platforms if desired, but this includes Chrome for Android.
+*** note
+**Note:** Out of these, only (1) can be controlled server-side to mitigate
+incidents, so be careful.
 ***
 
-Mechanisms usually used for this include:
+1.  If you're launching a feature in Chrome first and will later launch in
+    WebView (or vice-versa), use a `base::Feature` with overrides in
+    `AwFieldTrials::RegisterFeatureOverrides()`. You can configure which code
+    path is tested with `base::test::ScopedFeatureList`.
 
+2.  Otherwise, if you want a configurable setting (by the user, enterprise
+    policy, or embedding app) that has different defaults in Chrome and WebView,
+    declare the setting in common code and the defaults in each embedder.
+    Examples of these are:
+    *   `blink::web_pref::WebPreferences`: these are usually per-WebView
+        settings accessed via `android.webkit.WebSettings`. WebView values are
+        populated in `AwSettings::PopulateWebPreferencesLocked()`. Tests can set
+        different values via `content::WebContents::SetWebPreferences()` or
+        `blink::WebView::ApplyWebPreferences()`.
+    *   Prefs: these are per-`AwBrowserContext` or local-state settings. For an
+        example, see `PrefService::GetBoolean()` and
+        `PrefRegistrySimple::RegisterBooleanPref()`. Tests can set different
+        values via `TestingPrefServiceSimple`.
 
-*   Checking a command line flag in the common code such as
-    `--disable-foo-enforcement`, and setting that flag during WebView's startup,
-    often in [`AwMainDelegate::BasicStartupComplete`](../lib/aw_main_delegate.cc).
-    *   This can be used to apply changes conditionally based on the app's
-        targetSdkVersion, or unconditionally for all usage of WebView. Don't use
-        this for settings the app should be able to control.
-    *   The command line flag should have a name that describes the actual
-        effect it has, and usually doesn't need to refer to WebView.
+3.  Otherwise, if either the Chrome or WebView implementation needs to rely
+    on functionality that lives in `//chrome` or `//android_webview`, declare a
+    method in a new/existing interface and implement it in each embedder. Tests
+    can use a fake or mock the method.
 
-*   Calling a method defined by the common code from WebView code.
-    *   This can be used during startup as a more flexible alternative to a
-        command line flag; for example to easily pass an enum value, or to
-        ensure the change is applied at a specific point in time.
-    *   This can also be used when the app should be able to change a global
-        setting at runtime.
-
-*   Checking a setting stored in `content::WebPreferences`.
-    *   This can be used when the app should be able to change the setting at
-        runtime, usually on a per-WebView basis (e.g. via
-        `android.webkit.WebSettings`).
-
-*   Calling a method in a delegate interface defined by the common code and
-    implemented by the WebView/Chrome layer.
-    *   This can be used for situations that are more complex than a
-        boolean/enum option, e.g. policy logic with parameters that affect the
-        result, if the policy should be different in Chrome vs WebView.
+4.  Otherwise, check `build::IsAndroidWebView()`. Perform the check in a code
+    path that allows testing, such as a) the implementation of a method in some
+    interface (uses the same test strategy as above), or b) when deciding what
+    argument to pass to a function; different tests can pass different values.
+    In general this is less convenient than (1) but good testing can and should
+    still be achieved.

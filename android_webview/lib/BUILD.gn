@@ -67,6 +67,7 @@ source_set("webview_entry_point") {
     "//android_webview",
     "//base",
     "//base:jni_onload",
+    "//build:is_android_web_view",
   ]
 
   sources = [ "webview_entry_point.cc" ]

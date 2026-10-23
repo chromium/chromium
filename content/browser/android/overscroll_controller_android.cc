@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/is_android_web_view.h"
 #include "cc/layers/layer.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "content/public/browser/navigation_controller.h"
@@ -50,8 +51,7 @@ std::unique_ptr<EdgeEffect> CreateGlowEdgeEffect(
 }
 
 std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableOverscrollEdgeEffect)) {
+  if (build::IsAndroidWebView()) {
     return nullptr;
   }
 

@@ -118,9 +118,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   TRACE_EVENT0("startup", "AwMainDelegate::BasicStartupComplete");
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
 
-  // WebView uses the Android system's scrollbars and overscroll glow.
-  cl->AppendSwitch(switches::kDisableOverscrollEdgeEffect);
-
   // Pull-to-refresh should never be a default WebView action.
   cl->AppendSwitch(switches::kDisablePullToRefreshEffect);
 

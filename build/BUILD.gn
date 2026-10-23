@@ -138,3 +138,10 @@ if (is_chromeos) {
     process_only = true
   }
 }
+
+source_set("is_android_web_view") {
+  sources = [
+    "is_android_web_view.cc",
+    "is_android_web_view.h",
+  ]
+}
