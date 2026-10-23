@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      var initialized = false;
+      var sendAndSubmitRequested = false;
+
+      function initialize() {
+        window.addEventListener('message', function(event) {
+          if (event.source !== window || !event.data ||
+              event.data.type != 'gaia_saml_api_reply') {
+            return;
+          }
+          var response = event.data.response;
+          if (response.result != 'initialized' ||
+              response.version != 1 ||
+              response.keyTypes.indexOf('KEY_TYPE_PASSWORD_PLAIN') == -1) {
+            return;
+          }
+          initialized = true;
+          if (sendAndSubmitRequested)
+            send_and_submit();
+        });
+
+        window.setTimeout(function() {
+          window.postMessage({
+              type: 'gaia_saml_api',
+              call: {method: 'initialize', requestedVersion: 1}}, '/');
+        }, 0);
+      }
+
+      function send_and_submit() {
+        if (!initialized) {
+          sendAndSubmitRequested = true;
+          return;
+        }
+        var form = document.forms[0];
+        var token = form.elements['RelayState'].value;
+        var user = document.getElementById('Email').value;
+        var password = document.getElementById('Password').value;
+        window.setTimeout(function() {
+          window.postMessage({
+              type: 'gaia_saml_api',
+              call: {method: 'add',
+                     token: token,
+                     user: user,
+                     passwordBytes: password,
+                     keyType: 'KEY_TYPE_PASSWORD_PLAIN'}}, '/');
+           form.submit();
+         }, 0);
+        window.setTimeout(function() {
+          window.postMessage({
+              type: 'gaia_saml_api',
+              call: {method: 'confirm', token: token}}, '/');
+          form.submit();
+        }, 0);
+      }
+    </script>
+  </head>
+  <body onload="initialize();">
+    User: <input type=text id=Email>
+    Password: <input type=password id=Password>
+    <input id=Submit type=button value="Login" onclick="send_and_submit();"/>
+    <form method=post action="$Post" target=_top>
+      <input type=hidden name=SAMLResponse value="fake_response"/>
+      <input type=hidden name=RelayState value="$RelayState">
+    </form>
+  </body>
+</html>

@@ -630,6 +630,43 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, CredentialPassingAPI) {
                                      1);
 }
 
+// Tests the credentials passing API usage from a subframe. Regression test
+// against b/577034455.
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, CredentialPassingApiFromSubframe) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_api_login_with_subframe.html");
+  fake_saml_idp()->SetLoginAuthHTMLTemplate("saml_api_subframe.html");
+  StartSamlAndWaitForIdpPageLoad(
+      saml_test_users::kFirstUserCorpExampleComEmail);
+
+  // Wait for the subframe to load.
+  ASSERT_TRUE(content::WaitForLoadStop(SigninFrameJS().web_contents()));
+  content::RenderFrameHost* subframe = content::ChildFrameAt(
+      signin::GetAuthFrame(GetLoginUI()->GetWebContents(), gaia_frame_parent_),
+      0);
+  ASSERT_TRUE(subframe);
+
+  // Fill-in the SAML IdP form in the subframe and submit.
+  ASSERT_TRUE(
+      content::ExecJs(subframe,
+                      "document.getElementById('Email').value = 'fake_user';"
+                      "document.getElementById('Password').value = 'password';"
+                      "document.getElementById('Submit').click();"));
+
+  test::WaitForPrimaryUserSessionStart();
+
+  Key key("password");
+  key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                SystemSaltGetter::ConvertRawSaltToHexString(
+                    FakeCryptohomeMiscClient::GetStubSystemSalt()));
+  EXPECT_EQ(key.GetSecret(), cryptohome_client_->salted_hashed_secret());
+
+  // Verify that the password was passed via the credentials passing API.
+  EXPECT_TRUE(user_manager::KnownUser(g_browser_process->local_state())
+                  .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                      saml_test_users::kFirstUserCorpExampleComEmail,
+                      kFirstSAMLUserGaiaId)));
+}
+
 // Tests the sign-in flow when the credentials passing API is used w/o 'confirm'
 // call. The password from the last 'add' should be used.
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
