@@ -11,9 +11,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 
 /**
@@ -22,7 +23,8 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
  * SESSIONS invalidation accordingly. It should be used only from the UI thread.
  */
 @NullMarked
-public class SessionsInvalidationManager implements ApplicationStatus.ApplicationStateListener {
+public class SessionsInvalidationManager
+        implements ApplicationStatus.ApplicationStateListener, Destroyable {
     /**
      * The amount of time after the RecentTabsPage is opened to register for session sync
      * invalidations. The delay is designed so that only users who linger on the RecentTabsPage
@@ -32,13 +34,14 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
     static final int REGISTER_FOR_SESSION_SYNC_INVALIDATIONS_DELAY_MS =
             (int) DateUtils.SECOND_IN_MILLIS * 20;
 
+    private static final ProfileKeyedMap<SessionsInvalidationManager> sProfileMap =
+            ProfileKeyedMap.createMapOfDestroyables();
+
     /** Used to schedule tasks to enable and disable session sync invalidations. */
     private final ResumableDelayedTaskRunner mEnableSessionInvalidationsRunner;
 
     /** Used to call native code that enables and disables session invalidations. */
     private final Profile mProfile;
-
-    private static @MonotonicNonNull SessionsInvalidationManager sInstance;
 
     /** Whether session sync invalidations are enabled. */
     private boolean mIsSessionInvalidationsEnabled;
@@ -47,16 +50,14 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
     private int mNumRecentTabPages;
 
     /**
-     * Returns the a singleton SessionsInvalidationManager.
+     * Returns the {@link SessionsInvalidationManager} for the given {@link Profile}.
      *
-     * Calling this method will create the instance if it does not yet exist.
+     * <p>Calling this method will create the instance if it does not yet exist.
      */
     public static SessionsInvalidationManager get(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new SessionsInvalidationManager(profile, new ResumableDelayedTaskRunner());
-        }
-        return sInstance;
+        return sProfileMap.getForProfile(
+                profile, p -> new SessionsInvalidationManager(p, new ResumableDelayedTaskRunner()));
     }
 
     @VisibleForTesting
@@ -65,6 +66,12 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
         mIsSessionInvalidationsEnabled = false;
         mEnableSessionInvalidationsRunner = runner;
         ApplicationStatus.registerApplicationStateListener(this);
+    }
+
+    @Override
+    public void destroy() {
+        mEnableSessionInvalidationsRunner.cancel();
+        ApplicationStatus.unregisterApplicationStateListener(this);
     }
 
     /** Called when a RecentTabsPage is opened. */

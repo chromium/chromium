@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.invalidation;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -34,12 +36,26 @@ public class SessionsInvalidationManagerTest {
     @Mock private ResumableDelayedTaskRunner mResumableDelayedTaskRunner;
 
     @Mock private Profile mProfile;
+    @Mock private Profile mProfile2;
 
     private Activity mActivity;
 
     @Before
     public void setup() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+    }
+
+    /**
+     * Tests that {@link SessionsInvalidationManager#get(Profile)} returns distinct instances for
+     * distinct profiles.
+     */
+    @Test
+    public void testGetForProfile() {
+        SessionsInvalidationManager manager1 = SessionsInvalidationManager.get(mProfile);
+        assertSame(manager1, SessionsInvalidationManager.get(mProfile));
+        SessionsInvalidationManager manager2 = SessionsInvalidationManager.get(mProfile2);
+        assertNotSame(manager1, manager2);
+        assertSame(manager2, SessionsInvalidationManager.get(mProfile2));
     }
 
     /**
