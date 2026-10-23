@@ -231,9 +231,9 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
 
   content::WebContents* target_contents = nullptr;
   if (params->options && params->options->target_tab_id) {
-    if (!ExtensionTabUtil::GetTabById(*(params->options->target_tab_id),
-                                      browser_context(), true,
-                                      &target_contents)) {
+    if (!ExtensionTabUtil::GetTabById(
+            *(params->options->target_tab_id), browser_context(),
+            include_incognito_information(), &target_contents)) {
       return RespondNow(Error(kInvalidTabIdError));
     }
   } else {
@@ -275,9 +275,9 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   bool should_restrict_to_render_frame = extension()->manifest_version() < 3;
   if (params->options && params->options->consumer_tab_id) {
     content::WebContents* consumer_contents = nullptr;
-    if (!ExtensionTabUtil::GetTabById(*(params->options->consumer_tab_id),
-                                      browser_context(), true,
-                                      &consumer_contents)) {
+    if (!ExtensionTabUtil::GetTabById(
+            *(params->options->consumer_tab_id), browser_context(),
+            include_incognito_information(), &consumer_contents)) {
       return RespondNow(Error(kInvalidTabIdError));
     }
 

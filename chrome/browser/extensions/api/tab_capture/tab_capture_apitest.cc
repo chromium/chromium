@@ -4,11 +4,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
@@ -45,6 +48,7 @@
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gl/gl_switches.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -260,6 +264,158 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
       {.extension_url = "start_tab_capture.html", .open_in_incognito = true},
       {.allow_in_incognito = true}))
       << message_;
+}
+
+// Exercises the profile boundaries of tabCapture.getMediaStreamId() by
+// running the function directly, so the profile of the calling extension
+// context can be controlled precisely.
+class TabCaptureGetMediaStreamIdTest : public TabCaptureApiTest {
+ protected:
+  // Loads an extension with the tabCapture permission using the given
+  // `incognito_mode` ("split" or "spanning"), enabled in incognito.
+  const Extension* LoadTabCaptureExtension(const char* incognito_mode) {
+    extension_dir_.WriteManifest(base::StringPrintf(
+        R"({
+             "name": "Tab capture profile boundaries",
+             "version": "1",
+             "manifest_version": 3,
+             "incognito": "%s",
+             "permissions": ["tabCapture"]
+           })",
+        incognito_mode));
+    return LoadExtension(extension_dir_.UnpackedPath(),
+                         {.allow_in_incognito = true});
+  }
+
+  // Grants `extension` permission to capture the tab hosting `web_contents`,
+  // as an extension action invocation on that tab would.
+  void GrantCapturePermission(const Extension* extension,
+                              content::WebContents* web_contents) {
+    ActiveTabPermissionGranter::FromWebContents(web_contents)
+        ->GrantIfRequested(extension);
+  }
+
+  std::string BuildArgs(int target_tab_id, int consumer_tab_id) {
+    return base::StringPrintf(R"([{"targetTabId": %d, "consumerTabId": %d}])",
+                              target_tab_id, consumer_tab_id);
+  }
+
+  scoped_refptr<TabCaptureGetMediaStreamIdFunction> CreateFunction(
+      const Extension* extension) {
+    auto function = base::MakeRefCounted<TabCaptureGetMediaStreamIdFunction>();
+    function->set_extension(extension);
+    return function;
+  }
+
+ private:
+  TestExtensionDir extension_dir_;
+};
+
+// The regular-profile instance of a split-mode extension only sees tabs from
+// its own profile, so it cannot obtain a stream ID for an incognito tab.
+IN_PROC_BROWSER_TEST_F(TabCaptureGetMediaStreamIdTest,
+                       SplitModeRejectsIncognitoTargetTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  const Extension* extension = LoadTabCaptureExtension("split");
+  ASSERT_TRUE(extension);
+
+  content::WebContents* consumer_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(consumer_contents, url));
+
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), url);
+  ASSERT_TRUE(incognito_contents);
+  GrantCapturePermission(extension, incognito_contents);
+
+  EXPECT_EQ("Invalid tab specified.",
+            api_test_utils::RunFunctionAndReturnError(
+                CreateFunction(extension),
+                BuildArgs(ExtensionTabUtil::GetTabId(incognito_contents),
+                          ExtensionTabUtil::GetTabId(consumer_contents)),
+                profile()));
+}
+
+// The regular-profile instance of a split-mode extension cannot designate a
+// tab from the incognito profile as the consumer of a stream ID.
+IN_PROC_BROWSER_TEST_F(TabCaptureGetMediaStreamIdTest,
+                       SplitModeRejectsIncognitoConsumerTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  const Extension* extension = LoadTabCaptureExtension("split");
+  ASSERT_TRUE(extension);
+
+  content::WebContents* target_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(target_contents, url));
+  GrantCapturePermission(extension, target_contents);
+
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), url);
+  ASSERT_TRUE(incognito_contents);
+
+  EXPECT_EQ("Invalid tab specified.",
+            api_test_utils::RunFunctionAndReturnError(
+                CreateFunction(extension),
+                BuildArgs(ExtensionTabUtil::GetTabId(target_contents),
+                          ExtensionTabUtil::GetTabId(incognito_contents)),
+                profile()));
+}
+
+// The incognito-profile instance of a split-mode extension can obtain a
+// stream ID for a tab in its own profile.
+IN_PROC_BROWSER_TEST_F(TabCaptureGetMediaStreamIdTest,
+                       SplitModeIncognitoContextTargetsOwnProfileTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  const Extension* extension = LoadTabCaptureExtension("split");
+  ASSERT_TRUE(extension);
+
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), url);
+  ASSERT_TRUE(incognito_contents);
+  GrantCapturePermission(extension, incognito_contents);
+
+  const int incognito_tab_id = ExtensionTabUtil::GetTabId(incognito_contents);
+  std::optional<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          CreateFunction(extension),
+          BuildArgs(incognito_tab_id, incognito_tab_id),
+          incognito_contents->GetBrowserContext());
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_FALSE(result->GetString().empty());
+}
+
+// A spanning-mode extension with incognito access can obtain a stream ID for
+// an incognito tab.
+IN_PROC_BROWSER_TEST_F(TabCaptureGetMediaStreamIdTest,
+                       SpanningModeTargetsIncognitoTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  const Extension* extension = LoadTabCaptureExtension("spanning");
+  ASSERT_TRUE(extension);
+
+  content::WebContents* consumer_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(consumer_contents, url));
+
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), url);
+  ASSERT_TRUE(incognito_contents);
+  GrantCapturePermission(extension, incognito_contents);
+
+  std::optional<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          CreateFunction(extension),
+          BuildArgs(ExtensionTabUtil::GetTabId(incognito_contents),
+                    ExtensionTabUtil::GetTabId(consumer_contents)),
+          profile(), api_test_utils::FunctionMode::kIncognito);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_FALSE(result->GetString().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
