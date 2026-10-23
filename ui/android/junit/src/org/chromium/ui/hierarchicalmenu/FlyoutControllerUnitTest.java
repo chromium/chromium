@@ -314,13 +314,14 @@ public class FlyoutControllerUnitTest {
                                 .with(TITLE, "Empty")
                                 .with(ENABLED, false)
                                 .build());
+        ListItem dividerItem = new ListItem(0, new PropertyModel());
         ListItem emptySubmenu =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, "Empty Submenu")
                                 .with(ENABLED, true)
-                                .with(SUBMENU_PROVIDER, () -> List.of(disabledItem))
+                                .with(SUBMENU_PROVIDER, () -> List.of(disabledItem, dividerItem))
                                 .with(IS_HIGHLIGHTED, false)
                                 .build());
 
