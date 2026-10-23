@@ -322,7 +322,8 @@ class CORE_EXPORT ExclusionSpaceInternal final
                                : nullptr),
           has_shape_exclusions(false) {}
 
-    // The copy constructor explicitly copies the shape_exclusions member.
+    // The copy constructor and copy assignment operator explicitly copy the
+    // shape_exclusions member.
     Shelf(const Shelf& other)
         : block_offset(other.block_offset),
           line_left(other.line_left),
@@ -334,6 +335,22 @@ class CORE_EXPORT ExclusionSpaceInternal final
                                      *other.shape_exclusions)
                                : nullptr),
           has_shape_exclusions(other.has_shape_exclusions) {}
+    Shelf(Shelf&&) noexcept = default;
+
+    Shelf& operator=(const Shelf& other) {
+      block_offset = other.block_offset;
+      line_left = other.line_left;
+      line_right = other.line_right;
+      line_left_edges = other.line_left_edges;
+      line_right_edges = other.line_right_edges;
+      shape_exclusions =
+          other.shape_exclusions
+              ? MakeGarbageCollected<ShapeExclusions>(*other.shape_exclusions)
+              : nullptr;
+      has_shape_exclusions = other.has_shape_exclusions;
+      return *this;
+    }
+    Shelf& operator=(Shelf&&) noexcept = default;
 
     void Trace(Visitor* visitor) const { visitor->Trace(shape_exclusions); }
 
