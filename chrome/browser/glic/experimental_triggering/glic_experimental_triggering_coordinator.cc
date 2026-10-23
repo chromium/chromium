@@ -875,14 +875,35 @@ class ExperimentalTriggeringUpdatesHandler
       const TaskMetadata* task_metadata,
       base::ScopedClosureRunner cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
+    // Keep the handler alive if an actuation session or action execution is
+    // already running on this context so that neither early validation failures
+    // nor the async screenshot response tear down the in-flight task.
+    // TODO(b/574916669): Decide this once in OnRequest(), by only arming
+    // `cleanup_runner` when the handler has no live work, instead of guarding
+    // each Process* method individually.
+    if (instance_ || actions_runner_) {
+      std::ignore = cleanup_runner.Release();
+    }
+
+    // Like `ProcessSubmitConfirmation`, failures are reported as a
+    // `ScreenshotResult` rather than a failed `TaskUpdate`: being unable to
+    // capture a screenshot says nothing about the health of the actuation task,
+    // so it must not end the task.
+    auto create_error_response = [&](ScreenshotResult::Status status,
+                                     std::string_view error_message) {
+      DLOG(WARNING) << error_message;
+      return CreateScreenshotResultResponse(
+          context_id_,
+          CreateScreenshotResult(status, /*file_token=*/std::string_view(),
+                                 screenshot_req.request_token),
+          task_metadata, sequence_generator_.GetNext());
+    };
+
     if (!coordinator_) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kCoordinatorUnavailable);
-      return CreateResponseMessage(context_id_, TaskUpdate::State::kFailed,
-                                   TaskUpdate::DataType::kErrorMessage,
-                                   "Message handler is no longer available.",
-                                   task_metadata,
-                                   sequence_generator_.GetNext());
+      return create_error_response(ScreenshotResult::Status::kErrorCapture,
+                                   "Message handler is no longer available.");
     }
 
     GlicKeyedService* glic_service =
@@ -891,56 +912,41 @@ class ExperimentalTriggeringUpdatesHandler
     if (!glic_service) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kGlicServiceUnavailable);
-      return CreateResponseMessage(context_id_, TaskUpdate::State::kFailed,
-                                   TaskUpdate::DataType::kErrorMessage,
-                                   "GlicKeyedService is not available.",
-                                   task_metadata,
-                                   sequence_generator_.GetNext());
+      return create_error_response(ScreenshotResult::Status::kErrorCapture,
+                                   "GlicKeyedService is not available.");
     }
 
     if (HandleUnavailableExperimentalTriggering(glic_service)) {
       result_logger.set_result(
           GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn);
-      return CreateResponseMessage(
-          context_id_, TaskUpdate::State::kFailed,
-          TaskUpdate::DataType::kErrorMessage,
-          "User is not opted in to experimental triggering.", task_metadata,
-          sequence_generator_.GetNext());
+      return create_error_response(
+          ScreenshotResult::Status::kErrorDisabled,
+          "User is not opted in to experimental triggering.");
     }
 
     if (!base::FeatureList::IsEnabled(
             features::kGlicExperimentalTriggeringScreenshot)) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kUnexpectedRequestPayload);
-      SendScreenshotResult(ScreenshotResult::Status::kErrorDisabled,
-                           /*file_token=*/std::string_view(),
-                           screenshot_req.request_token);
-      return CreateResponseMessage(context_id_, TaskUpdate::State::kFailed,
-                                   TaskUpdate::DataType::kErrorMessage,
-                                   "Screenshot feature is disabled.",
-                                   task_metadata,
-                                   sequence_generator_.GetNext());
+      return create_error_response(ScreenshotResult::Status::kErrorDisabled,
+                                   "Screenshot feature is disabled.");
     }
 
     if (screenshot_req.request_token.empty()) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kUnexpectedRequestPayload);
-      return CreateScreenshotResultResponse(
-          context_id_,
-          CreateScreenshotResult(
-              ScreenshotResult::Status::kErrorInvalidRequest),
-          task_metadata, sequence_generator_.GetNext());
+      return create_error_response(
+          ScreenshotResult::Status::kErrorInvalidRequest,
+          "Received a screenshot request with an empty request token.");
     }
 
     GlicInstance* instance = instance_.get();
     if (!instance) {
       result_logger.set_result(
           GlicExperimentalTriggeringIncomingMessageResult::kNoInstance);
-      return CreateResponseMessage(
-          context_id_, TaskUpdate::State::kFailed,
-          TaskUpdate::DataType::kErrorMessage,
-          "No active Glic instance available for screenshot.", task_metadata,
-          sequence_generator_.GetNext());
+      return create_error_response(
+          ScreenshotResult::Status::kErrorCapture,
+          "No active Glic instance available for screenshot.");
     }
 
     GlicExperimentalTriggeringManager* triggering_manager =
@@ -948,17 +954,10 @@ class ExperimentalTriggeringUpdatesHandler
     if (!triggering_manager) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kTriggeringManagerUnavailable);
-      return CreateResponseMessage(
-          context_id_, TaskUpdate::State::kFailed,
-          TaskUpdate::DataType::kErrorMessage,
-          "GlicExperimentalTriggeringManager is not available.", task_metadata,
-          sequence_generator_.GetNext());
+      return create_error_response(
+          ScreenshotResult::Status::kErrorCapture,
+          "GlicExperimentalTriggeringManager is not available.");
     }
-
-    auto response = CreateResponseMessage(
-        context_id_, TaskUpdate::State::kStarting, std::nullopt, "",
-        task_metadata, sequence_generator_.GetNext());
-    std::ignore = cleanup_runner.Release();
 
     triggering_manager->CaptureAndUploadEncryptedScreenshot(
         screenshot_req.public_key, screenshot_req.auth_secret,
@@ -987,7 +986,10 @@ class ExperimentalTriggeringUpdatesHandler
 
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
-    return response;
+    // No synchronous reply: the `ScreenshotResult` above is the only meaningful
+    // response, and emitting a task update here would imply a task state
+    // transition that did not happen.
+    return std::nullopt;
   }
 
   std::optional<ExperimentalTriggeringResponse> ProcessSubmitConfirmation(
@@ -1002,7 +1004,7 @@ class ExperimentalTriggeringUpdatesHandler
       std::ignore = cleanup_runner.Release();
     }
 
-    // Unlike the other request types, delivery failures are reported as a
+    // Unlike actuation requests, delivery failures are reported as a
     // `ConfirmationResult` rather than a failed `TaskUpdate`. A confirmation
     // that could not be delivered says nothing about the health of the
     // actuation task, so surfacing it as a task failure would be misleading.

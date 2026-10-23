@@ -185,8 +185,8 @@ message GlicExperimentalTriggering {
       optional Status status = 1;
       // A screenshot file identifier.
       optional string file_token = 2;
-      // Detailed error message.
-      optional string error_message = 3;
+      // Deprecated: Rely on `status` enum values instead.
+      optional string error_message = 3 [deprecated = true];
       // Opaque identifier to correlate this response with its request.
       optional bytes request_token = 4;
     }
@@ -220,6 +220,16 @@ message GlicExperimentalTriggering {
       optional string error_message = 2;
     }
 
+    // `task_update` reports the lifecycle of an actuation task. It is meant
+    // only for TriggerActuationRequest, ContinueActuationRequest and
+    // StopActuationRequest, and for the task's own progress updates. Other
+    // requests are answered with their own result payload: an empty
+    // synchronous reply while the work runs asynchronously, then
+    // `device_opt_in_result`, `screenshot_result`, `execute_actions_response`
+    // or `confirmation_result` on completion or early failure.
+    // TODO(b/574916669): ExecuteActionsRequest, the Android DeviceOptInRequest
+    // path, and requests rejected before reaching a handler still report early
+    // failures as a failed `task_update`.
     oneof payload {
       TaskUpdate task_update = 3;
       DeviceOptInResult device_opt_in_result = 4;

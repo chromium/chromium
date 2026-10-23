@@ -1025,16 +1025,10 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
       screenshot_future;
   SetupMessageSenderMock(&screenshot_future);
 
-  // Send the screenshot request.
+  // Send the screenshot request. The asynchronous ScreenshotResult is the only
+  // response; no synchronous TaskUpdate reply is emitted.
   auto screenshot_reply = SendMessageAndWait(std::move(screenshot_message));
-  ASSERT_TRUE(screenshot_reply);
-  ASSERT_TRUE(screenshot_reply->has_glic_experimental_triggering());
-  EXPECT_EQ(screenshot_reply->glic_experimental_triggering()
-                .response()
-                .task_update()
-                .state(),
-            components_sharing_message::GlicExperimentalTriggering::
-                ExperimentalTriggeringResponse::TaskUpdate::STARTING);
+  EXPECT_FALSE(screenshot_reply);
 
   // 3. Verify the screenshot response contains the uploaded token.
   ASSERT_TRUE(screenshot_future.Wait());

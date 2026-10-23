@@ -378,19 +378,13 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       update_future.GetRepeatingCallback(), nullptr);
 
   ASSERT_TRUE(response.has_value());
-  ASSERT_TRUE(response->task_update.has_value());
-  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
-  EXPECT_EQ(response->task_update->data_type,
-            TaskUpdate::DataType::kErrorMessage);
-  EXPECT_EQ(response->task_update->data, "Screenshot feature is disabled.");
-
-  // Should also notify the callback with kErrorDisabled.
-  auto update = update_future.Take();
-  ASSERT_TRUE(update.screenshot_result.has_value());
-  EXPECT_EQ(update.screenshot_result->status,
+  ASSERT_TRUE(response->screenshot_result.has_value());
+  EXPECT_EQ(response->screenshot_result->status,
             ScreenshotResult::Status::kErrorDisabled);
-  EXPECT_EQ(update.screenshot_result->request_token,
+  EXPECT_EQ(response->screenshot_result->request_token,
             std::vector<uint8_t>({'t', 'o', 'k', 'e', 'n'}));
+  EXPECT_FALSE(response->task_update.has_value());
+  EXPECT_FALSE(update_future.IsReady());
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
@@ -399,6 +393,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   features.InitAndEnableFeature(
       features::kGlicExperimentalTriggeringScreenshot);
 
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
   ExperimentalTriggeringRequest request;
   request.version = 1;
   request.context_id = kTestContextId;
@@ -409,14 +404,59 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       .request_token = {'t', 'o', 'k', 'e', 'n'},
   };
 
-  auto response = SendRequest(request);
+  auto response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
   ASSERT_TRUE(response.has_value());
-  ASSERT_TRUE(response->task_update.has_value());
-  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
-  EXPECT_EQ(response->task_update->data_type,
-            TaskUpdate::DataType::kErrorMessage);
-  EXPECT_EQ(response->task_update->data,
-            "No active Glic instance available for screenshot.");
+  ASSERT_TRUE(response->screenshot_result.has_value());
+  EXPECT_EQ(response->screenshot_result->status,
+            ScreenshotResult::Status::kErrorCapture);
+  EXPECT_EQ(response->screenshot_result->request_token,
+            std::vector<uint8_t>({'t', 'o', 'k', 'e', 'n'}));
+  EXPECT_FALSE(response->task_update.has_value());
+  EXPECT_FALSE(update_future.IsReady());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       GetScreenshotRequest_NotOptedIn) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/true);
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(false);
+  glic_service->enabling().SetExperimentalTriggeringEnabled(false);
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = GetScreenshotRequest{
+      .public_key = {'k', 'e', 'y'},
+      .auth_secret = {'s', 'e', 'c'},
+      .request_token = {'t', 'o', 'k', 'e', 'n'},
+  };
+
+  auto response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->screenshot_result.has_value());
+  EXPECT_EQ(response->screenshot_result->status,
+            ScreenshotResult::Status::kErrorDisabled);
+  EXPECT_EQ(response->screenshot_result->request_token,
+            std::vector<uint8_t>({'t', 'o', 'k', 'e', 'n'}));
+  EXPECT_FALSE(response->task_update.has_value());
+  EXPECT_FALSE(update_future.IsReady());
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, UnrecognizedStopActuation) {
@@ -845,6 +885,38 @@ class GlicExperimentalTriggeringCoordinatorWithTabTest
     return screenshot_request;
   }
 
+  // Sends a GetScreenshotRequest on the active session and expects a
+  // synchronous ScreenshotResult error that keeps the session's handler alive.
+  void SendScreenshotRequestAndExpectSyncError(
+      const std::vector<uint8_t>& request_token,
+      ScreenshotResult::Status expected_status,
+      GlicExperimentalTriggeringIncomingMessageResult expected_metric) {
+    base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+    base::HistogramTester histogram_tester;
+    auto response = coordinator_->OnRequest(
+        kTestContextId, CreateScreenshotRequest(request_token),
+        ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
+            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+        update_future.GetRepeatingCallback(), nullptr);
+
+    ASSERT_TRUE(response.has_value());
+    ASSERT_TRUE(response->screenshot_result.has_value());
+    EXPECT_EQ(response->screenshot_result->status, expected_status);
+    EXPECT_TRUE(response->screenshot_result->file_token.empty());
+    EXPECT_EQ(response->screenshot_result->request_token, request_token);
+    EXPECT_FALSE(response->task_update.has_value());
+    EXPECT_FALSE(update_future.IsReady());
+    EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+    histogram_tester.ExpectUniqueSample(
+        "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+        expected_metric, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+        "SharingMessage",
+        expected_metric, 1);
+  }
+
   ExperimentalTriggeringRequest CreateExecuteScriptToolRequest(
       std::optional<int32_t> tab_id = std::nullopt,
       std::optional<std::string> document_identifier = std::nullopt) {
@@ -979,35 +1051,44 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   EXPECT_CALL(test_triggering_manager_, CaptureAndUploadEncryptedScreenshot)
       .Times(0);
 
-  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
-  base::HistogramTester histogram_tester;
-  auto response = coordinator_->OnRequest(
-      kTestContextId, CreateScreenshotRequest(/*request_token=*/{}),
-      ScopedIncomingMessageResultLogger(
-          GlicMetricReporter(profile_),
-          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-      update_future.GetRepeatingCallback(), nullptr);
-
-  ASSERT_TRUE(response.has_value());
-  ASSERT_TRUE(response->screenshot_result.has_value());
-  EXPECT_EQ(response->screenshot_result->status,
-            ScreenshotResult::Status::kErrorInvalidRequest);
-  EXPECT_TRUE(response->screenshot_result->file_token.empty());
-  EXPECT_TRUE(response->screenshot_result->request_token.empty());
-  EXPECT_FALSE(response->task_update.has_value());
-  EXPECT_FALSE(update_future.IsReady());
-
-  histogram_tester.ExpectUniqueSample(
-      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+  SendScreenshotRequestAndExpectSyncError(
+      /*request_token=*/{}, ScreenshotResult::Status::kErrorInvalidRequest,
       GlicExperimentalTriggeringIncomingMessageResult::
-          kUnexpectedRequestPayload,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
-      "SharingMessage",
+          kUnexpectedRequestPayload);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       GetScreenshotRequest_FeatureDisabled_PreservesActiveSession) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
+  StartActuationSession();
+
+  EXPECT_CALL(test_triggering_manager_, CaptureAndUploadEncryptedScreenshot)
+      .Times(0);
+
+  SendScreenshotRequestAndExpectSyncError(
+      {'t', 'o', 'k', 'e', 'n'}, ScreenshotResult::Status::kErrorDisabled,
       GlicExperimentalTriggeringIncomingMessageResult::
-          kUnexpectedRequestPayload,
-      1);
+          kUnexpectedRequestPayload);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       GetScreenshotRequest_NullTriggeringManager_PreservesActiveSession) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+
+  StartActuationSession();
+
+  ON_CALL(mock_glic_instance_, GetExperimentalTriggeringManager())
+      .WillByDefault(testing::Return(nullptr));
+
+  SendScreenshotRequestAndExpectSyncError(
+      {'t', 'o', 'k', 'e', 'n'}, ScreenshotResult::Status::kErrorCapture,
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kTriggeringManagerUnavailable);
 }
 
 struct ScreenshotCaptureTestCase {
@@ -1050,9 +1131,9 @@ TEST_P(GlicExperimentalTriggeringCoordinatorScreenshotCaptureTest,
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
 
-  ASSERT_TRUE(response.has_value());
-  ASSERT_TRUE(response->task_update.has_value());
-  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+  // The asynchronous ScreenshotResult is the only reply; emitting a synchronous
+  // task update would imply a state transition that didn't happen.
+  EXPECT_FALSE(response.has_value());
 
   auto async_response = update_future.Take();
   ASSERT_TRUE(async_response.screenshot_result.has_value());
