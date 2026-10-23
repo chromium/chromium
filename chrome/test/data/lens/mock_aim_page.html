@@ -133,24 +133,14 @@
           '/lens_button.html?cs=0';
     }
 
-    window.addEventListener('message', (event) => {
-      let dataBytes;
-      if (event.data instanceof ArrayBuffer) {
-        dataBytes = new Uint8Array(event.data);
-      } else if (event.data instanceof Uint8Array) {
-        dataBytes = event.data;
-      } else {
-        return;
-      }
-
+    function handleClientToSearchBytes(dataBytes, replyFn) {
       window.receivedMessages.push(dataBytes);
 
       // Handle HandshakePing: field 1 length-delimited (tag 10).
       if (dataBytes.length >= 2 && dataBytes[0] === 10) {
         // Send SearchToClientMessage with HandshakeResponse (field 1, wire type 2, length 0 -> [10, 0]).
-        if (event.source) {
-          const response = new Uint8Array([10, 0]);
-          event.source.postMessage(response.buffer, event.origin);
+        if (replyFn) {
+          replyFn(new Uint8Array([10, 0]));
         }
         document.body.dataset.handshakeComplete = 'true';
         return;
@@ -187,12 +177,49 @@
           }
         }
       }
+    }
+
+    let searchPort = null;
+    if (typeof chrome !== 'undefined' && chrome.runtime &&
+        typeof chrome.runtime.connect === 'function') {
+      searchPort = chrome.runtime.connect(
+          configuredExtensionId, {name: 'chrome-search-channel'});
+      searchPort.onMessage.addListener((msg) => {
+        if (!msg || msg.type !== 'chrome-search-channel' ||
+            !Array.isArray(msg.payload)) {
+          return;
+        }
+        handleClientToSearchBytes(new Uint8Array(msg.payload), (response) => {
+          searchPort.postMessage({
+            type: 'chrome-search-channel',
+            payload: Array.from(response),
+          });
+        });
+      });
+    }
+
+    window.addEventListener('message', (event) => {
+      let dataBytes;
+      if (event.data instanceof ArrayBuffer) {
+        dataBytes = new Uint8Array(event.data);
+      } else if (event.data instanceof Uint8Array) {
+        dataBytes = event.data;
+      } else {
+        return;
+      }
+
+      handleClientToSearchBytes(dataBytes, (response) => {
+        if (event.source) {
+          event.source.postMessage(response.buffer, event.origin);
+        }
+      });
     });
 
     // Proactively post 'domContentLoaded' to the lens button iframe to establish
-    // the target origin in post_message_handler.ts.
+    // the target origin in post_message_handler.ts when service worker port is
+    // not used.
     function pingButtonIframe() {
-      if (document.body.dataset.handshakeComplete === 'true') {
+      if (searchPort || document.body.dataset.handshakeComplete === 'true') {
         return;
       }
       const buttonIframe = document.getElementById('lens-button-iframe');
@@ -202,7 +229,7 @@
     }
 
     const pingInterval = setInterval(() => {
-      if (document.body.dataset.handshakeComplete === 'true') {
+      if (searchPort || document.body.dataset.handshakeComplete === 'true') {
         clearInterval(pingInterval);
       } else {
         pingButtonIframe();
@@ -210,6 +237,14 @@
     }, 50);
 
     function submitQuery() {
+      if (searchPort) {
+        // SearchToClientMessage with OnSubmitQueryRequest: field 2, length 0 -> [18, 0].
+        searchPort.postMessage({
+          type: 'chrome-search-channel',
+          payload: [18, 0],
+        });
+        return;
+      }
       const buttonIframe = document.getElementById('lens-button-iframe');
       if (buttonIframe && buttonIframe.contentWindow) {
         // SearchToClientMessage with OnSubmitQueryRequest: field 2, length 0 -> [18, 0].

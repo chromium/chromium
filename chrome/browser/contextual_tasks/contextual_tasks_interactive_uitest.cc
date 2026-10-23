@@ -40,6 +40,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -5110,24 +5111,39 @@ class ContextualTasksExtensionTabPickerInteractiveUiTest
     const GURL tab_picker_url(
         base::StringPrintf("chrome-extension://%s/tab_picker.html?cs=0",
                            extension_misc::kContextualTasksExtensionId));
-    EXPECT_TRUE(content::ExecJs(host_contents, R"(
+    EXPECT_TRUE(content::ExecJs(
+        host_contents,
+        content::JsReplace(
+            R"(
       (() => {
         if (!Array.isArray(window.receivedSearchMessages)) {
           window.receivedSearchMessages = [];
           window.searchMessageWaiters = [];
-          window.addEventListener('message', (event) => {
-            if (event.data instanceof Uint8Array ||
-                event.data instanceof ArrayBuffer) {
-              const bytes = event.data instanceof Uint8Array ?
-                  event.data : new Uint8Array(event.data);
+          const port = chrome.runtime.connect(
+              $1, {name: 'chrome-search-channel'});
+          window.__aimSearchPort = port;
+          window.__handshakeCompletePromise = new Promise((resolve) => {
+            port.onMessage.addListener((msg) => {
+              if (!msg || msg.type !== 'chrome-search-channel' ||
+                  !Array.isArray(msg.payload)) {
+                return;
+              }
+              if (msg.payload.length >= 2 && msg.payload[0] === 10) {
+                port.postMessage({
+                  type: 'chrome-search-channel',
+                  payload: [10, 0],
+                });
+                resolve(true);
+                return;
+              }
               window.receivedSearchMessages.push(
-                  btoa(Array.from(bytes, b => String.fromCharCode(b))
+                  btoa(Array.from(msg.payload, b => String.fromCharCode(b))
                       .join('')));
               const waiters = window.searchMessageWaiters.splice(0);
               for (const w of waiters) {
                 w();
               }
-            }
+            });
           });
         }
         let iframe = document.getElementById('tab-picker-iframe');
@@ -5137,7 +5153,8 @@ class ContextualTasksExtensionTabPickerInteractiveUiTest
           document.body.appendChild(iframe);
         }
       })();
-    )"));
+    )",
+            extension_misc::kContextualTasksExtensionId)));
     EXPECT_TRUE(content::NavigateIframeToURL(host_contents, "tab-picker-iframe",
                                              tab_picker_url));
 
@@ -5162,12 +5179,7 @@ class ContextualTasksExtensionTabPickerInteractiveUiTest
           const trigger = app?.shadowRoot?.querySelector('#shareTabsTrigger');
           const item = app?.shadowRoot?.querySelector(
               'button.dropdown-item[data-index="0"]');
-          if (trigger && item && window.__extensionBrowserProxyInstance &&
-              document.readyState === 'complete') {
-            window.__handshakeCompletePromise = new Promise((res) => {
-              window.__extensionBrowserProxyInstance.callbackRouter
-                  .onHandshakeComplete.addListener(() => res(true));
-            });
+          if (trigger && item && document.readyState === 'complete') {
             resolve(true);
             return;
           }
@@ -5177,17 +5189,15 @@ class ContextualTasksExtensionTabPickerInteractiveUiTest
       })
     )"));
 
-    EXPECT_TRUE(content::ExecJs(host_contents, R"(
-      (() => {
-        const iframe = document.getElementById('tab-picker-iframe');
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.postMessage(new Uint8Array([10, 0]), '*');
-        }
-      })();
-    )"));
-
-    EXPECT_EQ(true,
-              content::EvalJs(picker_rfh, "window.__handshakeCompletePromise"));
+    EXPECT_EQ(true, content::EvalJs(host_contents,
+                                    "window.__handshakeCompletePromise"));
+    auto* user_data =
+        ContextualTasksWebContentsUserData::FromWebContents(host_contents);
+    EXPECT_NE(user_data, nullptr);
+    if (user_data) {
+      EXPECT_TRUE(base::test::RunUntil(
+          [&]() { return user_data->IsHandshakeCompleteForTesting(); }));
+    }
     return picker_rfh;
   }
 

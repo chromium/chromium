@@ -978,6 +978,7 @@ source_set("interactive_ui_tests") {
     deps += [
       ":interactive_ui_test_support",
       ":ui",
+      ":user_data",
       "//chrome/browser/extensions",
 
       # TabUnderlineView currently resides under glic/browser_ui.
