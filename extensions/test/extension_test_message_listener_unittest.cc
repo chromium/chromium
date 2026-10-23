@@ -4,11 +4,18 @@
 
 #include "extensions/test/extension_test_message_listener.h"
 
+#include "base/debug/stack_trace.h"
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/time/time.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/buildflags/buildflags.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -76,6 +83,61 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
                 base::StringPrintf(kFormat, kFailureMessage));
     EXPECT_FALSE(listener.WaitUntilSatisfied());  // fails
     EXPECT_EQ(kFailureMessage, listener.message());
+  }
+}
+
+TEST_F(ExtensionTestMessageListenerUnittest, TimeoutReportsCallerLocation) {
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Milliseconds(1));
+
+  {
+    ExtensionTestMessageListener listener(kTestMessage);
+    testing::TestPartResultArray results;
+    bool satisfied = true;
+    base::Location expected_location;
+    {
+      base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+          base::debug::OverrideStackTraceOutputForTesting::Mode::
+              kSuppressOutput);
+      testing::ScopedFakeTestPartResultReporter reporter(
+          testing::ScopedFakeTestPartResultReporter::
+              INTERCEPT_ONLY_CURRENT_THREAD,
+          &results);
+      expected_location = base::Location::Current();
+      satisfied = listener.WaitUntilSatisfied();
+    }
+    EXPECT_FALSE(satisfied);
+    EXPECT_FALSE(listener.was_satisfied());
+    ASSERT_EQ(1, results.size());
+    EXPECT_STREQ(expected_location.file_name(),
+                 results.GetTestPartResult(0).file_name());
+    EXPECT_EQ(expected_location.line_number() + 1,
+              results.GetTestPartResult(0).line_number());
+  }
+
+  {
+    ExtensionTestMessageListener listener(kTestMessage);
+    testing::TestPartResultArray results;
+    bool satisfied = true;
+    base::Location expected_location;
+    {
+      base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+          base::debug::OverrideStackTraceOutputForTesting::Mode::
+              kSuppressOutput);
+      testing::ScopedFakeTestPartResultReporter reporter(
+          testing::ScopedFakeTestPartResultReporter::
+              INTERCEPT_ONLY_CURRENT_THREAD,
+          &results);
+      const auto kNestable = base::RunLoop::Type::kNestableTasksAllowed;
+      expected_location = base::Location::Current();
+      satisfied = listener.WaitUntilSatisfied(kNestable);
+    }
+    EXPECT_FALSE(satisfied);
+    EXPECT_FALSE(listener.was_satisfied());
+    ASSERT_EQ(1, results.size());
+    EXPECT_STREQ(expected_location.file_name(),
+                 results.GetTestPartResult(0).file_name());
+    EXPECT_EQ(expected_location.line_number() + 1,
+              results.GetTestPartResult(0).line_number());
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "extensions/test/extension_test_message_listener.h"
 
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -30,18 +31,22 @@ ExtensionTestMessageListener::~ExtensionTestMessageListener() {
   DCHECK(!function_) << "MessageListener did not reply, but signaled it would.";
 }
 
-bool ExtensionTestMessageListener::WaitUntilSatisfied() {
-  return WaitUntilSatisfied(base::RunLoop::Type::kDefault);
+bool ExtensionTestMessageListener::WaitUntilSatisfied(
+    const base::Location& location) {
+  return WaitUntilSatisfied(base::RunLoop::Type::kDefault, location);
 }
 
 bool ExtensionTestMessageListener::WaitUntilSatisfied(
-    base::RunLoop::Type message_waiter_type) {
-  if (satisfied_)
+    base::RunLoop::Type message_waiter_type,
+    const base::Location& location) {
+  if (satisfied_) {
     return !failed_;
+  }
   base::RunLoop message_waiter(message_waiter_type);
   quit_wait_closure_ = message_waiter.QuitWhenIdleClosure();
-  message_waiter.Run();
-  return !failed_;
+  message_waiter.Run(location);
+  quit_wait_closure_.Reset();
+  return satisfied_ && !failed_;
 }
 
 void ExtensionTestMessageListener::Reply(const std::string& message) {
