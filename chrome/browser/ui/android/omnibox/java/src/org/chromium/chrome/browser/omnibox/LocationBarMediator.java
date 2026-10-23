@@ -713,6 +713,10 @@ public class LocationBarMediator
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
+        if (mOmniboxPrerender != null) {
+            mOmniboxPrerender.destroy();
+            mOmniboxPrerender = null;
+        }
         mLocationBarLayout.removeOnLayoutChangeListener(mOnLocationBarLayoutChange);
         mDeferredFocusCurrentTab = false;
         if (mUrlTextWrappingSupplier != null) {

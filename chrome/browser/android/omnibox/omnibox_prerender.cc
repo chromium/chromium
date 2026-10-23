@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/constants.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -34,17 +35,13 @@
 using predictors::AutocompleteActionPredictor;
 using predictors::AutocompleteActionPredictorFactory;
 
-OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
-                                   const jni_zero::JavaRef<jobject>& obj)
-    : weak_java_omnibox_(env, obj) {}
+OmniboxPrerender::OmniboxPrerender() = default;
 
 OmniboxPrerender::~OmniboxPrerender() = default;
 
-static int64_t JNI_OmniboxPrerender_Init(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
-  OmniboxPrerender* omnibox = new OmniboxPrerender(env, obj);
-  return reinterpret_cast<intptr_t>(omnibox);
+static jni_zero::JniUniquePtr<OmniboxPrerender> JNI_OmniboxPrerender_Init(
+    JNIEnv* env) {
+  return jni_zero::MakeUnique<OmniboxPrerender>();
 }
 
 void OmniboxPrerender::Clear(Profile* profile) {

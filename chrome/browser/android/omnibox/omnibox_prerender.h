@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 #define CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 
-#include <string>
+#include <cstdint>
 
-#include "base/android/jni_weak_ref.h"
+#include <string>
 
 class Profile;
 class TabAndroid;
@@ -24,7 +24,7 @@ class WebContents;
 // or pre-connect. This class then takes the corresponding action.
 class OmniboxPrerender {
  public:
-  OmniboxPrerender(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
+  OmniboxPrerender();
 
   OmniboxPrerender(const OmniboxPrerender&) = delete;
   OmniboxPrerender& operator=(const OmniboxPrerender&) = delete;
@@ -53,13 +53,11 @@ class OmniboxPrerender {
                       TabAndroid* tab);
 
  private:
-
   // Prerenders a given AutocompleteMatch's url.
   void DoPrerender(const AutocompleteMatch& match,
                    Profile* profile,
                    content::WebContents* web_contents);
   void DoPreconnect(const AutocompleteMatch& match, Profile* profile);
-  JavaObjectWeakGlobalRef weak_java_omnibox_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
