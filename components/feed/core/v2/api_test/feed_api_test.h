@@ -456,8 +456,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   void SetCountry(const std::string& country);
 
   // Replace stream_.
-  void CreateStream(bool wait_for_initialization = true,
-                    bool is_new_tab_search_engine_url_android_enabled = false);
+  void CreateStream(bool wait_for_initialization = true);
   std::unique_ptr<StreamModel> CreateStreamModel();
   bool IsTaskQueueIdle() const;
   void WaitForIdleTaskQueue();

@@ -60,9 +60,6 @@ import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtilsJni;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -160,7 +157,6 @@ public class FeedSurfaceMediatorTest {
     public void tearDown() {
         if (mFeedSurfaceMediator != null) mFeedSurfaceMediator.destroy();
         FeedSurfaceMediator.setPrefForTest(null, null);
-        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY);
     }
 
     @Test
@@ -248,7 +244,6 @@ public class FeedSurfaceMediatorTest {
 
     @Test
     public void testObserveTemplateUrlService() {
-        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
 
         mFeedSurfaceMediator = createMediator();

@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -63,7 +62,6 @@ public class HomepageManagerTest {
     @Before
     public void setUp() {
         PartnerBrowserCustomizations.setInstanceForTesting(mPartnerBrowserCustomizations);
-        DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
         ExtensionsUrlOverrideRegistry.resetRegistry();
         UrlConstantResolverFactory.resetResolvers();
     }

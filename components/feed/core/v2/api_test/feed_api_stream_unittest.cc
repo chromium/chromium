@@ -55,18 +55,8 @@ TEST_F(FeedApiTest, DoNotRefreshIfArticlesListIsHidden) {
   EXPECT_TRUE(refresh_scheduler_.completed);
 }
 
-TEST_F(FeedApiTest,
-       DoNotRefreshIfSnippetsByDseDisabled_ignoredWithoutFlagEnabled) {
-  profile_prefs_.SetBoolean(prefs::kEnableSnippetsByDse, false);
-  stream_->ExecuteRefreshTask();
-  WaitForIdleTaskQueue();
-  EXPECT_TRUE(refresh_scheduler_.scheduled_run_time.has_value());
-}
-
 TEST_F(FeedApiTest, DoNotRefreshIfSnippetsByDseDisabled) {
   profile_prefs_.SetBoolean(prefs::kEnableSnippetsByDse, false);
-  CreateStream(/*wait_for_initialization=*/true,
-               /*is_new_tab_search_engine_url_android_enabled*/ true);
   stream_->ExecuteRefreshTask();
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(refresh_scheduler_.scheduled_run_time.has_value());
@@ -2502,15 +2492,13 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabledByDse) {
 
   // Turn off the feed, and re-create FeedStream. It should perform a ClearAll.
   profile_prefs_.SetBoolean(feed::prefs::kEnableSnippetsByDse, false);
-  CreateStream(/*wait_for_initialization=*/true,
-               /*is_new_tab_search_engine_url_android_enabled*/ true);
+  CreateStream(/*wait_for_initialization=*/true);
   EXPECT_TRUE(on_clear_all.called());
 
   // Re-create the feed, and verify ClearAll isn't called again.
   on_clear_all.Clear();
   base::HistogramTester histograms;
-  CreateStream(/*wait_for_initialization=*/true,
-               /*is_new_tab_search_engine_url_android_enabled*/ true);
+  CreateStream(/*wait_for_initialization=*/true);
 
   EXPECT_FALSE(on_clear_all.called());
 }

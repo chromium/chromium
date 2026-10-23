@@ -530,9 +530,6 @@ public final class ChromePreferenceKeys {
     public static final String IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE =
             "Chrome.GoogleBottomBar.IsDefaultSearchEngineGoogle";
 
-    /** Whether the device is from an EEA country. */
-    public static final String IS_EEA_CHOICE_COUNTRY = "Chrome.SearchEngine.IsEeaChoiceCountry";
-
     /** Whether the default search engine is Google. */
     public static final String IS_DSE_GOOGLE = "Chrome.SearchEngine.IsDSEGoogle";
 
@@ -1286,7 +1283,6 @@ public final class ChromePreferenceKeys {
                 IN_APP_UPDATE_FAILURE_BACKOFF_TIMESTAMP,
                 IN_APP_UPDATE_RESTART_BACKOFF_TIMESTAMP,
                 IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
-                IS_EEA_CHOICE_COUNTRY,
                 IS_LAST_VISITED_TAB_SRP,
                 IS_DSE_GOOGLE,
                 IS_MVT_VISIBLE,

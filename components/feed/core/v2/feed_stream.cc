@@ -552,11 +552,10 @@ bool FeedStream::IsEnabledAndVisible() {
 
 bool FeedStream::IsFeedEnabledByDse() {
 #if BUILDFLAG(IS_ANDROID)
-  if (chrome_info_.is_new_tab_search_engine_url_android_enabled) {
-    return snippets_enabled_by_dse_.GetValue();
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
+  return snippets_enabled_by_dse_.GetValue();
+#else
   return true;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void FeedStream::EnabledPreferencesChanged() {

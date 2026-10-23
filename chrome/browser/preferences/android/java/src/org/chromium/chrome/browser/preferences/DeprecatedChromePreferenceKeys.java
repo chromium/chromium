@@ -93,6 +93,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageCohort",
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
                 "Chrome.SafetyCheck.RunCounter",
+                "Chrome.SearchEngine.IsEeaChoiceCountry",
                 "Chrome.SearchResumptionModule.Collapse",
                 "Chrome.Segmentation.ShowQueryTiles",
                 "Chrome.SigninPromo.NTPImpressions",

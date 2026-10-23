@@ -952,14 +952,10 @@ void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetch_image_call_count_++;
 }
 
-void FeedApiTest::CreateStream(
-    bool wait_for_initialization,
-    bool is_new_tab_search_engine_url_android_enabled) {
+void FeedApiTest::CreateStream(bool wait_for_initialization) {
   ChromeInfo chrome_info;
   chrome_info.channel = version_info::Channel::STABLE;
   chrome_info.version = base::Version({99, 1, 9911, 2});
-  chrome_info.is_new_tab_search_engine_url_android_enabled =
-      is_new_tab_search_engine_url_android_enabled;
   chrome_info.user_feedback_allowed_pref_key = kFeedbackAllowedPref;
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
