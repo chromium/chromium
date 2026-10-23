@@ -1746,6 +1746,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NE(body, nullptr);
   const std::string* reason = body->FindString("reason");
   const std::optional<bool> is_top_level = body->FindBool("is_top_level");
+  const std::string* visibility_state = body->FindString("visibility_state");
 
   ASSERT_NE(type, nullptr);
   EXPECT_EQ(*type, "crash");
@@ -1756,8 +1757,61 @@ IN_PROC_BROWSER_TEST_P(
   if (GetParam()) {
     ASSERT_TRUE(is_top_level.has_value());
     EXPECT_FALSE(*is_top_level);
+    ASSERT_NE(visibility_state, nullptr);
+    EXPECT_EQ(*visibility_state, "visible");
   } else {
     EXPECT_EQ(is_top_level, std::nullopt);
+    EXPECT_EQ(visibility_state, nullptr);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
+                       DISABLED_ON_ASAN(CrashReportHiddenCrossOriginIframe)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(NavigateToURL(
+      contents, server()->GetURL(kCrossOriginHost, "/iframe.html")));
+
+  GURL iframe_url = server()->GetURL(
+      kReportingHost,
+      base::StrCat({"/set-header?", GetAppropriateReportingHeader()}));
+  ASSERT_TRUE(NavigateIframeToURL(contents, "test", iframe_url));
+
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+
+  // Hide the page before the cross-origin iframe crashes.
+  contents->WasHidden();
+  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetVisibilityState(),
+            content::PageVisibilityState::kHidden);
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(
+      subframe->GetProcess());
+  subframe->GetProcess()->Shutdown(content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  ASSERT_FALSE(response.empty());
+  const base::DictValue& report = response.begin()->GetDict();
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::optional<bool> is_top_level = body->FindBool("is_top_level");
+  const std::string* visibility_state = body->FindString("visibility_state");
+
+  if (GetParam()) {
+    ASSERT_TRUE(is_top_level.has_value());
+    EXPECT_FALSE(*is_top_level);
+    ASSERT_NE(visibility_state, nullptr);
+    EXPECT_EQ(*visibility_state, "hidden");
+  } else {
+    EXPECT_EQ(is_top_level, std::nullopt);
+    EXPECT_EQ(visibility_state, nullptr);
   }
 }
 

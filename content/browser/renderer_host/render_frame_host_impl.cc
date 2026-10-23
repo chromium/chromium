@@ -4693,6 +4693,17 @@ void RenderFrameHostImpl::RenderProcessGone(
           ? PrerenderFinalStatus::kRendererProcessCrashed
           : PrerenderFinalStatus::kRendererProcessKilled));
 
+  // Generate crash reports for this frame and any descendant frames hosted in
+  // the crashed process before `owned_render_widget_host_->RendererExited()`
+  // resets the widget's visibility state, and before `ResetChildren()` and
+  // `RenderFrameDeleted()` destroy descendant frames (and expire their
+  // reporting sources in `~RenderFrameHostImpl()`).
+  ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
+    if (rfh->site_instance_->group() == site_instance_group) {
+      rfh->MaybeGenerateCrashReport(info);
+    }
+  });
+
   if (owned_render_widget_host_) {
     owned_render_widget_host_->RendererExited();
   }
@@ -4719,16 +4730,6 @@ void RenderFrameHostImpl::RenderProcessGone(
   }
 
   ++renderer_exit_count_;
-
-  // Generate crash reports for this frame and any descendant frames hosted in
-  // the crashed process before `ResetChildren()` and `RenderFrameDeleted()`
-  // destroy them (and expire their reporting sources in
-  // `~RenderFrameHostImpl()`).
-  ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
-    if (rfh->site_instance_->group() == site_instance_group) {
-      rfh->MaybeGenerateCrashReport(info);
-    }
-  });
 
   // When a frame's process dies, its RenderFrame no longer exists, which means
   // that its child frames must be cleaned up as well.
