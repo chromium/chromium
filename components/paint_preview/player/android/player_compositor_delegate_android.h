@@ -30,6 +30,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       bool j_main_frame_mode,
       const base::android::JavaRef<jobject>& j_compositor_error_callback,
       bool j_is_low_mem);
+  ~PlayerCompositorDelegateAndroid() override;
 
   void OnCompositorReady(
       CompositorStatus compositor_status,
@@ -67,8 +68,6 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   // Called to set if compression should happen at close time.
   void SetCompressOnClose(JNIEnv* env, bool compress_on_close);
 
-  void Destroy(JNIEnv* env);
-
   static void CompositeResponseFramesToVectors(
       const base::flat_map<base::UnguessableToken, mojom::FrameDataPtr>& frames,
       std::vector<base::UnguessableToken>* all_guids,
@@ -79,8 +78,6 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       std::vector<int>* subframe_rects);
 
  private:
-  ~PlayerCompositorDelegateAndroid() override;
-
   void OnJavaBitmapCallback(
       const base::android::ScopedJavaGlobalRef<jobject>& j_bitmap_callback,
       base::OnceClosure&& error_callback,

@@ -23,6 +23,7 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/player/android/convert_to_java_bitmap.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -44,7 +45,8 @@ constexpr size_t kMaxParallelBitmapRequestsLowMemory = 2;
 
 }  // namespace
 
-static int64_t JNI_PlayerCompositorDelegateImpl_Initialize(
+static jni_zero::JniUniquePtr<PlayerCompositorDelegateAndroid>
+JNI_PlayerCompositorDelegateImpl_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& j_object,
     int64_t paint_preview_service,
@@ -55,13 +57,11 @@ static int64_t JNI_PlayerCompositorDelegateImpl_Initialize(
     const JavaRef<jobject>& j_compositor_error_callback,
     bool j_is_low_mem) {
   TRACE_EVENT0("paint_preview", "JNI_PlayerCompositorDelegateImpl_Initialize");
-  PlayerCompositorDelegateAndroid* delegate =
-      new PlayerCompositorDelegateAndroid(
-          env, j_object,
-          reinterpret_cast<PaintPreviewBaseService*>(paint_preview_service),
-          j_capture_result_ptr, j_url_spec, j_directory_key, j_main_frame_mode,
-          j_compositor_error_callback, j_is_low_mem);
-  return reinterpret_cast<intptr_t>(delegate);
+  return jni_zero::MakeUnique<PlayerCompositorDelegateAndroid>(
+      env, j_object,
+      reinterpret_cast<PaintPreviewBaseService*>(paint_preview_service),
+      j_capture_result_ptr, j_url_spec, j_directory_key, j_main_frame_mode,
+      j_compositor_error_callback, j_is_low_mem);
 }
 
 PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
@@ -302,10 +302,6 @@ void PlayerCompositorDelegateAndroid::SetCompressOnClose(
     JNIEnv* env,
     bool compress_on_close) {
   PlayerCompositorDelegate::SetCompressOnClose(compress_on_close);
-}
-
-void PlayerCompositorDelegateAndroid::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 PlayerCompositorDelegateAndroid::~PlayerCompositorDelegateAndroid() = default;

@@ -11,7 +11,10 @@ import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -30,10 +33,14 @@ import org.chromium.url.GURL;
 @JNINamespace("paint_preview")
 @NullMarked
 public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
+    @JniType("::paint_preview::PlayerCompositorDelegateAndroid")
+    interface NativePlayerCompositorDelegateAndroid extends JniTypeToken {}
+
     private static final int LOW_MEMORY_THRESHOLD_KB = 2048;
 
     private final CompositorListener mCompositorListener;
-    private long mNativePlayerCompositorDelegate;
+    private @Nullable JniUniquePtr<NativePlayerCompositorDelegateAndroid>
+            mNativePlayerCompositorDelegate;
 
     public PlayerCompositorDelegateImpl(
             NativePaintPreviewServiceProvider service,
@@ -60,7 +67,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
             TraceEvent.end("PlayerCompositorDelegateImplJni.initialize()");
         }
         // TODO(crbug.com/40106234): Handle initialization errors when
-        // mNativePlayerCompositorDelegate == 0.
+        // mNativePlayerCompositorDelegate == null.
     }
 
     @CalledByNative
@@ -93,7 +100,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
             float scaleFactor,
             Callback<Bitmap> bitmapCallback,
             Runnable errorCallback) {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return -1;
         }
 
@@ -121,7 +128,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public boolean cancelBitmapRequest(int requestId) {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return false;
         }
 
@@ -131,7 +138,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public void cancelAllBitmapRequests() {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return;
         }
 
@@ -141,7 +148,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public @Nullable GURL onClick(UnguessableToken frameGuid, int x, int y) {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return null;
         }
 
@@ -155,7 +162,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public Point getRootFrameOffsets() {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return new Point();
         }
 
@@ -167,7 +174,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public void setCompressOnClose(boolean compressOnClose) {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return;
         }
 
@@ -177,17 +184,17 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @Override
     public void destroy() {
-        if (mNativePlayerCompositorDelegate == 0) {
+        if (mNativePlayerCompositorDelegate == null) {
             return;
         }
 
-        PlayerCompositorDelegateImplJni.get().destroy(mNativePlayerCompositorDelegate);
-        mNativePlayerCompositorDelegate = 0;
+        mNativePlayerCompositorDelegate.destroy();
+        mNativePlayerCompositorDelegate = null;
     }
 
     @NativeMethods
     interface Natives {
-        long initialize(
+        JniUniquePtr<NativePlayerCompositorDelegateAndroid> initialize(
                 PlayerCompositorDelegateImpl caller,
                 long nativePaintPreviewBaseService,
                 long captureResultPtr,
@@ -197,10 +204,8 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
                 Callback<Integer> compositorErrorCallback,
                 boolean isLowMemory);
 
-        void destroy(long nativePlayerCompositorDelegateAndroid);
-
         int requestBitmap(
-                long nativePlayerCompositorDelegateAndroid,
+                JniPtr<NativePlayerCompositorDelegateAndroid> self,
                 @JniType("std::optional<base::UnguessableToken>")
                         @Nullable UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback,
@@ -211,20 +216,21 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
                 int clipWidth,
                 int clipHeight);
 
-        boolean cancelBitmapRequest(long nativePlayerCompositorDelegateAndroid, int requestId);
+        boolean cancelBitmapRequest(
+                JniPtr<NativePlayerCompositorDelegateAndroid> self, int requestId);
 
-        void cancelAllBitmapRequests(long nativePlayerCompositorDelegateAndroid);
+        void cancelAllBitmapRequests(JniPtr<NativePlayerCompositorDelegateAndroid> self);
 
         String onClick(
-                long nativePlayerCompositorDelegateAndroid,
+                JniPtr<NativePlayerCompositorDelegateAndroid> self,
                 @JniType("std::optional<base::UnguessableToken>")
                         @Nullable UnguessableToken frameGuid,
                 int x,
                 int y);
 
-        int[] getRootFrameOffsets(long nativePlayerCompositorDelegateAndroid);
+        int[] getRootFrameOffsets(JniPtr<NativePlayerCompositorDelegateAndroid> self);
 
         void setCompressOnClose(
-                long nativePlayerCompositorDelegateAndroid, boolean compressOnClose);
+                JniPtr<NativePlayerCompositorDelegateAndroid> self, boolean compressOnClose);
     }
 }
