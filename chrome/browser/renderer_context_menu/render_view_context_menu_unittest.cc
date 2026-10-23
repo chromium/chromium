@@ -3814,6 +3814,22 @@ TEST_F(RenderViewContextMenuOrderTest, VideoMenu_Order) {
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, AudioMenu_Order) {
+  content::ContextMenuParams params = CreateParams(MenuItem::AUDIO);
+  params.page_url = GURL("https://www.example.com/");
+  params.media_flags = blink::ContextMenuData::kMediaCanSave |
+                       blink::ContextMenuData::kMediaHasAudio;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_CONTENT_CONTEXT_LOOP, IDC_CONTENT_CONTEXT_CONTROLS, kSeparatorId,
+          IDC_CONTENT_CONTEXT_OPENAVNEWTAB, IDC_CONTENT_CONTEXT_SAVEAVAS,
+          IDC_CONTENT_CONTEXT_COPYAVLOCATION, IDC_ROUTE_MEDIA, kSeparatorId,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
