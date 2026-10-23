@@ -67,7 +67,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
         ExtensionControlHandler.setFactoryForTesting(() -> mMockExtensionControlHandler);

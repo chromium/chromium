@@ -548,7 +548,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         var profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
+                        RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
         clearInvocations(mObserverMock);
@@ -571,7 +571,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         var profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
+                        RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
         clearInvocations(mObserverMock);
@@ -580,7 +580,7 @@ public class ProfileDataCacheUnitTest {
         BadgeConfig badgeConfig =
                 BadgeConfig.create(R.drawable.ic_error_24dp)
                         .withDefaultSizeChildAccountConfig()
-                        .build(RuntimeEnvironment.application.getApplicationContext());
+                        .build(RuntimeEnvironment.getApplication().getApplicationContext());
         profileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), badgeConfig);
         var primaryAccountProfileData = profileDataCache.getById(TestAccounts.ACCOUNT1.getId());
 

@@ -79,7 +79,7 @@ public class NativeMessagingConnectionTest {
 
     @Before
     public void setUp() throws RemoteException {
-        mTestContext = new TestContext(RuntimeEnvironment.application);
+        mTestContext = new TestContext(RuntimeEnvironment.getApplication());
         ContextUtils.initApplicationContextForTests(mTestContext);
 
         IExtensionNativeMessagePort mockPort = Mockito.mock(IExtensionNativeMessagePort.class);

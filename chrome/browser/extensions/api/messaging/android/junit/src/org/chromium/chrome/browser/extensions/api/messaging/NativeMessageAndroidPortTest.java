@@ -141,7 +141,7 @@ public class NativeMessageAndroidPortTest {
     public void setUp() {
         NativeMessagingManagerJni.setInstanceForTesting(mNativeMessagingManagerJni);
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mTestContext = new TestContext(RuntimeEnvironment.application);
+        mTestContext = new TestContext(RuntimeEnvironment.getApplication());
         ContextUtils.initApplicationContextForTests(mTestContext);
 
         mFakeBrowserService =

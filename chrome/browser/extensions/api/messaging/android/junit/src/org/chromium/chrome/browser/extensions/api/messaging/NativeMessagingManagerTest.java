@@ -128,7 +128,7 @@ public class NativeMessagingManagerTest {
     public void setUp() {
         NativeMessagingManagerJni.setInstanceForTesting(mNativeMessagingManagerJni);
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mTestContext = new TestContext(RuntimeEnvironment.application);
+        mTestContext = new TestContext(RuntimeEnvironment.getApplication());
         mTestContext.setPackageManager(mMockPackageManager);
         ContextUtils.initApplicationContextForTests(mTestContext);
         mManager = NativeMessagingManager.getForProfile(mProfile);
