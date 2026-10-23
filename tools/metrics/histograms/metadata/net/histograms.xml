@@ -8074,19 +8074,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
-    expires_after="2025-06-22">
-  <owner>rodneyding@google.com</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The type of header received for configuring reporting API endpoints,
-    recorded when reporting API headers are successfully parsed.
-
-    Warning: this histogram was expired from 2023-02-18 to 2024-04-09; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Net.Reporting.ReportBodySize" units="KB"
     expires_after="2026-02-21">
   <owner>ricea@chromium.org</owner>
@@ -8121,17 +8108,6 @@ chromium-metrics-reviews@google.com.
     payload containing the reports being prepared for upload to the Reporting
     API. This metric reflects the size of the JSON after filtering based on
     report body size.
-  </summary>
-</histogram>
-
-<histogram name="Net.Reporting.UploadHeaderType"
-    enum="NetReportingUploadHeaderType" expires_after="2025-11-30">
-  <owner>rodneyding@google.com</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The type of header that produced the endpoint used for uploading reports for
-    the Reporting API, recorded when reports have been succesfully uploaded,
-    counted once for each report.
   </summary>
 </histogram>
 

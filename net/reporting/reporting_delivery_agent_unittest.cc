@@ -40,9 +40,6 @@ namespace {
 using base::test::IsJson;
 using testing::Optional;
 
-constexpr char kReportingUploadHeaderTypeHistogram[] =
-    "Net.Reporting.UploadHeaderType";
-
 constexpr size_t kMaxReportBodySizeBytes = 1024;  // 1KB for testing
 
 constexpr std::string CreateStringWithLength(size_t size_bytes) {
@@ -122,24 +119,6 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     EXPECT_TRUE(delivery_timer()->IsRunning());
   }
 
-  // Prime delivery timer with a document report with a endpoint group that
-  // has matching reporting_source.
-  void UploadFirstDocumentReportAndStartTimer() {
-    ReportingEndpointGroupKey dummy_group(
-        kNak_, kDocumentReportingSource_,
-        url::Origin::Create(GURL("https://dummy.test")), "dummy",
-        ReportingTargetType::kDeveloper);
-    SetV1EndpointInCache(dummy_group, kDocumentReportingSource_,
-                         kIsolationInfo_, GURL("https://dummy.test/upload"));
-    AddReport(kDocumentReportingSource_, dummy_group.network_anonymization_key,
-              dummy_group.origin.value().GetURL(), dummy_group.group_name);
-
-    ASSERT_EQ(1u, pending_uploads().size());
-    pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
-    EXPECT_EQ(0u, pending_uploads().size());
-    EXPECT_TRUE(delivery_timer()->IsRunning());
-  }
-
   void SendReportsForSource(base::UnguessableToken reporting_source) {
     delivery_agent()->SendReportsForSource(reporting_source);
   }
@@ -196,7 +175,6 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
 };
 
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
-  base::HistogramTester histograms;
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   AddReport(kEmptyReportingSource_, kNak_, kUrl_, kGroup_);
 
@@ -218,13 +196,6 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 1);
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
-      0);
 
   {
     ReportingEndpoint::Statistics stats =
@@ -238,31 +209,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   // TODO(dcreager): Check that BackoffEntry was informed of success.
 }
 
-TEST_F(ReportingDeliveryAgentTest, ReportToHeaderCountedCorrectly) {
-  base::HistogramTester histograms;
-
-  // Set an endpoint with no reporting source (as if configured with the
-  // Report-To header).
-  ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-
-  // Add and upload a report with an associated source.
-  AddReport(kDocumentReportingSource_, kNak_, kUrl_, kGroup_);
-  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
-
-  // Successful upload should count this as a Report-To delivery, even though
-  // the report itself had a reporting source.
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 1);
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
-      0);
-}
-
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
-  base::HistogramTester histograms;
-
   SetV1EndpointInCache(kDocumentGroupKey_, kDocumentReportingSource_,
                        kIsolationInfo_, kEndpoint_);
   AddReport(kDocumentReportingSource_, kNak_, kUrl_, kGroup_);
@@ -285,13 +232,6 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
-      1);
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 0);
 
   {
     ReportingEndpoint::Statistics stats =
@@ -301,35 +241,6 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
     EXPECT_EQ(1, stats.attempted_reports);
     EXPECT_EQ(1, stats.successful_reports);
   }
-}
-
-TEST_F(ReportingDeliveryAgentTest, UploadHeaderTypeEnumCountPerReport) {
-  UploadFirstDocumentReportAndStartTimer();
-  base::HistogramTester histograms;
-
-  SetV1EndpointInCache(kDocumentGroupKey_, kDocumentReportingSource_,
-                       kIsolationInfo_, kEndpoint_);
-  AddReport(kDocumentReportingSource_, kNak_, kUrl_, kGroup_);
-  AddReport(kDocumentReportingSource_, kNak_, kUrl_, kGroup_);
-
-  // There should be one upload per (NAK, origin, reporting source).
-  EXPECT_TRUE(delivery_timer()->IsRunning());
-  delivery_timer()->Fire();
-
-  ASSERT_EQ(1u, pending_uploads().size());
-  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
-
-  // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
-  cache()->GetReports(&reports);
-  EXPECT_TRUE(reports.empty());
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
-      2);
-  histograms.ExpectBucketCount(
-      kReportingUploadHeaderTypeHistogram,
-      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 0);
 }
 
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {

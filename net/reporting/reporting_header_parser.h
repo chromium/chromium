@@ -29,18 +29,6 @@ std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
 
 class NET_EXPORT ReportingHeaderParser {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // They should also be kept in sync with the NetReportingHeaderType enum
-  // in tools/metrics/histograms/enums.xml
-  enum class ReportingHeaderType {
-    kReportTo = 0,
-    kReportToInvalid = 1,
-    kReportingEndpoints = 2,
-    kReportingEndpointsInvalid = 3,
-    kMaxValue = kReportingEndpointsInvalid,
-  };
-
   ReportingHeaderParser() = delete;
   ReportingHeaderParser(const ReportingHeaderParser&) = delete;
   ReportingHeaderParser& operator=(const ReportingHeaderParser&) = delete;
@@ -63,8 +51,6 @@ class NET_EXPORT ReportingHeaderParser {
       const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);
-
-  static void RecordReportingHeaderType(ReportingHeaderType header_type);
 };
 
 }  // namespace net

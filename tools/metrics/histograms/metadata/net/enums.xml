@@ -1458,18 +1458,6 @@ historical analysis. -->
   <int value="10" label="Discarded: IP address mismatch"/>
 </enum>
 
-<enum name="NetReportingHeaderType">
-  <int value="0" label="Report-To"/>
-  <int value="1" label="Invalid Report-To"/>
-  <int value="2" label="Reporting-Endpoints"/>
-  <int value="3" label="Invalid Reporting-Endpoints"/>
-</enum>
-
-<enum name="NetReportingUploadHeaderType">
-  <int value="0" label="ReportTo"/>
-  <int value="1" label="ReportingEndpoints"/>
-</enum>
-
 <enum name="NetTrustAnchors">
 <!-- Generated from net/data/ssl/root_stores/root_stores.json.
 Called by update_net_trust_anchors.py.-->

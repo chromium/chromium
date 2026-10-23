@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
@@ -268,15 +267,12 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
 
 std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
     const std::string& header) {
-  // Ignore empty header values. Skip logging metric to maintain parity with
-  // ReportingHeaderType::kReportToInvalid.
+  // Ignore empty header values.
   if (header.empty())
     return std::nullopt;
   std::optional<structured_headers::Dictionary> header_dict =
       structured_headers::ParseDictionary(header);
   if (!header_dict) {
-    ReportingHeaderParser::RecordReportingHeaderType(
-        ReportingHeaderParser::ReportingHeaderType::kReportingEndpointsInvalid);
     return std::nullopt;
   }
   base::flat_map<std::string, std::string> parsed_header;
@@ -286,20 +282,11 @@ std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
     const std::string* endpoint_url_string =
         item ? item->item.GetIfString() : nullptr;
     if (!endpoint_url_string) {
-      ReportingHeaderParser::RecordReportingHeaderType(
-          ReportingHeaderParser::ReportingHeaderType::
-              kReportingEndpointsInvalid);
       return std::nullopt;
     }
     parsed_header[entry.first] = *endpoint_url_string;
   }
   return parsed_header;
-}
-
-// static
-void ReportingHeaderParser::RecordReportingHeaderType(
-    ReportingHeaderType header_type) {
-  base::UmaHistogramEnumeration("Net.Reporting.HeaderType", header_type);
 }
 
 // static
@@ -323,17 +310,11 @@ void ReportingHeaderParser::ParseReportToHeader(
     }
   }
 
-  if (parsed_header.empty() && list.size() > 0) {
-    RecordReportingHeaderType(ReportingHeaderType::kReportToInvalid);
-  }
-
   // Remove the client if it has no valid endpoint groups.
   if (parsed_header.empty()) {
     cache->RemoveClient(network_anonymization_key, origin);
     return;
   }
-
-  RecordReportingHeaderType(ReportingHeaderType::kReportTo);
 
   cache->OnParsedHeader(network_anonymization_key, origin,
                         std::move(parsed_header));
@@ -368,11 +349,9 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
   }
 
   if (parsed_header.empty()) {
-    RecordReportingHeaderType(ReportingHeaderType::kReportingEndpointsInvalid);
     return;
   }
 
-  RecordReportingHeaderType(ReportingHeaderType::kReportingEndpoints);
   cache->OnParsedReportingEndpointsHeader(reporting_source, isolation_info,
                                           std::move(parsed_header));
 }

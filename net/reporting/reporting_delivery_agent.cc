@@ -44,13 +44,6 @@ namespace {
 
 using ReportList =
     std::vector<raw_ptr<const ReportingReport, VectorExperimental>>;
-using ReportingUploadHeaderType =
-    ReportingDeliveryAgent::ReportingUploadHeaderType;
-
-void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
-  base::UmaHistogramEnumeration("Net.Reporting.UploadHeaderType", header_type);
-}
-
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
   base::ListValue reports_value;
   const bool can_exclude_report_with_large_body =
@@ -229,13 +222,6 @@ class Delivery {
                                          group_name_and_count.second, success);
     }
     if (success) {
-      ReportingUploadHeaderType upload_type =
-          target_.reporting_source.has_value()
-              ? ReportingUploadHeaderType::kReportingEndpoints
-              : ReportingUploadHeaderType::kReportTo;
-      for (size_t i = 0; i < reports_.size(); ++i) {
-        RecordReportingUploadHeaderType(upload_type);
-      }
       cache->RemoveReports(reports_, /* delivery_success */ true);
     } else {
       cache->IncrementReportsAttempts(reports_);
