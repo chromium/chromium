@@ -2725,8 +2725,14 @@ void FileManagerBrowserTestBase::TearDown() {
 }
 
 void FileManagerBrowserTestBase::StartTest() {
-  ash::SystemWebAppManager::GetForTest(profile())
-      ->InstallSystemAppsForTesting();
+  // Only install the System Web Apps used by FilesAppBrowserTest to avoid the
+  // overhead of installing all ~24 default SWAs in every test.
+  ash::SystemWebAppManager::GetForTest(profile())->InstallSystemAppsForTesting({
+      ash::SystemWebAppType::FILE_MANAGER,
+      ash::SystemWebAppType::MEDIA,
+      ash::SystemWebAppType::SETTINGS,
+      ash::SystemWebAppType::OS_FEEDBACK,
+  });
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
 

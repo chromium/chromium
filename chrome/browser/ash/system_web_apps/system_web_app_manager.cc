@@ -23,6 +23,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -454,6 +455,14 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   base::RunLoop run_loop;
   on_apps_synchronized().Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+}
+
+void SystemWebAppManager::InstallSystemAppsForTesting(
+    base::flat_set<SystemWebAppType> types) {
+  base::EraseIf(system_app_delegates_, [&types](const auto& entry) {
+    return !types.contains(entry.first);
+  });
+  InstallSystemAppsForTesting();
 }
 
 std::optional<webapps::AppId> SystemWebAppManager::GetAppIdForSystemApp(

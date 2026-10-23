@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -118,6 +119,10 @@ class SystemWebAppManager : public KeyedService,
   // This can be called multiple times to simulate reinstallation from system
   // restart.
   void InstallSystemAppsForTesting();
+
+  // Same as `InstallSystemAppsForTesting()`, but only installs the System Web
+  // Apps whose types are in `types`.
+  void InstallSystemAppsForTesting(base::flat_set<SystemWebAppType> types);
 
   // Returns the app id for the given System App |type|.
   std::optional<webapps::AppId> GetAppIdForSystemApp(
