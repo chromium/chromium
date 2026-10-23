@@ -1163,7 +1163,7 @@ PrintRenderFrameHelper::~PrintRenderFrameHelper() = default;
 const mojo::AssociatedRemote<mojom::PrintManagerHost>&
 PrintRenderFrameHelper::GetPrintManagerHost() {
   // We should not make calls back to the host while handling PrintWithParams().
-  DCHECK(!print_with_params_callback_);
+  CHECK(!print_with_params_callback_);
 
   if (!print_manager_host_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
