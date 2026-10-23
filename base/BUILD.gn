@@ -2656,7 +2656,7 @@ if (enable_rust_api_from_cpp) {
     # `//net`, etc) can't use `rust_api_from_cpp` yet.  For more details see
     # the "Caveats" section in `//docs/rust/crubit/README.md`.
     #
-    # TODO(crbug.com/40226863): Remove `visibility` restrictions after Cronet
+    # TODO(https://crbug.com/576651451): Make publicly visible after Cronet
     # supports both Crubit directions.
     visibility = [ "//build/rust/tests/test_rust_api_from_cpp:*" ]
   }
