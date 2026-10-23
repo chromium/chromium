@@ -120,7 +120,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void AppMenuClosed() override;
 
   // ui::EventObserver:
-  // Handles click events and determines if the popup should be deactivated.
+  // Handles click and touch events and determines if the popup should be
+  // deactivated.
   void OnEvent(const ui::Event& event) override;
 
   // Focuses the native Views content, underlying WebContents, and DOM input.
