@@ -4392,7 +4392,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     UpdateId(scope, g_null_atom, id_value);
   }
 
-  const AtomicString& name_value = GetNameAttribute();
+  AtomicString name_value = GetNameAttribute();
   if (!name_value.IsNull()) {
     UpdateName(g_null_atom, name_value);
   }
@@ -4714,7 +4714,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       UpdateId(insertion_point.GetTreeScope(), id_value, g_null_atom);
     }
 
-    const AtomicString& name_value = GetNameAttribute();
+    AtomicString name_value = GetNameAttribute();
     if (!name_value.IsNull()) {
       UpdateName(name_value, g_null_atom);
     }
@@ -12674,15 +12674,15 @@ void Element::CloneAttributesFrom(const Element& other) {
     return;
   }
 
-  const AtomicString& old_id = GetIdAttribute();
-  const AtomicString& new_id = other.GetIdAttribute();
+  AtomicString old_id = GetIdAttribute();
+  AtomicString new_id = other.GetIdAttribute();
 
   if (!old_id.IsNull() || !new_id.IsNull()) {
     UpdateId(old_id, new_id);
   }
 
-  const AtomicString& old_name = GetNameAttribute();
-  const AtomicString& new_name = other.GetNameAttribute();
+  AtomicString old_name = GetNameAttribute();
+  AtomicString new_name = other.GetNameAttribute();
 
   if (!old_name.IsNull() || !new_name.IsNull()) {
     UpdateName(old_name, new_name);
