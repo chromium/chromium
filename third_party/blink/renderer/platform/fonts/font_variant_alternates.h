@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_ALTERNATES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_ALTERNATES_H_
 
-#include <optional>
-
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
@@ -24,25 +22,29 @@ class PLATFORM_EXPORT FontVariantAlternates
     return base::AdoptRef(new FontVariantAlternates());
   }
 
+  // Passing a null AtomicString clears the field.
   void SetStylistic(AtomicString);
   void SetHistoricalForms();
+  // Passing a null AtomicString clears the field.
   void SetSwash(AtomicString);
+  // Passing a null AtomicString clears the field.
   void SetOrnaments(AtomicString);
+  // Passing a null AtomicString clears the field.
   void SetAnnotation(AtomicString);
 
   void SetStyleset(Vector<AtomicString>);
   void SetCharacterVariant(Vector<AtomicString>);
 
   const AtomicString* Stylistic() const {
-    return stylistic_ ? &(*stylistic_) : nullptr;
+    return stylistic_ ? &stylistic_ : nullptr;
   }
   bool HistoricalForms() const { return historical_forms_; }
-  const AtomicString* Swash() const { return swash_ ? &(*swash_) : nullptr; }
+  const AtomicString* Swash() const { return swash_ ? &swash_ : nullptr; }
   const AtomicString* Ornaments() const {
-    return ornaments_ ? &(*ornaments_) : nullptr;
+    return ornaments_ ? &ornaments_ : nullptr;
   }
   const AtomicString* Annotation() const {
-    return annotation_ ? &(*annotation_) : nullptr;
+    return annotation_ ? &annotation_ : nullptr;
   }
 
   const Vector<AtomicString>& Styleset() const { return styleset_; }
@@ -84,10 +86,10 @@ class PLATFORM_EXPORT FontVariantAlternates
   static scoped_refptr<FontVariantAlternates> Clone(
       const FontVariantAlternates& other);
 
-  std::optional<AtomicString> stylistic_ = std::nullopt;
-  std::optional<AtomicString> swash_ = std::nullopt;
-  std::optional<AtomicString> ornaments_ = std::nullopt;
-  std::optional<AtomicString> annotation_ = std::nullopt;
+  AtomicString stylistic_;
+  AtomicString swash_;
+  AtomicString ornaments_;
+  AtomicString annotation_;
 
   Vector<AtomicString> styleset_;
   Vector<AtomicString> character_variant_;
