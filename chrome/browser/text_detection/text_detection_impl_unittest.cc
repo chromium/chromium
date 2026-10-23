@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
@@ -92,7 +91,6 @@ TEST_F(TextDetectionImplTest, ConvertsVisualAnnotationCorrectly) {
 
   auto annotation = screen_ai::mojom::VisualAnnotation::New();
   auto empty_line = screen_ai::mojom::LineBox::New();
-  empty_line->text_line = "";
   empty_line->bounding_box = gfx::Rect(0, 0, 50, 10);
   annotation->lines.push_back(std::move(empty_line));
 
@@ -222,7 +220,6 @@ TEST_F(TextDetectionImplTest,
   auto line = screen_ai::mojom::LineBox::New();
   line->text_line = "Queued Text";
   line->bounding_box = gfx::Rect(10, 10, 50, 20);
-  line->bounding_box_angle = 0.0f;
   annotation->lines.push_back(std::move(line));
   fake_ocr->set_visual_annotation_result(std::move(annotation));
 
@@ -287,7 +284,6 @@ TEST_F(TextDetectionImplTest, ExceedingMaxPendingRequestsReturnsEmpty) {
   auto line = screen_ai::mojom::LineBox::New();
   line->text_line = "Active Text";
   line->bounding_box = gfx::Rect(10, 10, 50, 20);
-  line->bounding_box_angle = 0.0f;
   annotation->lines.push_back(std::move(line));
   fake_ocr->set_visual_annotation_result(std::move(annotation));
 

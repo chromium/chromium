@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TEXT_DETECTION_TEXT_DETECTION_IMPL_H_
 #define CHROME_BROWSER_TEXT_DETECTION_TEXT_DETECTION_IMPL_H_
 
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -80,6 +79,12 @@ class TextDetectionImpl
   void SimulateOcrInitializationForTesting(bool successful);
 
  private:
+  enum class OcrStatus {
+    kPending,
+    kReady,
+    kFailed,
+  };
+
   ~TextDetectionImpl() override;
 
   void DispatchOcrRequest(const SkBitmap& bitmap, DetectCallback callback);
@@ -88,7 +93,7 @@ class TextDetectionImpl
                     screen_ai::mojom::VisualAnnotationPtr visual_annotation);
 
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr_;
-  std::optional<bool> ocr_ready_;
+  OcrStatus ocr_status_ = OcrStatus::kPending;
 
   // Total number of unfinished Detect() requests (including both those queued
   // in `queued_requests_` waiting for OCR initialization and those actively in

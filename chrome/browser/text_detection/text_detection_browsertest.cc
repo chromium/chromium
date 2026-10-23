@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(TextDetectionBrowserTest, CreateAndDetect) {
 INSTANTIATE_TEST_SUITE_P(All,
                          TextDetectionBrowserTest,
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
-                         ::testing::Values(true, false),
+                         ::testing::Bool(),
 #else
     ::testing::Values(false),
 #endif
