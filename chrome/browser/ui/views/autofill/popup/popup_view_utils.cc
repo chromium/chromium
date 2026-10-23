@@ -730,6 +730,10 @@ ui::ElementIdentifier GetAutofillPopupCellElementIdentifier(
   if (feature == &feature_engagement::kIPHAutofillAiValuablesFeature) {
     return PopupViewViews::kAutofillAiValuablesElementId;
   }
+  if (feature ==
+      &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer) {
+    return PopupViewViews::kAutofillAmbientAutofillSpiiDisclaimerElementId;
+  }
   return ui::ElementIdentifier();
 }
 

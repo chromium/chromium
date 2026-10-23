@@ -3040,6 +3040,18 @@ TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
             TestPopupViewViews::kAutofillCreditCardSuggestionEntryElementId);
 }
 
+TEST_F(PopupViewViewsTest, AmbientAutofillSpiiDisclaimerSuggestion_ElementId) {
+  Suggestion suggestion(u"dummy_main_text", SuggestionType::kFillAutofillAi);
+  suggestion.iph_metadata = Suggestion::IPHMetadata(
+      &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer);
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_EQ(
+      GetPopupRowViewAt(0).GetProperty(views::kElementIdentifierKey),
+      TestPopupViewViews::kAutofillAmbientAutofillSpiiDisclaimerElementId);
+}
+
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
 TEST_P(PopupViewViewsTestWithAnySuggestionType, ShowClickTest) {
   CreateAndShowView({type()});

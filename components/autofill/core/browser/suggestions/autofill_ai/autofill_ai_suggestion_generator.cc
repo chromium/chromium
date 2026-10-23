@@ -758,7 +758,6 @@ Suggestion GetSuggestionForEntity(
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillAiValuablesFeature);
   }
-#if BUILDFLAG(IS_ANDROID)
   if (GetPersonalContextSpiiType(entity.type(), entity.record_type()) ==
           EntityInstance::PersonalContextSpiiType::kSpii &&
       base::FeatureList::IsEnabled(
@@ -766,7 +765,6 @@ Suggestion GetSuggestionForEntity(
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer);
   }
-#endif
   return suggestion;
 }
 

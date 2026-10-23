@@ -581,6 +581,19 @@ void MaybeRegisterChromeFeaturePromos(
               143, "vizcay@google.com",
               "Triggered after Wallet autofill suggestions are shown.")));
 
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer,
+          autofill::PopupViewViews::
+              kAutofillAmbientAutofillSpiiDisclaimerElementId,
+          IDS_AUTOFILL_AI_SPII_DISCLAIMER_IPH_BODY,
+          IDS_AUTOFILL_AI_SPII_DISCLAIMER_IPH_BODY_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(148, "vizcay@google.com",
+                       "Triggered when Ambient Autofill suggestions containing "
+                       "sensitive personal info (SPII) are shown.")));
+
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

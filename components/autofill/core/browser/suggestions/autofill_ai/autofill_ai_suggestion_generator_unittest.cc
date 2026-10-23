@@ -3262,21 +3262,38 @@ TEST_F(
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
     PersonalContextSpiiEntities_AttachSpiiDisclaimerIphMetadataWhenFeatureEnabled) {
-  SetEntities({GetPassportEntityInstanceWithRandomGuid(
-      {.record_type = EntityInstance::RecordType::kPersonalContext})});
-  SetForm({PASSPORT_NUMBER});
+  SetEntities(
+      {GetPassportEntityInstanceWithRandomGuid(
+           {.record_type = EntityInstance::RecordType::kPersonalContext}),
+       test::GetDriversLicenseEntityInstanceWithRandomGuid(
+           {.record_type = EntityInstance::RecordType::kPersonalContext}),
+       test::GetNationalIdCardEntityInstance(
+           {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({PASSPORT_NUMBER, DRIVERS_LICENSE_NUMBER, NATIONAL_ID_CARD_NUMBER});
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
-      ElementsAre(
-          EqualsSuggestion(
-              SuggestionType::kFillAutofillAi,
-              &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs)));
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                           &feature_engagement::
+                               kIPH_AutofillAmbientAutofillSpiiDisclaimer)));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(1)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                           &feature_engagement::
+                               kIPH_AutofillAmbientAutofillSpiiDisclaimer)));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(2)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                           &feature_engagement::
+                               kIPH_AutofillAmbientAutofillSpiiDisclaimer)));
 }
 
 TEST_F(
@@ -3289,26 +3306,28 @@ TEST_F(
   SetEntities({GetPassportEntityInstanceWithRandomGuid(
       {.record_type = EntityInstance::RecordType::kPersonalContext})});
   SetForm({PASSPORT_NUMBER});
-  EXPECT_THAT(
-      CreateAutofillAiFillingSuggestions(field(0)),
-      ElementsAre(
-          EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs)));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(
+                  MaybeSuggestedByGeminiTitle(),
+                  EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr)));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        PersonalContextNonSpiiEntities_OmitSpiiDisclaimerIphMetadata) {
-  SetEntities({test::GetVehicleEntityInstanceWithRandomGuid(
-      {.record_type = EntityInstance::RecordType::kPersonalContext})});
-  SetForm({VEHICLE_LICENSE_PLATE});
-  EXPECT_THAT(
-      CreateAutofillAiFillingSuggestions(field(0)),
-      ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kManageAutofillAiTravel)));
+  SetEntities(
+      {test::GetVehicleEntityInstanceWithRandomGuid(
+           {.record_type = EntityInstance::RecordType::kPersonalContext}),
+       GetPassportEntityInstanceWithRandomGuid(
+           {.record_type = EntityInstance::RecordType::kLocal})});
+  SetForm({VEHICLE_LICENSE_PLATE, PASSPORT_NUMBER});
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              TravelSuggestionsAre(
+                  MaybeSuggestedByGeminiTitle(),
+                  EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr)));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(1)),
+              IdentityDocSuggestionsAre(
+                  EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr)));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill

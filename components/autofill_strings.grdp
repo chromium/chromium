@@ -1457,6 +1457,12 @@
   <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_BODY" desc="IPH toast for a suggestion item with an item from Google Wallet.">
     Manage your information or turn these suggestions off in Settings
   </message>
+  <message name="IDS_AUTOFILL_AI_SPII_DISCLAIMER_IPH_BODY" translateable="false" desc="IPH toast shown alongside a suggestion containing sensitive personal information (such as a passport, driver's license, or national ID card) extracted by Gemini, reminding the user to verify the original source before submitting.">
+    Gemini can make mistakes. Hover on the right side of a suggestion to review the original source and make sure the info is accurate.
+  </message>
+  <message name="IDS_AUTOFILL_AI_SPII_DISCLAIMER_IPH_BODY_SCREENREADER" translateable="false" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH toast shown alongside a suggestion containing sensitive personal information extracted by Gemini, reminding the user to verify the original source before submitting.">
+    Gemini can make mistakes. Open suggestion details to review the original source and make sure the info is accurate.
+  </message>
 
   <!-- Save/ Update dialog-->
   <message name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product. This is displayed in some smarter form understanding save and update prompts as a link. Upon clicking the user is taken to a their wallet passes pages. For example the user would see 'Your info is saved to Google Wallet for elisa.beckett@gmail.com'" formatter_data="android_java">

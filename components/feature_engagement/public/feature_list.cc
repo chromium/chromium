@@ -23,7 +23,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPH_AndroidTipsOptInPromo,
     &kIPH_AppLanguagePromo,
     &kIPH_ArchivedTabsAutoDeletePromo,
-    &kIPH_AutofillAmbientAutofillSpiiDisclaimer,
     &kIPH_BlueBubbleCooldownGroup,
     &kIPH_FullscreenSigninPromo,
     &kIPH_InterruptiveIphCooldownGroup,
@@ -363,6 +362,7 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
     // keep-sorted start case=no
+    &kIPH_AutofillAmbientAutofillSpiiDisclaimer,
     &kIPHAutofillAccountNameEmailSuggestionFeature,
     &kIPHAutofillAiValuablesFeature,
     &kIPHAutofillAtMemoryFeature,
