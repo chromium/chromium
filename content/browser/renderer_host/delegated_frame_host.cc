@@ -187,7 +187,13 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
-  const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
+  // Request copy from the smallest LocalSurfaceId for the current embed token
+  // (`SurfaceAggregator` already enforces the layer's `SurfaceRange`), so that
+  // Viz's `TakeCopyOutputRequests` can capture the currently active fallback
+  // surface even if the latest Browser-allocated `local_surface_id_` has not
+  // been submitted by the hidden renderer yet.
+  const viz::SurfaceId surface_id(frame_sink_id_,
+                                  local_surface_id_.ToSmallestId());
   CopyFromCompositingSurfaceInternal(
       src_subrect, output_size, surface_id,
       viz::CopyOutputRequest::ResultFormat::RGBA,
@@ -504,14 +510,12 @@ void DelegatedFrameHost::OptOutFrameEviction() {
 
 void DelegatedFrameHost::DidCopyStaleContent(
     std::unique_ptr<viz::CopyOutputResult> result) {
-  // host may have become visible by the time the request to capture surface is
-  // completed.
-  if (frame_evictor_->visible() || result->IsEmpty())
+  // Host may have become visible or cancelled the pending eviction by the time
+  // the request to capture surface is completed.
+  if (frame_evictor_->visible() ||
+      frame_eviction_state_ != FrameEvictionState::kPendingEvictionRequests) {
     return;
-
-  CHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  CHECK_EQ(result->destination(),
-           viz::CopyOutputResult::Destination::kSharedImage);
+  }
 
 // TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
 // CHECK on CrOS.
@@ -521,6 +525,14 @@ void DelegatedFrameHost::DidCopyStaleContent(
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
   ContinueDelegatedFrameEviction(
       frame_evictor_->CollectSurfaceIdsForEviction());
+
+  if (result->IsEmpty()) {
+    return;
+  }
+
+  CHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  CHECK_EQ(result->destination(),
+           viz::CopyOutputResult::Destination::kSharedImage);
 
   auto transfer_resource = viz::TransferableResource::Make(
       result->GetSharedImage(),

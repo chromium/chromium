@@ -119,9 +119,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, DraggableFramelessWindow) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-// Disabled due to flake. https://crbug.com/40256924
 IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest,
-                       DISABLED_ShouldShowStaleContentOnEviction) {
+                       ShouldShowStaleContentOnEviction) {
   AppWindow* app_window = CreateTestAppWindow("{}");
   // Make sure that a surface gets embedded in the frame evictor of the
   // DelegateFrameHost.
