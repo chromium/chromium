@@ -146,6 +146,9 @@ suite('HistorySearchSubpage', function() {
         learnMoreLink.href,
         loadTimeData.getString('historySearchLearnMoreUrl'));
 
+    // Prevent the link from opening a new tab, which backgrounds the test tab
+    // and slows down remaining test code.
+    learnMoreLink.addEventListener('click', e => e.preventDefault());
     learnMoreLink.click();
     await assertFeatureInteractionMetrics(
         AiPageHistorySearchInteractions.LEARN_MORE_LINK_CLICKED,
