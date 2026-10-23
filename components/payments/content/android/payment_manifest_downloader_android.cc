@@ -18,6 +18,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -114,40 +115,37 @@ void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
                      std::make_unique<DownloadCallback>(jcallback)));
 }
 
-void PaymentManifestDownloaderAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 // Static free function declared and called directly from java.
-// Caller owns the result. Returns 0 on error.
-static int64_t JNI_PaymentManifestDownloader_Init(
+// Caller owns the result. Returns nullptr on error.
+static jni_zero::JniUniquePtr<PaymentManifestDownloaderAndroid>
+JNI_PaymentManifestDownloader_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
     const base::android::JavaRef<jobject>& jrender_frame_host,
     int64_t native_csp_checker_android) {
   if (!jweb_contents || !jrender_frame_host || !native_csp_checker_android) {
-    return 0;
+    return nullptr;
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
-    return 0;
+    return nullptr;
   }
 
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
   if (!render_frame_host) {
-    return 0;
+    return nullptr;
   }
 
-  return reinterpret_cast<int64_t>(new PaymentManifestDownloaderAndroid(
+  return jni_zero::MakeUnique<PaymentManifestDownloaderAndroid>(
       std::make_unique<DeveloperConsoleLogger>(web_contents),
       payments::CSPCheckerAndroid::GetWeakPtr(native_csp_checker_android),
       web_contents->GetBrowserContext()
           ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      render_frame_host->GetWeakDocumentPtr()));
+      render_frame_host->GetWeakDocumentPtr());
 }
 
 // Static free function declared and called directly from java.

@@ -55,9 +55,6 @@ class PaymentManifestDownloaderAndroid {
       const base::android::JavaRef<jobject>& jurl,
       const base::android::JavaRef<jobject>& jcallback);
 
-  // Deletes this object.
-  void Destroy(JNIEnv* env);
-
  private:
   PaymentManifestDownloader downloader_;
 };
