@@ -33,7 +33,6 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
-#include "components/origin_gating/core/checker_id.h"
 #include "components/origin_gating/core/client_tool.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_checker.h"
@@ -333,11 +332,6 @@ class ExecutionEngine : public ToolDelegate,
   }
 
   State state() const { return state_; }
-
-  origin_gating::CheckerId checker_id() const {
-    return origin_gating_registration_ ? origin_gating_registration_->id()
-                                       : origin_gating::CheckerId();
-  }
 
   const origin_gating::OriginGatingChecker& GetOriginGatingChecker() const;
   origin_gating::OriginGatingChecker& GetOriginGatingChecker();
