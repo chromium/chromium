@@ -37,7 +37,7 @@ void ReceiveTextRequest(
     return;
   }
 
-  std::move(cb).Run(text.value());
+  std::move(cb).Run(std::move(text).value());
 }
 
 void ReceiveGenerateContentResponse(
@@ -54,8 +54,8 @@ void ReceiveGenerateContentResponse(
     std::move(cb).Run(base::unexpected(StatusCode::kNoResponse));
     return;
   }
-  std::move(cb).Run(
-      std::move(private_ai_response->generate_content_response()));
+  std::move(cb).Run(std::move(
+      *private_ai_response->mutable_generate_content_response()));
 }
 
 void ReceivePaicMessage(
@@ -72,7 +72,8 @@ void ReceivePaicMessage(
     std::move(cb).Run(base::unexpected(StatusCode::kNoResponse));
     return;
   }
-  std::move(cb).Run(std::move(private_ai_response->paic_response()));
+  std::move(cb).Run(
+      std::move(*private_ai_response->mutable_paic_response()));
 }
 
 }  // namespace
