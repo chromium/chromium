@@ -137,6 +137,35 @@ std::optional<int32_t> FindOpenTabHandleForSessionTabId(
   return std::nullopt;
 }
 
+// An open tab that a restored tab can be resolved to.
+struct OpenTabInfo {
+  int32_t session_id;
+  GURL url;
+  std::string title;
+};
+
+// Returns the open tabs in `browser_window`.
+std::vector<OpenTabInfo> GetOpenTabs(BrowserWindowInterface* browser_window) {
+  std::vector<OpenTabInfo> open_tabs;
+  TabListInterface* tab_list =
+      browser_window ? TabListInterface::From(browser_window) : nullptr;
+  if (!tab_list) {
+    return open_tabs;
+  }
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+    content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+    if (!contents) {
+      continue;
+    }
+    const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents);
+    if (session_id.is_valid()) {
+      open_tabs.push_back({session_id.id(), contents->GetLastCommittedURL(),
+                           base::UTF16ToUTF8(contents->GetTitle())});
+    }
+  }
+  return open_tabs;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void RemoveAttachedTabUnderline(
     std::optional<int32_t> session_tab_id,
@@ -997,19 +1026,48 @@ void ContextualTasksWebContentsUserData::
     return;
   }
 
-  // Save the thread's tabs in the session handle's central
-  // restored tabs tracker:
+  // Save the thread's tabs in the session handle's central restored tabs
+  // tracker. Restored tabs are only kept while their tab is open, so resolve
+  // each one to an open tab in this window and drop the ones that were closed.
+  const std::vector<OpenTabInfo> open_tabs =
+      GetOpenTabs(GetBrowserWindowInterface());
+  const auto is_open = [&open_tabs](int32_t session_id) {
+    return std::ranges::any_of(open_tabs, [session_id](const OpenTabInfo& tab) {
+      return tab.session_id == session_id;
+    });
+  };
   std::vector<contextual_search::TabInfo> restored_tabs;
   for (const auto& resource : committed_context) {
     if (!resource.has_chrome_tab_data) {
       continue;
     }
-    contextual_search::TabInfo tab;
-    if (resource.tab_id.has_value()) {
-      tab.tab_id = resource.tab_id->id();
+    const std::string title = resource.title.value_or("");
+    std::optional<int32_t> tab_id;
+    // The tab matched to this session's submitted context.
+    if (resource.tab_id.has_value() && is_open(resource.tab_id->id())) {
+      tab_id = resource.tab_id->id();
     }
+    // Any open tab showing the same page. This covers reopened threads and
+    // later updates, which cannot match submitted context since its tokens are
+    // cleared below.
+    if (!tab_id.has_value()) {
+      auto open_tab =
+          std::ranges::find_if(open_tabs, [&](const OpenTabInfo& tab) {
+            return session_handle->AreUrlsEquivalent(resource.url, title,
+                                                     tab.url, tab.title);
+          });
+      if (open_tab != open_tabs.end()) {
+        tab_id = open_tab->session_id;
+      }
+    }
+    // The tab was closed, so it is no longer part of the context library.
+    if (!tab_id.has_value()) {
+      continue;
+    }
+    contextual_search::TabInfo tab;
+    tab.tab_id = *tab_id;
     tab.url = resource.url;
-    tab.title = resource.title.value_or("");
+    tab.title = title;
     tab.submitted = true;
 
     restored_tabs.push_back(std::move(tab));

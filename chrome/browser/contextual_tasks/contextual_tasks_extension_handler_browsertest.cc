@@ -63,6 +63,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -3255,17 +3256,55 @@ class ContextualTasksExtensionHandlerContextLibraryBrowserTest
     message.SerializeToArray(serialized_message.data(), size);
     handler_->OnWebviewMessage(serialized_message, std::nullopt);
   }
+
+  // Opens `url` in a background tab, so `web_contents_` stays active, and
+  // returns the new tab's session ID. Restored tabs are only kept while their
+  // tab is open.
+  SessionID OpenBackgroundTab(const GURL& url) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    for (tabs::TabInterface* tab :
+         TabListInterface::From(browser())->GetAllTabs()) {
+      if (tab->GetContents()->GetLastCommittedURL() == url) {
+        return sessions::SessionTabHelper::IdForTab(tab->GetContents());
+      }
+    }
+    ADD_FAILURE() << "No open tab for " << url;
+    return SessionID::InvalidValue();
+  }
+
+  // Closes the tab with `session_id` and waits for it to be destroyed.
+  void CloseTab(SessionID session_id) {
+    for (tabs::TabInterface* tab :
+         TabListInterface::From(browser())->GetAllTabs()) {
+      if (sessions::SessionTabHelper::IdForTab(tab->GetContents()) ==
+          session_id) {
+        content::WebContentsDestroyedWatcher destroyed_watcher(
+            tab->GetContents());
+        TabListInterface::From(browser())->CloseTab(tab->GetHandle());
+        destroyed_watcher.Wait();
+        return;
+      }
+    }
+    ADD_FAILURE() << "No open tab for session ID " << session_id.id();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerContextLibraryBrowserTest,
     OnWebviewMessage_UpdateThreadContextLibrary_SetsRestoredTabsWhenEmpty) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("/title2.html");
+  const SessionID tab_a = OpenBackgroundTab(url_a);
+  const SessionID tab_b = OpenBackgroundTab(url_b);
   handler_->SetTaskId(base::Uuid::GenerateRandomV4());
   ASSERT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary library;
-  AddWebpageContext(library, 1, "https://example.com/a", "Tab A");
-  AddWebpageContext(library, 2, "https://example.com/b", "Tab B");
+  AddWebpageContext(library, 1, url_a.spec(), "Tab A");
+  AddWebpageContext(library, 2, url_b.spec(), "Tab B");
   // Non-tab contexts should not be added as restored tabs.
   auto* pdf_context = library.add_contexts();
   pdf_context->set_context_id(3);
@@ -3274,13 +3313,16 @@ IN_PROC_BROWSER_TEST_F(
 
   SendUpdateThreadContextLibrary(library);
 
+  // Restored tabs are resolved to the open tabs showing their URLs.
   const auto& restored = mock_session_handle_->GetTabContextState().restored;
   ASSERT_EQ(restored.size(), 2u);
-  EXPECT_EQ(restored[0].url, GURL("https://example.com/a"));
+  EXPECT_EQ(restored[0].tab_id, tab_a.id());
+  EXPECT_EQ(restored[0].url, url_a);
   EXPECT_EQ(restored[0].title, "Tab A");
   EXPECT_TRUE(restored[0].restored_from_aim);
   EXPECT_TRUE(restored[0].submitted);
-  EXPECT_EQ(restored[1].url, GURL("https://example.com/b"));
+  EXPECT_EQ(restored[1].tab_id, tab_b.id());
+  EXPECT_EQ(restored[1].url, url_b);
   EXPECT_EQ(restored[1].title, "Tab B");
   EXPECT_TRUE(restored[1].restored_from_aim);
   EXPECT_TRUE(restored[1].submitted);
@@ -3289,27 +3331,92 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerContextLibraryBrowserTest,
     OnWebviewMessage_UpdateThreadContextLibrary_ReplacesOldRestoredTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("/title2.html");
+  const GURL url_c = embedded_test_server()->GetURL("/title3.html");
+  const SessionID tab_a = OpenBackgroundTab(url_a);
+  OpenBackgroundTab(url_b);
+  const SessionID tab_c = OpenBackgroundTab(url_c);
   handler_->SetTaskId(base::Uuid::GenerateRandomV4());
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary first_library;
-  AddWebpageContext(first_library, 1, "https://example.com/a", "Tab A");
-  AddWebpageContext(first_library, 2, "https://example.com/b", "Tab B");
+  AddWebpageContext(first_library, 1, url_a.spec(), "Tab A");
+  AddWebpageContext(first_library, 2, url_b.spec(), "Tab B");
   SendUpdateThreadContextLibrary(first_library);
   ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 2u);
 
   // A later restored tabs update replaces the restored tabs with the server's
   // latest list, in server order.
   lens::SearchToClientMessage::UpdateThreadContextLibrary second_library;
-  AddWebpageContext(second_library, 3, "https://example.com/c", "Tab C");
-  AddWebpageContext(second_library, 1, "https://example.com/a", "Tab A");
+  AddWebpageContext(second_library, 3, url_c.spec(), "Tab C");
+  AddWebpageContext(second_library, 1, url_a.spec(), "Tab A");
   SendUpdateThreadContextLibrary(second_library);
 
   const auto& restored = mock_session_handle_->GetTabContextState().restored;
   ASSERT_EQ(restored.size(), 2u);
-  EXPECT_EQ(restored[0].url, GURL("https://example.com/c"));
+  EXPECT_EQ(restored[0].tab_id, tab_c.id());
+  EXPECT_EQ(restored[0].url, url_c);
   EXPECT_EQ(restored[0].title, "Tab C");
-  EXPECT_EQ(restored[1].url, GURL("https://example.com/a"));
+  EXPECT_EQ(restored[1].tab_id, tab_a.id());
+  EXPECT_EQ(restored[1].url, url_a);
   EXPECT_EQ(restored[1].title, "Tab A");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_KeepsOpenTabsAndDropsClosedTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL open_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL submitted_url = embedded_test_server()->GetURL("/title2.html");
+  const SessionID open_tab = OpenBackgroundTab(open_url);
+  const SessionID submitted_tab = OpenBackgroundTab(submitted_url);
+  handler_->SetTaskId(base::Uuid::GenerateRandomV4());
+
+  // The first update matches context 2 to the tab submitted in this session,
+  // even though that tab no longer shows the server's URL. Later updates find
+  // no submitted context, since its tokens get cleared.
+  base::UnguessableToken submitted_token = base::UnguessableToken::Create();
+  mock_session_handle_->SetSubmittedContextTokens({submitted_token});
+  contextual_search::FileInfo submitted_file;
+  submitted_file.file_token = submitted_token;
+  submitted_file.tab_session_id = submitted_tab;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(2);
+  submitted_file.request_id = req_id;
+  EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
+      .WillOnce(
+          Return(std::vector<contextual_search::FileInfo>{submitted_file}))
+      .WillRepeatedly(Return(std::vector<contextual_search::FileInfo>()));
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary library;
+  // Matched to an open tab by URL.
+  AddWebpageContext(library, 1, open_url.spec(), "Open Tab");
+  // Matched to the submitted tab, whose URL no longer matches the server's.
+  AddWebpageContext(library, 2, "https://example.com/navigated", "Submitted");
+  // Not open in any tab.
+  AddWebpageContext(library, 3, "https://example.com/closed", "Closed Tab");
+  SendUpdateThreadContextLibrary(library);
+  {
+    const auto& restored = mock_session_handle_->GetTabContextState().restored;
+    ASSERT_EQ(restored.size(), 2u);
+    EXPECT_EQ(restored[0].tab_id, open_tab.id());
+    EXPECT_EQ(restored[1].tab_id, submitted_tab.id());
+  }
+
+  // Later updates only match tabs that still show the page, so the submitted
+  // tab, which no longer does, is dropped.
+  SendUpdateThreadContextLibrary(library);
+  {
+    const auto& restored = mock_session_handle_->GetTabContextState().restored;
+    ASSERT_EQ(restored.size(), 1u);
+    EXPECT_EQ(restored[0].tab_id, open_tab.id());
+  }
+
+  // Once its tab is closed, the next update drops the restored tab.
+  CloseTab(open_tab);
+  SendUpdateThreadContextLibrary(library);
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3328,7 +3435,7 @@ IN_PROC_BROWSER_TEST_F(
 
   contextual_search::FileInfo submitted_file;
   submitted_file.file_token = submitted_token;
-  submitted_file.tab_session_id = SessionID::FromSerializedValue(42);
+  submitted_file.tab_session_id = active_tab_id;
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(101);
   submitted_file.request_id = req_id;
@@ -3351,7 +3458,7 @@ IN_PROC_BROWSER_TEST_F(
   // The matching submitted FileInfo populates `tab_id` on the restored tab.
   const auto& restored = mock_session_handle_->GetTabContextState().restored;
   ASSERT_EQ(restored.size(), 1u);
-  EXPECT_EQ(restored[0].tab_id, 42);
+  EXPECT_EQ(restored[0].tab_id, active_tab_id.id());
   EXPECT_EQ(restored[0].url, GURL("https://example.com/a"));
   EXPECT_EQ(restored[0].title, "Tab A");
 
@@ -3364,7 +3471,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(resources.size(), 2u);
   EXPECT_EQ(resources[0].url, GURL("https://example.com/a"));
   EXPECT_EQ(resources[0].title, "Tab A");
-  EXPECT_EQ(resources[0].tab_id, SessionID::FromSerializedValue(42));
+  EXPECT_EQ(resources[0].tab_id, active_tab_id);
   EXPECT_TRUE(resources[0].has_chrome_tab_data);
   EXPECT_EQ(resources[1].url, GURL("https://example.com/doc.pdf"));
   EXPECT_EQ(resources[1].title, "Doc");
@@ -3381,10 +3488,13 @@ IN_PROC_BROWSER_TEST_F(
   SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
   tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
   handler_->SetTaskId(task.GetTaskId());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  OpenBackgroundTab(url_a);
 
   // Seed existing restored tabs and submitted tokens.
   lens::SearchToClientMessage::UpdateThreadContextLibrary initial_library;
-  AddWebpageContext(initial_library, 1, "https://example.com/a", "Tab A");
+  AddWebpageContext(initial_library, 1, url_a.spec(), "Tab A");
   SendUpdateThreadContextLibrary(initial_library);
   ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
 
@@ -3417,9 +3527,13 @@ IN_PROC_BROWSER_TEST_F(
   // Like the side panel: only the helper has the task id.
   ASSERT_TRUE(ContextualSearchWebContentsHelper::FromWebContents(web_contents_)
                   ->GetSessionForTask(task.GetTaskId()));
+  // Restored tabs are only kept while their tab is open.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  OpenBackgroundTab(url_a);
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary library;
-  AddWebpageContext(library, 1, "https://example.com/a", "Tab A");
+  AddWebpageContext(library, 1, url_a.spec(), "Tab A");
   SendUpdateThreadContextLibrary(library);
 
   ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
@@ -3427,8 +3541,7 @@ IN_PROC_BROWSER_TEST_F(
       tasks_service->GetContextualTaskForTab(active_tab_id);
   ASSERT_TRUE(updated_task.has_value());
   ASSERT_EQ(updated_task->GetUrlResources().size(), 1u);
-  EXPECT_EQ(updated_task->GetUrlResources()[0].url,
-            GURL("https://example.com/a"));
+  EXPECT_EQ(updated_task->GetUrlResources()[0].url, url_a);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5314,6 +5427,41 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   EXPECT_EQ(tracker->GetFirstMatchingElement(kContextualTasksFaviconsElementId,
                                              context),
             nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       PersistedTabs_ShownInContextLibrary) {
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  const int32_t active_tab_handle_id = active_tab->GetHandle().raw_value();
+
+  contextual_search::FileInfo persisted_file_info;
+  persisted_file_info.file_token = token;
+  persisted_file_info.tab_session_id = active_tab_id;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(555);
+  persisted_file_info.request_id = req_id;
+  ON_CALL(*mock_controller_, GetFileInfo(token))
+      .WillByDefault(Return(&persisted_file_info));
+
+  // Persisted tabs are keyed by session ID, but are sent to the frontend by
+  // tab handle ID, which it uses to identify tabs.
+  base::RunLoop tab_context_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->tab_id, active_tab_handle_id);
+        EXPECT_THAT(submitted_tab_ids,
+                    testing::ElementsAre(active_tab_handle_id));
+        tab_context_run_loop.Quit();
+      });
+
+  mock_session_handle_->SetPersistedTabs({{active_tab_id, {token, req_id}}});
+  tab_context_run_loop.Run();
 }
 
 }  // namespace contextual_tasks
