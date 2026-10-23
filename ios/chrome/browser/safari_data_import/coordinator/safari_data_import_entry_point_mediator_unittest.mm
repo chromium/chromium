@@ -26,8 +26,7 @@
 class SafariDataImportEntryPointMediatorTest : public PlatformTest {
  public:
   SafariDataImportEntryPointMediatorTest() : PlatformTest() {
-    feature_engagement::test::ScopedIphFeatureList list;
-    list.InitAndEnableFeatures(
+    list_.InitAndEnableFeatures(
         {feature_engagement::kIPHiOSSafariImportFeature});
 
     ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
@@ -47,10 +46,10 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
     // Set a consistent start time for the mock clock to avoid midnight issues.
     base::Time next_day = base::Time::Now() + base::Days(1);
     base::Time::Exploded exploded;
-    next_day.LocalExplode(&exploded);
+    next_day.UTCExplode(&exploded);
     exploded.hour = 0;
     base::Time mock_start_time;
-    EXPECT_TRUE(base::Time::FromLocalExploded(exploded, &mock_start_time));
+    EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &mock_start_time));
     task_environment_.FastForwardBy(mock_start_time - base::Time::Now());
   }
 
@@ -63,6 +62,7 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
   }
 
  protected:
+  feature_engagement::test::ScopedIphFeatureList list_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   SceneState* scene_state_;
@@ -73,9 +73,8 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
 };
 
 // Tests that the Safari import reminder is registered on request.
-// TODO(crbug.com/522679300): disable as it fails when run locally.
 TEST_F(SafariDataImportEntryPointMediatorTest,
-       DISABLED_TestRegisterSafariImportReminder) {
+       TestRegisterSafariImportReminder) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
                   promos_manager::Promo::SafariImportRemindMeLater));
