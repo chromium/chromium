@@ -8,10 +8,13 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/video_codecs.h"
@@ -424,6 +427,55 @@ TEST_F(OpenscreenFrameSenderTest, RejectedFrameDoesNotCorruptState) {
   frame2->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
             video_sender().EnqueueFrame(std::move(frame2)));
+}
+
+// Each accepted frame gets a transport slice named for its media type. The
+// slice ends when the frame is canceled, usually because the Receiver ACKed it.
+TEST_F(OpenscreenFrameSenderTest, TracesEachFrameUntilItIsCanceled) {
+  base::test::TracingEnvironment tracing_environment;
+  base::test::TestTraceProcessor trace_processor;
+  trace_processor.StartTrace("cast.stream");
+
+  const auto make_key_frame = [](size_t payload_bytes) {
+    auto frame = std::make_unique<SenderEncodedFrame>();
+    frame->is_key_frame = true;
+    frame->frame_id = FrameId::first();
+    frame->referenced_frame_id = frame->frame_id;
+    frame->reference_time = base::TimeTicks::Now();
+    frame->rtp_timestamp = RtpTimeTicks{100};
+    frame->data = base::HeapArray<uint8_t>::WithSize(payload_bytes);
+    return frame;
+  };
+
+  // Audio goes first. The video slice must still be named for video.
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            audio_sender().EnqueueFrame(make_key_frame(20)));
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(make_key_frame(1000)));
+
+  // The Receiver ACKs the video frame. The audio frame stays in flight.
+  mock_video_sender().observer()->OnFrameCanceled(FrameId::first());
+
+  const absl::Status status = trace_processor.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  const auto result = trace_processor.RunQuery(R"(
+    SELECT
+      name,
+      dur >= 0 AS ended,
+      extract_arg(arg_set_id, 'debug.payload_bytes') AS payload_bytes,
+      extract_arg(arg_set_id, 'debug.is_key_frame') AS is_key_frame
+    FROM slice
+    WHERE category = 'cast.stream'
+    ORDER BY name
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(
+      result.value(),
+      testing::ElementsAre(
+          std::vector<std::string>{"name", "ended", "payload_bytes",
+                                   "is_key_frame"},
+          std::vector<std::string>{"Audio Transport", "0", "20", "1"},
+          std::vector<std::string>{"Video Transport", "1", "1000", "1"}));
 }
 
 }  // namespace media::cast
