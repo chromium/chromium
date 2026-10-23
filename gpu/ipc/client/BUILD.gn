@@ -6,7 +6,6 @@ import("//build/config/ui.gni")
 
 config("gpu_ipc_client_implementation") {
   defines = [ "GPU_IPC_CLIENT_IMPLEMENTATION" ]
-  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 component("client") {

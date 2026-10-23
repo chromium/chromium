@@ -23,8 +23,6 @@ component("android") {
 
   defines = [ "IS_VULKAN_ANDROID_IMPL" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [ "//ui/gfx" ]
 
   public_configs = [ ":vulkan_android" ]

@@ -22,8 +22,6 @@ component("mac") {
 
   defines = [ "IS_VULKAN_MAC_IMPL" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_configs = [ ":vulkan_mac" ]
 
   deps = [

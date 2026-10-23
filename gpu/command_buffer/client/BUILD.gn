@@ -13,7 +13,6 @@ declare_args() {
 
 config("implementation") {
   defines = [ "GPU_COMMAND_BUFFER_CLIENT_IMPLEMENTATION" ]
-  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # The files here go into the "gpu" component in a component build (with

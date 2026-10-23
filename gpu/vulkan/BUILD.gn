@@ -44,8 +44,6 @@ if (enable_vulkan) {
 
     public_configs = [ ":vulkan_config" ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     defines = [ "IS_VULKAN_IMPL" ]
 
     deps = [
@@ -70,8 +68,6 @@ if (enable_vulkan) {
     ]
 
     defines = [ "IS_VULKAN_IMPL" ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":vulkan_function_pointers",
@@ -121,8 +117,6 @@ if (enable_vulkan) {
     ]
 
     defines = [ "IS_VULKAN_IMPL" ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":buildflags",

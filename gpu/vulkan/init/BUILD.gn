@@ -17,8 +17,6 @@ component("init") {
 
   defines = [ "IS_VULKAN_INIT_IMPL" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//gpu/vulkan",

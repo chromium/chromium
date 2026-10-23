@@ -130,8 +130,6 @@ component("config") {
 
   defines = [ "GPU_CONFIG_IMPLEMENTATION" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//components/crash/core/common:crash_key",
     "//third_party/dawn/include/dawn:cpp_headers",
