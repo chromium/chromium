@@ -9,13 +9,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
@@ -34,6 +34,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -75,11 +76,6 @@ void OverrideZoomFactor(content::WebContents* web_contents,
       content::HostZoomMap::GetForWebContents(web_contents);
   zoom_map->SetZoomLevelForHost(pacp_url.GetHost(),
                                 blink::ZoomFactorToZoomLevel(zoom_factor));
-}
-
-bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
-  return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-         event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
 }  // namespace
@@ -248,19 +244,6 @@ void ParentAccessView::ChildPreferredSizeChanged(View* child) {
   widget->SetSize(widget->non_client_view()->GetPreferredSize());
 }
 
-bool ParentAccessView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  views::Widget* widget = GetWidget();
-  CHECK(widget);
-  if (IsEscapeEvent(event)) {
-    widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
-    return true;
-  }
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
-}
-
 void ParentAccessView::ResizeDueToAutoResize(content::WebContents* web_contents,
                                              const gfx::Size& new_size) {
   if (!web_view_) {
@@ -413,6 +396,9 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
   // Delegate handles accelerators when the webview is focused. Also handles
   // resizing events.
   web_view_->web_contents()->SetDelegate(this);
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
+  SetOnEscCloseWidget();
+
   web_view_->SetProperty(views::kElementIdentifierKey,
                          kLocalWebParentApprovalDialogId);
 

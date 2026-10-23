@@ -13,11 +13,10 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -63,9 +62,10 @@ using WebContentsObservationCallback =
 
 // Implements a View to display the Parent Access Widget (PACP).
 // The view contains a WebView which loads the PACP url.
-class ParentAccessView : public views::View,
-                         public views::WidgetObserver,
-                         public content::WebContentsDelegate {
+class ParentAccessView
+    : public views::View,
+      public views::WidgetObserver,
+      public views::WebContentsDelegateViews<ParentAccessView> {
   METADATA_HEADER(ParentAccessView, views::View)
 
  public:
@@ -111,16 +111,12 @@ class ParentAccessView : public views::View,
   void OnWidgetClose(views::Widget::ClosedReason closed_reason);
 
   // content::WebContentsDelegate override:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) override;
 
   void ShowWebViewAndDestroyTimeoutObserver();
 
   void UpdateDialogBorderAndChildrenBackgroundColors();
-
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   base::OnceClosure dialog_result_reset_callback_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
