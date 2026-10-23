@@ -36,6 +36,7 @@
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 #include "url/origin.h"
@@ -53,10 +54,10 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 
 // static
-static int64_t JNI_PageInfoController_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& java_web_contents) {
+static jni_zero::JniUniquePtr<PageInfoControllerAndroid>
+JNI_PageInfoController_Init(JNIEnv* env,
+                            const JavaRef<jobject>& obj,
+                            const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
 
@@ -64,10 +65,10 @@ static int64_t JNI_PageInfoController_Init(
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetVisibleEntry();
   if (nav_entry->IsInitialEntry())
-    return 0;
+    return nullptr;
 
-  return reinterpret_cast<intptr_t>(
-      new PageInfoControllerAndroid(env, obj, web_contents));
+  return jni_zero::MakeUnique<PageInfoControllerAndroid>(env, obj,
+                                                         web_contents);
 }
 
 PageInfoControllerAndroid::PageInfoControllerAndroid(
@@ -91,10 +92,6 @@ PageInfoControllerAndroid::PageInfoControllerAndroid(
 }
 
 PageInfoControllerAndroid::~PageInfoControllerAndroid() = default;
-
-void PageInfoControllerAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void PageInfoControllerAndroid::RecordPageInfoAction(JNIEnv* env,
                                                      int32_t action) {

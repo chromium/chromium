@@ -25,6 +25,10 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -71,6 +75,9 @@ public class PageInfoController
         implements PageInfoMainController,
                 ModalDialogProperties.Controller,
                 SystemSettingsActivityRequiredListener {
+    @JniType("::PageInfoControllerAndroid")
+    interface NativePageInfoControllerAndroid extends JniTypeToken {}
+
     @IntDef({
         OpenedFromSource.MENU,
         OpenedFromSource.TOOLBAR,
@@ -96,7 +103,7 @@ public class PageInfoController
     private final PageInfoControllerDelegate mDelegate;
 
     // A pointer to the C++ object for this UI.
-    private long mNativePageInfoController;
+    private @Nullable JniUniquePtr<NativePageInfoControllerAndroid> mNativePageInfoController;
 
     // The main PageInfo view.
     private final PageInfoView mView;
@@ -370,7 +377,7 @@ public class PageInfoController
                 };
 
         mDialog = dialog;
-        if (mNativePageInfoController != 0) {
+        if (mNativePageInfoController != null) {
             dialog.show();
         }
 
@@ -433,7 +440,7 @@ public class PageInfoController
         // Synchronize suspicious site state to native controller. In production this is set by
         // SetIdentityInfo, but is required for testing environments where setSecurityDescription
         // is invoked directly from Java tests without going through SetIdentityInfo.
-        if (mNativePageInfoController != 0) {
+        if (mNativePageInfoController != null) {
             PageInfoControllerJni.get()
                     .setIsSuspiciousSite(mNativePageInfoController, isSuspiciousSite);
         }
@@ -446,7 +453,7 @@ public class PageInfoController
             mView.getBackToSafetyButton()
                     .setOnClickListener(
                             v -> {
-                                if (mNativePageInfoController != 0) {
+                                if (mNativePageInfoController != null) {
                                     PageInfoControllerJni.get()
                                             .onSuspiciousSiteBackToSafety(
                                                     mNativePageInfoController);
@@ -456,7 +463,7 @@ public class PageInfoController
             mView.getMarkAsSafeButton()
                     .setOnClickListener(
                             v -> {
-                                if (mNativePageInfoController != 0) {
+                                if (mNativePageInfoController != null) {
                                     PageInfoControllerJni.get()
                                             .onSuspiciousSiteMarkAsSafe(mNativePageInfoController);
                                 }
@@ -515,7 +522,7 @@ public class PageInfoController
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        assert mNativePageInfoController != 0;
+        assert mNativePageInfoController != null;
         while (!mCurrentSubpageControllers.isEmpty()) {
             PageInfoSubpageController currentSubpageController =
                     mCurrentSubpageControllers.removeFirst();
@@ -524,8 +531,8 @@ public class PageInfoController
 
         destroy();
 
-        PageInfoControllerJni.get().destroy(mNativePageInfoController);
-        mNativePageInfoController = 0;
+        mNativePageInfoController.destroy();
+        mNativePageInfoController = null;
         if (mPendingRunAfterDismissTask != null) {
             mPendingRunAfterDismissTask.run();
         }
@@ -533,8 +540,8 @@ public class PageInfoController
 
     @Override
     public void recordAction(@PageInfoAction int action) {
-        assert mNativePageInfoController != 0;
-        if (mNativePageInfoController != 0) {
+        assert mNativePageInfoController != null;
+        if (mNativePageInfoController != null) {
             PageInfoControllerJni.get().recordPageInfoAction(mNativePageInfoController, action);
         }
     }
@@ -542,7 +549,7 @@ public class PageInfoController
     @Override
     public void refreshPermissions() {
         mPermissionParamsListBuilder.clearPermissionEntries();
-        if (mNativePageInfoController != 0) {
+        if (mNativePageInfoController != null) {
             PageInfoControllerJni.get().updatePermissions(mNativePageInfoController);
         }
     }
@@ -635,28 +642,9 @@ public class PageInfoController
                 : null;
     }
 
-    @NativeMethods
-    interface Natives {
-        long init(PageInfoController controller, WebContents webContents);
-
-        void destroy(long nativePageInfoControllerAndroid);
-
-        void recordPageInfoAction(long nativePageInfoControllerAndroid, int action);
-
-        void updatePermissions(long nativePageInfoControllerAndroid);
-
-        void onSuspiciousSiteBackToSafety(long nativePageInfoControllerAndroid);
-
-        void onSuspiciousSiteMarkAsSafe(long nativePageInfoControllerAndroid);
-
-        void openSafeBrowsingHelpCenter(long nativePageInfoControllerAndroid);
-
-        void setIsSuspiciousSite(long nativePageInfoControllerAndroid, boolean isSuspiciousSite);
-    }
-
     @Override
     public void openSafeBrowsingHelpCenter() {
-        if (mNativePageInfoController != 0) {
+        if (mNativePageInfoController != null) {
             PageInfoControllerJni.get().openSafeBrowsingHelpCenter(mNativePageInfoController);
         }
     }
@@ -734,5 +722,24 @@ public class PageInfoController
         if (mDialog != null) {
             mDialog.dismiss(true);
         }
+    }
+
+    @NativeMethods
+    interface Natives {
+        @Nullable JniUniquePtr<NativePageInfoControllerAndroid> init(
+                PageInfoController controller, WebContents webContents);
+
+        void recordPageInfoAction(JniPtr<NativePageInfoControllerAndroid> self, int action);
+
+        void updatePermissions(JniPtr<NativePageInfoControllerAndroid> self);
+
+        void onSuspiciousSiteBackToSafety(JniPtr<NativePageInfoControllerAndroid> self);
+
+        void onSuspiciousSiteMarkAsSafe(JniPtr<NativePageInfoControllerAndroid> self);
+
+        void openSafeBrowsingHelpCenter(JniPtr<NativePageInfoControllerAndroid> self);
+
+        void setIsSuspiciousSite(
+                JniPtr<NativePageInfoControllerAndroid> self, boolean isSuspiciousSite);
     }
 }

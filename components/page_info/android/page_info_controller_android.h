@@ -33,7 +33,6 @@ class PageInfoControllerAndroid : public PageInfoUI {
       delete;
 
   ~PageInfoControllerAndroid() override;
-  void Destroy(JNIEnv* env);
   void RecordPageInfoAction(JNIEnv* env, int32_t action);
   void UpdatePermissions(JNIEnv* env);
 
