@@ -1506,9 +1506,10 @@ void ChromeMainDelegate::InitMacCrashReporter(
     const base::CommandLine& command_line,
     const std::string& process_type) {
   // TODO(mark): Right now, InitializeCrashpad() needs to be called after
-  // CommandLine::Init() and chrome::RegisterPathProvider().  Ideally, Crashpad
-  // initialization could occur sooner, preferably even before the framework
-  // dylib is even loaded, to catch potential early crashes.
+  // CommandLine::Init(), chrome::RegisterPathProvider(), and
+  // InitializeUserDataDir().  Ideally, Crashpad initialization could occur
+  // sooner, preferably even before the framework dylib is even loaded, to
+  // catch potential early crashes.
 
   const bool browser_process = process_type.empty();
   const bool install_from_dmg_relauncher_process =
@@ -1582,11 +1583,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
   ChromeCrashReporterClient::Create();
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  InitMacCrashReporter(command_line, process_type);
-  SetUpInstallerPreferences(command_line);
-#endif
-
 #if !defined(BUILDING_CHROME_RENDERER)
   // Initialize the user data dir for any process type that needs it.
   if (chrome::ProcessNeedsProfileDir(process_type)) {
@@ -1601,6 +1597,15 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // Renderers on Windows never require a profile directory.
   CHECK(!chrome::ProcessNeedsProfileDir(process_type));
 #endif  // !defined(BUILDING_CHROME_RENDERER)
+
+#if BUILDFLAG(IS_MAC)
+  // Must run after InitializeUserDataDir() because InitializeCrashpad()
+  // resolves chrome::DIR_USER_DATA via GetCrashMetricsLocation() and
+  // GetCollectStatsConsent(), and SetUpInstallerPreferences() may also update
+  // upload consent in chrome::DIR_USER_DATA.
+  InitMacCrashReporter(command_line, process_type);
+  SetUpInstallerPreferences(command_line);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
   // Android does InitLogging when library is loaded. Skip here.
