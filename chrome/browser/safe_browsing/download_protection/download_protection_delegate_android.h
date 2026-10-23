@@ -88,7 +88,7 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
 
   void InitRateLimitingKeyManager(const std::string& safety_net_id);
 
-  const GURL download_request_url_;
+  mutable std::optional<GURL> download_request_url_;
 
   // Overrides the next call to ShouldSample() within IsSupportedDownload(), for
   // convenience in tests to bypass the random number generator.
