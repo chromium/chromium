@@ -48,7 +48,14 @@
 
 /* TODO(b/504669359): Define other location bar border colors such as high contrast. */
 :host(:not([dropdown-is-visible])) {
-  --cr-searchbox-icon-right-position: 2px;
+  --cr-searchbox-icon-container-size: calc(
+      var(--location-bar-icon-size) +
+      var(--location-bar-page-info-icon-padding-start) +
+      var(--location-bar-page-info-icon-padding-end));
+  --cr-searchbox-icon-left-position:
+      var(--location-bar-leading-decoration-edge-padding);
+  --cr-searchbox-icon-right-position:
+      var(--location-bar-leading-decoration-inner-padding);
   --cr-searchbox-shadow: inset 0 0 0 1px var(--color-location-bar-border-on-mismatch);
   box-sizing: border-box;
   margin-top: var(--alignment-inset-top);
@@ -63,7 +70,11 @@
 :host(:not([dropdown-is-visible])) #inputWrapper:focus-within,
 :host([is-logically-focused_]:not([dropdown-is-visible])) #inputWrapper {
   --cr-searchbox-shadow: none;
-  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  /* Mirrors views::FocusRing's default halo (kDefaultHaloThickness = 2.0f,
+   * kDefaultHaloInset = kDefaultHaloThickness * -0.5f = -1.0f), which draws
+   * 1px outside and 1px inside the location bar boundary. */
+  box-shadow: 0 0 0 1px var(--cr-focus-outline-color),
+      inset 0 0 0 1px var(--cr-focus-outline-color);
 }
 
 /* The compose button takes the focus ring's place while it has focus. With
@@ -307,7 +318,11 @@ omnibox-popup-contextual-entrypoint {
 
 #composeButton::part(glow-container) {
   height: 24px;
-  margin-inline-end: 2px;
+  /* .glow-container in searchbox_compose_button.css adds
+   * padding-inline: 2px, so subtract 2px to place the button's edge at
+   * --location-bar-trailing-decoration-aim-edge-padding. */
+  margin-inline-end: calc(
+      var(--location-bar-trailing-decoration-aim-edge-padding) - 2px);
   top: 0;
 }
 
@@ -323,12 +338,12 @@ omnibox-popup-contextual-entrypoint {
   color: var(--color-sys-on-tonal-container);
   font-size: 13px;
   font-weight: 500;
-  padding-inline-end: 12.5px;
+  padding-inline-end: 13px;
   padding-inline-start: 8px;
 }
 
 #composeButton[dynamic]::part(compose-button) {
-  padding-inline-end: 10.5px;
+  padding-inline-end: 11px;
 }
 
 :host([searchbox-dynamic-color-scheme_]) #composeButton::part(compose-button) {
@@ -353,8 +368,10 @@ omnibox-popup-contextual-entrypoint {
 }
 
 #composeButton::part(compose-icon) {
-  height: 15px;
-  max-width: 15px;
+  height: var(--location-bar-chip-icon-size);
+  max-width: var(--location-bar-chip-icon-size);
+  padding: 0;
+  width: var(--location-bar-chip-icon-size);
 }
 
 #composeButton[dynamic]::part(compose-icon) {
@@ -363,11 +380,6 @@ omnibox-popup-contextual-entrypoint {
 
 :host(:not([aim-button-icon-only_])) #composeButton[dynamic][has-user-input]::part(compose-icon) {
   max-width: 0;
-}
-
-#composeButton::part(compose-icon-favicon) {
-  height: 16px;
-  max-width: 16px;
 }
 
 #composeButton::part(label) {
@@ -379,7 +391,7 @@ omnibox-popup-contextual-entrypoint {
 }
 
 #composeButton[dynamic][has-user-input]::part(label) {
-  transform: translateX(-16px);
+  transform: translateX(calc(-1 * var(--location-bar-chip-icon-size)));
 }
 
 #composeButton::part(arrow-icon) {
@@ -406,11 +418,6 @@ omnibox-popup-contextual-entrypoint {
   scale: 1;
   transform: none;
   visibility: visible;
-  width: 15px;
-}
-
-:host([aim-button-icon-only_]) #composeButton::part(compose-icon-favicon) {
-  width: 16px;
 }
 
 :host([aim-button-icon-only_]) #composeButton::part(label),
