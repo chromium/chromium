@@ -18,8 +18,6 @@ import {getCss} from './smart_search.css.js';
 import {getHtml} from './smart_search.html.js';
 import type {SmartSearchResult} from './smart_search_card.js';
 
-export type {SmartSearchResult} from './smart_search_card.js';
-
 const MAX_URLS_TO_OPEN = 10;
 
 export class SmartSearchElement extends CrLitElement {

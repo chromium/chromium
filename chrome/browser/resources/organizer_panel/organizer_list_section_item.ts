@@ -20,8 +20,6 @@ import {getHtml} from './organizer_list_section_item.html.js';
 import type {OrganizerListSectionItemDescriptionElement, OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';
 import type {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
 
-export type {OrganizerListSectionItemDescriptionPart};
-
 // Stacked favicons configuration for an organizer list section item.
 export interface OrganizerListSectionItemStackedFavicons {
   // URLs to display favicons for.

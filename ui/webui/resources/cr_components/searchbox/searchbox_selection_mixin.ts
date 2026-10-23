@@ -8,14 +8,6 @@ import {KeywordType, SelectionDirection, SelectionLineState, SelectionStep} from
 
 import {kDefaultSelection} from './searchbox_match.js';
 
-export type {
-  Action,
-  AutocompleteMatch,
-  AutocompleteResult,
-  OmniboxPopupSelection,
-};
-export {SelectionDirection, SelectionLineState, SelectionStep};
-
 export function selectionsEqual(
     a: OmniboxPopupSelection, b: OmniboxPopupSelection): boolean {
   return a.line === b.line && a.state === b.state &&

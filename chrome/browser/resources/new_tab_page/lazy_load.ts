@@ -26,8 +26,9 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export type {ComposeboxFile, ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
-export {ComposeboxElement, SubmitButtonIconType, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
+export {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
+export {SubmitButtonIconType, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 export {ThreadsRailElement} from 'chrome://resources/cr_components/composebox/threads_rail.js';
 export {WindowProxy as ComposeboxWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';

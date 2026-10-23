@@ -5,6 +5,8 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {AMPLITUDE_DECAY_RATE, applySensitivityEasing, clamp, getAmbientSimulatedMotion, makeSimulatedAudioBump, MS_PER_FRAME, SPEECH_RECEIVED_BUMP_DURATION_MULT, SPEECH_RECEIVED_BUMP_DURATION_OFFSET, SPEECH_RECEIVED_BUMP_MAX_VOL_MULT, SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET, triggerSyllableBumps, updateBumpsAndGetSum} from './audio_simulation_utils.js';
+import type {Bump} from './audio_simulation_utils.js';
 import {getCss} from './audio_wave.css.js';
 import {getHtml} from './audio_wave.html.js';
 
@@ -29,19 +31,9 @@ const WAVE_SIDE_MARGIN_PEAK: number = 10;
 const STROKE_WIDTH: number = 3;
 const SPEECH_RECEIVED_VOL_SPIKE: number = 0.4;
 
-/* Audio simulation math and heuristics (Bézier easing, syllable counting,
- * bump summation) have been extracted to audio_simulation_utils.ts so they
- * can be shared across Search WebUI components. Re-exporting here for
- * backwards compatibility with existing consumers and tests.
- */
-import type {Bump} from './audio_simulation_utils.js';
-import {AMPLITUDE_DECAY_RATE, applySensitivityEasing, clamp, getAmbientSimulatedMotion, makeSimulatedAudioBump, MS_PER_FRAME, SPEECH_RECEIVED_BUMP_DURATION_MULT, SPEECH_RECEIVED_BUMP_DURATION_OFFSET, SPEECH_RECEIVED_BUMP_MAX_VOL_MULT, SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET, triggerSyllableBumps, updateBumpsAndGetSum} from './audio_simulation_utils.js';
-
 const SMOOTHING_WINDOW_SIZE: number = 3;
 const SMOOTHING_BUFFER_SIZE: number = 5;
 
-export type {Bump} from './audio_simulation_utils.js';
-export {AMPLITUDE_DECAY_RATE, applySensitivityEasing, bezierEasing, CIRCLE_RAD, clamp, countSyllablesHeuristic, FRAME_LATENCY, getAmbientSimulatedMotion, makeSimulatedAudioBump, MAX_FRAMES_PER_SYLLABLE, MIN_FRAMES_PER_SYLLABLE, MS_PER_FRAME, SPEECH_RECEIVED_BUMP_DURATION_MULT, SPEECH_RECEIVED_BUMP_DURATION_OFFSET, SPEECH_RECEIVED_BUMP_MAX_VOL_MULT, SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET, SYLLABLE_BUMP_DURATION_MULT, SYLLABLE_BUMP_DURATION_OFFSET, SYLLABLE_BUMP_MAX_VOL_MULT, SYLLABLE_BUMP_MAX_VOL_OFFSET, triggerSyllableBumps} from './audio_simulation_utils.js';
 /*
  * Linear Interpolation that maps one unit to another unit, like volume to px.
  */

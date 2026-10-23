@@ -17,8 +17,6 @@ import type {TopicFeedback, TopicItem} from './topic_utils.js';
 import {getCss} from './topics_view.css.js';
 import {getHtml} from './topics_view.html.js';
 
-export type {TopicItem} from './topic_utils.js';
-
 export type TopicsLoadState = 'loading'|'loaded'|'error';
 
 // TODO(crbug.com/558572977): Use internationalized strings once GRD

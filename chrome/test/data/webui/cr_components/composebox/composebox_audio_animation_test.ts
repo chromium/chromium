@@ -4,8 +4,10 @@
 
 import 'chrome://resources/cr_components/search/audio_wave.js';
 
-import type {AudioWaveElement, Bump} from 'chrome://resources/cr_components/search/audio_wave.js';
-import {bezierEasing, weightedAverage} from 'chrome://resources/cr_components/search/audio_wave.js';
+import {bezierEasing} from 'chrome://resources/cr_components/search/audio_simulation_utils.js';
+import type {Bump} from 'chrome://resources/cr_components/search/audio_simulation_utils.js';
+import {weightedAverage} from 'chrome://resources/cr_components/search/audio_wave.js';
+import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 

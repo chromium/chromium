@@ -25,14 +25,12 @@ import {DropTargetReceiver, DropTargetRegistrationRemote, TabDragService} from '
 import type {DropTargetInterface, DropTargetRegistrationRemote as DropTargetRegistrationRemoteType, TabDragServiceRemote} from '../tab_drag_api.mojom-webui.js';
 
 import type {TabAdded, TabClosed, TabUpdated} from './events.js';
-import type {TabGroupItem, TabItem, TabStripItem} from './items.js';
+import type {TabGroupItem, TabStripItem} from './items.js';
 import type {TabElement} from './tab.js';
 import {TabDragDelegate} from './tab_drag_delegate.js';
 import type {TabDragHost} from './tab_drag_host.js';
 import {getCss} from './tab_strip.css.js';
 import {getHtml} from './tab_strip.html.js';
-
-export type {TabGroupItem, TabItem, TabStripItem};
 
 export interface TabStripElement {
   $: {
