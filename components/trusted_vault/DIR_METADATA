@@ -6,4 +6,39 @@ agentic_review {
       "internal/agents/skills/trusted-vault-docs/SKILL.md"
     ]
   }
+  capability_groups {
+    path_expression: "components/trusted_vault/.*\\.(cc|h|mm)"
+    path_expression_exclusion: ".*_unittest\\.(cc|h|mm)"
+    rules: [
+      "components/trusted_vault/knowledge_base/enforce-single-primary-account-invariants.md"
+    ]
+  }
+  capability_groups {
+    path_expression: "components/trusted_vault/(?:.*\\.h|BUILD\\.gn)"
+    path_expression_exclusion: ".*_unittest\\.h"
+    rules: [
+      "components/trusted_vault/knowledge_base/encapsulate-wire-and-storage-protos.md"
+    ]
+  }
+  capability_groups {
+    path_expression: "components/trusted_vault/.*\\.h"
+    path_expression_exclusion: ".*_unittest\\.h"
+    rules: [
+      "components/trusted_vault/knowledge_base/prefer-narrow-delegates-and-separate-impl-headers.md"
+    ]
+  }
+  capability_groups {
+    path_expression: "components/trusted_vault/.*\\.(cc|h|mm)"
+    path_expression_exclusion: ".*_unittest\\.(cc|h|mm)"
+    rules: [
+      "components/trusted_vault/knowledge_base/coalesce-storage-mutations.md"
+    ]
+  }
+  capability_groups {
+    path_expression: "components/trusted_vault/.*\\.(cc|h|mm|proto)"
+    path_expression_exclusion: ".*_unittest\\.(cc|h|mm)"
+    rules: [
+      "components/trusted_vault/knowledge_base/record-uma-histograms-once-per-operation.md"
+    ]
+  }
 }
