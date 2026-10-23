@@ -115,14 +115,14 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
           &connection, &observer, storage(), account_info,
           SecurityDomainId::kChromeSync);
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.TrustedVaultDegradedRecoverabilityValue",
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue.ChromeSync",
       /*sample=*/trusted_vault_pb::DegradedRecoverabilityValue::kNotDegraded,
       /*expected_bucket_count=*/0);
 
   // Start the scheduler.
   scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.TrustedVaultDegradedRecoverabilityValue",
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue.ChromeSync",
       /*sample=*/trusted_vault_pb::DegradedRecoverabilityValue::kNotDegraded,
       /*expected_bucket_count=*/1);
 }
@@ -216,7 +216,8 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
           kPersistentAuthErrorResolved);
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason",
+      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason."
+      "ChromeSync",
       /*sample=*/
       TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
           kPersistentAuthErrorResolved,
@@ -527,7 +528,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
         base::DoNothing());
     run_loop.Run();
     histogram_tester.ExpectUniqueSample(
-        "TrustedVault.RecoverabilityStatusOnRequestCompletion",
+        "TrustedVault.RecoverabilityStatusOnRequestCompletion.ChromeSync",
         /*sample=*/
         TrustedVaultRecoverabilityStatus::kNotDegraded,
         /*expected_bucket_count=*/1);
@@ -552,7 +553,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
         TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA());
     run_loop.Run();
     histogram_tester.ExpectUniqueSample(
-        "TrustedVault.RecoverabilityStatusOnRequestCompletion",
+        "TrustedVault.RecoverabilityStatusOnRequestCompletion.ChromeSync",
         /*sample=*/
         TrustedVaultRecoverabilityStatus::kDegraded,
         /*expected_bucket_count=*/1);
@@ -577,11 +578,50 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
         TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA());
     run_loop.Run();
     histogram_tester.ExpectUniqueSample(
-        "TrustedVault.RecoverabilityStatusOnRequestCompletion",
+        "TrustedVault.RecoverabilityStatusOnRequestCompletion.ChromeSync",
         /*sample=*/
         TrustedVaultRecoverabilityStatus::kError,
         /*expected_bucket_count=*/1);
   }
+}
+
+TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
+       ShouldRecordHistogramsForPasskeysSecurityDomain) {
+  base::HistogramTester histogram_tester;
+  testing::NiceMock<MockTrustedVaultThrottlingConnection> connection;
+  testing::NiceMock<MockObserver> observer;
+
+  ON_CALL(connection, DownloadIsRecoverabilityDegraded(
+                          _, Eq(SecurityDomainId::kPasskeys), _))
+      .WillByDefault([](const CoreAccountInfo&, SecurityDomainId,
+                        MockTrustedVaultThrottlingConnection::
+                            IsRecoverabilityDegradedCallback callback) {
+        std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  TrustedVaultDegradedRecoverabilityHandler handler(
+      &connection, &observer, storage(), MakeAccountInfoWithGaiaId("user"),
+      SecurityDomainId::kPasskeys);
+
+  handler.GetIsRecoverabilityDegraded(base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(1));
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue.HwProtected",
+      trusted_vault_pb::DegradedRecoverabilityValue::kUnknown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.RecoverabilityStatusOnRequestCompletion.HwProtected",
+      TrustedVaultRecoverabilityStatus::kNotDegraded, 1);
+
+  handler.HintDegradedRecoverabilityChanged(
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+          kPersistentAuthErrorResolved);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason."
+      "HwProtected",
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+          kPersistentAuthErrorResolved,
+      1);
 }
 
 }  // namespace

@@ -194,6 +194,7 @@ void RecordTrustedVaultRecoveryFlowTriggeredEndpoint(
     TrustedVaultRecoveryFlowEndpoint endpoint);
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
+    SecurityDomainId security_domain_id,
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason);
 

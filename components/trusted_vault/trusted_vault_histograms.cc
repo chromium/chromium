@@ -86,10 +86,13 @@ SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
 }
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
+    SecurityDomainId security_domain_id,
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason) {
   base::UmaHistogramEnumeration(
-      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason",
+      base::StrCat(
+          {"TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason.",
+           GetSecurityDomainNameForUma(security_domain_id)}),
       hint_degraded_recoverability_changed_reason);
 }
 
