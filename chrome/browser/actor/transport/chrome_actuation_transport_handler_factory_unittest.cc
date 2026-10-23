@@ -58,7 +58,7 @@ class FakeTransportSession
   }
 
   void OnMessage(browser_actuator::transport::PayloadType payload_type,
-                 const google::protobuf::MessageLite& message) override {}
+                 std::string_view serialized_payload) override {}
 
   const std::vector<browser_actuator::transport::PayloadType>&
   sent_payload_types() const {
@@ -177,7 +177,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   downstream.set_request_id("req_enabled_start");
   downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
   session->OnMessage(browser_actuator::transport::PayloadType::kActuation,
-                     downstream);
+                     downstream.SerializeAsString());
   EXPECT_EQ(actor_keyed_service_->GetActiveTasks().size(), 1u);
 
   actor_keyed_service_->Shutdown();

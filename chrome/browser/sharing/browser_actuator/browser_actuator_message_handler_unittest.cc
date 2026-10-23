@@ -106,11 +106,6 @@ class MockTransportSession
   MOCK_METHOD(void,
               OnMessage,
               (browser_actuator::transport::PayloadType payload_type,
-               const google::protobuf::MessageLite& message),
-              (override));
-  MOCK_METHOD(void,
-              OnMessage,
-              (browser_actuator::transport::PayloadType payload_type,
                std::string_view serialized_payload),
               (override));
 };
@@ -158,7 +153,7 @@ TEST_F(BrowserActuatorMessageHandlerTest,
               &mock_session)));
   EXPECT_CALL(mock_session,
               OnMessage(browser_actuator::transport::PayloadType::kControl,
-                        std::string_view(serialized_command)));
+                        serialized_command));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -200,7 +195,7 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       mock_session,
       OnMessage(
           browser_actuator::transport::PayloadType::kExperimentalTriggering,
-          std::string_view(serialized_triggering)));
+          serialized_triggering));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -244,9 +239,9 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       .WillOnce(testing::Return(
           static_cast<browser_actuator::transport::TransportSession*>(
               session_ptr)));
-  EXPECT_CALL(*session_ptr,
-              OnMessage(browser_actuator::transport::PayloadType::kControl,
-                        testing::An<std::string_view>()))
+  EXPECT_CALL(
+      *session_ptr,
+      OnMessage(browser_actuator::transport::PayloadType::kControl, testing::_))
       .WillOnce([&owned_session](browser_actuator::transport::PayloadType,
                                  std::string_view) {
         // Simulate TransportSessionRegistryImpl::DestroySession().
@@ -302,15 +297,15 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       .WillRepeatedly(testing::Return(session));
   EXPECT_CALL(mock_session,
               OnMessage(browser_actuator::transport::PayloadType::kControl,
-                        std::string_view(serialized_start)));
+                        serialized_start));
   EXPECT_CALL(
       mock_session,
       OnMessage(
           browser_actuator::transport::PayloadType::kExperimentalTriggering,
-          std::string_view("trigger-bytes")));
+          "trigger-bytes"));
   EXPECT_CALL(mock_session,
               OnMessage(browser_actuator::transport::PayloadType::kActuation,
-                        std::string_view("actuation-bytes")));
+                        "actuation-bytes"));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -353,11 +348,11 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       mock_session,
       OnMessage(
           browser_actuator::transport::PayloadType::kExperimentalTriggering,
-          testing::An<std::string_view>()))
+          testing::_))
       .Times(0);
   EXPECT_CALL(mock_session,
               OnMessage(browser_actuator::transport::PayloadType::kActuation,
-                        std::string_view("actuation-bytes")));
+                        "actuation-bytes"));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>

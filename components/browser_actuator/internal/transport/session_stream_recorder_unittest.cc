@@ -41,7 +41,7 @@ class FakeTransportSession : public TransportSession {
     return {};
   }
   void OnMessage(PayloadType payload_type,
-                 const google::protobuf::MessageLite& message) override {}
+                 std::string_view serialized_payload) override {}
 
  private:
   std::string session_id_;

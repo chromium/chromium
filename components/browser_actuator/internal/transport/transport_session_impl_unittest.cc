@@ -722,15 +722,15 @@ TEST(TransportSessionImplTest, OnMessage) {
 
   ControlCommand command;
   command.mutable_close_session();
+  const std::string serialized_command = command.SerializeAsString();
 
   EXPECT_CALL(*handler_ptr,
-              OnMessage(PayloadType::kControl, command.SerializeAsString()));
+              OnMessage(PayloadType::kControl, serialized_command));
 
-  session.OnMessage(PayloadType::kControl, command);
+  session.OnMessage(PayloadType::kControl, serialized_command);
 }
 
-TEST(TransportSessionImplTest,
-     OnMessageSerializedPayloadSetsZeroSequenceForControlReplies) {
+TEST(TransportSessionImplTest, OnMessageSetsZeroSequenceForControlReplies) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -799,8 +799,7 @@ TEST(TransportSessionImplTest,
                   .has_value());
 }
 
-TEST(TransportSessionImplTest,
-     OnMessageSerializedPayloadHandlesSessionDestructionSafely) {
+TEST(TransportSessionImplTest, OnMessageHandlesSessionDestructionSafely) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())

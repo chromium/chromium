@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -33,7 +34,7 @@ class TestTransportSession : public TransportSession {
     return {};
   }
   void OnMessage(PayloadType payload_type,
-                 const google::protobuf::MessageLite& message) override {}
+                 std::string_view serialized_payload) override {}
 
  private:
   std::string session_id_;
@@ -53,8 +54,7 @@ class MockTransportSession : public TransportSession {
               (override));
   MOCK_METHOD(void,
               OnMessage,
-              (PayloadType payload_type,
-               const google::protobuf::MessageLite& message),
+              (PayloadType payload_type, std::string_view serialized_payload),
               (override));
 
  private:

@@ -30,12 +30,8 @@ class TransportSession {
       const google::protobuf::MessageLite& message) = 0;
 
   // Dispatches an incoming message to handlers registered for payload_type.
-  // TODO(crbug.com/572959192): Remove the `MessageLite` overload once all
-  // callers migrate to the `serialized_payload` overload.
   virtual void OnMessage(PayloadType payload_type,
-                         const google::protobuf::MessageLite& message) = 0;
-  virtual void OnMessage(PayloadType payload_type,
-                         std::string_view serialized_payload);
+                         std::string_view serialized_payload) = 0;
 };
 
 }  // namespace browser_actuator::transport

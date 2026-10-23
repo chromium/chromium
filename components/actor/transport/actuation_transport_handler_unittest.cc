@@ -46,7 +46,7 @@ class FakeTransportSession
   }
 
   void OnMessage(browser_actuator::transport::PayloadType payload_type,
-                 const google::protobuf::MessageLite& message) override {}
+                 std::string_view serialized_payload) override {}
 
   const std::vector<browser_actuator::transport::PayloadType>&
   sent_payload_types() const {

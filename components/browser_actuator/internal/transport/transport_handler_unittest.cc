@@ -29,8 +29,7 @@ class MockTransportSession : public TransportSession {
               (override));
   MOCK_METHOD(void,
               OnMessage,
-              (PayloadType payload_type,
-               const google::protobuf::MessageLite& message),
+              (PayloadType payload_type, std::string_view serialized_payload),
               (override));
 };
 

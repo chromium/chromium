@@ -100,14 +100,6 @@ TransportSessionImpl::SendUpstreamMessage(
   return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
 }
 
-void TransportSessionImpl::OnMessage(
-    PayloadType payload_type,
-    const google::protobuf::MessageLite& message) {
-  // TODO(crbug.com/572959192): Remove this overload once callers pass
-  // serialized payload bytes directly.
-  OnMessage(payload_type, message.SerializeAsString());
-}
-
 void TransportSessionImpl::OnMessage(PayloadType payload_type,
                                      std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
