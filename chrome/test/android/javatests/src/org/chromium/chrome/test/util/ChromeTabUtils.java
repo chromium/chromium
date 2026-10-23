@@ -23,8 +23,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -356,52 +354,9 @@ public class ChromeTabUtils {
     }
 
     /**
-     * Simulates a click to the normal (not incognito) new tab button.
-     * <p>
-     * Does not wait for the tab to be loaded.
-     */
-    public static void clickNewTabButton(
-            Instrumentation instrumentation, ChromeTabbedActivity activity) {
-        final TabModel normalTabModel = activity.getTabModelSelector().getModel(false);
-        final CallbackHelper createdCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    normalTabModel.addObserver(
-                            new TabModelObserver() {
-                                @Override
-                                public void didAddTab(
-                                        Tab tab,
-                                        @TabLaunchType int type,
-                                        @TabCreationState int creationState,
-                                        boolean markedForSelection) {
-                                    createdCallback.notifyCalled();
-                                    normalTabModel.removeObserver(this);
-                                }
-                            });
-                });
-        // Tablet has a new tab button. Phones should fall back to the menu.
-        if (activity.isTablet()) {
-            StripLayoutHelper strip =
-                    TabStripUtils.getStripLayoutHelper(activity, /* incognito= */ false);
-            CompositorButton newTabButton = strip.getNewTabButton();
-            TabStripUtils.clickCompositorButton(newTabButton, instrumentation, activity);
-            instrumentation.waitForIdleSync();
-        } else {
-            newTabFromMenu(
-                    instrumentation, activity, /* incognito= */ false, /* waitForNtpLoad= */ false);
-        }
-
-        try {
-            createdCallback.waitForCallback(null, 0, 1, 10, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Never received tab creation event", e);
-        }
-    }
-
-    /**
      * Creates a new tab by invoking the 'New Tab' menu item.
-     * <p>
-     * Returns when the tab has been created and has finished navigating.
+     *
+     * <p>Returns when the tab has been created and has finished navigating.
      */
     public static void newTabFromMenu(
             Instrumentation instrumentation, final ChromeActivity activity) {

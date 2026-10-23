@@ -142,7 +142,7 @@ public class TabStripTest {
                 getIndexOnUiThread(
                         mActivityTestRule.getActivity().getTabModelSelector().getModel(false)));
 
-        ChromeTabUtils.clickNewTabButton(
+        TabStripUtils.clickNewTabButton(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -191,7 +191,7 @@ public class TabStripTest {
                         mActivityTestRule.getActivity().getTabModelSelector().getModel(false)));
         compareAllTabStripsWithModel();
 
-        ChromeTabUtils.clickNewTabButton(
+        TabStripUtils.clickNewTabButton(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1040,7 +1040,7 @@ public class TabStripTest {
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        ChromeTabUtils.clickNewTabButton(
+        TabStripUtils.clickNewTabButton(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

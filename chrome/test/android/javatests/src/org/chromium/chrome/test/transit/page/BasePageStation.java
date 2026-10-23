@@ -15,12 +15,11 @@ import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
+import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -308,44 +307,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
                 .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
-    }
-
-    private static class TabAddedCondition extends CallbackCondition implements TabModelObserver {
-        private TabModel mTabModel;
-        private final Supplier<TabModel> mTabModelSupplier;
-
-        protected TabAddedCondition(int numTabsBeingOpened, Supplier<TabModel> tabModelSupplier) {
-            super("didAddTab", numTabsBeingOpened);
-            mTabModelSupplier = dependOnSupplier(tabModelSupplier, "TabModel");
-        }
-
-        @Override
-        public void didAddTab(
-                Tab tab,
-                @TabLaunchType int type,
-                @TabCreationState int creationState,
-                boolean markedForSelection) {
-            notifyCalled();
-        }
-
-        @Override
-        public void onStartMonitoring() {
-            super.onStartMonitoring();
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mTabModel = mTabModelSupplier.get();
-                        mTabModel.addObserver(this);
-                    });
-        }
-
-        @Override
-        public void onStopMonitoring() {
-            super.onStopMonitoring();
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mTabModel.removeObserver(this);
-                    });
-        }
     }
 
     private static class TabSelectedCondition extends CallbackCondition
