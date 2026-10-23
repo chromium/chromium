@@ -29,6 +29,52 @@ UNCONDITIONALLY_BOUND_EXTENSIONS = set(
   ]
 )
 
+
+def add_explicit_contexts_functions(source_funcs):
+  """Appends a <name>ContextANGLE variant of every function, taking an explicit
+  EGLDisplay and EGLContext as first arguments (GL_ANGLE_explicit_context).
+
+  These variants are only exposed through the ProcsGL table, where they are
+  contiguous. They are all loaded together when GL_ANGLE_explicit_context is
+  available, using the name of the source function's preferred version with a
+  "ContextANGLE" suffix. ANGLE exposes the explicit context variant of all its
+  entry points, so the extensions of the source function are not relevant.
+  """
+  explicit_context_funcs = []
+  for source_func in source_funcs:
+    args = source_func.get('arguments', 'void')
+    explicit_args = 'GLeglDisplayANGLE dpy, GLeglContextANGLE ctx'
+    if args not in ('', 'void'):
+      explicit_args += ', ' + args
+
+    source_known_as = source_func.get('known_as')
+    if not source_known_as:
+      source_names = source_func.get('names')
+      source_known_as = (
+        source_names[0] if source_names else source_func['versions'][0]['name']
+      )
+
+    explicit_context_funcs.append(
+      {
+        'return_type': source_func['return_type'],
+        'known_as': source_known_as + 'ContextANGLE',
+        'arguments': explicit_args,
+        # The binding is generated from the source function's versions.
+        'versions': [],
+        'explicit_context_source': source_func,
+        # Don't generate API object methods for explicit context functions,
+        # they are called directly through the proc table and the extra methods
+        # added to the API objects adds significant binary size.
+        'generate_api_functions': False,
+      }
+    )
+  return source_funcs + explicit_context_funcs
+
+
+def IsExplicitContextFunction(func):
+  return 'explicit_context_source' in func
+
+
 """Function binding conditions can be specified manually by supplying a versions
 array instead of the names array. Each version has the following keys:
    name: Mandatory. Name of the function. Multiple versions can have the same
@@ -45,7 +91,7 @@ By default, the function gets its name from the first name in its names or
 versions array. This can be overridden by supplying a 'known_as' key.
 
 """
-GL_FUNCTIONS = [
+GL_FUNCTIONS_WITHOUT_EXPLICIT_CONTEXT = [
   {
     'return_type': 'void',
     'versions': [
@@ -2936,6 +2982,10 @@ GL_FUNCTIONS = [
   },
 ]
 
+GL_FUNCTIONS = add_explicit_contexts_functions(
+  GL_FUNCTIONS_WITHOUT_EXPLICIT_CONTEXT
+)
+
 EGL_FUNCTIONS = [
   {
     'return_type': 'void',
@@ -3814,6 +3864,7 @@ FUNCTION_SETS = [
       'GLES3/gl32.h',
     ],
     [
+      "GL_ANGLE_explicit_context",
       "GL_ANGLE_renderability_validation",
       "GL_ANGLE_robust_resource_initialization",
       "GL_ANGLE_webgl_compatibility",
@@ -4000,6 +4051,8 @@ struct GL_EXPORT DisplayExtensionsEGL {
     % {'name': set_name.upper()}
   )
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     file.write(
       '  virtual %s %sFn(%s) = 0;\n'
       % (func['return_type'], func['known_as'], func['arguments'])
@@ -4014,6 +4067,8 @@ struct GL_EXPORT DisplayExtensionsEGL {
   file.write('\n')
   file.write('#if BINDINGS_%s_PROTOTYPES\n' % set_name.upper())
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     file.write(
       '#define %s ::gl::g_current_%s_context->%sFn\n'
       % (func['known_as'], set_name.lower(), func['known_as'])
@@ -4041,6 +4096,8 @@ def GenerateAPIHeader(file, functions, set_name):
 
   # Write API declaration.
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     file.write(
       '  %s %sFn(%s) override;\n'
       % (func['return_type'], func['known_as'], func['arguments'])
@@ -4066,6 +4123,8 @@ def GenerateMockHeader(file, functions, set_name):
 
   # Write API declaration.
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     args = func['arguments']
     if args == 'void':
       args = ''
@@ -4110,6 +4169,8 @@ def GenerateStubHeader(file, functions):
 
   # Write API declaration.
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     args = func['arguments']
     if args == 'void':
       args = ''
@@ -4136,6 +4197,8 @@ def GenerateStubSource(file, functions):
 
   # Write API declaration.
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     return_type = func['return_type']
     if return_type == 'void':
       continue
@@ -4171,8 +4234,17 @@ def GenerateSource(
     set_header_name,
   ]
 
+  system_include_list = ['string']
+  if set_name == 'gl':
+    # Used by the explicit context bindings.
+    include_list.append('base/compiler_specific.h')
+    system_include_list += ['array', 'cstddef', 'cstring']
+
   includes_string = "\n".join(
     ["#include \"{0}\"".format(h) for h in sorted(include_list)]
+  )
+  system_includes_string = "\n".join(
+    ["#include <{0}>".format(h) for h in sorted(system_include_list)]
   )
 
   # Write file header.
@@ -4180,13 +4252,13 @@ def GenerateSource(
     LICENSE_AND_HEADER
     + """
 
-#include <string>
+%s
 
 %s
 
 namespace gl {
 """
-    % includes_string
+    % (system_includes_string, includes_string)
   )
 
   file.write('\n')
@@ -4305,6 +4377,8 @@ void Driver%s::InitializeStaticBindings(GLGetProcAddressProc get_proc_address) {
 
   # TODO(jmadill): make more robust
   def IsClientExtensionFunc(func):
+    if IsExplicitContextFunction(func):
+      return False
     assert len(func['versions']) > 0
     if 'client_extensions' in func['versions'][0]:
       assert len(func['versions']) == 1
@@ -4351,9 +4425,65 @@ void Driver%s::InitializeExtensionBindings() {
 
   def OutputExtensionBindings(extension_funcs):
     for func in extension_funcs:
+      if IsExplicitContextFunction(func):
+        continue
       if 'static_binding' not in func:
         file.write('\n')
         WriteConditionalFuncBinding(file, func)
+
+  def OutputExplicitContextBindings(explicit_context_funcs):
+    # To minimize binary size, the explicit context functions are loaded in a
+    # loop from a table of the source function names (sharing the strings with
+    # their own bindings), with the "ContextANGLE" suffix appended at runtime.
+    # The i-th name is written to the i-th slot of the block of explicit context
+    # functions at the end of ProcsGL.
+    if not explicit_context_funcs:
+      return
+    file.write(
+      """
+  if (ext.b_GL_ANGLE_explicit_context) {
+    static constexpr auto kExplicitContextSourceNames =
+        std::to_array<const char*>({
+"""
+    )
+    for index, func in enumerate(explicit_context_funcs):
+      source_name = func['explicit_context_source']['versions'][0]['name']
+      file.write('            "%s",  // %d\n' % (source_name, index))
+    file.write(
+      """        });
+
+    // The loop below writes the i-th function pointer at
+    // kFirstOffset + i * sizeof(GLFunctionPointerType). Check that it is the
+    // field of the i-th function, and that the loop stays within ProcsGL. If
+    // the fields were reordered, the wrong functions would be called.
+    constexpr size_t kFirstOffset = offsetof(ProcsGL, %s);
+    static_assert(kFirstOffset + kExplicitContextSourceNames.size() *
+                                     sizeof(GLFunctionPointerType) ==
+                  sizeof(ProcsGL));
+"""
+      % (explicit_context_funcs[0]['known_as'] + 'Fn')
+    )
+    for index, func in enumerate(explicit_context_funcs):
+      file.write(
+        '    static_assert(offsetof(ProcsGL, %sFn) ==\n'
+        '                  kFirstOffset + %d *'
+        ' sizeof(GLFunctionPointerType));\n' % (func['known_as'], index)
+      )
+    file.write(
+      """
+    for (size_t i = 0; i < kExplicitContextSourceNames.size(); ++i) {
+      std::string name = kExplicitContextSourceNames[i];
+      name += "ContextANGLE";
+      GLFunctionPointerType proc = get_proc_address(name.c_str());
+      // SAFETY: The static_asserts above check that the i-th slot is the field
+      // of the i-th function, within ProcsGL.
+      UNSAFE_BUFFERS(memcpy(
+          reinterpret_cast<char*>(&fn) + kFirstOffset + i * sizeof(proc),
+          &proc, sizeof(proc)));
+    }
+  }
+"""
+    )
 
   OutputExtensionSettings(
     'extensions',
@@ -4384,6 +4514,9 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
     OutputExtensionBindings(
       [f for f in functions if not IsClientExtensionFunc(f)]
     )
+    OutputExplicitContextBindings(
+      [f for f in functions if IsExplicitContextFunction(f)]
+    )
   file.write('}\n')
 
   # Write function to clear all function pointers.
@@ -4409,6 +4542,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
 
   # Write GLApiBase functions
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     function_name = func['known_as']
     return_type = func['return_type']
     arguments = func['arguments']
@@ -4428,6 +4563,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
 
   # Write TraceGLApi functions
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     function_name = func['known_as']
     return_type = func['return_type']
     arguments = func['arguments']
@@ -4455,6 +4592,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
 
   # Write LogGLApi functions
   for func in functions:
+    if not func.get('generate_api_functions', True):
+      continue
     return_type = func['return_type']
     arguments = func['arguments']
     file.write('\n')
@@ -4632,6 +4771,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
     file.write('}\n')
     file.write('}  // namespace\n')
     for func in functions:
+      if not func.get('generate_api_functions', True):
+        continue
       function_name = func['known_as']
       return_type = func['return_type']
       arguments = func['arguments']
@@ -4677,6 +4818,7 @@ def GetUniquelyNamedFunctions(functions):
         'return_type': func['return_type'],
         'arguments': func['arguments'],
         'known_as': func['known_as'],
+        'generate_api_functions': func.get('generate_api_functions', True),
       }
   return uniquely_named_functions
 
@@ -4698,6 +4840,8 @@ def GenerateMockBindingsHeader(file, functions):
 
   for key in sorted(uniquely_named_functions.keys()):
     func = uniquely_named_functions[key]
+    if not func.get('generate_api_functions', True):
+      continue
     file.write(
       'static %s GL_BINDING_CALL Mock_%s(%s);\n'
       % (func['return_type'], func['name'], func['arguments'])
@@ -4737,6 +4881,9 @@ namespace gl {
 
   for key in sorted_function_names:
     func = uniquely_named_functions[key]
+    if not func.get('generate_api_functions', True):
+      continue
+
     file.write('\n')
     file.write(
       '%s GL_BINDING_CALL Mock%sInterface::Mock_%s(%s) {\n'
@@ -4776,7 +4923,11 @@ namespace gl {
   )
   file.write('  std::string_view name_view(name);\n')
   for key in sorted_function_names:
-    name = uniquely_named_functions[key]['name']
+    func = uniquely_named_functions[key]
+    if not func.get('generate_api_functions', True):
+      continue
+
+    name = func['name']
     file.write('  if (name_view == "%s")\n' % name)
     file.write(
       '    return reinterpret_cast<GLFunctionPointerType>(Mock_%s);\n' % name
@@ -5161,9 +5312,13 @@ def main(argv):
         del func['names']
 
     # Check function names in each set is sorted in alphabetical order.
-    for index in range(len(functions) - 1):
-      func_name = functions[index]['known_as']
-      next_func_name = functions[index + 1]['known_as']
+    # The injected "ContextANGLE" entry points are appended at the end.
+    sorted_functions = [
+      f for f in functions if not IsExplicitContextFunction(f)
+    ]
+    for index in range(len(sorted_functions) - 1):
+      func_name = sorted_functions[index]['known_as']
+      next_func_name = sorted_functions[index + 1]['known_as']
       if func_name.lower() > next_func_name.lower():
         raise Exception(
           'function %s is not in alphabetical order' % next_func_name

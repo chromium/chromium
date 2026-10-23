@@ -8,8 +8,12 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
+#include <array>
+#include <cstddef>
+#include <cstring>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -341,6 +345,8 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
       gfx::HasExtension(extensions, "GL_ANGLE_base_vertex_base_instance");
   ext.b_GL_ANGLE_blob_cache =
       gfx::HasExtension(extensions, "GL_ANGLE_blob_cache");
+  ext.b_GL_ANGLE_explicit_context =
+      gfx::HasExtension(extensions, "GL_ANGLE_explicit_context");
   ext.b_GL_ANGLE_framebuffer_blit =
       gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_blit");
   ext.b_GL_ANGLE_framebuffer_multisample =
@@ -2016,6 +2022,1350 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
   if (ext.b_GL_EXT_window_rectangles) {
     fn.glWindowRectanglesEXTFn = reinterpret_cast<glWindowRectanglesEXTProc>(
         get_proc_address("glWindowRectanglesEXT"));
+  }
+
+  if (ext.b_GL_ANGLE_explicit_context) {
+    static constexpr auto kExplicitContextSourceNames =
+        std::to_array<const char*>({
+            "glAcquireTexturesANGLE",                                    // 0
+            "glActiveTexture",                                           // 1
+            "glAttachShader",                                            // 2
+            "glBeginPixelLocalStorageANGLE",                             // 3
+            "glBeginQuery",                                              // 4
+            "glBeginTransformFeedback",                                  // 5
+            "glBindAttribLocation",                                      // 6
+            "glBindBuffer",                                              // 7
+            "glBindBufferBase",                                          // 8
+            "glBindBufferRange",                                         // 9
+            "glBindFragDataLocationEXT",                                 // 10
+            "glBindFragDataLocationIndexedEXT",                          // 11
+            "glBindFramebuffer",                                         // 12
+            "glBindRenderbuffer",                                        // 13
+            "glBindSampler",                                             // 14
+            "glBindTexture",                                             // 15
+            "glBindTransformFeedback",                                   // 16
+            "glBindUniformLocationCHROMIUM",                             // 17
+            "glBindVertexArray",                                         // 18
+            "glBlendBarrierNV",                                          // 19
+            "glBlendColor",                                              // 20
+            "glBlendEquation",                                           // 21
+            "glBlendEquationiOES",                                       // 22
+            "glBlendEquationSeparate",                                   // 23
+            "glBlendEquationSeparateiOES",                               // 24
+            "glBlendFunc",                                               // 25
+            "glBlendFunciOES",                                           // 26
+            "glBlendFuncSeparate",                                       // 27
+            "glBlendFuncSeparateiOES",                                   // 28
+            "glBlitFramebuffer",                                         // 29
+            "glBlobCacheCallbacksANGLE",                                 // 30
+            "glBufferData",                                              // 31
+            "glBufferSubData",                                           // 32
+            "glCheckFramebufferStatus",                                  // 33
+            "glClear",                                                   // 34
+            "glClearBufferfi",                                           // 35
+            "glClearBufferfv",                                           // 36
+            "glClearBufferiv",                                           // 37
+            "glClearBufferuiv",                                          // 38
+            "glClearColor",                                              // 39
+            "glClearDepth",                                              // 40
+            "glClearDepthf",                                             // 41
+            "glClearStencil",                                            // 42
+            "glClearTexImageEXT",                                        // 43
+            "glClearTexSubImage",                                        // 44
+            "glClientWaitSync",                                          // 45
+            "glClipControlEXT",                                          // 46
+            "glColorMask",                                               // 47
+            "glColorMaskiOES",                                           // 48
+            "glCompileShader",                                           // 49
+            "glCompressedTexImage2D",                                    // 50
+            "glCompressedTexImage3D",                                    // 51
+            "glCompressedTexSubImage2D",                                 // 52
+            "glCompressedTexSubImage3D",                                 // 53
+            "glCopyBufferSubData",                                       // 54
+            "glCopySubTextureCHROMIUM",                                  // 55
+            "glCopyTexImage2D",                                          // 56
+            "glCopyTexSubImage2D",                                       // 57
+            "glCopyTexSubImage3D",                                       // 58
+            "glCopyTextureCHROMIUM",                                     // 59
+            "glCreateMemoryObjectsEXT",                                  // 60
+            "glCreateProgram",                                           // 61
+            "glCreateShader",                                            // 62
+            "glCullFace",                                                // 63
+            "glDebugMessageCallbackKHR",                                 // 64
+            "glDebugMessageControlKHR",                                  // 65
+            "glDebugMessageInsertKHR",                                   // 66
+            "glDeleteBuffers",                                           // 67
+            "glDeleteFencesNV",                                          // 68
+            "glDeleteFramebuffers",                                      // 69
+            "glDeleteMemoryObjectsEXT",                                  // 70
+            "glDeleteProgram",                                           // 71
+            "glDeleteQueries",                                           // 72
+            "glDeleteRenderbuffers",                                     // 73
+            "glDeleteSamplers",                                          // 74
+            "glDeleteSemaphoresEXT",                                     // 75
+            "glDeleteShader",                                            // 76
+            "glDeleteSync",                                              // 77
+            "glDeleteTextures",                                          // 78
+            "glDeleteTransformFeedbacks",                                // 79
+            "glDeleteVertexArrays",                                      // 80
+            "glDepthFunc",                                               // 81
+            "glDepthMask",                                               // 82
+            "glDepthRange",                                              // 83
+            "glDepthRangef",                                             // 84
+            "glDetachShader",                                            // 85
+            "glDisable",                                                 // 86
+            "glDisableiOES",                                             // 87
+            "glDisableVertexAttribArray",                                // 88
+            "glDiscardFramebufferEXT",                                   // 89
+            "glDrawArrays",                                              // 90
+            "glDrawArraysInstanced",                                     // 91
+            "glDrawArraysInstancedBaseInstanceEXT",                      // 92
+            "glDrawBuffer",                                              // 93
+            "glDrawBuffers",                                             // 94
+            "glDrawElements",                                            // 95
+            "glDrawElementsInstanced",                                   // 96
+            "glDrawElementsInstancedBaseVertexBaseInstanceEXT",          // 97
+            "glDrawRangeElements",                                       // 98
+            "glEGLImageTargetRenderbufferStorageOES",                    // 99
+            "glEGLImageTargetTexStorageEXT",                             // 100
+            "glEGLImageTargetTexture2DOES",                              // 101
+            "glEnable",                                                  // 102
+            "glEnableiOES",                                              // 103
+            "glEnableVertexAttribArray",                                 // 104
+            "glEndPixelLocalStorageANGLE",                               // 105
+            "glEndPixelLocalStorageImplicitANGLE",                       // 106
+            "glEndQuery",                                                // 107
+            "glEndTilingQCOM",                                           // 108
+            "glEndTransformFeedback",                                    // 109
+            "glFenceSync",                                               // 110
+            "glFinish",                                                  // 111
+            "glFinishFenceNV",                                           // 112
+            "glFlush",                                                   // 113
+            "glFlushMappedBufferRange",                                  // 114
+            "glFramebufferMemorylessPixelLocalStorageANGLE",             // 115
+            "glFramebufferParameteriMESA",                               // 116
+            "glFramebufferPixelLocalClearValuefvANGLE",                  // 117
+            "glFramebufferPixelLocalClearValueivANGLE",                  // 118
+            "glFramebufferPixelLocalClearValueuivANGLE",                 // 119
+            "glFramebufferPixelLocalStorageInterruptANGLE",              // 120
+            "glFramebufferPixelLocalStorageRestoreANGLE",                // 121
+            "glFramebufferRenderbuffer",                                 // 122
+            "glFramebufferTexture2D",                                    // 123
+            "glFramebufferTexture2DMultisampleEXT",                      // 124
+            "glFramebufferTextureLayer",                                 // 125
+            "glFramebufferTextureMultiviewOVR",                          // 126
+            "glFramebufferTexturePixelLocalStorageANGLE",                // 127
+            "glFrontFace",                                               // 128
+            "glGenBuffers",                                              // 129
+            "glGenerateMipmap",                                          // 130
+            "glGenFencesNV",                                             // 131
+            "glGenFramebuffers",                                         // 132
+            "glGenQueries",                                              // 133
+            "glGenRenderbuffers",                                        // 134
+            "glGenSamplers",                                             // 135
+            "glGenSemaphoresEXT",                                        // 136
+            "glGenTextures",                                             // 137
+            "glGenTransformFeedbacks",                                   // 138
+            "glGenVertexArrays",                                         // 139
+            "glGetActiveAttrib",                                         // 140
+            "glGetActiveUniform",                                        // 141
+            "glGetActiveUniformBlockiv",                                 // 142
+            "glGetActiveUniformBlockivRobustANGLE",                      // 143
+            "glGetActiveUniformBlockName",                               // 144
+            "glGetActiveUniformsiv",                                     // 145
+            "glGetAttachedShaders",                                      // 146
+            "glGetAttribLocation",                                       // 147
+            "glGetBooleanv",                                             // 148
+            "glGetBooleanvRobustANGLE",                                  // 149
+            "glGetBufferParameteri64vRobustANGLE",                       // 150
+            "glGetBufferParameteriv",                                    // 151
+            "glGetBufferParameterivRobustANGLE",                         // 152
+            "glGetBufferPointervRobustANGLE",                            // 153
+            "glGetDebugMessageLogKHR",                                   // 154
+            "glGetError",                                                // 155
+            "glGetFenceivNV",                                            // 156
+            "glGetFloatv",                                               // 157
+            "glGetFloatvRobustANGLE",                                    // 158
+            "glGetFragDataIndexEXT",                                     // 159
+            "glGetFragDataLocation",                                     // 160
+            "glGetFramebufferAttachmentParameteriv",                     // 161
+            "glGetFramebufferAttachmentParameterivRobustANGLE",          // 162
+            "glGetFramebufferPixelLocalStorageParameterfvRobustANGLE",   // 163
+            "glGetFramebufferPixelLocalStorageParameterivRobustANGLE",   // 164
+            "glGetFramebufferPixelLocalStorageParameteruivRobustANGLE",  // 165
+            "glGetGraphicsResetStatusKHR",                               // 166
+            "glGetInteger64i_v",                                         // 167
+            "glGetInteger64i_vRobustANGLE",                              // 168
+            "glGetInteger64v",                                           // 169
+            "glGetInteger64vRobustANGLE",                                // 170
+            "glGetIntegeri_v",                                           // 171
+            "glGetIntegeri_vRobustANGLE",                                // 172
+            "glGetIntegerv",                                             // 173
+            "glGetIntegervRobustANGLE",                                  // 174
+            "glGetInternalformativ",                                     // 175
+            "glGetInternalformativRobustANGLE",                          // 176
+            "glGetInternalformatSampleivNV",                             // 177
+            "glGetMultisamplefvRobustANGLE",                             // 178
+            "glGetObjectLabelKHR",                                       // 179
+            "glGetObjectPtrLabelKHR",                                    // 180
+            "glGetPointervKHR",                                          // 181
+            "glGetProgramBinary",                                        // 182
+            "glGetProgramInfoLog",                                       // 183
+            "glGetProgramiv",                                            // 184
+            "glGetProgramivRobustANGLE",                                 // 185
+            "glGetQueryiv",                                              // 186
+            "glGetQueryivRobustANGLE",                                   // 187
+            "glGetQueryObjecti64vEXT",                                   // 188
+            "glGetQueryObjecti64vRobustANGLE",                           // 189
+            "glGetQueryObjectivEXT",                                     // 190
+            "glGetQueryObjectivRobustANGLE",                             // 191
+            "glGetQueryObjectui64vEXT",                                  // 192
+            "glGetQueryObjectui64vRobustANGLE",                          // 193
+            "glGetQueryObjectuiv",                                       // 194
+            "glGetQueryObjectuivRobustANGLE",                            // 195
+            "glGetRenderbufferParameteriv",                              // 196
+            "glGetRenderbufferParameterivRobustANGLE",                   // 197
+            "glGetSamplerParameterfv",                                   // 198
+            "glGetSamplerParameterfvRobustANGLE",                        // 199
+            "glGetSamplerParameteriv",                                   // 200
+            "glGetSamplerParameterivRobustANGLE",                        // 201
+            "glGetShaderInfoLog",                                        // 202
+            "glGetShaderiv",                                             // 203
+            "glGetShaderivRobustANGLE",                                  // 204
+            "glGetShaderPrecisionFormat",                                // 205
+            "glGetShaderSource",                                         // 206
+            "glGetString",                                               // 207
+            "glGetStringi",                                              // 208
+            "glGetSynciv",                                               // 209
+            "glGetTexLevelParameterfvANGLE",                             // 210
+            "glGetTexLevelParameterfvRobustANGLE",                       // 211
+            "glGetTexLevelParameterivANGLE",                             // 212
+            "glGetTexLevelParameterivRobustANGLE",                       // 213
+            "glGetTexParameterfv",                                       // 214
+            "glGetTexParameterfvRobustANGLE",                            // 215
+            "glGetTexParameteriv",                                       // 216
+            "glGetTexParameterivRobustANGLE",                            // 217
+            "glGetTransformFeedbackVarying",                             // 218
+            "glGetTranslatedShaderSourceANGLE",                          // 219
+            "glGetUniformBlockIndex",                                    // 220
+            "glGetUniformfv",                                            // 221
+            "glGetUniformfvRobustANGLE",                                 // 222
+            "glGetUniformIndices",                                       // 223
+            "glGetUniformiv",                                            // 224
+            "glGetUniformivRobustANGLE",                                 // 225
+            "glGetUniformLocation",                                      // 226
+            "glGetUniformuiv",                                           // 227
+            "glGetUniformuivRobustANGLE",                                // 228
+            "glGetVertexAttribfv",                                       // 229
+            "glGetVertexAttribfvRobustANGLE",                            // 230
+            "glGetVertexAttribIivRobustANGLE",                           // 231
+            "glGetVertexAttribIuivRobustANGLE",                          // 232
+            "glGetVertexAttribiv",                                       // 233
+            "glGetVertexAttribivRobustANGLE",                            // 234
+            "glGetVertexAttribPointerv",                                 // 235
+            "glGetVertexAttribPointervRobustANGLE",                      // 236
+            "glHint",                                                    // 237
+            "glImportMemoryFdEXT",                                       // 238
+            "glImportMemoryWin32HandleEXT",                              // 239
+            "glImportMemoryZirconHandleANGLE",                           // 240
+            "glImportSemaphoreFdEXT",                                    // 241
+            "glImportSemaphoreWin32HandleEXT",                           // 242
+            "glImportSemaphoreZirconHandleANGLE",                        // 243
+            "glInsertEventMarkerEXT",                                    // 244
+            "glInvalidateFramebuffer",                                   // 245
+            "glInvalidateSubFramebuffer",                                // 246
+            "glInvalidateTextureANGLE",                                  // 247
+            "glIsBuffer",                                                // 248
+            "glIsEnabled",                                               // 249
+            "glIsEnablediOES",                                           // 250
+            "glIsFenceNV",                                               // 251
+            "glIsFramebuffer",                                           // 252
+            "glIsProgram",                                               // 253
+            "glIsQuery",                                                 // 254
+            "glIsRenderbuffer",                                          // 255
+            "glIsSampler",                                               // 256
+            "glIsShader",                                                // 257
+            "glIsSync",                                                  // 258
+            "glIsTexture",                                               // 259
+            "glIsTransformFeedback",                                     // 260
+            "glIsVertexArray",                                           // 261
+            "glLineWidth",                                               // 262
+            "glLinkProgram",                                             // 263
+            "glMapBufferOES",                                            // 264
+            "glMapBufferRange",                                          // 265
+            "glMaxShaderCompilerThreadsKHR",                             // 266
+            "glMemoryObjectParameterivEXT",                              // 267
+            "glMultiDrawArraysANGLE",                                    // 268
+            "glMultiDrawArraysInstancedANGLE",                           // 269
+            "glMultiDrawArraysInstancedBaseInstanceANGLE",               // 270
+            "glMultiDrawElementsANGLE",                                  // 271
+            "glMultiDrawElementsInstancedANGLE",                         // 272
+            "glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE",   // 273
+            "glObjectLabelKHR",                                          // 274
+            "glObjectPtrLabelKHR",                                       // 275
+            "glPatchParameteriOES",                                      // 276
+            "glPauseTransformFeedback",                                  // 277
+            "glPixelLocalStorageBarrierANGLE",                           // 278
+            "glPixelStorei",                                             // 279
+            "glPointParameteri",                                         // 280
+            "glPolygonMode",                                             // 281
+            "glPolygonModeANGLE",                                        // 282
+            "glPolygonOffset",                                           // 283
+            "glPolygonOffsetClampEXT",                                   // 284
+            "glPopDebugGroupKHR",                                        // 285
+            "glPopGroupMarkerEXT",                                       // 286
+            "glPrimitiveRestartIndex",                                   // 287
+            "glProgramBinary",                                           // 288
+            "glProgramParameteri",                                       // 289
+            "glProvokingVertexANGLE",                                    // 290
+            "glPushDebugGroupKHR",                                       // 291
+            "glPushGroupMarkerEXT",                                      // 292
+            "glQueryCounterEXT",                                         // 293
+            "glReadBuffer",                                              // 294
+            "glReadPixels",                                              // 295
+            "glReadPixelsRobustANGLE",                                   // 296
+            "glReleaseShaderCompiler",                                   // 297
+            "glReleaseTexturesANGLE",                                    // 298
+            "glRenderbufferStorage",                                     // 299
+            "glRenderbufferStorageMultisample",                          // 300
+            "glRenderbufferStorageMultisampleAdvancedAMD",               // 301
+            "glRenderbufferStorageMultisampleEXT",                       // 302
+            "glRequestExtensionANGLE",                                   // 303
+            "glResumeTransformFeedback",                                 // 304
+            "glSampleCoverage",                                          // 305
+            "glSamplerParameterf",                                       // 306
+            "glSamplerParameterfv",                                      // 307
+            "glSamplerParameterfvRobustANGLE",                           // 308
+            "glSamplerParameteri",                                       // 309
+            "glSamplerParameteriv",                                      // 310
+            "glSamplerParameterivRobustANGLE",                           // 311
+            "glScissor",                                                 // 312
+            "glSetFenceNV",                                              // 313
+            "glShaderBinary",                                            // 314
+            "glShaderSource",                                            // 315
+            "glSignalSemaphoreEXT",                                      // 316
+            "glStartTilingQCOM",                                         // 317
+            "glStencilFunc",                                             // 318
+            "glStencilFuncSeparate",                                     // 319
+            "glStencilMask",                                             // 320
+            "glStencilMaskSeparate",                                     // 321
+            "glStencilOp",                                               // 322
+            "glStencilOpSeparate",                                       // 323
+            "glTestFenceNV",                                             // 324
+            "glTexBufferOES",                                            // 325
+            "glTexBufferRangeOES",                                       // 326
+            "glTexImage2D",                                              // 327
+            "glTexImage2DExternalANGLE",                                 // 328
+            "glTexImage2DRobustANGLE",                                   // 329
+            "glTexImage3D",                                              // 330
+            "glTexImage3DRobustANGLE",                                   // 331
+            "glTexParameterf",                                           // 332
+            "glTexParameterfv",                                          // 333
+            "glTexParameterfvRobustANGLE",                               // 334
+            "glTexParameteri",                                           // 335
+            "glTexParameteriv",                                          // 336
+            "glTexParameterivRobustANGLE",                               // 337
+            "glTexStorage2D",                                            // 338
+            "glTexStorage3D",                                            // 339
+            "glTexStorageMem2DEXT",                                      // 340
+            "glTexStorageMemFlags2DANGLE",                               // 341
+            "glTexSubImage2D",                                           // 342
+            "glTexSubImage2DRobustANGLE",                                // 343
+            "glTexSubImage3D",                                           // 344
+            "glTexSubImage3DRobustANGLE",                                // 345
+            "glTransformFeedbackVaryings",                               // 346
+            "glTrimMemoryANGLE",                                         // 347
+            "glUniform1f",                                               // 348
+            "glUniform1fv",                                              // 349
+            "glUniform1i",                                               // 350
+            "glUniform1iv",                                              // 351
+            "glUniform1ui",                                              // 352
+            "glUniform1uiv",                                             // 353
+            "glUniform2f",                                               // 354
+            "glUniform2fv",                                              // 355
+            "glUniform2i",                                               // 356
+            "glUniform2iv",                                              // 357
+            "glUniform2ui",                                              // 358
+            "glUniform2uiv",                                             // 359
+            "glUniform3f",                                               // 360
+            "glUniform3fv",                                              // 361
+            "glUniform3i",                                               // 362
+            "glUniform3iv",                                              // 363
+            "glUniform3ui",                                              // 364
+            "glUniform3uiv",                                             // 365
+            "glUniform4f",                                               // 366
+            "glUniform4fv",                                              // 367
+            "glUniform4i",                                               // 368
+            "glUniform4iv",                                              // 369
+            "glUniform4ui",                                              // 370
+            "glUniform4uiv",                                             // 371
+            "glUniformBlockBinding",                                     // 372
+            "glUniformMatrix2fv",                                        // 373
+            "glUniformMatrix2x3fv",                                      // 374
+            "glUniformMatrix2x4fv",                                      // 375
+            "glUniformMatrix3fv",                                        // 376
+            "glUniformMatrix3x2fv",                                      // 377
+            "glUniformMatrix3x4fv",                                      // 378
+            "glUniformMatrix4fv",                                        // 379
+            "glUniformMatrix4x2fv",                                      // 380
+            "glUniformMatrix4x3fv",                                      // 381
+            "glUnmapBuffer",                                             // 382
+            "glUseProgram",                                              // 383
+            "glValidateProgram",                                         // 384
+            "glVertexAttrib1f",                                          // 385
+            "glVertexAttrib1fv",                                         // 386
+            "glVertexAttrib2f",                                          // 387
+            "glVertexAttrib2fv",                                         // 388
+            "glVertexAttrib3f",                                          // 389
+            "glVertexAttrib3fv",                                         // 390
+            "glVertexAttrib4f",                                          // 391
+            "glVertexAttrib4fv",                                         // 392
+            "glVertexAttribDivisor",                                     // 393
+            "glVertexAttribI4i",                                         // 394
+            "glVertexAttribI4iv",                                        // 395
+            "glVertexAttribI4ui",                                        // 396
+            "glVertexAttribI4uiv",                                       // 397
+            "glVertexAttribIPointer",                                    // 398
+            "glVertexAttribPointer",                                     // 399
+            "glViewport",                                                // 400
+            "glWaitSemaphoreEXT",                                        // 401
+            "glWaitSync",                                                // 402
+            "glWindowRectanglesEXT",                                     // 403
+        });
+
+    // The loop below writes the i-th function pointer at
+    // kFirstOffset + i * sizeof(GLFunctionPointerType). Check that it is the
+    // field of the i-th function, and that the loop stays within ProcsGL. If
+    // the fields were reordered, the wrong functions would be called.
+    constexpr size_t kFirstOffset =
+        offsetof(ProcsGL, glAcquireTexturesANGLEContextANGLEFn);
+    static_assert(kFirstOffset + kExplicitContextSourceNames.size() *
+                                     sizeof(GLFunctionPointerType) ==
+                  sizeof(ProcsGL));
+    static_assert(offsetof(ProcsGL, glAcquireTexturesANGLEContextANGLEFn) ==
+                  kFirstOffset + 0 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glActiveTextureContextANGLEFn) ==
+                  kFirstOffset + 1 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glAttachShaderContextANGLEFn) ==
+                  kFirstOffset + 2 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glBeginPixelLocalStorageANGLEContextANGLEFn) ==
+        kFirstOffset + 3 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBeginQueryContextANGLEFn) ==
+                  kFirstOffset + 4 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBeginTransformFeedbackContextANGLEFn) ==
+                  kFirstOffset + 5 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindAttribLocationContextANGLEFn) ==
+                  kFirstOffset + 6 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindBufferContextANGLEFn) ==
+                  kFirstOffset + 7 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindBufferBaseContextANGLEFn) ==
+                  kFirstOffset + 8 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindBufferRangeContextANGLEFn) ==
+                  kFirstOffset + 9 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindFragDataLocationContextANGLEFn) ==
+                  kFirstOffset + 10 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glBindFragDataLocationIndexedContextANGLEFn) ==
+        kFirstOffset + 11 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindFramebufferEXTContextANGLEFn) ==
+                  kFirstOffset + 12 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindRenderbufferEXTContextANGLEFn) ==
+                  kFirstOffset + 13 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindSamplerContextANGLEFn) ==
+                  kFirstOffset + 14 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindTextureContextANGLEFn) ==
+                  kFirstOffset + 15 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindTransformFeedbackContextANGLEFn) ==
+                  kFirstOffset + 16 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glBindUniformLocationCHROMIUMContextANGLEFn) ==
+        kFirstOffset + 17 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBindVertexArrayOESContextANGLEFn) ==
+                  kFirstOffset + 18 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendBarrierKHRContextANGLEFn) ==
+                  kFirstOffset + 19 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendColorContextANGLEFn) ==
+                  kFirstOffset + 20 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendEquationContextANGLEFn) ==
+                  kFirstOffset + 21 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendEquationiOESContextANGLEFn) ==
+                  kFirstOffset + 22 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendEquationSeparateContextANGLEFn) ==
+                  kFirstOffset + 23 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glBlendEquationSeparateiOESContextANGLEFn) ==
+        kFirstOffset + 24 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendFuncContextANGLEFn) ==
+                  kFirstOffset + 25 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendFunciOESContextANGLEFn) ==
+                  kFirstOffset + 26 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendFuncSeparateContextANGLEFn) ==
+                  kFirstOffset + 27 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlendFuncSeparateiOESContextANGLEFn) ==
+                  kFirstOffset + 28 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlitFramebufferContextANGLEFn) ==
+                  kFirstOffset + 29 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBlobCacheCallbacksANGLEContextANGLEFn) ==
+                  kFirstOffset + 30 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBufferDataContextANGLEFn) ==
+                  kFirstOffset + 31 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glBufferSubDataContextANGLEFn) ==
+                  kFirstOffset + 32 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glCheckFramebufferStatusEXTContextANGLEFn) ==
+        kFirstOffset + 33 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearContextANGLEFn) ==
+                  kFirstOffset + 34 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearBufferfiContextANGLEFn) ==
+                  kFirstOffset + 35 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearBufferfvContextANGLEFn) ==
+                  kFirstOffset + 36 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearBufferivContextANGLEFn) ==
+                  kFirstOffset + 37 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearBufferuivContextANGLEFn) ==
+                  kFirstOffset + 38 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearColorContextANGLEFn) ==
+                  kFirstOffset + 39 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearDepthContextANGLEFn) ==
+                  kFirstOffset + 40 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearDepthfContextANGLEFn) ==
+                  kFirstOffset + 41 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearStencilContextANGLEFn) ==
+                  kFirstOffset + 42 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearTexImageContextANGLEFn) ==
+                  kFirstOffset + 43 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClearTexSubImageContextANGLEFn) ==
+                  kFirstOffset + 44 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClientWaitSyncContextANGLEFn) ==
+                  kFirstOffset + 45 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glClipControlEXTContextANGLEFn) ==
+                  kFirstOffset + 46 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glColorMaskContextANGLEFn) ==
+                  kFirstOffset + 47 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glColorMaskiOESContextANGLEFn) ==
+                  kFirstOffset + 48 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCompileShaderContextANGLEFn) ==
+                  kFirstOffset + 49 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCompressedTexImage2DContextANGLEFn) ==
+                  kFirstOffset + 50 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCompressedTexImage3DContextANGLEFn) ==
+                  kFirstOffset + 51 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCompressedTexSubImage2DContextANGLEFn) ==
+                  kFirstOffset + 52 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCompressedTexSubImage3DContextANGLEFn) ==
+                  kFirstOffset + 53 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCopyBufferSubDataContextANGLEFn) ==
+                  kFirstOffset + 54 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCopySubTextureCHROMIUMContextANGLEFn) ==
+                  kFirstOffset + 55 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCopyTexImage2DContextANGLEFn) ==
+                  kFirstOffset + 56 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCopyTexSubImage2DContextANGLEFn) ==
+                  kFirstOffset + 57 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCopyTexSubImage3DContextANGLEFn) ==
+                  kFirstOffset + 58 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCopyTextureCHROMIUMContextANGLEFn) ==
+                  kFirstOffset + 59 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCreateMemoryObjectsEXTContextANGLEFn) ==
+                  kFirstOffset + 60 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCreateProgramContextANGLEFn) ==
+                  kFirstOffset + 61 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCreateShaderContextANGLEFn) ==
+                  kFirstOffset + 62 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glCullFaceContextANGLEFn) ==
+                  kFirstOffset + 63 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDebugMessageCallbackKHRContextANGLEFn) ==
+                  kFirstOffset + 64 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDebugMessageControlKHRContextANGLEFn) ==
+                  kFirstOffset + 65 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDebugMessageInsertKHRContextANGLEFn) ==
+                  kFirstOffset + 66 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteBuffersARBContextANGLEFn) ==
+                  kFirstOffset + 67 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteFencesNVContextANGLEFn) ==
+                  kFirstOffset + 68 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteFramebuffersEXTContextANGLEFn) ==
+                  kFirstOffset + 69 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteMemoryObjectsEXTContextANGLEFn) ==
+                  kFirstOffset + 70 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteProgramContextANGLEFn) ==
+                  kFirstOffset + 71 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteQueriesContextANGLEFn) ==
+                  kFirstOffset + 72 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteRenderbuffersEXTContextANGLEFn) ==
+                  kFirstOffset + 73 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteSamplersContextANGLEFn) ==
+                  kFirstOffset + 74 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteSemaphoresEXTContextANGLEFn) ==
+                  kFirstOffset + 75 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteShaderContextANGLEFn) ==
+                  kFirstOffset + 76 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteSyncContextANGLEFn) ==
+                  kFirstOffset + 77 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteTexturesContextANGLEFn) ==
+                  kFirstOffset + 78 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteTransformFeedbacksContextANGLEFn) ==
+                  kFirstOffset + 79 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDeleteVertexArraysOESContextANGLEFn) ==
+                  kFirstOffset + 80 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDepthFuncContextANGLEFn) ==
+                  kFirstOffset + 81 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDepthMaskContextANGLEFn) ==
+                  kFirstOffset + 82 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDepthRangeContextANGLEFn) ==
+                  kFirstOffset + 83 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDepthRangefContextANGLEFn) ==
+                  kFirstOffset + 84 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDetachShaderContextANGLEFn) ==
+                  kFirstOffset + 85 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDisableContextANGLEFn) ==
+                  kFirstOffset + 86 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDisableiOESContextANGLEFn) ==
+                  kFirstOffset + 87 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDisableVertexAttribArrayContextANGLEFn) ==
+                  kFirstOffset + 88 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDiscardFramebufferEXTContextANGLEFn) ==
+                  kFirstOffset + 89 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDrawArraysContextANGLEFn) ==
+                  kFirstOffset + 90 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDrawArraysInstancedANGLEContextANGLEFn) ==
+                  kFirstOffset + 91 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glDrawArraysInstancedBaseInstanceANGLEContextANGLEFn) ==
+        kFirstOffset + 92 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDrawBufferContextANGLEFn) ==
+                  kFirstOffset + 93 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDrawBuffersARBContextANGLEFn) ==
+                  kFirstOffset + 94 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDrawElementsContextANGLEFn) ==
+                  kFirstOffset + 95 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glDrawElementsInstancedANGLEContextANGLEFn) ==
+        kFirstOffset + 96 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(
+            ProcsGL,
+            glDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEFn) ==
+        kFirstOffset + 97 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glDrawRangeElementsContextANGLEFn) ==
+                  kFirstOffset + 98 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glEGLImageTargetRenderbufferStorageOESContextANGLEFn) ==
+        kFirstOffset + 99 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glEGLImageTargetTexStorageEXTContextANGLEFn) ==
+        kFirstOffset + 100 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glEGLImageTargetTexture2DOESContextANGLEFn) ==
+        kFirstOffset + 101 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glEnableContextANGLEFn) ==
+                  kFirstOffset + 102 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glEnableiOESContextANGLEFn) ==
+                  kFirstOffset + 103 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glEnableVertexAttribArrayContextANGLEFn) ==
+                  kFirstOffset + 104 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glEndPixelLocalStorageANGLEContextANGLEFn) ==
+        kFirstOffset + 105 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glEndPixelLocalStorageImplicitANGLEContextANGLEFn) ==
+        kFirstOffset + 106 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glEndQueryContextANGLEFn) ==
+                  kFirstOffset + 107 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glEndTilingQCOMContextANGLEFn) ==
+                  kFirstOffset + 108 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glEndTransformFeedbackContextANGLEFn) ==
+                  kFirstOffset + 109 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFenceSyncContextANGLEFn) ==
+                  kFirstOffset + 110 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFinishContextANGLEFn) ==
+                  kFirstOffset + 111 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFinishFenceNVContextANGLEFn) ==
+                  kFirstOffset + 112 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFlushContextANGLEFn) ==
+                  kFirstOffset + 113 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFlushMappedBufferRangeContextANGLEFn) ==
+                  kFirstOffset + 114 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferMemorylessPixelLocalStorageANGLEContextANGLEFn) ==
+        kFirstOffset + 115 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glFramebufferParameteriMESAContextANGLEFn) ==
+        kFirstOffset + 116 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferPixelLocalClearValuefvANGLEContextANGLEFn) ==
+        kFirstOffset + 117 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferPixelLocalClearValueivANGLEContextANGLEFn) ==
+        kFirstOffset + 118 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferPixelLocalClearValueuivANGLEContextANGLEFn) ==
+        kFirstOffset + 119 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferPixelLocalStorageInterruptANGLEContextANGLEFn) ==
+        kFirstOffset + 120 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferPixelLocalStorageRestoreANGLEContextANGLEFn) ==
+        kFirstOffset + 121 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glFramebufferRenderbufferEXTContextANGLEFn) ==
+        kFirstOffset + 122 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFramebufferTexture2DEXTContextANGLEFn) ==
+                  kFirstOffset + 123 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glFramebufferTexture2DMultisampleEXTContextANGLEFn) ==
+        kFirstOffset + 124 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFramebufferTextureLayerContextANGLEFn) ==
+                  kFirstOffset + 125 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glFramebufferTextureMultiviewOVRContextANGLEFn) ==
+        kFirstOffset + 126 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glFramebufferTexturePixelLocalStorageANGLEContextANGLEFn) ==
+        kFirstOffset + 127 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glFrontFaceContextANGLEFn) ==
+                  kFirstOffset + 128 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenBuffersARBContextANGLEFn) ==
+                  kFirstOffset + 129 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenerateMipmapEXTContextANGLEFn) ==
+                  kFirstOffset + 130 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenFencesNVContextANGLEFn) ==
+                  kFirstOffset + 131 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenFramebuffersEXTContextANGLEFn) ==
+                  kFirstOffset + 132 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenQueriesContextANGLEFn) ==
+                  kFirstOffset + 133 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenRenderbuffersEXTContextANGLEFn) ==
+                  kFirstOffset + 134 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenSamplersContextANGLEFn) ==
+                  kFirstOffset + 135 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenSemaphoresEXTContextANGLEFn) ==
+                  kFirstOffset + 136 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenTexturesContextANGLEFn) ==
+                  kFirstOffset + 137 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenTransformFeedbacksContextANGLEFn) ==
+                  kFirstOffset + 138 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGenVertexArraysOESContextANGLEFn) ==
+                  kFirstOffset + 139 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetActiveAttribContextANGLEFn) ==
+                  kFirstOffset + 140 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetActiveUniformContextANGLEFn) ==
+                  kFirstOffset + 141 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetActiveUniformBlockivContextANGLEFn) ==
+                  kFirstOffset + 142 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetActiveUniformBlockivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 143 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetActiveUniformBlockNameContextANGLEFn) ==
+        kFirstOffset + 144 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetActiveUniformsivContextANGLEFn) ==
+                  kFirstOffset + 145 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetAttachedShadersContextANGLEFn) ==
+                  kFirstOffset + 146 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetAttribLocationContextANGLEFn) ==
+                  kFirstOffset + 147 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetBooleanvContextANGLEFn) ==
+                  kFirstOffset + 148 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetBooleanvRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 149 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetBufferParameteri64vRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 150 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetBufferParameterivContextANGLEFn) ==
+                  kFirstOffset + 151 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetBufferParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 152 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetBufferPointervRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 153 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetDebugMessageLogKHRContextANGLEFn) ==
+                  kFirstOffset + 154 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetErrorContextANGLEFn) ==
+                  kFirstOffset + 155 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetFenceivNVContextANGLEFn) ==
+                  kFirstOffset + 156 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetFloatvContextANGLEFn) ==
+                  kFirstOffset + 157 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetFloatvRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 158 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetFragDataIndexContextANGLEFn) ==
+                  kFirstOffset + 159 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetFragDataLocationContextANGLEFn) ==
+                  kFirstOffset + 160 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glGetFramebufferAttachmentParameterivEXTContextANGLEFn) ==
+        kFirstOffset + 161 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(
+            ProcsGL,
+            glGetFramebufferAttachmentParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 162 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(
+            ProcsGL,
+            glGetFramebufferPixelLocalStorageParameterfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 163 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(
+            ProcsGL,
+            glGetFramebufferPixelLocalStorageParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 164 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(
+            ProcsGL,
+            glGetFramebufferPixelLocalStorageParameteruivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 165 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetGraphicsResetStatusARBContextANGLEFn) ==
+        kFirstOffset + 166 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetInteger64i_vContextANGLEFn) ==
+                  kFirstOffset + 167 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetInteger64i_vRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 168 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetInteger64vContextANGLEFn) ==
+                  kFirstOffset + 169 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetInteger64vRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 170 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetIntegeri_vContextANGLEFn) ==
+                  kFirstOffset + 171 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetIntegeri_vRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 172 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetIntegervContextANGLEFn) ==
+                  kFirstOffset + 173 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetIntegervRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 174 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetInternalformativContextANGLEFn) ==
+                  kFirstOffset + 175 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetInternalformativRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 176 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetInternalformatSampleivNVContextANGLEFn) ==
+        kFirstOffset + 177 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetMultisamplefvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 178 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetObjectLabelKHRContextANGLEFn) ==
+                  kFirstOffset + 179 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetObjectPtrLabelKHRContextANGLEFn) ==
+                  kFirstOffset + 180 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetPointervKHRContextANGLEFn) ==
+                  kFirstOffset + 181 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetProgramBinaryContextANGLEFn) ==
+                  kFirstOffset + 182 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetProgramInfoLogContextANGLEFn) ==
+                  kFirstOffset + 183 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetProgramivContextANGLEFn) ==
+                  kFirstOffset + 184 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetProgramivRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 185 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetQueryivContextANGLEFn) ==
+                  kFirstOffset + 186 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetQueryivRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 187 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetQueryObjecti64vContextANGLEFn) ==
+                  kFirstOffset + 188 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetQueryObjecti64vRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 189 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetQueryObjectivContextANGLEFn) ==
+                  kFirstOffset + 190 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetQueryObjectivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 191 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetQueryObjectui64vContextANGLEFn) ==
+                  kFirstOffset + 192 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetQueryObjectui64vRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 193 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetQueryObjectuivContextANGLEFn) ==
+                  kFirstOffset + 194 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetQueryObjectuivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 195 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetRenderbufferParameterivEXTContextANGLEFn) ==
+        kFirstOffset + 196 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glGetRenderbufferParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 197 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetSamplerParameterfvContextANGLEFn) ==
+                  kFirstOffset + 198 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetSamplerParameterfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 199 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetSamplerParameterivContextANGLEFn) ==
+                  kFirstOffset + 200 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetSamplerParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 201 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetShaderInfoLogContextANGLEFn) ==
+                  kFirstOffset + 202 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetShaderivContextANGLEFn) ==
+                  kFirstOffset + 203 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetShaderivRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 204 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetShaderPrecisionFormatContextANGLEFn) ==
+                  kFirstOffset + 205 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetShaderSourceContextANGLEFn) ==
+                  kFirstOffset + 206 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetStringContextANGLEFn) ==
+                  kFirstOffset + 207 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetStringiContextANGLEFn) ==
+                  kFirstOffset + 208 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetSyncivContextANGLEFn) ==
+                  kFirstOffset + 209 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTexLevelParameterfvANGLEContextANGLEFn) ==
+        kFirstOffset + 210 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTexLevelParameterfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 211 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTexLevelParameterivANGLEContextANGLEFn) ==
+        kFirstOffset + 212 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTexLevelParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 213 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetTexParameterfvContextANGLEFn) ==
+                  kFirstOffset + 214 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTexParameterfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 215 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetTexParameterivContextANGLEFn) ==
+                  kFirstOffset + 216 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTexParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 217 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTransformFeedbackVaryingContextANGLEFn) ==
+        kFirstOffset + 218 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetTranslatedShaderSourceANGLEContextANGLEFn) ==
+        kFirstOffset + 219 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformBlockIndexContextANGLEFn) ==
+                  kFirstOffset + 220 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformfvContextANGLEFn) ==
+                  kFirstOffset + 221 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformfvRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 222 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformIndicesContextANGLEFn) ==
+                  kFirstOffset + 223 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformivContextANGLEFn) ==
+                  kFirstOffset + 224 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformivRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 225 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformLocationContextANGLEFn) ==
+                  kFirstOffset + 226 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformuivContextANGLEFn) ==
+                  kFirstOffset + 227 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetUniformuivRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 228 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetVertexAttribfvContextANGLEFn) ==
+                  kFirstOffset + 229 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetVertexAttribfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 230 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetVertexAttribIivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 231 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetVertexAttribIuivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 232 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetVertexAttribivContextANGLEFn) ==
+                  kFirstOffset + 233 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetVertexAttribivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 234 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glGetVertexAttribPointervContextANGLEFn) ==
+                  kFirstOffset + 235 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glGetVertexAttribPointervRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 236 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glHintContextANGLEFn) ==
+                  kFirstOffset + 237 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glImportMemoryFdEXTContextANGLEFn) ==
+                  kFirstOffset + 238 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glImportMemoryWin32HandleEXTContextANGLEFn) ==
+        kFirstOffset + 239 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glImportMemoryZirconHandleANGLEContextANGLEFn) ==
+        kFirstOffset + 240 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glImportSemaphoreFdEXTContextANGLEFn) ==
+                  kFirstOffset + 241 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glImportSemaphoreWin32HandleEXTContextANGLEFn) ==
+        kFirstOffset + 242 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glImportSemaphoreZirconHandleANGLEContextANGLEFn) ==
+        kFirstOffset + 243 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glInsertEventMarkerEXTContextANGLEFn) ==
+                  kFirstOffset + 244 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glInvalidateFramebufferContextANGLEFn) ==
+                  kFirstOffset + 245 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glInvalidateSubFramebufferContextANGLEFn) ==
+                  kFirstOffset + 246 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glInvalidateTextureANGLEContextANGLEFn) ==
+                  kFirstOffset + 247 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsBufferContextANGLEFn) ==
+                  kFirstOffset + 248 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsEnabledContextANGLEFn) ==
+                  kFirstOffset + 249 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsEnablediOESContextANGLEFn) ==
+                  kFirstOffset + 250 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsFenceNVContextANGLEFn) ==
+                  kFirstOffset + 251 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsFramebufferEXTContextANGLEFn) ==
+                  kFirstOffset + 252 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsProgramContextANGLEFn) ==
+                  kFirstOffset + 253 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsQueryContextANGLEFn) ==
+                  kFirstOffset + 254 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsRenderbufferEXTContextANGLEFn) ==
+                  kFirstOffset + 255 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsSamplerContextANGLEFn) ==
+                  kFirstOffset + 256 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsShaderContextANGLEFn) ==
+                  kFirstOffset + 257 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsSyncContextANGLEFn) ==
+                  kFirstOffset + 258 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsTextureContextANGLEFn) ==
+                  kFirstOffset + 259 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsTransformFeedbackContextANGLEFn) ==
+                  kFirstOffset + 260 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glIsVertexArrayOESContextANGLEFn) ==
+                  kFirstOffset + 261 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glLineWidthContextANGLEFn) ==
+                  kFirstOffset + 262 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glLinkProgramContextANGLEFn) ==
+                  kFirstOffset + 263 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glMapBufferContextANGLEFn) ==
+                  kFirstOffset + 264 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glMapBufferRangeContextANGLEFn) ==
+                  kFirstOffset + 265 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glMaxShaderCompilerThreadsKHRContextANGLEFn) ==
+        kFirstOffset + 266 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glMemoryObjectParameterivEXTContextANGLEFn) ==
+        kFirstOffset + 267 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glMultiDrawArraysANGLEContextANGLEFn) ==
+                  kFirstOffset + 268 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glMultiDrawArraysInstancedANGLEContextANGLEFn) ==
+        kFirstOffset + 269 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glMultiDrawArraysInstancedBaseInstanceANGLEContextANGLEFn) ==
+        kFirstOffset + 270 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glMultiDrawElementsANGLEContextANGLEFn) ==
+                  kFirstOffset + 271 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glMultiDrawElementsInstancedANGLEContextANGLEFn) ==
+        kFirstOffset + 272 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(
+            ProcsGL,
+            glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEFn) ==
+        kFirstOffset + 273 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glObjectLabelKHRContextANGLEFn) ==
+                  kFirstOffset + 274 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glObjectPtrLabelKHRContextANGLEFn) ==
+                  kFirstOffset + 275 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPatchParameteriOESContextANGLEFn) ==
+                  kFirstOffset + 276 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPauseTransformFeedbackContextANGLEFn) ==
+                  kFirstOffset + 277 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glPixelLocalStorageBarrierANGLEContextANGLEFn) ==
+        kFirstOffset + 278 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPixelStoreiContextANGLEFn) ==
+                  kFirstOffset + 279 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPointParameteriContextANGLEFn) ==
+                  kFirstOffset + 280 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPolygonModeContextANGLEFn) ==
+                  kFirstOffset + 281 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPolygonModeANGLEContextANGLEFn) ==
+                  kFirstOffset + 282 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPolygonOffsetContextANGLEFn) ==
+                  kFirstOffset + 283 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPolygonOffsetClampEXTContextANGLEFn) ==
+                  kFirstOffset + 284 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPopDebugGroupKHRContextANGLEFn) ==
+                  kFirstOffset + 285 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPopGroupMarkerEXTContextANGLEFn) ==
+                  kFirstOffset + 286 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPrimitiveRestartIndexContextANGLEFn) ==
+                  kFirstOffset + 287 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glProgramBinaryContextANGLEFn) ==
+                  kFirstOffset + 288 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glProgramParameteriContextANGLEFn) ==
+                  kFirstOffset + 289 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glProvokingVertexANGLEContextANGLEFn) ==
+                  kFirstOffset + 290 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPushDebugGroupKHRContextANGLEFn) ==
+                  kFirstOffset + 291 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glPushGroupMarkerEXTContextANGLEFn) ==
+                  kFirstOffset + 292 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glQueryCounterContextANGLEFn) ==
+                  kFirstOffset + 293 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glReadBufferContextANGLEFn) ==
+                  kFirstOffset + 294 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glReadPixelsContextANGLEFn) ==
+                  kFirstOffset + 295 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glReadPixelsRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 296 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glReleaseShaderCompilerContextANGLEFn) ==
+                  kFirstOffset + 297 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glReleaseTexturesANGLEContextANGLEFn) ==
+                  kFirstOffset + 298 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glRenderbufferStorageEXTContextANGLEFn) ==
+                  kFirstOffset + 299 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glRenderbufferStorageMultisampleContextANGLEFn) ==
+        kFirstOffset + 300 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL,
+                 glRenderbufferStorageMultisampleAdvancedAMDContextANGLEFn) ==
+        kFirstOffset + 301 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glRenderbufferStorageMultisampleEXTContextANGLEFn) ==
+        kFirstOffset + 302 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glRequestExtensionANGLEContextANGLEFn) ==
+                  kFirstOffset + 303 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glResumeTransformFeedbackContextANGLEFn) ==
+                  kFirstOffset + 304 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSampleCoverageContextANGLEFn) ==
+                  kFirstOffset + 305 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSamplerParameterfContextANGLEFn) ==
+                  kFirstOffset + 306 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSamplerParameterfvContextANGLEFn) ==
+                  kFirstOffset + 307 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glSamplerParameterfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 308 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSamplerParameteriContextANGLEFn) ==
+                  kFirstOffset + 309 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSamplerParameterivContextANGLEFn) ==
+                  kFirstOffset + 310 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glSamplerParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 311 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glScissorContextANGLEFn) ==
+                  kFirstOffset + 312 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSetFenceNVContextANGLEFn) ==
+                  kFirstOffset + 313 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glShaderBinaryContextANGLEFn) ==
+                  kFirstOffset + 314 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glShaderSourceContextANGLEFn) ==
+                  kFirstOffset + 315 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glSignalSemaphoreEXTContextANGLEFn) ==
+                  kFirstOffset + 316 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStartTilingQCOMContextANGLEFn) ==
+                  kFirstOffset + 317 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStencilFuncContextANGLEFn) ==
+                  kFirstOffset + 318 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStencilFuncSeparateContextANGLEFn) ==
+                  kFirstOffset + 319 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStencilMaskContextANGLEFn) ==
+                  kFirstOffset + 320 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStencilMaskSeparateContextANGLEFn) ==
+                  kFirstOffset + 321 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStencilOpContextANGLEFn) ==
+                  kFirstOffset + 322 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glStencilOpSeparateContextANGLEFn) ==
+                  kFirstOffset + 323 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTestFenceNVContextANGLEFn) ==
+                  kFirstOffset + 324 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexBufferOESContextANGLEFn) ==
+                  kFirstOffset + 325 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexBufferRangeOESContextANGLEFn) ==
+                  kFirstOffset + 326 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexImage2DContextANGLEFn) ==
+                  kFirstOffset + 327 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexImage2DExternalANGLEContextANGLEFn) ==
+                  kFirstOffset + 328 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexImage2DRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 329 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexImage3DContextANGLEFn) ==
+                  kFirstOffset + 330 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexImage3DRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 331 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexParameterfContextANGLEFn) ==
+                  kFirstOffset + 332 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexParameterfvContextANGLEFn) ==
+                  kFirstOffset + 333 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glTexParameterfvRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 334 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexParameteriContextANGLEFn) ==
+                  kFirstOffset + 335 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexParameterivContextANGLEFn) ==
+                  kFirstOffset + 336 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glTexParameterivRobustANGLEContextANGLEFn) ==
+        kFirstOffset + 337 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexStorage2DEXTContextANGLEFn) ==
+                  kFirstOffset + 338 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexStorage3DContextANGLEFn) ==
+                  kFirstOffset + 339 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexStorageMem2DEXTContextANGLEFn) ==
+                  kFirstOffset + 340 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glTexStorageMemFlags2DANGLEContextANGLEFn) ==
+        kFirstOffset + 341 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexSubImage2DContextANGLEFn) ==
+                  kFirstOffset + 342 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexSubImage2DRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 343 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexSubImage3DContextANGLEFn) ==
+                  kFirstOffset + 344 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTexSubImage3DRobustANGLEContextANGLEFn) ==
+                  kFirstOffset + 345 * sizeof(GLFunctionPointerType));
+    static_assert(
+        offsetof(ProcsGL, glTransformFeedbackVaryingsContextANGLEFn) ==
+        kFirstOffset + 346 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glTrimMemoryANGLEContextANGLEFn) ==
+                  kFirstOffset + 347 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform1fContextANGLEFn) ==
+                  kFirstOffset + 348 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform1fvContextANGLEFn) ==
+                  kFirstOffset + 349 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform1iContextANGLEFn) ==
+                  kFirstOffset + 350 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform1ivContextANGLEFn) ==
+                  kFirstOffset + 351 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform1uiContextANGLEFn) ==
+                  kFirstOffset + 352 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform1uivContextANGLEFn) ==
+                  kFirstOffset + 353 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform2fContextANGLEFn) ==
+                  kFirstOffset + 354 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform2fvContextANGLEFn) ==
+                  kFirstOffset + 355 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform2iContextANGLEFn) ==
+                  kFirstOffset + 356 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform2ivContextANGLEFn) ==
+                  kFirstOffset + 357 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform2uiContextANGLEFn) ==
+                  kFirstOffset + 358 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform2uivContextANGLEFn) ==
+                  kFirstOffset + 359 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform3fContextANGLEFn) ==
+                  kFirstOffset + 360 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform3fvContextANGLEFn) ==
+                  kFirstOffset + 361 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform3iContextANGLEFn) ==
+                  kFirstOffset + 362 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform3ivContextANGLEFn) ==
+                  kFirstOffset + 363 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform3uiContextANGLEFn) ==
+                  kFirstOffset + 364 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform3uivContextANGLEFn) ==
+                  kFirstOffset + 365 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform4fContextANGLEFn) ==
+                  kFirstOffset + 366 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform4fvContextANGLEFn) ==
+                  kFirstOffset + 367 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform4iContextANGLEFn) ==
+                  kFirstOffset + 368 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform4ivContextANGLEFn) ==
+                  kFirstOffset + 369 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform4uiContextANGLEFn) ==
+                  kFirstOffset + 370 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniform4uivContextANGLEFn) ==
+                  kFirstOffset + 371 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformBlockBindingContextANGLEFn) ==
+                  kFirstOffset + 372 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix2fvContextANGLEFn) ==
+                  kFirstOffset + 373 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix2x3fvContextANGLEFn) ==
+                  kFirstOffset + 374 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix2x4fvContextANGLEFn) ==
+                  kFirstOffset + 375 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix3fvContextANGLEFn) ==
+                  kFirstOffset + 376 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix3x2fvContextANGLEFn) ==
+                  kFirstOffset + 377 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix3x4fvContextANGLEFn) ==
+                  kFirstOffset + 378 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix4fvContextANGLEFn) ==
+                  kFirstOffset + 379 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix4x2fvContextANGLEFn) ==
+                  kFirstOffset + 380 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUniformMatrix4x3fvContextANGLEFn) ==
+                  kFirstOffset + 381 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUnmapBufferContextANGLEFn) ==
+                  kFirstOffset + 382 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glUseProgramContextANGLEFn) ==
+                  kFirstOffset + 383 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glValidateProgramContextANGLEFn) ==
+                  kFirstOffset + 384 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib1fContextANGLEFn) ==
+                  kFirstOffset + 385 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib1fvContextANGLEFn) ==
+                  kFirstOffset + 386 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib2fContextANGLEFn) ==
+                  kFirstOffset + 387 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib2fvContextANGLEFn) ==
+                  kFirstOffset + 388 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib3fContextANGLEFn) ==
+                  kFirstOffset + 389 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib3fvContextANGLEFn) ==
+                  kFirstOffset + 390 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib4fContextANGLEFn) ==
+                  kFirstOffset + 391 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttrib4fvContextANGLEFn) ==
+                  kFirstOffset + 392 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribDivisorANGLEContextANGLEFn) ==
+                  kFirstOffset + 393 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribI4iContextANGLEFn) ==
+                  kFirstOffset + 394 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribI4ivContextANGLEFn) ==
+                  kFirstOffset + 395 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribI4uiContextANGLEFn) ==
+                  kFirstOffset + 396 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribI4uivContextANGLEFn) ==
+                  kFirstOffset + 397 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribIPointerContextANGLEFn) ==
+                  kFirstOffset + 398 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glVertexAttribPointerContextANGLEFn) ==
+                  kFirstOffset + 399 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glViewportContextANGLEFn) ==
+                  kFirstOffset + 400 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glWaitSemaphoreEXTContextANGLEFn) ==
+                  kFirstOffset + 401 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glWaitSyncContextANGLEFn) ==
+                  kFirstOffset + 402 * sizeof(GLFunctionPointerType));
+    static_assert(offsetof(ProcsGL, glWindowRectanglesEXTContextANGLEFn) ==
+                  kFirstOffset + 403 * sizeof(GLFunctionPointerType));
+
+    for (size_t i = 0; i < kExplicitContextSourceNames.size(); ++i) {
+      std::string name = kExplicitContextSourceNames[i];
+      name += "ContextANGLE";
+      GLFunctionPointerType proc = get_proc_address(name.c_str());
+      // SAFETY: The static_asserts above check that the i-th slot is the field
+      // of the i-th function, within ProcsGL.
+      UNSAFE_BUFFERS(
+          memcpy(reinterpret_cast<char*>(&fn) + kFirstOffset + i * sizeof(proc),
+                 &proc, sizeof(proc)));
+    }
   }
 }
 

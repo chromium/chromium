@@ -1504,11 +1504,2642 @@ typedef void(GL_BINDING_CALL* glWaitSyncProc)(GLsync sync,
 typedef void(GL_BINDING_CALL* glWindowRectanglesEXTProc)(GLenum mode,
                                                          GLsizei n,
                                                          const GLint* box);
+typedef void(GL_BINDING_CALL* glAcquireTexturesANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint numTextures,
+    const GLuint* textures,
+    const GLenum* layouts);
+typedef void(GL_BINDING_CALL* glActiveTextureContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum texture);
+typedef void(GL_BINDING_CALL* glAttachShaderContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint shader);
+typedef void(GL_BINDING_CALL* glBeginPixelLocalStorageANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLenum* loadops);
+typedef void(GL_BINDING_CALL* glBeginQueryContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint id);
+typedef void(GL_BINDING_CALL* glBeginTransformFeedbackContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum primitiveMode);
+typedef void(GL_BINDING_CALL* glBindAttribLocationContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint index,
+    const char* name);
+typedef void(GL_BINDING_CALL* glBindBufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint buffer);
+typedef void(GL_BINDING_CALL* glBindBufferBaseContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index,
+    GLuint buffer);
+typedef void(GL_BINDING_CALL* glBindBufferRangeContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index,
+    GLuint buffer,
+    GLintptr offset,
+    GLsizeiptr size);
+typedef void(GL_BINDING_CALL* glBindFragDataLocationContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint colorNumber,
+    const char* name);
+typedef void(GL_BINDING_CALL* glBindFragDataLocationIndexedContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint colorNumber,
+    GLuint index,
+    const char* name);
+typedef void(GL_BINDING_CALL* glBindFramebufferEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint framebuffer);
+typedef void(GL_BINDING_CALL* glBindRenderbufferEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint renderbuffer);
+typedef void(GL_BINDING_CALL* glBindSamplerContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint unit,
+    GLuint sampler);
+typedef void(GL_BINDING_CALL* glBindTextureContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint texture);
+typedef void(GL_BINDING_CALL* glBindTransformFeedbackContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint id);
+typedef void(GL_BINDING_CALL* glBindUniformLocationCHROMIUMContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    const char* name);
+typedef void(GL_BINDING_CALL* glBindVertexArrayOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint array);
+typedef void(GL_BINDING_CALL* glBlendBarrierKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glBlendColorContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampf red,
+    GLclampf green,
+    GLclampf blue,
+    GLclampf alpha);
+typedef void(GL_BINDING_CALL* glBlendEquationContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode);
+typedef void(GL_BINDING_CALL* glBlendEquationiOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint buf,
+    GLenum mode);
+typedef void(GL_BINDING_CALL* glBlendEquationSeparateContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum modeRGB,
+    GLenum modeAlpha);
+typedef void(GL_BINDING_CALL* glBlendEquationSeparateiOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint buf,
+    GLenum modeRGB,
+    GLenum modeAlpha);
+typedef void(GL_BINDING_CALL* glBlendFuncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum sfactor,
+    GLenum dfactor);
+typedef void(GL_BINDING_CALL* glBlendFunciOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint buf,
+    GLenum sfactor,
+    GLenum dfactor);
+typedef void(GL_BINDING_CALL* glBlendFuncSeparateContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum srcRGB,
+    GLenum dstRGB,
+    GLenum srcAlpha,
+    GLenum dstAlpha);
+typedef void(GL_BINDING_CALL* glBlendFuncSeparateiOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint buf,
+    GLenum srcRGB,
+    GLenum dstRGB,
+    GLenum srcAlpha,
+    GLenum dstAlpha);
+typedef void(GL_BINDING_CALL* glBlitFramebufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint srcX0,
+    GLint srcY0,
+    GLint srcX1,
+    GLint srcY1,
+    GLint dstX0,
+    GLint dstY0,
+    GLint dstX1,
+    GLint dstY1,
+    GLbitfield mask,
+    GLenum filter);
+typedef void(GL_BINDING_CALL* glBlobCacheCallbacksANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLSETBLOBPROCANGLE set,
+    GLGETBLOBPROCANGLE get,
+    const void* userData);
+typedef void(GL_BINDING_CALL* glBufferDataContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizeiptr size,
+    const void* data,
+    GLenum usage);
+typedef void(GL_BINDING_CALL* glBufferSubDataContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLintptr offset,
+    GLsizeiptr size,
+    const void* data);
+typedef GLenum(GL_BINDING_CALL* glCheckFramebufferStatusEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target);
+typedef void(GL_BINDING_CALL* glClearContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                       GLeglContextANGLE ctx,
+                                                       GLbitfield mask);
+typedef void(GL_BINDING_CALL* glClearBufferfiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum buffer,
+    GLint drawbuffer,
+    const GLfloat depth,
+    GLint stencil);
+typedef void(GL_BINDING_CALL* glClearBufferfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum buffer,
+    GLint drawbuffer,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glClearBufferivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum buffer,
+    GLint drawbuffer,
+    const GLint* value);
+typedef void(GL_BINDING_CALL* glClearBufferuivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum buffer,
+    GLint drawbuffer,
+    const GLuint* value);
+typedef void(GL_BINDING_CALL* glClearColorContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampf red,
+    GLclampf green,
+    GLclampf blue,
+    GLclampf alpha);
+typedef void(GL_BINDING_CALL* glClearDepthContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampd depth);
+typedef void(GL_BINDING_CALL* glClearDepthfContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampf depth);
+typedef void(GL_BINDING_CALL* glClearStencilContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint s);
+typedef void(GL_BINDING_CALL* glClearTexImageContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint texture,
+    GLint level,
+    GLenum format,
+    GLenum type,
+    const GLvoid* data);
+typedef void(GL_BINDING_CALL* glClearTexSubImageContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint texture,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    GLint width,
+    GLint height,
+    GLint depth,
+    GLenum format,
+    GLenum type,
+    const GLvoid* data);
+typedef GLenum(GL_BINDING_CALL* glClientWaitSyncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsync sync,
+    GLbitfield flags,
+    GLuint64 timeout);
+typedef void(GL_BINDING_CALL* glClipControlEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum origin,
+    GLenum depth);
+typedef void(GL_BINDING_CALL* glColorMaskContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLboolean red,
+    GLboolean green,
+    GLboolean blue,
+    GLboolean alpha);
+typedef void(GL_BINDING_CALL* glColorMaskiOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint buf,
+    GLboolean red,
+    GLboolean green,
+    GLboolean blue,
+    GLboolean alpha);
+typedef void(GL_BINDING_CALL* glCompileShaderContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader);
+typedef void(GL_BINDING_CALL* glCompressedTexImage2DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLint border,
+    GLsizei imageSize,
+    const void* data);
+typedef void(GL_BINDING_CALL* glCompressedTexImage3DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLint border,
+    GLsizei imageSize,
+    const void* data);
+typedef void(GL_BINDING_CALL* glCompressedTexSubImage2DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLsizei imageSize,
+    const void* data);
+typedef void(GL_BINDING_CALL* glCompressedTexSubImage3DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLenum format,
+    GLsizei imageSize,
+    const void* data);
+typedef void(GL_BINDING_CALL* glCopyBufferSubDataContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum readTarget,
+    GLenum writeTarget,
+    GLintptr readOffset,
+    GLintptr writeOffset,
+    GLsizeiptr size);
+typedef void(GL_BINDING_CALL* glCopySubTextureCHROMIUMContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sourceId,
+    GLint sourceLevel,
+    GLenum destTarget,
+    GLuint destId,
+    GLint destLevel,
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean unpackFlipY,
+    GLboolean unpackPremultiplyAlpha,
+    GLboolean unpackUnmultiplyAlpha);
+typedef void(GL_BINDING_CALL* glCopyTexImage2DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum internalformat,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLint border);
+typedef void(GL_BINDING_CALL* glCopyTexSubImage2DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height);
+typedef void(GL_BINDING_CALL* glCopyTexSubImage3DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height);
+typedef void(GL_BINDING_CALL* glCopyTextureCHROMIUMContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sourceId,
+    GLint sourceLevel,
+    GLenum destTarget,
+    GLuint destId,
+    GLint destLevel,
+    GLint internalFormat,
+    GLenum destType,
+    GLboolean unpackFlipY,
+    GLboolean unpackPremultiplyAlpha,
+    GLboolean unpackUnmultiplyAlpha);
+typedef void(GL_BINDING_CALL* glCreateMemoryObjectsEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* memoryObjects);
+typedef GLuint(GL_BINDING_CALL* glCreateProgramContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef GLuint(GL_BINDING_CALL* glCreateShaderContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum type);
+typedef void(GL_BINDING_CALL* glCullFaceContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                          GLeglContextANGLE ctx,
+                                                          GLenum mode);
+typedef void(GL_BINDING_CALL* glDebugMessageCallbackKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLDEBUGPROC callback,
+    const void* userParam);
+typedef void(GL_BINDING_CALL* glDebugMessageControlKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum source,
+    GLenum type,
+    GLenum severity,
+    GLsizei count,
+    const GLuint* ids,
+    GLboolean enabled);
+typedef void(GL_BINDING_CALL* glDebugMessageInsertKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei length,
+    const char* buf);
+typedef void(GL_BINDING_CALL* glDeleteBuffersARBContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* buffers);
+typedef void(GL_BINDING_CALL* glDeleteFencesNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* fences);
+typedef void(GL_BINDING_CALL* glDeleteFramebuffersEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* framebuffers);
+typedef void(GL_BINDING_CALL* glDeleteMemoryObjectsEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* memoryObjects);
+typedef void(GL_BINDING_CALL* glDeleteProgramContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program);
+typedef void(GL_BINDING_CALL* glDeleteQueriesContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* ids);
+typedef void(GL_BINDING_CALL* glDeleteRenderbuffersEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* renderbuffers);
+typedef void(GL_BINDING_CALL* glDeleteSamplersContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* samplers);
+typedef void(GL_BINDING_CALL* glDeleteSemaphoresEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* semaphores);
+typedef void(GL_BINDING_CALL* glDeleteShaderContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader);
+typedef void(GL_BINDING_CALL* glDeleteSyncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsync sync);
+typedef void(GL_BINDING_CALL* glDeleteTexturesContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* textures);
+typedef void(GL_BINDING_CALL* glDeleteTransformFeedbacksContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* ids);
+typedef void(GL_BINDING_CALL* glDeleteVertexArraysOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* arrays);
+typedef void(GL_BINDING_CALL* glDepthFuncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum func);
+typedef void(GL_BINDING_CALL* glDepthMaskContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLboolean flag);
+typedef void(GL_BINDING_CALL* glDepthRangeContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampd zNear,
+    GLclampd zFar);
+typedef void(GL_BINDING_CALL* glDepthRangefContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampf zNear,
+    GLclampf zFar);
+typedef void(GL_BINDING_CALL* glDetachShaderContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint shader);
+typedef void(GL_BINDING_CALL* glDisableContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                         GLeglContextANGLE ctx,
+                                                         GLenum cap);
+typedef void(GL_BINDING_CALL* glDisableiOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index);
+typedef void(GL_BINDING_CALL* glDisableVertexAttribArrayContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index);
+typedef void(GL_BINDING_CALL* glDiscardFramebufferEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei numAttachments,
+    const GLenum* attachments);
+typedef void(GL_BINDING_CALL* glDrawArraysContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLint first,
+    GLsizei count);
+typedef void(GL_BINDING_CALL* glDrawArraysInstancedANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLint first,
+    GLsizei count,
+    GLsizei primcount);
+typedef void(
+    GL_BINDING_CALL* glDrawArraysInstancedBaseInstanceANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLint first,
+    GLsizei count,
+    GLsizei primcount,
+    GLuint baseinstance);
+typedef void(GL_BINDING_CALL* glDrawBufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode);
+typedef void(GL_BINDING_CALL* glDrawBuffersARBContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLenum* bufs);
+typedef void(GL_BINDING_CALL* glDrawElementsContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    const void* indices);
+typedef void(GL_BINDING_CALL* glDrawElementsInstancedANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    const void* indices,
+    GLsizei primcount);
+typedef void(
+    GL_BINDING_CALL*
+        glDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    const void* indices,
+    GLsizei primcount,
+    GLint baseVertex,
+    GLuint baseInstance);
+typedef void(GL_BINDING_CALL* glDrawRangeElementsContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLuint start,
+    GLuint end,
+    GLsizei count,
+    GLenum type,
+    const void* indices);
+typedef void(
+    GL_BINDING_CALL* glEGLImageTargetRenderbufferStorageOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLeglImageOES image);
+typedef void(GL_BINDING_CALL* glEGLImageTargetTexStorageEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLeglImageOES image,
+    const GLint* attrib_list);
+typedef void(GL_BINDING_CALL* glEGLImageTargetTexture2DOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLeglImageOES image);
+typedef void(GL_BINDING_CALL* glEnableContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                        GLeglContextANGLE ctx,
+                                                        GLenum cap);
+typedef void(GL_BINDING_CALL* glEnableiOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index);
+typedef void(GL_BINDING_CALL* glEnableVertexAttribArrayContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index);
+typedef void(GL_BINDING_CALL* glEndPixelLocalStorageANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLenum* storeops);
+typedef void(
+    GL_BINDING_CALL* glEndPixelLocalStorageImplicitANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glEndQueryContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                          GLeglContextANGLE ctx,
+                                                          GLenum target);
+typedef void(GL_BINDING_CALL* glEndTilingQCOMContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLbitfield preserveMask);
+typedef void(GL_BINDING_CALL* glEndTransformFeedbackContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef GLsync(GL_BINDING_CALL* glFenceSyncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum condition,
+    GLbitfield flags);
+typedef void(GL_BINDING_CALL* glFinishContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                        GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glFinishFenceNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint fence);
+typedef void(GL_BINDING_CALL* glFlushContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                       GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glFlushMappedBufferRangeContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLintptr offset,
+    GLsizeiptr length);
+typedef void(GL_BINDING_CALL*
+                 glFramebufferMemorylessPixelLocalStorageANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    GLenum internalformat,
+    GLbitfield usage);
+typedef void(GL_BINDING_CALL* glFramebufferParameteriMESAContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLint param);
+typedef void(
+    GL_BINDING_CALL* glFramebufferPixelLocalClearValuefvANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    const GLfloat* value);
+typedef void(
+    GL_BINDING_CALL* glFramebufferPixelLocalClearValueivANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    const GLint* value);
+typedef void(
+    GL_BINDING_CALL* glFramebufferPixelLocalClearValueuivANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    const GLuint* value);
+typedef void(GL_BINDING_CALL*
+                 glFramebufferPixelLocalStorageInterruptANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL*
+                 glFramebufferPixelLocalStorageRestoreANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glFramebufferRenderbufferEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLenum renderbuffertarget,
+    GLuint renderbuffer);
+typedef void(GL_BINDING_CALL* glFramebufferTexture2DEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLenum textarget,
+    GLuint texture,
+    GLint level);
+typedef void(
+    GL_BINDING_CALL* glFramebufferTexture2DMultisampleEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLenum textarget,
+    GLuint texture,
+    GLint level,
+    GLsizei samples);
+typedef void(GL_BINDING_CALL* glFramebufferTextureLayerContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLuint texture,
+    GLint level,
+    GLint layer);
+typedef void(GL_BINDING_CALL* glFramebufferTextureMultiviewOVRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLuint texture,
+    GLint level,
+    GLint baseViewIndex,
+    GLsizei numViews);
+typedef void(GL_BINDING_CALL*
+                 glFramebufferTexturePixelLocalStorageANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    GLuint backingtexture,
+    GLint level,
+    GLint layer,
+    GLbitfield usage);
+typedef void(GL_BINDING_CALL* glFrontFaceContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode);
+typedef void(GL_BINDING_CALL* glGenBuffersARBContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* buffers);
+typedef void(GL_BINDING_CALL* glGenerateMipmapEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target);
+typedef void(GL_BINDING_CALL* glGenFencesNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* fences);
+typedef void(GL_BINDING_CALL* glGenFramebuffersEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* framebuffers);
+typedef void(GL_BINDING_CALL* glGenQueriesContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* ids);
+typedef void(GL_BINDING_CALL* glGenRenderbuffersEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* renderbuffers);
+typedef void(GL_BINDING_CALL* glGenSamplersContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* samplers);
+typedef void(GL_BINDING_CALL* glGenSemaphoresEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* semaphores);
+typedef void(GL_BINDING_CALL* glGenTexturesContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* textures);
+typedef void(GL_BINDING_CALL* glGenTransformFeedbacksContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* ids);
+typedef void(GL_BINDING_CALL* glGenVertexArraysOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    GLuint* arrays);
+typedef void(GL_BINDING_CALL* glGetActiveAttribContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint index,
+    GLsizei bufsize,
+    GLsizei* length,
+    GLint* size,
+    GLenum* type,
+    char* name);
+typedef void(GL_BINDING_CALL* glGetActiveUniformContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint index,
+    GLsizei bufsize,
+    GLsizei* length,
+    GLint* size,
+    GLenum* type,
+    char* name);
+typedef void(GL_BINDING_CALL* glGetActiveUniformBlockivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint uniformBlockIndex,
+    GLenum pname,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL* glGetActiveUniformBlockivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint uniformBlockIndex,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetActiveUniformBlockNameContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint uniformBlockIndex,
+    GLsizei bufSize,
+    GLsizei* length,
+    char* uniformBlockName);
+typedef void(GL_BINDING_CALL* glGetActiveUniformsivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLsizei uniformCount,
+    const GLuint* uniformIndices,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetAttachedShadersContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLsizei maxcount,
+    GLsizei* count,
+    GLuint* shaders);
+typedef GLint(GL_BINDING_CALL* glGetAttribLocationContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    const char* name);
+typedef void(GL_BINDING_CALL* glGetBooleanvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLboolean* params);
+typedef void(GL_BINDING_CALL* glGetBooleanvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLboolean* data);
+typedef void(
+    GL_BINDING_CALL* glGetBufferParameteri64vRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint64* params);
+typedef void(GL_BINDING_CALL* glGetBufferParameterivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL* glGetBufferParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetBufferPointervRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    void** params);
+typedef GLuint(GL_BINDING_CALL* glGetDebugMessageLogKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint count,
+    GLsizei bufSize,
+    GLenum* sources,
+    GLenum* types,
+    GLuint* ids,
+    GLenum* severities,
+    GLsizei* lengths,
+    char* messageLog);
+typedef GLenum(GL_BINDING_CALL* glGetErrorContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glGetFenceivNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint fence,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetFloatvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetFloatvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* data);
+typedef GLint(GL_BINDING_CALL* glGetFragDataIndexContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    const char* name);
+typedef GLint(GL_BINDING_CALL* glGetFragDataLocationContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    const char* name);
+typedef void(
+    GL_BINDING_CALL* glGetFramebufferAttachmentParameterivEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLenum pname,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL*
+        glGetFramebufferAttachmentParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum attachment,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL*
+        glGetFramebufferPixelLocalStorageParameterfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLfloat* params);
+typedef void(
+    GL_BINDING_CALL*
+        glGetFramebufferPixelLocalStorageParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL*
+        glGetFramebufferPixelLocalStorageParameteruivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint plane,
+    GLenum pname,
+    GLsizei paramCount,
+    GLsizei* length,
+    GLuint* params);
+typedef GLenum(GL_BINDING_CALL* glGetGraphicsResetStatusARBContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glGetInteger64i_vContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index,
+    GLint64* data);
+typedef void(GL_BINDING_CALL* glGetInteger64i_vRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint64* data);
+typedef void(GL_BINDING_CALL* glGetInteger64vContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLint64* params);
+typedef void(GL_BINDING_CALL* glGetInteger64vRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint64* data);
+typedef void(GL_BINDING_CALL* glGetIntegeri_vContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index,
+    GLint* data);
+typedef void(GL_BINDING_CALL* glGetIntegeri_vRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* data);
+typedef void(GL_BINDING_CALL* glGetIntegervContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetIntegervRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* data);
+typedef void(GL_BINDING_CALL* glGetInternalformativContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum internalformat,
+    GLenum pname,
+    GLsizei bufSize,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetInternalformativRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum internalformat,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetInternalformatSampleivNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum internalformat,
+    GLsizei samples,
+    GLenum pname,
+    GLsizei bufSize,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetMultisamplefvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLuint index,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* val);
+typedef void(GL_BINDING_CALL* glGetObjectLabelKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum identifier,
+    GLuint name,
+    GLsizei bufSize,
+    GLsizei* length,
+    char* label);
+typedef void(GL_BINDING_CALL* glGetObjectPtrLabelKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    void* ptr,
+    GLsizei bufSize,
+    GLsizei* length,
+    char* label);
+typedef void(GL_BINDING_CALL* glGetPointervKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    void** params);
+typedef void(GL_BINDING_CALL* glGetProgramBinaryContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLenum* binaryFormat,
+    GLvoid* binary);
+typedef void(GL_BINDING_CALL* glGetProgramInfoLogContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLsizei bufsize,
+    GLsizei* length,
+    char* infolog);
+typedef void(GL_BINDING_CALL* glGetProgramivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetProgramivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetQueryivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetQueryivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjecti64vContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLint64* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjecti64vRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint64* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjectivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjectivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjectui64vContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLuint64* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjectui64vRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLuint64* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjectuivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLuint* params);
+typedef void(GL_BINDING_CALL* glGetQueryObjectuivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLuint* params);
+typedef void(GL_BINDING_CALL* glGetRenderbufferParameterivEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL* glGetRenderbufferParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetSamplerParameterfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLfloat* params);
+typedef void(
+    GL_BINDING_CALL* glGetSamplerParameterfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetSamplerParameterivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL* glGetSamplerParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetShaderInfoLogContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader,
+    GLsizei bufsize,
+    GLsizei* length,
+    char* infolog);
+typedef void(GL_BINDING_CALL* glGetShaderivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetShaderivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetShaderPrecisionFormatContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum shadertype,
+    GLenum precisiontype,
+    GLint* range,
+    GLint* precision);
+typedef void(GL_BINDING_CALL* glGetShaderSourceContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader,
+    GLsizei bufsize,
+    GLsizei* length,
+    char* source);
+typedef const GLubyte*(GL_BINDING_CALL* glGetStringContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum name);
+typedef const GLubyte*(GL_BINDING_CALL* glGetStringiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum name,
+    GLuint index);
+typedef void(GL_BINDING_CALL* glGetSyncivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsync sync,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* values);
+typedef void(GL_BINDING_CALL* glGetTexLevelParameterfvANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum pname,
+    GLfloat* params);
+typedef void(
+    GL_BINDING_CALL* glGetTexLevelParameterfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetTexLevelParameterivANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum pname,
+    GLint* params);
+typedef void(
+    GL_BINDING_CALL* glGetTexLevelParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetTexParameterfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetTexParameterfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetTexParameterivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetTexParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetTransformFeedbackVaryingContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint index,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLsizei* size,
+    GLenum* type,
+    char* name);
+typedef void(GL_BINDING_CALL* glGetTranslatedShaderSourceANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader,
+    GLsizei bufsize,
+    GLsizei* length,
+    char* source);
+typedef GLuint(GL_BINDING_CALL* glGetUniformBlockIndexContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    const char* uniformBlockName);
+typedef void(GL_BINDING_CALL* glGetUniformfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetUniformfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetUniformIndicesContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLsizei uniformCount,
+    const char* const* uniformNames,
+    GLuint* uniformIndices);
+typedef void(GL_BINDING_CALL* glGetUniformivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetUniformivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef GLint(GL_BINDING_CALL* glGetUniformLocationContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    const char* name);
+typedef void(GL_BINDING_CALL* glGetUniformuivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    GLuint* params);
+typedef void(GL_BINDING_CALL* glGetUniformuivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLint location,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLuint* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribIivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribIuivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLuint* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params);
+typedef void(GL_BINDING_CALL* glGetVertexAttribPointervContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    void** pointer);
+typedef void(
+    GL_BINDING_CALL* glGetVertexAttribPointervRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    void** pointer);
+typedef void(GL_BINDING_CALL* glHintContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                      GLeglContextANGLE ctx,
+                                                      GLenum target,
+                                                      GLenum mode);
+typedef void(GL_BINDING_CALL* glImportMemoryFdEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint memory,
+    GLuint64 size,
+    GLenum handleType,
+    GLint fd);
+typedef void(GL_BINDING_CALL* glImportMemoryWin32HandleEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint memory,
+    GLuint64 size,
+    GLenum handleType,
+    void* handle);
+typedef void(GL_BINDING_CALL* glImportMemoryZirconHandleANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint memory,
+    GLuint64 size,
+    GLenum handleType,
+    GLuint handle);
+typedef void(GL_BINDING_CALL* glImportSemaphoreFdEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint semaphore,
+    GLenum handleType,
+    GLint fd);
+typedef void(GL_BINDING_CALL* glImportSemaphoreWin32HandleEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint semaphore,
+    GLenum handleType,
+    void* handle);
+typedef void(
+    GL_BINDING_CALL* glImportSemaphoreZirconHandleANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint semaphore,
+    GLenum handleType,
+    GLuint handle);
+typedef void(GL_BINDING_CALL* glInsertEventMarkerEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei length,
+    const char* marker);
+typedef void(GL_BINDING_CALL* glInvalidateFramebufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei numAttachments,
+    const GLenum* attachments);
+typedef void(GL_BINDING_CALL* glInvalidateSubFramebufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei numAttachments,
+    const GLenum* attachments,
+    GLint x,
+    GLint y,
+    GLint width,
+    GLint height);
+typedef void(GL_BINDING_CALL* glInvalidateTextureANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target);
+typedef GLboolean(GL_BINDING_CALL* glIsBufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint buffer);
+typedef GLboolean(GL_BINDING_CALL* glIsEnabledContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum cap);
+typedef GLboolean(GL_BINDING_CALL* glIsEnablediOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLuint index);
+typedef GLboolean(GL_BINDING_CALL* glIsFenceNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint fence);
+typedef GLboolean(GL_BINDING_CALL* glIsFramebufferEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint framebuffer);
+typedef GLboolean(GL_BINDING_CALL* glIsProgramContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program);
+typedef GLboolean(GL_BINDING_CALL* glIsQueryContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint query);
+typedef GLboolean(GL_BINDING_CALL* glIsRenderbufferEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint renderbuffer);
+typedef GLboolean(GL_BINDING_CALL* glIsSamplerContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler);
+typedef GLboolean(GL_BINDING_CALL* glIsShaderContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader);
+typedef GLboolean(GL_BINDING_CALL* glIsSyncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsync sync);
+typedef GLboolean(GL_BINDING_CALL* glIsTextureContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint texture);
+typedef GLboolean(GL_BINDING_CALL* glIsTransformFeedbackContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id);
+typedef GLboolean(GL_BINDING_CALL* glIsVertexArrayOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint array);
+typedef void(GL_BINDING_CALL* glLineWidthContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLfloat width);
+typedef void(GL_BINDING_CALL* glLinkProgramContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program);
+typedef void*(GL_BINDING_CALL* glMapBufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum access);
+typedef void*(GL_BINDING_CALL* glMapBufferRangeContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLintptr offset,
+    GLsizeiptr length,
+    GLbitfield access);
+typedef void(GL_BINDING_CALL* glMaxShaderCompilerThreadsKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint count);
+typedef void(GL_BINDING_CALL* glMemoryObjectParameterivEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint memoryObject,
+    GLenum pname,
+    const GLint* param);
+typedef void(GL_BINDING_CALL* glMultiDrawArraysANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    const GLint* firsts,
+    const GLsizei* counts,
+    GLsizei drawcount);
+typedef void(GL_BINDING_CALL* glMultiDrawArraysInstancedANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    const GLint* firsts,
+    const GLsizei* counts,
+    const GLsizei* instanceCounts,
+    GLsizei drawcount);
+typedef void(GL_BINDING_CALL*
+                 glMultiDrawArraysInstancedBaseInstanceANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    const GLint* firsts,
+    const GLsizei* counts,
+    const GLsizei* instanceCounts,
+    const GLuint* baseInstances,
+    GLsizei drawcount);
+typedef void(GL_BINDING_CALL* glMultiDrawElementsANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    const GLsizei* counts,
+    GLenum type,
+    const GLvoid* const* indices,
+    GLsizei drawcount);
+typedef void(
+    GL_BINDING_CALL* glMultiDrawElementsInstancedANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    const GLsizei* counts,
+    GLenum type,
+    const GLvoid* const* indices,
+    const GLsizei* instanceCounts,
+    GLsizei drawcount);
+typedef void(
+    GL_BINDING_CALL*
+        glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    const GLsizei* counts,
+    GLenum type,
+    const GLvoid* const* indices,
+    const GLsizei* instanceCounts,
+    const GLint* baseVertices,
+    const GLuint* baseInstances,
+    GLsizei drawcount);
+typedef void(GL_BINDING_CALL* glObjectLabelKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum identifier,
+    GLuint name,
+    GLsizei length,
+    const char* label);
+typedef void(GL_BINDING_CALL* glObjectPtrLabelKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    void* ptr,
+    GLsizei length,
+    const char* label);
+typedef void(GL_BINDING_CALL* glPatchParameteriOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLint value);
+typedef void(GL_BINDING_CALL* glPauseTransformFeedbackContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glPixelLocalStorageBarrierANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glPixelStoreiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLint param);
+typedef void(GL_BINDING_CALL* glPointParameteriContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum pname,
+    GLint param);
+typedef void(GL_BINDING_CALL* glPolygonModeContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum face,
+    GLenum mode);
+typedef void(GL_BINDING_CALL* glPolygonModeANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum face,
+    GLenum mode);
+typedef void(GL_BINDING_CALL* glPolygonOffsetContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLfloat factor,
+    GLfloat units);
+typedef void(GL_BINDING_CALL* glPolygonOffsetClampEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLfloat factor,
+    GLfloat units,
+    GLfloat clamp);
+typedef void(GL_BINDING_CALL* glPopDebugGroupKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glPopGroupMarkerEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glPrimitiveRestartIndexContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index);
+typedef void(GL_BINDING_CALL* glProgramBinaryContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLenum binaryFormat,
+    const GLvoid* binary,
+    GLsizei length);
+typedef void(GL_BINDING_CALL* glProgramParameteriContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLenum pname,
+    GLint value);
+typedef void(GL_BINDING_CALL* glProvokingVertexANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum provokeMode);
+typedef void(GL_BINDING_CALL* glPushDebugGroupKHRContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum source,
+    GLuint id,
+    GLsizei length,
+    const char* message);
+typedef void(GL_BINDING_CALL* glPushGroupMarkerEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei length,
+    const char* marker);
+typedef void(GL_BINDING_CALL* glQueryCounterContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint id,
+    GLenum target);
+typedef void(GL_BINDING_CALL* glReadBufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum src);
+typedef void(GL_BINDING_CALL* glReadPixelsContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    void* pixels);
+typedef void(GL_BINDING_CALL* glReadPixelsRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLsizei* columns,
+    GLsizei* rows,
+    void* pixels);
+typedef void(GL_BINDING_CALL* glReleaseShaderCompilerContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glReleaseTexturesANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint numTextures,
+    const GLuint* textures,
+    GLenum* layouts);
+typedef void(GL_BINDING_CALL* glRenderbufferStorageEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height);
+typedef void(GL_BINDING_CALL* glRenderbufferStorageMultisampleContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei samples,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height);
+typedef void(GL_BINDING_CALL*
+                 glRenderbufferStorageMultisampleAdvancedAMDContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei samples,
+    GLsizei storageSamples,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height);
+typedef void(
+    GL_BINDING_CALL* glRenderbufferStorageMultisampleEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei samples,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height);
+typedef void(GL_BINDING_CALL* glRequestExtensionANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    const char* name);
+typedef void(GL_BINDING_CALL* glResumeTransformFeedbackContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx);
+typedef void(GL_BINDING_CALL* glSampleCoverageContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLclampf value,
+    GLboolean invert);
+typedef void(GL_BINDING_CALL* glSamplerParameterfContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLfloat param);
+typedef void(GL_BINDING_CALL* glSamplerParameterfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    const GLfloat* params);
+typedef void(GL_BINDING_CALL* glSamplerParameterfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLsizei bufSize,
+    const GLfloat* param);
+typedef void(GL_BINDING_CALL* glSamplerParameteriContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLint param);
+typedef void(GL_BINDING_CALL* glSamplerParameterivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    const GLint* params);
+typedef void(GL_BINDING_CALL* glSamplerParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint sampler,
+    GLenum pname,
+    GLsizei bufSize,
+    const GLint* param);
+typedef void(GL_BINDING_CALL* glScissorContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                         GLeglContextANGLE ctx,
+                                                         GLint x,
+                                                         GLint y,
+                                                         GLsizei width,
+                                                         GLsizei height);
+typedef void(GL_BINDING_CALL* glSetFenceNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint fence,
+    GLenum condition);
+typedef void(GL_BINDING_CALL* glShaderBinaryContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLsizei n,
+    const GLuint* shaders,
+    GLenum binaryformat,
+    const void* binary,
+    GLsizei length);
+typedef void(GL_BINDING_CALL* glShaderSourceContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint shader,
+    GLsizei count,
+    const char* const* str,
+    const GLint* length);
+typedef void(GL_BINDING_CALL* glSignalSemaphoreEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint semaphore,
+    GLuint numBufferBarriers,
+    const GLuint* buffers,
+    GLuint numTextureBarriers,
+    const GLuint* textures,
+    const GLenum* dstLayouts);
+typedef void(GL_BINDING_CALL* glStartTilingQCOMContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint x,
+    GLuint y,
+    GLuint width,
+    GLuint height,
+    GLbitfield preserveMask);
+typedef void(GL_BINDING_CALL* glStencilFuncContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum func,
+    GLint ref,
+    GLuint mask);
+typedef void(GL_BINDING_CALL* glStencilFuncSeparateContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum face,
+    GLenum func,
+    GLint ref,
+    GLuint mask);
+typedef void(GL_BINDING_CALL* glStencilMaskContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint mask);
+typedef void(GL_BINDING_CALL* glStencilMaskSeparateContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum face,
+    GLuint mask);
+typedef void(GL_BINDING_CALL* glStencilOpContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum fail,
+    GLenum zfail,
+    GLenum zpass);
+typedef void(GL_BINDING_CALL* glStencilOpSeparateContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum face,
+    GLenum fail,
+    GLenum zfail,
+    GLenum zpass);
+typedef GLboolean(GL_BINDING_CALL* glTestFenceNVContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint fence);
+typedef void(GL_BINDING_CALL* glTexBufferOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum internalformat,
+    GLuint buffer);
+typedef void(GL_BINDING_CALL* glTexBufferRangeOESContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum internalformat,
+    GLuint buffer,
+    GLintptr offset,
+    GLsizeiptr size);
+typedef void(GL_BINDING_CALL* glTexImage2DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLint border,
+    GLenum format,
+    GLenum type,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexImage2DExternalANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLint border,
+    GLenum format,
+    GLenum type);
+typedef void(GL_BINDING_CALL* glTexImage2DRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLint border,
+    GLenum format,
+    GLenum type,
+    GLsizei bufSize,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexImage3DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLint border,
+    GLenum format,
+    GLenum type,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexImage3DRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLint border,
+    GLenum format,
+    GLenum type,
+    GLsizei bufSize,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexParameterfContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLfloat param);
+typedef void(GL_BINDING_CALL* glTexParameterfvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    const GLfloat* params);
+typedef void(GL_BINDING_CALL* glTexParameterfvRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    const GLfloat* params);
+typedef void(GL_BINDING_CALL* glTexParameteriContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLint param);
+typedef void(GL_BINDING_CALL* glTexParameterivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    const GLint* params);
+typedef void(GL_BINDING_CALL* glTexParameterivRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLenum pname,
+    GLsizei bufSize,
+    const GLint* params);
+typedef void(GL_BINDING_CALL* glTexStorage2DEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei levels,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height);
+typedef void(GL_BINDING_CALL* glTexStorage3DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei levels,
+    GLenum internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth);
+typedef void(GL_BINDING_CALL* glTexStorageMem2DEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset);
+typedef void(GL_BINDING_CALL* glTexStorageMemFlags2DANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext);
+typedef void(GL_BINDING_CALL* glTexSubImage2DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexSubImage2DRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    GLsizei bufSize,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexSubImage3DContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLenum format,
+    GLenum type,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTexSubImage3DRobustANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLenum format,
+    GLenum type,
+    GLsizei bufSize,
+    const void* pixels);
+typedef void(GL_BINDING_CALL* glTransformFeedbackVaryingsContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLsizei count,
+    const char* const* varyings,
+    GLenum bufferMode);
+typedef void(GL_BINDING_CALL* glTrimMemoryANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum trimLevel);
+typedef void(GL_BINDING_CALL* glUniform1fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLfloat x);
+typedef void(GL_BINDING_CALL* glUniform1fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLfloat* v);
+typedef void(GL_BINDING_CALL* glUniform1iContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLint x);
+typedef void(GL_BINDING_CALL* glUniform1ivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLint* v);
+typedef void(GL_BINDING_CALL* glUniform1uiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLuint v0);
+typedef void(GL_BINDING_CALL* glUniform1uivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLuint* v);
+typedef void(GL_BINDING_CALL* glUniform2fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLfloat x,
+    GLfloat y);
+typedef void(GL_BINDING_CALL* glUniform2fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLfloat* v);
+typedef void(GL_BINDING_CALL* glUniform2iContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLint x,
+    GLint y);
+typedef void(GL_BINDING_CALL* glUniform2ivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLint* v);
+typedef void(GL_BINDING_CALL* glUniform2uiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLuint v0,
+    GLuint v1);
+typedef void(GL_BINDING_CALL* glUniform2uivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLuint* v);
+typedef void(GL_BINDING_CALL* glUniform3fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLfloat x,
+    GLfloat y,
+    GLfloat z);
+typedef void(GL_BINDING_CALL* glUniform3fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLfloat* v);
+typedef void(GL_BINDING_CALL* glUniform3iContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLint x,
+    GLint y,
+    GLint z);
+typedef void(GL_BINDING_CALL* glUniform3ivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLint* v);
+typedef void(GL_BINDING_CALL* glUniform3uiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLuint v0,
+    GLuint v1,
+    GLuint v2);
+typedef void(GL_BINDING_CALL* glUniform3uivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLuint* v);
+typedef void(GL_BINDING_CALL* glUniform4fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLfloat x,
+    GLfloat y,
+    GLfloat z,
+    GLfloat w);
+typedef void(GL_BINDING_CALL* glUniform4fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLfloat* v);
+typedef void(GL_BINDING_CALL* glUniform4iContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLint x,
+    GLint y,
+    GLint z,
+    GLint w);
+typedef void(GL_BINDING_CALL* glUniform4ivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLint* v);
+typedef void(GL_BINDING_CALL* glUniform4uiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLuint v0,
+    GLuint v1,
+    GLuint v2,
+    GLuint v3);
+typedef void(GL_BINDING_CALL* glUniform4uivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    const GLuint* v);
+typedef void(GL_BINDING_CALL* glUniformBlockBindingContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program,
+    GLuint uniformBlockIndex,
+    GLuint uniformBlockBinding);
+typedef void(GL_BINDING_CALL* glUniformMatrix2fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix2x3fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix2x4fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix3fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix3x2fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix3x4fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix4fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix4x2fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef void(GL_BINDING_CALL* glUniformMatrix4x3fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLint location,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value);
+typedef GLboolean(GL_BINDING_CALL* glUnmapBufferContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum target);
+typedef void(GL_BINDING_CALL* glUseProgramContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program);
+typedef void(GL_BINDING_CALL* glValidateProgramContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint program);
+typedef void(GL_BINDING_CALL* glVertexAttrib1fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLfloat x);
+typedef void(GL_BINDING_CALL* glVertexAttrib1fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    const GLfloat* values);
+typedef void(GL_BINDING_CALL* glVertexAttrib2fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLfloat x,
+    GLfloat y);
+typedef void(GL_BINDING_CALL* glVertexAttrib2fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    const GLfloat* values);
+typedef void(GL_BINDING_CALL* glVertexAttrib3fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLfloat x,
+    GLfloat y,
+    GLfloat z);
+typedef void(GL_BINDING_CALL* glVertexAttrib3fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    const GLfloat* values);
+typedef void(GL_BINDING_CALL* glVertexAttrib4fContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLfloat x,
+    GLfloat y,
+    GLfloat z,
+    GLfloat w);
+typedef void(GL_BINDING_CALL* glVertexAttrib4fvContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    const GLfloat* values);
+typedef void(GL_BINDING_CALL* glVertexAttribDivisorANGLEContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint index,
+    GLuint divisor);
+typedef void(GL_BINDING_CALL* glVertexAttribI4iContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLint x,
+    GLint y,
+    GLint z,
+    GLint w);
+typedef void(GL_BINDING_CALL* glVertexAttribI4ivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    const GLint* values);
+typedef void(GL_BINDING_CALL* glVertexAttribI4uiContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLuint x,
+    GLuint y,
+    GLuint z,
+    GLuint w);
+typedef void(GL_BINDING_CALL* glVertexAttribI4uivContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    const GLuint* values);
+typedef void(GL_BINDING_CALL* glVertexAttribIPointerContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLint size,
+    GLenum type,
+    GLsizei stride,
+    const void* ptr);
+typedef void(GL_BINDING_CALL* glVertexAttribPointerContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint indx,
+    GLint size,
+    GLenum type,
+    GLboolean normalized,
+    GLsizei stride,
+    const void* ptr);
+typedef void(GL_BINDING_CALL* glViewportContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                          GLeglContextANGLE ctx,
+                                                          GLint x,
+                                                          GLint y,
+                                                          GLsizei width,
+                                                          GLsizei height);
+typedef void(GL_BINDING_CALL* glWaitSemaphoreEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLuint semaphore,
+    GLuint numBufferBarriers,
+    const GLuint* buffers,
+    GLuint numTextureBarriers,
+    const GLuint* textures,
+    const GLenum* srcLayouts);
+typedef void(GL_BINDING_CALL* glWaitSyncContextANGLEProc)(GLeglDisplayANGLE dpy,
+                                                          GLeglContextANGLE ctx,
+                                                          GLsync sync,
+                                                          GLbitfield flags,
+                                                          GLuint64 timeout);
+typedef void(GL_BINDING_CALL* glWindowRectanglesEXTContextANGLEProc)(
+    GLeglDisplayANGLE dpy,
+    GLeglContextANGLE ctx,
+    GLenum mode,
+    GLsizei n,
+    const GLint* box);
 
 struct ExtensionsGL {
   bool b_GL_AMD_framebuffer_multisample_advanced;
   bool b_GL_ANGLE_base_vertex_base_instance;
   bool b_GL_ANGLE_blob_cache;
+  bool b_GL_ANGLE_explicit_context;
   bool b_GL_ANGLE_framebuffer_blit;
   bool b_GL_ANGLE_framebuffer_multisample;
   bool b_GL_ANGLE_get_tex_level_parameter;
@@ -2013,6 +4644,529 @@ struct ProcsGL {
   glWaitSemaphoreEXTProc glWaitSemaphoreEXTFn;
   glWaitSyncProc glWaitSyncFn;
   glWindowRectanglesEXTProc glWindowRectanglesEXTFn;
+  glAcquireTexturesANGLEContextANGLEProc glAcquireTexturesANGLEContextANGLEFn;
+  glActiveTextureContextANGLEProc glActiveTextureContextANGLEFn;
+  glAttachShaderContextANGLEProc glAttachShaderContextANGLEFn;
+  glBeginPixelLocalStorageANGLEContextANGLEProc
+      glBeginPixelLocalStorageANGLEContextANGLEFn;
+  glBeginQueryContextANGLEProc glBeginQueryContextANGLEFn;
+  glBeginTransformFeedbackContextANGLEProc
+      glBeginTransformFeedbackContextANGLEFn;
+  glBindAttribLocationContextANGLEProc glBindAttribLocationContextANGLEFn;
+  glBindBufferContextANGLEProc glBindBufferContextANGLEFn;
+  glBindBufferBaseContextANGLEProc glBindBufferBaseContextANGLEFn;
+  glBindBufferRangeContextANGLEProc glBindBufferRangeContextANGLEFn;
+  glBindFragDataLocationContextANGLEProc glBindFragDataLocationContextANGLEFn;
+  glBindFragDataLocationIndexedContextANGLEProc
+      glBindFragDataLocationIndexedContextANGLEFn;
+  glBindFramebufferEXTContextANGLEProc glBindFramebufferEXTContextANGLEFn;
+  glBindRenderbufferEXTContextANGLEProc glBindRenderbufferEXTContextANGLEFn;
+  glBindSamplerContextANGLEProc glBindSamplerContextANGLEFn;
+  glBindTextureContextANGLEProc glBindTextureContextANGLEFn;
+  glBindTransformFeedbackContextANGLEProc glBindTransformFeedbackContextANGLEFn;
+  glBindUniformLocationCHROMIUMContextANGLEProc
+      glBindUniformLocationCHROMIUMContextANGLEFn;
+  glBindVertexArrayOESContextANGLEProc glBindVertexArrayOESContextANGLEFn;
+  glBlendBarrierKHRContextANGLEProc glBlendBarrierKHRContextANGLEFn;
+  glBlendColorContextANGLEProc glBlendColorContextANGLEFn;
+  glBlendEquationContextANGLEProc glBlendEquationContextANGLEFn;
+  glBlendEquationiOESContextANGLEProc glBlendEquationiOESContextANGLEFn;
+  glBlendEquationSeparateContextANGLEProc glBlendEquationSeparateContextANGLEFn;
+  glBlendEquationSeparateiOESContextANGLEProc
+      glBlendEquationSeparateiOESContextANGLEFn;
+  glBlendFuncContextANGLEProc glBlendFuncContextANGLEFn;
+  glBlendFunciOESContextANGLEProc glBlendFunciOESContextANGLEFn;
+  glBlendFuncSeparateContextANGLEProc glBlendFuncSeparateContextANGLEFn;
+  glBlendFuncSeparateiOESContextANGLEProc glBlendFuncSeparateiOESContextANGLEFn;
+  glBlitFramebufferContextANGLEProc glBlitFramebufferContextANGLEFn;
+  glBlobCacheCallbacksANGLEContextANGLEProc
+      glBlobCacheCallbacksANGLEContextANGLEFn;
+  glBufferDataContextANGLEProc glBufferDataContextANGLEFn;
+  glBufferSubDataContextANGLEProc glBufferSubDataContextANGLEFn;
+  glCheckFramebufferStatusEXTContextANGLEProc
+      glCheckFramebufferStatusEXTContextANGLEFn;
+  glClearContextANGLEProc glClearContextANGLEFn;
+  glClearBufferfiContextANGLEProc glClearBufferfiContextANGLEFn;
+  glClearBufferfvContextANGLEProc glClearBufferfvContextANGLEFn;
+  glClearBufferivContextANGLEProc glClearBufferivContextANGLEFn;
+  glClearBufferuivContextANGLEProc glClearBufferuivContextANGLEFn;
+  glClearColorContextANGLEProc glClearColorContextANGLEFn;
+  glClearDepthContextANGLEProc glClearDepthContextANGLEFn;
+  glClearDepthfContextANGLEProc glClearDepthfContextANGLEFn;
+  glClearStencilContextANGLEProc glClearStencilContextANGLEFn;
+  glClearTexImageContextANGLEProc glClearTexImageContextANGLEFn;
+  glClearTexSubImageContextANGLEProc glClearTexSubImageContextANGLEFn;
+  glClientWaitSyncContextANGLEProc glClientWaitSyncContextANGLEFn;
+  glClipControlEXTContextANGLEProc glClipControlEXTContextANGLEFn;
+  glColorMaskContextANGLEProc glColorMaskContextANGLEFn;
+  glColorMaskiOESContextANGLEProc glColorMaskiOESContextANGLEFn;
+  glCompileShaderContextANGLEProc glCompileShaderContextANGLEFn;
+  glCompressedTexImage2DContextANGLEProc glCompressedTexImage2DContextANGLEFn;
+  glCompressedTexImage3DContextANGLEProc glCompressedTexImage3DContextANGLEFn;
+  glCompressedTexSubImage2DContextANGLEProc
+      glCompressedTexSubImage2DContextANGLEFn;
+  glCompressedTexSubImage3DContextANGLEProc
+      glCompressedTexSubImage3DContextANGLEFn;
+  glCopyBufferSubDataContextANGLEProc glCopyBufferSubDataContextANGLEFn;
+  glCopySubTextureCHROMIUMContextANGLEProc
+      glCopySubTextureCHROMIUMContextANGLEFn;
+  glCopyTexImage2DContextANGLEProc glCopyTexImage2DContextANGLEFn;
+  glCopyTexSubImage2DContextANGLEProc glCopyTexSubImage2DContextANGLEFn;
+  glCopyTexSubImage3DContextANGLEProc glCopyTexSubImage3DContextANGLEFn;
+  glCopyTextureCHROMIUMContextANGLEProc glCopyTextureCHROMIUMContextANGLEFn;
+  glCreateMemoryObjectsEXTContextANGLEProc
+      glCreateMemoryObjectsEXTContextANGLEFn;
+  glCreateProgramContextANGLEProc glCreateProgramContextANGLEFn;
+  glCreateShaderContextANGLEProc glCreateShaderContextANGLEFn;
+  glCullFaceContextANGLEProc glCullFaceContextANGLEFn;
+  glDebugMessageCallbackKHRContextANGLEProc
+      glDebugMessageCallbackKHRContextANGLEFn;
+  glDebugMessageControlKHRContextANGLEProc
+      glDebugMessageControlKHRContextANGLEFn;
+  glDebugMessageInsertKHRContextANGLEProc glDebugMessageInsertKHRContextANGLEFn;
+  glDeleteBuffersARBContextANGLEProc glDeleteBuffersARBContextANGLEFn;
+  glDeleteFencesNVContextANGLEProc glDeleteFencesNVContextANGLEFn;
+  glDeleteFramebuffersEXTContextANGLEProc glDeleteFramebuffersEXTContextANGLEFn;
+  glDeleteMemoryObjectsEXTContextANGLEProc
+      glDeleteMemoryObjectsEXTContextANGLEFn;
+  glDeleteProgramContextANGLEProc glDeleteProgramContextANGLEFn;
+  glDeleteQueriesContextANGLEProc glDeleteQueriesContextANGLEFn;
+  glDeleteRenderbuffersEXTContextANGLEProc
+      glDeleteRenderbuffersEXTContextANGLEFn;
+  glDeleteSamplersContextANGLEProc glDeleteSamplersContextANGLEFn;
+  glDeleteSemaphoresEXTContextANGLEProc glDeleteSemaphoresEXTContextANGLEFn;
+  glDeleteShaderContextANGLEProc glDeleteShaderContextANGLEFn;
+  glDeleteSyncContextANGLEProc glDeleteSyncContextANGLEFn;
+  glDeleteTexturesContextANGLEProc glDeleteTexturesContextANGLEFn;
+  glDeleteTransformFeedbacksContextANGLEProc
+      glDeleteTransformFeedbacksContextANGLEFn;
+  glDeleteVertexArraysOESContextANGLEProc glDeleteVertexArraysOESContextANGLEFn;
+  glDepthFuncContextANGLEProc glDepthFuncContextANGLEFn;
+  glDepthMaskContextANGLEProc glDepthMaskContextANGLEFn;
+  glDepthRangeContextANGLEProc glDepthRangeContextANGLEFn;
+  glDepthRangefContextANGLEProc glDepthRangefContextANGLEFn;
+  glDetachShaderContextANGLEProc glDetachShaderContextANGLEFn;
+  glDisableContextANGLEProc glDisableContextANGLEFn;
+  glDisableiOESContextANGLEProc glDisableiOESContextANGLEFn;
+  glDisableVertexAttribArrayContextANGLEProc
+      glDisableVertexAttribArrayContextANGLEFn;
+  glDiscardFramebufferEXTContextANGLEProc glDiscardFramebufferEXTContextANGLEFn;
+  glDrawArraysContextANGLEProc glDrawArraysContextANGLEFn;
+  glDrawArraysInstancedANGLEContextANGLEProc
+      glDrawArraysInstancedANGLEContextANGLEFn;
+  glDrawArraysInstancedBaseInstanceANGLEContextANGLEProc
+      glDrawArraysInstancedBaseInstanceANGLEContextANGLEFn;
+  glDrawBufferContextANGLEProc glDrawBufferContextANGLEFn;
+  glDrawBuffersARBContextANGLEProc glDrawBuffersARBContextANGLEFn;
+  glDrawElementsContextANGLEProc glDrawElementsContextANGLEFn;
+  glDrawElementsInstancedANGLEContextANGLEProc
+      glDrawElementsInstancedANGLEContextANGLEFn;
+  glDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEProc
+      glDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEFn;
+  glDrawRangeElementsContextANGLEProc glDrawRangeElementsContextANGLEFn;
+  glEGLImageTargetRenderbufferStorageOESContextANGLEProc
+      glEGLImageTargetRenderbufferStorageOESContextANGLEFn;
+  glEGLImageTargetTexStorageEXTContextANGLEProc
+      glEGLImageTargetTexStorageEXTContextANGLEFn;
+  glEGLImageTargetTexture2DOESContextANGLEProc
+      glEGLImageTargetTexture2DOESContextANGLEFn;
+  glEnableContextANGLEProc glEnableContextANGLEFn;
+  glEnableiOESContextANGLEProc glEnableiOESContextANGLEFn;
+  glEnableVertexAttribArrayContextANGLEProc
+      glEnableVertexAttribArrayContextANGLEFn;
+  glEndPixelLocalStorageANGLEContextANGLEProc
+      glEndPixelLocalStorageANGLEContextANGLEFn;
+  glEndPixelLocalStorageImplicitANGLEContextANGLEProc
+      glEndPixelLocalStorageImplicitANGLEContextANGLEFn;
+  glEndQueryContextANGLEProc glEndQueryContextANGLEFn;
+  glEndTilingQCOMContextANGLEProc glEndTilingQCOMContextANGLEFn;
+  glEndTransformFeedbackContextANGLEProc glEndTransformFeedbackContextANGLEFn;
+  glFenceSyncContextANGLEProc glFenceSyncContextANGLEFn;
+  glFinishContextANGLEProc glFinishContextANGLEFn;
+  glFinishFenceNVContextANGLEProc glFinishFenceNVContextANGLEFn;
+  glFlushContextANGLEProc glFlushContextANGLEFn;
+  glFlushMappedBufferRangeContextANGLEProc
+      glFlushMappedBufferRangeContextANGLEFn;
+  glFramebufferMemorylessPixelLocalStorageANGLEContextANGLEProc
+      glFramebufferMemorylessPixelLocalStorageANGLEContextANGLEFn;
+  glFramebufferParameteriMESAContextANGLEProc
+      glFramebufferParameteriMESAContextANGLEFn;
+  glFramebufferPixelLocalClearValuefvANGLEContextANGLEProc
+      glFramebufferPixelLocalClearValuefvANGLEContextANGLEFn;
+  glFramebufferPixelLocalClearValueivANGLEContextANGLEProc
+      glFramebufferPixelLocalClearValueivANGLEContextANGLEFn;
+  glFramebufferPixelLocalClearValueuivANGLEContextANGLEProc
+      glFramebufferPixelLocalClearValueuivANGLEContextANGLEFn;
+  glFramebufferPixelLocalStorageInterruptANGLEContextANGLEProc
+      glFramebufferPixelLocalStorageInterruptANGLEContextANGLEFn;
+  glFramebufferPixelLocalStorageRestoreANGLEContextANGLEProc
+      glFramebufferPixelLocalStorageRestoreANGLEContextANGLEFn;
+  glFramebufferRenderbufferEXTContextANGLEProc
+      glFramebufferRenderbufferEXTContextANGLEFn;
+  glFramebufferTexture2DEXTContextANGLEProc
+      glFramebufferTexture2DEXTContextANGLEFn;
+  glFramebufferTexture2DMultisampleEXTContextANGLEProc
+      glFramebufferTexture2DMultisampleEXTContextANGLEFn;
+  glFramebufferTextureLayerContextANGLEProc
+      glFramebufferTextureLayerContextANGLEFn;
+  glFramebufferTextureMultiviewOVRContextANGLEProc
+      glFramebufferTextureMultiviewOVRContextANGLEFn;
+  glFramebufferTexturePixelLocalStorageANGLEContextANGLEProc
+      glFramebufferTexturePixelLocalStorageANGLEContextANGLEFn;
+  glFrontFaceContextANGLEProc glFrontFaceContextANGLEFn;
+  glGenBuffersARBContextANGLEProc glGenBuffersARBContextANGLEFn;
+  glGenerateMipmapEXTContextANGLEProc glGenerateMipmapEXTContextANGLEFn;
+  glGenFencesNVContextANGLEProc glGenFencesNVContextANGLEFn;
+  glGenFramebuffersEXTContextANGLEProc glGenFramebuffersEXTContextANGLEFn;
+  glGenQueriesContextANGLEProc glGenQueriesContextANGLEFn;
+  glGenRenderbuffersEXTContextANGLEProc glGenRenderbuffersEXTContextANGLEFn;
+  glGenSamplersContextANGLEProc glGenSamplersContextANGLEFn;
+  glGenSemaphoresEXTContextANGLEProc glGenSemaphoresEXTContextANGLEFn;
+  glGenTexturesContextANGLEProc glGenTexturesContextANGLEFn;
+  glGenTransformFeedbacksContextANGLEProc glGenTransformFeedbacksContextANGLEFn;
+  glGenVertexArraysOESContextANGLEProc glGenVertexArraysOESContextANGLEFn;
+  glGetActiveAttribContextANGLEProc glGetActiveAttribContextANGLEFn;
+  glGetActiveUniformContextANGLEProc glGetActiveUniformContextANGLEFn;
+  glGetActiveUniformBlockivContextANGLEProc
+      glGetActiveUniformBlockivContextANGLEFn;
+  glGetActiveUniformBlockivRobustANGLEContextANGLEProc
+      glGetActiveUniformBlockivRobustANGLEContextANGLEFn;
+  glGetActiveUniformBlockNameContextANGLEProc
+      glGetActiveUniformBlockNameContextANGLEFn;
+  glGetActiveUniformsivContextANGLEProc glGetActiveUniformsivContextANGLEFn;
+  glGetAttachedShadersContextANGLEProc glGetAttachedShadersContextANGLEFn;
+  glGetAttribLocationContextANGLEProc glGetAttribLocationContextANGLEFn;
+  glGetBooleanvContextANGLEProc glGetBooleanvContextANGLEFn;
+  glGetBooleanvRobustANGLEContextANGLEProc
+      glGetBooleanvRobustANGLEContextANGLEFn;
+  glGetBufferParameteri64vRobustANGLEContextANGLEProc
+      glGetBufferParameteri64vRobustANGLEContextANGLEFn;
+  glGetBufferParameterivContextANGLEProc glGetBufferParameterivContextANGLEFn;
+  glGetBufferParameterivRobustANGLEContextANGLEProc
+      glGetBufferParameterivRobustANGLEContextANGLEFn;
+  glGetBufferPointervRobustANGLEContextANGLEProc
+      glGetBufferPointervRobustANGLEContextANGLEFn;
+  glGetDebugMessageLogKHRContextANGLEProc glGetDebugMessageLogKHRContextANGLEFn;
+  glGetErrorContextANGLEProc glGetErrorContextANGLEFn;
+  glGetFenceivNVContextANGLEProc glGetFenceivNVContextANGLEFn;
+  glGetFloatvContextANGLEProc glGetFloatvContextANGLEFn;
+  glGetFloatvRobustANGLEContextANGLEProc glGetFloatvRobustANGLEContextANGLEFn;
+  glGetFragDataIndexContextANGLEProc glGetFragDataIndexContextANGLEFn;
+  glGetFragDataLocationContextANGLEProc glGetFragDataLocationContextANGLEFn;
+  glGetFramebufferAttachmentParameterivEXTContextANGLEProc
+      glGetFramebufferAttachmentParameterivEXTContextANGLEFn;
+  glGetFramebufferAttachmentParameterivRobustANGLEContextANGLEProc
+      glGetFramebufferAttachmentParameterivRobustANGLEContextANGLEFn;
+  glGetFramebufferPixelLocalStorageParameterfvRobustANGLEContextANGLEProc
+      glGetFramebufferPixelLocalStorageParameterfvRobustANGLEContextANGLEFn;
+  glGetFramebufferPixelLocalStorageParameterivRobustANGLEContextANGLEProc
+      glGetFramebufferPixelLocalStorageParameterivRobustANGLEContextANGLEFn;
+  glGetFramebufferPixelLocalStorageParameteruivRobustANGLEContextANGLEProc
+      glGetFramebufferPixelLocalStorageParameteruivRobustANGLEContextANGLEFn;
+  glGetGraphicsResetStatusARBContextANGLEProc
+      glGetGraphicsResetStatusARBContextANGLEFn;
+  glGetInteger64i_vContextANGLEProc glGetInteger64i_vContextANGLEFn;
+  glGetInteger64i_vRobustANGLEContextANGLEProc
+      glGetInteger64i_vRobustANGLEContextANGLEFn;
+  glGetInteger64vContextANGLEProc glGetInteger64vContextANGLEFn;
+  glGetInteger64vRobustANGLEContextANGLEProc
+      glGetInteger64vRobustANGLEContextANGLEFn;
+  glGetIntegeri_vContextANGLEProc glGetIntegeri_vContextANGLEFn;
+  glGetIntegeri_vRobustANGLEContextANGLEProc
+      glGetIntegeri_vRobustANGLEContextANGLEFn;
+  glGetIntegervContextANGLEProc glGetIntegervContextANGLEFn;
+  glGetIntegervRobustANGLEContextANGLEProc
+      glGetIntegervRobustANGLEContextANGLEFn;
+  glGetInternalformativContextANGLEProc glGetInternalformativContextANGLEFn;
+  glGetInternalformativRobustANGLEContextANGLEProc
+      glGetInternalformativRobustANGLEContextANGLEFn;
+  glGetInternalformatSampleivNVContextANGLEProc
+      glGetInternalformatSampleivNVContextANGLEFn;
+  glGetMultisamplefvRobustANGLEContextANGLEProc
+      glGetMultisamplefvRobustANGLEContextANGLEFn;
+  glGetObjectLabelKHRContextANGLEProc glGetObjectLabelKHRContextANGLEFn;
+  glGetObjectPtrLabelKHRContextANGLEProc glGetObjectPtrLabelKHRContextANGLEFn;
+  glGetPointervKHRContextANGLEProc glGetPointervKHRContextANGLEFn;
+  glGetProgramBinaryContextANGLEProc glGetProgramBinaryContextANGLEFn;
+  glGetProgramInfoLogContextANGLEProc glGetProgramInfoLogContextANGLEFn;
+  glGetProgramivContextANGLEProc glGetProgramivContextANGLEFn;
+  glGetProgramivRobustANGLEContextANGLEProc
+      glGetProgramivRobustANGLEContextANGLEFn;
+  glGetQueryivContextANGLEProc glGetQueryivContextANGLEFn;
+  glGetQueryivRobustANGLEContextANGLEProc glGetQueryivRobustANGLEContextANGLEFn;
+  glGetQueryObjecti64vContextANGLEProc glGetQueryObjecti64vContextANGLEFn;
+  glGetQueryObjecti64vRobustANGLEContextANGLEProc
+      glGetQueryObjecti64vRobustANGLEContextANGLEFn;
+  glGetQueryObjectivContextANGLEProc glGetQueryObjectivContextANGLEFn;
+  glGetQueryObjectivRobustANGLEContextANGLEProc
+      glGetQueryObjectivRobustANGLEContextANGLEFn;
+  glGetQueryObjectui64vContextANGLEProc glGetQueryObjectui64vContextANGLEFn;
+  glGetQueryObjectui64vRobustANGLEContextANGLEProc
+      glGetQueryObjectui64vRobustANGLEContextANGLEFn;
+  glGetQueryObjectuivContextANGLEProc glGetQueryObjectuivContextANGLEFn;
+  glGetQueryObjectuivRobustANGLEContextANGLEProc
+      glGetQueryObjectuivRobustANGLEContextANGLEFn;
+  glGetRenderbufferParameterivEXTContextANGLEProc
+      glGetRenderbufferParameterivEXTContextANGLEFn;
+  glGetRenderbufferParameterivRobustANGLEContextANGLEProc
+      glGetRenderbufferParameterivRobustANGLEContextANGLEFn;
+  glGetSamplerParameterfvContextANGLEProc glGetSamplerParameterfvContextANGLEFn;
+  glGetSamplerParameterfvRobustANGLEContextANGLEProc
+      glGetSamplerParameterfvRobustANGLEContextANGLEFn;
+  glGetSamplerParameterivContextANGLEProc glGetSamplerParameterivContextANGLEFn;
+  glGetSamplerParameterivRobustANGLEContextANGLEProc
+      glGetSamplerParameterivRobustANGLEContextANGLEFn;
+  glGetShaderInfoLogContextANGLEProc glGetShaderInfoLogContextANGLEFn;
+  glGetShaderivContextANGLEProc glGetShaderivContextANGLEFn;
+  glGetShaderivRobustANGLEContextANGLEProc
+      glGetShaderivRobustANGLEContextANGLEFn;
+  glGetShaderPrecisionFormatContextANGLEProc
+      glGetShaderPrecisionFormatContextANGLEFn;
+  glGetShaderSourceContextANGLEProc glGetShaderSourceContextANGLEFn;
+  glGetStringContextANGLEProc glGetStringContextANGLEFn;
+  glGetStringiContextANGLEProc glGetStringiContextANGLEFn;
+  glGetSyncivContextANGLEProc glGetSyncivContextANGLEFn;
+  glGetTexLevelParameterfvANGLEContextANGLEProc
+      glGetTexLevelParameterfvANGLEContextANGLEFn;
+  glGetTexLevelParameterfvRobustANGLEContextANGLEProc
+      glGetTexLevelParameterfvRobustANGLEContextANGLEFn;
+  glGetTexLevelParameterivANGLEContextANGLEProc
+      glGetTexLevelParameterivANGLEContextANGLEFn;
+  glGetTexLevelParameterivRobustANGLEContextANGLEProc
+      glGetTexLevelParameterivRobustANGLEContextANGLEFn;
+  glGetTexParameterfvContextANGLEProc glGetTexParameterfvContextANGLEFn;
+  glGetTexParameterfvRobustANGLEContextANGLEProc
+      glGetTexParameterfvRobustANGLEContextANGLEFn;
+  glGetTexParameterivContextANGLEProc glGetTexParameterivContextANGLEFn;
+  glGetTexParameterivRobustANGLEContextANGLEProc
+      glGetTexParameterivRobustANGLEContextANGLEFn;
+  glGetTransformFeedbackVaryingContextANGLEProc
+      glGetTransformFeedbackVaryingContextANGLEFn;
+  glGetTranslatedShaderSourceANGLEContextANGLEProc
+      glGetTranslatedShaderSourceANGLEContextANGLEFn;
+  glGetUniformBlockIndexContextANGLEProc glGetUniformBlockIndexContextANGLEFn;
+  glGetUniformfvContextANGLEProc glGetUniformfvContextANGLEFn;
+  glGetUniformfvRobustANGLEContextANGLEProc
+      glGetUniformfvRobustANGLEContextANGLEFn;
+  glGetUniformIndicesContextANGLEProc glGetUniformIndicesContextANGLEFn;
+  glGetUniformivContextANGLEProc glGetUniformivContextANGLEFn;
+  glGetUniformivRobustANGLEContextANGLEProc
+      glGetUniformivRobustANGLEContextANGLEFn;
+  glGetUniformLocationContextANGLEProc glGetUniformLocationContextANGLEFn;
+  glGetUniformuivContextANGLEProc glGetUniformuivContextANGLEFn;
+  glGetUniformuivRobustANGLEContextANGLEProc
+      glGetUniformuivRobustANGLEContextANGLEFn;
+  glGetVertexAttribfvContextANGLEProc glGetVertexAttribfvContextANGLEFn;
+  glGetVertexAttribfvRobustANGLEContextANGLEProc
+      glGetVertexAttribfvRobustANGLEContextANGLEFn;
+  glGetVertexAttribIivRobustANGLEContextANGLEProc
+      glGetVertexAttribIivRobustANGLEContextANGLEFn;
+  glGetVertexAttribIuivRobustANGLEContextANGLEProc
+      glGetVertexAttribIuivRobustANGLEContextANGLEFn;
+  glGetVertexAttribivContextANGLEProc glGetVertexAttribivContextANGLEFn;
+  glGetVertexAttribivRobustANGLEContextANGLEProc
+      glGetVertexAttribivRobustANGLEContextANGLEFn;
+  glGetVertexAttribPointervContextANGLEProc
+      glGetVertexAttribPointervContextANGLEFn;
+  glGetVertexAttribPointervRobustANGLEContextANGLEProc
+      glGetVertexAttribPointervRobustANGLEContextANGLEFn;
+  glHintContextANGLEProc glHintContextANGLEFn;
+  glImportMemoryFdEXTContextANGLEProc glImportMemoryFdEXTContextANGLEFn;
+  glImportMemoryWin32HandleEXTContextANGLEProc
+      glImportMemoryWin32HandleEXTContextANGLEFn;
+  glImportMemoryZirconHandleANGLEContextANGLEProc
+      glImportMemoryZirconHandleANGLEContextANGLEFn;
+  glImportSemaphoreFdEXTContextANGLEProc glImportSemaphoreFdEXTContextANGLEFn;
+  glImportSemaphoreWin32HandleEXTContextANGLEProc
+      glImportSemaphoreWin32HandleEXTContextANGLEFn;
+  glImportSemaphoreZirconHandleANGLEContextANGLEProc
+      glImportSemaphoreZirconHandleANGLEContextANGLEFn;
+  glInsertEventMarkerEXTContextANGLEProc glInsertEventMarkerEXTContextANGLEFn;
+  glInvalidateFramebufferContextANGLEProc glInvalidateFramebufferContextANGLEFn;
+  glInvalidateSubFramebufferContextANGLEProc
+      glInvalidateSubFramebufferContextANGLEFn;
+  glInvalidateTextureANGLEContextANGLEProc
+      glInvalidateTextureANGLEContextANGLEFn;
+  glIsBufferContextANGLEProc glIsBufferContextANGLEFn;
+  glIsEnabledContextANGLEProc glIsEnabledContextANGLEFn;
+  glIsEnablediOESContextANGLEProc glIsEnablediOESContextANGLEFn;
+  glIsFenceNVContextANGLEProc glIsFenceNVContextANGLEFn;
+  glIsFramebufferEXTContextANGLEProc glIsFramebufferEXTContextANGLEFn;
+  glIsProgramContextANGLEProc glIsProgramContextANGLEFn;
+  glIsQueryContextANGLEProc glIsQueryContextANGLEFn;
+  glIsRenderbufferEXTContextANGLEProc glIsRenderbufferEXTContextANGLEFn;
+  glIsSamplerContextANGLEProc glIsSamplerContextANGLEFn;
+  glIsShaderContextANGLEProc glIsShaderContextANGLEFn;
+  glIsSyncContextANGLEProc glIsSyncContextANGLEFn;
+  glIsTextureContextANGLEProc glIsTextureContextANGLEFn;
+  glIsTransformFeedbackContextANGLEProc glIsTransformFeedbackContextANGLEFn;
+  glIsVertexArrayOESContextANGLEProc glIsVertexArrayOESContextANGLEFn;
+  glLineWidthContextANGLEProc glLineWidthContextANGLEFn;
+  glLinkProgramContextANGLEProc glLinkProgramContextANGLEFn;
+  glMapBufferContextANGLEProc glMapBufferContextANGLEFn;
+  glMapBufferRangeContextANGLEProc glMapBufferRangeContextANGLEFn;
+  glMaxShaderCompilerThreadsKHRContextANGLEProc
+      glMaxShaderCompilerThreadsKHRContextANGLEFn;
+  glMemoryObjectParameterivEXTContextANGLEProc
+      glMemoryObjectParameterivEXTContextANGLEFn;
+  glMultiDrawArraysANGLEContextANGLEProc glMultiDrawArraysANGLEContextANGLEFn;
+  glMultiDrawArraysInstancedANGLEContextANGLEProc
+      glMultiDrawArraysInstancedANGLEContextANGLEFn;
+  glMultiDrawArraysInstancedBaseInstanceANGLEContextANGLEProc
+      glMultiDrawArraysInstancedBaseInstanceANGLEContextANGLEFn;
+  glMultiDrawElementsANGLEContextANGLEProc
+      glMultiDrawElementsANGLEContextANGLEFn;
+  glMultiDrawElementsInstancedANGLEContextANGLEProc
+      glMultiDrawElementsInstancedANGLEContextANGLEFn;
+  glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEProc
+      glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEContextANGLEFn;
+  glObjectLabelKHRContextANGLEProc glObjectLabelKHRContextANGLEFn;
+  glObjectPtrLabelKHRContextANGLEProc glObjectPtrLabelKHRContextANGLEFn;
+  glPatchParameteriOESContextANGLEProc glPatchParameteriOESContextANGLEFn;
+  glPauseTransformFeedbackContextANGLEProc
+      glPauseTransformFeedbackContextANGLEFn;
+  glPixelLocalStorageBarrierANGLEContextANGLEProc
+      glPixelLocalStorageBarrierANGLEContextANGLEFn;
+  glPixelStoreiContextANGLEProc glPixelStoreiContextANGLEFn;
+  glPointParameteriContextANGLEProc glPointParameteriContextANGLEFn;
+  glPolygonModeContextANGLEProc glPolygonModeContextANGLEFn;
+  glPolygonModeANGLEContextANGLEProc glPolygonModeANGLEContextANGLEFn;
+  glPolygonOffsetContextANGLEProc glPolygonOffsetContextANGLEFn;
+  glPolygonOffsetClampEXTContextANGLEProc glPolygonOffsetClampEXTContextANGLEFn;
+  glPopDebugGroupKHRContextANGLEProc glPopDebugGroupKHRContextANGLEFn;
+  glPopGroupMarkerEXTContextANGLEProc glPopGroupMarkerEXTContextANGLEFn;
+  glPrimitiveRestartIndexContextANGLEProc glPrimitiveRestartIndexContextANGLEFn;
+  glProgramBinaryContextANGLEProc glProgramBinaryContextANGLEFn;
+  glProgramParameteriContextANGLEProc glProgramParameteriContextANGLEFn;
+  glProvokingVertexANGLEContextANGLEProc glProvokingVertexANGLEContextANGLEFn;
+  glPushDebugGroupKHRContextANGLEProc glPushDebugGroupKHRContextANGLEFn;
+  glPushGroupMarkerEXTContextANGLEProc glPushGroupMarkerEXTContextANGLEFn;
+  glQueryCounterContextANGLEProc glQueryCounterContextANGLEFn;
+  glReadBufferContextANGLEProc glReadBufferContextANGLEFn;
+  glReadPixelsContextANGLEProc glReadPixelsContextANGLEFn;
+  glReadPixelsRobustANGLEContextANGLEProc glReadPixelsRobustANGLEContextANGLEFn;
+  glReleaseShaderCompilerContextANGLEProc glReleaseShaderCompilerContextANGLEFn;
+  glReleaseTexturesANGLEContextANGLEProc glReleaseTexturesANGLEContextANGLEFn;
+  glRenderbufferStorageEXTContextANGLEProc
+      glRenderbufferStorageEXTContextANGLEFn;
+  glRenderbufferStorageMultisampleContextANGLEProc
+      glRenderbufferStorageMultisampleContextANGLEFn;
+  glRenderbufferStorageMultisampleAdvancedAMDContextANGLEProc
+      glRenderbufferStorageMultisampleAdvancedAMDContextANGLEFn;
+  glRenderbufferStorageMultisampleEXTContextANGLEProc
+      glRenderbufferStorageMultisampleEXTContextANGLEFn;
+  glRequestExtensionANGLEContextANGLEProc glRequestExtensionANGLEContextANGLEFn;
+  glResumeTransformFeedbackContextANGLEProc
+      glResumeTransformFeedbackContextANGLEFn;
+  glSampleCoverageContextANGLEProc glSampleCoverageContextANGLEFn;
+  glSamplerParameterfContextANGLEProc glSamplerParameterfContextANGLEFn;
+  glSamplerParameterfvContextANGLEProc glSamplerParameterfvContextANGLEFn;
+  glSamplerParameterfvRobustANGLEContextANGLEProc
+      glSamplerParameterfvRobustANGLEContextANGLEFn;
+  glSamplerParameteriContextANGLEProc glSamplerParameteriContextANGLEFn;
+  glSamplerParameterivContextANGLEProc glSamplerParameterivContextANGLEFn;
+  glSamplerParameterivRobustANGLEContextANGLEProc
+      glSamplerParameterivRobustANGLEContextANGLEFn;
+  glScissorContextANGLEProc glScissorContextANGLEFn;
+  glSetFenceNVContextANGLEProc glSetFenceNVContextANGLEFn;
+  glShaderBinaryContextANGLEProc glShaderBinaryContextANGLEFn;
+  glShaderSourceContextANGLEProc glShaderSourceContextANGLEFn;
+  glSignalSemaphoreEXTContextANGLEProc glSignalSemaphoreEXTContextANGLEFn;
+  glStartTilingQCOMContextANGLEProc glStartTilingQCOMContextANGLEFn;
+  glStencilFuncContextANGLEProc glStencilFuncContextANGLEFn;
+  glStencilFuncSeparateContextANGLEProc glStencilFuncSeparateContextANGLEFn;
+  glStencilMaskContextANGLEProc glStencilMaskContextANGLEFn;
+  glStencilMaskSeparateContextANGLEProc glStencilMaskSeparateContextANGLEFn;
+  glStencilOpContextANGLEProc glStencilOpContextANGLEFn;
+  glStencilOpSeparateContextANGLEProc glStencilOpSeparateContextANGLEFn;
+  glTestFenceNVContextANGLEProc glTestFenceNVContextANGLEFn;
+  glTexBufferOESContextANGLEProc glTexBufferOESContextANGLEFn;
+  glTexBufferRangeOESContextANGLEProc glTexBufferRangeOESContextANGLEFn;
+  glTexImage2DContextANGLEProc glTexImage2DContextANGLEFn;
+  glTexImage2DExternalANGLEContextANGLEProc
+      glTexImage2DExternalANGLEContextANGLEFn;
+  glTexImage2DRobustANGLEContextANGLEProc glTexImage2DRobustANGLEContextANGLEFn;
+  glTexImage3DContextANGLEProc glTexImage3DContextANGLEFn;
+  glTexImage3DRobustANGLEContextANGLEProc glTexImage3DRobustANGLEContextANGLEFn;
+  glTexParameterfContextANGLEProc glTexParameterfContextANGLEFn;
+  glTexParameterfvContextANGLEProc glTexParameterfvContextANGLEFn;
+  glTexParameterfvRobustANGLEContextANGLEProc
+      glTexParameterfvRobustANGLEContextANGLEFn;
+  glTexParameteriContextANGLEProc glTexParameteriContextANGLEFn;
+  glTexParameterivContextANGLEProc glTexParameterivContextANGLEFn;
+  glTexParameterivRobustANGLEContextANGLEProc
+      glTexParameterivRobustANGLEContextANGLEFn;
+  glTexStorage2DEXTContextANGLEProc glTexStorage2DEXTContextANGLEFn;
+  glTexStorage3DContextANGLEProc glTexStorage3DContextANGLEFn;
+  glTexStorageMem2DEXTContextANGLEProc glTexStorageMem2DEXTContextANGLEFn;
+  glTexStorageMemFlags2DANGLEContextANGLEProc
+      glTexStorageMemFlags2DANGLEContextANGLEFn;
+  glTexSubImage2DContextANGLEProc glTexSubImage2DContextANGLEFn;
+  glTexSubImage2DRobustANGLEContextANGLEProc
+      glTexSubImage2DRobustANGLEContextANGLEFn;
+  glTexSubImage3DContextANGLEProc glTexSubImage3DContextANGLEFn;
+  glTexSubImage3DRobustANGLEContextANGLEProc
+      glTexSubImage3DRobustANGLEContextANGLEFn;
+  glTransformFeedbackVaryingsContextANGLEProc
+      glTransformFeedbackVaryingsContextANGLEFn;
+  glTrimMemoryANGLEContextANGLEProc glTrimMemoryANGLEContextANGLEFn;
+  glUniform1fContextANGLEProc glUniform1fContextANGLEFn;
+  glUniform1fvContextANGLEProc glUniform1fvContextANGLEFn;
+  glUniform1iContextANGLEProc glUniform1iContextANGLEFn;
+  glUniform1ivContextANGLEProc glUniform1ivContextANGLEFn;
+  glUniform1uiContextANGLEProc glUniform1uiContextANGLEFn;
+  glUniform1uivContextANGLEProc glUniform1uivContextANGLEFn;
+  glUniform2fContextANGLEProc glUniform2fContextANGLEFn;
+  glUniform2fvContextANGLEProc glUniform2fvContextANGLEFn;
+  glUniform2iContextANGLEProc glUniform2iContextANGLEFn;
+  glUniform2ivContextANGLEProc glUniform2ivContextANGLEFn;
+  glUniform2uiContextANGLEProc glUniform2uiContextANGLEFn;
+  glUniform2uivContextANGLEProc glUniform2uivContextANGLEFn;
+  glUniform3fContextANGLEProc glUniform3fContextANGLEFn;
+  glUniform3fvContextANGLEProc glUniform3fvContextANGLEFn;
+  glUniform3iContextANGLEProc glUniform3iContextANGLEFn;
+  glUniform3ivContextANGLEProc glUniform3ivContextANGLEFn;
+  glUniform3uiContextANGLEProc glUniform3uiContextANGLEFn;
+  glUniform3uivContextANGLEProc glUniform3uivContextANGLEFn;
+  glUniform4fContextANGLEProc glUniform4fContextANGLEFn;
+  glUniform4fvContextANGLEProc glUniform4fvContextANGLEFn;
+  glUniform4iContextANGLEProc glUniform4iContextANGLEFn;
+  glUniform4ivContextANGLEProc glUniform4ivContextANGLEFn;
+  glUniform4uiContextANGLEProc glUniform4uiContextANGLEFn;
+  glUniform4uivContextANGLEProc glUniform4uivContextANGLEFn;
+  glUniformBlockBindingContextANGLEProc glUniformBlockBindingContextANGLEFn;
+  glUniformMatrix2fvContextANGLEProc glUniformMatrix2fvContextANGLEFn;
+  glUniformMatrix2x3fvContextANGLEProc glUniformMatrix2x3fvContextANGLEFn;
+  glUniformMatrix2x4fvContextANGLEProc glUniformMatrix2x4fvContextANGLEFn;
+  glUniformMatrix3fvContextANGLEProc glUniformMatrix3fvContextANGLEFn;
+  glUniformMatrix3x2fvContextANGLEProc glUniformMatrix3x2fvContextANGLEFn;
+  glUniformMatrix3x4fvContextANGLEProc glUniformMatrix3x4fvContextANGLEFn;
+  glUniformMatrix4fvContextANGLEProc glUniformMatrix4fvContextANGLEFn;
+  glUniformMatrix4x2fvContextANGLEProc glUniformMatrix4x2fvContextANGLEFn;
+  glUniformMatrix4x3fvContextANGLEProc glUniformMatrix4x3fvContextANGLEFn;
+  glUnmapBufferContextANGLEProc glUnmapBufferContextANGLEFn;
+  glUseProgramContextANGLEProc glUseProgramContextANGLEFn;
+  glValidateProgramContextANGLEProc glValidateProgramContextANGLEFn;
+  glVertexAttrib1fContextANGLEProc glVertexAttrib1fContextANGLEFn;
+  glVertexAttrib1fvContextANGLEProc glVertexAttrib1fvContextANGLEFn;
+  glVertexAttrib2fContextANGLEProc glVertexAttrib2fContextANGLEFn;
+  glVertexAttrib2fvContextANGLEProc glVertexAttrib2fvContextANGLEFn;
+  glVertexAttrib3fContextANGLEProc glVertexAttrib3fContextANGLEFn;
+  glVertexAttrib3fvContextANGLEProc glVertexAttrib3fvContextANGLEFn;
+  glVertexAttrib4fContextANGLEProc glVertexAttrib4fContextANGLEFn;
+  glVertexAttrib4fvContextANGLEProc glVertexAttrib4fvContextANGLEFn;
+  glVertexAttribDivisorANGLEContextANGLEProc
+      glVertexAttribDivisorANGLEContextANGLEFn;
+  glVertexAttribI4iContextANGLEProc glVertexAttribI4iContextANGLEFn;
+  glVertexAttribI4ivContextANGLEProc glVertexAttribI4ivContextANGLEFn;
+  glVertexAttribI4uiContextANGLEProc glVertexAttribI4uiContextANGLEFn;
+  glVertexAttribI4uivContextANGLEProc glVertexAttribI4uivContextANGLEFn;
+  glVertexAttribIPointerContextANGLEProc glVertexAttribIPointerContextANGLEFn;
+  glVertexAttribPointerContextANGLEProc glVertexAttribPointerContextANGLEFn;
+  glViewportContextANGLEProc glViewportContextANGLEFn;
+  glWaitSemaphoreEXTContextANGLEProc glWaitSemaphoreEXTContextANGLEFn;
+  glWaitSyncContextANGLEProc glWaitSyncContextANGLEFn;
+  glWindowRectanglesEXTContextANGLEProc glWindowRectanglesEXTContextANGLEFn;
 };
 
 class GL_EXPORT GLApi {
