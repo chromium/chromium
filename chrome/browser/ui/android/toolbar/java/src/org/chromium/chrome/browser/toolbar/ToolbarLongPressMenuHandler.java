@@ -31,6 +31,9 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.IphEvent;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.IphFeature;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -84,6 +87,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Predicate<GURL> mIsSendTabToSelfAvailable;
     private final Runnable mOnSendTabToSelfClicked;
+    private boolean mWasBottomBarAddressBarIphShown;
 
     /**
      * Creates a new {@link ToolbarLongPressMenuHandler}.
@@ -280,10 +284,23 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         }
     }
 
+    /**
+     * Records that the bottom bar education address bar IPH was shown in the current session so a
+     * subsequent long-press move to the bottom can be attributed to it.
+     */
+    public void onBottomBarAddressBarIphShown() {
+        mWasBottomBarAddressBarIphShown = true;
+    }
+
     private void handleMoveAddressBarTo() {
         boolean currentlyOnTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
+        boolean wasIphShown = mWasBottomBarAddressBarIphShown;
+        mWasBottomBarAddressBarIphShown = false;
         // The new position is the inverse of the current position.
         if (currentlyOnTop) {
+            if (wasIphShown) {
+                BottomBarMetrics.recordIphEvent(IphEvent.MOVED_TO_BOTTOM, IphFeature.ADDRESS_BAR);
+            }
             AddressBarPreference.setToolbarPositionAndSource(
                     ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
         } else {

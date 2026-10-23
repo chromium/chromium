@@ -1273,11 +1273,13 @@ chromium-metrics-reviews@google.com.
   <owner>polardz@google.com</owner>
   <summary>
     Recorded when the {IPHType} In-Product Help (IPH) in the Android Bottom Bar
-    triggers (is shown or dismissed).
+    triggers (is shown, dismissed, or acted upon to move the address bar to the
+    bottom).
   </summary>
 <!-- LINT.IfChange(AndroidBottomBarIphFeature) -->
 
   <token key="IPHType">
+    <variant name="AddressBar" summary="Address bar move-to-bottom"/>
     <variant name="Glic" summary="Gemini button"/>
     <variant name="NewTab" summary="New Tab button"/>
   </token>

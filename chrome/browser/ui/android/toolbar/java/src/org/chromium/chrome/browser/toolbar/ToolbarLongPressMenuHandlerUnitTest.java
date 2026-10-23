@@ -46,6 +46,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.IphEvent;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
@@ -299,6 +301,50 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                 ToolbarPositionAndSource.TOP_LONG_PRESS,
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+    }
+
+    @Test
+    public void testHandleMoveAddressBarTo_RecordsMetricWhenAddressBarIphShown() {
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+        mToolbarLongPressMenuHandler.onBottomBarAddressBarIphShown();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.IPH.AddressBar.Event", IphEvent.MOVED_TO_BOTTOM);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testHandleMoveAddressBarTo_RecordsMetricOnlyOncePerIphShown() {
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+        mToolbarLongPressMenuHandler.onBottomBarAddressBarIphShown();
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+
+        HistogramWatcher noRecordWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BottomBar.IPH.AddressBar.Event")
+                        .build();
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        noRecordWatcher.assertExpected();
+    }
+
+    @Test
+    public void testHandleMoveAddressBarTo_DoesNotRecordMetricWhenAddressBarIphNotShown() {
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BottomBar.IPH.AddressBar.Event")
+                        .build();
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        watcher.assertExpected();
     }
 
     @Test

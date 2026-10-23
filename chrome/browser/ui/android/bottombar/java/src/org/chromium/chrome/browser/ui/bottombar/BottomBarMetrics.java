@@ -33,21 +33,23 @@ public class BottomBarMetrics {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarPromoEvent)
 
     // LINT.IfChange(AndroidBottomBarIphEvent)
-    /** Events representing showing or dismissing Bottom Bar In-Product Helps (IPH). */
-    @IntDef({IphEvent.SHOWN, IphEvent.DISMISSED})
+    /** Events representing showing, dismissing, or acting on Bottom Bar In-Product Helps (IPH). */
+    @IntDef({IphEvent.SHOWN, IphEvent.DISMISSED, IphEvent.MOVED_TO_BOTTOM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface IphEvent {
         int SHOWN = 0;
         int DISMISSED = 1;
-        int COUNT = 2;
+        int MOVED_TO_BOTTOM = 2;
+        int COUNT = 3;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarIphEvent)
 
     // LINT.IfChange(AndroidBottomBarIphFeature)
-    @StringDef({IphFeature.GLIC, IphFeature.NEW_TAB})
+    @StringDef({IphFeature.ADDRESS_BAR, IphFeature.GLIC, IphFeature.NEW_TAB})
     @Retention(RetentionPolicy.SOURCE)
     public @interface IphFeature {
+        String ADDRESS_BAR = "AddressBar";
         String GLIC = "Glic";
         String NEW_TAB = "NewTab";
     }
@@ -185,8 +187,9 @@ public class BottomBarMetrics {
     /**
      * Records In-Product Help (IPH) trigger events for Bottom Bar actions.
      *
-     * @param event The IPH event (Shown or Dismissed).
-     * @param featureType The feature type suffix for the histogram (e.g. "Glic", "NewTab").
+     * @param event The IPH event (Shown, Dismissed, or MovedToBottom).
+     * @param featureType The feature type suffix for the histogram (e.g. "AddressBar", "Glic",
+     *     "NewTab").
      */
     public static void recordIphEvent(@IphEvent int event, @IphFeature String featureType) {
         RecordHistogram.recordEnumeratedHistogram(

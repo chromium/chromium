@@ -3780,7 +3780,9 @@ public class ToolbarManager
             if (mBrowserControlsSizer.getControlsPosition() == ControlsPosition.TOP
                     && (mToolbarPositionController == null
                             || !mToolbarPositionController.doesPrefMismatchPosition())) {
-                mIphController.showBottomBarAddressBarIph(locationBarView);
+                mIphController.showBottomBarAddressBarIph(
+                        locationBarView,
+                        mToolbarLongPressMenuHandler::onBottomBarAddressBarIphShown);
             }
             return;
         }

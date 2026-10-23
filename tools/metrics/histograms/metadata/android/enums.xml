@@ -135,9 +135,10 @@ chromium-metrics-reviews@google.com.
 <enum name="AndroidBottomBarIphEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Dismissed"/>
+  <int value="2" label="MovedToBottom"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:IphEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarIphEvent) -->
 
 <!-- LINT.IfChange(AndroidBottomBarPromoEvent) -->
 
