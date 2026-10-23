@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -33,6 +36,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
 #include "pdf/buildflags.h"
@@ -108,6 +112,21 @@ class GuestUtilMultiInstanceTest : public testing::Test {
       adaptor.identity_test_env()->SetCookieAccounts(cookie_accounts);
     }
     return profile;
+  }
+
+  // Creates a profile whose GEiC policy URL is set before the profile's keyed
+  // services, and so its latched Glic provider, are created.
+  TestingProfile* CreateTestingProfileWithGeicPolicyUrl(
+      const std::string& url,
+      const std::string& name = "geic_policy_profile") {
+    auto pref_service =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(pref_service->registry());
+    pref_service->SetManagedPref(prefs::kGlicGeminiEnterpriseUrl,
+                                 base::Value(url));
+    return profile_manager_.CreateTestingProfile(
+        name, std::move(pref_service), base::UTF8ToUTF16(name),
+        /*avatar_id=*/0, /*testing_factories=*/{});
   }
 
  protected:
@@ -299,14 +318,14 @@ TEST_F(GuestUtilMultiInstanceTest,
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kGlicGuestUrlPresetAutopush, "https://evil.com/preset");
 
-  TestingProfile* profile = CreateTestingProfile();
-  profile->GetPrefs()->SetString(
-      glic::prefs::kGlicGeminiEnterpriseUrl,
+  TestingProfile* profile = CreateTestingProfileWithGeicPolicyUrl(
       "https://business.gemini.google/home/cid/abc123");
 
-  EXPECT_EQ(
-      GURL("https://business.gemini.google/side-panel?configId=abc123&hl=en"),
-      GetGuestURL(profile));
+  const GURL expected_guest_url(
+      "https://business.gemini.google/side-panel?configId=abc123&hl=en");
+  EXPECT_EQ(expected_guest_url, GetGuestURL(profile));
+  EXPECT_EQ(expected_guest_url,
+            GetGlicProviderSpec(profile).GetGuestUrl(profile));
   const url::Origin geic_origin =
       url::Origin::Create(GURL("https://business.gemini.google"));
   EXPECT_TRUE(IsOriginAllowedGlicApi(geic_origin, profile));
@@ -337,8 +356,11 @@ TEST_F(GuestUtilTest, GeicDisabledKeepsConsumerGuestURL) {
           "https://gemini.google.com/custom-panel"}}}},
       {});
 
-  EXPECT_EQ(GURL("https://gemini.google.com/custom-panel?hl=en"),
-            GetGuestURL(&profile_));
+  const GURL expected_guest_url(
+      "https://gemini.google.com/custom-panel?hl=en");
+  EXPECT_EQ(expected_guest_url, GetGuestURL(&profile_));
+  EXPECT_EQ(expected_guest_url,
+            GetGlicProviderSpec(&profile_).GetGuestUrl(&profile_));
 }
 
 TEST_F(GuestUtilMultiInstanceTest,

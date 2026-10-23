@@ -12,8 +12,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -27,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace glic {
 namespace {
@@ -36,6 +39,9 @@ namespace {
 constexpr char kGeicGuestUrlSwitch[] = "geic-guest-url";
 constexpr char kGuestUrl[] = "https://business.gemini.google/side-panel";
 constexpr char kPolicyUrl[] = "https://business.gemini.google/home/cid/abc123";
+// `kPolicyUrl` rewritten to the side-panel endpoint.
+constexpr char kCanonicalPolicyUrl[] =
+    "https://business.gemini.google/side-panel?configId=abc123";
 
 std::vector<base::test::FeatureRef> GetGeicEnabledFeatures() {
   std::vector<base::test::FeatureRef> features =
@@ -74,6 +80,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchBrowserTest,
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
             GlicProviderLatch::GetProvider(*profile));
+  EXPECT_EQ(GetLocalizedGuestURL(GURL(kGuestUrl)),
+            GetGlicProviderSpec(profile).GetGuestUrl(profile));
 }
 
 // ChromeOS does not support multiple profiles.
@@ -87,6 +95,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchBrowserTest,
 
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
             GlicProviderLatch::GetProvider(second_profile));
+  EXPECT_EQ(GetLocalizedGuestURL(GURL(kGuestUrl)),
+            GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -112,6 +122,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDisabledBrowserTest,
                        LatchesGeminiOnStartup) {
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGemini, GlicProviderLatch::GetProvider(*profile));
+  EXPECT_NE(GetLocalizedGuestURL(GURL(kGuestUrl)),
+            GetGlicProviderSpec(profile).GetGuestUrl(profile));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -124,6 +136,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDisabledBrowserTest,
 
   EXPECT_EQ(GlicProvider::kGemini,
             GlicProviderLatch::GetProvider(second_profile));
+  EXPECT_NE(GetLocalizedGuestURL(GURL(kGuestUrl)),
+            GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -160,6 +174,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicPolicyBrowserTest,
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
             GlicProviderLatch::GetProvider(*profile));
+  EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
+            GetGlicProviderSpec(profile).GetGuestUrl(profile));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -172,6 +188,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicPolicyBrowserTest,
 
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
             GlicProviderLatch::GetProvider(second_profile));
+  EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
+            GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

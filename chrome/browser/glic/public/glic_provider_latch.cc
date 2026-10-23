@@ -4,8 +4,11 @@
 
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
 
 namespace glic {
@@ -16,33 +19,46 @@ const void* const kGlicProviderLatchKey = &kGlicProviderLatchKey;
 
 }  // namespace
 
-GlicProviderLatch::GlicProviderLatch(GlicProvider provider)
-    : provider_(provider) {}
+GlicProviderLatch::GlicProviderLatch(
+    GlicProvider provider,
+    std::unique_ptr<const GlicProviderSpec> spec)
+    : provider_(provider), spec_(std::move(spec)) {
+  CHECK(spec_);
+}
 
 GlicProviderLatch::~GlicProviderLatch() = default;
 
 // static
+const GlicProviderLatch& GlicProviderLatch::Get(
+    content::BrowserContext& context) {
+  if (auto* latch = static_cast<GlicProviderLatch*>(
+          context.GetUserData(kGlicProviderLatchKey))) {
+    return *latch;
+  }
+  static const base::NoDestructor<GlicProviderLatch> kFallbackLatch(
+      GlicProvider::kGemini, CreateGlicProviderSpec(GlicProvider::kGemini, {}));
+  return *kFallbackLatch;
+}
+
+// static
 GlicProvider GlicProviderLatch::GetProvider(content::BrowserContext& context) {
-  GlicProviderLatch* latch = Get(context);
-  // Keyed service factories that read the provider must
-  // DependsOn(GlicProviderLatchFactory).
-  CHECK(latch);
-  return latch->provider_;
+  return Get(context).provider_;
+}
+
+const GlicProviderSpec& GlicProviderLatch::GetSpec() const {
+  return *spec_;
 }
 
 // static
 void GlicProviderLatch::Set(base::PassKey<GlicProviderLatchFactory>,
                             content::BrowserContext& context,
-                            GlicProvider provider) {
-  CHECK(!Get(context));
+                            GlicProvider provider,
+                            GeicProviderInitOptions geic_options) {
+  CHECK(!context.GetUserData(kGlicProviderLatchKey));
   context.SetUserData(kGlicProviderLatchKey,
-                      base::WrapUnique(new GlicProviderLatch(provider)));
-}
-
-// static
-GlicProviderLatch* GlicProviderLatch::Get(content::BrowserContext& context) {
-  return static_cast<GlicProviderLatch*>(
-      context.GetUserData(kGlicProviderLatchKey));
+                      base::WrapUnique(new GlicProviderLatch(
+                          provider, CreateGlicProviderSpec(
+                                        provider, std::move(geic_options)))));
 }
 
 }  // namespace glic

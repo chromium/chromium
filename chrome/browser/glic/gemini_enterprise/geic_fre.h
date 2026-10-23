@@ -23,10 +23,9 @@ namespace geic {
 
 // Returns the GEiC FRE status for `profile`'s GE instance, or std::nullopt if
 // the GEiC FRE doesn't apply to `profile`, i.e. `features::kGeicFre` is
-// disabled or GEiC isn't enabled for `profile` (see `IsGeicEnabled()`). Latches
-// the GEiC config (see `GetGeicGuestUrl()`). Fails closed: returns
-// `kNotStarted` if the entry is missing or invalid. Returns `kCompleted` with
-// `--geic-always-skip-fre`.
+// disabled or `profile` is not latched to Gemini Enterprise. Fails closed:
+// returns `kNotStarted` if the entry is missing or invalid. Returns
+// `kCompleted` with `--geic-always-skip-fre`.
 //
 // Compare the result with `==` only: `GetFreStatus(p) != kCompleted` is also
 // true when the GEiC FRE doesn't apply.

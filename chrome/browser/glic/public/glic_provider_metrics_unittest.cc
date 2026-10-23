@@ -185,7 +185,7 @@ TEST_P(GlicProviderMetricsTest, Reporter) {
 TEST_P(GlicProviderMetricsTest, ConsumerFallback) {
   EXPECT_EQ("Consumer", GlicMetricReporter(nullptr).infix());
 
-  // A profile without a GlicKeyedService falls back to Consumer.
+  // A profile without a GlicKeyedService still resolves its latched provider.
   TestingProfile* no_service_profile =
       testing_profile_manager_.CreateTestingProfile(
           "no_service",
@@ -195,8 +195,6 @@ TEST_P(GlicProviderMetricsTest, ConsumerFallback) {
                   [](content::BrowserContext*)
                       -> std::unique_ptr<KeyedService> { return nullptr; })}});
   ASSERT_FALSE(GlicKeyedService::Get(no_service_profile));
-
-
 
   std::string provider_str = GetParam() ? "Enterprise" : "Consumer";
   EXPECT_EQ(provider_str, GlicMetricReporter(no_service_profile).infix());

@@ -16,9 +16,8 @@ namespace glic {
 
 // Records Glic histograms under both the combined name (Glic.X) and the
 // per-provider name (Glic.Consumer.X / Glic.Enterprise.X). Resolves the
-// provider once at construction (Consumer when the profile has no
-// GlicKeyedService), so it is cheap to copy and safe to use during
-// teardown.
+// provider once at construction (Consumer when the profile is null or
+// non-regular), so it is cheap to copy and safe to use during teardown.
 // `name` is the histogram name without the leading `Glic.`.
 class GlicMetricReporter {
  public:

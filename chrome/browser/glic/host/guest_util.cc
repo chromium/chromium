@@ -25,7 +25,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
-#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_client_data_storage.h"
@@ -40,11 +39,11 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
@@ -60,8 +59,6 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/clipboard_types.h"
@@ -261,44 +258,6 @@ void ConfigureGuestZoom(content::WebContents& guest_contents) {
 #endif
 }
 
-GURL MaybeAppendAuthUser(const GURL& guest_url,
-                         content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSetAuthUser) ||
-      !GlicKeyedService::IsNoWebviewEnabled(browser_context)) {
-    return guest_url;
-  }
-  if (guest_url.is_empty() || !guest_url.is_valid()) {
-    return guest_url;
-  }
-  std::string unused_output;
-  if (net::GetValueForKeyInQuery(guest_url, "authuser", &unused_output)) {
-    return guest_url;
-  }
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile) {
-    return guest_url;
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return guest_url;
-  }
-  std::string email =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email;
-  if (email.empty()) {
-    return guest_url;
-  }
-  if (identity_manager->GetAccountsInCookieJar().AreAccountsFresh()) {
-    std::optional<size_t> session_index =
-        identity_manager->GetSessionIndexForPrimaryAccount();
-    if (session_index && *session_index == 0) {
-      return guest_url;
-    }
-  }
-  return net::AppendQueryParameter(guest_url, "authuser", email);
-}
-
 }  // namespace
 
 void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
@@ -453,32 +412,8 @@ GlicWebClientManager* GetWebClientManagerForWebContents(
 }
 
 GURL GetGuestURL(content::BrowserContext* browser_context) {
-  if (geic::IsGeicEnabled(browser_context)) {
-    GURL url = geic::GetGeicGuestUrl(browser_context);
-    if (url.is_empty()) {
-      VLOG(1) << "GEiC is enabled but no guest URL was provided.";
-      return GURL();
-    }
-    return GetLocalizedGuestURL(url);
-  }
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
-  GURL url =
-      GURL(has_glic_guest_url
-               ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
-               : features::kGlicGuestURL.Get());
-
-  // If a preset url is enabled, use it instead.
-  url = MaybeApplyPresetGuestUrl(std::move(url));
-
-  if (url.is_empty()) {
-    LOG(ERROR) << "No glic guest url";
-    return GURL();
-  }
-
-  url = MaybeAppendAuthUser(url, browser_context);
-  return GetLocalizedGuestURL(url);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return GetGlicProviderSpec(profile).GetGuestUrl(profile);
 }
 
 base::TimeDelta GetMaxLoadingTime() {

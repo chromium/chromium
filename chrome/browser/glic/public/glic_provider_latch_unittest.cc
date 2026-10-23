@@ -10,9 +10,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace glic {
 namespace {
@@ -46,13 +49,18 @@ class GlicProviderLatchTest : public testing::Test {
     ASSERT_TRUE(profile);
     EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
               GlicProvider::kGeminiEnterprise);
+    EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrl(profile),
+              GetLocalizedGuestURL(GURL(kGuestUrl)));
   }
 
-  void ExpectNotLatched(Profile* profile) {
+  void ExpectNotGeicLatched(Profile* profile) {
     ASSERT_TRUE(profile);
     KeyedServiceBaseFactory* factory = GlicProviderLatchFactory::GetInstance();
     factory->CreateServiceNowForTesting(profile);
     EXPECT_FALSE(factory->IsServiceCreated(profile));
+    EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
+    EXPECT_EQ(GetGlicProviderSpec(profile).GetSettingsSection(),
+              GlicSettingsSection::kGemini);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -65,33 +73,33 @@ TEST_F(GlicProviderLatchTest, RegularProfileIsLatchedAsGeminiEnterprise) {
 }
 
 TEST_F(GlicProviderLatchTest, IncognitoProfileIsNotLatched) {
-  ExpectNotLatched(helper_.incognito_profile());
+  ExpectNotGeicLatched(helper_.incognito_profile());
 }
 
 TEST_F(GlicProviderLatchTest, IsolatedModeProfileIsNotLatched) {
-  ExpectNotLatched(helper_.isolated_mode_profile());
+  ExpectNotGeicLatched(helper_.isolated_mode_profile());
 }
 
 TEST_F(GlicProviderLatchTest, GuestProfilesAreNotLatched) {
-  ExpectNotLatched(helper_.guest_profile());
-  ExpectNotLatched(helper_.guest_profile_otr());
+  ExpectNotGeicLatched(helper_.guest_profile());
+  ExpectNotGeicLatched(helper_.guest_profile_otr());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(GlicProviderLatchTest, SystemProfilesAreNotLatched) {
-  ExpectNotLatched(helper_.system_profile());
-  ExpectNotLatched(helper_.system_profile_otr());
+  ExpectNotGeicLatched(helper_.system_profile());
+  ExpectNotGeicLatched(helper_.system_profile_otr());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(GlicProviderLatchTest, AshInternalProfilesAreNotLatched) {
-  ExpectNotLatched(helper_.signin_profile());
-  ExpectNotLatched(helper_.signin_profile_otr());
-  ExpectNotLatched(helper_.lockscreen_profile());
-  ExpectNotLatched(helper_.lockscreen_profile_otr());
-  ExpectNotLatched(helper_.shimless_rma_app_profile());
-  ExpectNotLatched(helper_.shimless_rma_app_profile_otr());
+  ExpectNotGeicLatched(helper_.signin_profile());
+  ExpectNotGeicLatched(helper_.signin_profile_otr());
+  ExpectNotGeicLatched(helper_.lockscreen_profile());
+  ExpectNotGeicLatched(helper_.lockscreen_profile_otr());
+  ExpectNotGeicLatched(helper_.shimless_rma_app_profile());
+  ExpectNotGeicLatched(helper_.shimless_rma_app_profile_otr());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -104,6 +112,8 @@ TEST_F(GlicProviderLatchTest, LatchDoesNotChangeWithConfiguration) {
 
   EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
             GlicProvider::kGeminiEnterprise);
+  EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrl(profile),
+            GetLocalizedGuestURL(GURL(kGuestUrl)));
 }
 
 // A test latch set before the profile's keyed services are created replaces
@@ -129,6 +139,8 @@ TEST_F(GlicProviderLatchSetForTestingTest, OverridesResolvedLatch) {
   // GEiC is configured, so the factory would latch Gemini Enterprise.
   Profile* profile = helper_.regular_profile();
   EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
+  EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
+            GetLocalizedGuestURL(GURL(kGuestUrl)));
 }
 
 // Without GEiC configuration, profiles are latched as Gemini.
@@ -138,6 +150,8 @@ TEST(GlicProviderLatchDefaultTest, ProfileIsLatchedAsGemini) {
   Profile* profile = helper.regular_profile();
 
   EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
+  EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
+            GetLocalizedGuestURL(GURL(kGuestUrl)));
 }
 
 }  // namespace

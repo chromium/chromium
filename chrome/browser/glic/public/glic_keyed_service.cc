@@ -38,7 +38,6 @@
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_provider_spec_impl.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
@@ -56,6 +55,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
@@ -687,13 +687,8 @@ void GlicKeyedService::ShowExperimentalOptInDialogForTesting(
   opt_in_controller().ShowDialog(web_contents, base::DoNothing());
 }
 
-const GlicProviderSpec& GlicKeyedService::provider_spec() {
-  if (!provider_spec_) {
-    // Created lazily: geic::IsGeicEnabled() latches on its first call, and the
-    // service is created before late policy is applied.
-    provider_spec_ = CreateGlicProviderSpec(profile_);
-  }
-  return *provider_spec_;
+const GlicProviderSpec& GlicKeyedService::provider_spec() const {
+  return GetGlicProviderSpec(profile_);
 }
 
 }  // namespace glic

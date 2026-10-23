@@ -198,16 +198,18 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest, RejectsOffTheRecordProfile) {
   GlicGeminiEnterpriseManager otr_manager(otr_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> otr_remote;
   otr_manager.Bind(otr_remote.BindNewPipeAndPassReceiver());
+  otr_remote.FlushForTesting();
+  EXPECT_FALSE(otr_remote.is_connected());
 
   // Calling OpenSignInTab on OTR manager should immediately fail.
   base::test::TestFuture<mojom::OpenSignInTabResult> open_future;
   auto options = mojom::OpenSignInTabOptions::New();
   options->signin_url = GURL("https://accounts.google.com/signin");
-  otr_remote->OpenSignInTab(std::move(options), open_future.GetCallback());
+  otr_manager.OpenSignInTab(std::move(options), open_future.GetCallback());
   EXPECT_EQ(open_future.Take(), mojom::OpenSignInTabResult::kErrorFailure);
 
   base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
-  otr_remote->CloseSignInTab(nullptr, close_future.GetCallback());
+  otr_manager.CloseSignInTab(nullptr, close_future.GetCallback());
   EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kNoSignInTab);
 }
 
@@ -422,9 +424,11 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
   GlicGeminiEnterpriseManager otr_manager(otr_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> otr_remote;
   otr_manager.Bind(otr_remote.BindNewPipeAndPassReceiver());
+  otr_remote.FlushForTesting();
+  EXPECT_FALSE(otr_remote.is_connected());
 
   base::test::TestFuture<mojom::OpenAuthTabResponsePtr> open_future;
-  otr_remote->OpenAuthTab(
+  otr_manager.OpenAuthTab(
       MakeOpenOptions(
           kConnectorOauth,
           GURL("https://vertexaisearch.cloud.google.com/oauth-redirect")),

@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -37,9 +38,11 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -665,7 +668,9 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     profile_ = testing_profile_manager->CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName,
+        TestingProfile::kDefaultProfileUserName, CreatePrefService(),
+        base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName),
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
 
@@ -699,6 +704,14 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   }
 
  protected:
+  // Returns the pref service for the test profile, or null to use the default
+  // testing pref service. Override to set prefs that must be in place before
+  // the profile's keyed services are created.
+  virtual std::unique_ptr<sync_preferences::PrefServiceSyncable>
+  CreatePrefService() {
+    return nullptr;
+  }
+
   Profile* profile() { return profile_.get(); }
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -3356,6 +3369,109 @@ TEST_F(GlicEnablingProfileEligibilityTest, IsAnyEntryPointEnabled) {
 
   profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(IsAnyEntryPointEnabled(profile()));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest, Provider_GeminiWhenGeicDisabled) {
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+// Creates the test profile with `features::kGeic` enabled and a GEiC policy URL
+// already set, so that the Glic provider latched when the profile's keyed
+// services are created is Gemini Enterprise.
+class GlicEnablingGeicPolicyTest : public GlicEnablingProfileEligibilityTest {
+ public:
+  GlicEnablingGeicPolicyTest() {
+    geic_feature_list_.InitAndEnableFeature(features::kGeic);
+  }
+
+ protected:
+  std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService()
+      override {
+    auto pref_service =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(pref_service->registry());
+    pref_service->SetManagedPref(
+        prefs::kGlicGeminiEnterpriseUrl,
+        base::Value("https://business.gemini.google/home/cid/abc123"));
+    return pref_service;
+  }
+
+ private:
+  base::test::ScopedFeatureList geic_feature_list_;
+};
+
+// Like `GlicEnablingGeicPolicyTest`, but with `features::kGeic` disabled when
+// the profile is created.
+class GlicEnablingGeicPolicyFeatureDisabledTest
+    : public GlicEnablingGeicPolicyTest {
+ public:
+  GlicEnablingGeicPolicyFeatureDisabledTest() {
+    geic_disabled_feature_list_.InitAndDisableFeature(features::kGeic);
+  }
+
+ private:
+  base::test::ScopedFeatureList geic_disabled_feature_list_;
+};
+
+// Like `GlicEnablingGeicPolicyTest`, but with `features::kGlic` disabled when
+// the profile is created, so the profile is ineligible for Glic.
+class GlicEnablingGeicPolicyGlicDisabledTest
+    : public GlicEnablingGeicPolicyTest {
+ public:
+  GlicEnablingGeicPolicyGlicDisabledTest() {
+    glic_disabled_feature_list_.InitAndDisableFeature(features::kGlic);
+  }
+
+ private:
+  base::test::ScopedFeatureList glic_disabled_feature_list_;
+};
+
+TEST_F(GlicEnablingGeicPolicyTest, Provider_GeminiEnterpriseWithPolicyUrl) {
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
+       Provider_GeminiWhenGeicFeatureDisabledWithPolicyUrl) {
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+// The provider is latched independently of Glic eligibility.
+TEST_F(GlicEnablingGeicPolicyGlicDisabledTest,
+       Provider_GeminiEnterpriseLatchedButIneligibleForGlic) {
+  EXPECT_FALSE(GlicEnabling::IsProfileEligible(profile()));
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_EQ(GlicKeyedService::Get(profile()), nullptr);
+}
+
+TEST_F(GlicEnablingGeicPolicyTest, Provider_LatchedAtCreation) {
+  // Removing the policy after the profile was created does not change the
+  // provider or the latched guest URL for the rest of the session.
+  static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+      profile()->GetPrefs())
+      ->RemoveManagedPref(prefs::kGlicGeminiEnterpriseUrl);
+
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_EQ(
+      GetGlicProviderSpec(profile()).GetGuestUrl(profile()),
+      GURL("https://business.gemini.google/side-panel?configId=abc123&hl=en"));
+}
+
+// Keyed services that read the provider while they are being built must be
+// created after the provider is latched. Creating the profile in SetUp() has
+// already built every service that is created with the browser context without
+// hitting the latch CHECK; this checks that the Glic keyed service can be built
+// for a GEiC profile and that the profile reports the GEiC provider.
+TEST_F(GlicEnablingGeicPolicyTest, KeyedServicesBuildForGeicProfile) {
+  EXPECT_TRUE(GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                           /*create=*/true));
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
 }
 
 #if BUILDFLAG(IS_ANDROID)

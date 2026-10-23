@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,10 +34,14 @@ void GlicProviderLatchFactory::SetProviderForTesting(
   GetInstance()->SetTestingFactory(
       context,
       base::BindRepeating(
-          [](GlicProvider provider, content::BrowserContext* ctx)
-              -> std::unique_ptr<KeyedService> {
+          [](GlicProvider provider,
+             content::BrowserContext* ctx) -> std::unique_ptr<KeyedService> {
+            GeicProviderInitOptions geic_options;
+            if (provider == GlicProvider::kGeminiEnterprise) {
+              geic_options.guest_url = geic::ResolveGeicGuestUrl(ctx);
+            }
             GlicProviderLatch::Set(base::PassKey<GlicProviderLatchFactory>(),
-                                   *ctx, provider);
+                                   *ctx, provider, std::move(geic_options));
             return std::make_unique<KeyedService>();
           },
           provider));
@@ -52,11 +58,13 @@ GlicProviderLatchFactory::~GlicProviderLatchFactory() = default;
 std::unique_ptr<KeyedService>
 GlicProviderLatchFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  GlicProvider provider = geic::ResolveGeicGuestUrl(context).is_empty()
+  GURL geic_guest_url = geic::ResolveGeicGuestUrl(context);
+  GlicProvider provider = geic_guest_url.is_empty()
                               ? GlicProvider::kGemini
                               : GlicProvider::kGeminiEnterprise;
-  GlicProviderLatch::Set(base::PassKey<GlicProviderLatchFactory>(), *context,
-                         provider);
+  GlicProviderLatch::Set(
+      base::PassKey<GlicProviderLatchFactory>(), *context, provider,
+      GeicProviderInitOptions{.guest_url = std::move(geic_guest_url)});
   return std::make_unique<KeyedService>();
 }
 

@@ -93,7 +93,6 @@ source_set("glic") {
     "public/glic_provider_latch_factory.h",
     "public/glic_provider_metrics.cc",
     "public/glic_provider_metrics.h",
-    "public/glic_provider_spec.h",
     "public/glic_response_completion_cui_tracker.cc",
     "public/glic_response_completion_cui_tracker.h",
     "public/glic_side_panel_coordinator.cc",
@@ -409,7 +408,6 @@ source_set("impl") {
     "glic_profile_manager.cc",
     "glic_promotion_source_navigation_observer.cc",
     "glic_provider_spec_impl.cc",
-    "glic_provider_spec_impl.h",
     "glic_settings_util.cc",
     "glic_tab_restore_data.cc",
     "glic_tab_restore_helper.cc",
@@ -907,6 +905,7 @@ source_set("unit_tests") {
     "//chrome/browser/glic/suggestions:test_support",
     "//chrome/browser/glic/suggestions:unit_tests",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:test_support",
     "//chrome/browser/pwc",
     "//chrome/browser/sync",
@@ -962,7 +961,6 @@ source_set("unit_tests") {
       "//chrome/browser/actor:test_support",
       "//chrome/browser/background",
       "//chrome/browser/glic/media:unit_tests",
-      "//chrome/browser/prefs",
       "//chrome/browser/status_icons",
       "//chrome/common:chrome_features",
       "//chrome/test/base:scoped_metrics_service",
@@ -995,7 +993,12 @@ source_set("unit_tests") {
     ]
   }
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/test:test_support" ]
+    deps += [
+      "//chrome/browser/ash/test:test_support",
+      "//components/account_id",
+      "//components/user_manager",
+      "//components/user_manager:test_support",
+    ]
   }
 }
 

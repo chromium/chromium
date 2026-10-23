@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
@@ -33,16 +34,17 @@ constexpr char kStatusKey[] = "status";
 
 // Returns the `kGeicCompletedFre` key for `profile`'s GE instance: the
 // canonical guest URL. Returns std::nullopt if the GEiC FRE doesn't apply to
-// `profile`. Latches the GEiC config: once the FRE status is consulted, GEiC
-// mode is locked in for the rest of the session.
+// `profile`.
 // TODO(b/574495404): Move the GEiC FRE applicability check into GLiC's
 // per-provider enablement rules.
 std::optional<std::string> GetFrePrefKey(Profile* profile) {
+  // TODO(crbug.com/576047045): Update this check.
   if (!profile || !base::FeatureList::IsEnabled(features::kGeicFre) ||
       !IsGeicEnabledByFeature()) {
     return std::nullopt;
   }
-  const GURL guest_url = GetGeicGuestUrl(profile);
+  const GURL guest_url =
+      glic::GetGlicProviderSpec(profile).GetGuestUrl(profile);
   if (!guest_url.is_valid()) {
     return std::nullopt;
   }

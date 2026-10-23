@@ -13,8 +13,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/profiles/profile.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
@@ -120,7 +121,8 @@ GlicGeminiEnterpriseManager::~GlicGeminiEnterpriseManager() = default;
 
 void GlicGeminiEnterpriseManager::Bind(
     mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) {
-  if (!geic::IsGeicEnabled(profile_)) {
+  if (!profile_ || GlicProviderLatch::GetProvider(*profile_) !=
+                       GlicProvider::kGeminiEnterprise) {
     return;
   }
   receiver_.reset();

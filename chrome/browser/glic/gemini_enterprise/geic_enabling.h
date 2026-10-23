@@ -20,15 +20,15 @@ class BrowserContext;
 // configured?", not "should this profile run in GEiC mode?". The latter is
 // owned by GLiC's enablement utilities (see
 // GlicKeyedService::provider_spec() / GlicProviderSpec), which layer profile
-// eligibility on top of these helpers. These helpers resolve and latch the
-// result on the first call for a profile. In particular, GEiC is unavailable
-// whenever GLiC itself is disabled or ineligible for the profile, and that is
-// not reflected here.
+// eligibility on top of these helpers. The per-profile answer is resolved
+// once, when the profile's keyed services are created, and latched by
+// `GlicProviderLatch`. In particular, GEiC is unavailable whenever GLiC itself
+// is disabled or ineligible for the profile, and that is not reflected here.
 //
-// Including this header is restricted to allowlists in
-// chrome/browser/glic/DEPS and chrome/browser/glic/host/DEPS so that callers go
-// through GLiC's enablement utilities instead. Reach out to the GEiC owners
-// before adding a new entry to those allowlists.
+// Including this header is restricted to an allowlist in
+// chrome/browser/glic/DEPS so that callers go through GLiC's enablement
+// utilities instead. Reach out to the GEiC owners before adding a new entry to
+// that allowlist.
 namespace geic {
 
 // Optional command line switch for manual developer overrides of the guest URL.
@@ -38,31 +38,18 @@ inline constexpr auto& kGeicGuestURLSwitch = switches::kGeicGuestURL;
 // enabled, independent of profile state or guest URL configuration.
 bool IsGeicEnabledByFeature();
 
-// Returns true if Gemini Enterprise in Chrome (GEiC) is enabled for
-// `browser_context`.
-//
-// Requires both `IsGeicEnabledByFeature()` and a valid resolved GEiC guest URL
-// for `browser_context` (from `--geic-guest-url`, the `GeminiEnterpriseUrl`
-// policy, or the `features::kGeicGuestURL` Finch parameter; when
-// `features::kGeic` is controlled by a `google_groups`-filtered Finch study,
-// the Finch URL parameter only applies to profiles in those groups). The result
-// is resolved on the first call and latched on `browser_context`, so it does
-// not change for the rest of the session.
-bool IsGeicEnabled(content::BrowserContext* browser_context);
-
-// Returns the Gemini Enterprise guest URL for `browser_context` if enabled, or
-// empty GURL() if not. Latched together with `IsGeicEnabled()`.
+// Resolves the Gemini Enterprise guest URL for `browser_context` from the
+// current configuration on every call, without reading or writing the latch, or
+// returns an empty GURL() if GEiC is not enabled or no valid URL is configured.
+// `GlicProviderLatchFactory` calls this when a profile's keyed services are
+// created.
 //
 // Precedence:
 // 1. Command-line switch `--geic-guest-url`.
 // 2. Enterprise policy (`glic.gemini_enterprise_settings.url`).
-// 3. Finch parameter `features::kGeicGuestURL`.
-GURL GetGeicGuestUrl(content::BrowserContext* browser_context);
-
-// Like `GetGeicGuestUrl()`, but resolves the URL from the current configuration
-// on every call, without reading or writing the latch.
-// `GlicProviderLatchFactory` calls this when a profile's keyed services are
-// created.
+// 3. Finch parameter `features::kGeicGuestURL` (when `features::kGeic` is
+//    controlled by a `google_groups`-filtered Finch study, the Finch URL
+//    parameter only applies to profiles in those groups).
 GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 
 }  // namespace geic

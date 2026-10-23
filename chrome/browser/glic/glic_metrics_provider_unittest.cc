@@ -31,9 +31,30 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif
 
 namespace glic {
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS, `chrome::kInitialProfile` ("Default") is the sign-in screen
+// profile (`ash::kSigninBrowserContextBaseName`), not a user profile, and
+// `ProfileManager::GetInitialProfileDir()` returns the active logged-in user's
+// profile directory.
+constexpr char kInitialProfileName[] = "initial@test";
+#else
+constexpr const char* kInitialProfileName = chrome::kInitialProfile;
+#endif
+
+}  // namespace
 
 class GlicMetricsProviderTest : public testing::Test {
  public:
@@ -51,6 +72,17 @@ class GlicMetricsProviderTest : public testing::Test {
     testing_profile_manager_ =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->local_state()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kInitialProfileName, GaiaId("1234567890"));
+    ASSERT_TRUE(user_manager::TestHelper(scoped_user_manager_.Get())
+                    .AddRegularUser(account_id));
+    scoped_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+#endif
     metrics_service_ = std::make_unique<ScopedMetricsServiceForSyntheticTrials>(
         TestingBrowserProcess::GetGlobal());
     profile1_ = profile_manager()->CreateTestingProfile("profile1");
@@ -62,6 +94,9 @@ class GlicMetricsProviderTest : public testing::Test {
     profile2_ = nullptr;
     metrics_service_.reset();
     testing_profile_manager_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_user_manager_.Reset();
+#endif
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
@@ -92,6 +127,9 @@ class GlicMetricsProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS)
+  user_manager::ScopedUserManager scoped_user_manager_;
+#endif
   std::unique_ptr<ScopedMetricsServiceForSyntheticTrials> metrics_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestingProfileManager> testing_profile_manager_;
@@ -216,7 +254,7 @@ TEST_F(GlicMetricsProviderTest, ProvideCurrentSessionData_GlicProvider_Gemini) {
   EXPECT_FALSE(
       variations::ContainsTrialName(GetSyntheticFieldTrials(), "GlicProvider"));
 
-  profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+  profile_manager()->CreateTestingProfile(kInitialProfileName);
   provider.ProvideCurrentSessionData(nullptr);
   EXPECT_TRUE(variations::ContainsTrialAndGroupName(GetSyntheticFieldTrials(),
                                                     "GlicProvider", "Gemini"));
@@ -227,7 +265,7 @@ TEST_F(GlicMetricsProviderTest,
   base::test::ScopedFeatureList geic_feature_list;
   geic_feature_list.InitAndEnableFeature(features::kGeic);
 
-  CreateEnterpriseTestingProfile(chrome::kInitialProfile);
+  CreateEnterpriseTestingProfile(kInitialProfileName);
 
   GlicMetricsProvider provider;
   provider.ProvideCurrentSessionData(nullptr);
@@ -240,7 +278,7 @@ TEST_F(GlicMetricsProviderTest,
   base::test::ScopedFeatureList disabled_glic_feature_list;
   disabled_glic_feature_list.InitAndDisableFeature(features::kGlic);
 
-  profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+  profile_manager()->CreateTestingProfile(kInitialProfileName);
 
   GlicMetricsProvider provider;
   provider.ProvideCurrentSessionData(nullptr);
@@ -254,7 +292,7 @@ TEST_F(GlicMetricsProviderTest,
   geic_feature_list.InitAndEnableFeature(features::kGeic);
 
   Profile* default_profile =
-      profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
+      profile_manager()->CreateTestingProfile(kInitialProfileName);
 
   // Configure an enterprise profile and invoke Glic there.
   Profile* enterprise_profile = CreateEnterpriseTestingProfile("enterprise");

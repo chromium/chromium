@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_SPEC_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_SPEC_H_
 
+#include <memory>
 #include <string_view>
+
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -13,16 +17,23 @@ namespace glic {
 
 enum class GlicSettingsSection { kGemini, kGeminiEnterprise };
 
+struct GeicProviderInitOptions {
+  GURL guest_url;
+};
+
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
 // Holds data only. Values don't change for a given profile.
 class GlicProviderSpec;
 
-// Returns GlicKeyedService::Get(profile)->provider_spec() when the service
-// exists, else a static spec chosen via geic::IsGeicEnabled(profile) for
-// regular profiles (or a static Consumer spec when profile is null or
-// non-regular).
+// Returns the `GlicProviderSpec` for `profile` owned by `GlicProviderLatch`
+// (or a static Consumer spec when `profile` is null or not latched).
 const GlicProviderSpec& GetGlicProviderSpec(Profile* profile);
+
+// Creates the per-profile `GlicProviderSpec` stored in `GlicProviderLatch`.
+std::unique_ptr<const GlicProviderSpec> CreateGlicProviderSpec(
+    GlicProvider provider,
+    GeicProviderInitOptions geic_options);
 
 class GlicProviderSpec {
  public:
@@ -45,6 +56,9 @@ class GlicProviderSpec {
   virtual bool IsActuationSupported() const = 0;
   // Whether this provider requires NoWebview mode.
   virtual bool RequiresNoWebview() const = 0;
+  // Returns the localized guest URL to load for `profile`, or an empty GURL
+  // if none is configured.
+  virtual GURL GetGuestUrl(Profile* profile) const = 0;
 };
 
 }  // namespace glic

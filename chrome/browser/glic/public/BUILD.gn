@@ -31,7 +31,11 @@ source_set("provider") {
     "glic_provider.h",
     "glic_provider_latch.cc",
     "glic_provider_latch.h",
+    "glic_provider_spec.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
   deps = [ "//content/public/browser" ]
 }

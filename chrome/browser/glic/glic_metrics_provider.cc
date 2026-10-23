@@ -14,7 +14,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
-#include "chrome/browser/glic/glic_provider_spec_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"
@@ -163,7 +162,7 @@ void GlicMetricsProvider::ProvideCurrentSessionData(
     //   one provider here.
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "GlicProvider",
-        CreateGlicProviderSpec(provider_profile)->GetSyntheticTrialGroupName(),
+        GetGlicProviderSpec(provider_profile).GetSyntheticTrialGroupName(),
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 
