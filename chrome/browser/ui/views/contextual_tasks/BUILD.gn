@@ -4,6 +4,31 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
+source_set("onboarding_bubble") {
+  sources = [
+    "contextual_tasks_onboarding_bubble_view.cc",
+    "contextual_tasks_onboarding_bubble_view.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//components/strings:components_strings",
+    "//skia",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx/geometry",
+  ]
+}
+
 source_set("contextual_tasks") {
   sources = [
     "contextual_tasks_browser_controller.h",
@@ -55,11 +80,17 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "contextual_tasks_ephemeral_button_utils_unittest.cc" ]
+  sources = [
+    "contextual_tasks_ephemeral_button_utils_unittest.cc",
+    "contextual_tasks_onboarding_bubble_view_unittest.cc",
+  ]
   deps = [
     ":contextual_tasks",
+    ":onboarding_bubble",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
@@ -67,9 +98,14 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/contextual_tasks/public:feature_list",
     "//components/prefs",
+    "//components/strings:components_strings",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/base/interaction:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 }
 
