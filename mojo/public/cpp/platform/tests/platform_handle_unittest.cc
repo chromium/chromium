@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/platform/platform_handle.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/check.h"
@@ -61,7 +62,7 @@ enum class TestType {
   kSharedMemory,
 };
 
-const std::string kTestData = "some data to validate";
+constexpr std::string_view kTestData = "some data to validate";
 
 class PlatformHandleTest : public testing::Test,
                            public testing::WithParamInterface<HandleType> {

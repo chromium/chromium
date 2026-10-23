@@ -41,7 +41,7 @@
 
 namespace tracing {
 
-const std::string kDataSourceName = "track_event";
+constexpr char kDataSourceName[] = "track_event";
 
 constexpr base::ProcessId kProducerPid = 1234;
 

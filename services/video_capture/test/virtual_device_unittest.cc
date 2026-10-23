@@ -26,10 +26,10 @@ namespace video_capture {
 
 namespace {
 
-const std::string kTestDeviceId = "/test/device";
-const std::string kTestDeviceName = "Test Device";
-const gfx::Size kTestFrameSize = {640 /* width */, 480 /* height */};
-const media::VideoPixelFormat kTestPixelFormat =
+constexpr char kTestDeviceId[] = "/test/device";
+constexpr char kTestDeviceName[] = "Test Device";
+constexpr gfx::Size kTestFrameSize = {640 /* width */, 480 /* height */};
+constexpr media::VideoPixelFormat kTestPixelFormat =
     media::VideoPixelFormat::PIXEL_FORMAT_I420;
 
 }  // anonymous namespace

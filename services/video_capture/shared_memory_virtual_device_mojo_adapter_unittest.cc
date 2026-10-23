@@ -28,9 +28,9 @@ using testing::_;
 namespace video_capture {
 namespace {
 
-const std::string kTestDeviceId = "/test/device";
-const std::string kTestDeviceName = "Test Device";
-const gfx::Size kTestFrameSize = {640 /* width */, 480 /* height */};
+constexpr char kTestDeviceId[] = "/test/device";
+constexpr char kTestDeviceName[] = "Test Device";
+constexpr gfx::Size kTestFrameSize = {640 /* width */, 480 /* height */};
 
 std::vector<media::VideoPixelFormat>
 GetSupportedUncompressedVideoPixelFormats() {
