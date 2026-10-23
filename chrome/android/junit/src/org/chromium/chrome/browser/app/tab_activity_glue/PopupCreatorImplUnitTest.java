@@ -157,6 +157,8 @@ public class PopupCreatorImplUnitTest {
     private static final int TOOLBAR_HAIRLINE_HEIGHT = 9;
     private static final int CUSTOM_TABS_POPUP_TITLE_BAR_MIN_HEIGHT = 62;
     private static final int CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT = 75;
+    private static final int SMALL_POPUP_TITLE_BAR_HEIGHT = 10;
+    private static final Rect VIEWPORT_BOUNDS_PX = new Rect(100, 200, 400, 600);
 
     private TestCustomTabActivity mActivity;
     private PopupCreatorImpl mPopupCreator;
@@ -168,7 +170,7 @@ public class PopupCreatorImplUnitTest {
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
 
         PopupCreatorImpl.setReparentingTaskForTesting(mReparentingTask);
-        PopupCreatorImpl.setInsetsForecastForTesting(Insets.NONE);
+        PopupCreatorImpl.setPredictPopupWindowBoundsForTesting(false);
 
         doReturn(DISPLAY_ID).when(mDisplay).getDisplayId();
         doReturn(DENSITY).when(mDisplay).getDipScale();
@@ -525,58 +527,39 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    public void testInsetsForecastUsedForNewPopups() {
-        WindowFeatures windowFeatures =
-                new WindowFeatures(100, 200, 300, 400); // left, top, width, height
-        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
-        final Insets insets = Insets.of(-12, -34, -56, -78); // left, top, right, bottom
+    public void testPredictPopupWindowBounds_E2EUiMode() {
+        PopupCreatorImpl.setPredictPopupWindowBoundsForTesting(true);
 
-        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
-
-        PopupCreatorImpl.setInsetsForecastForTesting(insets);
-        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
-        ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
-
-        Rect launchBounds = activityOptions.getLaunchBounds();
-        final Rect targetBounds =
-                new Rect(100 - 12, 200 - 34, 400 + 56, 600 + 78); // left, top, right, bottom
-
+        // The popup header is taller than the caption bar, so it replaces the top inset.
+        final int deltaWidthPx = LAST_RAW_WINDOW_INSETS.left + LAST_RAW_WINDOW_INSETS.right;
+        final int deltaHeightPx =
+                CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT
+                        + CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT
+                        + TOOLBAR_HAIRLINE_HEIGHT
+                        + LAST_RAW_WINDOW_INSETS.bottom;
         assertEquals(
-                "The launch bounds specified in ActivityOptions have not been preserved and outset"
-                        + " by given window insets",
-                targetBounds,
-                launchBounds);
+                "The predicted window bounds are invalid",
+                growViewportBounds(deltaWidthPx, deltaHeightPx),
+                PopupCreatorImpl.predictPopupWindowBounds(mWindow, mDisplay, VIEWPORT_BOUNDS_PX));
     }
 
     @Test
-    public void testPopupInsetsForecastUseExpectedValues_E2EUiMode() {
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
+    public void testPredictPopupWindowBoundsCrossDisplays_E2EUiMode() {
+        PopupCreatorImpl.setPredictPopupWindowBoundsForTesting(true);
 
-        /* Insets.of(
-         *     0,
-         *     0,
-         *     -(left inset + right inset),
-         *     -(popup header height + CCT toolbar height + hairline height + bottom inset)) */
+        // Insets are scaled by the density ratio between displays; resources are not.
+        final int deltaWidthPx =
+                scaleToExternalDisplay(LAST_RAW_WINDOW_INSETS.left + LAST_RAW_WINDOW_INSETS.right);
+        final int deltaHeightPx =
+                CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT
+                        + CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT
+                        + TOOLBAR_HAIRLINE_HEIGHT
+                        + scaleToExternalDisplay(LAST_RAW_WINDOW_INSETS.bottom);
         assertEquals(
-                "The insets returned are invalid",
-                Insets.of(0, 0, -(12 + 56), -(75 + 20 + 9 + 78)),
-                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
-    }
-
-    @Test
-    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode() {
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
-
-        /* Pixel values of insets are scaled by the density quotient between displays.
-         * Insets.of(
-         *     0,
-         *     0,
-         *     -(left inset + right inset),
-         *     -(popup header height + CCT toolbar height + hairline height + bottom inset)) */
-        assertEquals(
-                "The insets returned are invalid",
-                Insets.of(0, 0, -(24 + 112), -(75 + 20 + 9 + 156)),
-                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
+                "The predicted window bounds are invalid",
+                growViewportBounds(deltaWidthPx, deltaHeightPx),
+                PopupCreatorImpl.predictPopupWindowBounds(
+                        mWindow, mExternalDisplay, VIEWPORT_BOUNDS_PX));
     }
 
     /**
@@ -584,24 +567,20 @@ public class PopupCreatorImplUnitTest {
      * header height should match the top inset height.
      */
     @Test
-    public void testPopupInsetsForecastUseExpectedValues_E2EUiMode_smallHeader() {
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
-        doReturn(10)
-                .when(mResources)
-                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
-        doReturn(10)
-                .when(mResources)
-                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_text_height);
+    public void testPredictPopupWindowBounds_E2EUiMode_smallHeader() {
+        PopupCreatorImpl.setPredictPopupWindowBoundsForTesting(true);
+        useSmallPopupTitleBar();
 
-        /* Insets.of(
-         *     0,
-         *     0,
-         *     -(left inset + right inset),
-         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
+        final int deltaWidthPx = LAST_RAW_WINDOW_INSETS.left + LAST_RAW_WINDOW_INSETS.right;
+        final int deltaHeightPx =
+                LAST_RAW_WINDOW_INSETS.top
+                        + CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT
+                        + TOOLBAR_HAIRLINE_HEIGHT
+                        + LAST_RAW_WINDOW_INSETS.bottom;
         assertEquals(
-                "The insets returned are invalid",
-                Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
-                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
+                "The predicted window bounds are invalid",
+                growViewportBounds(deltaWidthPx, deltaHeightPx),
+                PopupCreatorImpl.predictPopupWindowBounds(mWindow, mDisplay, VIEWPORT_BOUNDS_PX));
     }
 
     /**
@@ -609,25 +588,47 @@ public class PopupCreatorImplUnitTest {
      * header height should match the top inset height.
      */
     @Test
-    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode_smallHeader() {
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
-        doReturn(10)
+    public void testPredictPopupWindowBoundsCrossDisplays_E2EUiMode_smallHeader() {
+        PopupCreatorImpl.setPredictPopupWindowBoundsForTesting(true);
+        useSmallPopupTitleBar();
+
+        // Insets are scaled by the density ratio between displays; resources are not.
+        final int deltaWidthPx =
+                scaleToExternalDisplay(LAST_RAW_WINDOW_INSETS.left + LAST_RAW_WINDOW_INSETS.right);
+        final int deltaHeightPx =
+                scaleToExternalDisplay(LAST_RAW_WINDOW_INSETS.top)
+                        + CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT
+                        + TOOLBAR_HAIRLINE_HEIGHT
+                        + scaleToExternalDisplay(LAST_RAW_WINDOW_INSETS.bottom);
+        assertEquals(
+                "The predicted window bounds are invalid",
+                growViewportBounds(deltaWidthPx, deltaHeightPx),
+                PopupCreatorImpl.predictPopupWindowBounds(
+                        mWindow, mExternalDisplay, VIEWPORT_BOUNDS_PX));
+    }
+
+    /** Returns {@link #VIEWPORT_BOUNDS_PX} grown to the right and bottom by the given deltas. */
+    private static Rect growViewportBounds(int deltaWidthPx, int deltaHeightPx) {
+        return new Rect(
+                VIEWPORT_BOUNDS_PX.left,
+                VIEWPORT_BOUNDS_PX.top,
+                VIEWPORT_BOUNDS_PX.right + deltaWidthPx,
+                VIEWPORT_BOUNDS_PX.bottom + deltaHeightPx);
+    }
+
+    /** Scales pixels on the default display to pixels on the external display. */
+    private static int scaleToExternalDisplay(int px) {
+        return Math.round(px * EXTERNAL_DISPLAY_DENSITY / DENSITY);
+    }
+
+    /** Makes the minimal popup header height smaller than the top inset. */
+    private void useSmallPopupTitleBar() {
+        doReturn(SMALL_POPUP_TITLE_BAR_HEIGHT)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
-        doReturn(10)
+        doReturn(SMALL_POPUP_TITLE_BAR_HEIGHT)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_text_height);
-
-        /* Pixel values of insets are scaled by the density quotient between displays.
-         * Insets.of(
-         *     0,
-         *     0,
-         *     -(left inset + right inset),
-         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        assertEquals(
-                "The insets returned are invalid",
-                Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
-                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
     }
 
     @Test
@@ -638,7 +639,7 @@ public class PopupCreatorImplUnitTest {
 
         doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setPredictPopupWindowBoundsForTesting(true);
         mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         final ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();

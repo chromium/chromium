@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -56,7 +57,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
-import org.chromium.ui.insets.WindowInsetsUtils;
 import org.chromium.url.Origin;
 
 /** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
@@ -67,7 +67,7 @@ public class PopupCreatorImpl implements PopupCreator {
 
     private static final String TAG = "PopupCreatorImpl";
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
-    private static @Nullable Insets sInsetsForecastForTesting;
+    private static @Nullable Boolean sPredictPopupWindowBoundsForTesting;
     private static @Nullable Boolean sMoveTabToNewPopupResultForTesting;
     private static @Nullable Boolean sMoveToNewDocumentPiPWindowResultForTesting;
     private static @Nullable Boolean sSetMovableTaskRequiredForPopupsForTesting;
@@ -373,64 +373,91 @@ public class PopupCreatorImpl implements PopupCreator {
         return true;
     }
 
-    public static Insets getPopupInsetsForecast(
-            @Nullable WindowAndroid sourceWindow, DisplayAndroid targetDisplay) {
-        if (sInsetsForecastForTesting != null) {
-            return sInsetsForecastForTesting;
+    /**
+     * Predicts the bounds of the window that will host a popup with the requested viewport bounds.
+     * The window keeps the top-left corner of the viewport and grows to the right and bottom:
+     *
+     * <pre>
+     *   |<------ requested viewport width ------>|<- deltaWidthPx ->|
+     *   +-----------------------------------------------------------+  ---
+     *   | Caption bar (+ popup header overflow below it)            |   ^
+     *   +-----------------------------------------------------------+   | deltaHeightPx
+     *   | Custom Tab toolbar + hairline                             |   v
+     *   +----------------------------------------+------------------+  ---
+     *   |                                        |                  |   ^
+     *   |           Requested viewport           |                  |   | requested
+     *   |                                        |                  |   | viewport height
+     *   +----------------------------------------+------------------+   v
+     * </pre>
+     *
+     * <p>The caption bar insets of {@code sourceWindow} are used as a proxy for the ones the popup
+     * window will get: {@code deltaWidthPx} is their left + right, {@code deltaHeightPx} their top
+     * + bottom plus the browser top controls.
+     *
+     * @param sourceWindow The window the popup is opened from.
+     * @param targetDisplay The display the popup will be opened on.
+     * @param requestedViewportBoundsPx The requested viewport bounds in pixels of {@code
+     *     targetDisplay}.
+     * @return The predicted window bounds in pixels of {@code targetDisplay}.
+     */
+    @VisibleForTesting
+    static Rect predictPopupWindowBounds(
+            @Nullable WindowAndroid sourceWindow,
+            DisplayAndroid targetDisplay,
+            Rect requestedViewportBoundsPx) {
+        final Rect windowBoundsPx = new Rect(requestedViewportBoundsPx);
+        if (sPredictPopupWindowBoundsForTesting != null && !sPredictPopupWindowBoundsForTesting) {
+            return windowBoundsPx;
         }
         if (sourceWindow == null) {
-            Log.w(TAG, "getPopupInsetsForecast: sourceWindow is null -- bailing out");
-            return Insets.NONE;
+            Log.w(TAG, "predictPopupWindowBounds: sourceWindow is null -- bailing out");
+            return windowBoundsPx;
         }
 
         final Context targetDisplayContext = targetDisplay.getWindowContext();
         if (targetDisplayContext == null) {
-            return Insets.NONE;
+            return windowBoundsPx;
         }
 
         final InsetObserver insetObserver = sourceWindow.getInsetObserver();
-        Insets windowInsetsOnSourceDisplay = Insets.NONE;
+        Insets captionBarInsetsOnSourceDisplay = Insets.NONE;
         if (insetObserver != null && insetObserver.getLastRawWindowInsets() != null) {
-            windowInsetsOnSourceDisplay =
+            captionBarInsetsOnSourceDisplay =
                     insetObserver
                             .getLastRawWindowInsets()
                             .getInsets(WindowInsetsCompat.Type.captionBar());
         }
         Log.v(
                 TAG,
-                "getPopupInsetsForecast: windowInsetsOnSourceDisplay = %s [px]",
-                windowInsetsOnSourceDisplay);
+                "predictPopupWindowBounds: captionBarInsetsOnSourceDisplay = %s [px]",
+                captionBarInsetsOnSourceDisplay);
 
-        final float densityFactor =
+        final float targetToSourceDisplayDensityRatio =
                 targetDisplay.getDipScale() / sourceWindow.getDisplay().getDipScale();
-        final Insets forecastedWindowInsetsOnTargetDisplay =
-                Insets.of(
-                        0,
-                        0,
-                        Math.round(
-                                (windowInsetsOnSourceDisplay.left
-                                                + windowInsetsOnSourceDisplay.right)
-                                        * densityFactor),
-                        Math.round(
-                                (windowInsetsOnSourceDisplay.top
-                                                + windowInsetsOnSourceDisplay.bottom)
-                                        * densityFactor));
+        final int deltaWidthPx =
+                Math.round(
+                        (captionBarInsetsOnSourceDisplay.left
+                                        + captionBarInsetsOnSourceDisplay.right)
+                                * targetToSourceDisplayDensityRatio);
+        final int deltaHeightPx =
+                Math.round(
+                                (captionBarInsetsOnSourceDisplay.top
+                                                + captionBarInsetsOnSourceDisplay.bottom)
+                                        * targetToSourceDisplayDensityRatio)
+                        + predictBrowserTopControlsTotalHeightBelowTopInsetPx(
+                                targetDisplayContext,
+                                Math.round(
+                                        captionBarInsetsOnSourceDisplay.top
+                                                * targetToSourceDisplayDensityRatio));
         Log.v(
                 TAG,
-                "getPopupInsetsForecast: forecastedWindowInsetsOnTargetDisplay = %s [px]",
-                forecastedWindowInsetsOnTargetDisplay);
+                "predictPopupWindowBounds: deltaWidthPx = %d px, deltaHeightPx = %d px",
+                deltaWidthPx,
+                deltaHeightPx);
 
-        final int totalTopControlsHeightPx =
-                predictBrowserTopControlsTotalHeightBelowTopInsetPx(
-                        targetDisplayContext,
-                        Math.round(windowInsetsOnSourceDisplay.top * densityFactor));
-        final Insets totalInsets =
-                Insets.add(
-                        forecastedWindowInsetsOnTargetDisplay,
-                        Insets.of(0, 0, 0, totalTopControlsHeightPx));
-        Log.v(TAG, "getPopupInsetsForecast: totalInsets = %s [px]", totalInsets);
-        final Insets invertedTotalInsets = Insets.subtract(Insets.NONE, totalInsets);
-        return invertedTotalInsets;
+        windowBoundsPx.right += deltaWidthPx;
+        windowBoundsPx.bottom += deltaHeightPx;
+        return windowBoundsPx;
     }
 
     /**
@@ -465,12 +492,12 @@ public class PopupCreatorImpl implements PopupCreator {
     }
 
     /**
-     * Overrides values returned by {@link getPopupInsetsForecast}. Usually it is desired to pass
-     * insets that are non-positive in all directions.
+     * If set to {@code false}, {@link #predictPopupWindowBounds} returns the requested viewport
+     * bounds unchanged.
      */
-    public static void setInsetsForecastForTesting(Insets insets) {
-        sInsetsForecastForTesting = insets;
-        ResettersForTesting.register(() -> sInsetsForecastForTesting = null);
+    public static void setPredictPopupWindowBoundsForTesting(boolean predict) {
+        sPredictPopupWindowBoundsForTesting = predict;
+        ResettersForTesting.register(() -> sPredictPopupWindowBoundsForTesting = null);
     }
 
     public static void setMoveTabToNewPopupResultForTesting(boolean result) {
@@ -605,8 +632,7 @@ public class PopupCreatorImpl implements PopupCreator {
             Rect bounds = localCoordinates.second;
 
             if (predictFinalBounds) {
-                Insets insets = getPopupInsetsForecast(sourceWindow, display);
-                bounds = WindowInsetsUtils.insetRectangle(bounds, insets);
+                bounds = predictPopupWindowBounds(sourceWindow, display, bounds);
             }
 
             bounds = DisplayUtil.clampWindowToDisplay(bounds, display);
