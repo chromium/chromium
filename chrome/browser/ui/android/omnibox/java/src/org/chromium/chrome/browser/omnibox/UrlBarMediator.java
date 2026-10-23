@@ -157,11 +157,14 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     /**
      * Signals that the UrlBar has finished being relocated to a new parent.
      *
-     * @param postReparentingFocus Whether the UrlBar should be focused.
+     * @param focusGained Whether the UrlBar gained focus as part of the reparenting. Outside of an
+     *     input session the text is re-pushed so the view picks up the focused presentation. When
+     *     focus is unchanged the view is deliberately left untouched: re-pushing text calls
+     *     setText(), which replaces the Editable and destroys any in-progress IME composition.
      */
-    void finishReparenting(boolean postReparentingFocus) {
+    void finishReparenting(boolean focusGained) {
         mIsReparenting = false;
-        if (postReparentingFocus && !isInInputSession()) {
+        if (focusGained && !isInInputSession()) {
             pushTextToModel(/* originChanged= */ false);
         }
     }

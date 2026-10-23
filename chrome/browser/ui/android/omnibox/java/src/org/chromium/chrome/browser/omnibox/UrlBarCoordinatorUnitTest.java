@@ -17,6 +17,12 @@ import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -78,6 +84,7 @@ public class UrlBarCoordinatorUnitTest {
         OmniboxResourceProvider.setUrlBarPrimaryTextColorForTesting(Color.LTGRAY);
         OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mContext = activity;
         mUrlBar = new TestUrlBar(activity);
         activity.setContentView(mUrlBar);
@@ -281,5 +288,97 @@ public class UrlBarCoordinatorUnitTest {
         mUrlBar.mTextWrappingChangeListener.onResult(false);
         assertFalse(supplier.get());
         assertFalse(mCoordinator.isTextWrapped());
+    }
+
+    @Test
+    public void reparenting_preservesComposingSpanSelectionAndFocus() {
+        FrameLayout secondParent = addSecondParent();
+        focusUrlBar();
+
+        InputConnection ic = mUrlBar.onCreateInputConnection(new EditorInfo());
+        assertNotNull(ic);
+        ic.setComposingText("z", 1);
+
+        mCoordinator.startReparenting();
+        moveUrlBarTo(secondParent);
+        mCoordinator.finishReparenting(/* postReparentingFocus= */ true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertTrue(mUrlBar.hasFocus());
+        assertFalse(mUrlBar.isTemporarilyDetached());
+        assertEquals(1, mUrlBar.getSelectionStart());
+        assertEquals(1, mUrlBar.getSelectionEnd());
+        assertEquals(0, BaseInputConnection.getComposingSpanStart(mUrlBar.getText()));
+        assertEquals(1, BaseInputConnection.getComposingSpanEnd(mUrlBar.getText()));
+        verify(mFocusChangeCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void reparenting_focusedToUnfocused_clearsFocusAndNotifies() {
+        FrameLayout secondParent = addSecondParent();
+        // Without another focusable view, clearFocus() would hand focus straight back to the
+        // UrlBar (the only focusable in the window). In production, focus moves to web contents.
+        View focusSink = new View(mContext);
+        focusSink.setFocusable(true);
+        ((ViewGroup) mUrlBar.getParent()).addView(focusSink, 0);
+        focusUrlBar();
+
+        mCoordinator.startReparenting();
+        moveUrlBarTo(secondParent);
+        mCoordinator.finishReparenting(/* postReparentingFocus= */ false);
+
+        assertFalse(mUrlBar.hasFocus());
+        assertFalse(mUrlBar.isTemporarilyDetached());
+        verify(mFocusChangeCallback).onResult(any());
+    }
+
+    @Test
+    public void reparenting_unfocused_remainsUnfocusedAndNotDetached() {
+        FrameLayout secondParent = addSecondParent();
+
+        mCoordinator.startReparenting();
+        moveUrlBarTo(secondParent);
+        mCoordinator.finishReparenting(/* postReparentingFocus= */ false);
+
+        assertFalse(mUrlBar.hasFocus());
+        assertFalse(mUrlBar.isTemporarilyDetached());
+        verify(mFocusChangeCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void reparenting_unfocusedToFocused_gainsFocusAndNotifies() {
+        FrameLayout secondParent = addSecondParent();
+        mUrlBar.setAllowFocus(true);
+
+        mCoordinator.startReparenting();
+        moveUrlBarTo(secondParent);
+        mCoordinator.finishReparenting(/* postReparentingFocus= */ true);
+
+        assertTrue(mUrlBar.hasFocus());
+        assertFalse(mUrlBar.isTemporarilyDetached());
+        verify(mFocusChangeCallback).onResult(any());
+    }
+
+    private FrameLayout addSecondParent() {
+        FrameLayout secondParent = new FrameLayout(mContext);
+        ((ViewGroup) mUrlBar.getParent()).addView(secondParent);
+        return secondParent;
+    }
+
+    private void focusUrlBar() {
+        mUrlBar.setAllowFocus(true);
+        mCoordinator.requestFocus();
+        assertTrue(mUrlBar.hasFocus());
+        clearInvocations(mFocusChangeCallback);
+    }
+
+    /** Mirrors LocationBarMediator#detachLocationBarLayoutPreservingFocus() followed by addView. */
+    private void moveUrlBarTo(ViewGroup newParent) {
+        ViewGroup oldParent = (ViewGroup) mUrlBar.getParent();
+        if (oldParent.getFocusedChild() == mUrlBar) {
+            oldParent.clearChildFocus(mUrlBar);
+        }
+        oldParent.removeView(mUrlBar);
+        newParent.addView(mUrlBar);
     }
 }

@@ -1612,7 +1612,7 @@ public class LocationBarMediator
         marginLayoutParams.height = MarginLayoutParams.MATCH_PARENT;
         mToolbarParent = (ViewGroup) mLocationBarLayout.getParent();
         mIndexInToolbar = mToolbarParent.indexOfChild(mLocationBarLayout);
-        mToolbarParent.removeView(mLocationBarLayout);
+        detachLocationBarLayoutPreservingFocus(mToolbarParent);
         suggestionsContainer.addView(mLocationBarLayout, 0, marginLayoutParams);
         mDropdown = suggestionsContainer.takeDropdownView();
         // Ensure mDropdown is detached from any previous parent before adding. During
@@ -1709,7 +1709,7 @@ public class LocationBarMediator
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mLocationBarLayout.getLayoutParams();
         ViewGroup suggestionsContainer = mAutocompleteCoordinator.getSuggestionsContainer();
-        suggestionsContainer.removeView(mLocationBarLayout);
+        detachLocationBarLayoutPreservingFocus(suggestionsContainer);
         assertNonNull(mToolbarParent)
                 .addView(mLocationBarLayout, mIndexInToolbar, marginLayoutParams);
         if (mLocationBarLayout.isInLayout()) {
@@ -1726,6 +1726,26 @@ public class LocationBarMediator
                         && mCurrentInput.getDisplayState() != DisplayState.WEBSITE;
         mUrlCoordinator.finishReparenting(postReparentingFocus);
         mIsReparenting = false;
+    }
+
+    /**
+     * Removes {@link #mLocationBarLayout} from {@code parent} without unfocusing its subtree.
+     *
+     * <p>ViewGroup#removeView() only unfocuses the removed child (and hands focus to the root) when
+     * that child is the parent's focused child. Releasing the parent's reference first keeps the
+     * UrlBar focused through the move, so TextView and InputMethodManager never observe a focus
+     * loss and any in-progress IME composition survives; addView() on the new parent re-links the
+     * focus chain. ViewGroup#clearChildFocus() ignores its argument and clears the chain up to the
+     * root unconditionally, so it must only be called when the location bar actually holds focus,
+     * otherwise it would orphan focus held elsewhere (e.g. web contents).
+     *
+     * @param parent The current parent of {@link #mLocationBarLayout}.
+     */
+    private void detachLocationBarLayoutPreservingFocus(ViewGroup parent) {
+        if (parent.getFocusedChild() == mLocationBarLayout) {
+            parent.clearChildFocus(mLocationBarLayout);
+        }
+        parent.removeView(mLocationBarLayout);
     }
 
     private boolean isPageClassIneligibleForPopover() {

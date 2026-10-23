@@ -462,7 +462,11 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onFocusChanged(
-            boolean focused, @FocusDirection int direction, Rect previouslyFocusedRect) {
+            boolean focused, @FocusDirection int direction, @Nullable Rect previouslyFocusedRect) {
+        if (isReparenting()) {
+            super.onFocusChanged(focused, direction, previouslyFocusedRect);
+            return;
+        }
         boolean wasFocused = mFocused;
         mFocused = focused;
 

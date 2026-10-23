@@ -52,7 +52,17 @@ public class AutocompleteEditText extends EditTextWithLeading
     private boolean mDisableTextScrollingFromAutocomplete;
 
     private @Nullable OnKeyListener mOnKeyListener;
-    private boolean mModelShouldIgnoreFocusChanges;
+
+    /**
+     * Whether Omnibox-specific focus handling is skipped. Set while the view is being reparented,
+     * so the transient focus loss/gain does not reach the model or trigger UrlBar's focus
+     * presentation changes (cursor, scroll, ellipsis). IME session preservation is handled
+     * separately by the temporarily-detached state, see {@link #beginReparenting()}.
+     */
+    private boolean mIgnoreFocusChangesWhileReparenting;
+
+    /** Whether {@link #beginReparenting()} put the view into the temporarily-detached state. */
+    private boolean mTemporarilyDetachedForReparenting;
 
     public AutocompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -195,14 +205,77 @@ public class AutocompleteEditText extends EditTextWithLeading
     }
 
     @Override
-    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        if (mModel != null && !mModelShouldIgnoreFocusChanges) mModel.onFocusChanged(focused);
+    protected void onFocusChanged(
+            boolean focused, int direction, @Nullable Rect previouslyFocusedRect) {
+        if (mIgnoreFocusChangesWhileReparenting) {
+            super.onFocusChanged(focused, direction, previouslyFocusedRect);
+            return;
+        }
+        if (mModel != null) mModel.onFocusChanged(focused);
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
         if (!focused) setCursorVisible(false);
     }
 
-    void setModelShouldIgnoreFocusChanges(boolean ignoreFocusChanges) {
-        mModelShouldIgnoreFocusChanges = ignoreFocusChanges;
+    /** Returns whether the view is being reparented and Omnibox focus handling is suspended. */
+    boolean isReparenting() {
+        return mIgnoreFocusChangesWhileReparenting;
+    }
+
+    /**
+     * Prepares the view to be moved to a new parent without disturbing the IME session.
+     *
+     * <p>ViewGroup#removeView() unfocuses the removed subtree. For a focused editor that means
+     * TextView/Editor strip the IME ComposingSpan and InputMethodManager finishes and later
+     * restarts the input session, which makes CJK IMEs commit the in-progress composition. While
+     * the view is marked temporarily detached, TextView, Editor and InputMethodManager ignore these
+     * focus transitions, and Omnibox-specific focus handling is suspended as well.
+     *
+     * <p>Must be paired with {@link #endReparenting(boolean)}.
+     */
+    void beginReparenting() {
+        mIgnoreFocusChangesWhileReparenting = true;
+        // An unfocused view has no IME session to protect.
+        if (isFocused()) {
+            mTemporarilyDetachedForReparenting = true;
+            dispatchStartTemporaryDetach();
+        }
+    }
+
+    /**
+     * Completes a move started with {@link #beginReparenting()} and applies the target focus state.
+     *
+     * @param focused Whether the view should be focused once reparenting has completed.
+     */
+    void endReparenting(boolean focused) {
+        if (focused) {
+            // Normally a no-op: LocationBarMediator keeps the focus chain intact through the
+            // reparenting. If the framework did move focus, this restores it while the view is
+            // still temporarily detached, so TextView/IMM do not restart the input session.
+            // Restoring focus the move dropped is not a real transition, so keep Omnibox focus
+            // handling suspended for it; a genuine focus gain (view was not focused at
+            // beginReparenting()) must run the regular handling.
+            mIgnoreFocusChangesWhileReparenting = mTemporarilyDetachedForReparenting;
+            requestFocus();
+            mIgnoreFocusChangesWhileReparenting = false;
+            // Ending the temporary detach re-registers the focused view as the one served by
+            // InputMethodManager, an association dropped when the view left the window. Without
+            // it, the pending IMM focus check would see no served view, finish the current input
+            // (committing the composition) and restart it.
+            finishTemporaryDetachForReparenting();
+        } else {
+            mIgnoreFocusChangesWhileReparenting = false;
+            finishTemporaryDetachForReparenting();
+            // With focus handling re-enabled, this performs the regular unfocus cleanup.
+            clearFocus();
+        }
+    }
+
+    private void finishTemporaryDetachForReparenting() {
+        // The temporarily-detached state is sticky; only undo what beginReparenting() started, and
+        // never leave it set, or TextView and IMM would ignore every future focus change.
+        if (!mTemporarilyDetachedForReparenting) return;
+        mTemporarilyDetachedForReparenting = false;
+        dispatchFinishTemporaryDetach();
     }
 
     @Override

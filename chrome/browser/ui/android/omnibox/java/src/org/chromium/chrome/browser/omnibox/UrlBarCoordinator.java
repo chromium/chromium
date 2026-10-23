@@ -481,7 +481,7 @@ public class UrlBarCoordinator
     public void startReparenting() {
         mMediator.startReparenting(
                 new TextSelection(mUrlBar.getSelectionStart(), mUrlBar.getSelectionEnd()));
-        mUrlBar.setModelShouldIgnoreFocusChanges(true);
+        mUrlBar.beginReparenting();
     }
 
     /**
@@ -491,18 +491,16 @@ public class UrlBarCoordinator
      *     process has completed.
      */
     public void finishReparenting(boolean postReparentingFocus) {
-        if (postReparentingFocus) {
-            mUrlBar.requestFocus();
-        } else {
-            mUrlBar.clearFocus();
-        }
-        mMediator.finishReparenting(postReparentingFocus);
-        if (mHasFocus != postReparentingFocus) {
+        // mHasFocus cannot change while the mediator reports reparenting, so capture the
+        // transition up front.
+        boolean focusChanged = mHasFocus != postReparentingFocus;
+        mUrlBar.endReparenting(postReparentingFocus);
+        mMediator.finishReparenting(/* focusGained= */ focusChanged && postReparentingFocus);
+        if (focusChanged) {
             onUrlFocusChangeInternal(
                     new UrlBarFocusChangeInfo(
                             postReparentingFocus, UrlBarFocusChangeInfo.NO_FOCUS_DIRECTION));
         }
-        mUrlBar.setModelShouldIgnoreFocusChanges(false);
     }
 
     public void maybeAcceptInlineSuggestion(KeyEvent event) {

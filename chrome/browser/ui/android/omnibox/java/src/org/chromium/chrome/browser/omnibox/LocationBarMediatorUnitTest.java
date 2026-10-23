@@ -3982,6 +3982,43 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testReparenting_releasesParentFocusOnlyWhenLocationBarIsFocused() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+
+        doReturn(mLocationBarParent).when(mLocationBarLayout).getParent();
+        doReturn(mSuggestionsContainer).when(mAutocompleteCoordinator).getSuggestionsContainer();
+        doReturn(mDropdown).when(mSuggestionsContainer).takeDropdownView();
+        doReturn(new MarginLayoutParams(-2, -2)).when(mLocationBarLayout).getLayoutParams();
+        doReturn(mPlaceholder)
+                .when(mLocationBarLayout)
+                .findViewById(R.id.suggestions_container_placeholder);
+
+        // Toolbar focus is held by the location bar: release it so removeView() keeps the UrlBar
+        // focused (and the IME composition intact). The release must precede removeView(), which
+        // would otherwise unfocus the subtree first; assert that at the time removeView() runs.
+        doReturn(mLocationBarLayout).when(mLocationBarParent).getFocusedChild();
+        doAnswer(
+                        inv -> {
+                            verify(mLocationBarParent).clearChildFocus(mLocationBarLayout);
+                            return null;
+                        })
+                .when(mLocationBarParent)
+                .removeView(mLocationBarLayout);
+        mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
+        mMediator.handleUrlFocusAnimation(/* hasFocus= */ true);
+        verify(mLocationBarParent).removeView(mLocationBarLayout);
+
+        // Focus moved to another window branch (e.g. web contents) before leaving SUGGESTIONS:
+        // the focus chain must not be cleared, or the focused view would be orphaned.
+        doReturn(null).when(mSuggestionsContainer).getFocusedChild();
+        mMediator.endInput();
+        verify(mSuggestionsContainer, never()).clearChildFocus(any());
+        verify(mSuggestionsContainer).removeView(mLocationBarLayout);
+    }
+
+    @Test
     public void testReparentToToolbar_preservesFocusInStandby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
