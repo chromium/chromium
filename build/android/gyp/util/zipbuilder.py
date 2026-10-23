@@ -28,22 +28,23 @@ _SIGNFLINGER_BINARY_PATH = os.path.join(_SIGNFLINGER_DIR, 'signflinger')
 _MAIN_CLASS = 'org.chromium.build.ZipBuilder'
 
 # CPU flags in /proc/cpuinfo required by the GraalVM native-image binary
-# (-march=x86-64-v3 -H:CPUFeatures=SHA,CLMUL,AES).
+# (-march=x86-64-v2 -H:CPUFeatures=AVX,AVX2,BMI2,SHA,CLMUL,AES). Flags that are
+# part of the x86-64 baseline (cmov, cx8, fxsr, mmx, sse, sse2) are omitted.
 _REQUIRED_CPU_FLAGS = frozenset(
     {
-        'abm',
-        'aes',
-        'avx2',
-        'bmi1',
-        'bmi2',
-        'f16c',
-        'fma',
-        'movbe',
-        'pclmulqdq',
+        # x86-64-v2.
+        'pni',  # SSE3
         'popcnt',
-        'sha_ni',
+        'sse4_1',
         'sse4_2',
         'ssse3',
+        # -H:CPUFeatures.
+        'aes',
+        'avx',
+        'avx2',
+        'bmi2',
+        'pclmulqdq',  # CLMUL
+        'sha_ni',
     }
 )
 
