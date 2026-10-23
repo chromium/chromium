@@ -600,7 +600,7 @@ by a child template that "extends" this file.
         </receiver>
 
         <!-- Actor related -->
-        <receiver android:name="org.chromium.chrome.browser.actor.ActorBroadcastReceiver"
+        <receiver android:name="org.chromium.chrome.browser.actor.notifications.ActorBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.actor.ACTION_PAUSE" />

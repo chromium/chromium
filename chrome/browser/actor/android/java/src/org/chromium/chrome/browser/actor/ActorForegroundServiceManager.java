@@ -21,6 +21,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
+import org.chromium.chrome.browser.actor.notifications.ActorNotificationService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -484,7 +486,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 });
     }
 
-    static void setInstanceForTesting(ActorForegroundServiceManager instance) {
+    public static void setInstanceForTesting(ActorForegroundServiceManager instance) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ActorForegroundServiceManager oldInstance = sInstance;

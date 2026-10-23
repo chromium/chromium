@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.notifications;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,6 +18,11 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTaskId;
+import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ActorTaskTimeoutParameters;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -41,8 +46,7 @@ public class ActorExternalTriggerSnackbarController
                 Destroyable,
                 SnackbarManager.SnackbarController {
     /** Android package name for the Gemini (Bard) shell app. */
-    @VisibleForTesting
-    static final String BARD_PACKAGE_NAME = "com.google.android.apps.bard";
+    @VisibleForTesting static final String BARD_PACKAGE_NAME = "com.google.android.apps.bard";
 
     private static final String GEMINI_APP_BASE_URL = "https://gemini.google.com/app";
 
@@ -145,10 +149,10 @@ public class ActorExternalTriggerSnackbarController
         // SnackbarManager auto-dismisses the snackbar and calls onDismissNoAction().
         Snackbar snackbar =
                 Snackbar.make(
-                        message,
-                        this,
-                        Snackbar.TYPE_NOTIFICATION,
-                        Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER)
+                                message,
+                                this,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER)
                         .setDuration(
                                 ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs() * 2);
         mSnackbarManager.showSnackbar(snackbar);

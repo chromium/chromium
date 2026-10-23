@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.actor;
+package org.chromium.chrome.browser.actor.notifications;
 
 import android.app.Notification;
 import android.content.Intent;
@@ -16,6 +16,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceManager;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorMetrics;
+import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,7 +81,7 @@ public class ActorNotificationService {
     }
 
     /** Returns the IDs of the tasks whose live notification is still awaiting demotion. */
-    Set<Integer> getPendingDemotionTaskIds() {
+    public Set<Integer> getPendingDemotionTaskIds() {
         return mDemoteRunnables.keySet();
     }
 
@@ -97,7 +104,7 @@ public class ActorNotificationService {
      *
      * @param taskId The ID of the task to demote.
      */
-    void demoteNow(int taskId) {
+    public void demoteNow(int taskId) {
         Runnable runnable = mDemoteRunnables.get(taskId);
         if (runnable == null) return;
         mHandler.removeCallbacks(runnable);
@@ -355,7 +362,7 @@ public class ActorNotificationService {
      * @param taskId The ID of the task.
      * @return The {@link ActorTask} if found, null otherwise.
      */
-    @Nullable ActorTask getTask(int taskId) {
+    public @Nullable ActorTask getTask(int taskId) {
         return mTaskCache.computeIfAbsent(taskId, mKeyedService::getTask);
     }
 
@@ -371,7 +378,7 @@ public class ActorNotificationService {
         mTaskCache.clear();
     }
 
-    void clearTaskData(int taskId) {
+    public void clearTaskData(int taskId) {
         cancelDemoteRunnable(taskId);
         mNotificationCache.remove(taskId);
         mTaskStates.remove(taskId);

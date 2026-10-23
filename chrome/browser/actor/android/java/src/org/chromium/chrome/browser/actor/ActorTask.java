@@ -41,7 +41,7 @@ public class ActorTask {
 
     @VisibleForTesting
     @CalledByNative
-    ActorTask(
+    public ActorTask(
             long nativeTask,
             int id,
             @JniType("std::string") String title,
@@ -201,7 +201,7 @@ public class ActorTask {
 
     @VisibleForTesting
     @CalledByNative
-    void clearNativePtr() {
+    public void clearNativePtr() {
         if (mNativeTask != 0) {
             mLastKnownState = ActorTaskJni.get().getState(mNativeTask);
             mLastKnownActuatedTabId = ActorTaskJni.get().getLastActuatedTabId(mNativeTask);
@@ -212,8 +212,9 @@ public class ActorTask {
         mNativeTask = 0;
     }
 
+    /** Native methods for ActorTask. */
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         @Nullable
         @JniType("std::optional<std::string>")
         String getGlicConversationId(long nativeActorTaskAndroid);

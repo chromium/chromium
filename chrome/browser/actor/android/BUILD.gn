@@ -7,15 +7,11 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/actor/ActorBroadcastReceiver.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorExternalTriggerSnackbarController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManager.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorMetrics.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorNotificationFactory.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorNotificationService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelper.java",
@@ -28,6 +24,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorTabStateHelper.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/BackgroundSession.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/OffscreenRenderingManager.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorBroadcastReceiver.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarController.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactory.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationService.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlMediator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlStateTracker.java",
@@ -170,11 +170,8 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/actor/ActorExternalTriggerSnackbarControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorMetricsTest.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorNotificationFactoryTest.java",
-    "java/src/org/chromium/chrome/browser/actor/ActorNotificationServiceTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskTimeoutManagerTest.java",
@@ -185,6 +182,9 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/background_tabs/BackgroundTabRestorationHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ColdBackgroundTabTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/OffscreenRenderingManagerTest.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarControllerTest.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactoryTest.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationServiceTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialogTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
@@ -286,10 +286,10 @@ android_library("unit_device_javatests") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/actor/ActorNotificationClickIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorBackgroundActuationIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ActorTabStateHelperIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationClickIntegrationTest.java",
   ]
   deps = [
     ":java",
