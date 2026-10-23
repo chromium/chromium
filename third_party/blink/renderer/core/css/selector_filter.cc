@@ -52,7 +52,7 @@ inline void CollectElementIdentifierHashes(const Element& element,
     func(element.IdForStyleResolution().Hash() * kIdSalt);
   }
 
-  if (element.IsStyledElement() && element.HasClass()) {
+  if (element.HasClass()) {
     for (const AtomicString& class_name : element.ClassNames()) {
       func(class_name.Hash() * kClassSalt);
     }

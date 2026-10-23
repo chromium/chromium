@@ -1190,9 +1190,6 @@ crbug.com/1395815 external/wpt/html/semantics/forms/the-input-element/range-tick
 # This test fails on content_shell but passes on headless/wpt.fyi
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Failure ]
 
-# XML nodes aren't match by .class selectors:
-crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
-
 # Bug in <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
