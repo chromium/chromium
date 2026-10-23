@@ -31,12 +31,29 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> CreateJavaJniPtr(
     JNIEnv* env,
     jlong ptr);
 
+// Generated glue wraps the description of the method that hands a pointer to
+// Java in this, so that leak reports can name it without the strings ending up
+// in release binaries.
+#if JNI_ZERO_DCHECK_IS_ON()
+#define JNI_ZERO_SAFE_PTR_CONTEXT(context) context
+#else
+#define JNI_ZERO_SAFE_PTR_CONTEXT(context) nullptr
+#endif
+
+// |creation_context| is appended to LifetimeAssert failures for the created
+// object. @CalledByNative glue sets it because the Java stack at creation time
+// ends at the outermost Java->native call rather than at the method that
+// received the pointer.
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
-CreateJavaJniUniquePtr(JNIEnv* env, jlong ptr, jlong deleter);
+CreateJavaJniUniquePtr(JNIEnv* env,
+                       jlong ptr,
+                       jlong deleter,
+                       const char* creation_context = nullptr);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> CreateJavaJniRawPtr(
     JNIEnv* env,
-    jlong ptr);
+    jlong ptr,
+    const char* creation_context = nullptr);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT void ReleaseJavaJniPtr(
     JNIEnv* env,

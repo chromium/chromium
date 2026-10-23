@@ -75,6 +75,15 @@ jclass GetClassGlobalRef(JNIEnv* env, jobject obj) {
   return static_cast<jclass>(env->NewGlobalRef(env->GetObjectClass(obj)));
 }
 
+ScopedJavaLocalRef<jstring> CreationContextToJava(
+    JNIEnv* env,
+    const char* creation_context) {
+  if (!creation_context) {
+    return nullptr;
+  }
+  return AdoptRef(env, env->NewStringUTF(creation_context));
+}
+
 }  // namespace
 
 void JNI_JniZero_SetJniClassLoader(
@@ -398,23 +407,29 @@ ScopedJavaLocalRef<jobject> CreateJavaJniPtr(JNIEnv* env, jlong ptr) {
   return Java_JniPtrImpl_Constructor(env, ptr);
 }
 
-ScopedJavaLocalRef<jobject> CreateJavaJniUniquePtr(JNIEnv* env,
-                                                   jlong ptr,
-                                                   jlong deleter) {
+ScopedJavaLocalRef<jobject> CreateJavaJniUniquePtr(
+    JNIEnv* env,
+    jlong ptr,
+    jlong deleter,
+    const char* creation_context) {
   if (!ptr) {
     return nullptr;
   }
-  return Java_JniUniquePtrImpl_Constructor(env, ptr, deleter);
+  return Java_JniUniquePtrImpl_Constructor(
+      env, ptr, deleter, CreationContextToJava(env, creation_context));
 }
 
-ScopedJavaLocalRef<jobject> CreateJavaJniRawPtr(JNIEnv* env, jlong ptr) {
+ScopedJavaLocalRef<jobject> CreateJavaJniRawPtr(JNIEnv* env,
+                                                jlong ptr,
+                                                const char* creation_context) {
   if (!ptr) {
     return nullptr;
   }
   if (internal::g_raw_ptr_wrap_fn) {
     internal::g_raw_ptr_wrap_fn(static_cast<uintptr_t>(ptr));
   }
-  return Java_JniRawPtrImpl_Constructor(env, ptr);
+  return Java_JniRawPtrImpl_Constructor(
+      env, ptr, CreationContextToJava(env, creation_context));
 }
 
 void ReleaseJavaJniPtr(JNIEnv* env, const JavaRef<jobject>& obj) {

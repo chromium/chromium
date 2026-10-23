@@ -18,12 +18,16 @@ class JniUniquePtrImpl<T extends JniTypeToken> implements JniUniquePtr<T>, JniPt
     private final @Nullable SafePointersTracker mTracker;
     private long mNativePointer;
 
-    @CalledByNative
     JniUniquePtrImpl(long nativePointer, long deleter) {
+        this(nativePointer, deleter, null);
+    }
+
+    @CalledByNative
+    JniUniquePtrImpl(long nativePointer, long deleter, @Nullable String creationContext) {
         assert nativePointer != 0;
         mNativePointer = nativePointer;
         mDeleter = deleter;
-        mTracker = JniZero.createSafePointersTracker(this);
+        mTracker = JniZero.createSafePointersTracker(this, creationContext);
     }
 
     @Override

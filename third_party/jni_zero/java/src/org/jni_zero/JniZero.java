@@ -22,7 +22,10 @@ public class JniZero {
 
     /** Seam for //base's LifetimeAssert to attach leak tracking without a //base dep. */
     public interface SafePointersTrackerFactory {
-        SafePointersTracker create(Object target);
+        /**
+         * @param creationContext Names the JNI method that handed the pointer to Java, or null.
+         */
+        SafePointersTracker create(Object target, @Nullable String creationContext);
     }
 
     public interface SafePointersTracker {
@@ -33,8 +36,9 @@ public class JniZero {
         sTrackerFactory = factory;
     }
 
-    static @Nullable SafePointersTracker createSafePointersTracker(Object target) {
-        return sTrackerFactory == null ? null : sTrackerFactory.create(target);
+    static @Nullable SafePointersTracker createSafePointersTracker(
+            Object target, @Nullable String creationContext) {
+        return sTrackerFactory == null ? null : sTrackerFactory.create(target, creationContext);
     }
 
     /** Sets the ClassLoader used to resolve classes by JNI Zero. */

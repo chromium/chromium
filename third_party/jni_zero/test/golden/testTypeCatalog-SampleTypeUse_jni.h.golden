@@ -158,7 +158,7 @@ static void Java_SampleTypeUse_bar(JNIEnv* env, ::jni_zero::JniRawPtr<::my::cpp:
       "bar",
       "(Lorg/jni_zero/JniRawPtr;)V",
       &cached_method_id);
-  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniRawPtr(env, reinterpret_cast<jlong>(ptr.get()));
+  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniRawPtr(env, reinterpret_cast<jlong>(ptr.get()), JNI_ZERO_SAFE_PTR_CONTEXT("passed to org.jni_zero.SampleTypeUse#bar parameter ptr"));
   env->CallStaticVoidMethod(clazz, call_context.method_id(), converted_ptr.obj());
 }
 
@@ -221,7 +221,7 @@ static void Java_SampleTypeUse_qux(JNIEnv* env, ::jni_zero::JniUniquePtr<::my::c
       "(Lorg/jni_zero/JniUniquePtr;)V",
       &cached_method_id);
   jlong converted_ptr_deleter = ptr.deleter_address();
-  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniUniquePtr(env, reinterpret_cast<jlong>(ptr.release()), converted_ptr_deleter);
+  ::jni_zero::ScopedJavaLocalRef<jobject> converted_ptr = ::jni_zero::internal::CreateJavaJniUniquePtr(env, reinterpret_cast<jlong>(ptr.release()), converted_ptr_deleter, JNI_ZERO_SAFE_PTR_CONTEXT("passed to org.jni_zero.SampleTypeUse#qux parameter ptr"));
   env->CallStaticVoidMethod(clazz, call_context.method_id(), converted_ptr.obj());
 }
 

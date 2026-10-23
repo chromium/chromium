@@ -16,11 +16,15 @@ class JniRawPtrImpl<T extends JniTypeToken> implements JniRawPtr<T>, JniPtrInner
     final @Nullable SafePointersTracker mTracker;
     long mNativePointer;
 
-    @CalledByNative
     JniRawPtrImpl(long nativePointer) {
+        this(nativePointer, null);
+    }
+
+    @CalledByNative
+    JniRawPtrImpl(long nativePointer, @Nullable String creationContext) {
         assert nativePointer != 0;
         mNativePointer = nativePointer;
-        mTracker = JniZero.createSafePointersTracker(this);
+        mTracker = JniZero.createSafePointersTracker(this, creationContext);
     }
 
     @Override

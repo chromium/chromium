@@ -158,13 +158,20 @@ def _param_type_cpp_mirror(java_type):
   return _param_type_cpp_non_mirror(java_type)
 
 
-def _prep_param(sb, param):
+def _safe_pointer_creation_context(java_class, cbn, param):
+  class_name = java_class.class_without_prefix.full_name_with_dots
+  return (f'JNI_ZERO_SAFE_PTR_CONTEXT("passed to {class_name}#{cbn.name} '
+          f'parameter {param.name}")')
+
+
+def _prep_param(sb, java_class, cbn, param):
   """Returns the snippet to use for the parameter."""
   ret = param.cpp_name()
   java_type = param.java_type
 
   if java_type.is_safe_pointer():
     converted_name = f'converted_{param.name}'
+    context = _safe_pointer_creation_context(java_class, cbn, param)
     if java_type.java_class == java_types.JNI_PTR_CLASS:
       sb(f'::jni_zero::ScopedJavaLocalRef<jobject> {converted_name} = '
          f'::jni_zero::internal::CreateJavaJniPtr(env, '
@@ -173,12 +180,12 @@ def _prep_param(sb, param):
       sb(f'jlong {converted_name}_deleter = {ret}.deleter_address();\n')
       sb(f'::jni_zero::ScopedJavaLocalRef<jobject> {converted_name} = '
          f'::jni_zero::internal::CreateJavaJniUniquePtr(env, '
-         f'reinterpret_cast<jlong>({ret}.release()), {converted_name}_deleter);\n'
-         )
+         f'reinterpret_cast<jlong>({ret}.release()), {converted_name}_deleter, '
+         f'{context});\n')
     elif java_type.java_class == java_types.JNI_RAW_PTR_CLASS:
       sb(f'::jni_zero::ScopedJavaLocalRef<jobject> {converted_name} = '
          f'::jni_zero::internal::CreateJavaJniRawPtr(env, '
-         f'reinterpret_cast<jlong>({ret}.get()));\n')
+         f'reinterpret_cast<jlong>({ret}.get()), {context});\n')
     return f'{converted_name}.obj()'
 
   if converted_type := java_type.converted_type:
@@ -431,7 +438,7 @@ def method_definition(sb,
         call_args.append('obj.obj()')
     else:
       call_args = [receiver_arg, 'call_context.method_id()']
-    call_args.extend(_prep_param(sb, p) for p in cbn.params)
+    call_args.extend(_prep_param(sb, java_class, cbn, p) for p in cbn.params)
 
     if not is_void:
       return_rvalue = '_ret'
