@@ -57,6 +57,12 @@
       opacity var(--chip-expand-duration) var(--ease-out-cubic-bezier);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+
+  /* The ripple (pressed) color, used by the pressed layer (#chip::after) and
+   * the IPH pulse (see help_bubble_anchor.css). */
+  --chip-ink-drop-ripple-color:
+      var(--color-omnibox-chip-ink-drop-ripple, transparent);
+  --iph-pressed-color: var(--chip-ink-drop-ripple-color);
 }
 
 #chip:focus-visible {
@@ -97,7 +103,7 @@
 /* An invisible overlay that mimics the native views::InkDrop ripple
    (pressed state). */
 #chip::after {
-  background-color: var(--color-omnibox-chip-ink-drop-ripple, transparent);
+  background-color: var(--chip-ink-drop-ripple-color);
   /* Matches views::FloodFillInkDropRipple::ACTION_TRIGGERED_FADE_OUT (300ms) */
   transition: opacity 300ms ease-in-out;
 }

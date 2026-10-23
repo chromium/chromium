@@ -7,23 +7,31 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {AppMenuIconType, AppMenuSeverity, IconTable, IconType} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('IPH', function() {
-  // Distinct fake colors so that the normal and IPH icon colors can be told
-  // apart.
+  // Distinct fake colors so that the normal and IPH colors can be told apart.
   const ICON_COLOR = 'rgb(4, 5, 6)';
   const PROMO_COLOR = 'rgb(1, 2, 3)';
+  const RIPPLE_COLOR = 'rgb(7, 8, 9)';
+  const APP_MENU_RIPPLE_COLOR = 'rgb(10, 11, 12)';
+  const ATTENTION_COLOR = 'rgb(13, 14, 15)';
+
+  const FAKE_COLORS: Record<string, string> = {
+    '--color-toolbar-button-icon': ICON_COLOR,
+    '--color-toolbar-feature-promo-highlight': PROMO_COLOR,
+    '--color-toolbar-ink-drop-ripple': RIPPLE_COLOR,
+    '--color-app-menu-chip-ink-drop-ripple': APP_MENU_RIPPLE_COLOR,
+    '--color-button-feature-attention-highlight': ATTENTION_COLOR,
+  };
 
   setup(() => {
-    document.documentElement.style.setProperty(
-        '--color-toolbar-button-icon', ICON_COLOR);
-    document.documentElement.style.setProperty(
-        '--color-toolbar-feature-promo-highlight', PROMO_COLOR);
+    for (const [name, value] of Object.entries(FAKE_COLORS)) {
+      document.documentElement.style.setProperty(name, value);
+    }
   });
 
   teardown(() => {
-    document.documentElement.style.removeProperty(
-        '--color-toolbar-button-icon');
-    document.documentElement.style.removeProperty(
-        '--color-toolbar-feature-promo-highlight');
+    for (const name of Object.keys(FAKE_COLORS)) {
+      document.documentElement.style.removeProperty(name);
+    }
   });
 
   function getIconColor(visualTarget: HTMLElement): string {
@@ -40,10 +48,13 @@ suite('IPH', function() {
    * @param expectIconRecolor Whether the icon is expected to be painted in the
    *     feature promo highlight color during the IPH, matching native
    *     ToolbarButton::GetForegroundColor() and its overrides.
+   * @param expectedPressedColor The pressed (ripple) color expected on top of
+   *     the attention color in the pulse, matching the native ink drop ripple.
    */
   async function testIPH(
       tagName: string, setNormalState: (el: any) => void,
-      expectIconRecolor: boolean = true) {
+      expectIconRecolor: boolean = true,
+      expectedPressedColor: string = RIPPLE_COLOR) {
     const el = document.createElement(tagName) as any;
     setNormalState(el);
     document.body.appendChild(el);
@@ -97,6 +108,14 @@ suite('IPH', function() {
     assertEquals(
         '1', window.getComputedStyle(visualTarget, '::before').opacity,
         `Button ${tagName} pulse layer should have opacity: 1`);
+    assertEquals(
+        ATTENTION_COLOR,
+        window.getComputedStyle(visualTarget, '::before').backgroundColor,
+        `Button ${tagName} pulse should paint the attention color underneath`);
+    assertEquals(
+        `linear-gradient(${expectedPressedColor})`,
+        window.getComputedStyle(visualTarget, '::before').backgroundImage,
+        `Button ${tagName} pulse should paint the pressed color on top`);
     if (expectIconRecolor) {
       assertEquals(
           PROMO_COLOR, getIconColor(visualTarget),
@@ -218,7 +237,7 @@ suite('IPH', function() {
 
   test('AppMenuButtonWithLabel', async () => {
     // Native BrowserAppMenuButton keeps the label colors while the label is
-    // visible.
+    // visible, and uses the app menu chip ripple.
     await testIPH('app-menu-button', (el) => {
       el.state = {
         iconType: AppMenuIconType.kNone,
@@ -229,6 +248,6 @@ suite('IPH', function() {
         isContextMenuVisible: false,
         windowIsMaximizedOrFullscreen: false,
       };
-    }, /*expectIconRecolor=*/ false);
+    }, /*expectIconRecolor=*/ false, APP_MENU_RIPPLE_COLOR);
   });
 });

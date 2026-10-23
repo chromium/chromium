@@ -29,6 +29,9 @@ cr-icon-button {
   --cr-icon-button-size: var(--toolbar-button-height);
   --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
+  /* Pressed color painted in the IPH pulse; see help_bubble_anchor.css.
+   * Matches the ripple of native ConfigureInkDrop(). */
+  --iph-pressed-color: var(--color-toolbar-ink-drop-ripple);
 }
 
 cr-button {
@@ -52,6 +55,9 @@ cr-button {
   --cr-button-background-color: transparent;
   --cr-button-border-color: transparent;
   --cr-button-border: 0;
+  /* Pressed color painted in the IPH pulse; see help_bubble_anchor.css.
+   * Matches the ripple of native ConfigureInkDrop(). */
+  --iph-pressed-color: var(--color-toolbar-ink-drop-ripple);
 }
 
 /* Like native toolbar buttons, use the inactive icon color while the browser

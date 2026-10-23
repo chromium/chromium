@@ -12,13 +12,33 @@
   --cr-hover-background-color: transparent;
   --cr-icon-button-hover-background-color: transparent;
   --cr-icon-button-active-background-color: transparent;
+  /* cr-button's (extension buttons) press ripple; the pulse already paints
+   * the pressed color. */
+  --cr-button-ripple-color: transparent;
   background-color: transparent !important;
   isolation: isolate;
 }
 
+/* The pulse below already paints the pressed color, so hide each control's own
+ * pressed layer (every .iph-visual-target::after is one) while the IPH shows.
+ * Otherwise pressing the anchor would paint the pressed color twice, whereas
+ * native reuses its single ripple (InkDropImpl::AnimateToState()). */
+:host(.help-anchor-highlight) .iph-visual-target::after {
+  opacity: 0 !important;
+}
+
+/* In native views the help bubble anchor-highlights its anchor button, so the
+ * ink drop shows the attention highlight together with the pressed ripple, and
+ * both pulse under one mask. The ripple layer is stacked above the highlight
+ * (InkDropImpl::RecreateRippleAndHighlight() recreates the ripple last). Paint
+ * both colors into this single pulsing layer: the attention color underneath,
+ * and the control's pressed color (set per control via --iph-pressed-color) on
+ * top. */
 :host(.help-anchor-highlight) .iph-visual-target::before {
   animation: pulse 1600ms infinite !important;
   background-color: var(--color-button-feature-attention-highlight) !important;
+  background-image:
+      linear-gradient(var(--iph-pressed-color, transparent)) !important;
   border-radius: inherit;
   content: '';
   inset: 0;

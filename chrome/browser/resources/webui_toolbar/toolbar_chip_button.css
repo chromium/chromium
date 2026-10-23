@@ -80,6 +80,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Pressed color painted in the IPH pulse; see help_bubble_anchor.css.
+ * Like [is-menu-open] below, suppressed when [disable-hover-highlight] is set
+ * for chips that are not currently interactive (native InkDropMode::OFF). */
+:host(:not([disable-hover-highlight])) #button {
+  --iph-pressed-color: var(--toolbar-chip-ink-drop-ripple-color);
+}
+
 /* --- HIGHLIGHT ENGINE ---
  * Mimics views::InkDrop highlight and pressed states for 1:1 parity.
  * We use ::before for the hover highlight and ::after for the pressed
