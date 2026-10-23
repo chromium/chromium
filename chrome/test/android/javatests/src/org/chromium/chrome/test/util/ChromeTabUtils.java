@@ -829,68 +829,6 @@ public class ChromeTabUtils {
     }
 
     /**
-     * Long presses the view, selects an item from the context menu, and
-     * asserts that a new tab is opened and is incognito if expectIncognito is true.
-     * For use in testing long-press context menu options that open new tabs in a different
-     * ChromeTabbedActivity instance.
-     *
-     * @param foregroundActivity The {@link ChromeTabbedActivity} currently in the foreground.
-     * @param backgroundActivity The {@link ChromeTabbedActivity} currently in the background. The
-     *                           new tab is expected to open in this activity.
-     * @param view The {@link View} in the {@code foregroundActivity} to long press.
-     * @param contextMenuItemId The context menu item to select on the view.
-     * @param expectIncognito Whether the opened tab is expected to be incognito.
-     * @param expectedUrl The expected url for the new tab.
-     */
-    public static void invokeContextMenuAndOpenInOtherWindow(
-            ChromeTabbedActivity foregroundActivity,
-            ChromeTabbedActivity backgroundActivity,
-            View view,
-            int contextMenuItemId,
-            boolean expectIncognito,
-            final String expectedUrl)
-            throws ExecutionException {
-        final CallbackHelper createdCallback = new CallbackHelper();
-        final TabModel tabModel =
-                backgroundActivity.getTabModelSelector().getModel(expectIncognito);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabModel.addObserver(
-                            new TabModelObserver() {
-                                @Override
-                                public void didAddTab(
-                                        Tab tab,
-                                        @TabLaunchType int type,
-                                        @TabCreationState int creationState,
-                                        boolean markedForSelection) {
-                                    if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
-                                        createdCallback.notifyCalled();
-                                        tabModel.removeObserver(this);
-                                    }
-                                }
-                            });
-                });
-
-        TestTouchUtils.performLongClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), view);
-        Assert.assertTrue(
-                InstrumentationRegistry.getInstrumentation()
-                        .invokeContextMenuAction(foregroundActivity, contextMenuItemId, 0));
-
-        try {
-            createdCallback.waitForCallback(0);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Never received tab creation event", e);
-        }
-
-        if (expectIncognito) {
-            Assert.assertTrue(backgroundActivity.getTabModelSelector().isIncognitoSelected());
-        } else {
-            Assert.assertFalse(backgroundActivity.getTabModelSelector().isIncognitoSelected());
-        }
-    }
-
-    /**
      * Issues a fake notification about the renderer being killed.
      *
      * @param tab {@link Tab} instance where the target renderer resides.
