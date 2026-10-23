@@ -3114,42 +3114,42 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     bool* opt_needs_additional_pass,
     bool needs_intrinsic_track_size) const {
   const auto& style = Style();
-  if (track_direction != style.GridLanesTrackSizingDirection()) {
-    return;
-  }
+  if (track_direction == style.GridLanesTrackSizingDirection()) {
+    auto& layout_data = sizing_subtree.LayoutData();
 
-  auto& layout_data = sizing_subtree.LayoutData();
+    const bool has_non_definite_track =
+        track_direction == kForColumns
+            ? layout_data.Columns().HasNonDefiniteTrack()
+            : layout_data.Rows().HasNonDefiniteTrack();
 
-  const bool has_non_definite_track =
-      track_direction == kForColumns
-          ? layout_data.Columns().HasNonDefiniteTrack()
-          : layout_data.Rows().HasNonDefiniteTrack();
+    if (has_non_definite_track) {
+      if (layout_data.HasSubgriddedAxis(track_direction)) {
+        // If we don't have a sizing collection for this axis, then we're in a
+        // subgrid that must inherit the track collection of its parent.
+        CHECK(opt_subgrid_data.IsSubgrid());
 
-  if (has_non_definite_track) {
-    if (layout_data.HasSubgriddedAxis(track_direction)) {
-      // If we don't have a sizing collection for this axis, then we're in a
-      // subgrid that must inherit the track collection of its parent.
-      CHECK(opt_subgrid_data.IsSubgrid());
+        // Refresh inherited tracks to pick up the parent's resolved sizes.
+        layout_data.SetTrackCollection(CreateSubgridTrackCollection(
+            opt_subgrid_data, style, GetConstraintSpace(),
+            BorderScrollbarPadding(), GetGridAvailableSize(), track_direction));
+      } else {
+        ComputeUsedTrackSizes(sizing_subtree, sizing_constraint,
+                              needs_intrinsic_track_size);
 
-      // Refresh inherited tracks to pick up the parent's resolved sizes.
-      layout_data.SetTrackCollection(CreateSubgridTrackCollection(
-          opt_subgrid_data, style, GetConstraintSpace(),
-          BorderScrollbarPadding(), GetGridAvailableSize(), track_direction));
-    } else {
-      ComputeUsedTrackSizes(sizing_subtree, sizing_constraint,
-                            needs_intrinsic_track_size);
+        auto& track_collection = layout_data.SizingCollection(track_direction);
+        auto first_set_geometry =
+            GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
+                track_collection, style, grid_lanes_available_size_,
+                BorderScrollbarPadding());
 
-      auto& track_collection = layout_data.SizingCollection(track_direction);
-      auto first_set_geometry =
-          GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
-              track_collection, style, grid_lanes_available_size_,
-              BorderScrollbarPadding());
-
-      track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
-                                            first_set_geometry.gutter_size);
+        track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
+                                              first_set_geometry.gutter_size);
+      }
     }
   }
 
+  // Grid-lanes has no tracks in its stacking axis, but descendant grid subgrids
+  // may still have standalone tracks to size in that direction.
   CompleteTrackSizingAlgorithmForEachSubgrid(sizing_subtree, *this,
                                              track_direction, sizing_constraint,
                                              opt_needs_additional_pass);
