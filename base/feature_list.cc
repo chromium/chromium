@@ -75,36 +75,46 @@ inline constexpr bool HasFlags(FeatureStateCache feature_cached_value,
 }
 
 // Unpacks the override state and caching context from the packed cache value.
-// The override state is stored in the 8 bits from 24 to 31. The caching
-// context is stored in the 16 bits from 0 to 15.
+// Bits 24 and 25 store the resolved enabled state and whether the feature was
+// explicitly overridden. The caching context is stored in bits 0 to 15.
 std::pair<FeatureList::OverrideState, uint16_t> UnpackFeatureState(
     Feature::FeatureStateCache packed_cache_value) {
-  return std::make_pair(
-      static_cast<FeatureList::OverrideState>(packed_cache_value >> 24),
-      packed_cache_value & internal::kCachingContextMask);
+  if ((packed_cache_value & internal::kCachedExplicitOverrideMask) == 0) {
+    return {FeatureList::OVERRIDE_USE_DEFAULT,
+            static_cast<uint16_t>(packed_cache_value &
+                                  internal::kCachingContextMask)};
+  }
+  return {(packed_cache_value & internal::kCachedResolvedEnabledMask)
+              ? FeatureList::OVERRIDE_ENABLE_FEATURE
+              : FeatureList::OVERRIDE_DISABLE_FEATURE,
+          static_cast<uint16_t>(packed_cache_value &
+                                internal::kCachingContextMask)};
 }
 
-// Packs the override state and caching context into the packed cache value.
-// The override state is stored in the 8 bits from 24 to 31. The caching
-// context is stored in the 16 bits from 0 to 15.
+// Packs the override state, resolved enabled state, and caching context into
+// the packed cache value.
 Feature::FeatureStateCache PackFeatureState(
     FeatureList::OverrideState override_state,
+    bool resolved_enabled,
     uint32_t caching_context) {
-  return (static_cast<FeatureStateCache>(override_state) << 24) |
+  return (resolved_enabled ? internal::kCachedResolvedEnabledMask : 0) |
+         (override_state != FeatureList::OVERRIDE_USE_DEFAULT
+              ? internal::kCachedExplicitOverrideMask
+              : 0) |
          (caching_context & internal::kCachingContextMask);
 }
 
 // Atomically sets the override state and caching context in the packed cache
-// value. The override state is stored in the 8 bits from 24 to 31. The
-// caching context is stored in the 16 bits from 0 to 15. The flags in the
-// packed cache value are preserved.
+// value. The resolved state and explicit-override marker are updated together,
+// while the flags in the packed cache value are preserved.
 void AtomicSetFeatureState(std::atomic<FeatureStateCache>& cached_value,
                            FeatureList::OverrideState override_state,
+                           bool resolved_enabled,
                            uint32_t caching_context) {
-  // The new value to store, with the override state and caching context but
-  // no flags.
+  // The new value to store, with the override, resolved state, and caching
+  // context but no flags.
   const FeatureStateCache new_value =
-      PackFeatureState(override_state, caching_context);
+      PackFeatureState(override_state, resolved_enabled, caching_context);
 
   // When updating the currently cached value, we need to preserve all of its
   // flag bits (bits 16 through 23). A simple store could clear those bits.
@@ -376,7 +386,8 @@ bool ParseEnableFeatures(const std::string& enable_features,
 
 // A monotonically increasing id, passed to `FeatureList`s as they are created
 // to invalidate the cache member of `base::Feature` objects that were queried
-// with a different `FeatureList` installed.
+// with a different `FeatureList` installed. Wraps around to 1, never to 0: a
+// caching context of 0 marks a feature whose state has never been cached.
 uint16_t g_current_caching_context = 1;
 
 }  // namespace
@@ -395,7 +406,9 @@ BASE_FEATURE(kDCheckIsFatalFeature,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-FeatureList::FeatureList() : caching_context_(g_current_caching_context++) {}
+FeatureList::FeatureList()
+    : caching_context_(
+          internal::NextCachingContext(g_current_caching_context)) {}
 
 FeatureList::~FeatureList() = default;
 
@@ -1194,7 +1207,18 @@ void FeatureList::BuildTrialToFeaturesIndex() {
 }
 
 bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
-  return IsFeatureEnabledForOverrideState(feature, GetOverrideState(feature));
+  const Feature::FeatureStateCache cached_value =
+      feature.cached_value.load(std::memory_order_relaxed);
+  if (!FeatureIsRuntimeMutable(cached_value) &&
+      (cached_value & internal::kCachingContextMask) == caching_context_) {
+    return (cached_value & internal::kCachedResolvedEnabledMask) != 0;
+  }
+  return ResolveFeatureEnabledState(feature);
+}
+
+bool FeatureList::ResolveFeatureEnabledState(const Feature& feature) const {
+  return IsFeatureEnabledForOverrideState(
+      feature, GetOverrideStateImpl(feature, /*activate_trial=*/true));
 }
 
 bool FeatureList::IsFeatureEnabledForOverrideState(
@@ -1294,7 +1318,10 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
   // Update the cache with the override state ONLY if we are performing an
   // activating query.
   if (activate_trial) {
-    AtomicSetFeatureState(feature.cached_value, state, caching_context_);
+    const bool resolved_enabled =
+        IsFeatureEnabledForOverrideState(feature, state);
+    AtomicSetFeatureState(feature.cached_value, state, resolved_enabled,
+                          caching_context_);
   }
 
   return state;

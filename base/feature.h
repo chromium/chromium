@@ -203,7 +203,7 @@ constexpr bool IsCountrySpecificFeatureState(FeatureState state) {
 // above, as there are some subtleties involved.
 //
 // Feature constants are internally mutable, as this allows them to contain a
-// mutable member to cache their override state, while still remaining declared
+// mutable member to cache their resolved state, while still remaining declared
 // as const. This cache member allows for significantly faster IsEnabled()
 // checks.
 //
@@ -219,9 +219,9 @@ constexpr bool IsCountrySpecificFeatureState(FeatureState state) {
 // https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
 struct BASE_EXPORT LOGICALLY_CONST Feature {
   // The type used to store the cached state of a feature. This is a uint32_t
-  // that is packed with the override state, logging and mutability flags, and
-  // a caching context ID. See the comments on `cached_value` below for more
-  // details.
+  // that is packed with the resolved enabled state, explicit-override marker,
+  // logging and mutability flags, and a caching context ID. See the comments
+  // on `cached_value` below for more details.
   using FeatureStateCache = uint32_t;
 
   constexpr Feature(const char* name,
@@ -236,7 +236,7 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
 
   // Non-copyable since:
   // - there should be only one `Feature` instance per unique name.
-  // - a `Feature` contains internal cached state about the override state.
+  // - a `Feature` contains internal cached state about its resolved state.
   Feature(const Feature&) = delete;
   Feature& operator=(const Feature&) = delete;
 
@@ -289,26 +289,25 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // Keep this in sync with base/feature_list_internal.h:kRuntimeMutabilityMask
   enum { kRuntimeMutabilityMask = 1 << 18 };
 
-  // A packed value where the upper 8 bits (bits 24-31) represent the
-  // `OverrideState` of this feature, the next 8 bits (bits 16-23) are reserved
-  // for flags (e.g. logging, runtime mutability, etc.), and the lower 16 bits
-  // (bits 0-15) are a caching context ID used to allow ScopedFeatureLists to
-  // invalidate these cached values in testing. A
-  // value of 0 in the caching context ID field indicates that this value has
-  // never been looked up and cached, a value of 1 indicates this value contains
-  // the cached `OverrideState` that was looked up via `base::FeatureList`,
-  // and any other value indicate that this cached value is only valid for a
+  // A packed value where bits 24 and 25 hold the resolved enabled state and
+  // whether the feature was explicitly overridden, bits 16 through 23 hold
+  // flags (e.g. logging and runtime mutability), and the last 16 bits are a
+  // caching context ID used to allow ScopedFeatureLists to invalidate these
+  // cached values in testing. A value of 0 in the caching context ID field
+  // indicates that this value has never been looked up and cached, a value of 1
+  // indicates this value contains a state cached via `base::FeatureList`, and
+  // any other value indicates that this cached value is only valid for a
   // particular ScopedFeatureList instance.
   //
   // Packing these values into a uint32_t makes it so that atomic operations
   // performed on this fields can be lock free.
   //
-  // The override state stored in this field is only used if the current
+  // The cached state is only used if the current
   // `FeatureList::caching_context_` field is equal to the lower 16 bits of the
-  // packed cached value. Otherwise, the override state is looked up in the
-  // feature list and the cache is updated.
-  // The logging bits (16 and 17) are used to ensure that we only log the
-  // feature access once per session, even if the cached value is invalidated.
+  // packed cached value. Otherwise, the state is looked up in the feature list
+  // and the cache is updated. The logging bits (16 and 17) are used to ensure
+  // that we only log the feature access once per session, even if the cached
+  // value is invalidated.
   mutable std::atomic<FeatureStateCache> cached_value;
 };
 

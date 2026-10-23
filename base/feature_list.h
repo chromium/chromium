@@ -700,6 +700,12 @@ class BASE_EXPORT FeatureList {
   // Requires the FeatureList to have already been fully initialized.
   bool IsFeatureEnabled(const Feature& feature) const;
 
+  // Handles lookups that the cached state cannot answer. Kept out of line
+  // so IsFeatureEnabled() stays small and can inline into IsEnabled().
+  // On Windows, inlining the cache-hit path avoids an extra function call and
+  // its stack-protection overhead.
+  NOINLINE bool ResolveFeatureEnabledState(const Feature& feature) const;
+
   // Returns whether `feature` is enabled if its override state is
   // `override_state`, falling back to the feature's default state (including
   // any country restrictions) for OVERRIDE_USE_DEFAULT. Has no side effects

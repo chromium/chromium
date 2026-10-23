@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <ostream>
 #include <set>
 #include <string>
@@ -194,6 +195,10 @@ class FeatureListTest : public testing::Test {
     feature.cached_value.store(value, std::memory_order_relaxed);
   }
 
+  Feature::FeatureStateCache GetFeatureStateForTesting(const Feature& feature) {
+    return feature.cached_value.load(std::memory_order_relaxed);
+  }
+
  private:
   test::ScopedFeatureList scoped_feature_list_;
 };
@@ -201,6 +206,59 @@ class FeatureListTest : public testing::Test {
 TEST_F(FeatureListTest, DefaultStates) {
   EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOnByDefault));
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
+}
+
+TEST_F(FeatureListTest, CacheStoresResolvedAndExplicitState) {
+  FeatureList::ClearFeatureCachedValueForTesting(kFeatureOnByDefault);
+  EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOnByDefault));
+  Feature::FeatureStateCache cached_value =
+      GetFeatureStateForTesting(kFeatureOnByDefault);
+  EXPECT_TRUE(cached_value & internal::kCachedResolvedEnabledMask);
+  EXPECT_FALSE(cached_value & internal::kCachedExplicitOverrideMask);
+  EXPECT_FALSE(
+      FeatureList::GetStateIfOverridden(kFeatureOnByDefault).has_value());
+
+  FeatureList::ClearFeatureCachedValueForTesting(kFeatureOffByDefault);
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
+  cached_value = GetFeatureStateForTesting(kFeatureOffByDefault);
+  EXPECT_FALSE(cached_value & internal::kCachedResolvedEnabledMask);
+  EXPECT_FALSE(cached_value & internal::kCachedExplicitOverrideMask);
+  EXPECT_FALSE(
+      FeatureList::GetStateIfOverridden(kFeatureOffByDefault).has_value());
+
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kFeatureOffByDefault},
+      /*disabled_features=*/{kFeatureOnByDefault});
+
+  EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOffByDefault));
+  cached_value = GetFeatureStateForTesting(kFeatureOffByDefault);
+  EXPECT_TRUE(cached_value & internal::kCachedResolvedEnabledMask);
+  EXPECT_TRUE(cached_value & internal::kCachedExplicitOverrideMask);
+  const auto off_by_default_state =
+      FeatureList::GetStateIfOverridden(kFeatureOffByDefault);
+  ASSERT_TRUE(off_by_default_state.has_value());
+  EXPECT_TRUE(*off_by_default_state);
+
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
+  cached_value = GetFeatureStateForTesting(kFeatureOnByDefault);
+  EXPECT_FALSE(cached_value & internal::kCachedResolvedEnabledMask);
+  EXPECT_TRUE(cached_value & internal::kCachedExplicitOverrideMask);
+  const auto on_by_default_state =
+      FeatureList::GetStateIfOverridden(kFeatureOnByDefault);
+  ASSERT_TRUE(on_by_default_state.has_value());
+  EXPECT_FALSE(*on_by_default_state);
+}
+
+TEST(FeatureListCachingContextTest, SkipsZeroOnWraparound) {
+  constexpr uint16_t kMaxContext = std::numeric_limits<uint16_t>::max();
+  uint16_t next_context = kMaxContext - 1;
+
+  EXPECT_EQ(internal::NextCachingContext(next_context), kMaxContext - 1);
+  EXPECT_EQ(internal::NextCachingContext(next_context), kMaxContext);
+  EXPECT_EQ(internal::NextCachingContext(next_context), 1);
+  EXPECT_EQ(internal::NextCachingContext(next_context), 2);
+  EXPECT_EQ(next_context, 3);
 }
 
 // Testing the 2-argument BASE_FEATURE macro.
