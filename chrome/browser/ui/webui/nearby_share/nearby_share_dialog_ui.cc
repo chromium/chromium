@@ -139,8 +139,9 @@ void NearbyShareDialogUI::SetAttachments(
 
 void NearbyShareDialogUI::SetWebView(views::WebView* web_view) {
   CHECK(web_view);
-  web_view_ = web_view;
-  web_view_->GetWebContents()->SetDelegate(this);
+  web_view->GetWebContents()->SetDelegate(this);
+  SetReferenceView(web_view);
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 }
 
 void NearbyShareDialogUI::BindInterface(
@@ -165,17 +166,6 @@ void NearbyShareDialogUI::BindInterface(
       NearbySharingServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   nearby_sharing_service->GetContactManager()->Bind(std::move(receiver));
-}
-
-bool NearbyShareDialogUI::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  if (!web_view_) {
-    return false;
-  }
-
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, web_view_->GetFocusManager());
 }
 
 void NearbyShareDialogUI::WebContentsCreated(
