@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.ui.browser_window;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.Locale;
@@ -26,17 +29,16 @@ final class BrowserWindowCreatorBridge {
 
     @CalledByNative
     @VisibleForTesting
-    static long createBrowserWindow(AndroidBrowserWindowCreateParams createParams) {
+    static @Nullable JniPtr<NativeBrowserWindowInterface> createBrowserWindow(
+            AndroidBrowserWindowCreateParams createParams) {
         if (!canCreateBrowserWindow(createParams)) {
             createParams.destroyWebContents();
-            return 0L;
+            return null;
         }
 
         ChromeAndroidTask task =
                 ChromeAndroidTaskTrackerImpl.getInstance().createPendingTask(createParams, null);
-        return task == null
-                ? 0L
-                : task.getOrCreateNativeBrowserWindowPtr(createParams.getProfile());
+        return task == null ? null : task.getOrCreateNativeBrowserWindow(createParams.getProfile());
     }
 
     @CalledByNative

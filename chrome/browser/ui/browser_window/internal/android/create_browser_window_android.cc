@@ -35,10 +35,8 @@ BrowserWindowInterface* CreateBrowserWindow(
           bounds.right(), bounds.bottom(),
           static_cast<int>(create_params.initial_show_state), raw_web_contents);
 
-  int64_t window_ptr =
-      Java_BrowserWindowCreatorBridge_createBrowserWindow(env, j_create_params);
-
-  return reinterpret_cast<BrowserWindowInterface*>(window_ptr);
+  return Java_BrowserWindowCreatorBridge_createBrowserWindow(env,
+                                                             j_create_params);
 }
 
 void CreateBrowserWindow(
