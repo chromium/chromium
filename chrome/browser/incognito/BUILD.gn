@@ -141,6 +141,7 @@ android_library("incognito_java_tests") {
 robolectric_library("incognito_junit_tests") {
   resources_package = "org.chromium.chrome.browser.incognito"
   sources = [
+    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoStartupUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinatorTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerImplTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactoryTest.java",
@@ -159,6 +160,7 @@ robolectric_library("incognito_junit_tests") {
     "//base:tristate_java",
     "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui/public:java",
+    "//chrome/browser/android/cookies:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",

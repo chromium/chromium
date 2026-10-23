@@ -29,7 +29,6 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -110,7 +109,6 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisabledTest(message = "crbug.com/568762355")
     public void testBasicIncognito() {
         forceUnflaggedLaunchPath();
         final IncognitoNewTabPageStation incognitoEntryPoint =
@@ -130,13 +128,16 @@ public class PopupMultiwindowPTTest {
                 "The number of tabs in the original window is unexpected",
                 initialTabCount,
                 mCtaTestRule.tabsCount(/* incognito= */ true));
+        assertTrue(popup.isIncognito());
+
+        // Close the popup while the opener still holds the shared incognito profile.
+        popup.finishActivity();
 
         if (page.getActivity().isIncognitoWindow()) {
-            TransitAsserts.assertFinalDestinations(mEntryPage, page, popup);
+            TransitAsserts.assertFinalDestinations(mEntryPage, page);
         } else {
-            TransitAsserts.assertFinalDestinations(page, popup);
+            TransitAsserts.assertFinalDestinations(page);
         }
-        assertTrue(popup.isIncognito());
     }
 
     @Test

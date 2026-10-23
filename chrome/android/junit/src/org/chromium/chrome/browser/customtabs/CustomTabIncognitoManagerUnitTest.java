@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -26,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -55,7 +58,7 @@ public class CustomTabIncognitoManagerUnitTest {
     @Before
     public void setUp() {
         ProfileManagerJni.setInstanceForTesting(mProfileManagerJni);
-        IncognitoTabHostRegistry.getInstance().getHosts().clear();
+        IncognitoTabHostRegistry.getInstance().clearForTesting();
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
 
@@ -64,18 +67,29 @@ public class CustomTabIncognitoManagerUnitTest {
         doReturn(mOtrProfile).when(mProfileProvider).getOffTheRecordProfile();
         doReturn(mOtrProfile).when(mProfileProvider).getOffTheRecordProfile(any(Boolean.class));
 
-        mIncognitoManager =
-                new CustomTabIncognitoManager(
-                        mActivity,
-                        mNavigationController,
-                        mIntentDataProvider,
-                        mProfileProviderSupplier,
-                        mLifecycleDispatcher);
+        mIncognitoManager = createIncognitoManager();
     }
 
     @After
     public void tearDown() {
-        IncognitoTabHostRegistry.getInstance().getHosts().clear();
+        IncognitoTabHostRegistry.getInstance().clearForTesting();
+    }
+
+    private CustomTabIncognitoManager createIncognitoManager() {
+        return new CustomTabIncognitoManager(
+                mActivity,
+                mNavigationController,
+                mIntentDataProvider,
+                mProfileProviderSupplier,
+                mLifecycleDispatcher);
+    }
+
+    /** Stubs the intent data provider as an incognito popup opened by Chrome (shared OTR). */
+    private void stubIncognitoPopupOpenedByChrome() {
+        doReturn(CustomTabProfileType.INCOGNITO).when(mIntentDataProvider).getCustomTabMode();
+        doReturn(CustomTabsUiType.POPUP).when(mIntentDataProvider).getUiType();
+        doReturn(true).when(mIntentDataProvider).isOpenedByChrome();
+        doReturn(true).when(mOtrProfile).isPrimaryOtrProfile();
     }
 
     @Test
@@ -103,6 +117,21 @@ public class CustomTabIncognitoManagerUnitTest {
     }
 
     @Test
+    public void testOnDestroy_primaryOtrProfile_withOtherActiveIncognitoModel_doesNotDestroy() {
+        doReturn(true).when(mOtrProfile).isPrimaryOtrProfile();
+
+        IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
+        doReturn(false).when(otherHost).hasIncognitoTabs();
+        doReturn(true).when(otherHost).isActiveModel();
+        IncognitoTabHostRegistry.getInstance().register(otherHost);
+
+        mActivity.finish();
+        mIncognitoManager.onDestroy();
+
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
+    }
+
+    @Test
     public void testOnDestroy_primaryOtrProfile_noOtherIncognitoTabs_destroysProfile() {
         doReturn(true).when(mOtrProfile).isPrimaryOtrProfile();
 
@@ -113,30 +142,75 @@ public class CustomTabIncognitoManagerUnitTest {
     }
 
     @Test
-    public void testOnFinishNativeInitialization_openedByChrome_registersHost() {
-        doReturn(CustomTabProfileType.INCOGNITO).when(mIntentDataProvider).getCustomTabMode();
-        doReturn(true).when(mIntentDataProvider).isOpenedByChrome();
-        doReturn(true).when(mOtrProfile).isPrimaryOtrProfile();
+    public void testConstructor_incognitoPopupOpenedByChrome_registersHostBeforeNativeInit() {
+        stubIncognitoPopupOpenedByChrome();
 
-        mIncognitoManager.onFinishNativeInitialization();
+        // The manager created in setUp() was built before the stubs; create the real subject now.
+        CustomTabIncognitoManager manager = createIncognitoManager();
 
+        // Registered without onFinishNativeInitialization() having run.
         assertEquals(1, IncognitoTabHostRegistry.getInstance().getHosts().size());
+        IncognitoTabHost host = IncognitoTabHostRegistry.getInstance().getHosts().get(0);
+        assertTrue(host.hasIncognitoTabs());
+        assertTrue(host.isActiveModel());
 
         mActivity.finish();
-        mIncognitoManager.onDestroy();
+        manager.onDestroy();
 
         assertEquals(0, IncognitoTabHostRegistry.getInstance().getHosts().size());
     }
 
     @Test
-    public void testOnFinishNativeInitialization_isolatedOtrProfile_doesNotRegisterHost() {
+    public void testConstructor_incognitoNonPopup_doesNotRegisterHostBeforeNativeInit() {
         doReturn(CustomTabProfileType.INCOGNITO).when(mIntentDataProvider).getCustomTabMode();
+        doReturn(CustomTabsUiType.DEFAULT).when(mIntentDataProvider).getUiType();
         doReturn(true).when(mIntentDataProvider).isOpenedByChrome();
-        doReturn(false).when(mOtrProfile).isPrimaryOtrProfile();
 
-        mIncognitoManager.onFinishNativeInitialization();
+        createIncognitoManager();
 
         assertEquals(0, IncognitoTabHostRegistry.getInstance().getHosts().size());
+    }
+
+    @Test
+    public void testConstructor_popupNotOpenedByChrome_doesNotRegisterHostBeforeNativeInit() {
+        doReturn(CustomTabProfileType.INCOGNITO).when(mIntentDataProvider).getCustomTabMode();
+        doReturn(CustomTabsUiType.POPUP).when(mIntentDataProvider).getUiType();
+        doReturn(false).when(mIntentDataProvider).isOpenedByChrome();
+
+        createIncognitoManager();
+
+        assertEquals(0, IncognitoTabHostRegistry.getInstance().getHosts().size());
+    }
+
+    @Test
+    public void testHost_whileFinishing_reportsNoTabsButActiveModelUntilDestroyed() {
+        stubIncognitoPopupOpenedByChrome();
+        CustomTabIncognitoManager manager = createIncognitoManager();
+        IncognitoTabHost host = IncognitoTabHostRegistry.getInstance().getHosts().get(0);
+
+        // A finishing popup has no tabs but keeps the incognito model active until destroyed.
+        mActivity.finish();
+        assertTrue(mActivity.isFinishing());
+        assertFalse(host.hasIncognitoTabs());
+        assertTrue(host.isActiveModel());
+
+        manager.onDestroy();
+        assertEquals(0, IncognitoTabHostRegistry.getInstance().getHosts().size());
+        // The popup was the last holder of the primary OTR profile.
+        verify(mProfileManagerJni).destroyWhenAppropriate(mOtrProfile);
+    }
+
+    @Test
+    public void testOnDestroy_notFinishing_unregistersHostWithoutDestroyingProfile() {
+        stubIncognitoPopupOpenedByChrome();
+        CustomTabIncognitoManager manager = createIncognitoManager();
+        assertEquals(1, IncognitoTabHostRegistry.getInstance().getHosts().size());
+
+        // Recreation, e.g. on configuration change.
+        manager.onDestroy();
+
+        assertEquals(0, IncognitoTabHostRegistry.getInstance().getHosts().size());
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
     }
 
     @Test
