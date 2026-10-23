@@ -195,26 +195,34 @@ mod test {
 
         let matcher = SerdeDFA::new(Cow::Borrowed("^abc")).unwrap();
 
-        assert!(matcher
-            .deref()
-            .try_search_fwd(&Input::new("ab").anchored(regex_automata::Anchored::Yes))
-            .unwrap()
-            .is_none());
-        assert!(matcher
-            .deref()
-            .try_search_fwd(&Input::new("abc").anchored(regex_automata::Anchored::Yes))
-            .unwrap()
-            .is_some());
-        assert!(matcher
-            .deref()
-            .try_search_fwd(&Input::new("abcde").anchored(regex_automata::Anchored::Yes))
-            .unwrap()
-            .is_some());
-        assert!(matcher
-            .deref()
-            .try_search_fwd(&Input::new(" abcde").anchored(regex_automata::Anchored::Yes))
-            .unwrap()
-            .is_none());
+        assert!(
+            matcher
+                .deref()
+                .try_search_fwd(&Input::new("ab").anchored(regex_automata::Anchored::Yes))
+                .unwrap()
+                .is_none()
+        );
+        assert!(
+            matcher
+                .deref()
+                .try_search_fwd(&Input::new("abc").anchored(regex_automata::Anchored::Yes))
+                .unwrap()
+                .is_some()
+        );
+        assert!(
+            matcher
+                .deref()
+                .try_search_fwd(&Input::new("abcde").anchored(regex_automata::Anchored::Yes))
+                .unwrap()
+                .is_some()
+        );
+        assert!(
+            matcher
+                .deref()
+                .try_search_fwd(&Input::new(" abcde").anchored(regex_automata::Anchored::Yes))
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[derive(serde::Deserialize)]

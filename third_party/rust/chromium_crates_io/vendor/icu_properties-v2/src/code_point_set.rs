@@ -177,8 +177,8 @@ impl<'a> CodePointSetDataBorrowed<'a> {
     /// # Example
     ///
     /// ```
-    /// use icu::properties::props::Alphabetic;
     /// use icu::properties::CodePointSetData;
+    /// use icu::properties::props::Alphabetic;
     ///
     /// let alphabetic = CodePointSetData::new::<Alphabetic>();
     /// let mut ranges = alphabetic.iter_ranges();
@@ -201,8 +201,8 @@ impl<'a> CodePointSetDataBorrowed<'a> {
     /// # Example
     ///
     /// ```
-    /// use icu::properties::props::Alphabetic;
     /// use icu::properties::CodePointSetData;
+    /// use icu::properties::props::Alphabetic;
     ///
     /// let alphabetic = CodePointSetData::new::<Alphabetic>();
     /// let mut ranges = alphabetic.iter_ranges();
@@ -254,9 +254,9 @@ pub trait BinaryProperty: crate::private::Sealed + Sized {
 mod tests {
     #[test]
     fn test_general_category() {
+        use crate::CodePointMapData;
         use crate::props::GeneralCategory;
         use crate::props::GeneralCategoryGroup;
-        use crate::CodePointMapData;
 
         let digits_data = CodePointMapData::<GeneralCategory>::new()
             .get_set_for_value_group(GeneralCategoryGroup::Number);
@@ -271,8 +271,8 @@ mod tests {
 
     #[test]
     fn test_script() {
-        use crate::props::Script;
         use crate::CodePointMapData;
+        use crate::props::Script;
 
         let thai_data = CodePointMapData::<Script>::new().get_set_for_value(Script::Thai);
         let thai = thai_data.as_borrowed();
@@ -286,8 +286,8 @@ mod tests {
 
     #[test]
     fn test_gc_groupings() {
-        use crate::props::{GeneralCategory, GeneralCategoryGroup};
         use crate::CodePointMapData;
+        use crate::props::{GeneralCategory, GeneralCategoryGroup};
         use icu_collections::codepointinvlist::CodePointInversionListBuilder;
 
         let test_group = |category: GeneralCategoryGroup, subcategories: &[GeneralCategory]| {
@@ -383,8 +383,8 @@ mod tests {
 
     #[test]
     fn test_gc_surrogate() {
-        use crate::props::GeneralCategory;
         use crate::CodePointMapData;
+        use crate::props::GeneralCategory;
 
         let surrogates_data = CodePointMapData::<GeneralCategory>::new()
             .get_set_for_value(GeneralCategory::Surrogate);

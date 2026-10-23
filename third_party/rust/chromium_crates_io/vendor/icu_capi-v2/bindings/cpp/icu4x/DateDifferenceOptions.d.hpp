@@ -30,7 +30,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `DateDifferenceOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateDifferenceOptions.html) for more information.
+ * See the [Rust documentation for `DateDifferenceOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateDifferenceOptions.html) for more information.
  */
 struct DateDifferenceOptions {
     std::optional<icu4x::DateDurationUnit> largest_unit;

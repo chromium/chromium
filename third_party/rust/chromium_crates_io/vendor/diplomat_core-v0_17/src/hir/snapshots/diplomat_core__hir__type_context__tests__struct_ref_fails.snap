@@ -1,0 +1,8 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo
+> Struct Ident("Foo", Some(Span { start: LineColumn { line: 1, col: 0 }, end: LineColumn { line: 1, col: 0 }, range: 0..0, span_location: None })) field "foo" cannot be borrowed. Structs cannot be borrowed inside of other structs, try removing the borrow and storing the struct directly.
+Diplomat error: Lowering error in Foo::out
+> Found lifetimes used in struct references also used in the return type: 'a

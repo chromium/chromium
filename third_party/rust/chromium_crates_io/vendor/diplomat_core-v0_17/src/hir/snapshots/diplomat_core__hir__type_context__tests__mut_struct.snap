@@ -1,0 +1,8 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo::takes_mut
+> Found a mutable struct ref &mut self. Try marking the struct def with `#[diplomat::attr(auto, mut_struct_ref)]`
+Diplomat error: Lowering error in Foo::takes_mut
+> Found a mutable struct ref &mut Foo. Try marking the struct def with `#[diplomat::attr(auto, mut_struct_ref)]`

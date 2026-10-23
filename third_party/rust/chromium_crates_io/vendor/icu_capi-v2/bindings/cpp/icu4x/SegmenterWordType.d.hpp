@@ -26,7 +26,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `WordType`](https://docs.rs/icu/2.2.0/icu/segmenter/options/enum.WordType.html) for more information.
+ * See the [Rust documentation for `WordType`](https://docs.rs/icu/2.4.0/icu/segmenter/options/enum.WordType.html) for more information.
  */
 class SegmenterWordType {
 public:
@@ -45,7 +45,7 @@ public:
     explicit operator bool() const = delete;
 
   /**
-   * See the [Rust documentation for `is_word_like`](https://docs.rs/icu/2.2.0/icu/segmenter/options/enum.WordType.html#method.is_word_like) for more information.
+   * See the [Rust documentation for `is_word_like`](https://docs.rs/icu/2.4.0/icu/segmenter/options/enum.WordType.html#method.is_word_like) for more information.
    */
   inline bool is_word_like() const;
 

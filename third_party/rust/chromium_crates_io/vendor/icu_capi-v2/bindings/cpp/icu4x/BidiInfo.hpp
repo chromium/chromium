@@ -38,7 +38,7 @@ inline size_t icu4x::BidiInfo::paragraph_count() const {
     return result;
 }
 
-inline std::unique_ptr<icu4x::BidiParagraph> icu4x::BidiInfo::paragraph_at(size_t n) const {
+inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::BidiParagraph>> icu4x::BidiInfo::paragraph_at(size_t n) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_BidiInfo_paragraph_at_mv1(this->AsFFI(),
         n);
     return std::unique_ptr<icu4x::BidiParagraph>(icu4x::BidiParagraph::FromFFI(result));

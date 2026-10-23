@@ -27,12 +27,12 @@ namespace icu4x {
 /**
  * An iterator over the locale under fallback.
  *
- * See the [Rust documentation for `LocaleFallbackIterator`](https://docs.rs/icu/2.2.0/icu/locale/fallback/struct.LocaleFallbackIterator.html) for more information.
+ * See the [Rust documentation for `LocaleFallbackIterator`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbackIterator.html) for more information.
  */
 class LocaleFallbackIterator {
 public:
 
-  inline std::unique_ptr<icu4x::Locale> next();
+  inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::Locale>> next();
 
     inline const icu4x::capi::LocaleFallbackIterator* AsFFI() const;
     inline icu4x::capi::LocaleFallbackIterator* AsFFI();

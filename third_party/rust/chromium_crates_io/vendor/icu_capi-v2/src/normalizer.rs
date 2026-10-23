@@ -2,6 +2,28 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
+struct Write16Adapter<'a>(&'a mut diplomat_runtime::DiplomatWrite16);
+
+impl write16::Write16 for Write16Adapter<'_> {
+    #[inline(always)]
+    fn write_slice(&mut self, s: &[u16]) -> core::fmt::Result {
+        self.0.write_slice(s);
+        Ok(())
+    }
+
+    #[inline(always)]
+    fn write_char(&mut self, c: char) -> core::fmt::Result {
+        self.0.write_char_as_utf16(c);
+        Ok(())
+    }
+
+    #[inline(always)]
+    fn size_hint(&mut self, upcoming: usize) -> core::fmt::Result {
+        self.0.reserve(upcoming);
+        Ok(())
+    }
+}
+
 #[diplomat::bridge]
 #[diplomat::abi_rename = "icu4x_{0}_mv1"]
 pub mod ffi {
@@ -104,8 +126,33 @@ pub mod ffi {
             FnInStruct,
             hidden
         )]
+        #[diplomat::attr(not(supports = utf8_strings), disable)]
+        #[diplomat::attr(*, rename = "normalize")]
         pub fn normalize(&self, s: &DiplomatStr, write: &mut DiplomatWrite) {
             let _infallible = self.0.as_borrowed().normalize_utf8_to(s, write);
+        }
+
+        /// Normalize a string
+        ///
+        /// Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
+        /// to the WHATWG Encoding Standard.
+        #[diplomat::rust_link(
+            icu::normalizer::ComposingNormalizerBorrowed::normalize_utf16,
+            FnInStruct
+        )]
+        #[diplomat::rust_link(
+            icu::normalizer::ComposingNormalizerBorrowed::normalize_utf16_to,
+            FnInStruct,
+            hidden
+        )]
+        #[diplomat::attr(not(supports = utf8_strings), rename = "normalize")]
+        #[diplomat::attr(supports = utf8_strings, rename = "normalize16")]
+        #[diplomat::cfg(supports = utf16_writeables)]
+        pub fn normalize_utf16(&self, s: &DiplomatStr16, write: &mut DiplomatWrite16) {
+            let _infallible = self
+                .0
+                .as_borrowed()
+                .normalize_utf16_to(s, &mut super::Write16Adapter(write));
         }
 
         /// Check if a string is normalized
@@ -266,8 +313,33 @@ pub mod ffi {
             FnInStruct,
             hidden
         )]
+        #[diplomat::attr(not(supports = utf8_strings), disable)]
+        #[diplomat::attr(*, rename = "normalize")]
         pub fn normalize(&self, s: &DiplomatStr, write: &mut DiplomatWrite) {
             let _infallible = self.0.as_borrowed().normalize_utf8_to(s, write);
+        }
+
+        /// Normalize a string
+        ///
+        /// Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
+        /// to the WHATWG Encoding Standard.
+        #[diplomat::rust_link(
+            icu::normalizer::DecomposingNormalizerBorrowed::normalize_utf16,
+            FnInStruct
+        )]
+        #[diplomat::rust_link(
+            icu::normalizer::DecomposingNormalizerBorrowed::normalize_utf16_to,
+            FnInStruct,
+            hidden
+        )]
+        #[diplomat::attr(not(supports = utf8_strings), rename = "normalize")]
+        #[diplomat::attr(supports = utf8_strings, rename = "normalize16")]
+        #[diplomat::cfg(supports = utf16_writeables)]
+        pub fn normalize_utf16(&self, s: &DiplomatStr16, write: &mut DiplomatWrite16) {
+            let _infallible = self
+                .0
+                .as_borrowed()
+                .normalize_utf16_to(s, &mut super::Write16Adapter(write));
         }
 
         /// Check if a string is normalized
@@ -330,5 +402,36 @@ pub mod ffi {
         pub fn is_normalized_utf16_up_to(&self, s: &DiplomatStr16) -> usize {
             self.0.as_borrowed().split_normalized_utf16(s).0.len()
         }
+    }
+}
+
+#[cfg(all(test, feature = "compiled_data"))]
+mod tests {
+    use super::ffi::{ComposingNormalizer, DecomposingNormalizer};
+    use diplomat_runtime::rust_interop::RustWriteVecGeneric;
+
+    #[test]
+    fn test_normalize_utf16() {
+        let nfc = ComposingNormalizer::create_nfc();
+        let nfd = DecomposingNormalizer::create_nfd();
+
+        // "ä" decomposed (U+0061 U+0308), Hangul L+V (U+1100 U+1161 -> U+AC00), and "😊" (U+1F60A)
+        let input = [0x0061u16, 0x0308, 0x1100, 0x1161, 0xD83D, 0xDE0A];
+        let expected_nfc = [0x00E4u16, 0xAC00, 0xD83D, 0xDE0A];
+
+        let mut out_nfc = RustWriteVecGeneric::<u16>::with_capacity(0);
+        nfc.normalize_utf16(&input, unsafe { out_nfc.borrow_mut() });
+        assert_eq!(out_nfc.as_slice(), &expected_nfc);
+
+        let mut out_nfd = RustWriteVecGeneric::<u16>::with_capacity(0);
+        nfd.normalize_utf16(&expected_nfc, unsafe { out_nfd.borrow_mut() });
+        assert_eq!(out_nfd.as_slice(), &input);
+
+        // Supplementary decomposition: U+1D15E (𝅗𝅥) -> U+1D157 U+1D165 (𝅗𝅥) + unpaired surrogate 0xD800 -> 0xFFFD
+        let supp_input = [0xD834u16, 0xDD5E, 0xD800];
+        let expected_supp_nfd = [0xD834u16, 0xDD57, 0xD834, 0xDD65, 0xFFFD];
+        let mut out_supp = RustWriteVecGeneric::<u16>::with_capacity(0);
+        nfd.normalize_utf16(&supp_input, unsafe { out_supp.borrow_mut() });
+        assert_eq!(out_supp.as_slice(), &expected_supp_nfd);
     }
 }

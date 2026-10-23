@@ -7,7 +7,7 @@ const LineBreakIteratorUtf8_box_destroy_registry = new FinalizationRegistry((ptr
 });
 
 /**
- * See the [Rust documentation for `LineBreakIterator`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.LineBreakIterator.html) for more information.
+ * See the [Rust documentation for `LineBreakIterator`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.LineBreakIterator.html) for more information.
  */
 export class LineBreakIteratorUtf8 {
     // Internal ptr reference:
@@ -44,7 +44,7 @@ export class LineBreakIteratorUtf8 {
      * Finds the next breakpoint. Returns -1 if at the end of the string or if the index is
      * out of range of a 32-bit signed integer.
      *
-     * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.LineBreakIterator.html#method.next) for more information.
+     * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.LineBreakIterator.html#method.next) for more information.
      */
     next() {
 

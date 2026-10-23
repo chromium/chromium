@@ -32,39 +32,39 @@ namespace capi {
 
 namespace icu4x {
 /**
- * 🚧 This API is unstable and may experience breaking changes outside major releases.
+ * See the [Rust documentation for `RegionDisplayNames`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html) for more information.
  *
- * See the [Rust documentation for `RegionDisplayNames`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html) for more information.
+ * 🚧 This API is unstable and may experience breaking changes outside major releases.
  */
 class RegionDisplayNames {
 public:
 
   /**
-   * 🚧 This API is unstable and may experience breaking changes outside major releases.
-   *
    * Creates a new `RegionDisplayNames` from locale data and an options bag using compiled data.
    *
-   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html#method.try_new) for more information.
+   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html#method.try_new) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::RegionDisplayNames>, icu4x::DataError> create_v1(const icu4x::Locale& locale, icu4x::DisplayNamesOptionsV1 options);
 
   /**
-   * 🚧 This API is unstable and may experience breaking changes outside major releases.
-   *
    * Creates a new `RegionDisplayNames` from locale data and an options bag using a particular data source.
    *
-   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html#method.try_new) for more information.
+   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html#method.try_new) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::RegionDisplayNames>, icu4x::DataError> create_v1_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, icu4x::DisplayNamesOptionsV1 options);
 
   /**
-   * 🚧 This API is unstable and may experience breaking changes outside major releases.
-   *
    * Returns the locale specific display name of a region.
    * Note that the function returns an empty string in case the display name for a given
    * region code is not found.
    *
-   * See the [Rust documentation for `of`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html#method.of) for more information.
+   * See the [Rust documentation for `of`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.RegionDisplayNames.html#method.of) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline icu4x::diplomat::result<std::string, icu4x::LocaleParseError> of(std::string_view region) const;
   template<typename W>

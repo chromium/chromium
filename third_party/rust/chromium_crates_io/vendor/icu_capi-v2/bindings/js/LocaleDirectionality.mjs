@@ -11,7 +11,7 @@ const LocaleDirectionality_box_destroy_registry = new FinalizationRegistry((ptr)
 });
 
 /**
- * See the [Rust documentation for `LocaleDirectionality`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html) for more information.
+ * See the [Rust documentation for `LocaleDirectionality`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html) for more information.
  */
 export class LocaleDirectionality {
     // Internal ptr reference:
@@ -45,7 +45,7 @@ export class LocaleDirectionality {
     /**
      * Construct a new `LocaleDirectionality` instance using compiled data.
      *
-     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.new_common) for more information.
+     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.new_common) for more information.
      */
     #defaultConstructor() {
 
@@ -63,13 +63,13 @@ export class LocaleDirectionality {
     /**
      * Construct a new `LocaleDirectionality` instance using a particular data source.
      *
-     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.new_common) for more information.
+     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.new_common) for more information.
      */
     static createCommonWithProvider(provider) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_LocaleDirectionality_create_common_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue);
+        const result = wasm.icu4x_LocaleDirectionality_create_common_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -88,7 +88,7 @@ export class LocaleDirectionality {
     /**
      * Construct a new `LocaleDirectionality` instance using compiled data.
      *
-     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.new_extended) for more information.
+     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.new_extended) for more information.
      */
     static createExtended() {
 
@@ -106,13 +106,13 @@ export class LocaleDirectionality {
     /**
      * Construct a new `LocaleDirectionality` instance using a particular data source.
      *
-     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.new_extended) for more information.
+     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.new_extended) for more information.
      */
     static createExtendedWithProvider(provider) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_LocaleDirectionality_create_extended_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue);
+        const result = wasm.icu4x_LocaleDirectionality_create_extended_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -129,11 +129,11 @@ export class LocaleDirectionality {
     }
 
     /**
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.get) for more information.
      */
     get(locale) {
 
-        const result = wasm.icu4x_LocaleDirectionality_get_mv1(this.ffiValue, locale.ffiValue);
+        const result = wasm.icu4x_LocaleDirectionality_get_mv1(this.ffiValue, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'));
 
         try {
             return new LocaleDirection(diplomatRuntime.internalConstructor, result);
@@ -145,11 +145,11 @@ export class LocaleDirectionality {
     }
 
     /**
-     * See the [Rust documentation for `is_left_to_right`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.is_left_to_right) for more information.
+     * See the [Rust documentation for `is_left_to_right`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.is_left_to_right) for more information.
      */
     isLeftToRight(locale) {
 
-        const result = wasm.icu4x_LocaleDirectionality_is_left_to_right_mv1(this.ffiValue, locale.ffiValue);
+        const result = wasm.icu4x_LocaleDirectionality_is_left_to_right_mv1(this.ffiValue, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'));
 
         try {
             return result;
@@ -161,11 +161,11 @@ export class LocaleDirectionality {
     }
 
     /**
-     * See the [Rust documentation for `is_right_to_left`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.is_right_to_left) for more information.
+     * See the [Rust documentation for `is_right_to_left`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.is_right_to_left) for more information.
      */
     isRightToLeft(locale) {
 
-        const result = wasm.icu4x_LocaleDirectionality_is_right_to_left_mv1(this.ffiValue, locale.ffiValue);
+        const result = wasm.icu4x_LocaleDirectionality_is_right_to_left_mv1(this.ffiValue, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'));
 
         try {
             return result;
@@ -179,7 +179,7 @@ export class LocaleDirectionality {
     /**
      * Construct a new `LocaleDirectionality` instance using compiled data.
      *
-     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleDirectionality.html#method.new_common) for more information.
+     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleDirectionality.html#method.new_common) for more information.
      */
     constructor() {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

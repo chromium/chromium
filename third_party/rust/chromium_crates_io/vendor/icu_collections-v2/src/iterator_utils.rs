@@ -31,11 +31,9 @@ where
         // range from last time, or the next range
         let mut ret = if let Some(peek) = self.peek.take() {
             peek
-        } else if let Some(next) = self.iter.next() {
-            next
         } else {
-            // No ranges, exit early
-            return None;
+            // Exit early when there are no ranges
+            self.iter.next()?
         };
 
         // Keep pulling ranges
@@ -151,10 +149,6 @@ mod tests {
         test_set::<Lowercase>("Lowercase");
         test_set::<Math>("Math");
         test_set::<NoncharacterCodePoint>("Noncharacter_Code_Point");
-        test_set::<NfcInert>("NFC_Inert");
-        test_set::<NfdInert>("NFD_Inert");
-        test_set::<NfkcInert>("NFKC_Inert");
-        test_set::<NfkdInert>("NFKD_Inert");
         test_set::<PatternSyntax>("Pattern_Syntax");
         test_set::<PatternWhiteSpace>("Pattern_White_Space");
         test_set::<PrependedConcatenationMark>("Prepended_Concatenation_Mark");
@@ -163,8 +157,6 @@ mod tests {
         test_set::<Radical>("Radical");
         test_set::<RegionalIndicator>("Regional_Indicator");
         test_set::<SoftDotted>("Soft_Dotted");
-        test_set::<SegmentStarter>("Segment_Starter");
-        test_set::<CaseSensitive>("Case_Sensitive");
         test_set::<SentenceTerminal>("Sentence_Terminal");
         test_set::<TerminalPunctuation>("Terminal_Punctuation");
         test_set::<UnifiedIdeograph>("Unified_Ideograph");

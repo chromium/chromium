@@ -6,7 +6,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * ECMA-402 compatible sign display preference.
  *
- * See the [Rust documentation for `SignDisplay`](https://docs.rs/fixed_decimal/0.7.2/fixed_decimal/enum.SignDisplay.html) for more information.
+ * See the [Rust documentation for `SignDisplay`](https://docs.rs/fixed_decimal/0.7.3/fixed_decimal/enum.SignDisplay.html) for more information.
  */
 export class DecimalSignDisplay {
 

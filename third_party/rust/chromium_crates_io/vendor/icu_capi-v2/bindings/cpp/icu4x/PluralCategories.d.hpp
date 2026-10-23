@@ -30,7 +30,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `categories`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
+ * See the [Rust documentation for `categories`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
  */
 struct PluralCategories {
     bool zero;

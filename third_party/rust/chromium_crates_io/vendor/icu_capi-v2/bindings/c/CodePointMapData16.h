@@ -27,6 +27,11 @@ CodePointRangeIterator* icu4x_CodePointMapData16_iter_ranges_for_value_complemen
 
 CodePointSetData* icu4x_CodePointMapData16_get_set_for_value_mv1(const CodePointMapData16* self, uint16_t value);
 
+CodePointMapData16* icu4x_CodePointMapData16_create_block_mv1(void);
+
+typedef struct icu4x_CodePointMapData16_create_block_with_provider_mv1_result {union {CodePointMapData16* ok; DataError err;}; bool is_ok;} icu4x_CodePointMapData16_create_block_with_provider_mv1_result;
+icu4x_CodePointMapData16_create_block_with_provider_mv1_result icu4x_CodePointMapData16_create_block_with_provider_mv1(const DataProvider* provider);
+
 CodePointMapData16* icu4x_CodePointMapData16_create_script_mv1(void);
 
 typedef struct icu4x_CodePointMapData16_create_script_with_provider_mv1_result {union {CodePointMapData16* ok; DataError err;}; bool is_ok;} icu4x_CodePointMapData16_create_script_with_provider_mv1_result;

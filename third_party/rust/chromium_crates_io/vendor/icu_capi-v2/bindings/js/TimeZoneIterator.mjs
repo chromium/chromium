@@ -8,7 +8,7 @@ const TimeZoneIterator_box_destroy_registry = new FinalizationRegistry((ptr) => 
 });
 
 /**
- * See the [Rust documentation for `TimeZoneIter`](https://docs.rs/icu/2.2.0/icu/time/zone/iana/struct.TimeZoneIter.html) for more information.
+ * See the [Rust documentation for `TimeZoneIter`](https://docs.rs/icu/2.4.0/icu/time/zone/iana/struct.TimeZoneIter.html) for more information.
  */
 export class TimeZoneIterator {
     // Internal ptr reference:
@@ -42,7 +42,7 @@ export class TimeZoneIterator {
 
 
     /**
-     * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/time/zone/iana/struct.TimeZoneIter.html#method.next) for more information.
+     * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/time/zone/iana/struct.TimeZoneIter.html#method.next) for more information.
      */
     #iteratorNext() {
 

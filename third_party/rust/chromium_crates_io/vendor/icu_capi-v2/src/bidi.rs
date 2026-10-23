@@ -65,7 +65,7 @@ pub mod ffi {
             text: &'text DiplomatStr,
             default_level: Option<u8>,
         ) -> Option<Box<BidiInfo<'text>>> {
-            let text = core::str::from_utf8(text).ok()?;
+            let text = str::from_utf8(text).ok()?;
 
             Some(Box::new(BidiInfo(
                 unicode_bidi::BidiInfo::new_with_data_source(

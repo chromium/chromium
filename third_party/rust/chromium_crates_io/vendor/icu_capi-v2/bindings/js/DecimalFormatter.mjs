@@ -14,7 +14,7 @@ const DecimalFormatter_box_destroy_registry = new FinalizationRegistry((ptr) => 
 /**
  * An ICU4X Decimal Format object, capable of formatting a {@link Decimal} as a string.
  *
- * See the [Rust documentation for `DecimalFormatter`](https://docs.rs/icu/2.2.0/icu/decimal/struct.DecimalFormatter.html) for more information.
+ * See the [Rust documentation for `DecimalFormatter`](https://docs.rs/icu/2.4.0/icu/decimal/struct.DecimalFormatter.html) for more information.
  */
 export class DecimalFormatter {
     // Internal ptr reference:
@@ -48,7 +48,7 @@ export class DecimalFormatter {
     /**
      * Creates a new {@link DecimalFormatter}, using compiled data
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/decimal/struct.DecimalFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/decimal/struct.DecimalFormatter.html#method.try_new) for more information.
      */
     static createWithGroupingStrategy(locale, groupingStrategy) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -56,7 +56,7 @@ export class DecimalFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_DecimalFormatter_create_with_grouping_strategy_mv1(diplomatReceive.buffer, locale.ffiValue, diplomatRuntime.optionToBufferForCalling(wasm, groupingStrategy, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]));
+        const result = wasm.icu4x_DecimalFormatter_create_with_grouping_strategy_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), diplomatRuntime.optionToBufferForCalling(wasm, groupingStrategy, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DecimalGroupingStrategy(jsValue).ffiValue, Int32Array)]));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -77,7 +77,7 @@ export class DecimalFormatter {
     /**
      * Creates a new {@link DecimalFormatter}, using a particular data source.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/decimal/struct.DecimalFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/decimal/struct.DecimalFormatter.html#method.try_new) for more information.
      */
     static createWithGroupingStrategyAndProvider(provider, locale, groupingStrategy) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -85,7 +85,7 @@ export class DecimalFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_DecimalFormatter_create_with_grouping_strategy_and_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, diplomatRuntime.optionToBufferForCalling(wasm, groupingStrategy, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]));
+        const result = wasm.icu4x_DecimalFormatter_create_with_grouping_strategy_and_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), diplomatRuntime.optionToBufferForCalling(wasm, groupingStrategy, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DecimalGroupingStrategy(jsValue).ffiValue, Int32Array)]));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -106,7 +106,7 @@ export class DecimalFormatter {
     /**
      * Creates a new {@link DecimalFormatter} from preconstructed locale data.
      *
-     * See the [Rust documentation for `DecimalSymbolsV1`](https://docs.rs/icu/2.2.0/icu/decimal/provider/struct.DecimalSymbolsV1.html) for more information.
+     * See the [Rust documentation for `DecimalSymbolsV1`](https://docs.rs/icu/2.4.0/icu/decimal/provider/struct.DecimalSymbolsV1.html) for more information.
      */
     static createWithManualData(plusSignPrefix, plusSignSuffix, minusSignPrefix, minusSignSuffix, decimalSeparator, groupingSeparator, primaryGroupSize, secondaryGroupSize, minGroupSize, digits, groupingStrategy) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -121,7 +121,7 @@ export class DecimalFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_DecimalFormatter_create_with_manual_data_mv1(diplomatReceive.buffer, plusSignPrefixSlice.ptr, plusSignSuffixSlice.ptr, minusSignPrefixSlice.ptr, minusSignSuffixSlice.ptr, decimalSeparatorSlice.ptr, groupingSeparatorSlice.ptr, primaryGroupSize, secondaryGroupSize, minGroupSize, digitsSlice.ptr, diplomatRuntime.optionToBufferForCalling(wasm, groupingStrategy, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]));
+        const result = wasm.icu4x_DecimalFormatter_create_with_manual_data_mv1(diplomatReceive.buffer, plusSignPrefixSlice.ptr, plusSignSuffixSlice.ptr, minusSignPrefixSlice.ptr, minusSignSuffixSlice.ptr, decimalSeparatorSlice.ptr, groupingSeparatorSlice.ptr, primaryGroupSize, secondaryGroupSize, minGroupSize, digitsSlice.ptr, diplomatRuntime.optionToBufferForCalling(wasm, groupingStrategy, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DecimalGroupingStrategy(jsValue).ffiValue, Int32Array)]));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -142,12 +142,12 @@ export class DecimalFormatter {
     /**
      * Formats a {@link Decimal} to a string.
      *
-     * See the [Rust documentation for `format`](https://docs.rs/icu/2.2.0/icu/decimal/struct.DecimalFormatter.html#method.format) for more information.
+     * See the [Rust documentation for `format`](https://docs.rs/icu/2.4.0/icu/decimal/struct.DecimalFormatter.html#method.format) for more information.
      */
     format(value) {
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
-    wasm.icu4x_DecimalFormatter_format_mv1(this.ffiValue, value.ffiValue, write.buffer);
+    wasm.icu4x_DecimalFormatter_format_mv1(this.ffiValue, value instanceof Decimal ? value.ffiValue : typeError('value', 'Decimal'), write.buffer);
 
         try {
             return write.readString8();

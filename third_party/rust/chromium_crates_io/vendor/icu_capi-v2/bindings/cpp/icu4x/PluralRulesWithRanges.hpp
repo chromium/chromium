@@ -14,6 +14,7 @@
 #include "DataError.hpp"
 #include "DataProvider.hpp"
 #include "Locale.hpp"
+#include "PluralCategories.hpp"
 #include "PluralCategory.hpp"
 #include "PluralOperands.hpp"
 #include "diplomat_runtime.hpp"
@@ -36,6 +37,12 @@ namespace capi {
     icu4x_PluralRulesWithRanges_create_ordinal_with_provider_mv1_result icu4x_PluralRulesWithRanges_create_ordinal_with_provider_mv1(const icu4x::capi::DataProvider* provider, const icu4x::capi::Locale* locale);
 
     icu4x::capi::PluralCategory icu4x_PluralRulesWithRanges_category_for_range_mv1(const icu4x::capi::PluralRulesWithRanges* self, const icu4x::capi::PluralOperands* start, const icu4x::capi::PluralOperands* end);
+
+    icu4x::capi::PluralCategory icu4x_PluralRulesWithRanges_category_for_mv1(const icu4x::capi::PluralRulesWithRanges* self, const icu4x::capi::PluralOperands* op);
+
+    icu4x::capi::PluralCategories icu4x_PluralRulesWithRanges_categories_mv1(const icu4x::capi::PluralRulesWithRanges* self);
+
+    icu4x::capi::PluralCategory icu4x_PluralRulesWithRanges_resolve_range_mv1(const icu4x::capi::PluralRulesWithRanges* self, icu4x::capi::PluralCategory start, icu4x::capi::PluralCategory end);
 
     void icu4x_PluralRulesWithRanges_destroy_mv1(PluralRulesWithRanges* self);
 
@@ -67,6 +74,24 @@ inline icu4x::diplomat::result<std::unique_ptr<icu4x::PluralRulesWithRanges>, ic
 
 inline icu4x::PluralCategory icu4x::PluralRulesWithRanges::category_for_range(const icu4x::PluralOperands& start, const icu4x::PluralOperands& end) const {
     auto result = icu4x::capi::icu4x_PluralRulesWithRanges_category_for_range_mv1(this->AsFFI(),
+        start.AsFFI(),
+        end.AsFFI());
+    return icu4x::PluralCategory::FromFFI(result);
+}
+
+inline icu4x::PluralCategory icu4x::PluralRulesWithRanges::category_for(const icu4x::PluralOperands& op) const {
+    auto result = icu4x::capi::icu4x_PluralRulesWithRanges_category_for_mv1(this->AsFFI(),
+        op.AsFFI());
+    return icu4x::PluralCategory::FromFFI(result);
+}
+
+inline icu4x::PluralCategories icu4x::PluralRulesWithRanges::categories() const {
+    auto result = icu4x::capi::icu4x_PluralRulesWithRanges_categories_mv1(this->AsFFI());
+    return icu4x::PluralCategories::FromFFI(result);
+}
+
+inline icu4x::PluralCategory icu4x::PluralRulesWithRanges::resolve_range(icu4x::PluralCategory start, icu4x::PluralCategory end) const {
+    auto result = icu4x::capi::icu4x_PluralRulesWithRanges_resolve_range_mv1(this->AsFFI(),
         start.AsFFI(),
         end.AsFFI());
     return icu4x::PluralCategory::FromFFI(result);

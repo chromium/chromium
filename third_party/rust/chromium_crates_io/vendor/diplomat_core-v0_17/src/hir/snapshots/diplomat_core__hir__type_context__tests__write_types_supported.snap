@@ -1,0 +1,469 @@
+---
+source: core/src/hir/type_context.rs
+expression: tcx
+---
+TypeContext {
+    out_structs: [],
+    structs: [],
+    opaques: [
+        OpaqueDef {
+            docs: Docs {
+                lines: "",
+                rust_links: [],
+            },
+            name: Ident(
+                "Foo",
+                Some(
+                    Span {
+                        start: LineColumn {
+                            line: 1,
+                            col: 0,
+                        },
+                        end: LineColumn {
+                            line: 1,
+                            col: 0,
+                        },
+                        range: 0..0,
+                        span_location: None,
+                    },
+                ),
+            ),
+            methods: [
+                Method {
+                    docs: Docs {
+                        lines: "",
+                        rust_links: [],
+                    },
+                    name: Ident(
+                        "write_str",
+                        Some(
+                            Span {
+                                start: LineColumn {
+                                    line: 1,
+                                    col: 0,
+                                },
+                                end: LineColumn {
+                                    line: 1,
+                                    col: 0,
+                                },
+                                range: 0..0,
+                                span_location: None,
+                            },
+                        ),
+                    ),
+                    abi_name: "Foo_write_str",
+                    lifetime_env: LifetimeEnv {
+                        nodes: [],
+                        num_lifetimes: 1,
+                    },
+                    param_self: Some(
+                        ParamSelf {
+                            ty: Opaque(
+                                OpaquePath {
+                                    lifetimes: Lifetimes {
+                                        indices: [],
+                                    },
+                                    optional: NonOptional,
+                                    owner: Borrow {
+                                        lifetime: NonStatic(
+                                            Lifetime(
+                                                0,
+                                            ),
+                                        ),
+                                        mutability: Immutable,
+                                    },
+                                    tcx_id: OpaqueId(
+                                        0,
+                                    ),
+                                },
+                            ),
+                            attrs: Attrs {
+                                disable: false,
+                                unstable: false,
+                                deprecated: None,
+                                namespace: None,
+                                rename: RenameAttr {
+                                    pattern: None,
+                                },
+                                abi_rename: RenameAttr {
+                                    pattern: None,
+                                },
+                                special_method: None,
+                                custom_errors: false,
+                                default: false,
+                                demo_attrs: DemoInfo {
+                                    generate: false,
+                                    default_constructor: false,
+                                    external: false,
+                                    custom_func: None,
+                                    input_cfg: DemoInputCFG {
+                                        label: "",
+                                        default_value: "",
+                                    },
+                                },
+                                generate_mocking_interface: false,
+                                manually_disposable: false,
+                                abi_compatible: false,
+                                ffi_error: false,
+                                mut_struct_ref: false,
+                                tuple: false,
+                                precondition_violation: false,
+                                custom_extra_code: {},
+                                default_value: None,
+                            },
+                        },
+                    ),
+                    params: [],
+                    output: Infallible(
+                        Write(
+                            Str,
+                        ),
+                    ),
+                    attrs: Attrs {
+                        disable: false,
+                        unstable: false,
+                        deprecated: None,
+                        namespace: None,
+                        rename: RenameAttr {
+                            pattern: None,
+                        },
+                        abi_rename: RenameAttr {
+                            pattern: None,
+                        },
+                        special_method: None,
+                        custom_errors: false,
+                        default: false,
+                        demo_attrs: DemoInfo {
+                            generate: false,
+                            default_constructor: false,
+                            external: false,
+                            custom_func: None,
+                            input_cfg: DemoInputCFG {
+                                label: "",
+                                default_value: "",
+                            },
+                        },
+                        generate_mocking_interface: false,
+                        manually_disposable: false,
+                        abi_compatible: false,
+                        ffi_error: false,
+                        mut_struct_ref: false,
+                        tuple: false,
+                        precondition_violation: false,
+                        custom_extra_code: {},
+                        default_value: None,
+                    },
+                },
+                Method {
+                    docs: Docs {
+                        lines: "",
+                        rust_links: [],
+                    },
+                    name: Ident(
+                        "write_str16",
+                        Some(
+                            Span {
+                                start: LineColumn {
+                                    line: 1,
+                                    col: 0,
+                                },
+                                end: LineColumn {
+                                    line: 1,
+                                    col: 0,
+                                },
+                                range: 0..0,
+                                span_location: None,
+                            },
+                        ),
+                    ),
+                    abi_name: "Foo_write_str16",
+                    lifetime_env: LifetimeEnv {
+                        nodes: [],
+                        num_lifetimes: 1,
+                    },
+                    param_self: Some(
+                        ParamSelf {
+                            ty: Opaque(
+                                OpaquePath {
+                                    lifetimes: Lifetimes {
+                                        indices: [],
+                                    },
+                                    optional: NonOptional,
+                                    owner: Borrow {
+                                        lifetime: NonStatic(
+                                            Lifetime(
+                                                0,
+                                            ),
+                                        ),
+                                        mutability: Immutable,
+                                    },
+                                    tcx_id: OpaqueId(
+                                        0,
+                                    ),
+                                },
+                            ),
+                            attrs: Attrs {
+                                disable: false,
+                                unstable: false,
+                                deprecated: None,
+                                namespace: None,
+                                rename: RenameAttr {
+                                    pattern: None,
+                                },
+                                abi_rename: RenameAttr {
+                                    pattern: None,
+                                },
+                                special_method: None,
+                                custom_errors: false,
+                                default: false,
+                                demo_attrs: DemoInfo {
+                                    generate: false,
+                                    default_constructor: false,
+                                    external: false,
+                                    custom_func: None,
+                                    input_cfg: DemoInputCFG {
+                                        label: "",
+                                        default_value: "",
+                                    },
+                                },
+                                generate_mocking_interface: false,
+                                manually_disposable: false,
+                                abi_compatible: false,
+                                ffi_error: false,
+                                mut_struct_ref: false,
+                                tuple: false,
+                                precondition_violation: false,
+                                custom_extra_code: {},
+                                default_value: None,
+                            },
+                        },
+                    ),
+                    params: [],
+                    output: Infallible(
+                        Write(
+                            Str16,
+                        ),
+                    ),
+                    attrs: Attrs {
+                        disable: false,
+                        unstable: false,
+                        deprecated: None,
+                        namespace: None,
+                        rename: RenameAttr {
+                            pattern: None,
+                        },
+                        abi_rename: RenameAttr {
+                            pattern: None,
+                        },
+                        special_method: Some(
+                            Stringifier,
+                        ),
+                        custom_errors: false,
+                        default: false,
+                        demo_attrs: DemoInfo {
+                            generate: false,
+                            default_constructor: false,
+                            external: false,
+                            custom_func: None,
+                            input_cfg: DemoInputCFG {
+                                label: "",
+                                default_value: "",
+                            },
+                        },
+                        generate_mocking_interface: false,
+                        manually_disposable: false,
+                        abi_compatible: false,
+                        ffi_error: false,
+                        mut_struct_ref: false,
+                        tuple: false,
+                        precondition_violation: false,
+                        custom_extra_code: {},
+                        default_value: None,
+                    },
+                },
+                Method {
+                    docs: Docs {
+                        lines: "",
+                        rust_links: [],
+                    },
+                    name: Ident(
+                        "write_generic",
+                        Some(
+                            Span {
+                                start: LineColumn {
+                                    line: 1,
+                                    col: 0,
+                                },
+                                end: LineColumn {
+                                    line: 1,
+                                    col: 0,
+                                },
+                                range: 0..0,
+                                span_location: None,
+                            },
+                        ),
+                    ),
+                    abi_name: "Foo_write_generic",
+                    lifetime_env: LifetimeEnv {
+                        nodes: [],
+                        num_lifetimes: 1,
+                    },
+                    param_self: Some(
+                        ParamSelf {
+                            ty: Opaque(
+                                OpaquePath {
+                                    lifetimes: Lifetimes {
+                                        indices: [],
+                                    },
+                                    optional: NonOptional,
+                                    owner: Borrow {
+                                        lifetime: NonStatic(
+                                            Lifetime(
+                                                0,
+                                            ),
+                                        ),
+                                        mutability: Immutable,
+                                    },
+                                    tcx_id: OpaqueId(
+                                        0,
+                                    ),
+                                },
+                            ),
+                            attrs: Attrs {
+                                disable: false,
+                                unstable: false,
+                                deprecated: None,
+                                namespace: None,
+                                rename: RenameAttr {
+                                    pattern: None,
+                                },
+                                abi_rename: RenameAttr {
+                                    pattern: None,
+                                },
+                                special_method: None,
+                                custom_errors: false,
+                                default: false,
+                                demo_attrs: DemoInfo {
+                                    generate: false,
+                                    default_constructor: false,
+                                    external: false,
+                                    custom_func: None,
+                                    input_cfg: DemoInputCFG {
+                                        label: "",
+                                        default_value: "",
+                                    },
+                                },
+                                generate_mocking_interface: false,
+                                manually_disposable: false,
+                                abi_compatible: false,
+                                ffi_error: false,
+                                mut_struct_ref: false,
+                                tuple: false,
+                                precondition_violation: false,
+                                custom_extra_code: {},
+                                default_value: None,
+                            },
+                        },
+                    ),
+                    params: [],
+                    output: Infallible(
+                        Write(
+                            Primitive(
+                                Int(
+                                    U32,
+                                ),
+                            ),
+                        ),
+                    ),
+                    attrs: Attrs {
+                        disable: false,
+                        unstable: false,
+                        deprecated: None,
+                        namespace: None,
+                        rename: RenameAttr {
+                            pattern: None,
+                        },
+                        abi_rename: RenameAttr {
+                            pattern: None,
+                        },
+                        special_method: None,
+                        custom_errors: false,
+                        default: false,
+                        demo_attrs: DemoInfo {
+                            generate: false,
+                            default_constructor: false,
+                            external: false,
+                            custom_func: None,
+                            input_cfg: DemoInputCFG {
+                                label: "",
+                                default_value: "",
+                            },
+                        },
+                        generate_mocking_interface: false,
+                        manually_disposable: false,
+                        abi_compatible: false,
+                        ffi_error: false,
+                        mut_struct_ref: false,
+                        tuple: false,
+                        precondition_violation: false,
+                        custom_extra_code: {},
+                        default_value: None,
+                    },
+                },
+            ],
+            attrs: Attrs {
+                disable: false,
+                unstable: false,
+                deprecated: None,
+                namespace: None,
+                rename: RenameAttr {
+                    pattern: None,
+                },
+                abi_rename: RenameAttr {
+                    pattern: None,
+                },
+                special_method: None,
+                custom_errors: false,
+                default: false,
+                demo_attrs: DemoInfo {
+                    generate: false,
+                    default_constructor: false,
+                    external: false,
+                    custom_func: None,
+                    input_cfg: DemoInputCFG {
+                        label: "",
+                        default_value: "",
+                    },
+                },
+                generate_mocking_interface: false,
+                manually_disposable: false,
+                abi_compatible: false,
+                ffi_error: false,
+                mut_struct_ref: false,
+                tuple: false,
+                precondition_violation: false,
+                custom_extra_code: {},
+                default_value: None,
+            },
+            lifetimes: LifetimeEnv {
+                nodes: [],
+                num_lifetimes: 0,
+            },
+            special_method_presence: SpecialMethodPresence {
+                comparator: false,
+                optional_comparator: false,
+                iterator: None,
+                iterable: None,
+            },
+            dtor_abi_name: "Foo_destroy",
+            usage: TypingUseInfo {
+                sliced: false,
+                optioned: false,
+                results: [],
+            },
+        },
+    ],
+    enums: [],
+    traits: [],
+    functions: [],
+}

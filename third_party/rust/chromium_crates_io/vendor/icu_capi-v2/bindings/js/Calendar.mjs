@@ -10,7 +10,7 @@ const Calendar_box_destroy_registry = new FinalizationRegistry((ptr) => {
 });
 
 /**
- * See the [Rust documentation for `AnyCalendar`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendar.html) for more information.
+ * See the [Rust documentation for `AnyCalendar`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendar.html) for more information.
  */
 export class Calendar {
     // Internal ptr reference:
@@ -44,11 +44,11 @@ export class Calendar {
     /**
      * Creates a new {@link Calendar} for the specified kind, using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendar.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendar.html#method.new) for more information.
      */
     #defaultConstructor(kind) {
 
-        const result = wasm.icu4x_Calendar_create_mv1(kind.ffiValue);
+        const result = wasm.icu4x_Calendar_create_mv1(new CalendarKind(kind).ffiValue);
 
         try {
             return new Calendar(diplomatRuntime.internalConstructor, result, []);
@@ -62,13 +62,13 @@ export class Calendar {
     /**
      * Creates a new {@link Calendar} for the specified kind, using a particular data source.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendar.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendar.html#method.new) for more information.
      */
     static createWithProvider(provider, kind) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_Calendar_create_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, kind.ffiValue);
+        const result = wasm.icu4x_Calendar_create_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), new CalendarKind(kind).ffiValue);
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -87,7 +87,7 @@ export class Calendar {
     /**
      * Returns the kind of this calendar
      *
-     * See the [Rust documentation for `kind`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendar.html#method.kind) for more information.
+     * See the [Rust documentation for `kind`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendar.html#method.kind) for more information.
      */
     get kind() {
 
@@ -105,7 +105,7 @@ export class Calendar {
     /**
      * Creates a new {@link Calendar} for the specified kind, using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendar.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendar.html#method.new) for more information.
      */
     constructor(kind) {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

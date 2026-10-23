@@ -4,9 +4,9 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * 🚧 This API is unstable and may experience breaking changes outside major releases.
+ * See the [Rust documentation for `LanguageDisplay`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/enum.LanguageDisplay.html) for more information.
  *
- * See the [Rust documentation for `LanguageDisplay`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/enum.LanguageDisplay.html) for more information.
+ * @experimental
  */
 export class LanguageDisplay {
 

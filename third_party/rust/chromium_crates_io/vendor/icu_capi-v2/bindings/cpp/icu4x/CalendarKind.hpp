@@ -47,6 +47,7 @@ inline icu4x::CalendarKind icu4x::CalendarKind::FromFFI(icu4x::capi::CalendarKin
         case icu4x::capi::CalendarKind_HijriSimulatedMecca:
         case icu4x::capi::CalendarKind_HijriTabularTypeIIThursday:
         case icu4x::capi::CalendarKind_HijriUmmAlQura:
+        case icu4x::capi::CalendarKind_Julian:
         case icu4x::capi::CalendarKind_Persian:
         case icu4x::capi::CalendarKind_Roc:
             return static_cast<icu4x::CalendarKind::Value>(c_enum);

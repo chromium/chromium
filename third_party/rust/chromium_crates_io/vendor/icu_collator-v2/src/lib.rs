@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `icu_collator-2.2.1` crate.
+// `icu_collator-2.4.0` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.

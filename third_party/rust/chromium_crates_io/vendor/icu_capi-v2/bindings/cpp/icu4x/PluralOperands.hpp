@@ -27,6 +27,8 @@ namespace capi {
 
     icu4x::capi::PluralOperands* icu4x_PluralOperands_from_fixed_decimal_mv1(const icu4x::capi::Decimal* x);
 
+    icu4x::capi::PluralOperands* icu4x_PluralOperands_from_significand_and_exponent_mv1(const icu4x::capi::Decimal* significand, uint8_t exponent);
+
     void icu4x_PluralOperands_destroy_mv1(PluralOperands* self);
 
     } // extern "C"
@@ -45,6 +47,12 @@ inline std::unique_ptr<icu4x::PluralOperands> icu4x::PluralOperands::from(int64_
 
 inline std::unique_ptr<icu4x::PluralOperands> icu4x::PluralOperands::from_fixed_decimal(const icu4x::Decimal& x) {
     auto result = icu4x::capi::icu4x_PluralOperands_from_fixed_decimal_mv1(x.AsFFI());
+    return std::unique_ptr<icu4x::PluralOperands>(icu4x::PluralOperands::FromFFI(result));
+}
+
+inline std::unique_ptr<icu4x::PluralOperands> icu4x::PluralOperands::from_significand_and_exponent(const icu4x::Decimal& significand, uint8_t exponent) {
+    auto result = icu4x::capi::icu4x_PluralOperands_from_significand_and_exponent_mv1(significand.AsFFI(),
+        exponent);
     return std::unique_ptr<icu4x::PluralOperands>(icu4x::PluralOperands::FromFFI(result));
 }
 

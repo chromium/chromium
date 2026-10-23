@@ -8,7 +8,7 @@ pub mod ffi {
     use alloc::boxed::Box;
     use diplomat_runtime::{DiplomatStr16Slice, DiplomatStrSlice};
     #[cfg(any(feature = "compiled_data", feature = "buffer_provider"))]
-    use icu_list::{options::ListFormatterOptions, ListFormatterPreferences};
+    use icu_list::{ListFormatterPreferences, options::ListFormatterOptions};
 
     #[cfg(feature = "buffer_provider")]
     use crate::unstable::provider::ffi::DataProvider;

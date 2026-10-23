@@ -118,6 +118,16 @@ typedef enum JoiningGroup {
   JoiningGroup_VerticalTail = 103,
   JoiningGroup_KashmiriYeh = 104,
   JoiningGroup_ThinNoon = 105,
+  JoiningGroup_CrownAin = 106,
+  JoiningGroup_CrownBeh = 107,
+  JoiningGroup_CrownFeh = 108,
+  JoiningGroup_CrownHah = 109,
+  JoiningGroup_CrownHeh = 110,
+  JoiningGroup_CrownKaf = 111,
+  JoiningGroup_CrownMeem = 112,
+  JoiningGroup_CrownSad = 113,
+  JoiningGroup_CrownSeen = 114,
+  JoiningGroup_CrownTah = 115,
 } JoiningGroup;
 
 typedef struct JoiningGroup_option {union { JoiningGroup ok; }; bool is_ok; } JoiningGroup_option;

@@ -132,19 +132,19 @@ inline icu4x::diplomat::result<std::unique_ptr<icu4x::WordSegmenter>, icu4x::Dat
     return result.is_ok ? icu4x::diplomat::result<std::unique_ptr<icu4x::WordSegmenter>, icu4x::DataError>(icu4x::diplomat::Ok<std::unique_ptr<icu4x::WordSegmenter>>(std::unique_ptr<icu4x::WordSegmenter>(icu4x::WordSegmenter::FromFFI(result.ok)))) : icu4x::diplomat::result<std::unique_ptr<icu4x::WordSegmenter>, icu4x::DataError>(icu4x::diplomat::Err<icu4x::DataError>(icu4x::DataError::FromFFI(result.err)));
 }
 
-inline std::unique_ptr<icu4x::WordBreakIteratorUtf8> icu4x::WordSegmenter::segment(std::string_view input) const {
+inline std::unique_ptr<icu4x::WordBreakIteratorUtf8> icu4x::WordSegmenter::segment(std::string_view input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_WordSegmenter_segment_utf8_mv1(this->AsFFI(),
         {input.data(), input.size()});
     return std::unique_ptr<icu4x::WordBreakIteratorUtf8>(icu4x::WordBreakIteratorUtf8::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::WordBreakIteratorUtf16> icu4x::WordSegmenter::segment16(std::u16string_view input) const {
+inline std::unique_ptr<icu4x::WordBreakIteratorUtf16> icu4x::WordSegmenter::segment16(std::u16string_view input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_WordSegmenter_segment_utf16_mv1(this->AsFFI(),
         {input.data(), input.size()});
     return std::unique_ptr<icu4x::WordBreakIteratorUtf16>(icu4x::WordBreakIteratorUtf16::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::WordBreakIteratorLatin1> icu4x::WordSegmenter::segment_latin1(icu4x::diplomat::span<const uint8_t> input) const {
+inline std::unique_ptr<icu4x::WordBreakIteratorLatin1> icu4x::WordSegmenter::segment_latin1(icu4x::diplomat::span<const uint8_t> input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_WordSegmenter_segment_latin1_mv1(this->AsFFI(),
         {input.data(), input.size()});
     return std::unique_ptr<icu4x::WordBreakIteratorLatin1>(icu4x::WordBreakIteratorLatin1::FromFFI(result));

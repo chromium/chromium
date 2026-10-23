@@ -37,7 +37,7 @@ namespace icu4x {
  * An ICU4X grapheme-cluster-break segmenter, capable of finding grapheme cluster breakpoints
  * in strings.
  *
- * See the [Rust documentation for `GraphemeClusterSegmenter`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.GraphemeClusterSegmenter.html) for more information.
+ * See the [Rust documentation for `GraphemeClusterSegmenter`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.GraphemeClusterSegmenter.html) for more information.
  */
 class GraphemeClusterSegmenter {
 public:
@@ -45,14 +45,14 @@ public:
   /**
    * Construct an {@link GraphemeClusterSegmenter} using compiled data.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.GraphemeClusterSegmenter.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.GraphemeClusterSegmenter.html#method.new) for more information.
    */
   inline static std::unique_ptr<icu4x::GraphemeClusterSegmenter> create();
 
   /**
    * Construct an {@link GraphemeClusterSegmenter}.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.GraphemeClusterSegmenter.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.GraphemeClusterSegmenter.html#method.new) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::GraphemeClusterSegmenter>, icu4x::DataError> create_with_provider(const icu4x::DataProvider& provider);
 
@@ -62,9 +62,9 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `segment_utf8`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.GraphemeClusterSegmenterBorrowed.html#method.segment_utf8) for more information.
+   * See the [Rust documentation for `segment_utf8`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.GraphemeClusterSegmenterBorrowed.html#method.segment_utf8) for more information.
    */
-  inline std::unique_ptr<icu4x::GraphemeClusterBreakIteratorUtf8> segment(std::string_view input) const;
+  inline std::unique_ptr<icu4x::GraphemeClusterBreakIteratorUtf8> segment(std::string_view input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND;
 
   /**
    * Segments a string.
@@ -72,16 +72,16 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.GraphemeClusterSegmenterBorrowed.html#method.segment_utf16) for more information.
+   * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.GraphemeClusterSegmenterBorrowed.html#method.segment_utf16) for more information.
    */
-  inline std::unique_ptr<icu4x::GraphemeClusterBreakIteratorUtf16> segment16(std::u16string_view input) const;
+  inline std::unique_ptr<icu4x::GraphemeClusterBreakIteratorUtf16> segment16(std::u16string_view input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND;
 
   /**
    * Segments a Latin-1 string.
    *
-   * See the [Rust documentation for `segment_latin1`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.GraphemeClusterSegmenterBorrowed.html#method.segment_latin1) for more information.
+   * See the [Rust documentation for `segment_latin1`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.GraphemeClusterSegmenterBorrowed.html#method.segment_latin1) for more information.
    */
-  inline std::unique_ptr<icu4x::GraphemeClusterBreakIteratorLatin1> segment_latin1(icu4x::diplomat::span<const uint8_t> input) const;
+  inline std::unique_ptr<icu4x::GraphemeClusterBreakIteratorLatin1> segment_latin1(icu4x::diplomat::span<const uint8_t> input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND;
 
     inline const icu4x::capi::GraphemeClusterSegmenter* AsFFI() const;
     inline icu4x::capi::GraphemeClusterSegmenter* AsFFI();

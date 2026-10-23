@@ -12,7 +12,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
  * This mapper supports two-way mapping, but it is optimized for the case of Windows to BCP-47.
  * It also supports normalizing and canonicalizing the Windows strings.
  *
- * See the [Rust documentation for `WindowsParser`](https://docs.rs/icu/2.2.0/icu/time/zone/windows/struct.WindowsParser.html) for more information.
+ * See the [Rust documentation for `WindowsParser`](https://docs.rs/icu/2.4.0/icu/time/zone/windows/struct.WindowsParser.html) for more information.
  */
 export class WindowsParser {
     /** @internal */
@@ -22,19 +22,19 @@ export class WindowsParser {
     /**
      * Create a new {@link WindowsParser} using a particular data source
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/time/zone/windows/struct.WindowsParser.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/time/zone/windows/struct.WindowsParser.html#method.new) for more information.
      */
     static createWithProvider(provider: DataProvider): WindowsParser;
 
     /**
-     * See the [Rust documentation for `parse`](https://docs.rs/icu/2.2.0/icu/time/zone/windows/struct.WindowsParserBorrowed.html#method.parse) for more information.
+     * See the [Rust documentation for `parse`](https://docs.rs/icu/2.4.0/icu/time/zone/windows/struct.WindowsParserBorrowed.html#method.parse) for more information.
      */
     parse(value: string, region: string): TimeZone | null;
 
     /**
      * Create a new {@link WindowsParser} using compiled data
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/time/zone/windows/struct.WindowsParser.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/time/zone/windows/struct.WindowsParser.html#method.new) for more information.
      */
     constructor();
 }

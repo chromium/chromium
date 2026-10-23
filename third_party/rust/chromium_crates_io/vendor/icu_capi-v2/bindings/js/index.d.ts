@@ -88,9 +88,17 @@ export { DateFormatter } from "./DateFormatter"
 
 export { DateFormatterGregorian } from "./DateFormatterGregorian"
 
+export { DateRangeFormatter } from "./DateRangeFormatter"
+
+export { DateRangeFormatterGregorian } from "./DateRangeFormatterGregorian"
+
 export { DateTimeFormatter } from "./DateTimeFormatter"
 
 export { DateTimeFormatterGregorian } from "./DateTimeFormatterGregorian"
+
+export { DateTimeRangeFormatter } from "./DateTimeRangeFormatter"
+
+export { DateTimeRangeFormatterGregorian } from "./DateTimeRangeFormatterGregorian"
 
 export { DecimalFormatter } from "./DecimalFormatter"
 
@@ -127,6 +135,8 @@ export { LocaleExpander } from "./LocaleExpander"
 export { Locale } from "./Locale"
 
 export { LocaleDirectionality } from "./LocaleDirectionality"
+
+export { LocaleNamesUnstable } from "./LocaleNamesUnstable"
 
 export { Logger } from "./Logger"
 
@@ -203,6 +213,8 @@ export { WordSegmenter } from "./WordSegmenter"
 export { Time } from "./Time"
 
 export { TimeFormatter } from "./TimeFormatter"
+
+export { TimeRangeFormatter } from "./TimeRangeFormatter"
 
 export { TimeZone } from "./TimeZone"
 
@@ -310,11 +322,15 @@ export { TransformResult } from "./TransformResult"
 
 export { LocaleDirection } from "./LocaleDirection"
 
+export { LanguageDisplayUnstable } from "./LanguageDisplayUnstable"
+
 export { PluralCategory } from "./PluralCategory"
 
 export { BidiPairedBracketType } from "./BidiPairedBracketType"
 
 export { BidiClass } from "./BidiClass"
+
+export { Block } from "./Block"
 
 export { CanonicalCombiningClass } from "./CanonicalCombiningClass"
 

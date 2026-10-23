@@ -19,6 +19,7 @@ include!("property_enum_general_category_v1.rs.data");
 include!("property_name_long_grapheme_cluster_break_v1.rs.data");
 include!("property_binary_emoji_presentation_v1.rs.data");
 include!("property_binary_case_sensitive_v1.rs.data");
+include!("property_name_long_block_v1.rs.data");
 include!("property_name_short_bidi_class_v1.rs.data");
 include!("property_binary_nfd_inert_v1.rs.data");
 include!("property_binary_graph_v1.rs.data");
@@ -49,6 +50,7 @@ include!("property_binary_changes_when_casefolded_v1.rs.data");
 include!("property_name_parse_hangul_syllable_type_v1.rs.data");
 include!("property_enum_sentence_break_v1.rs.data");
 include!("property_binary_quotation_mark_v1.rs.data");
+include!("property_enum_block_v1.rs.data");
 include!("property_binary_deprecated_v1.rs.data");
 include!("property_binary_xid_start_v1.rs.data");
 include!("property_binary_segment_starter_v1.rs.data");
@@ -68,6 +70,7 @@ include!("property_binary_print_v1.rs.data");
 include!("property_enum_canonical_combining_class_v1.rs.data");
 include!("property_binary_terminal_punctuation_v1.rs.data");
 include!("property_enum_vertical_orientation_v1.rs.data");
+include!("property_name_short_block_v1.rs.data");
 include!("property_binary_cased_v1.rs.data");
 include!("property_name_parse_numeric_type_v1.rs.data");
 include!("property_binary_nfkc_inert_v1.rs.data");
@@ -99,6 +102,7 @@ include!("property_enum_line_break_v1.rs.data");
 include!("property_enum_east_asian_width_v1.rs.data");
 include!("property_name_parse_grapheme_cluster_break_v1.rs.data");
 include!("property_name_parse_indic_conjunct_break_v1.rs.data");
+include!("property_name_parse_block_v1.rs.data");
 include!("property_name_parse_general_category_v1.rs.data");
 include!("property_binary_logical_order_exception_v1.rs.data");
 include!("property_binary_case_ignorable_v1.rs.data");
@@ -151,7 +155,7 @@ include!("property_name_parse_canonical_combining_class_v1.rs.data");
 #[macro_export]
 macro_rules! __make_provider {
     ($ name : ty) => {
-        #[clippy::msrv = "1.86"]
+        #[clippy::msrv = "1.88"]
         impl $name {
             #[allow(dead_code)]
             pub(crate) const MUST_USE_MAKE_PROVIDER_MACRO: () = ();
@@ -190,6 +194,7 @@ macro_rules! impl_data_provider {
         impl_property_name_long_grapheme_cluster_break_v1!($provider);
         impl_property_binary_emoji_presentation_v1!($provider);
         impl_property_binary_case_sensitive_v1!($provider);
+        impl_property_name_long_block_v1!($provider);
         impl_property_name_short_bidi_class_v1!($provider);
         impl_property_binary_nfd_inert_v1!($provider);
         impl_property_binary_graph_v1!($provider);
@@ -220,6 +225,7 @@ macro_rules! impl_data_provider {
         impl_property_name_parse_hangul_syllable_type_v1!($provider);
         impl_property_enum_sentence_break_v1!($provider);
         impl_property_binary_quotation_mark_v1!($provider);
+        impl_property_enum_block_v1!($provider);
         impl_property_binary_deprecated_v1!($provider);
         impl_property_binary_xid_start_v1!($provider);
         impl_property_binary_segment_starter_v1!($provider);
@@ -239,6 +245,7 @@ macro_rules! impl_data_provider {
         impl_property_enum_canonical_combining_class_v1!($provider);
         impl_property_binary_terminal_punctuation_v1!($provider);
         impl_property_enum_vertical_orientation_v1!($provider);
+        impl_property_name_short_block_v1!($provider);
         impl_property_binary_cased_v1!($provider);
         impl_property_name_parse_numeric_type_v1!($provider);
         impl_property_binary_nfkc_inert_v1!($provider);
@@ -270,6 +277,7 @@ macro_rules! impl_data_provider {
         impl_property_enum_east_asian_width_v1!($provider);
         impl_property_name_parse_grapheme_cluster_break_v1!($provider);
         impl_property_name_parse_indic_conjunct_break_v1!($provider);
+        impl_property_name_parse_block_v1!($provider);
         impl_property_name_parse_general_category_v1!($provider);
         impl_property_binary_logical_order_exception_v1!($provider);
         impl_property_binary_case_ignorable_v1!($provider);

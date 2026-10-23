@@ -8,7 +8,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 /**
  * The various calendar types currently supported by {@link Calendar}
  *
- * See the [Rust documentation for `AnyCalendarKind`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendarKind.html) for more information.
+ * See the [Rust documentation for `AnyCalendarKind`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendarKind.html) for more information.
  */
 export class CalendarKind {
     #value = undefined;
@@ -30,6 +30,7 @@ export class CalendarKind {
         ["HijriSimulatedMecca", 18],
         ["HijriTabularTypeIiThursday", 14],
         ["HijriUmmAlQura", 15],
+        ["Julian", 19],
         ["Persian", 16],
         ["Roc", 17]
     ]);
@@ -97,6 +98,7 @@ export class CalendarKind {
         [18]: new CalendarKind(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 18),
         [14]: new CalendarKind(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 14),
         [15]: new CalendarKind(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 15),
+        [19]: new CalendarKind(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 19),
         [16]: new CalendarKind(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 16),
         [17]: new CalendarKind(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 17),
     };
@@ -168,6 +170,10 @@ export class CalendarKind {
      */
     static HijriUmmAlQura = CalendarKind.#objectValues[15];
     /**
+     * The kind of a Julian calendar,
+     */
+    static Julian = CalendarKind.#objectValues[19];
+    /**
      * The kind of a Persian calendar
      */
     static Persian = CalendarKind.#objectValues[16];
@@ -180,11 +186,11 @@ export class CalendarKind {
     /**
      * Creates a new {@link CalendarKind} for the specified locale, using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendarKind.html#method.new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendarKind.html#method.try_new) for more information.
      */
     static create(locale) {
 
-        const result = wasm.icu4x_CalendarKind_create_mv1(locale.ffiValue);
+        const result = wasm.icu4x_CalendarKind_create_mv1(locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'));
 
         try {
             return new CalendarKind(diplomatRuntime.internalConstructor, result);

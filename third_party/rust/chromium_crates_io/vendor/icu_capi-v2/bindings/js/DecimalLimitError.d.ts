@@ -4,7 +4,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * Additional information: [1](https://docs.rs/fixed_decimal/0.7.2/fixed_decimal/struct.LimitError.html)
+ * Additional information: [1](https://docs.rs/fixed_decimal/0.7.3/fixed_decimal/struct.LimitError.html)
  */
 export class DecimalLimitError {
 

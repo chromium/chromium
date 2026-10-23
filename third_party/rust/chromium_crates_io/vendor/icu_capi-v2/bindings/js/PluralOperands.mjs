@@ -9,7 +9,7 @@ const PluralOperands_box_destroy_registry = new FinalizationRegistry((ptr) => {
 });
 
 /**
- * See the [Rust documentation for `PluralOperands`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralOperands.html) for more information.
+ * See the [Rust documentation for `PluralOperands`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralOperands.html) for more information.
  */
 export class PluralOperands {
     // Internal ptr reference:
@@ -43,7 +43,7 @@ export class PluralOperands {
     /**
      * Construct for a given string representing a number
      *
-     * See the [Rust documentation for `from_str`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralOperands.html#method.from_str) for more information.
+     * See the [Rust documentation for `from_str`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralOperands.html#method.from_str) for more information.
      */
     static fromString(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -93,7 +93,27 @@ export class PluralOperands {
      */
     static fromFixedDecimal(x) {
 
-        const result = wasm.icu4x_PluralOperands_from_fixed_decimal_mv1(x.ffiValue);
+        const result = wasm.icu4x_PluralOperands_from_fixed_decimal_mv1(x instanceof Decimal ? x.ffiValue : typeError('x', 'Decimal'));
+
+        try {
+            return new PluralOperands(diplomatRuntime.internalConstructor, result, []);
+        }
+
+        finally {
+            diplomatRuntime.FUNCTION_PARAM_ALLOC.clean();
+        }
+    }
+
+    /**
+     * Construct from a `FixedDecimal` significand and a compact/scientific exponent.
+     *
+     * Retains at most 18 digits each from the integer and fraction parts.
+     *
+     * @experimental
+     */
+    static fromSignificandAndExponent(significand, exponent) {
+
+        const result = wasm.icu4x_PluralOperands_from_significand_and_exponent_mv1(significand instanceof Decimal ? significand.ffiValue : typeError('significand', 'Decimal'), exponent);
 
         try {
             return new PluralOperands(diplomatRuntime.internalConstructor, result, []);

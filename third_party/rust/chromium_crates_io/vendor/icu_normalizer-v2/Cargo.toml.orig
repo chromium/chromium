@@ -40,8 +40,6 @@ serde = { workspace = true, features = ["derive", "alloc"], optional = true }
 icu_normalizer_data = { workspace = true, optional = true }
 
 [dev-dependencies]
-arraystring = { workspace = true }
-arrayvec = { workspace = true }
 atoi = { workspace = true }
 detone = { workspace = true }
 icu = { path = "../../components/icu", default-features = false }

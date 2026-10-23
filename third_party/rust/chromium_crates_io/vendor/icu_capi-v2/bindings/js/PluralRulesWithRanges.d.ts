@@ -2,6 +2,7 @@
 import type { DataError } from "./DataError"
 import type { DataProvider } from "./DataProvider"
 import type { Locale } from "./Locale"
+import type { PluralCategories } from "./PluralCategories"
 import type { PluralCategory } from "./PluralCategory"
 import type { PluralOperands } from "./PluralOperands"
 import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
@@ -9,7 +10,9 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `PluralRulesWithRanges`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRulesWithRanges.html) for more information.
+ * See the [Rust documentation for `PluralRulesWithRanges`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html) for more information.
+ *
+ * @experimental
  */
 export class PluralRulesWithRanges {
     /** @internal */
@@ -21,35 +24,72 @@ export class PluralRulesWithRanges {
     /**
      * construct a {@link PluralRulesWithRanges} for the given locale, for cardinal numbers, using compiled data.
      *
-     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_cardinal) for more information.
+     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_cardinal) for more information.
+     *
+     * @experimental
      */
     static createCardinal(locale: Locale): PluralRulesWithRanges;
 
     /**
      * construct a {@link PluralRulesWithRanges} for the given locale, for cardinal numbers, using a particular data source.
      *
-     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_cardinal) for more information.
+     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_cardinal) for more information.
+     *
+     * @experimental
      */
     static createCardinalWithProvider(provider: DataProvider, locale: Locale): PluralRulesWithRanges;
 
     /**
      * Construct a {@link PluralRulesWithRanges} for the given locale, for ordinal numbers, using compiled data.
      *
-     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_ordinal) for more information.
+     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_ordinal) for more information.
+     *
+     * @experimental
      */
     static createOrdinal(locale: Locale): PluralRulesWithRanges;
 
     /**
      * Construct a {@link PluralRulesWithRanges} for the given locale, for ordinal numbers, using a particular data source.
      *
-     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_ordinal) for more information.
+     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html#method.try_new_ordinal) for more information.
+     *
+     * @experimental
      */
     static createOrdinalWithProvider(provider: DataProvider, locale: Locale): PluralRulesWithRanges;
 
     /**
      * Get the category for a given number represented as operands
      *
-     * See the [Rust documentation for `category_for_range`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRulesWithRanges.html#method.category_for_range) for more information.
+     * See the [Rust documentation for `category_for_range`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html#method.category_for_range) for more information.
+     *
+     * @experimental
      */
     categoryForRange(start: PluralOperands, end: PluralOperands): PluralCategory;
+
+    /**
+     * Get the category for a given number represented as operands
+     *
+     * See the [Rust documentation for `category_for`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.category_for) for more information.
+     *
+     * @experimental
+     */
+    categoryFor(op: PluralOperands): PluralCategory;
+
+    /**
+     * Get all of the categories needed in the current locale
+     *
+     * See the [Rust documentation for `categories`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
+     *
+     * @experimental
+     */
+    get categories(): PluralCategories;
+
+    /**
+     * Resolves the plural category for a given range of categories.
+     *
+     * See the [Rust documentation for `resolve_range`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRulesWithRanges.html#method.resolve_range) for more information.
+     *
+     * @experimental
+     */
+    resolveRange(start: PluralCategory, end: PluralCategory): PluralCategory;
 }

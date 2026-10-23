@@ -176,3 +176,23 @@ fn test_scientific_syntax_error() {
         }
     }
 }
+
+#[test]
+fn test_from_str_scientific_bounds() {
+    assert_eq!(
+        ScientificDecimal::from_str("0e5").unwrap().to_string(),
+        "0e5"
+    );
+    assert_eq!(
+        ScientificDecimal::from_str("1e99999").unwrap().to_string(),
+        "1e99999"
+    );
+    assert_eq!(
+        ScientificDecimal::from_str("-1e-99999")
+            .unwrap()
+            .to_string(),
+        "-1e-99999"
+    );
+    assert_eq!(ScientificDecimal::from_str("1e-"), Err(ParseError::Syntax));
+    assert_eq!(ScientificDecimal::from_str("0e-"), Err(ParseError::Syntax));
+}

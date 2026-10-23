@@ -7,6 +7,7 @@
 pub mod ffi {
     use alloc::boxed::Box;
 
+    use crate::unstable::properties_enums::ffi::Script;
     use crate::unstable::properties_iter::ffi::CodePointRangeIterator;
     use crate::unstable::properties_sets::ffi::CodePointSetData;
     #[cfg(feature = "buffer_provider")]
@@ -75,8 +76,27 @@ pub mod ffi {
             FnInStruct,
             hidden
         )]
-        pub fn get_script_val(&self, ch: DiplomatChar) -> u16 {
-            self.0.as_borrowed().get_script_val32(ch).to_icu4c_value()
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "get_script_val")]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensions_get_script_val_mv1"]
+        pub fn get_script_val_raw(&self, ch: DiplomatChar) -> u16 {
+            self.get_script_val(ch).to_integer_value()
+        }
+
+        /// Get the Script property value for a code point
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::get_script_val,
+            FnInStruct
+        )]
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::get_script_val32,
+            FnInStruct,
+            hidden
+        )]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensions_get_script_val_mv2"]
+        pub fn get_script_val(&self, ch: DiplomatChar) -> Script {
+            Script::from(self.0.as_borrowed().get_script_val32(ch))
         }
 
         /// Check if the `Script_Extensions` property of the given code point covers the given script
@@ -89,10 +109,30 @@ pub mod ffi {
             FnInStruct,
             hidden
         )]
-        pub fn has_script(&self, ch: DiplomatChar, script: u16) -> bool {
-            self.0
-                .as_borrowed()
-                .has_script32(ch, icu_properties::props::Script::from_icu4c_value(script))
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "has_script")]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensions_has_script_mv1"]
+        pub fn has_script_raw(&self, ch: DiplomatChar, script: u16) -> bool {
+            self.has_script(
+                ch,
+                Script::from_integer_value(script).unwrap_or(Script::Unknown),
+            )
+        }
+
+        /// Check if the `Script_Extensions` property of the given code point covers the given script
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::has_script,
+            FnInStruct
+        )]
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::has_script32,
+            FnInStruct,
+            hidden
+        )]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensions_has_script_mv2"]
+        pub fn has_script(&self, ch: DiplomatChar, script: Script) -> bool {
+            self.0.as_borrowed().has_script32(ch, script.into())
         }
 
         /// Borrow this object for a slightly faster variant with more operations
@@ -110,14 +150,33 @@ pub mod ffi {
             icu::properties::script::ScriptWithExtensionsBorrowed::get_script_extensions_ranges,
             FnInStruct
         )]
-        pub fn iter_ranges_for_script<'a>(
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "iter_ranges_for_script")]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensions_iter_ranges_for_script_mv1"]
+        pub fn iter_ranges_for_script_raw<'a>(
             &'a self,
             script: u16,
         ) -> Box<CodePointRangeIterator<'a>> {
+            self.iter_ranges_for_script(
+                Script::from_integer_value(script).unwrap_or(Script::Unknown),
+            )
+        }
+
+        /// Get a list of ranges of code points that contain this script in their `Script_Extensions` values
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::get_script_extensions_ranges,
+            FnInStruct
+        )]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensions_iter_ranges_for_script_mv2"]
+        pub fn iter_ranges_for_script<'a>(
+            &'a self,
+            script: Script,
+        ) -> Box<CodePointRangeIterator<'a>> {
             Box::new(CodePointRangeIterator(Box::new(
-                self.0.as_borrowed().get_script_extensions_ranges(
-                    icu_properties::props::Script::from_icu4c_value(script),
-                ),
+                self.0
+                    .as_borrowed()
+                    .get_script_extensions_ranges(script.into()),
             )))
         }
     }
@@ -128,14 +187,31 @@ pub mod ffi {
             icu::properties::script::ScriptWithExtensionsBorrowed::get_script_val,
             FnInStruct
         )]
-        /// Get the Script property value for a code point
         #[diplomat::rust_link(
             icu::properties::script::ScriptWithExtensionsBorrowed::get_script_val32,
             FnInStruct,
             hidden
         )]
-        pub fn get_script_val(&self, ch: DiplomatChar) -> u16 {
-            self.0.get_script_val32(ch).to_icu4c_value()
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "get_script_val")]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensionsBorrowed_get_script_val_mv1"]
+        pub fn get_script_val_raw(&self, ch: DiplomatChar) -> u16 {
+            self.get_script_val(ch).to_integer_value()
+        }
+        /// Get the Script property value for a code point
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::get_script_val,
+            FnInStruct
+        )]
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::get_script_val32,
+            FnInStruct,
+            hidden
+        )]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensionsBorrowed_get_script_val_mv2"]
+        pub fn get_script_val(&self, ch: DiplomatChar) -> Script {
+            Script::from(self.0.get_script_val32(ch))
         }
         /// Get the Script property value for a code point
         #[diplomat::rust_link(
@@ -160,9 +236,29 @@ pub mod ffi {
             FnInStruct,
             hidden
         )]
-        pub fn has_script(&self, ch: DiplomatChar, script: u16) -> bool {
-            self.0
-                .has_script32(ch, icu_properties::props::Script::from_icu4c_value(script))
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "has_script")]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensionsBorrowed_has_script_mv1"]
+        pub fn has_script_raw(&self, ch: DiplomatChar, script: u16) -> bool {
+            self.has_script(
+                ch,
+                Script::from_integer_value(script).unwrap_or(Script::Unknown),
+            )
+        }
+        /// Check if the `Script_Extensions` property of the given code point covers the given script
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::has_script,
+            FnInStruct
+        )]
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::has_script32,
+            FnInStruct,
+            hidden
+        )]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensionsBorrowed_has_script_mv2"]
+        pub fn has_script(&self, ch: DiplomatChar, script: Script) -> bool {
+            self.0.has_script32(ch, script.into())
         }
 
         /// Build the `CodePointSetData` corresponding to a codepoints matching a particular script
@@ -171,11 +267,25 @@ pub mod ffi {
             icu::properties::script::ScriptWithExtensionsBorrowed::get_script_extensions_set,
             FnInStruct
         )]
-        pub fn get_script_extensions_set(&self, script: u16) -> Box<CodePointSetData> {
-            let list = self
-                .0
-                .get_script_extensions_set(icu_properties::props::Script::from_icu4c_value(script))
-                .into_owned();
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "get_script_extensions_set")]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensionsBorrowed_get_script_extensions_set_mv1"]
+        pub fn get_script_extensions_set_raw(&self, script: u16) -> Box<CodePointSetData> {
+            self.get_script_extensions_set(
+                Script::from_integer_value(script).unwrap_or(Script::Unknown),
+            )
+        }
+
+        /// Build the `CodePointSetData` corresponding to a codepoints matching a particular script
+        /// in their `Script_Extensions`
+        #[diplomat::rust_link(
+            icu::properties::script::ScriptWithExtensionsBorrowed::get_script_extensions_set,
+            FnInStruct
+        )]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptWithExtensionsBorrowed_get_script_extensions_set_mv2"]
+        pub fn get_script_extensions_set(&self, script: Script) -> Box<CodePointSetData> {
+            let list = self.0.get_script_extensions_set(script.into()).into_owned();
             let set = icu_properties::CodePointSetData::from_code_point_inversion_list(list);
             Box::new(CodePointSetData(set))
         }
@@ -183,9 +293,18 @@ pub mod ffi {
     impl<'a> ScriptExtensionsSet<'a> {
         /// Check if the `Script_Extensions` property of the given code point covers the given script
         #[diplomat::rust_link(icu::properties::script::ScriptExtensionsSet::contains, FnInStruct)]
-        pub fn contains(&self, script: u16) -> bool {
-            self.0
-                .contains(&icu_properties::props::Script::from_icu4c_value(script))
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "contains")]
+        #[diplomat::abi_rename = "icu4x_ScriptExtensionsSet_contains_mv1"]
+        pub fn contains_raw(&self, script: u16) -> bool {
+            self.contains(Script::from_integer_value(script).unwrap_or(Script::Unknown))
+        }
+        /// Check if the `Script_Extensions` property of the given code point covers the given script
+        #[diplomat::rust_link(icu::properties::script::ScriptExtensionsSet::contains, FnInStruct)]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptExtensionsSet_contains_mv2"]
+        pub fn contains(&self, script: Script) -> bool {
+            self.0.contains(&script.into())
         }
 
         /// Get the number of scripts contained in here
@@ -197,8 +316,19 @@ pub mod ffi {
 
         /// Get script at index
         #[diplomat::rust_link(icu::properties::script::ScriptExtensionsSet::iter, FnInStruct)]
-        pub fn script_at(&self, index: usize) -> Option<u16> {
-            self.0.array_get(index).map(|x| x.to_icu4c_value())
+        #[diplomat::attr(any(dart, kotlin), disable)]
+        #[diplomat::attr(*, rename = "script_at")]
+        #[diplomat::abi_rename = "icu4x_ScriptExtensionsSet_script_at_mv1"]
+        pub fn script_at_raw(&self, index: usize) -> Option<u16> {
+            self.script_at(index).map(|s| s.to_integer_value())
+        }
+
+        /// Get script at index
+        #[diplomat::rust_link(icu::properties::script::ScriptExtensionsSet::iter, FnInStruct)]
+        #[diplomat::attr(not(any(dart, kotlin)), disable)]
+        #[diplomat::abi_rename = "icu4x_ScriptExtensionsSet_script_at_mv2"]
+        pub fn script_at(&self, index: usize) -> Option<Script> {
+            self.0.array_get(index).map(Into::into)
         }
     }
 }

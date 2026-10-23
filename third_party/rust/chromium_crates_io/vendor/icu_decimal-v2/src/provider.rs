@@ -20,8 +20,8 @@
 //! contains the resolved numbering system as its attribute:
 //!
 //! ```
-//! use icu::decimal::provider::DecimalDigitsV1;
 //! use icu::decimal::DecimalFormatter;
+//! use icu::decimal::provider::DecimalDigitsV1;
 //! use icu::locale::locale;
 //! use icu_provider::prelude::*;
 //! use std::any::TypeId;
@@ -110,16 +110,17 @@ use alloc::boxed::Box;
 #[cfg(feature = "datagen")]
 #[cfg(feature = "unstable")]
 use alloc::vec::Vec;
+use icu_locale_core::subtags::Subtag;
 #[cfg(feature = "unstable")]
 use icu_pattern::{Pattern, PatternBackend, SinglePlaceholder};
 #[cfg(feature = "unstable")]
 use icu_plurals::provider::PluralElementsPackedULE;
 use icu_provider::prelude::*;
-#[cfg(feature = "unstable")]
-use zerovec::ule::vartuple::VarTupleULE;
 use zerovec::VarZeroCow;
 #[cfg(feature = "unstable")]
 use zerovec::VarZeroVec;
+#[cfg(feature = "unstable")]
+use zerovec::ule::vartuple::VarTupleULE;
 
 #[cfg(feature = "compiled_data")]
 #[derive(Debug)]
@@ -138,7 +139,6 @@ const _: () = {
     use icu_decimal_data::*;
     pub mod icu {
         pub use crate as decimal;
-        pub use icu_locale as locale;
     }
     make_provider!(Baked);
     #[cfg(feature = "unstable")]
@@ -155,6 +155,18 @@ icu_provider::data_marker!(
     "decimal/symbols/v1",
     DecimalSymbols<'static>,
 );
+
+impl DecimalSymbolsV1 {
+    /// Creates attributes for this marker from parts.
+    pub fn make_attributes(nu: &Subtag) -> &DataMarkerAttributes {
+        DataMarkerAttributes::from_str_or_panic(nu.as_str())
+    }
+
+    /// Parses attributes for this marker into parts.
+    pub fn parse_attributes(a: &DataMarkerAttributes) -> Option<Subtag> {
+        Subtag::try_from_str(a.as_str()).ok()
+    }
+}
 
 icu_provider::data_marker!(
     /// The digits for a given numbering system. This data ought to be stored in the `und` locale with a marker attribute
@@ -401,21 +413,7 @@ where
 }
 
 #[cfg(feature = "unstable")]
-impl<P: PatternBackend> icu_provider::ule::MaybeAsVarULE for CompactPatterns<'_, P> {
-    type EncodedStruct = [()];
-}
-
-#[cfg(feature = "datagen")]
-#[cfg(feature = "unstable")]
-impl<P: PatternBackend> icu_provider::ule::MaybeEncodeAsVarULE for CompactPatterns<'_, P> {
-    type EncodeableStruct<'b>
-        = &'b [()]
-    where
-        Self: 'b;
-    fn maybe_as_encodeable<'b>(&'b self) -> Option<Self::EncodeableStruct<'b>> {
-        None
-    }
-}
+icu_provider::data_struct!(<P: PatternBackend> CompactPatterns<'_, P>, #[cfg(feature = "datagen")]);
 
 #[cfg(feature = "datagen")]
 #[cfg(feature = "unstable")]
@@ -433,8 +431,8 @@ impl<P: PatternBackend> CompactPatterns<'static, P> {
         >,
         zero_magnitude: Option<&icu_plurals::PluralElements<&Pattern<P>>>,
     ) -> Result<Self, DataError> {
-        use icu_plurals::provider::FourBitMetadata;
         use icu_plurals::PluralElements;
+        use icu_plurals::provider::FourBitMetadata;
         use zerovec::ule::encode_varule_to_box;
         use zerovec::ule::vartuple::VarTuple;
         use zerovec::vecs::VarZeroVecOwned;
@@ -540,10 +538,9 @@ pub(crate) fn load_with_fallback<'a, M: DataMarker>(
 }
 
 impl crate::DecimalFormatterPreferences {
-    pub(crate) fn nu_id<'a>(
-        &'a self,
-        locale: &'a DataLocale,
-    ) -> Option<DataIdentifierBorrowed<'a>> {
+    /// Returns a data identifier with the numbering system resolved from the preferences, if present.
+    #[doc(hidden)]
+    pub fn nu_id<'a>(&'a self, locale: &'a DataLocale) -> Option<DataIdentifierBorrowed<'a>> {
         self.numbering_system
             .as_ref()
             .map(|s| s.as_str())

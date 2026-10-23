@@ -27,7 +27,7 @@ namespace capi {
 } // namespace capi
 } // namespace
 
-inline std::unique_ptr<icu4x::TimeZone> icu4x::TimeZoneIterator::next() {
+inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::TimeZone>> icu4x::TimeZoneIterator::next() {
     auto result = icu4x::capi::icu4x_TimeZoneIterator_next_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::TimeZone>(icu4x::TimeZone::FromFFI(result));
 }

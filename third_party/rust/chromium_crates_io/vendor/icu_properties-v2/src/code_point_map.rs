@@ -194,8 +194,8 @@ impl<'a, T: TrieValue> CodePointMapDataBorrowed<'a, T> {
     /// # Example
     ///
     /// ```
-    /// use icu::properties::props::GeneralCategory;
     /// use icu::properties::CodePointMapData;
+    /// use icu::properties::props::GeneralCategory;
     ///
     /// let gc = CodePointMapData::<GeneralCategory>::new();
     ///
@@ -218,8 +218,8 @@ impl<'a, T: TrieValue> CodePointMapDataBorrowed<'a, T> {
     /// # Examples
     ///
     /// ```
-    /// use icu::properties::props::GeneralCategory;
     /// use icu::properties::CodePointMapData;
+    /// use icu::properties::props::GeneralCategory;
     ///
     /// let gc = CodePointMapData::<GeneralCategory>::new();
     /// let mut ranges = gc.iter_ranges();
@@ -241,8 +241,8 @@ impl<'a, T: TrieValue> CodePointMapDataBorrowed<'a, T> {
     ///
     ///
     /// ```
-    /// use icu::properties::props::GeneralCategory;
     /// use icu::properties::CodePointMapData;
+    /// use icu::properties::props::GeneralCategory;
     ///
     /// let gc = CodePointMapData::<GeneralCategory>::new();
     /// let mut ranges = gc.iter_ranges_for_value(GeneralCategory::UppercaseLetter);
@@ -290,8 +290,8 @@ impl CodePointMapDataBorrowed<'_, GeneralCategory> {
     /// # Example
     ///
     /// ```
-    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
     /// use icu::properties::CodePointMapData;
+    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
     ///
     /// let gc = CodePointMapData::<GeneralCategory>::new();
     ///
@@ -353,8 +353,8 @@ impl<'a> CodePointMapDataBorrowed<'a, GeneralCategory> {
     /// # Examples
     ///
     /// ```
-    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
     /// use icu::properties::CodePointMapData;
+    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
     ///
     /// let gc = CodePointMapData::<GeneralCategory>::new();
     /// let mut ranges = gc.iter_ranges_for_group(GeneralCategoryGroup::Letter);
@@ -388,7 +388,7 @@ impl<'a> CodePointMapDataBorrowed<'a, GeneralCategory> {
 /// </div>
 ///
 /// [`TR44`]: https://www.unicode.org/reports/tr44
-pub trait EnumeratedProperty: crate::private::Sealed + TrieValue {
+pub trait EnumeratedProperty: crate::private::Sealed + TrieValue + Default {
     #[doc(hidden)]
     type DataMarker: DataMarker<DataStruct = PropertyCodePointMap<'static, Self>>;
     #[doc(hidden)]

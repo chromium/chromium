@@ -11,7 +11,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 /**
  * An ICU4X `DateTime` object capable of containing a date and time for any calendar.
  *
- * See the [Rust documentation for `DateTime`](https://docs.rs/icu/2.2.0/icu/time/struct.DateTime.html) for more information.
+ * See the [Rust documentation for `DateTime`](https://docs.rs/icu/2.4.0/icu/time/struct.DateTime.html) for more information.
  */
 export class DateTime {
     #date;
@@ -85,8 +85,8 @@ export class DateTime {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#date.ffiValue, Uint32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#time.ffiValue, Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#date instanceof Date ? this.#date.ffiValue : typeError('this.#date', 'Date'), Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#time instanceof Time ? this.#time.ffiValue : typeError('this.#time', 'Time'), Uint32Array);
     }
 
     // This struct contains borrowed fields, so this takes in a list of
@@ -111,7 +111,7 @@ export class DateTime {
     /**
      * Creates a new {@link DateTime} from an IXDTF string.
      *
-     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.DateTime.html#method.try_from_str) for more information.
+     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.DateTime.html#method.try_from_str) for more information.
      */
     static fromString(v, calendar) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -120,7 +120,7 @@ export class DateTime {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
 
 
-        const result = wasm.icu4x_DateTime_from_string_mv1(diplomatReceive.buffer, vSlice.ptr, calendar.ffiValue);
+        const result = wasm.icu4x_DateTime_from_string_mv1(diplomatReceive.buffer, vSlice.ptr, calendar instanceof Calendar ? calendar.ffiValue : typeError('calendar', 'Calendar'));
 
         try {
             if (!diplomatReceive.resultFlag) {

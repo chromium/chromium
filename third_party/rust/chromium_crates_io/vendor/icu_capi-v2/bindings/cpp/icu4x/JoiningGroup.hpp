@@ -150,6 +150,16 @@ inline icu4x::JoiningGroup icu4x::JoiningGroup::FromFFI(icu4x::capi::JoiningGrou
         case icu4x::capi::JoiningGroup_VerticalTail:
         case icu4x::capi::JoiningGroup_KashmiriYeh:
         case icu4x::capi::JoiningGroup_ThinNoon:
+        case icu4x::capi::JoiningGroup_CrownAin:
+        case icu4x::capi::JoiningGroup_CrownBeh:
+        case icu4x::capi::JoiningGroup_CrownFeh:
+        case icu4x::capi::JoiningGroup_CrownHah:
+        case icu4x::capi::JoiningGroup_CrownHeh:
+        case icu4x::capi::JoiningGroup_CrownKaf:
+        case icu4x::capi::JoiningGroup_CrownMeem:
+        case icu4x::capi::JoiningGroup_CrownSad:
+        case icu4x::capi::JoiningGroup_CrownSeen:
+        case icu4x::capi::JoiningGroup_CrownTah:
             return static_cast<icu4x::JoiningGroup::Value>(c_enum);
         default:
             std::abort();

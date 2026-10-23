@@ -1,0 +1,31 @@
+---
+source: macro/src/lib.rs
+assertion_line: 1046
+expression: "pretty_print_code(gen_bridge(parse_quote!\n{\n    mod ffi\n    {\n        struct Foo {} enum MyError { A, } impl Foo\n        {\n            pub fn bar(&self) -> Result<Box<[u8]>, MyError>\n            { unimplemented!() }\n        }\n    }\n}).to_token_stream())"
+---
+mod ffi {
+    #[repr(C)]
+    struct Foo {}
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    enum MyError {
+        A,
+    }
+    impl Foo {
+        pub fn bar(&self) -> Result<Box<[u8]>, MyError> {
+            unimplemented!()
+        }
+    }
+    use diplomat_runtime::*;
+    use core::ffi::c_void;
+    #[no_mangle]
+    #[allow(deprecated)]
+    extern "C" fn Foo_bar(
+        this: &Foo,
+    ) -> diplomat_runtime::DiplomatResult<
+        diplomat_runtime::DiplomatOwnedSlice<u8>,
+        MyError,
+    > {
+        this.bar().map(<diplomat_runtime::DiplomatOwnedSlice<u8>>::from).into()
+    }
+}

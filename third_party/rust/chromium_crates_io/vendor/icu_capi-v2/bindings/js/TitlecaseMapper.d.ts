@@ -9,7 +9,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `TitlecaseMapper`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html) for more information.
+ * See the [Rust documentation for `TitlecaseMapper`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html) for more information.
  */
 export class TitlecaseMapper {
     /** @internal */
@@ -19,7 +19,7 @@ export class TitlecaseMapper {
     /**
      * Construct a new `TitlecaseMapper` instance using a particular data source.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
      */
     static createWithProvider(provider: DataProvider): TitlecaseMapper;
 
@@ -28,7 +28,7 @@ export class TitlecaseMapper {
      *
      * The `v1` refers to the version of the options struct, which may change as we add more options
      *
-     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
+     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
      */
     titlecaseSegment(s: string, locale: Locale, options: TitlecaseOptions_obj): string;
 
@@ -37,14 +37,14 @@ export class TitlecaseMapper {
      *
      * The `v1` refers to the version of the options struct, which may change as we add more options
      *
-     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
+     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
      */
     static titlecaseSegmentWithCompiledData(s: string, locale: Locale, options: TitlecaseOptions_obj): string;
 
     /**
      * Construct a new `TitlecaseMapper` instance using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
      */
     constructor();
 }

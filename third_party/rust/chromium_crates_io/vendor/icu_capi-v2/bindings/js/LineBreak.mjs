@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `LineBreak`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html) for more information.
+ * See the [Rust documentation for `LineBreak`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html) for more information.
  */
 export class LineBreak {
     #value = undefined;
@@ -157,205 +157,205 @@ export class LineBreak {
     ];
 
     /**
-     * See the [Rust documentation for `Unknown`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Unknown) for more information.
+     * See the [Rust documentation for `Unknown`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Unknown) for more information.
      */
     static Unknown = LineBreak.#objectValues[0];
     /**
-     * See the [Rust documentation for `Ambiguous`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Ambiguous) for more information.
+     * See the [Rust documentation for `Ambiguous`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Ambiguous) for more information.
      */
     static Ambiguous = LineBreak.#objectValues[1];
     /**
-     * See the [Rust documentation for `Alphabetic`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Alphabetic) for more information.
+     * See the [Rust documentation for `Alphabetic`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Alphabetic) for more information.
      */
     static Alphabetic = LineBreak.#objectValues[2];
     /**
-     * See the [Rust documentation for `BreakBoth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakBoth) for more information.
+     * See the [Rust documentation for `BreakBoth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakBoth) for more information.
      */
     static BreakBoth = LineBreak.#objectValues[3];
     /**
-     * See the [Rust documentation for `BreakAfter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakAfter) for more information.
+     * See the [Rust documentation for `BreakAfter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakAfter) for more information.
      */
     static BreakAfter = LineBreak.#objectValues[4];
     /**
-     * See the [Rust documentation for `BreakBefore`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakBefore) for more information.
+     * See the [Rust documentation for `BreakBefore`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakBefore) for more information.
      */
     static BreakBefore = LineBreak.#objectValues[5];
     /**
-     * See the [Rust documentation for `MandatoryBreak`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.MandatoryBreak) for more information.
+     * See the [Rust documentation for `MandatoryBreak`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.MandatoryBreak) for more information.
      */
     static MandatoryBreak = LineBreak.#objectValues[6];
     /**
-     * See the [Rust documentation for `ContingentBreak`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ContingentBreak) for more information.
+     * See the [Rust documentation for `ContingentBreak`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ContingentBreak) for more information.
      */
     static ContingentBreak = LineBreak.#objectValues[7];
     /**
-     * See the [Rust documentation for `ClosePunctuation`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ClosePunctuation) for more information.
+     * See the [Rust documentation for `ClosePunctuation`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ClosePunctuation) for more information.
      */
     static ClosePunctuation = LineBreak.#objectValues[8];
     /**
-     * See the [Rust documentation for `CombiningMark`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.CombiningMark) for more information.
+     * See the [Rust documentation for `CombiningMark`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.CombiningMark) for more information.
      */
     static CombiningMark = LineBreak.#objectValues[9];
     /**
-     * See the [Rust documentation for `CarriageReturn`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.CarriageReturn) for more information.
+     * See the [Rust documentation for `CarriageReturn`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.CarriageReturn) for more information.
      */
     static CarriageReturn = LineBreak.#objectValues[10];
     /**
-     * See the [Rust documentation for `Exclamation`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Exclamation) for more information.
+     * See the [Rust documentation for `Exclamation`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Exclamation) for more information.
      */
     static Exclamation = LineBreak.#objectValues[11];
     /**
-     * See the [Rust documentation for `Glue`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Glue) for more information.
+     * See the [Rust documentation for `Glue`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Glue) for more information.
      */
     static Glue = LineBreak.#objectValues[12];
     /**
-     * See the [Rust documentation for `Hyphen`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Hyphen) for more information.
+     * See the [Rust documentation for `Hyphen`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Hyphen) for more information.
      */
     static Hyphen = LineBreak.#objectValues[13];
     /**
-     * See the [Rust documentation for `Ideographic`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Ideographic) for more information.
+     * See the [Rust documentation for `Ideographic`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Ideographic) for more information.
      */
     static Ideographic = LineBreak.#objectValues[14];
     /**
-     * See the [Rust documentation for `Inseparable`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Inseparable) for more information.
+     * See the [Rust documentation for `Inseparable`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Inseparable) for more information.
      */
     static Inseparable = LineBreak.#objectValues[15];
     /**
-     * See the [Rust documentation for `InfixNumeric`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.InfixNumeric) for more information.
+     * See the [Rust documentation for `InfixNumeric`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.InfixNumeric) for more information.
      */
     static InfixNumeric = LineBreak.#objectValues[16];
     /**
-     * See the [Rust documentation for `LineFeed`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.LineFeed) for more information.
+     * See the [Rust documentation for `LineFeed`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.LineFeed) for more information.
      */
     static LineFeed = LineBreak.#objectValues[17];
     /**
-     * See the [Rust documentation for `Nonstarter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Nonstarter) for more information.
+     * See the [Rust documentation for `Nonstarter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Nonstarter) for more information.
      */
     static Nonstarter = LineBreak.#objectValues[18];
     /**
-     * See the [Rust documentation for `Numeric`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Numeric) for more information.
+     * See the [Rust documentation for `Numeric`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Numeric) for more information.
      */
     static Numeric = LineBreak.#objectValues[19];
     /**
-     * See the [Rust documentation for `OpenPunctuation`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.OpenPunctuation) for more information.
+     * See the [Rust documentation for `OpenPunctuation`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.OpenPunctuation) for more information.
      */
     static OpenPunctuation = LineBreak.#objectValues[20];
     /**
-     * See the [Rust documentation for `PostfixNumeric`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.PostfixNumeric) for more information.
+     * See the [Rust documentation for `PostfixNumeric`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.PostfixNumeric) for more information.
      */
     static PostfixNumeric = LineBreak.#objectValues[21];
     /**
-     * See the [Rust documentation for `PrefixNumeric`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.PrefixNumeric) for more information.
+     * See the [Rust documentation for `PrefixNumeric`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.PrefixNumeric) for more information.
      */
     static PrefixNumeric = LineBreak.#objectValues[22];
     /**
-     * See the [Rust documentation for `Quotation`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Quotation) for more information.
+     * See the [Rust documentation for `Quotation`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Quotation) for more information.
      */
     static Quotation = LineBreak.#objectValues[23];
     /**
-     * See the [Rust documentation for `ComplexContext`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ComplexContext) for more information.
+     * See the [Rust documentation for `ComplexContext`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ComplexContext) for more information.
      */
     static ComplexContext = LineBreak.#objectValues[24];
     /**
-     * See the [Rust documentation for `Surrogate`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Surrogate) for more information.
+     * See the [Rust documentation for `Surrogate`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Surrogate) for more information.
      */
     static Surrogate = LineBreak.#objectValues[25];
     /**
-     * See the [Rust documentation for `Space`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Space) for more information.
+     * See the [Rust documentation for `Space`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Space) for more information.
      */
     static Space = LineBreak.#objectValues[26];
     /**
-     * See the [Rust documentation for `BreakSymbols`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakSymbols) for more information.
+     * See the [Rust documentation for `BreakSymbols`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.BreakSymbols) for more information.
      */
     static BreakSymbols = LineBreak.#objectValues[27];
     /**
-     * See the [Rust documentation for `ZWSpace`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ZWSpace) for more information.
+     * See the [Rust documentation for `ZWSpace`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ZWSpace) for more information.
      */
     static ZwSpace = LineBreak.#objectValues[28];
     /**
-     * See the [Rust documentation for `NextLine`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.NextLine) for more information.
+     * See the [Rust documentation for `NextLine`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.NextLine) for more information.
      */
     static NextLine = LineBreak.#objectValues[29];
     /**
-     * See the [Rust documentation for `WordJoiner`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.WordJoiner) for more information.
+     * See the [Rust documentation for `WordJoiner`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.WordJoiner) for more information.
      */
     static WordJoiner = LineBreak.#objectValues[30];
     /**
-     * See the [Rust documentation for `H2`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.H2) for more information.
+     * See the [Rust documentation for `H2`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.H2) for more information.
      */
     static H2 = LineBreak.#objectValues[31];
     /**
-     * See the [Rust documentation for `H3`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.H3) for more information.
+     * See the [Rust documentation for `H3`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.H3) for more information.
      */
     static H3 = LineBreak.#objectValues[32];
     /**
-     * See the [Rust documentation for `JL`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.JL) for more information.
+     * See the [Rust documentation for `JL`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.JL) for more information.
      */
     static Jl = LineBreak.#objectValues[33];
     /**
-     * See the [Rust documentation for `JT`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.JT) for more information.
+     * See the [Rust documentation for `JT`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.JT) for more information.
      */
     static Jt = LineBreak.#objectValues[34];
     /**
-     * See the [Rust documentation for `JV`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.JV) for more information.
+     * See the [Rust documentation for `JV`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.JV) for more information.
      */
     static Jv = LineBreak.#objectValues[35];
     /**
-     * See the [Rust documentation for `CloseParenthesis`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.CloseParenthesis) for more information.
+     * See the [Rust documentation for `CloseParenthesis`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.CloseParenthesis) for more information.
      */
     static CloseParenthesis = LineBreak.#objectValues[36];
     /**
-     * See the [Rust documentation for `ConditionalJapaneseStarter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ConditionalJapaneseStarter) for more information.
+     * See the [Rust documentation for `ConditionalJapaneseStarter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ConditionalJapaneseStarter) for more information.
      */
     static ConditionalJapaneseStarter = LineBreak.#objectValues[37];
     /**
-     * See the [Rust documentation for `HebrewLetter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.HebrewLetter) for more information.
+     * See the [Rust documentation for `HebrewLetter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.HebrewLetter) for more information.
      */
     static HebrewLetter = LineBreak.#objectValues[38];
     /**
-     * See the [Rust documentation for `RegionalIndicator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.RegionalIndicator) for more information.
+     * See the [Rust documentation for `RegionalIndicator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.RegionalIndicator) for more information.
      */
     static RegionalIndicator = LineBreak.#objectValues[39];
     /**
-     * See the [Rust documentation for `EBase`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.EBase) for more information.
+     * See the [Rust documentation for `EBase`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.EBase) for more information.
      */
     static EBase = LineBreak.#objectValues[40];
     /**
-     * See the [Rust documentation for `EModifier`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.EModifier) for more information.
+     * See the [Rust documentation for `EModifier`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.EModifier) for more information.
      */
     static EModifier = LineBreak.#objectValues[41];
     /**
-     * See the [Rust documentation for `ZWJ`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ZWJ) for more information.
+     * See the [Rust documentation for `ZWJ`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ZWJ) for more information.
      */
     static Zwj = LineBreak.#objectValues[42];
     /**
-     * See the [Rust documentation for `Aksara`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Aksara) for more information.
+     * See the [Rust documentation for `Aksara`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Aksara) for more information.
      */
     static Aksara = LineBreak.#objectValues[43];
     /**
-     * See the [Rust documentation for `AksaraPrebase`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.AksaraPrebase) for more information.
+     * See the [Rust documentation for `AksaraPrebase`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.AksaraPrebase) for more information.
      */
     static AksaraPrebase = LineBreak.#objectValues[44];
     /**
-     * See the [Rust documentation for `AksaraStart`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.AksaraStart) for more information.
+     * See the [Rust documentation for `AksaraStart`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.AksaraStart) for more information.
      */
     static AksaraStart = LineBreak.#objectValues[45];
     /**
-     * See the [Rust documentation for `ViramaFinal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ViramaFinal) for more information.
+     * See the [Rust documentation for `ViramaFinal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.ViramaFinal) for more information.
      */
     static ViramaFinal = LineBreak.#objectValues[46];
     /**
-     * See the [Rust documentation for `Virama`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Virama) for more information.
+     * See the [Rust documentation for `Virama`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.Virama) for more information.
      */
     static Virama = LineBreak.#objectValues[47];
     /**
-     * See the [Rust documentation for `UnambiguousHyphen`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#associatedconstant.UnambiguousHyphen) for more information.
+     * See the [Rust documentation for `UnambiguousHyphen`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#associatedconstant.UnambiguousHyphen) for more information.
      */
     static UnambiguousHyphen = LineBreak.#objectValues[48];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -373,7 +373,7 @@ export class LineBreak {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -397,7 +397,7 @@ export class LineBreak {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -421,7 +421,7 @@ export class LineBreak {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -439,7 +439,7 @@ export class LineBreak {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.LineBreak.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.LineBreak.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -460,6 +460,11 @@ export class LineBreak {
         }
     }
 
+    /**
+     * Creates a `LineBreak` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

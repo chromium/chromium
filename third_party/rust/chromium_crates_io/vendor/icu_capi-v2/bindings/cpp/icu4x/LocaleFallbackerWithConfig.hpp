@@ -12,6 +12,7 @@
 #include <optional>
 #include <cstdlib>
 #include "Locale.hpp"
+#include "LocaleFallbackConfig.hpp"
 #include "LocaleFallbackIterator.hpp"
 #include "diplomat_runtime.hpp"
 
@@ -19,6 +20,8 @@
 namespace icu4x {
 namespace capi {
     extern "C" {
+
+    icu4x::capi::LocaleFallbackConfig icu4x_LocaleFallbackerWithConfig_config_mv1(const icu4x::capi::LocaleFallbackerWithConfig* self);
 
     icu4x::capi::LocaleFallbackIterator* icu4x_LocaleFallbackerWithConfig_fallback_for_locale_mv1(const icu4x::capi::LocaleFallbackerWithConfig* self, const icu4x::capi::Locale* locale);
 
@@ -28,7 +31,12 @@ namespace capi {
 } // namespace capi
 } // namespace
 
-inline std::unique_ptr<icu4x::LocaleFallbackIterator> icu4x::LocaleFallbackerWithConfig::fallback_for_locale(const icu4x::Locale& locale) const {
+inline icu4x::LocaleFallbackConfig icu4x::LocaleFallbackerWithConfig::config() const {
+    auto result = icu4x::capi::icu4x_LocaleFallbackerWithConfig_config_mv1(this->AsFFI());
+    return icu4x::LocaleFallbackConfig::FromFFI(result);
+}
+
+inline std::unique_ptr<icu4x::LocaleFallbackIterator> icu4x::LocaleFallbackerWithConfig::fallback_for_locale(const icu4x::Locale& locale) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_LocaleFallbackerWithConfig_fallback_for_locale_mv1(this->AsFFI(),
         locale.AsFFI());
     return std::unique_ptr<icu4x::LocaleFallbackIterator>(icu4x::LocaleFallbackIterator::FromFFI(result));

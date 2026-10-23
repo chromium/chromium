@@ -7,7 +7,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `DateFromFieldsOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateFromFieldsOptions.html) for more information.
+ * See the [Rust documentation for `DateFromFieldsOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateFromFieldsOptions.html) for more information.
  */
 export class DateFromFieldsOptions {
     #overflow;
@@ -35,13 +35,13 @@ export class DateFromFieldsOptions {
         }
 
         if ("overflow" in structObj) {
-            this.#overflow = structObj.overflow;
+            this.#overflow = new DateOverflow(structObj.overflow);
         } else {
             this.#overflow = null;
         }
 
         if ("missingFieldsStrategy" in structObj) {
-            this.#missingFieldsStrategy = structObj.missingFieldsStrategy;
+            this.#missingFieldsStrategy = new DateMissingFieldsStrategy(structObj.missingFieldsStrategy);
         } else {
             this.#missingFieldsStrategy = null;
         }
@@ -89,8 +89,8 @@ export class DateFromFieldsOptions {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#overflow, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 8, this.#missingFieldsStrategy, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#overflow, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateOverflow(jsValue).ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 8, this.#missingFieldsStrategy, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateMissingFieldsStrategy(jsValue).ffiValue, Int32Array));
     }
 
     // This struct contains borrowed fields, so this takes in a list of

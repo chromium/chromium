@@ -33,7 +33,7 @@ serde = { workspace = true, features = ["derive", "alloc"], optional = true }
 displaydoc = { workspace = true, optional = true }
 
 icu_plurals_data = { workspace = true, optional = true }
-icu_locale = { workspace = true, optional = true }
+icu_locale_fallback = { workspace = true, optional = true }
 
 [dev-dependencies]
 icu = { path = "../../components/icu", default-features = false }
@@ -50,7 +50,7 @@ default = ["compiled_data"]
 serde = ["dep:serde", "zerovec/serde", "icu_locale_core/serde", "icu_provider/serde", "dep:displaydoc"]
 datagen = ["serde", "zerovec/databake", "dep:databake", "icu_provider/export"]
 unstable = []
-compiled_data = ["dep:icu_plurals_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
+compiled_data = ["dep:icu_plurals_data", "dep:icu_locale_fallback", "icu_locale_fallback?/compiled_data", "icu_provider/baked"]
 
 # added by accident
 icu_normalizer_data = []

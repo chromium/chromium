@@ -1,0 +1,26 @@
+---
+source: macro/src/lib.rs
+expression: "pretty_print_code(gen_bridge(parse_quote!\n{\n    mod ffi\n    {\n        use diplomat_runtime::DiplomatWriteGeneric; struct Foo {} impl Foo\n        {\n            pub fn get_ints(&self, out: &mut DiplomatWriteGeneric<u32>)\n            { out.push(42); }\n        }\n    }\n}).to_token_stream())"
+---
+mod ffi {
+    use diplomat_runtime::DiplomatWriteGeneric;
+    #[repr(C)]
+    struct Foo {}
+    impl Foo {
+        pub fn get_ints(&self, out: &mut DiplomatWriteGeneric<u32>) {
+            out.push(42);
+        }
+    }
+    use diplomat_runtime::*;
+    use core::ffi::c_void;
+    #[no_mangle]
+    #[allow(deprecated)]
+    extern "C" fn Foo_get_ints(
+        this: &Foo,
+        out: &mut diplomat_runtime::DiplomatWriteGeneric<u32>,
+    ) {
+        let ret = this.get_ints(out);
+        out.flush();
+        ret
+    }
+}

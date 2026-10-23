@@ -13,7 +13,7 @@ const LocaleFallbacker_box_destroy_registry = new FinalizationRegistry((ptr) => 
 /**
  * An object that runs the ICU4X locale fallback algorithm.
  *
- * See the [Rust documentation for `LocaleFallbacker`](https://docs.rs/icu_locale/2.2.0/icu_locale/struct.LocaleFallbacker.html) for more information.
+ * See the [Rust documentation for `LocaleFallbacker`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbacker.html) for more information.
  */
 export class LocaleFallbacker {
     // Internal ptr reference:
@@ -47,7 +47,7 @@ export class LocaleFallbacker {
     /**
      * Creates a new `LocaleFallbacker` from compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu_locale/2.2.0/icu_locale/struct.LocaleFallbacker.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbacker.html#method.new) for more information.
      */
     #defaultConstructor() {
 
@@ -65,13 +65,13 @@ export class LocaleFallbacker {
     /**
      * Creates a new `LocaleFallbacker` from a data provider.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu_locale/2.2.0/icu_locale/struct.LocaleFallbacker.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbacker.html#method.new) for more information.
      */
     static createWithProvider(provider) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_LocaleFallbacker_create_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue);
+        const result = wasm.icu4x_LocaleFallbacker_create_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -90,7 +90,7 @@ export class LocaleFallbacker {
     /**
      * Creates a new `LocaleFallbacker` without data for limited functionality.
      *
-     * See the [Rust documentation for `new_without_data`](https://docs.rs/icu_locale/2.2.0/icu_locale/struct.LocaleFallbacker.html#method.new_without_data) for more information.
+     * See the [Rust documentation for `new_without_data`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbacker.html#method.new_without_data) for more information.
      */
     static withoutData() {
 
@@ -108,7 +108,7 @@ export class LocaleFallbacker {
     /**
      * Associates this `LocaleFallbacker` with configuration options.
      *
-     * See the [Rust documentation for `for_config`](https://docs.rs/icu_locale/2.2.0/icu_locale/struct.LocaleFallbacker.html#method.for_config) for more information.
+     * See the [Rust documentation for `for_config`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbacker.html#method.for_config) for more information.
      */
     forConfig(config) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -133,7 +133,7 @@ export class LocaleFallbacker {
     /**
      * Creates a new `LocaleFallbacker` from compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu_locale/2.2.0/icu_locale/struct.LocaleFallbacker.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbacker.html#method.new) for more information.
      */
     constructor() {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

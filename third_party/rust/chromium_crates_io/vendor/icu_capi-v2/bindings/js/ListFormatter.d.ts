@@ -8,7 +8,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `ListFormatter`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html) for more information.
+ * See the [Rust documentation for `ListFormatter`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html) for more information.
  */
 export class ListFormatter {
     /** @internal */
@@ -20,47 +20,47 @@ export class ListFormatter {
     /**
      * Construct a new `ListFormatter` instance for And patterns from compiled data.
      *
-     * See the [Rust documentation for `try_new_and`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.try_new_and) for more information.
+     * See the [Rust documentation for `try_new_and`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.try_new_and) for more information.
      */
     static createAndWithLength(locale: Locale, length: ListLength): ListFormatter;
 
     /**
      * Construct a new `ListFormatter` instance for And patterns
      *
-     * See the [Rust documentation for `try_new_and`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.try_new_and) for more information.
+     * See the [Rust documentation for `try_new_and`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.try_new_and) for more information.
      */
     static createAndWithLengthAndProvider(provider: DataProvider, locale: Locale, length: ListLength): ListFormatter;
 
     /**
      * Construct a new `ListFormatter` instance for And patterns from compiled data.
      *
-     * See the [Rust documentation for `try_new_or`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.try_new_or) for more information.
+     * See the [Rust documentation for `try_new_or`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.try_new_or) for more information.
      */
     static createOrWithLength(locale: Locale, length: ListLength): ListFormatter;
 
     /**
      * Construct a new `ListFormatter` instance for And patterns
      *
-     * See the [Rust documentation for `try_new_or`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.try_new_or) for more information.
+     * See the [Rust documentation for `try_new_or`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.try_new_or) for more information.
      */
     static createOrWithLengthAndProvider(provider: DataProvider, locale: Locale, length: ListLength): ListFormatter;
 
     /**
      * Construct a new `ListFormatter` instance for And patterns from compiled data.
      *
-     * See the [Rust documentation for `try_new_unit`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.try_new_unit) for more information.
+     * See the [Rust documentation for `try_new_unit`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.try_new_unit) for more information.
      */
     static createUnitWithLength(locale: Locale, length: ListLength): ListFormatter;
 
     /**
      * Construct a new `ListFormatter` instance for And patterns
      *
-     * See the [Rust documentation for `try_new_unit`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.try_new_unit) for more information.
+     * See the [Rust documentation for `try_new_unit`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.try_new_unit) for more information.
      */
     static createUnitWithLengthAndProvider(provider: DataProvider, locale: Locale, length: ListLength): ListFormatter;
 
     /**
-     * See the [Rust documentation for `format`](https://docs.rs/icu/2.2.0/icu/list/struct.ListFormatter.html#method.format) for more information.
+     * See the [Rust documentation for `format`](https://docs.rs/icu/2.4.0/icu/list/struct.ListFormatter.html#method.format) for more information.
      */
     format(list: Array<string>): string;
 }

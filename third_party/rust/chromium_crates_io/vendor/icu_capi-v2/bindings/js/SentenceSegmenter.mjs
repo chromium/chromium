@@ -13,7 +13,7 @@ const SentenceSegmenter_box_destroy_registry = new FinalizationRegistry((ptr) =>
 /**
  * An ICU4X sentence-break segmenter, capable of finding sentence breakpoints in strings.
  *
- * See the [Rust documentation for `SentenceSegmenter`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html) for more information.
+ * See the [Rust documentation for `SentenceSegmenter`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html) for more information.
  */
 export class SentenceSegmenter {
     // Internal ptr reference:
@@ -47,7 +47,7 @@ export class SentenceSegmenter {
     /**
      * Construct a {@link SentenceSegmenter} using compiled data. This does not assume any content locale.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
      */
     #defaultConstructor() {
 
@@ -69,7 +69,7 @@ export class SentenceSegmenter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_SentenceSegmenter_create_with_content_locale_mv1(diplomatReceive.buffer, locale.ffiValue);
+        const result = wasm.icu4x_SentenceSegmenter_create_with_content_locale_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -92,7 +92,7 @@ export class SentenceSegmenter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_SentenceSegmenter_create_with_content_locale_and_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue);
+        const result = wasm.icu4x_SentenceSegmenter_create_with_content_locale_and_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -114,7 +114,7 @@ export class SentenceSegmenter {
      * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
      * to the WHATWG Encoding Standard.
      *
-     * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf16) for more information.
+     * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf16) for more information.
      */
     segment(input) {
         let functionGarbageCollectorGrip = new diplomatRuntime.GarbageCollectorGrip();
@@ -139,7 +139,7 @@ export class SentenceSegmenter {
     /**
      * Construct a {@link SentenceSegmenter} using compiled data. This does not assume any content locale.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
      */
     constructor() {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

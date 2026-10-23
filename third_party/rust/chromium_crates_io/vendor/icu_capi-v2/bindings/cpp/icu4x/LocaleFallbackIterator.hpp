@@ -27,7 +27,7 @@ namespace capi {
 } // namespace capi
 } // namespace
 
-inline std::unique_ptr<icu4x::Locale> icu4x::LocaleFallbackIterator::next() {
+inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::Locale>> icu4x::LocaleFallbackIterator::next() {
     auto result = icu4x::capi::icu4x_LocaleFallbackIterator_next_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::Locale>(icu4x::Locale::FromFFI(result));
 }

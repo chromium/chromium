@@ -98,6 +98,8 @@ namespace capi {
 
     void icu4x_Decimal_to_string_mv1(const icu4x::capi::Decimal* self, icu4x::diplomat::capi::DiplomatWrite* write);
 
+    bool icu4x_Decimal_equals_mv1(const icu4x::capi::Decimal* self, const icu4x::capi::Decimal* other);
+
     void icu4x_Decimal_destroy_mv1(Decimal* self);
 
     } // extern "C"
@@ -285,6 +287,12 @@ inline void icu4x::Decimal::to_string_write(W& writeable) const {
     icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteTrait<W>::Construct(writeable);
     icu4x::capi::icu4x_Decimal_to_string_mv1(this->AsFFI(),
         &write);
+}
+
+inline bool icu4x::Decimal::equals(const icu4x::Decimal& other) const {
+    auto result = icu4x::capi::icu4x_Decimal_equals_mv1(this->AsFFI(),
+        other.AsFFI());
+    return result;
 }
 
 inline const icu4x::capi::Decimal* icu4x::Decimal::AsFFI() const {

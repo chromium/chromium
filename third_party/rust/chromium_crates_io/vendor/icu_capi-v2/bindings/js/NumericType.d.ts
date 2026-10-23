@@ -4,7 +4,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `NumericType`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html) for more information.
+ * See the [Rust documentation for `NumericType`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html) for more information.
  */
 export class NumericType {
 
@@ -17,56 +17,61 @@ export class NumericType {
     get ffiValue(): number;
 
     /**
-     * See the [Rust documentation for `None`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html#associatedconstant.None) for more information.
+     * See the [Rust documentation for `None`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html#associatedconstant.None) for more information.
      */
     static None : NumericType;
     /**
-     * See the [Rust documentation for `Decimal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html#associatedconstant.Decimal) for more information.
+     * See the [Rust documentation for `Decimal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html#associatedconstant.Decimal) for more information.
      */
     static Decimal : NumericType;
     /**
-     * See the [Rust documentation for `Digit`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html#associatedconstant.Digit) for more information.
+     * See the [Rust documentation for `Digit`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html#associatedconstant.Digit) for more information.
      */
     static Digit : NumericType;
     /**
-     * See the [Rust documentation for `Numeric`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html#associatedconstant.Numeric) for more information.
+     * See the [Rust documentation for `Numeric`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html#associatedconstant.Numeric) for more information.
      */
     static Numeric : NumericType;
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch: codepoint): NumericType;
 
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName(): string | null;
 
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName(): string | null;
 
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue(): number;
 
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.NumericType.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.NumericType.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other: number): NumericType | null;
 
+    /**
+     * Creates a `NumericType` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s: string): NumericType | null;
 
     constructor(value: NumericType | string );

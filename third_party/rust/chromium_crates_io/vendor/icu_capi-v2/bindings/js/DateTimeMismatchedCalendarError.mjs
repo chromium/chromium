@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `MismatchedCalendarError`](https://docs.rs/icu/2.2.0/icu/datetime/struct.MismatchedCalendarError.html) for more information.
+ * See the [Rust documentation for `MismatchedCalendarError`](https://docs.rs/icu/2.4.0/icu/datetime/struct.MismatchedCalendarError.html) for more information.
  */
 export class DateTimeMismatchedCalendarError {
     #thisKind;
@@ -34,13 +34,13 @@ export class DateTimeMismatchedCalendarError {
         }
 
         if ("thisKind" in structObj) {
-            this.#thisKind = structObj.thisKind;
+            this.#thisKind = new CalendarKind(structObj.thisKind);
         } else {
             throw new Error("Missing required field thisKind.");
         }
 
         if ("dateKind" in structObj) {
-            this.#dateKind = structObj.dateKind;
+            this.#dateKind = new CalendarKind(structObj.dateKind);
         } else {
             this.#dateKind = null;
         }
@@ -88,8 +88,8 @@ export class DateTimeMismatchedCalendarError {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#thisKind.ffiValue, Int32Array);
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 4, this.#dateKind, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CalendarKind(this.#thisKind).ffiValue, Int32Array);
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 4, this.#dateKind, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CalendarKind(jsValue).ffiValue, Int32Array));
     }
 
     // This struct contains borrowed fields, so this takes in a list of

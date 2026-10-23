@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `IndicSyllabicCategory`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html) for more information.
+ * See the [Rust documentation for `IndicSyllabicCategory`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html) for more information.
  */
 export class IndicSyllabicCategory {
     #value = undefined;
@@ -133,157 +133,157 @@ export class IndicSyllabicCategory {
     ];
 
     /**
-     * See the [Rust documentation for `Other`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Other) for more information.
+     * See the [Rust documentation for `Other`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Other) for more information.
      */
     static Other = IndicSyllabicCategory.#objectValues[0];
     /**
-     * See the [Rust documentation for `Avagraha`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Avagraha) for more information.
+     * See the [Rust documentation for `Avagraha`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Avagraha) for more information.
      */
     static Avagraha = IndicSyllabicCategory.#objectValues[1];
     /**
-     * See the [Rust documentation for `Bindu`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Bindu) for more information.
+     * See the [Rust documentation for `Bindu`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Bindu) for more information.
      */
     static Bindu = IndicSyllabicCategory.#objectValues[2];
     /**
-     * See the [Rust documentation for `BrahmiJoiningNumber`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.BrahmiJoiningNumber) for more information.
+     * See the [Rust documentation for `BrahmiJoiningNumber`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.BrahmiJoiningNumber) for more information.
      */
     static BrahmiJoiningNumber = IndicSyllabicCategory.#objectValues[3];
     /**
-     * See the [Rust documentation for `CantillationMark`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.CantillationMark) for more information.
+     * See the [Rust documentation for `CantillationMark`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.CantillationMark) for more information.
      */
     static CantillationMark = IndicSyllabicCategory.#objectValues[4];
     /**
-     * See the [Rust documentation for `Consonant`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Consonant) for more information.
+     * See the [Rust documentation for `Consonant`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Consonant) for more information.
      */
     static Consonant = IndicSyllabicCategory.#objectValues[5];
     /**
-     * See the [Rust documentation for `ConsonantDead`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantDead) for more information.
+     * See the [Rust documentation for `ConsonantDead`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantDead) for more information.
      */
     static ConsonantDead = IndicSyllabicCategory.#objectValues[6];
     /**
-     * See the [Rust documentation for `ConsonantFinal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantFinal) for more information.
+     * See the [Rust documentation for `ConsonantFinal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantFinal) for more information.
      */
     static ConsonantFinal = IndicSyllabicCategory.#objectValues[7];
     /**
-     * See the [Rust documentation for `ConsonantHeadLetter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantHeadLetter) for more information.
+     * See the [Rust documentation for `ConsonantHeadLetter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantHeadLetter) for more information.
      */
     static ConsonantHeadLetter = IndicSyllabicCategory.#objectValues[8];
     /**
-     * See the [Rust documentation for `ConsonantInitialPostfixed`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantInitialPostfixed) for more information.
+     * See the [Rust documentation for `ConsonantInitialPostfixed`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantInitialPostfixed) for more information.
      */
     static ConsonantInitialPostfixed = IndicSyllabicCategory.#objectValues[9];
     /**
-     * See the [Rust documentation for `ConsonantKiller`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantKiller) for more information.
+     * See the [Rust documentation for `ConsonantKiller`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantKiller) for more information.
      */
     static ConsonantKiller = IndicSyllabicCategory.#objectValues[10];
     /**
-     * See the [Rust documentation for `ConsonantMedial`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantMedial) for more information.
+     * See the [Rust documentation for `ConsonantMedial`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantMedial) for more information.
      */
     static ConsonantMedial = IndicSyllabicCategory.#objectValues[11];
     /**
-     * See the [Rust documentation for `ConsonantPlaceholder`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantPlaceholder) for more information.
+     * See the [Rust documentation for `ConsonantPlaceholder`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantPlaceholder) for more information.
      */
     static ConsonantPlaceholder = IndicSyllabicCategory.#objectValues[12];
     /**
-     * See the [Rust documentation for `ConsonantPrecedingRepha`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantPrecedingRepha) for more information.
+     * See the [Rust documentation for `ConsonantPrecedingRepha`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantPrecedingRepha) for more information.
      */
     static ConsonantPrecedingRepha = IndicSyllabicCategory.#objectValues[13];
     /**
-     * See the [Rust documentation for `ConsonantPrefixed`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantPrefixed) for more information.
+     * See the [Rust documentation for `ConsonantPrefixed`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantPrefixed) for more information.
      */
     static ConsonantPrefixed = IndicSyllabicCategory.#objectValues[14];
     /**
-     * See the [Rust documentation for `ConsonantSubjoined`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantSubjoined) for more information.
+     * See the [Rust documentation for `ConsonantSubjoined`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantSubjoined) for more information.
      */
     static ConsonantSubjoined = IndicSyllabicCategory.#objectValues[15];
     /**
-     * See the [Rust documentation for `ConsonantSucceedingRepha`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantSucceedingRepha) for more information.
+     * See the [Rust documentation for `ConsonantSucceedingRepha`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantSucceedingRepha) for more information.
      */
     static ConsonantSucceedingRepha = IndicSyllabicCategory.#objectValues[16];
     /**
-     * See the [Rust documentation for `ConsonantWithStacker`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantWithStacker) for more information.
+     * See the [Rust documentation for `ConsonantWithStacker`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ConsonantWithStacker) for more information.
      */
     static ConsonantWithStacker = IndicSyllabicCategory.#objectValues[17];
     /**
-     * See the [Rust documentation for `GeminationMark`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.GeminationMark) for more information.
+     * See the [Rust documentation for `GeminationMark`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.GeminationMark) for more information.
      */
     static GeminationMark = IndicSyllabicCategory.#objectValues[18];
     /**
-     * See the [Rust documentation for `InvisibleStacker`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.InvisibleStacker) for more information.
+     * See the [Rust documentation for `InvisibleStacker`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.InvisibleStacker) for more information.
      */
     static InvisibleStacker = IndicSyllabicCategory.#objectValues[19];
     /**
-     * See the [Rust documentation for `Joiner`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Joiner) for more information.
+     * See the [Rust documentation for `Joiner`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Joiner) for more information.
      */
     static Joiner = IndicSyllabicCategory.#objectValues[20];
     /**
-     * See the [Rust documentation for `ModifyingLetter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ModifyingLetter) for more information.
+     * See the [Rust documentation for `ModifyingLetter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ModifyingLetter) for more information.
      */
     static ModifyingLetter = IndicSyllabicCategory.#objectValues[21];
     /**
-     * See the [Rust documentation for `NonJoiner`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.NonJoiner) for more information.
+     * See the [Rust documentation for `NonJoiner`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.NonJoiner) for more information.
      */
     static NonJoiner = IndicSyllabicCategory.#objectValues[22];
     /**
-     * See the [Rust documentation for `Nukta`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Nukta) for more information.
+     * See the [Rust documentation for `Nukta`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Nukta) for more information.
      */
     static Nukta = IndicSyllabicCategory.#objectValues[23];
     /**
-     * See the [Rust documentation for `Number`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Number) for more information.
+     * See the [Rust documentation for `Number`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Number) for more information.
      */
     static Number = IndicSyllabicCategory.#objectValues[24];
     /**
-     * See the [Rust documentation for `NumberJoiner`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.NumberJoiner) for more information.
+     * See the [Rust documentation for `NumberJoiner`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.NumberJoiner) for more information.
      */
     static NumberJoiner = IndicSyllabicCategory.#objectValues[25];
     /**
-     * See the [Rust documentation for `PureKiller`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.PureKiller) for more information.
+     * See the [Rust documentation for `PureKiller`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.PureKiller) for more information.
      */
     static PureKiller = IndicSyllabicCategory.#objectValues[26];
     /**
-     * See the [Rust documentation for `RegisterShifter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.RegisterShifter) for more information.
+     * See the [Rust documentation for `RegisterShifter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.RegisterShifter) for more information.
      */
     static RegisterShifter = IndicSyllabicCategory.#objectValues[27];
     /**
-     * See the [Rust documentation for `SyllableModifier`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.SyllableModifier) for more information.
+     * See the [Rust documentation for `SyllableModifier`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.SyllableModifier) for more information.
      */
     static SyllableModifier = IndicSyllabicCategory.#objectValues[28];
     /**
-     * See the [Rust documentation for `ToneLetter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ToneLetter) for more information.
+     * See the [Rust documentation for `ToneLetter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ToneLetter) for more information.
      */
     static ToneLetter = IndicSyllabicCategory.#objectValues[29];
     /**
-     * See the [Rust documentation for `ToneMark`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ToneMark) for more information.
+     * See the [Rust documentation for `ToneMark`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ToneMark) for more information.
      */
     static ToneMark = IndicSyllabicCategory.#objectValues[30];
     /**
-     * See the [Rust documentation for `Virama`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Virama) for more information.
+     * See the [Rust documentation for `Virama`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Virama) for more information.
      */
     static Virama = IndicSyllabicCategory.#objectValues[31];
     /**
-     * See the [Rust documentation for `Visarga`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Visarga) for more information.
+     * See the [Rust documentation for `Visarga`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Visarga) for more information.
      */
     static Visarga = IndicSyllabicCategory.#objectValues[32];
     /**
-     * See the [Rust documentation for `Vowel`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Vowel) for more information.
+     * See the [Rust documentation for `Vowel`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.Vowel) for more information.
      */
     static Vowel = IndicSyllabicCategory.#objectValues[33];
     /**
-     * See the [Rust documentation for `VowelDependent`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.VowelDependent) for more information.
+     * See the [Rust documentation for `VowelDependent`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.VowelDependent) for more information.
      */
     static VowelDependent = IndicSyllabicCategory.#objectValues[34];
     /**
-     * See the [Rust documentation for `VowelIndependent`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.VowelIndependent) for more information.
+     * See the [Rust documentation for `VowelIndependent`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.VowelIndependent) for more information.
      */
     static VowelIndependent = IndicSyllabicCategory.#objectValues[35];
     /**
-     * See the [Rust documentation for `ReorderingKiller`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ReorderingKiller) for more information.
+     * See the [Rust documentation for `ReorderingKiller`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#associatedconstant.ReorderingKiller) for more information.
      */
     static ReorderingKiller = IndicSyllabicCategory.#objectValues[36];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -301,7 +301,7 @@ export class IndicSyllabicCategory {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -325,7 +325,7 @@ export class IndicSyllabicCategory {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -349,7 +349,7 @@ export class IndicSyllabicCategory {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -367,7 +367,7 @@ export class IndicSyllabicCategory {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicSyllabicCategory.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicSyllabicCategory.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -388,6 +388,11 @@ export class IndicSyllabicCategory {
         }
     }
 
+    /**
+     * Creates a `IndicSyllabicCategory` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

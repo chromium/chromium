@@ -39,7 +39,7 @@ namespace icu4x {
 /**
  * An ICU4X `DateTime` object capable of containing a date and time for any calendar.
  *
- * See the [Rust documentation for `DateTime`](https://docs.rs/icu/2.2.0/icu/time/struct.DateTime.html) for more information.
+ * See the [Rust documentation for `DateTime`](https://docs.rs/icu/2.4.0/icu/time/struct.DateTime.html) for more information.
  */
 struct DateTime {
     std::unique_ptr<icu4x::Date> date;
@@ -48,7 +48,7 @@ struct DateTime {
   /**
    * Creates a new {@link DateTime} from an IXDTF string.
    *
-   * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.DateTime.html#method.try_from_str) for more information.
+   * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.DateTime.html#method.try_from_str) for more information.
    */
   inline static icu4x::diplomat::result<icu4x::DateTime, icu4x::Rfc9557ParseError> from_string(std::string_view v, const icu4x::Calendar& calendar);
 

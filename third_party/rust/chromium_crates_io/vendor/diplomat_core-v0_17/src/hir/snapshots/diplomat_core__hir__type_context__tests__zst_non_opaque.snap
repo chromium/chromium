@@ -1,0 +1,6 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in NonOpaque
+> Methods on ZST structs are not yet implemented: NonOpaque

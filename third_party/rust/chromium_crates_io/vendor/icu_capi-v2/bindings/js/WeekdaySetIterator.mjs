@@ -10,7 +10,7 @@ const WeekdaySetIterator_box_destroy_registry = new FinalizationRegistry((ptr) =
 /**
  * Documents which days of the week are considered to be a part of the weekend
  *
- * See the [Rust documentation for `WeekdaySetIterator`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekdaySetIterator.html) for more information.
+ * See the [Rust documentation for `WeekdaySetIterator`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekdaySetIterator.html) for more information.
  */
 export class WeekdaySetIterator {
     // Internal ptr reference:
@@ -42,7 +42,7 @@ export class WeekdaySetIterator {
 
 
     /**
-     * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekdaySetIterator.html#method.next) for more information.
+     * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekdaySetIterator.html#method.next) for more information.
      */
     #iteratorNext() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);

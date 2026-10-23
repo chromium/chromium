@@ -71,7 +71,7 @@ version = "2.2.0"
 optional = true
 
 [dependencies.icu_properties]
-version = "=2.2.0"
+version = "2.2.0"
 optional = true
 
 [dependencies.read-fonts]

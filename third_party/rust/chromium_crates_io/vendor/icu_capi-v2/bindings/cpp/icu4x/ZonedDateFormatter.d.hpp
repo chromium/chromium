@@ -40,7 +40,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `DateTimeFormatter`](https://docs.rs/icu/2.2.0/icu/datetime/struct.DateTimeFormatter.html) for more information.
+ * See the [Rust documentation for `DateTimeFormatter`](https://docs.rs/icu/2.4.0/icu/datetime/struct.DateTimeFormatter.html) for more information.
  */
 class ZonedDateFormatter {
 public:
@@ -51,7 +51,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
+   * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_specific_long(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -61,7 +61,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
+   * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_specific_long_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -71,7 +71,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
+   * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_specific_short(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -81,7 +81,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
+   * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_specific_short_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -91,7 +91,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
+   * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_localized_offset_long(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -101,7 +101,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
+   * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_localized_offset_long_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -111,7 +111,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
+   * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_localized_offset_short(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -121,7 +121,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
+   * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_localized_offset_short_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -131,7 +131,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
+   * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_generic_long(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -141,7 +141,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
+   * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_generic_long_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -151,7 +151,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
+   * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_generic_short(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -161,7 +161,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
+   * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_generic_short_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -171,7 +171,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `Location`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
+   * See the [Rust documentation for `Location`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_location(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -181,7 +181,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `Location`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
+   * See the [Rust documentation for `Location`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_location_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -191,7 +191,7 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
+   * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_exemplar_city(const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
@@ -201,19 +201,19 @@ public:
    * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
    * or else unexpected behavior may occur!
    *
-   * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
+   * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::ZonedDateFormatter>, icu4x::DateTimeFormatterLoadError> create_exemplar_city_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, const icu4x::DateFormatter& formatter);
 
   /**
-   * See the [Rust documentation for `format`](https://docs.rs/icu/2.2.0/icu/datetime/struct.DateTimeFormatter.html#method.format) for more information.
+   * See the [Rust documentation for `format`](https://docs.rs/icu/2.4.0/icu/datetime/struct.DateTimeFormatter.html#method.format) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::DateTimeWriteError> format_iso(const icu4x::IsoDate& iso_date, const icu4x::TimeZoneInfo& zone) const;
   template<typename W>
   inline icu4x::diplomat::result<std::monostate, icu4x::DateTimeWriteError> format_iso_write(const icu4x::IsoDate& iso_date, const icu4x::TimeZoneInfo& zone, W& writeable_output) const;
 
   /**
-   * See the [Rust documentation for `format_same_calendar`](https://docs.rs/icu/2.2.0/icu/datetime/struct.DateTimeFormatter.html#method.format_same_calendar) for more information.
+   * See the [Rust documentation for `format_same_calendar`](https://docs.rs/icu/2.4.0/icu/datetime/struct.DateTimeFormatter.html#method.format_same_calendar) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::DateTimeMismatchedCalendarError> format_same_calendar(const icu4x::Date& date, const icu4x::TimeZoneInfo& zone) const;
   template<typename W>

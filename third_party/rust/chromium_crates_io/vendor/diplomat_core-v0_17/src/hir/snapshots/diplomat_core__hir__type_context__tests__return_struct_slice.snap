@@ -1,0 +1,6 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo::returns_slice
+> `abi_compatible` can only be used on non-output-only struct or enum types.

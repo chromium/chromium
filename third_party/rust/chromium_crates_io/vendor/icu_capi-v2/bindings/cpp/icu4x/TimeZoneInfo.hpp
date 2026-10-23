@@ -62,7 +62,7 @@ inline std::unique_ptr<icu4x::TimeZoneInfo> icu4x::TimeZoneInfo::utc() {
     return std::unique_ptr<icu4x::TimeZoneInfo>(icu4x::TimeZoneInfo::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::TimeZoneInfo> icu4x::TimeZoneInfo::from_parts(const icu4x::TimeZone& id, const icu4x::UtcOffset* offset, std::optional<icu4x::TimeZoneVariant> _variant) {
+inline std::unique_ptr<icu4x::TimeZoneInfo> icu4x::TimeZoneInfo::from_parts(const icu4x::TimeZone& id, icu4x::diplomat::maybe_null<const icu4x::UtcOffset*> offset, std::optional<icu4x::TimeZoneVariant> _variant) {
     auto result = icu4x::capi::icu4x_TimeZoneInfo_from_parts_mv1(id.AsFFI(),
         offset ? offset->AsFFI() : nullptr,
         _variant.has_value() ? (icu4x::capi::TimeZoneVariant_option{ { _variant.value().AsFFI() }, true }) : (icu4x::capi::TimeZoneVariant_option{ {}, false }));
@@ -105,7 +105,7 @@ inline std::unique_ptr<icu4x::TimeZoneInfo> icu4x::TimeZoneInfo::with_variant(ic
     return std::unique_ptr<icu4x::TimeZoneInfo>(icu4x::TimeZoneInfo::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::UtcOffset> icu4x::TimeZoneInfo::offset() const {
+inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::UtcOffset>> icu4x::TimeZoneInfo::offset() const {
     auto result = icu4x::capi::icu4x_TimeZoneInfo_offset_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::UtcOffset>(icu4x::UtcOffset::FromFFI(result));
 }

@@ -26,7 +26,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * Additional information: [1](https://docs.rs/fixed_decimal/0.7.2/fixed_decimal/enum.ParseError.html)
+ * Additional information: [1](https://docs.rs/fixed_decimal/0.7.3/fixed_decimal/enum.ParseError.html)
  */
 class DecimalParseError {
 public:

@@ -9,7 +9,7 @@ export type DateAddOptions_obj = {
 
 
 /**
- * See the [Rust documentation for `DateAddOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateAddOptions.html) for more information.
+ * See the [Rust documentation for `DateAddOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateAddOptions.html) for more information.
  */
 export class DateAddOptions {
     get overflow(): DateOverflow | null;

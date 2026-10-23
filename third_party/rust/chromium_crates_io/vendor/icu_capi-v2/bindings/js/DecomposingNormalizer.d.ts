@@ -6,7 +6,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `DecomposingNormalizer`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html) for more information.
+ * See the [Rust documentation for `DecomposingNormalizer`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html) for more information.
  */
 export class DecomposingNormalizer {
     /** @internal */
@@ -18,28 +18,28 @@ export class DecomposingNormalizer {
     /**
      * Construct a new `DecomposingNormalizer` instance for NFD using compiled data.
      *
-     * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
+     * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
      */
     static createNfd(): DecomposingNormalizer;
 
     /**
      * Construct a new `DecomposingNormalizer` instance for NFD using a particular data source.
      *
-     * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
+     * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
      */
     static createNfdWithProvider(provider: DataProvider): DecomposingNormalizer;
 
     /**
      * Construct a new `DecomposingNormalizer` instance for NFKD using compiled data.
      *
-     * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
+     * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
      */
     static createNfkd(): DecomposingNormalizer;
 
     /**
      * Construct a new `DecomposingNormalizer` instance for NFKD using a particular data source.
      *
-     * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
+     * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
      */
     static createNfkdWithProvider(provider: DataProvider): DecomposingNormalizer;
 
@@ -49,7 +49,7 @@ export class DecomposingNormalizer {
      * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
      * to the WHATWG Encoding Standard.
      *
-     * See the [Rust documentation for `normalize_utf8`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.normalize_utf8) for more information.
+     * See the [Rust documentation for `normalize_utf16`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.normalize_utf16) for more information.
      */
     normalize(s: string): string;
 
@@ -59,14 +59,14 @@ export class DecomposingNormalizer {
      * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
      * to the WHATWG Encoding Standard.
      *
-     * See the [Rust documentation for `is_normalized_utf16`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.is_normalized_utf16) for more information.
+     * See the [Rust documentation for `is_normalized_utf16`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.is_normalized_utf16) for more information.
      */
     isNormalized(s: string): boolean;
 
     /**
      * Return the index a slice of potentially-invalid UTF-16 is normalized up to
      *
-     * See the [Rust documentation for `split_normalized_utf16`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized_utf16) for more information.
+     * See the [Rust documentation for `split_normalized_utf16`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized_utf16) for more information.
      */
     isNormalizedUpTo(s: string): number;
 }

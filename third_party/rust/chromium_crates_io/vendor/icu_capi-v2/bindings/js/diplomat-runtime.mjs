@@ -7,14 +7,26 @@ export const internalConstructor = Symbol("constructor");
  */
 export const exposeConstructor = Symbol("exposeConstructor");
 
+export function typeError(varr, ty) {
+    throw Error(`${varr} is not a ${ty}`);
+}
+
+const TEXT_DECODER_UTF8 = new TextDecoder("utf-8");
+// WASM linear memory is always little-endian
+const TEXT_DECODER_UTF16 = new TextDecoder("utf-16le");
+const TEXT_ENCODER = new TextEncoder();
+
 export function readString8(wasm, ptr, len) {
     const buf = new Uint8Array(wasm.memory.buffer, ptr, len);
-    return (new TextDecoder("utf-8")).decode(buf)
+    return TEXT_DECODER_UTF8.decode(buf);
 }
 
 export function readString16(wasm, ptr, len) {
+    if (len === 0) {
+        return "";
+    }
     const buf = new Uint16Array(wasm.memory.buffer, ptr, len);
-    return String.fromCharCode.apply(null, buf)
+    return TEXT_DECODER_UTF16.decode(buf);
 }
 
 export function withDiplomatWrite(wasm, callback) {
@@ -209,26 +221,28 @@ export function readOption(wasm, ptr, size, readCallback) {
  */
 export class DiplomatBuf {
     static str8 = (wasm, string) => {
-    var utf8Length = 0;
-    for (const codepointString of string) {
-        let codepoint = codepointString.codePointAt(0);
-        if (codepoint < 0x80) {
-        utf8Length += 1
-        } else if (codepoint < 0x800) {
-        utf8Length += 2
-        } else if (codepoint < 0x10000) {
-        utf8Length += 3
-        } else {
-        utf8Length += 4
+        let utf8Length = 0;
+        for (let i = 0; i < string.length; i++) {
+            const c = string.charCodeAt(i);
+            if (c < 0x80) {
+                utf8Length += 1;
+            } else if (c < 0x800) {
+                utf8Length += 2;
+            } else if (c >= 0xD800 && c <= 0xDBFF && i + 1 < string.length && (string.charCodeAt(i + 1) & 0xFC00) === 0xDC00) {
+                utf8Length += 4;
+                i++;
+            } else {
+                // 3-byte BMP character, or unpaired surrogate (which TextEncoder replaces with 3-byte U+FFFD)
+                utf8Length += 3;
+            }
         }
-    }
 
-    const ptr = wasm.diplomat_alloc(utf8Length, 1);
+        const ptr = wasm.diplomat_alloc(utf8Length, 1);
 
-    const result = (new TextEncoder()).encodeInto(string, new Uint8Array(wasm.memory.buffer, ptr, utf8Length));
-    console.assert(string.length === result.read && utf8Length === result.written, "UTF-8 write error");
+        const result = TEXT_ENCODER.encodeInto(string, new Uint8Array(wasm.memory.buffer, ptr, utf8Length));
+        console.assert(string.length === result.read && utf8Length === result.written, "UTF-8 write error");
 
-    return new DiplomatBuf(ptr, utf8Length, () => wasm.diplomat_free(ptr, utf8Length, 1));
+        return new DiplomatBuf(ptr, utf8Length, () => wasm.diplomat_free(ptr, utf8Length, 1));
     }
 
     static str16 = (wasm, string) => {
@@ -374,6 +388,10 @@ export class DiplomatWriteBuf {
         return readString8(this.#wasm, this.ptr, this.size);
     }
 
+    readString16() {
+        return readString16(this.#wasm, this.ptr, this.size / 2);
+    }
+
     get buffer() {
         return this.#buffer;
     }
@@ -476,8 +494,6 @@ export class DiplomatSlicePrimitive extends DiplomatSlice {
 }
 
 export class DiplomatSliceStr extends DiplomatSlice {
-    #decoder;
-
     constructor(wasm, buffer, stringEncoding, lifetimeEdges) {
         let encoding;
         switch (stringEncoding) {
@@ -492,18 +508,14 @@ export class DiplomatSliceStr extends DiplomatSlice {
                 break;
         }
         super(wasm, buffer, encoding, lifetimeEdges);
-
-        if (stringEncoding === "string8") {
-            this.#decoder = new TextDecoder('utf-8');
-        }
     }
 
     getValue() {
         switch (this.bufferType) {
             case Uint8Array:
-                return this.#decoder.decode(super.getValue());
+                return TEXT_DECODER_UTF8.decode(super.getValue());
             case Uint16Array:
-                return String.fromCharCode.apply(null, super.getValue());
+                return TEXT_DECODER_UTF16.decode(super.getValue());
             default:
                 return null;
         }

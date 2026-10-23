@@ -5,10 +5,14 @@
 //! The primary per-codepoint casefolding data
 
 #[cfg(feature = "datagen")]
-use alloc::collections::BTreeMap;
+use super::exceptions::Exception;
+#[cfg(feature = "datagen")]
+use alloc::collections::BTreeSet;
+#[cfg(feature = "datagen")]
+use alloc::vec::Vec;
 use core::num::TryFromIntError;
 use icu_collections::codepointtrie::TrieValue;
-use zerovec::ule::{AsULE, RawBytesULE, UleError, ULE};
+use zerovec::ule::{AsULE, RawBytesULE, ULE, UleError};
 
 /// The case of a Unicode character
 ///
@@ -116,9 +120,176 @@ pub(crate) enum MappingKind {
 #[cfg_attr(feature = "datagen", databake(path = icu_casemap::provider::data))]
 pub struct CaseMapData {
     /// Whether this is default-ignoreable
-    pub ignoreable: bool,
+    #[cfg_attr(feature = "serde", serde(rename = "ignoreable"))]
+    pub is_ignoreable: bool,
     /// The rest of the case mapping data
     pub kind: CaseMapDataKind,
+}
+
+impl CaseMapData {
+    /// The [`CaseMapData`] for a code point that is uncased, insensitive, and has no dot type.
+    pub const UNCASED_INSENSITIVE_NO_DOT: Self = Self {
+        is_ignoreable: false,
+        kind: CaseMapDataKind::Uncased(NonExceptionData {
+            is_sensitive: false,
+            dot_type: DotType::NoDot,
+        }),
+    };
+
+    /// Creates a new [`CaseMapData`] for a code point, given the relevant data.
+    #[cfg(feature = "datagen")]
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        exceptions: &mut Vec<Exception<'_>>,
+        c: char,
+        is_ignoreable: bool,
+        is_sensitive: bool,
+        dot_type: DotType,
+        case_type: Option<CaseType>,
+        simple_upper: Option<char>,
+        simple_lower: Option<char>,
+        simple_title: Option<char>,
+        full_lower: Option<&str>,
+        full_upper: Option<&str>,
+        full_title: Option<&str>,
+        has_conditional_map: bool,
+        simple_fold: Option<char>,
+        full_fold: Option<&str>,
+        has_conditional_fold: bool,
+        mut full_closure: BTreeSet<char>,
+    ) -> Self {
+        // Don't store full mappings that are the same as the simple mapping, unless there is a conditional case mapping.
+        let full_lower = full_lower.filter(|&s| {
+            !has_conditional_map && s != simple_lower.unwrap_or(c).encode_utf8(&mut [0; 4])
+        });
+        let full_upper = full_upper.filter(|&s| {
+            !has_conditional_map && s != simple_upper.unwrap_or(c).encode_utf8(&mut [0; 4])
+        });
+        let full_title = full_title.filter(|&s| {
+            !has_conditional_map
+                && s != simple_title
+                    .or(simple_upper)
+                    .unwrap_or(c)
+                    .encode_utf8(&mut [0; 4])
+        });
+
+        // Don't store full case folding that is the same as the simple case folding, unless there is a conditional case folding.
+        let full_fold = full_fold.filter(|f| {
+            !has_conditional_fold
+                && (f.chars().nth(1).is_some()
+                    || f.chars()
+                        .next()
+                        .is_some_and(|c| c != simple_fold.unwrap_or(c)))
+        });
+
+        // We can use delta encoding if uppercase and titlecase match, and there is no special simple case folding.
+        let delta = if simple_upper == simple_title
+            && simple_fold.is_none_or(|s| s == simple_lower.unwrap_or(c))
+        {
+            if let Some(u) = simple_upper
+                && Some(CaseType::Lower) == case_type
+            {
+                Some((u as i32 - c as i32, u))
+            } else if let Some(l) = simple_lower
+                && let Some(CaseType::Upper | CaseType::Title) = case_type
+            {
+                Some((l as i32 - c as i32, l))
+            } else {
+                Some((0, c))
+            }
+        } else {
+            None
+        };
+
+        // Remove characters from the closure that are already covered by the simple case mappings.
+        if let Some(l) = simple_lower {
+            full_closure.remove(&l);
+        }
+        if let Some(u) = simple_upper {
+            full_closure.remove(&u);
+        }
+        if let Some(t) = simple_title {
+            full_closure.remove(&t);
+        }
+        if let Some(s) = simple_fold {
+            full_closure.remove(&s);
+        }
+
+        let no_simple_case_folding = simple_fold.is_none() && simple_lower.is_some();
+
+        let needs_exception_non_closure = delta
+            .and_then(|(d, _)| u8::try_from(d.abs()).ok())
+            .is_none()
+            || no_simple_case_folding
+            || has_conditional_fold
+            || has_conditional_map
+            || full_lower.is_some()
+            || full_fold.is_some()
+            || full_upper.is_some()
+            || full_title.is_some();
+
+        let kind = if needs_exception_non_closure || !full_closure.is_empty() {
+            // Don't use the delta if we're only here because of a non-trivial closure.
+            let delta = delta.filter(|_| needs_exception_non_closure);
+
+            // TODO: it's not clear to me why we need this
+            let delta = delta.filter(|&(d, _)| d != 0);
+
+            let exception = super::exceptions::DecodedException {
+                bits: super::exception_helpers::ExceptionBits {
+                    no_simple_case_folding,
+                    is_sensitive,
+                    dot_type,
+                    has_conditional_map,
+                    has_conditional_fold,
+                    negative_delta: delta.is_some_and(|(d, _)| d < 0),
+                },
+                simple_case_delta: delta.map(|(d, _)| d.unsigned_abs()),
+                lowercase: simple_lower.filter(|&l| delta.is_none_or(|(_, d)| d != l)),
+                uppercase: simple_upper.filter(|&u| delta.is_none_or(|(_, d)| d != u)),
+                titlecase: simple_title.filter(|&t| Some(t) != simple_upper),
+                full_lowercase: full_lower.map(Into::into),
+                full_uppercase: full_upper.map(Into::into),
+                full_titlecase: full_title.map(Into::into),
+                casefold: simple_fold.filter(|&s| delta.is_none() && Some(s) != simple_lower),
+                full_casefold: full_fold.map(Into::into),
+                closure: (!full_closure.is_empty()).then(|| full_closure.into_iter().collect()),
+            }
+            .encode();
+
+            CaseMapDataKind::Exception(
+                case_type,
+                exceptions
+                    .iter()
+                    .position(|x| x == &exception)
+                    .unwrap_or_else(|| {
+                        exceptions.push(exception);
+                        exceptions.len() - 1
+                    }) as u16,
+            )
+        } else if let Some((delta, _)) = delta
+            && let Some(case_type) = case_type
+        {
+            CaseMapDataKind::Delta(
+                NonExceptionData {
+                    is_sensitive,
+                    dot_type,
+                },
+                case_type,
+                delta as i16,
+            )
+        } else {
+            CaseMapDataKind::Uncased(NonExceptionData {
+                is_sensitive,
+                dot_type,
+            })
+        };
+
+        Self {
+            is_ignoreable,
+            kind,
+        }
+    }
 }
 
 /// A subset of case mapping data associated with a single code point
@@ -158,7 +329,8 @@ pub enum CaseMapDataKind {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct NonExceptionData {
     /// Whether or not the type is case-sensitive
-    pub sensitive: bool,
+    #[cfg_attr(feature = "serde", serde(rename = "sensitive"))]
+    pub is_sensitive: bool,
     /// The "dot type"
     pub dot_type: DotType,
 }
@@ -191,7 +363,7 @@ impl CaseMapData {
 
     #[inline]
     pub(crate) fn is_ignorable(self) -> bool {
-        self.ignoreable
+        self.is_ignoreable
     }
 
     #[inline]
@@ -206,8 +378,8 @@ impl CaseMapData {
     pub(crate) fn is_sensitive(self) -> bool {
         match self.kind {
             CaseMapDataKind::Exception(..) => false,
-            CaseMapDataKind::Delta(ned, ..) => ned.sensitive,
-            CaseMapDataKind::Uncased(ned) => ned.sensitive,
+            CaseMapDataKind::Delta(ned, ..) => ned.is_sensitive,
+            CaseMapDataKind::Uncased(ned) => ned.is_sensitive,
         }
     }
 
@@ -244,37 +416,6 @@ impl CaseMapData {
         } else {
             0
         }
-    }
-
-    // CaseMapExceptionsBuilder moves the full mapping and closure
-    // strings out of the exception table itself. This means that the
-    // exception index for a code point in ICU4X will be different
-    // from the exception index for the same codepoint in ICU4C. Given
-    // a mapping from old to new, this function updates the exception
-    // index if necessary.
-    #[cfg(feature = "datagen")]
-    pub(crate) fn with_updated_exception(self, updates: &BTreeMap<u16, u16>) -> Self {
-        let kind = if let CaseMapDataKind::Exception(ty, index) = self.kind {
-            if let Some(updated_exception) = updates.get(&index) {
-                CaseMapDataKind::Exception(ty, *updated_exception)
-            } else {
-                self.kind
-            }
-        } else {
-            self.kind
-        };
-
-        Self { kind, ..self }
-    }
-
-    /// Attempt to construct from ICU-format integer
-    #[cfg(any(feature = "datagen", test))]
-    pub(crate) fn try_from_icu_integer(int: u16) -> Result<Self, UleError> {
-        let raw = int.to_unaligned();
-        CaseMapDataULE::validate_bytes(raw.as_bytes())?;
-
-        let this = Self::from_unaligned(CaseMapDataULE(raw));
-        Ok(this)
     }
 }
 
@@ -394,7 +535,7 @@ impl AsULE for CaseMapData {
     fn from_unaligned(ule: Self::ULE) -> Self {
         let sixteen = ule.0.as_unsigned_int();
 
-        let ignoreable = (sixteen & CaseMapDataULE::CASE_IGNOREABLE_BIT) != 0;
+        let is_ignoreable = (sixteen & CaseMapDataULE::CASE_IGNOREABLE_BIT) != 0;
         let exception = (sixteen & CaseMapDataULE::EXCEPTION_BIT) != 0;
 
         let case_type = sixteen & CaseMapDataULE::CASE_TYPE_BITS;
@@ -406,10 +547,10 @@ impl AsULE for CaseMapData {
         } else {
             let dot_type = (sixteen & CaseMapDataULE::DOT_TYPE_BITS) >> CaseMapDataULE::DOT_SHIFT;
             let dot_type = DotType::from_masked_bits(dot_type);
-            let sensitive = (sixteen & CaseMapDataULE::CASE_SENSITIVE_BIT) != 0;
+            let is_sensitive = (sixteen & CaseMapDataULE::CASE_SENSITIVE_BIT) != 0;
             let ned = NonExceptionData {
                 dot_type,
-                sensitive,
+                is_sensitive,
             };
             if let Some(case_type) = case_type {
                 // no need to mask first since the delta bits start at 15
@@ -421,12 +562,15 @@ impl AsULE for CaseMapData {
                 CaseMapDataKind::Uncased(ned)
             }
         };
-        CaseMapData { ignoreable, kind }
+        CaseMapData {
+            is_ignoreable,
+            kind,
+        }
     }
 
     fn to_unaligned(self) -> Self::ULE {
         let mut sixteen = 0;
-        if self.ignoreable {
+        if self.is_ignoreable {
             sixteen |= CaseMapDataULE::CASE_IGNOREABLE_BIT;
         }
         match self.kind {
@@ -437,7 +581,7 @@ impl AsULE for CaseMapData {
             }
             CaseMapDataKind::Uncased(ned) => {
                 sixteen |= (ned.dot_type as u16) << CaseMapDataULE::DOT_SHIFT;
-                if ned.sensitive {
+                if ned.is_sensitive {
                     sixteen |= CaseMapDataULE::CASE_SENSITIVE_BIT;
                 }
                 // Remaining bytes are left at zero
@@ -448,7 +592,7 @@ impl AsULE for CaseMapData {
                 // right type
                 sixteen |= (delta << CaseMapDataULE::DELTA_SHIFT) as u16;
                 sixteen |= (ned.dot_type as u16) << CaseMapDataULE::DOT_SHIFT;
-                if ned.sensitive {
+                if ned.is_sensitive {
                     sixteen |= CaseMapDataULE::CASE_SENSITIVE_BIT;
                 }
                 sixteen |= case_type as u16;
@@ -466,18 +610,18 @@ mod tests {
     fn test_roundtrip() {
         const TESTCASES: &[CaseMapData] = &[
             CaseMapData {
-                ignoreable: true,
+                is_ignoreable: true,
                 kind: CaseMapDataKind::Exception(Some(CaseType::Title), 923),
             },
             CaseMapData {
-                ignoreable: false,
+                is_ignoreable: false,
                 kind: CaseMapDataKind::Exception(None, 923),
             },
             CaseMapData {
-                ignoreable: true,
+                is_ignoreable: true,
                 kind: CaseMapDataKind::Delta(
                     NonExceptionData {
-                        sensitive: true,
+                        is_sensitive: true,
                         dot_type: DotType::SoftDotted,
                     },
                     CaseType::Upper,
@@ -485,10 +629,10 @@ mod tests {
                 ),
             },
             CaseMapData {
-                ignoreable: false,
+                is_ignoreable: false,
                 kind: CaseMapDataKind::Delta(
                     NonExceptionData {
-                        sensitive: true,
+                        is_sensitive: true,
                         dot_type: DotType::SoftDotted,
                     },
                     CaseType::Upper,
@@ -496,9 +640,9 @@ mod tests {
                 ),
             },
             CaseMapData {
-                ignoreable: false,
+                is_ignoreable: false,
                 kind: CaseMapDataKind::Uncased(NonExceptionData {
-                    sensitive: false,
+                    is_sensitive: false,
                     dot_type: DotType::SoftDotted,
                 }),
             },
@@ -508,20 +652,6 @@ mod tests {
             let ule = case.to_unaligned();
             let roundtrip = CaseMapData::from_unaligned(ule);
             assert_eq!(*case, roundtrip);
-            let integer = ule.0.as_unsigned_int();
-            let roundtrip2 = CaseMapData::try_from_icu_integer(integer).unwrap();
-            assert_eq!(*case, roundtrip2);
         }
-    }
-    #[test]
-    fn test_integer_roundtrip() {
-        // Buggy roundtrip cases go here
-        fn test_single_integer(int: u16) {
-            let cmd = CaseMapData::try_from_icu_integer(int).unwrap();
-            assert_eq!(int, cmd.to_unaligned().0.as_unsigned_int())
-        }
-
-        test_single_integer(84);
-        test_single_integer(2503);
     }
 }

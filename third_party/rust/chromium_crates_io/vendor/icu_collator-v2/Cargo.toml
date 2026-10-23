@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `icu_collator-2.2.1` crate.
+# `icu_collator-2.4.0` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "icu_collator"
-version = "2.2.1"
+version = "2.4.0"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -26,35 +26,35 @@ is_placeholder = true
 "unstable" = []
 
 [dependencies.icu_collator_data]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_collections]
-version = "~2.2.0"
-default_features = false
-[dependencies.icu_locale]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_locale_core]
-version = "^2.2.0"
+version = "^2.4.0"
+default_features = false
+[dependencies.icu_locale_fallback]
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_normalizer]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_properties]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_provider]
-version = "^2.2.0"
+version = "^2.4.0"
 default_features = false
 [dependencies.smallvec]
 version = "^1.10.0"
 default_features = false
 [dependencies.utf16_iter]
-version = "^1.0.2"
+version = "^1.0.4"
 default_features = false
 [dependencies.utf8_iter]
-version = "^1.0.2"
+version = "^1.0.4"
 default_features = false
 [dependencies.zerovec]
-version = "^0.11.6"
+version = "^0.11.9"
 default_features = false

@@ -65,11 +65,38 @@ impl<'a, const IS_TITLE_CONTEXT: bool> Writeable for FullCaseWriteable<'a, '_, I
         let src = self.src;
         let mut mapping = self.mapping;
         let mut iter = src.char_indices();
+        // Number of characters to titlecase at the beginning
+        // for the dutch IJ case.
+        //
+        // This cannot be handled in full_helper: this affects the trailing case logic. All other special casing
+        // situations are able to cope by only titlecasing the first character, Dutch is the only place where
+        // the first two base characters get uppercased.
+        let mut dutch_titlecase_count = if IS_TITLE_CONTEXT && self.locale == CaseMapLocale::Dutch {
+            dutch_ij_pair_at_beginning_count(src, self.data)
+        } else {
+            None
+        };
         for (i, c) in &mut iter {
             let context = ContextIterator::new(&src[..i], &src[i..]);
             self.data
                 .full_helper::<IS_TITLE_CONTEXT, W>(c, context, self.locale, mapping, sink)?;
             if IS_TITLE_CONTEXT {
+                // Check if we're uppercasing a dutch IJ
+                if let Some(count) = dutch_titlecase_count {
+                    // If we are, we want to wait `count` characters
+                    // before we switch to lowercasing (or TrailingCase::Unchanged)
+                    if count > 1 {
+                        // We still have code points to process
+                        dutch_titlecase_count = Some(count - 1);
+                        // Continue the loop to skip the mode switching code below
+                        continue;
+                    } else {
+                        // We would have been down to zero. Time to continue the loop as normal.
+                        dutch_titlecase_count = None;
+                    }
+                }
+
+                // If titlecasing, switch the mode to lowercasing/TrailingCase::Unchanged
                 if self.titlecase_tail_casing == TrailingCase::Lower {
                     mapping = MappingKind::Lower;
                 } else {
@@ -105,10 +132,10 @@ impl<'data> CaseMap<'data> {
         } else {
             let idx = data.exception_index();
             let exception = self.exceptions.get(idx);
-            if data.is_relevant_to(kind) {
-                if let Some(simple) = exception.get_simple_case_slot_for(c) {
-                    return simple;
-                }
+            if data.is_relevant_to(kind)
+                && let Some(simple) = exception.get_simple_case_slot_for(c)
+            {
+                return simple;
             }
             exception.slot_char_for_kind(kind).unwrap_or(c)
         }
@@ -211,18 +238,6 @@ impl<'data> CaseMap<'data> {
             !IS_TITLE_CONTEXT || kind == MappingKind::Title || kind == MappingKind::Lower
         );
 
-        // ICU4C's non-standard extension for Dutch IJ titlecasing
-        // handled here instead of in full_lower_special_case because J does not have conditional
-        // special casemapping.
-        if IS_TITLE_CONTEXT && locale == CaseMapLocale::Dutch && kind == MappingKind::Lower {
-            // When titlecasing, a J found immediately after an I at the beginning of the segment
-            // should also uppercase. They are both allowed to have an acute accent but it must
-            // be present on both letters or neither. They may not have any other combining marks.
-            if (c == 'j' || c == 'J') && context.is_dutch_ij_pair_at_beginning(self) {
-                return sink.write_char('J');
-            }
-        }
-
         // ICU4C's non-standard extension for Greek uppercasing:
         // https://icu.unicode.org/design/case/greek-upper.
         // Effectively removes Greek accents from Greek vowels during uppercasing,
@@ -250,19 +265,16 @@ impl<'data> CaseMap<'data> {
                     // the now-unaccented adjacent vowels from a digraph/diphthong.
                     // Use a precomposed dialytika if the accent was precomposed, and a combining dialytika
                     // if the accent was combining, so as to map NFD to NFD and NFC to NFC.
-                    if !diacritics.dialytika && (vowel == GreekVowel::Ι || vowel == GreekVowel::Υ)
+                    if !diacritics.dialytika
+                        && (vowel == GreekVowel::Ι || vowel == GreekVowel::Υ)
+                        && let Some(preceding_vowel) = context.preceding_greek_vowel_diacritics()
+                        && !preceding_vowel.combining.dialytika
+                        && !preceding_vowel.precomposed.dialytika
                     {
-                        if let Some(preceding_vowel) = context.preceding_greek_vowel_diacritics() {
-                            if !preceding_vowel.combining.dialytika
-                                && !preceding_vowel.precomposed.dialytika
-                            {
-                                if preceding_vowel.combining.accented {
-                                    diacritics.dialytika = true;
-                                } else {
-                                    precomposed_diacritics.dialytika =
-                                        preceding_vowel.precomposed.accented;
-                                }
-                            }
+                        if preceding_vowel.combining.accented {
+                            diacritics.dialytika = true;
+                        } else {
+                            precomposed_diacritics.dialytika = preceding_vowel.precomposed.accented;
                         }
                     }
                     // Write the base of the uppercased combining character sequence.
@@ -340,32 +352,32 @@ impl<'data> CaseMap<'data> {
         } else {
             let idx = data.exception_index();
             let exception = self.exceptions.get(idx);
-            if exception.bits.has_conditional_special() {
-                if let Some(special) = match kind {
+            if exception.bits.has_conditional_special()
+                && let Some(special) = match kind {
                     MappingKind::Lower => {
                         self.full_lower_special_case::<IS_TITLE_CONTEXT>(c, context, locale)
                     }
                     MappingKind::Fold => self.full_fold_special_case(c, context, locale),
                     MappingKind::Upper | MappingKind::Title => self
                         .full_upper_or_title_special_case::<IS_TITLE_CONTEXT>(c, context, locale),
-                } {
-                    return special.write_to(sink);
                 }
+            {
+                return special.write_to(sink);
             }
-            if let Some(mapped_string) = exception.get_fullmappings_slot_for_kind(kind) {
-                if !mapped_string.is_empty() {
-                    return sink.write_str(mapped_string);
-                }
+            if let Some(mapped_string) = exception.get_fullmappings_slot_for_kind(kind)
+                && !mapped_string.is_empty()
+            {
+                return sink.write_str(mapped_string);
             }
 
             if kind == MappingKind::Fold && exception.bits.no_simple_case_folding() {
                 return sink.write_char(c);
             }
 
-            if data.is_relevant_to(kind) {
-                if let Some(simple) = exception.get_simple_case_slot_for(c) {
-                    return sink.write_char(simple);
-                }
+            if data.is_relevant_to(kind)
+                && let Some(simple) = exception.get_simple_case_slot_for(c)
+            {
+                return sink.write_char(simple);
             }
 
             if let Some(slot_char) = exception.slot_char_for_kind(kind) {
@@ -482,7 +494,7 @@ impl<'data> CaseMap<'data> {
     ) -> Option<FullMappingResult<'_>> {
         if locale == CaseMapLocale::Turkish && c == 'i' {
             // In Turkic languages, i turns into a dotted capital I.
-            return Some(FullMappingResult::CodePoint('\u{130}'));
+            return Some(FullMappingResult::CodePoint('İ'));
         }
         if locale == CaseMapLocale::Lithuanian
             && c == '\u{307}'
@@ -493,7 +505,7 @@ impl<'data> CaseMap<'data> {
             return Some(FullMappingResult::Remove);
         }
         // ICU4C's non-standard extension for Armenian ligature ech-yiwn.
-        if c == '\u{587}' {
+        if c == 'և' {
             return match (locale, IS_TITLE_CONTEXT) {
                 (CaseMapLocale::Armenian, false) => Some(FullMappingResult::String("ԵՎ")),
                 (CaseMapLocale::Armenian, true) => Some(FullMappingResult::String("Եվ")),
@@ -662,7 +674,7 @@ pub enum CaseMapLocale {
 
 impl CaseMapLocale {
     pub const fn from_langid(langid: &LanguageIdentifier) -> Self {
-        use icu_locale_core::subtags::{language, Language};
+        use icu_locale_core::subtags::{Language, language};
         const TR: Language = language!("tr");
         const AZ: Language = language!("az");
         const LT: Language = language!("lt");
@@ -809,56 +821,172 @@ impl<'a> ContextIterator<'a> {
         }
         false
     }
+}
 
-    /// Checks the preceding and surrounding context of a j or J
-    /// and returns true if it is preceded by an i or I at the start of the string.
-    /// If one has an acute accent,
-    /// both must have the accent for this to return true. No other accents are handled.
-    fn is_dutch_ij_pair_at_beginning(&self, mapping: &CaseMap) -> bool {
-        let mut before = self.before.chars().rev();
-        let mut i_has_acute = false;
-        loop {
-            match before.next() {
-                Some('i') | Some('I') => break,
-                Some('í') | Some('Í') => {
-                    i_has_acute = true;
-                    break;
+/// Data on an i, I, í, or Í at the beginning of a string
+#[derive(PartialEq, Eq, Debug, Clone)]
+struct DutchIData<'a> {
+    /// The rest of the string after this i
+    rest: &'a str,
+    has_acute: bool,
+    // Number of code points consumed.
+    char_count: usize,
+}
+
+/// Is there an i at the beginning of the string which may be relevant
+/// for Dutch titlecasing?
+fn dutch_i_at_beginning(s: &'_ str) -> Option<DutchIData<'_>> {
+    let mut chars = s.chars();
+    match chars.next() {
+        Some('i') | Some('I') => {
+            let rest = chars.as_str();
+            match chars.next() {
+                Some(ACUTE) => {
+                    // We have consumed an i and an acute accent.
+                    // So chars.as_str() will have the rest of the string
+                    Some(DutchIData {
+                        rest: chars.as_str(),
+                        has_acute: true,
+                        char_count: 2,
+                    })
                 }
-                Some(ACUTE) => i_has_acute = true,
-                _ => return false,
+                _ => {
+                    // We have consumed an i and a non-acute accent character.
+                    // So `rest`, from before our `.next()` call, will have the rest of the string
+                    Some(DutchIData {
+                        rest,
+                        has_acute: false,
+                        char_count: 1,
+                    })
+                }
             }
         }
-
-        if before.next().is_some() {
-            // not at the beginning of a string, doesn't matter
-            return false;
-        }
-        let mut j_has_acute = false;
-        for c in self.after.chars() {
-            if c == ACUTE {
-                j_has_acute = true;
-                continue;
-            }
-            // We are supposed to check that `j` has no other combining marks aside
-            // from potentially an acute accent. Once we hit the first non-combining mark
-            // we are done.
-            //
-            // ICU4C checks for `gc=Mn` to determine if something is a combining mark,
-            // however this requires extra data (and is the *only* point in the casemapping algorithm
-            // where there is a direct dependency on properties data not mediated by the casemapping data trie).
-            //
-            // Instead, we can check for ccc via dot_type, the same way the rest of the algorithm does.
-            //
-            // See https://unicode-org.atlassian.net/browse/ICU-22429
-            match mapping.dot_type(c) {
-                // Not a combining character; ccc = 0
-                DotType::NoDot | DotType::SoftDotted => break,
-                // found combining character, bail
-                _ => return false,
-            }
-        }
-
-        // either both should have an acute accent, or none. this is an XNOR operation
-        !(j_has_acute ^ i_has_acute)
+        // We have consumed an i and an acute accent.
+        // So chars.as_str() will have the rest of the string
+        Some('í') | Some('Í') => Some(DutchIData {
+            rest: chars.as_str(),
+            has_acute: true,
+            char_count: 1,
+        }),
+        _ => None,
     }
+}
+
+/// This checks for a Dutch-relevant IJ pair at the beginning of a string.
+/// This is an I followed by a J, with any casing, and no accents other than acute.
+/// Acute accents must be on both or neither.
+///
+/// This returns the number of characters (codepoint-wise, not code unit-wise)
+/// in the IJ pair, not including any combining characters on the J.
+///
+/// In dutch titlecasing mode, the first N characters should be uppercased:
+/// `ijabc` should titlecase to `IJabc`.
+fn dutch_ij_pair_at_beginning_count(s: &str, mapping: &CaseMap) -> Option<usize> {
+    let i_at_beginning = dutch_i_at_beginning(s)?;
+
+    let mut chars = i_at_beginning.rest.chars();
+
+    match chars.next() {
+        Some('j' | 'J') => (),
+        _ => return None,
+    }
+
+    let mut j_has_acute = false;
+    for c in chars {
+        if c == ACUTE {
+            j_has_acute = true;
+            continue;
+        }
+        // We are supposed to check that `j` has no other combining marks aside
+        // from potentially an acute accent. Once we hit the first non-combining mark
+        // we are done.
+        //
+        // ICU4C checks for `gc=Mn` to determine if something is a combining mark,
+        // however this requires extra data (and is the *only* point in the casemapping algorithm
+        // where there is a direct dependency on properties data not mediated by the casemapping data trie).
+        //
+        // Instead, we can check for ccc via dot_type, the same way the rest of the algorithm does.
+        //
+        // See https://unicode-org.atlassian.net/browse/ICU-22429
+        match mapping.dot_type(c) {
+            // Not a combining character; ccc = 0
+            DotType::NoDot | DotType::SoftDotted => break,
+            // found combining character, bail
+            _ => return None,
+        }
+    }
+
+    // either both should have an acute accent, or none. this is an XNOR operation
+    if !(j_has_acute ^ i_at_beginning.has_acute) {
+        // There were char_count characters in the i, and 1 more j character.
+        // The accent won't be cased.
+        Some(i_at_beginning.char_count + 1)
+    } else {
+        None
+    }
+}
+
+#[test]
+fn test_dutch_i_at_beginning() {
+    #[allow(
+        clippy::unnecessary_wraps,
+        reason = "this is a convenience function for testing"
+    )]
+    fn id(rest: &str, has_acute: bool, char_count: usize) -> Option<DutchIData<'_>> {
+        Some(DutchIData {
+            rest,
+            has_acute,
+            char_count,
+        })
+    }
+
+    // Should remove the dutch I (capital or lowercase, possibly accented I)
+    // and return the rest of the string
+    assert_eq!(dutch_i_at_beginning("iX"), id("X", false, 1));
+    assert_eq!(dutch_i_at_beginning("íX"), id("X", true, 1));
+    assert_eq!(dutch_i_at_beginning("i\u{301}X"), id("X", true, 2));
+    assert_eq!(dutch_i_at_beginning("IX"), id("X", false, 1));
+    assert_eq!(dutch_i_at_beginning("ÍX"), id("X", true, 1));
+    assert_eq!(dutch_i_at_beginning("ÍX"), id("X", true, 1));
+    assert_eq!(dutch_i_at_beginning("I\u{301}X"), id("X", true, 2));
+
+    // Shouldn't get confused about other accent marks: ONLY acute accents, and only one of them.
+    assert_eq!(dutch_i_at_beginning("í\u{301}X"), id("\u{301}X", true, 1));
+    assert_eq!(dutch_i_at_beginning("i\u{302}X"), id("\u{302}X", false, 1));
+    // This is an acute accent that comes *after* but that's fine, other parts of the algorithm
+    // will reject that.
+    assert_eq!(
+        dutch_i_at_beginning("i\u{302}\u{301}X"),
+        id("\u{302}\u{301}X", false, 1)
+    );
+
+    assert_eq!(dutch_i_at_beginning("ï\u{301}X"), None);
+}
+
+#[test]
+fn test_dutch_ij_at_beginning() {
+    let data = crate::CaseMapperBorrowed::new().data;
+
+    assert_eq!(dutch_ij_pair_at_beginning_count("ijabcd", data), Some(2));
+    assert_eq!(dutch_ij_pair_at_beginning_count("iJabcd", data), Some(2));
+    assert_eq!(dutch_ij_pair_at_beginning_count("IJabcd", data), Some(2));
+    assert_eq!(dutch_ij_pair_at_beginning_count("Ijabcd", data), Some(2));
+    assert_eq!(
+        dutch_ij_pair_at_beginning_count("íj\u{301}abcd", data),
+        Some(2)
+    );
+    assert_eq!(
+        dutch_ij_pair_at_beginning_count("ÍJ\u{301}abcd", data),
+        Some(2)
+    );
+    assert_eq!(
+        dutch_ij_pair_at_beginning_count("i\u{301}J\u{301}abcd", data),
+        Some(3)
+    );
+    assert_eq!(
+        dutch_ij_pair_at_beginning_count("i\u{301}Jabcd", data),
+        None
+    );
+    assert_eq!(dutch_ij_pair_at_beginning_count("íJabcd", data), None);
+    assert_eq!(dutch_ij_pair_at_beginning_count("abcdijk", data), None);
 }

@@ -2,6 +2,9 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
+#[cfg(feature = "alloc")]
+use alloc::string::String;
+use yoke::Yokeable;
 use zerofrom::ZeroFrom;
 use zerovec::{ZeroSlice, ZeroVec};
 
@@ -78,11 +81,11 @@ fn skip_node_value(pos: usize, lead: u16) -> usize {
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "databake", derive(databake::Bake))]
 #[cfg_attr(feature = "databake", databake(path = icu_collections::char16trie))]
-#[derive(Clone, Debug, PartialEq, Eq, ZeroFrom)]
+#[derive(Clone, Debug, PartialEq, Eq, ZeroFrom, Yokeable)]
 #[allow(clippy::exhaustive_structs)] // effectively exhaustive, struct-constructible for baking
 pub struct Char16Trie<'data> {
     /// An array of u16 containing the trie data.
-    #[cfg_attr(feature = "serde", serde(borrow))]
+    #[cfg_attr(feature = "serde", serde(borrow, alias = "trie_data"))]
     #[doc(hidden)] // #2417
     pub data: ZeroVec<'data, u16>,
 }
@@ -94,26 +97,110 @@ impl<'data> Char16Trie<'data> {
         Self { data }
     }
 
+    /// Returns a new [`Char16TrieCursor`] backed by borrowed data from the `trie` data.
+    #[inline]
+    pub fn cursor(&self) -> Char16TrieCursor<'_> {
+        Char16TrieCursor::new(&self.data)
+    }
+
     /// Returns a new [`Char16TrieIterator`] backed by borrowed data from the `trie` data
+    #[deprecated(since = "2.4.0", note = "use `Char16Trie::cursor`")]
+    #[allow(deprecated)]
     #[inline]
     pub fn iter(&self) -> Char16TrieIterator<'_> {
         Char16TrieIterator::new(&self.data)
     }
+
+    /// Returns an iterator over the key/value pairs in this trie.
+    ///
+    /// This is called `iter2` because of the deprecated `iter` API, which
+    /// is conceptually a lookup cursor, not an iterator.
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use icu::collections::char16trie::Char16Trie;
+    /// use zerovec::ZeroVec;
+    ///
+    /// // A Char16Trie containing the ASCII characters 'a' and 'ab'.
+    /// let trie_data = [48, 97, 176, 98, 32868];
+    /// let trie = Char16Trie::new(ZeroVec::from_slice_or_alloc(&trie_data));
+    ///
+    /// let mut it = trie.iter2();
+    /// assert_eq!(it.next(), Some(("a".into(), 1)));
+    /// assert_eq!(it.next(), Some(("ab".into(), 100)));
+    /// assert_eq!(it.next(), None);
+    /// ```
+    #[cfg(feature = "alloc")]
+    pub fn iter2(&self) -> impl Iterator<Item = (String, i32)> + '_ {
+        let cursor = self.cursor();
+        let mut root_value = cursor.value();
+        let mut stack = alloc::vec![(cursor, 0)];
+        let mut prefix = String::new();
+        let mut lead_surrogate = None;
+        core::iter::from_fn(move || {
+            if let Some(v) = root_value.take() {
+                return Some((String::new(), v));
+            }
+            while let Some((cursor, i)) = stack.last_mut() {
+                let mut next_cursor = cursor.clone();
+                if let Some(c) = next_cursor.probe(*i) {
+                    *i += 1;
+
+                    if let Some(lead) = lead_surrogate.take() {
+                        prefix.push(
+                            char::decode_utf16([lead, c])
+                                .next()
+                                .and_then(Result::ok)
+                                .unwrap_or(char::REPLACEMENT_CHARACTER),
+                        );
+                    } else if matches!(c, 0xD800..0xDC00) {
+                        lead_surrogate = Some(c);
+                    } else {
+                        prefix
+                            .push(char::from_u32(c as u32).unwrap_or(char::REPLACEMENT_CHARACTER));
+                    }
+
+                    let v = next_cursor.value();
+                    stack.push((next_cursor, 0));
+                    if let Some(v) = v {
+                        return Some((prefix.clone(), v));
+                    }
+                } else {
+                    stack.pop();
+                    if lead_surrogate.take().is_none()
+                        && let Some(ch @ '\u{10000}'..) = prefix.pop()
+                    {
+                        lead_surrogate = Some(u16_lead(ch as u32));
+                    }
+                }
+            }
+            None
+        })
+    }
 }
 
-/// This struct represents an iterator over a [`Char16Trie`].
+/// A cursor into a [`Char16Trie`], useful for stepwise lookup.
 #[derive(Clone, Debug)]
-pub struct Char16TrieIterator<'a> {
+pub struct Char16TrieCursor<'a> {
     /// A reference to the [`Char16Trie`] data to iterate over.
     trie: &'a ZeroSlice<u16>,
     /// Index of next trie unit to read, or `None` if there are no more matches.
     pos: Option<usize>,
     /// Remaining length of a linear-match node, minus 1, or `None` if not in
     /// such a node.
-    remaining_match_length: Option<usize>,
+    remaining_match_length: Option<u8>,
 }
 
+/// This struct represents an iterator over a [`Char16Trie`].
+#[deprecated(since = "2.4.0", note = "use `Char16TrieCursor`")]
+#[derive(Clone, Debug)]
+pub struct Char16TrieIterator<'a>(Char16TrieCursor<'a>);
+
 /// An enum representing the return value from a lookup in [`Char16Trie`].
+#[deprecated(since = "2.4.0", note = "use `Char16TrieCursor`")]
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[allow(clippy::exhaustive_enums)]
 pub enum TrieResult {
@@ -138,7 +225,7 @@ pub enum TrieResult {
 // supplementary code point (0x10000..0x10ffff).
 // @param supplementary 32-bit code point (U+10000..U+10ffff)
 // @return lead surrogate (U+d800..U+dbff) for supplementary
-fn u16_lead(supplementary: i32) -> u16 {
+fn u16_lead(supplementary: u32) -> u16 {
     (((supplementary) >> 10) + 0xd7c0) as u16
 }
 
@@ -146,28 +233,12 @@ fn u16_lead(supplementary: i32) -> u16 {
 // supplementary code point (0x10000..0x10ffff).
 // @param supplementary 32-bit code point (U+10000..U+10ffff)
 // @return trail surrogate (U+dc00..U+dfff) for supplementary
-fn u16_tail(supplementary: i32) -> u16 {
+fn u16_tail(supplementary: u32) -> u16 {
     (((supplementary) & 0x3ff) | 0xdc00) as u16
 }
 
-/// A macro that takes an `Option` argument and either unwraps it if it has a value or
-/// causes the function to return `TrieResult::NoMatch` if there is no value.
-/// This could perhaps be done with `std::ops::Try` once stabilized.
-macro_rules! trie_unwrap {
-    ($option:expr) => {
-        match $option {
-            Some(x) => x,
-            None => {
-                // Unexpected
-                debug_assert!(false);
-                return TrieResult::NoMatch;
-            }
-        }
-    };
-}
-
-impl<'a> Char16TrieIterator<'a> {
-    /// Returns a new [`Char16TrieIterator`] backed by borrowed data for the `trie` array
+impl<'a> Char16TrieCursor<'a> {
+    /// Returns a new [`Char16TrieCursor`] backed by borrowed data for the `trie` array.
     #[inline]
     pub fn new(trie: &'a ZeroSlice<u16>) -> Self {
         Self {
@@ -177,125 +248,232 @@ impl<'a> Char16TrieIterator<'a> {
         }
     }
 
-    /// Traverses the trie from the current state for this input char.
+    /// Steps the cursor one `char` into the trie.
     ///
     /// # Examples
     ///
     /// ```
-    /// use icu::collections::char16trie::{Char16Trie, TrieResult};
+    /// use icu::collections::char16trie::Char16Trie;
     /// use zerovec::ZeroVec;
     ///
-    /// // A Char16Trie containing the ASCII characters 'a' and 'b'.
+    /// // A Char16Trie containing the ASCII characters 'a' and 'ab'.
     /// let trie_data = [48, 97, 176, 98, 32868];
     /// let trie = Char16Trie::new(ZeroVec::from_slice_or_alloc(&trie_data));
     ///
-    /// let mut iter = trie.iter();
-    /// let res = iter.next('a');
-    /// assert_eq!(res, TrieResult::Intermediate(1));
-    /// let res = iter.next('b');
-    /// assert_eq!(res, TrieResult::FinalValue(100));
-    /// let res = iter.next('c');
-    /// assert_eq!(res, TrieResult::NoMatch);
+    /// let mut cursor = trie.cursor();
+    /// cursor.step('a');
+    /// assert_eq!(cursor.value(), Some(1));
+    /// assert!(!cursor.is_empty());
+    /// cursor.step('b');
+    /// assert_eq!(cursor.value(), Some(100));
+    /// assert!(cursor.is_empty());
+    /// cursor.step('c');
+    /// assert_eq!(cursor.value(), None);
+    /// assert!(cursor.is_empty());
     /// ```
-    pub fn next(&mut self, c: char) -> TrieResult {
-        if (c as u32) <= 0xffff {
-            self.next16(c as u16)
-        } else {
-            match self.next16(u16_lead(c as i32)) {
-                TrieResult::NoValue | TrieResult::Intermediate(_) => {
-                    self.next16(u16_tail(c as i32))
-                }
-                _ => TrieResult::NoMatch,
-            }
-        }
+    #[inline]
+    pub fn step(&mut self, c: char) {
+        self.step32(c as u32);
     }
 
-    /// Traverses the trie from the current state for this input char.
+    /// Steps the cursor one code point (up to `0x10ffff`) into the trie.
     ///
     /// # Examples
     ///
     /// ```
-    /// use icu::collections::char16trie::{Char16Trie, TrieResult};
+    /// use icu::collections::char16trie::Char16Trie;
     /// use zerovec::ZeroVec;
     ///
-    /// // A Char16Trie containing the ASCII characters 'a' and 'b'.
+    /// // A Char16Trie containing the ASCII characters 'a' and 'ab'.
     /// let trie_data = [48, 97, 176, 98, 32868];
     /// let trie = Char16Trie::new(ZeroVec::from_slice_or_alloc(&trie_data));
     ///
-    /// let mut iter = trie.iter();
-    /// let res = iter.next('a');
-    /// assert_eq!(res, TrieResult::Intermediate(1));
-    /// let res = iter.next('b');
-    /// assert_eq!(res, TrieResult::FinalValue(100));
-    /// let res = iter.next('c');
-    /// assert_eq!(res, TrieResult::NoMatch);
+    /// let mut cursor = trie.cursor();
+    /// cursor.step32('a' as u32);
+    /// assert_eq!(cursor.value(), Some(1));
+    /// assert!(!cursor.is_empty());
+    /// cursor.step32('b' as u32);
+    /// assert_eq!(cursor.value(), Some(100));
+    /// assert!(cursor.is_empty());
+    /// cursor.step32('c' as u32);
+    /// assert_eq!(cursor.value(), None);
+    /// assert!(cursor.is_empty());
     /// ```
-    pub fn next32(&mut self, c: u32) -> TrieResult {
-        if c <= 0xffff {
-            self.next16(c as u16)
+    #[inline]
+    pub fn step32(&mut self, c: u32) {
+        let c = if let Ok(c) = u16::try_from(c) {
+            c
         } else {
-            match self.next16(u16_lead(c as i32)) {
-                TrieResult::NoValue | TrieResult::Intermediate(_) => {
-                    self.next16(u16_tail(c as i32))
-                }
-                _ => TrieResult::NoMatch,
-            }
-        }
-    }
-
-    /// Traverses the trie from the current state for this input char.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use icu::collections::char16trie::{Char16Trie, TrieResult};
-    /// use zerovec::ZeroVec;
-    ///
-    /// // A Char16Trie containing the ASCII characters 'a' and 'b'.
-    /// let trie_data = [48, 97, 176, 98, 32868];
-    /// let trie = Char16Trie::new(ZeroVec::from_slice_or_alloc(&trie_data));
-    ///
-    /// let mut iter = trie.iter();
-    /// let res = iter.next16('a' as u16);
-    /// assert_eq!(res, TrieResult::Intermediate(1));
-    /// let res = iter.next16('b' as u16);
-    /// assert_eq!(res, TrieResult::FinalValue(100));
-    /// let res = iter.next16('c' as u16);
-    /// assert_eq!(res, TrieResult::NoMatch);
-    /// ```
-    pub fn next16(&mut self, c: u16) -> TrieResult {
-        let mut pos = match self.pos {
-            Some(p) => p,
-            None => return TrieResult::NoMatch,
+            self.step16(u16_lead(c));
+            u16_tail(c)
         };
-        if let Some(length) = self.remaining_match_length {
+        self.step16(c);
+    }
+
+    /// Steps the cursor one 16-bit code unit into the trie.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use icu::collections::char16trie::Char16Trie;
+    /// use zerovec::ZeroVec;
+    ///
+    /// // A Char16Trie containing the ASCII characters 'a' and 'ab'.
+    /// let trie_data = [48, 97, 176, 98, 32868];
+    /// let trie = Char16Trie::new(ZeroVec::from_slice_or_alloc(&trie_data));
+    ///
+    /// let mut cursor = trie.cursor();
+    /// cursor.step16('a' as u16);
+    /// assert_eq!(cursor.value(), Some(1));
+    /// assert!(!cursor.is_empty());
+    /// cursor.step16('b' as u16);
+    /// assert_eq!(cursor.value(), Some(100));
+    /// assert!(cursor.is_empty());
+    /// cursor.step16('c' as u16);
+    /// assert_eq!(cursor.value(), None);
+    /// assert!(cursor.is_empty());
+    /// ```
+    #[inline]
+    pub fn step16(&mut self, c: u16) {
+        let Some(pos) = self.pos else {
+            return;
+        };
+        self.pos = if let Some(length) = self.remaining_match_length {
             // Remaining part of a linear-match node
-            if c == trie_unwrap!(self.trie.get(pos)) {
-                pos += 1;
-                self.pos = Some(pos);
-                if length == 0 {
-                    self.remaining_match_length = None;
-                    let node = trie_unwrap!(self.trie.get(pos));
-                    if node >= MIN_VALUE_LEAD {
-                        return self.value_result(pos);
-                    }
-                } else {
-                    self.remaining_match_length = Some(length - 1);
-                }
-                return TrieResult::NoValue;
+            if Some(c) == self.trie.get(pos) {
+                self.remaining_match_length = length.checked_sub(1);
+                Some(pos + 1)
+            } else {
+                None
             }
-            self.stop();
-            TrieResult::NoMatch
         } else {
             self.next_impl(pos, c)
+        };
+    }
+
+    #[cfg(feature = "alloc")]
+    fn probe(&mut self, mut index: usize) -> Option<u16> {
+        let mut pos = self.pos?;
+        if let Some(length) = self.remaining_match_length {
+            if index > 0 {
+                return None;
+            }
+            let unit = self.trie.get(pos)?;
+            self.remaining_match_length = length.checked_sub(1);
+            self.pos = Some(pos + 1);
+            return Some(unit);
+        }
+        let mut node = self.trie.get(pos)?;
+        pos += 1;
+        if node >= MIN_VALUE_LEAD {
+            if (node & VALUE_IS_FINAL) != 0 {
+                return None;
+            }
+            // Skip intermediate value.
+            pos = skip_node_value(pos, node);
+            node &= NODE_TYPE_MASK;
+        }
+        if node >= MIN_LINEAR_MATCH {
+            if index > 0 {
+                return None;
+            }
+            let length = (node - MIN_LINEAR_MATCH) as u8;
+            let unit = self.trie.get(pos)?;
+            self.remaining_match_length = length.checked_sub(1);
+            self.pos = Some(pos + 1);
+            return Some(unit);
+        }
+        let mut length = node as usize;
+        if length == 0 {
+            length = self.trie.get(pos)? as usize;
+            pos += 1;
+        }
+        length += 1;
+        if index >= length {
+            return None;
+        }
+
+        // The length of the branch is the number of units to select from.
+        // The data structure encodes a binary search.
+        while length > MAX_BRANCH_LINEAR_SUB_NODE_LENGTH {
+            let half = length >> 1;
+            if index < half {
+                length = half;
+                pos = self.jump_by_delta(pos + 1)?;
+            } else {
+                index -= half;
+                length -= half;
+                pos = self.skip_delta(pos + 1)?;
+            }
+        }
+        // Drop down to linear search for the last few units.
+        while index > 0 {
+            index -= 1;
+            length -= 1;
+            pos = self.skip_value(pos + 1)?;
+        }
+        let unit = self.trie.get(pos)?;
+        pos += 1;
+        if length > 1 {
+            let node = self.trie.get(pos)?;
+            if node & VALUE_IS_FINAL == 0 {
+                // Use the non-final value as the jump delta.
+                pos += 1;
+
+                if node < MIN_TWO_UNIT_VALUE_LEAD {
+                    pos += node as usize;
+                } else if node < THREE_UNIT_VALUE_LEAD {
+                    pos += (((node - MIN_TWO_UNIT_VALUE_LEAD) as u32) << 16) as usize
+                        | self.trie.get(pos)? as usize;
+                    pos += 1;
+                } else {
+                    pos +=
+                        ((self.trie.get(pos)? as usize) << 16) | self.trie.get(pos + 1)? as usize;
+                    pos += 2;
+                }
+            }
+        }
+        self.pos = Some(pos);
+        Some(unit)
+    }
+
+    /// Returns the value at the current position.
+    #[inline]
+    pub fn value(&self) -> Option<i32> {
+        if self.remaining_match_length.is_some() {
+            return None;
+        }
+        let pos = self.pos?;
+        let lead_unit = self.trie.get(pos)?;
+        if lead_unit < MIN_VALUE_LEAD {
+            None
+        } else if lead_unit & VALUE_IS_FINAL != 0 {
+            let v = self.read_value(pos + 1, lead_unit & 0x7fff);
+            debug_assert!(v.is_some());
+            Some(v.unwrap_or(0))
+        } else {
+            let v = self.read_node_value(pos + 1, lead_unit);
+            debug_assert!(v.is_some());
+            Some(v.unwrap_or(0))
         }
     }
 
-    fn branch_next(&mut self, pos: usize, length: usize, in_unit: u16) -> TrieResult {
-        let mut pos = pos;
-        let mut length = length;
+    /// Checks whether the cursor points to an empty trie (i.e., no further
+    /// units can be matched from the current position).
+    ///
+    /// Use this to determine when to stop iterating.
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        let Some(pos) = self.pos else {
+            return true;
+        };
+        self.remaining_match_length.is_none()
+            && self.trie.get(pos).is_none_or(|u| u & VALUE_IS_FINAL != 0)
+    }
+
+    fn branch_next(&self, mut pos: usize, mut length: usize, in_unit: u16) -> Option<usize> {
         if length == 0 {
-            length = trie_unwrap!(self.trie.get(pos)) as usize;
+            length = self.trie.get(pos)? as usize;
             pos += 1;
         }
         length += 1;
@@ -303,24 +481,23 @@ impl<'a> Char16TrieIterator<'a> {
         // The length of the branch is the number of units to select from.
         // The data structure encodes a binary search.
         while length > MAX_BRANCH_LINEAR_SUB_NODE_LENGTH {
-            if in_unit < trie_unwrap!(self.trie.get(pos)) {
+            if in_unit < self.trie.get(pos)? {
                 length >>= 1;
-                pos = trie_unwrap!(self.jump_by_delta(pos + 1));
+                pos = self.jump_by_delta(pos + 1)?;
             } else {
                 length = length - (length >> 1);
-                pos = trie_unwrap!(self.skip_delta(pos + 1));
+                pos = self.skip_delta(pos + 1)?;
             }
         }
         // Drop down to linear search for the last few bytes.
         // length>=2 because the loop body above sees length>kMaxBranchLinearSubNodeLength>=3
         // and divides length by 2.
         loop {
-            if in_unit == trie_unwrap!(self.trie.get(pos)) {
+            if in_unit == self.trie.get(pos)? {
                 pos += 1;
-                let mut node = trie_unwrap!(self.trie.get(pos));
+                let node = self.trie.get(pos)?;
                 if node & VALUE_IS_FINAL != 0 {
-                    self.pos = Some(pos);
-                    return self.value_result(pos);
+                    return Some(pos);
                 }
                 // Use the non-final value as the jump delta.
                 pos += 1;
@@ -329,65 +506,37 @@ impl<'a> Char16TrieIterator<'a> {
                     pos += node as usize;
                 } else if node < THREE_UNIT_VALUE_LEAD {
                     pos += (((node - MIN_TWO_UNIT_VALUE_LEAD) as u32) << 16) as usize
-                        | trie_unwrap!(self.trie.get(pos)) as usize;
+                        | self.trie.get(pos)? as usize;
                     pos += 1;
                 } else {
-                    pos += ((trie_unwrap!(self.trie.get(pos)) as usize) << 16)
-                        | trie_unwrap!(self.trie.get(pos + 1)) as usize;
+                    pos +=
+                        ((self.trie.get(pos)? as usize) << 16) | self.trie.get(pos + 1)? as usize;
                     pos += 2;
                 }
-                node = trie_unwrap!(self.trie.get(pos));
-                self.pos = Some(pos);
-
-                if node >= MIN_VALUE_LEAD {
-                    return self.value_result(pos);
-                }
-                return TrieResult::NoValue;
+                return Some(pos);
             }
             length -= 1;
-            pos = trie_unwrap!(self.skip_value(pos + 1));
+            pos = self.skip_value(pos + 1)?;
             if length <= 1 {
                 break;
             }
         }
 
-        if in_unit == trie_unwrap!(self.trie.get(pos)) {
-            pos += 1;
-            self.pos = Some(pos);
-            let node = trie_unwrap!(self.trie.get(pos));
-            if node >= MIN_VALUE_LEAD {
-                return self.value_result(pos);
-            }
-            TrieResult::NoValue
-        } else {
-            self.stop();
-            TrieResult::NoMatch
-        }
+        (in_unit == self.trie.get(pos)?).then_some(pos + 1)
     }
 
-    fn next_impl(&mut self, pos: usize, in_unit: u16) -> TrieResult {
-        let mut node = trie_unwrap!(self.trie.get(pos));
+    fn next_impl(&mut self, pos: usize, in_unit: u16) -> Option<usize> {
+        let mut node = self.trie.get(pos)?;
         let mut pos = pos + 1;
         loop {
             if node < MIN_LINEAR_MATCH {
                 return self.branch_next(pos, node as usize, in_unit);
             } else if node < MIN_VALUE_LEAD {
                 // Match the first of length+1 units.
-                let length = node - MIN_LINEAR_MATCH;
-                if in_unit == trie_unwrap!(self.trie.get(pos)) {
-                    pos += 1;
-                    if length == 0 {
-                        self.remaining_match_length = None;
-                        self.pos = Some(pos);
-                        node = trie_unwrap!(self.trie.get(pos));
-                        if node >= MIN_VALUE_LEAD {
-                            return self.value_result(pos);
-                        }
-                        return TrieResult::NoValue;
-                    }
-                    self.remaining_match_length = Some(length as usize - 1);
-                    self.pos = Some(pos);
-                    return TrieResult::NoValue;
+                let length = (node - MIN_LINEAR_MATCH) as u8;
+                if in_unit == self.trie.get(pos)? {
+                    self.remaining_match_length = length.checked_sub(1);
+                    return Some(pos + 1);
                 }
                 // No match
                 break;
@@ -400,12 +549,7 @@ impl<'a> Char16TrieIterator<'a> {
                 node &= NODE_TYPE_MASK;
             }
         }
-        self.stop();
-        TrieResult::NoMatch
-    }
-
-    fn stop(&mut self) {
-        self.pos = None;
+        None
     }
 
     #[inline(always)] // 1 call site and we want the Option to go away
@@ -445,29 +589,6 @@ impl<'a> Char16TrieIterator<'a> {
         Some(v)
     }
 
-    fn value_result(&self, pos: usize) -> TrieResult {
-        match self.get_value(pos) {
-            Some(result) => result,
-            None => {
-                // Unexpected
-                debug_assert!(false);
-                TrieResult::NoMatch
-            }
-        }
-    }
-
-    #[inline(always)] // 1 call site and we want the Option to go away
-    fn get_value(&self, pos: usize) -> Option<TrieResult> {
-        let lead_unit = self.trie.get(pos)?;
-        if lead_unit & VALUE_IS_FINAL == VALUE_IS_FINAL {
-            self.read_value(pos + 1, lead_unit & 0x7fff)
-                .map(TrieResult::FinalValue)
-        } else {
-            self.read_node_value(pos + 1, lead_unit)
-                .map(TrieResult::Intermediate)
-        }
-    }
-
     #[inline(always)] // 1 call site and we want the Option to go away
     fn read_value(&self, pos: usize, lead_unit: u16) -> Option<i32> {
         let v = if lead_unit < MIN_TWO_UNIT_VALUE_LEAD {
@@ -491,5 +612,57 @@ impl<'a> Char16TrieIterator<'a> {
             ((self.trie.get(pos)? as i32) << 16) | self.trie.get(pos + 1)? as i32
         };
         Some(v)
+    }
+}
+
+impl core::fmt::Write for Char16TrieCursor<'_> {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        for c in s.encode_utf16() {
+            self.step16(c);
+        }
+        Ok(())
+    }
+
+    fn write_char(&mut self, c: char) -> core::fmt::Result {
+        self.step(c);
+        Ok(())
+    }
+}
+
+#[allow(deprecated)]
+impl<'a> Char16TrieIterator<'a> {
+    /// Returns a new [`Char16TrieIterator`] backed by borrowed data for the `trie` array
+    #[inline]
+    pub fn new(trie: &'a ZeroSlice<u16>) -> Self {
+        Self(Char16TrieCursor::new(trie))
+    }
+
+    /// Traverses the trie from the current state for this input char.
+    #[inline]
+    pub fn next(&mut self, c: char) -> TrieResult {
+        self.next32(c as u32)
+    }
+
+    /// Traverses the trie from the current state for this input char.
+    #[inline]
+    pub fn next32(&mut self, c: u32) -> TrieResult {
+        if c <= 0xffff {
+            self.next16(c as u16)
+        } else {
+            self.0.step16(u16_lead(c));
+            self.next16(u16_tail(c))
+        }
+    }
+
+    /// Traverses the trie from the current state for this input char.
+    #[inline]
+    pub fn next16(&mut self, c: u16) -> TrieResult {
+        self.0.step16(c);
+        match (self.0.value(), self.0.is_empty()) {
+            (Some(v), true) => TrieResult::FinalValue(v),
+            (Some(v), false) => TrieResult::Intermediate(v),
+            (None, true) => TrieResult::NoMatch,
+            (None, false) => TrieResult::NoValue,
+        }
     }
 }

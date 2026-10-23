@@ -34,7 +34,7 @@ namespace icu4x {
 /**
  * An ICU4X Bidi object, containing loaded bidi data
  *
- * See the [Rust documentation for `BidiClass`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html) for more information.
+ * See the [Rust documentation for `BidiClass`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html) for more information.
  */
 class Bidi {
 public:
@@ -58,7 +58,7 @@ public:
    *
    * See the [Rust documentation for `new_with_data_source`](https://docs.rs/unicode_bidi/0.3.11/unicode_bidi/struct.BidiInfo.html#method.new_with_data_source) for more information.
    */
-  inline std::unique_ptr<icu4x::BidiInfo> for_text(std::string_view text, std::optional<uint8_t> default_level) const;
+  inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::BidiInfo>> for_text(std::string_view text DIPLOMAT_LIFETIME_BOUND, std::optional<uint8_t> default_level) const;
 
   /**
    * Utility function for producing reorderings given a list of levels

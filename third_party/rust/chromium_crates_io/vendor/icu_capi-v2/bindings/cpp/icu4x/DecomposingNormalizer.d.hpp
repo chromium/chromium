@@ -28,7 +28,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `DecomposingNormalizer`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html) for more information.
+ * See the [Rust documentation for `DecomposingNormalizer`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html) for more information.
  */
 class DecomposingNormalizer {
 public:
@@ -36,28 +36,28 @@ public:
   /**
    * Construct a new `DecomposingNormalizer` instance for NFD using compiled data.
    *
-   * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
+   * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
    */
   inline static std::unique_ptr<icu4x::DecomposingNormalizer> create_nfd();
 
   /**
    * Construct a new `DecomposingNormalizer` instance for NFD using a particular data source.
    *
-   * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
+   * See the [Rust documentation for `new_nfd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfd) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::DecomposingNormalizer>, icu4x::DataError> create_nfd_with_provider(const icu4x::DataProvider& provider);
 
   /**
    * Construct a new `DecomposingNormalizer` instance for NFKD using compiled data.
    *
-   * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
+   * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
    */
   inline static std::unique_ptr<icu4x::DecomposingNormalizer> create_nfkd();
 
   /**
    * Construct a new `DecomposingNormalizer` instance for NFKD using a particular data source.
    *
-   * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
+   * See the [Rust documentation for `new_nfkd`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizer.html#method.new_nfkd) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::DecomposingNormalizer>, icu4x::DataError> create_nfkd_with_provider(const icu4x::DataProvider& provider);
 
@@ -67,11 +67,23 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `normalize_utf8`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.normalize_utf8) for more information.
+   * See the [Rust documentation for `normalize_utf8`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.normalize_utf8) for more information.
    */
   inline std::string normalize(std::string_view s) const;
   template<typename W>
   inline void normalize_write(std::string_view s, W& writeable_output) const;
+
+  /**
+   * Normalize a string
+   *
+   * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
+   * to the WHATWG Encoding Standard.
+   *
+   * See the [Rust documentation for `normalize_utf16`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.normalize_utf16) for more information.
+   */
+  inline std::u16string normalize16(std::u16string_view s) const;
+  template<typename W>
+  inline void normalize16_write(std::u16string_view s, W& writeable_output) const;
 
   /**
    * Check if a string is normalized
@@ -79,7 +91,7 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `is_normalized_utf8`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.is_normalized_utf8) for more information.
+   * See the [Rust documentation for `is_normalized_utf8`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.is_normalized_utf8) for more information.
    */
   inline bool is_normalized(std::string_view s) const;
 
@@ -89,23 +101,23 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `is_normalized_utf16`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.is_normalized_utf16) for more information.
+   * See the [Rust documentation for `is_normalized_utf16`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.is_normalized_utf16) for more information.
    */
   inline bool is_normalized16(std::u16string_view s) const;
 
   /**
    * Return the index a slice of potentially-invalid UTF-8 is normalized up to
    *
-   * See the [Rust documentation for `split_normalized_utf8`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized_utf8) for more information.
+   * See the [Rust documentation for `split_normalized_utf8`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized_utf8) for more information.
    *
-   * See the [Rust documentation for `split_normalized`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized) for more information.
+   * See the [Rust documentation for `split_normalized`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized) for more information.
    */
   inline size_t is_normalized_up_to(std::string_view s) const;
 
   /**
    * Return the index a slice of potentially-invalid UTF-16 is normalized up to
    *
-   * See the [Rust documentation for `split_normalized_utf16`](https://docs.rs/icu/2.2.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized_utf16) for more information.
+   * See the [Rust documentation for `split_normalized_utf16`](https://docs.rs/icu/2.4.0/icu/normalizer/struct.DecomposingNormalizerBorrowed.html#method.split_normalized_utf16) for more information.
    */
   inline size_t is_normalized16_up_to(std::u16string_view s) const;
 

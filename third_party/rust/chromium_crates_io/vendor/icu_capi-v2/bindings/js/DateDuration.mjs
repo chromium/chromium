@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `DateDuration`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateDuration.html) for more information.
+ * See the [Rust documentation for `DateDuration`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateDuration.html) for more information.
  */
 export class DateDuration {
     #isNegative;
@@ -162,7 +162,7 @@ export class DateDuration {
     /**
      * Creates a new {@link DateDuration} from an ISO 8601 string.
      *
-     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateDuration.html#method.try_from_str) for more information.
+     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateDuration.html#method.try_from_str) for more information.
      */
     static fromString(v) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -192,7 +192,7 @@ export class DateDuration {
     /**
      * Returns a new {@link DateDuration} representing a number of years.
      *
-     * See the [Rust documentation for `for_years`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateDuration.html#method.for_years) for more information.
+     * See the [Rust documentation for `for_years`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateDuration.html#method.for_years) for more information.
      */
     static forYears(years) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 20, 4, false);
@@ -213,7 +213,7 @@ export class DateDuration {
     /**
      * Returns a new {@link DateDuration} representing a number of months.
      *
-     * See the [Rust documentation for `for_months`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateDuration.html#method.for_months) for more information.
+     * See the [Rust documentation for `for_months`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateDuration.html#method.for_months) for more information.
      */
     static forMonths(months) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 20, 4, false);
@@ -234,7 +234,7 @@ export class DateDuration {
     /**
      * Returns a new {@link DateDuration} representing a number of weeks.
      *
-     * See the [Rust documentation for `for_weeks`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateDuration.html#method.for_weeks) for more information.
+     * See the [Rust documentation for `for_weeks`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateDuration.html#method.for_weeks) for more information.
      */
     static forWeeks(weeks) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 20, 4, false);
@@ -255,7 +255,7 @@ export class DateDuration {
     /**
      * Returns a new {@link DateDuration} representing a number of days.
      *
-     * See the [Rust documentation for `for_days`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateDuration.html#method.for_days) for more information.
+     * See the [Rust documentation for `for_days`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateDuration.html#method.for_days) for more information.
      */
     static forDays(days) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 20, 4, false);

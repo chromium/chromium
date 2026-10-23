@@ -10,7 +10,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `VariantOffsetsCalculator`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsetsCalculator.html) for more information.
+ * See the [Rust documentation for `VariantOffsetsCalculator`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsetsCalculator.html) for more information.
  *
  * @deprecated this API is a bad approximation of a time zone database
  */
@@ -22,24 +22,24 @@ export class VariantOffsetsCalculator {
     /**
      * Construct a new {@link VariantOffsetsCalculator} instance using a particular data source.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsetsCalculator.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsetsCalculator.html#method.new) for more information.
      */
     static createWithProvider(provider: DataProvider): VariantOffsetsCalculator;
 
     /**
-     * See the [Rust documentation for `compute_offsets_from_time_zone_and_name_timestamp`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsetsCalculatorBorrowed.html#method.compute_offsets_from_time_zone_and_name_timestamp) for more information.
+     * See the [Rust documentation for `compute_offsets_from_time_zone_and_name_timestamp`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsetsCalculatorBorrowed.html#method.compute_offsets_from_time_zone_and_name_timestamp) for more information.
      */
     computeOffsetsFromTimeZoneAndDateTime(timeZone: TimeZone, utcDate: IsoDate, utcTime: Time): VariantOffsets | null;
 
     /**
-     * See the [Rust documentation for `compute_offsets_from_time_zone_and_name_timestamp`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsetsCalculatorBorrowed.html#method.compute_offsets_from_time_zone_and_name_timestamp) for more information.
+     * See the [Rust documentation for `compute_offsets_from_time_zone_and_name_timestamp`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsetsCalculatorBorrowed.html#method.compute_offsets_from_time_zone_and_name_timestamp) for more information.
      */
     computeOffsetsFromTimeZoneAndTimestamp(timeZone: TimeZone, timestamp: bigint): VariantOffsets | null;
 
     /**
      * Construct a new {@link VariantOffsetsCalculator} instance using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsetsCalculator.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsetsCalculator.html#method.new) for more information.
      */
     constructor();
 }

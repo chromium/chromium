@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * Additional information: [1](https://docs.rs/icu/2.2.0/icu/locale/enum.ParseError.html)
+ * Additional information: [1](https://docs.rs/icu/2.4.0/icu/locale/enum.ParseError.html)
  */
 export class LocaleParseError {
     #value = undefined;

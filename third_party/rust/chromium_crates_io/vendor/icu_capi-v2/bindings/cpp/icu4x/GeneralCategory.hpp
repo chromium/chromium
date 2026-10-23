@@ -54,8 +54,8 @@ inline icu4x::GeneralCategory icu4x::GeneralCategory::FromFFI(icu4x::capi::Gener
         case icu4x::capi::GeneralCategory_ModifierLetter:
         case icu4x::capi::GeneralCategory_OtherLetter:
         case icu4x::capi::GeneralCategory_NonspacingMark:
-        case icu4x::capi::GeneralCategory_SpacingMark:
         case icu4x::capi::GeneralCategory_EnclosingMark:
+        case icu4x::capi::GeneralCategory_SpacingMark:
         case icu4x::capi::GeneralCategory_DecimalNumber:
         case icu4x::capi::GeneralCategory_LetterNumber:
         case icu4x::capi::GeneralCategory_OtherNumber:
@@ -70,13 +70,13 @@ inline icu4x::GeneralCategory icu4x::GeneralCategory::FromFFI(icu4x::capi::Gener
         case icu4x::capi::GeneralCategory_OpenPunctuation:
         case icu4x::capi::GeneralCategory_ClosePunctuation:
         case icu4x::capi::GeneralCategory_ConnectorPunctuation:
-        case icu4x::capi::GeneralCategory_InitialPunctuation:
-        case icu4x::capi::GeneralCategory_FinalPunctuation:
         case icu4x::capi::GeneralCategory_OtherPunctuation:
         case icu4x::capi::GeneralCategory_MathSymbol:
         case icu4x::capi::GeneralCategory_CurrencySymbol:
         case icu4x::capi::GeneralCategory_ModifierSymbol:
         case icu4x::capi::GeneralCategory_OtherSymbol:
+        case icu4x::capi::GeneralCategory_InitialPunctuation:
+        case icu4x::capi::GeneralCategory_FinalPunctuation:
             return static_cast<icu4x::GeneralCategory::Value>(c_enum);
         default:
             std::abort();

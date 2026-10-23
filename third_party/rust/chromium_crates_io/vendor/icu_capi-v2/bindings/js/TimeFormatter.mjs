@@ -14,7 +14,7 @@ const TimeFormatter_box_destroy_registry = new FinalizationRegistry((ptr) => {
 });
 
 /**
- * See the [Rust documentation for `NoCalendarFormatter`](https://docs.rs/icu/2.2.0/icu/datetime/type.NoCalendarFormatter.html) for more information.
+ * See the [Rust documentation for `NoCalendarFormatter`](https://docs.rs/icu/2.4.0/icu/datetime/type.NoCalendarFormatter.html) for more information.
  */
 export class TimeFormatter {
     // Internal ptr reference:
@@ -46,11 +46,11 @@ export class TimeFormatter {
 
 
     /**
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/datetime/type.NoCalendarFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/datetime/type.NoCalendarFormatter.html#method.try_new) for more information.
      *
-     * See the [Rust documentation for `T`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html) for more information.
+     * See the [Rust documentation for `T`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html) for more information.
      *
-     * Additional information: [1](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.with_time_precision), [2](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.with_alignment), [3](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.for_length)
+     * Additional information: [1](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.with_time_precision), [2](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.with_alignment), [3](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.for_length)
      */
     #defaultConstructor(locale, length, timePrecision, alignment) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -58,7 +58,7 @@ export class TimeFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_TimeFormatter_create_mv1(diplomatReceive.buffer, locale.ffiValue, diplomatRuntime.optionToBufferForCalling(wasm, length, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, timePrecision, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, alignment, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]));
+        const result = wasm.icu4x_TimeFormatter_create_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), diplomatRuntime.optionToBufferForCalling(wasm, length, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateTimeLength(jsValue).ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, timePrecision, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new TimePrecision(jsValue).ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, alignment, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateTimeAlignment(jsValue).ffiValue, Int32Array)]));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -77,11 +77,11 @@ export class TimeFormatter {
     }
 
     /**
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/datetime/type.NoCalendarFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/datetime/type.NoCalendarFormatter.html#method.try_new) for more information.
      *
-     * See the [Rust documentation for `T`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html) for more information.
+     * See the [Rust documentation for `T`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html) for more information.
      *
-     * Additional information: [1](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.with_time_precision), [2](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.with_alignment), [3](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.for_length)
+     * Additional information: [1](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.with_time_precision), [2](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.with_alignment), [3](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.for_length)
      */
     static createWithProvider(provider, locale, length, timePrecision, alignment) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -89,7 +89,7 @@ export class TimeFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_TimeFormatter_create_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, diplomatRuntime.optionToBufferForCalling(wasm, length, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, timePrecision, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, alignment, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array)]));
+        const result = wasm.icu4x_TimeFormatter_create_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), diplomatRuntime.optionToBufferForCalling(wasm, length, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateTimeLength(jsValue).ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, timePrecision, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new TimePrecision(jsValue).ffiValue, Int32Array)]), diplomatRuntime.optionToBufferForCalling(wasm, alignment, 4, 4, functionCleanupArena, (arrayBuffer, offset, jsValue) => [diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateTimeAlignment(jsValue).ffiValue, Int32Array)]));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -108,12 +108,12 @@ export class TimeFormatter {
     }
 
     /**
-     * See the [Rust documentation for `format`](https://docs.rs/icu/2.2.0/icu/datetime/type.NoCalendarFormatter.html#method.format) for more information.
+     * See the [Rust documentation for `format`](https://docs.rs/icu/2.4.0/icu/datetime/type.NoCalendarFormatter.html#method.format) for more information.
      */
     format(time) {
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
-    wasm.icu4x_TimeFormatter_format_mv1(this.ffiValue, time.ffiValue, write.buffer);
+    wasm.icu4x_TimeFormatter_format_mv1(this.ffiValue, time instanceof Time ? time.ffiValue : typeError('time', 'Time'), write.buffer);
 
         try {
             return write.readString8();
@@ -126,11 +126,11 @@ export class TimeFormatter {
     }
 
     /**
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/datetime/type.NoCalendarFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/datetime/type.NoCalendarFormatter.html#method.try_new) for more information.
      *
-     * See the [Rust documentation for `T`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html) for more information.
+     * See the [Rust documentation for `T`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html) for more information.
      *
-     * Additional information: [1](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.with_time_precision), [2](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.with_alignment), [3](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/struct.T.html#method.for_length)
+     * Additional information: [1](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.with_time_precision), [2](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.with_alignment), [3](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/struct.T.html#method.for_length)
      */
     constructor(locale, length, timePrecision, alignment) {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

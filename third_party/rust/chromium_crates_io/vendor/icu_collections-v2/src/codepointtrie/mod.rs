@@ -29,6 +29,8 @@
 //!
 //! [`ICU4X`]: ../icu/index.html
 
+#[cfg(feature = "alloc")]
+mod builder;
 mod cptrie;
 mod error;
 mod impl_const;
@@ -40,6 +42,8 @@ pub mod toml;
 #[cfg(feature = "serde")]
 mod serde;
 
+#[cfg(feature = "alloc")]
+pub use builder::CodePointTrieBuilder;
 pub use cptrie::CodePointMapRange;
 pub use cptrie::CodePointMapRangeIterator;
 pub use cptrie::CodePointTrie;

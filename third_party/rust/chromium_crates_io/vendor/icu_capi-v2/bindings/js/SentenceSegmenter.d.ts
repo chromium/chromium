@@ -10,7 +10,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * An ICU4X sentence-break segmenter, capable of finding sentence breakpoints in strings.
  *
- * See the [Rust documentation for `SentenceSegmenter`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html) for more information.
+ * See the [Rust documentation for `SentenceSegmenter`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html) for more information.
  */
 export class SentenceSegmenter {
     /** @internal */
@@ -33,14 +33,14 @@ export class SentenceSegmenter {
      * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
      * to the WHATWG Encoding Standard.
      *
-     * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf16) for more information.
+     * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf16) for more information.
      */
     segment(input: string): SentenceBreakIteratorUtf16;
 
     /**
      * Construct a {@link SentenceSegmenter} using compiled data. This does not assume any content locale.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
      */
     constructor();
 }

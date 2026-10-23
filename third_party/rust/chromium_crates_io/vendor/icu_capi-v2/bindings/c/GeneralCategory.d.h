@@ -19,8 +19,8 @@ typedef enum GeneralCategory {
   GeneralCategory_ModifierLetter = 4,
   GeneralCategory_OtherLetter = 5,
   GeneralCategory_NonspacingMark = 6,
-  GeneralCategory_SpacingMark = 8,
   GeneralCategory_EnclosingMark = 7,
+  GeneralCategory_SpacingMark = 8,
   GeneralCategory_DecimalNumber = 9,
   GeneralCategory_LetterNumber = 10,
   GeneralCategory_OtherNumber = 11,
@@ -35,13 +35,13 @@ typedef enum GeneralCategory {
   GeneralCategory_OpenPunctuation = 20,
   GeneralCategory_ClosePunctuation = 21,
   GeneralCategory_ConnectorPunctuation = 22,
-  GeneralCategory_InitialPunctuation = 28,
-  GeneralCategory_FinalPunctuation = 29,
   GeneralCategory_OtherPunctuation = 23,
   GeneralCategory_MathSymbol = 24,
   GeneralCategory_CurrencySymbol = 25,
   GeneralCategory_ModifierSymbol = 26,
   GeneralCategory_OtherSymbol = 27,
+  GeneralCategory_InitialPunctuation = 28,
+  GeneralCategory_FinalPunctuation = 29,
 } GeneralCategory;
 
 typedef struct GeneralCategory_option {union { GeneralCategory ok; }; bool is_ok; } GeneralCategory_option;

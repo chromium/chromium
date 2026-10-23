@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
-rust-version = "1.86"
+edition = "2024"
+rust-version = "1.88"
 name = "icu_properties"
-version = "2.2.0"
+version = "2.4.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -47,6 +47,7 @@ categories = [
 ]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
+resolver = "2"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -78,6 +79,7 @@ datagen = [
 ]
 default = ["compiled_data"]
 harfbuzz_traits = ["dep:harfbuzz-traits"]
+log = ["dep:log"]
 serde = [
     "dep:serde",
     "icu_locale_core/serde",
@@ -87,6 +89,7 @@ serde = [
     "zerotrie/serde",
 ]
 unicode_bidi = ["dep:unicode-bidi"]
+unstable = []
 
 [lib]
 name = "icu_properties"
@@ -98,27 +101,36 @@ features = ["derive"]
 optional = true
 default-features = false
 
+[dependencies.displaydoc]
+version = "0.2.3"
+default-features = false
+
 [dependencies.harfbuzz-traits]
 version = "0.6.0"
 optional = true
 default-features = false
 
 [dependencies.icu_collections]
-version = "~2.2.0"
+version = "~2.4.0"
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.2.0"
+version = "2.4.0"
 features = ["zerovec"]
 default-features = false
 
 [dependencies.icu_properties_data]
-version = "~2.2.0"
+version = "~2.4.0"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.2.0"
+version = "2.4.0"
+default-features = false
+
+[dependencies.log]
+version = "0.4.17"
+optional = true
 default-features = false
 
 [dependencies.serde]
@@ -133,7 +145,7 @@ optional = true
 default-features = false
 
 [dependencies.zerotrie]
-version = "0.2.4"
+version = "0.2.5"
 features = [
     "yoke",
     "zerofrom",
@@ -141,7 +153,7 @@ features = [
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.6"
+version = "0.11.9"
 features = [
     "derive",
     "yoke",
@@ -151,8 +163,9 @@ default-features = false
 [dev-dependencies]
 
 [lints.clippy]
-alloc-instead-of-core = "warn"
-branches-sharing-code = "warn"
+alloc_instead_of_core = "warn"
+bool_assert_comparison = "allow"
+branches_sharing_code = "warn"
 collection_is_never_read = "warn"
 crosspointer_transmute = "warn"
 dbg_macro = "warn"
@@ -167,7 +180,7 @@ mismatching_type_param_order = "warn"
 missing_fields_in_debug = "warn"
 missing_transmute_annotations = "warn"
 negative_feature_names = "warn"
-or-fun-call = "warn"
+or_fun_call = "warn"
 same_functions_in_if_condition = "warn"
 todo = "warn"
 transmute_bytes_to_str = "warn"
@@ -178,7 +191,7 @@ transmute_ptr_to_ref = "warn"
 transmute_undefined_repr = "warn"
 transmutes_expressible_as_ptr_casts = "warn"
 trivially_copy_pass_by_ref = "deny"
-unnecessary-wraps = "warn"
+unnecessary_wraps = "warn"
 useless_transmute = "warn"
 wildcard_dependencies = "warn"
 
@@ -195,6 +208,7 @@ priority = 0
 check-cfg = [
     "cfg(icu4c_enable_renaming)",
     "cfg(needs_alloc_error_handler)",
+    "cfg(icu4x_nightly_tests)",
     "cfg(icu4x_run_size_tests)",
     "cfg(icu4x_unstable_fast_trie_only)",
 ]

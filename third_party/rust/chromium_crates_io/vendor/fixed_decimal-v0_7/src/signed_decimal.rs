@@ -1190,6 +1190,25 @@ fn test_from_str_scientific() {
 }
 
 #[test]
+fn test_from_str_scientific_bounds() {
+    assert_eq!(Decimal::from_str("-0e5").unwrap().to_string(), "-0");
+    assert_eq!(Decimal::from_str("-1e99999"), Err(ParseError::Limit));
+    assert_eq!(Decimal::from_str("-1e-99999"), Err(ParseError::Limit));
+    assert_eq!(
+        Decimal::from_str("-1e999999999999999999999999999999"),
+        Err(ParseError::Limit)
+    );
+    assert_eq!(
+        Decimal::from_str("-1e-999999999999999999999999999999"),
+        Err(ParseError::Limit)
+    );
+    assert_eq!(Decimal::from_str("-10e32767"), Err(ParseError::Limit));
+    assert_eq!(Decimal::from_str("-1e-"), Err(ParseError::Syntax));
+    assert_eq!(Decimal::from_str("-0e-"), Err(ParseError::Syntax));
+    assert!(Decimal::from_str("-1e32767").is_ok());
+}
+
+#[test]
 fn test_isize_limits() {
     for num in &[isize::MAX, isize::MIN] {
         let dec: Decimal = (*num).into();

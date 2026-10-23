@@ -40,7 +40,7 @@ public:
   /**
    * Get the nth paragraph, returning `None` if out of bounds
    */
-  inline std::unique_ptr<icu4x::BidiParagraph> paragraph_at(size_t n) const;
+  inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::BidiParagraph>> paragraph_at(size_t n) const DIPLOMAT_LIFETIME_BOUND;
 
   /**
    * The number of bytes in this full text

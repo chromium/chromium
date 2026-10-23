@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `IndicConjunctBreak`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html) for more information.
+ * See the [Rust documentation for `IndicConjunctBreak`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html) for more information.
  */
 export class IndicConjunctBreak {
     #value = undefined;
@@ -67,25 +67,25 @@ export class IndicConjunctBreak {
     ];
 
     /**
-     * See the [Rust documentation for `None`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.None) for more information.
+     * See the [Rust documentation for `None`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.None) for more information.
      */
     static None = IndicConjunctBreak.#objectValues[0];
     /**
-     * See the [Rust documentation for `Consonant`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.Consonant) for more information.
+     * See the [Rust documentation for `Consonant`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.Consonant) for more information.
      */
     static Consonant = IndicConjunctBreak.#objectValues[1];
     /**
-     * See the [Rust documentation for `Extend`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.Extend) for more information.
+     * See the [Rust documentation for `Extend`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.Extend) for more information.
      */
     static Extend = IndicConjunctBreak.#objectValues[2];
     /**
-     * See the [Rust documentation for `Linker`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.Linker) for more information.
+     * See the [Rust documentation for `Linker`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html#associatedconstant.Linker) for more information.
      */
     static Linker = IndicConjunctBreak.#objectValues[3];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -103,7 +103,7 @@ export class IndicConjunctBreak {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -127,7 +127,7 @@ export class IndicConjunctBreak {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -151,7 +151,7 @@ export class IndicConjunctBreak {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -169,7 +169,7 @@ export class IndicConjunctBreak {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.IndicConjunctBreak.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.IndicConjunctBreak.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -190,6 +190,11 @@ export class IndicConjunctBreak {
         }
     }
 
+    /**
+     * Creates a `IndicConjunctBreak` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

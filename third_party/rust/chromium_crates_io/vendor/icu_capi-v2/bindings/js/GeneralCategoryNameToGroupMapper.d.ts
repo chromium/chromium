@@ -9,9 +9,9 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * A type capable of looking up General Category Group values from a string name.
  *
- * See the [Rust documentation for `PropertyParser`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyParser.html) for more information.
+ * See the [Rust documentation for `PropertyParser`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyParser.html) for more information.
  *
- * See the [Rust documentation for `GeneralCategory`](https://docs.rs/icu/2.2.0/icu/properties/props/enum.GeneralCategory.html) for more information.
+ * See the [Rust documentation for `GeneralCategory`](https://docs.rs/icu/2.4.0/icu/properties/props/enum.GeneralCategory.html) for more information.
  */
 export class GeneralCategoryNameToGroupMapper {
     /** @internal */
@@ -23,7 +23,7 @@ export class GeneralCategoryNameToGroupMapper {
      *
      * Returns 0 if the name is unknown for this property
      *
-     * See the [Rust documentation for `get_strict`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyParserBorrowed.html#method.get_strict) for more information.
+     * See the [Rust documentation for `get_strict`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyParserBorrowed.html#method.get_strict) for more information.
      */
     getStrict(name: string): GeneralCategoryGroup;
 
@@ -32,21 +32,21 @@ export class GeneralCategoryNameToGroupMapper {
      *
      * Returns 0 if the name is unknown for this property
      *
-     * See the [Rust documentation for `get_loose`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyParserBorrowed.html#method.get_loose) for more information.
+     * See the [Rust documentation for `get_loose`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyParserBorrowed.html#method.get_loose) for more information.
      */
     getLoose(name: string): GeneralCategoryGroup;
 
     /**
      * Create a name-to-mask mapper for the `General_Category` property, using a particular data source.
      *
-     * See the [Rust documentation for `GeneralCategoryGroup`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GeneralCategoryGroup.html) for more information.
+     * See the [Rust documentation for `GeneralCategoryGroup`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GeneralCategoryGroup.html) for more information.
      */
     static createWithProvider(provider: DataProvider): GeneralCategoryNameToGroupMapper;
 
     /**
      * Create a name-to-mask mapper for the `General_Category` property, using compiled data.
      *
-     * See the [Rust documentation for `GeneralCategoryGroup`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GeneralCategoryGroup.html) for more information.
+     * See the [Rust documentation for `GeneralCategoryGroup`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GeneralCategoryGroup.html) for more information.
      */
     constructor();
 }

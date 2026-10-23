@@ -1,7 +1,7 @@
 Name: icu_properties_data
 URL: https://crates.io/crates/icu_properties_data
-Version: 2.2.0
-Revision: c9fac4e625ccb2c6a7aa35079fff9709db4385ac
+Version: 2.4.0
+Revision: 031d9e89f6a3fd26a14491e090729d46094328fd
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/LICENSE

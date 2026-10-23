@@ -82,11 +82,8 @@ impl<M: DataMarker, P0: DryDataProvider<M>, P1: DryDataProvider<M>> DryDataProvi
     }
 }
 
-impl<
-        M: DynamicDataMarker,
-        P0: IterableDynamicDataProvider<M>,
-        P1: IterableDynamicDataProvider<M>,
-    > IterableDynamicDataProvider<M> for EitherProvider<P0, P1>
+impl<M: DynamicDataMarker, P0: IterableDynamicDataProvider<M>, P1: IterableDynamicDataProvider<M>>
+    IterableDynamicDataProvider<M> for EitherProvider<P0, P1>
 {
     #[inline]
     fn iter_ids_for_marker(

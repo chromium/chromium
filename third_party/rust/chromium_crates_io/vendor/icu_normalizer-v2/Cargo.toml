@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
-rust-version = "1.86"
+edition = "2024"
+rust-version = "1.88"
 name = "icu_normalizer"
-version = "2.2.0"
+version = "2.4.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -48,6 +48,7 @@ categories = [
 ]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
+resolver = "2"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -148,21 +149,21 @@ optional = true
 default-features = false
 
 [dependencies.icu_collections]
-version = "~2.2.0"
+version = "~2.4.0"
 default-features = false
 
 [dependencies.icu_normalizer_data]
-version = "~2.2.0"
+version = "~2.4.0"
 optional = true
 default-features = false
 
 [dependencies.icu_properties]
-version = "~2.2.0"
+version = "~2.4.0"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 
 [dependencies.serde]
@@ -179,12 +180,12 @@ version = "1.10.0"
 default-features = false
 
 [dependencies.utf16_iter]
-version = "1.0.2"
+version = "1.0.4"
 optional = true
 default-features = false
 
 [dependencies.utf8_iter]
-version = "1.0.2"
+version = "1.0.4"
 optional = true
 default-features = false
 
@@ -195,14 +196,7 @@ optional = true
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.6"
-default-features = false
-
-[dev-dependencies.arraystring]
-version = "0.3.0"
-
-[dev-dependencies.arrayvec]
-version = "0.7.2"
+version = "0.11.9"
 default-features = false
 
 [dev-dependencies.atoi]
@@ -223,8 +217,9 @@ default-features = false
 version = "0.5.0"
 
 [lints.clippy]
-alloc-instead-of-core = "warn"
-branches-sharing-code = "warn"
+alloc_instead_of_core = "warn"
+bool_assert_comparison = "allow"
+branches_sharing_code = "warn"
 collection_is_never_read = "warn"
 crosspointer_transmute = "warn"
 dbg_macro = "warn"
@@ -239,7 +234,7 @@ mismatching_type_param_order = "warn"
 missing_fields_in_debug = "warn"
 missing_transmute_annotations = "warn"
 negative_feature_names = "warn"
-or-fun-call = "warn"
+or_fun_call = "warn"
 same_functions_in_if_condition = "warn"
 todo = "warn"
 transmute_bytes_to_str = "warn"
@@ -250,7 +245,7 @@ transmute_ptr_to_ref = "warn"
 transmute_undefined_repr = "warn"
 transmutes_expressible_as_ptr_casts = "warn"
 trivially_copy_pass_by_ref = "deny"
-unnecessary-wraps = "warn"
+unnecessary_wraps = "warn"
 useless_transmute = "warn"
 wildcard_dependencies = "warn"
 
@@ -267,6 +262,7 @@ priority = 0
 check-cfg = [
     "cfg(icu4c_enable_renaming)",
     "cfg(needs_alloc_error_handler)",
+    "cfg(icu4x_nightly_tests)",
     "cfg(icu4x_run_size_tests)",
     "cfg(icu4x_unstable_fast_trie_only)",
 ]

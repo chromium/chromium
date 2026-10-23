@@ -25,14 +25,14 @@ use core::marker::PhantomData;
 use icu_provider::prelude::*;
 use yoke::Yokeable;
 use zerofrom::ZeroFrom;
-use zerovec::ule::vartuple::VarTuple;
-use zerovec::ule::vartuple::VarTupleULE;
+use zerovec::VarZeroSlice;
 use zerovec::ule::AsULE;
 use zerovec::ule::EncodeAsVarULE;
+use zerovec::ule::ULE;
 use zerovec::ule::UleError;
 use zerovec::ule::VarULE;
-use zerovec::ule::ULE;
-use zerovec::VarZeroSlice;
+use zerovec::ule::vartuple::VarTuple;
+use zerovec::ule::vartuple::VarTupleULE;
 
 pub mod rules;
 
@@ -53,7 +53,6 @@ const _: () = {
     use icu_plurals_data::*;
     mod icu {
         pub use crate as plurals;
-        pub use icu_locale as locale;
     }
 
     make_provider!(Baked);
@@ -392,6 +391,31 @@ pub struct PluralElementsPackedCow<'data, V: VarULE + ?Sized> {
     pub elements: Cow<'data, PluralElementsPackedULE<V>>,
 }
 
+impl<T: VarULE + ?Sized> icu_provider::ule::MaybeAsVarULE for PluralElementsPackedCow<'_, T> {
+    type EncodedStruct = PluralElementsPackedULE<T>;
+}
+
+#[cfg(feature = "datagen")]
+impl<T: VarULE + ?Sized> icu_provider::ule::MaybeEncodeAsVarULE for PluralElementsPackedCow<'_, T> {
+    type EncodeableStruct<'b>
+        = &'b PluralElementsPackedULE<T>
+    where
+        Self: 'b;
+    fn maybe_as_encodeable<'b>(&'b self) -> Option<Self::EncodeableStruct<'b>> {
+        Some(&self.elements)
+    }
+}
+
+impl<'a, V: VarULE + ?Sized> ZeroFrom<'a, PluralElementsPackedULE<V>>
+    for PluralElementsPackedCow<'a, V>
+{
+    fn zero_from(other: &'a PluralElementsPackedULE<V>) -> Self {
+        Self {
+            elements: Cow::Borrowed(other),
+        }
+    }
+}
+
 /// A bitpacked DST for [`PluralElements`].
 ///
 /// Can be put in a [`Cow`] or a [`VarZeroSlice`].
@@ -464,7 +488,7 @@ where
 
     unsafe fn from_bytes_unchecked(bytes: &[u8]) -> &Self {
         // Safety: the bytes are valid by trait invariant, and we are transparent over bytes
-        &*(bytes as *const [u8] as *const Self)
+        unsafe { &*(bytes as *const [u8] as *const Self) }
     }
 }
 
@@ -479,7 +503,7 @@ where
     /// The bytes must be valid according to [`PluralElementsPackedULE::validate_bytes`].
     pub const unsafe fn from_bytes_unchecked(bytes: &[u8]) -> &Self {
         // Safety: the bytes are valid by trait invariant, and we are transparent over bytes
-        &*(bytes as *const [u8] as *const Self)
+        unsafe { &*(bytes as *const [u8] as *const Self) }
     }
 
     /// Returns a tuple with:
@@ -536,15 +560,15 @@ where
 
         match parts.specials {
             Some(specials) => {
-                if op.is_exactly_zero() {
-                    if let Some(value) = get_special(specials, PluralElementsKeys::ExplicitZero) {
-                        return value;
-                    }
+                if op.is_exactly_zero()
+                    && let Some(value) = get_special(specials, PluralElementsKeys::ExplicitZero)
+                {
+                    return value;
                 }
-                if op.is_exactly_one() {
-                    if let Some(value) = get_special(specials, PluralElementsKeys::ExplicitOne) {
-                        return value;
-                    }
+                if op.is_exactly_one()
+                    && let Some(value) = get_special(specials, PluralElementsKeys::ExplicitOne)
+                {
+                    return value;
                 }
                 match category {
                     PluralCategory::Zero => Some(PluralElementsKeys::Zero),
@@ -637,11 +661,7 @@ pub struct FourBitMetadata(u8);
 impl FourBitMetadata {
     /// Creates a [`FourBitMetadata`] if the given value fits in 4 bits.
     pub fn try_from_byte(byte: u8) -> Option<Self> {
-        if byte <= 0x0F {
-            Some(Self(byte))
-        } else {
-            None
-        }
+        if byte <= 0x0F { Some(Self(byte)) } else { None }
     }
 
     /// Creates a [`FourBitMetadata`] with a zero value.

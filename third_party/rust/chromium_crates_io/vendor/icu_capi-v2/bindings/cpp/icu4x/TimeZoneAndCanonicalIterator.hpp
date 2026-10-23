@@ -28,7 +28,7 @@ namespace capi {
 } // namespace capi
 } // namespace
 
-inline std::optional<icu4x::TimeZoneAndCanonical> icu4x::TimeZoneAndCanonicalIterator::next() {
+inline std::optional<icu4x::TimeZoneAndCanonical> icu4x::TimeZoneAndCanonicalIterator::next() DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_TimeZoneAndCanonicalIterator_next_mv1(this->AsFFI());
     return result.is_ok ? std::optional<icu4x::TimeZoneAndCanonical>(icu4x::TimeZoneAndCanonical::FromFFI(result.ok)) : std::nullopt;
 }

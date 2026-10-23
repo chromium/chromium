@@ -19,34 +19,46 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/directionality.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/exemplar_chars.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/expander.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback/algorithms.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/names/language.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/names/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/names/region.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/names/script.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/names/variant.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/provider/names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/size_test_macro.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_locale"
   cargo_pkg_description =
       "API for Unicode Language and Locale Identifiers canonicalization"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = true
 
   deps = [
+    "//third_party/rust/displaydoc/v0_2:lib",
+    "//third_party/rust/either/v1:lib",
     "//third_party/rust/icu_collections/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/icu_locale_data/v2:lib",
+    "//third_party/rust/icu_locale_fallback/v2:lib",
+    "//third_party/rust/icu_pattern/v0_5:lib",
     "//third_party/rust/icu_provider/v2:lib",
-    "//third_party/rust/potential_utf/v0_1:lib",
     "//third_party/rust/tinystr/v0_8:lib",
+    "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
-  features = [ "compiled_data" ]
+  features = [
+    "compiled_data",
+    "unstable",
+  ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

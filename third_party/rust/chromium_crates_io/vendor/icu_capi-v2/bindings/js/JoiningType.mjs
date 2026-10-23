@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `JoiningType`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html) for more information.
+ * See the [Rust documentation for `JoiningType`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html) for more information.
  */
 export class JoiningType {
     #value = undefined;
@@ -71,33 +71,33 @@ export class JoiningType {
     ];
 
     /**
-     * See the [Rust documentation for `NonJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.NonJoining) for more information.
+     * See the [Rust documentation for `NonJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.NonJoining) for more information.
      */
     static NonJoining = JoiningType.#objectValues[0];
     /**
-     * See the [Rust documentation for `JoinCausing`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.JoinCausing) for more information.
+     * See the [Rust documentation for `JoinCausing`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.JoinCausing) for more information.
      */
     static JoinCausing = JoiningType.#objectValues[1];
     /**
-     * See the [Rust documentation for `DualJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.DualJoining) for more information.
+     * See the [Rust documentation for `DualJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.DualJoining) for more information.
      */
     static DualJoining = JoiningType.#objectValues[2];
     /**
-     * See the [Rust documentation for `LeftJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.LeftJoining) for more information.
+     * See the [Rust documentation for `LeftJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.LeftJoining) for more information.
      */
     static LeftJoining = JoiningType.#objectValues[3];
     /**
-     * See the [Rust documentation for `RightJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.RightJoining) for more information.
+     * See the [Rust documentation for `RightJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.RightJoining) for more information.
      */
     static RightJoining = JoiningType.#objectValues[4];
     /**
-     * See the [Rust documentation for `Transparent`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.Transparent) for more information.
+     * See the [Rust documentation for `Transparent`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.Transparent) for more information.
      */
     static Transparent = JoiningType.#objectValues[5];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -115,7 +115,7 @@ export class JoiningType {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -139,7 +139,7 @@ export class JoiningType {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -163,7 +163,7 @@ export class JoiningType {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -181,7 +181,7 @@ export class JoiningType {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -202,6 +202,11 @@ export class JoiningType {
         }
     }
 
+    /**
+     * Creates a `JoiningType` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

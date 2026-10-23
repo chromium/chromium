@@ -379,7 +379,7 @@ pub mod ffi {
             use icu_calendar::types::YearInput;
             let input_year = if !era_code.is_empty() {
                 YearInput::EraYear(
-                    core::str::from_utf8(era_code).map_err(|_| CalendarError::UnknownEra)?,
+                    str::from_utf8(era_code).map_err(|_| CalendarError::UnknownEra)?,
                     year,
                 )
             } else {

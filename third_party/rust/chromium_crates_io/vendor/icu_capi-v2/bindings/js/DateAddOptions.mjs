@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `DateAddOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateAddOptions.html) for more information.
+ * See the [Rust documentation for `DateAddOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateAddOptions.html) for more information.
  */
 export class DateAddOptions {
     #overflow;
@@ -27,7 +27,7 @@ export class DateAddOptions {
         }
 
         if ("overflow" in structObj) {
-            this.#overflow = structObj.overflow;
+            this.#overflow = new DateOverflow(structObj.overflow);
         } else {
             this.#overflow = null;
         }
@@ -75,7 +75,7 @@ export class DateAddOptions {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#overflow, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#overflow, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateOverflow(jsValue).ffiValue, Int32Array));
     }
 
     // This struct contains borrowed fields, so this takes in a list of

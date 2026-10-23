@@ -20,14 +20,10 @@ use icu_provider::prelude::*;
 use crate::provider::data::CaseMapData;
 use crate::provider::exceptions::CaseMapExceptions;
 use icu_collections::codepointtrie::CodePointTrie;
-#[cfg(feature = "datagen")]
-use icu_collections::codepointtrie::CodePointTrieHeader;
 
 pub mod data;
 pub mod exception_helpers;
 pub mod exceptions;
-#[cfg(feature = "datagen")]
-mod exceptions_builder;
 mod unfold;
 
 #[cfg(feature = "compiled_data")]
@@ -124,47 +120,12 @@ impl<'de> serde::Deserialize<'de> for CaseMap<'de> {
 }
 
 impl CaseMap<'_> {
-    /// Creates a new [`CaseMap`] using data exported by the
-    // `icuexportdata` tool in ICU4C. Validates that the data is
-    // consistent.
-    #[cfg(feature = "datagen")]
-    pub fn try_from_icu(
-        trie_header: CodePointTrieHeader,
-        trie_index: &[u16],
-        trie_data: &[u16],
-        exceptions: &[u16],
-    ) -> Result<Self, DataError> {
-        use self::exceptions_builder::CaseMapExceptionsBuilder;
-        use zerovec::ZeroVec;
-        let exceptions_builder = CaseMapExceptionsBuilder::new(exceptions);
-        let (exceptions, idx_map) = exceptions_builder.build()?;
-
-        let trie_index = ZeroVec::alloc_from_slice(trie_index);
-
-        #[expect(clippy::unwrap_used)] // datagen only
-        let trie_data = trie_data
-            .iter()
-            .map(|&i| {
-                CaseMapData::try_from_icu_integer(i)
-                    .unwrap()
-                    .with_updated_exception(&idx_map)
-            })
-            .collect::<ZeroVec<_>>();
-
-        let trie = CodePointTrie::try_new(trie_header, trie_index, trie_data)
-            .map_err(|_| DataError::custom("Casemapping data does not form valid trie"))?;
-
-        let result = Self { trie, exceptions };
-        result.validate().map_err(DataError::custom)?;
-        Ok(result)
-    }
-
     /// Given an existing [`CaseMap`], validates that the data is
     /// consistent. A [`CaseMap`] created by the ICU transformer has
     /// already been validated. Calling this function is only
     /// necessary if you are concerned about data corruption after
     /// deserializing.
-    #[cfg(any(feature = "serde", feature = "datagen"))]
+    #[cfg(feature = "serde")]
     #[allow(unused)] // is only used in debug mode for serde
     pub(crate) fn validate(&self) -> Result<(), &'static str> {
         // First, validate that exception data is well-formed.

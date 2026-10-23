@@ -1,0 +1,6 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo::apply_callback
+> found DiplomatOption<T>, where T is opaque. Please use Option<&T> (DiplomatOption is for primitives, structs, and enums)

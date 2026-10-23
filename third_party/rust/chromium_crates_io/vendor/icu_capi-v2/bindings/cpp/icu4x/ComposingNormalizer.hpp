@@ -32,6 +32,8 @@ namespace capi {
 
     void icu4x_ComposingNormalizer_normalize_mv1(const icu4x::capi::ComposingNormalizer* self, icu4x::diplomat::capi::DiplomatStringView s, icu4x::diplomat::capi::DiplomatWrite* write);
 
+    void icu4x_ComposingNormalizer_normalize_utf16_mv1(const icu4x::capi::ComposingNormalizer* self, icu4x::diplomat::capi::DiplomatString16View s, icu4x::diplomat::capi::DiplomatWrite* write);
+
     bool icu4x_ComposingNormalizer_is_normalized_utf8_mv1(const icu4x::capi::ComposingNormalizer* self, icu4x::diplomat::capi::DiplomatStringView s);
 
     bool icu4x_ComposingNormalizer_is_normalized_utf16_mv1(const icu4x::capi::ComposingNormalizer* self, icu4x::diplomat::capi::DiplomatString16View s);
@@ -78,6 +80,22 @@ template<typename W>
 inline void icu4x::ComposingNormalizer::normalize_write(std::string_view s, W& writeable) const {
     icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteTrait<W>::Construct(writeable);
     icu4x::capi::icu4x_ComposingNormalizer_normalize_mv1(this->AsFFI(),
+        {s.data(), s.size()},
+        &write);
+}
+
+inline std::u16string icu4x::ComposingNormalizer::normalize16(std::u16string_view s) const {
+    std::u16string output;
+    icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteFromString16(output);
+    icu4x::capi::icu4x_ComposingNormalizer_normalize_utf16_mv1(this->AsFFI(),
+        {s.data(), s.size()},
+        &write);
+    return output;
+}
+template<typename W>
+inline void icu4x::ComposingNormalizer::normalize16_write(std::u16string_view s, W& writeable) const {
+    icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteTrait<W>::Construct(writeable);
+    icu4x::capi::icu4x_ComposingNormalizer_normalize_utf16_mv1(this->AsFFI(),
         {s.data(), s.size()},
         &write);
 }

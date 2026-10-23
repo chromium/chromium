@@ -11,9 +11,9 @@ const LocaleDisplayNamesFormatter_box_destroy_registry = new FinalizationRegistr
 });
 
 /**
- * 🚧 This API is unstable and may experience breaking changes outside major releases.
+ * See the [Rust documentation for `LocaleDisplayNamesFormatter`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html) for more information.
  *
- * See the [Rust documentation for `LocaleDisplayNamesFormatter`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html) for more information.
+ * @experimental
  */
 export class LocaleDisplayNamesFormatter {
     // Internal ptr reference:
@@ -45,11 +45,11 @@ export class LocaleDisplayNamesFormatter {
 
 
     /**
-     * 🚧 This API is unstable and may experience breaking changes outside major releases.
-     *
      * Creates a new `LocaleDisplayNamesFormatter` from locale data and an options bag using compiled data.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html#method.try_new) for more information.
+     *
+     * @experimental
      */
     #defaultConstructor(locale, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -57,7 +57,7 @@ export class LocaleDisplayNamesFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_LocaleDisplayNamesFormatter_create_v1_mv1(diplomatReceive.buffer, locale.ffiValue, DisplayNamesOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(DisplayNamesOptions._sizeBytes), functionCleanupArena, {}, false));
+        const result = wasm.icu4x_LocaleDisplayNamesFormatter_create_v1_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), DisplayNamesOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(DisplayNamesOptions._sizeBytes), functionCleanupArena, {}, false));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -76,11 +76,11 @@ export class LocaleDisplayNamesFormatter {
     }
 
     /**
-     * 🚧 This API is unstable and may experience breaking changes outside major releases.
-     *
      * Creates a new `LocaleDisplayNamesFormatter` from locale data and an options bag using a particular data source.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/struct.LocaleDisplayNamesFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/struct.LocaleDisplayNamesFormatter.html#method.try_new) for more information.
+     *
+     * @experimental
      */
     static createWithProvider(provider, locale, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -88,7 +88,7 @@ export class LocaleDisplayNamesFormatter {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_LocaleDisplayNamesFormatter_create_v1_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, DisplayNamesOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(DisplayNamesOptions._sizeBytes), functionCleanupArena, {}, false));
+        const result = wasm.icu4x_LocaleDisplayNamesFormatter_create_v1_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), DisplayNamesOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(DisplayNamesOptions._sizeBytes), functionCleanupArena, {}, false));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -107,17 +107,16 @@ export class LocaleDisplayNamesFormatter {
     }
 
     /**
-     * 🚧 This API is unstable and may experience breaking changes outside major releases.
-     *
      * Returns the locale-specific display name of a locale.
-     * 🚧 This API is unstable and may experience breaking changes outside major releases.
      *
-     * See the [Rust documentation for `of`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html#method.of) for more information.
+     * See the [Rust documentation for `of`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html#method.of) for more information.
+     *
+     * @experimental
      */
     of(locale) {
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
-    wasm.icu4x_LocaleDisplayNamesFormatter_of_mv1(this.ffiValue, locale.ffiValue, write.buffer);
+    wasm.icu4x_LocaleDisplayNamesFormatter_of_mv1(this.ffiValue, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), write.buffer);
 
         try {
             return write.readString8();
@@ -130,11 +129,11 @@ export class LocaleDisplayNamesFormatter {
     }
 
     /**
-     * 🚧 This API is unstable and may experience breaking changes outside major releases.
-     *
      * Creates a new `LocaleDisplayNamesFormatter` from locale data and an options bag using compiled data.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/multi/struct.LocaleDisplayNamesFormatter.html#method.try_new) for more information.
+     *
+     * @experimental
      */
     constructor(locale, options) {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

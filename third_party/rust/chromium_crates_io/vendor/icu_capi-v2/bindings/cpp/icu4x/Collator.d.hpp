@@ -32,7 +32,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `Collator`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html) for more information.
+ * See the [Rust documentation for `Collator`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html) for more information.
  */
 class Collator {
 public:
@@ -40,14 +40,14 @@ public:
   /**
    * Construct a new Collator instance using compiled data.
    *
-   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::Collator>, icu4x::DataError> create_v1(const icu4x::Locale& locale, icu4x::CollatorOptionsV1 options);
 
   /**
    * Construct a new Collator instance using a particular data source.
    *
-   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::Collator>, icu4x::DataError> create_v1_with_provider(const icu4x::DataProvider& provider, const icu4x::Locale& locale, icu4x::CollatorOptionsV1 options);
 
@@ -57,7 +57,7 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `compare_utf8`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf8) for more information.
+   * See the [Rust documentation for `compare_utf8`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf8) for more information.
    */
   inline int8_t compare(std::string_view left, std::string_view right) const;
 
@@ -67,7 +67,7 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `compare_utf16`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf16) for more information.
+   * See the [Rust documentation for `compare_utf16`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf16) for more information.
    */
   inline int8_t compare16(std::u16string_view left, std::u16string_view right) const;
 
@@ -76,7 +76,7 @@ public:
    * and the options from locale data were combined. None of the struct fields
    * will have `Auto` as the value.
    *
-   * See the [Rust documentation for `resolved_options`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.resolved_options) for more information.
+   * See the [Rust documentation for `resolved_options`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.resolved_options) for more information.
    */
   inline icu4x::CollatorResolvedOptionsV1 resolved_options_v1() const;
 

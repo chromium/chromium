@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `DateDifferenceOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateDifferenceOptions.html) for more information.
+ * See the [Rust documentation for `DateDifferenceOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateDifferenceOptions.html) for more information.
  */
 export class DateDifferenceOptions {
     #largestUnit;
@@ -27,7 +27,7 @@ export class DateDifferenceOptions {
         }
 
         if ("largestUnit" in structObj) {
-            this.#largestUnit = structObj.largestUnit;
+            this.#largestUnit = new DateDurationUnit(structObj.largestUnit);
         } else {
             this.#largestUnit = null;
         }
@@ -75,7 +75,7 @@ export class DateDifferenceOptions {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#largestUnit, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#largestUnit, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new DateDurationUnit(jsValue).ffiValue, Int32Array));
     }
 
     // This struct contains borrowed fields, so this takes in a list of

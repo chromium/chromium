@@ -11,7 +11,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `ResolvedCollatorOptions`](https://docs.rs/icu/2.2.0/icu/collator/options/struct.ResolvedCollatorOptions.html) for more information.
+ * See the [Rust documentation for `ResolvedCollatorOptions`](https://docs.rs/icu/2.4.0/icu/collator/options/struct.ResolvedCollatorOptions.html) for more information.
  */
 export class CollatorResolvedOptions {
     #strength;
@@ -47,37 +47,37 @@ export class CollatorResolvedOptions {
             throw new Error("CollatorResolvedOptions is an out struct and can only be created internally.");
         }
         if ("strength" in structObj) {
-            this.#strength = structObj.strength;
+            this.#strength = new CollatorStrength(structObj.strength);
         } else {
             throw new Error("Missing required field strength.");
         }
 
         if ("alternateHandling" in structObj) {
-            this.#alternateHandling = structObj.alternateHandling;
+            this.#alternateHandling = new CollatorAlternateHandling(structObj.alternateHandling);
         } else {
             throw new Error("Missing required field alternateHandling.");
         }
 
         if ("caseFirst" in structObj) {
-            this.#caseFirst = structObj.caseFirst;
+            this.#caseFirst = new CollatorCaseFirst(structObj.caseFirst);
         } else {
             throw new Error("Missing required field caseFirst.");
         }
 
         if ("maxVariable" in structObj) {
-            this.#maxVariable = structObj.maxVariable;
+            this.#maxVariable = new CollatorMaxVariable(structObj.maxVariable);
         } else {
             throw new Error("Missing required field maxVariable.");
         }
 
         if ("caseLevel" in structObj) {
-            this.#caseLevel = structObj.caseLevel;
+            this.#caseLevel = new CollatorCaseLevel(structObj.caseLevel);
         } else {
             throw new Error("Missing required field caseLevel.");
         }
 
         if ("numeric" in structObj) {
-            this.#numeric = structObj.numeric;
+            this.#numeric = new CollatorNumericOrdering(structObj.numeric);
         } else {
             throw new Error("Missing required field numeric.");
         }
@@ -125,12 +125,12 @@ export class CollatorResolvedOptions {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#strength.ffiValue, Int32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#alternateHandling.ffiValue, Int32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 8, this.#caseFirst.ffiValue, Int32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 12, this.#maxVariable.ffiValue, Int32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 16, this.#caseLevel.ffiValue, Int32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 20, this.#numeric.ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CollatorStrength(this.#strength).ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, new CollatorAlternateHandling(this.#alternateHandling).ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 8, new CollatorCaseFirst(this.#caseFirst).ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 12, new CollatorMaxVariable(this.#maxVariable).ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 16, new CollatorCaseLevel(this.#caseLevel).ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 20, new CollatorNumericOrdering(this.#numeric).ffiValue, Int32Array);
     }
 
     // This struct contains borrowed fields, so this takes in a list of

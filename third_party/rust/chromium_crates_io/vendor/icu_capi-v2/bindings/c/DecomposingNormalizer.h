@@ -29,6 +29,8 @@ icu4x_DecomposingNormalizer_create_nfkd_with_provider_mv1_result icu4x_Decomposi
 
 void icu4x_DecomposingNormalizer_normalize_mv1(const DecomposingNormalizer* self, DiplomatStringView s, DiplomatWrite* write);
 
+void icu4x_DecomposingNormalizer_normalize_utf16_mv1(const DecomposingNormalizer* self, DiplomatString16View s, DiplomatWrite* write);
+
 bool icu4x_DecomposingNormalizer_is_normalized_mv1(const DecomposingNormalizer* self, DiplomatStringView s);
 
 bool icu4x_DecomposingNormalizer_is_normalized_utf16_mv1(const DecomposingNormalizer* self, DiplomatString16View s);

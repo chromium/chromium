@@ -24,7 +24,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/provider/data.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/provider/exception_helpers.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/provider/exceptions.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/provider/exceptions_builder.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/provider/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/provider/unfold.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_casemap-v2/src/set.rs",
@@ -33,12 +32,12 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_casemap"
   cargo_pkg_description = "Unicode case mapping and folding algorithms"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = true
 

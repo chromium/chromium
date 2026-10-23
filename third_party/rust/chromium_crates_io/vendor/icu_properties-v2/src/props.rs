@@ -20,83 +20,6 @@
 pub use crate::names::{NamedEnumeratedProperty, ParseableEnumeratedProperty};
 
 pub use crate::bidi::{BidiMirroringGlyph, BidiPairedBracketType};
-
-/// See [`test_enumerated_property_completeness`] for usage.
-/// Example input:
-/// ```ignore
-/// impl EastAsianWidth {
-///     pub const Neutral: EastAsianWidth = EastAsianWidth(0);
-///     pub const Ambiguous: EastAsianWidth = EastAsianWidth(1);
-///     ...
-/// }
-/// ```
-/// Produces `const ALL_VALUES = &[("Neutral", 0u16), ...];` by
-/// explicitly casting first field of the struct to u16.
-macro_rules! create_const_array {
-    (
-        $ ( #[$meta:meta] )*
-        impl $enum_ty:ident {
-            $( $(#[$const_meta:meta])* $v:vis const $i:ident: $t:ty = $e:expr; )*
-        }
-        #[test]
-        fn $consts_test:ident();
-    ) => {
-        $( #[$meta] )*
-        impl $enum_ty {
-            $(
-                $(#[$const_meta])*
-                $v const $i: $t = $e;
-            )*
-
-            /// All possible values of this enum in the Unicode version
-            /// from this ICU4X release.
-            pub const ALL_VALUES: &'static [$enum_ty] = &[
-                $($enum_ty::$i),*
-            ];
-        }
-
-        #[cfg(feature = "datagen")]
-        impl databake::Bake for $enum_ty {
-            fn bake(&self, env: &databake::CrateEnv) -> databake::TokenStream {
-                env.insert("icu_properties");
-                match *self {
-                    $(
-                        Self::$i => databake::quote!(icu_properties::props::$enum_ty::$i),
-                    )*
-                    Self(v) => databake::quote!(icu_properties::props::$enum_ty::from_icu4c_value(#v)),
-                }
-            }
-        }
-
-
-        impl From<$enum_ty> for u16  {
-            #[allow(trivial_numeric_casts)]
-            fn from(other: $enum_ty) -> Self {
-                other.0 as u16
-            }
-        }
-
-        #[test]
-        fn $consts_test() {
-            $(
-                assert_eq!(
-                    crate::names::PropertyNamesLong::<$enum_ty>::new().get($enum_ty::$i).unwrap()
-                        // Rust identifiers use camel case
-                        .replace('_', "")
-                        // We use Ethiopian
-                        .replace("Ethiopic", "Ethiopian")
-                        // Nastaliq is missing a long name?
-                        .replace("Aran", "Nastaliq")
-                        // We spell these out
-                        .replace("LVSyllable", "LeadingVowelSyllable")
-                        .replace("LVTSyllable", "LeadingVowelTrailingSyllable"),
-                    stringify!($i)
-                );
-            )*
-        }
-    }
-}
-
 pub use crate::code_point_map::EnumeratedProperty;
 
 macro_rules! make_enumerated_property {
@@ -143,7 +66,7 @@ macro_rules! make_enumerated_property {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::BidiClass, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::BidiClass};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<BidiClass>::new().get('y'),
@@ -162,67 +85,27 @@ pub struct BidiClass(pub(crate) u8);
 
 impl BidiClass {
     /// Returns an ICU4C `UBidiClass` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UBidiClass` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(non_upper_case_globals)]
-impl BidiClass {
-    /// (`L`) any strong left-to-right character
-    pub const LeftToRight: BidiClass = BidiClass(0);
-    /// (`R`) any strong right-to-left (non-Arabic-type) character
-    pub const RightToLeft: BidiClass = BidiClass(1);
-    /// (`EN`) any ASCII digit or Eastern Arabic-Indic digit
-    pub const EuropeanNumber: BidiClass = BidiClass(2);
-    /// (`ES`) plus and minus signs
-    pub const EuropeanSeparator: BidiClass = BidiClass(3);
-    /// (`ET`) a terminator in a numeric format context, includes currency signs
-    pub const EuropeanTerminator: BidiClass = BidiClass(4);
-    /// (`AN`) any Arabic-Indic digit
-    pub const ArabicNumber: BidiClass = BidiClass(5);
-    /// (`CS`) commas, colons, and slashes
-    pub const CommonSeparator: BidiClass = BidiClass(6);
-    /// (`B`) various newline characters
-    pub const ParagraphSeparator: BidiClass = BidiClass(7);
-    /// (`S`) various segment-related control codes
-    pub const SegmentSeparator: BidiClass = BidiClass(8);
-    /// (`WS`) spaces
-    pub const WhiteSpace: BidiClass = BidiClass(9);
-    /// (`ON`) most other symbols and punctuation marks
-    pub const OtherNeutral: BidiClass = BidiClass(10);
-    /// (`LRE`) U+202A: the LR embedding control
-    pub const LeftToRightEmbedding: BidiClass = BidiClass(11);
-    /// (`LRO`) U+202D: the LR override control
-    pub const LeftToRightOverride: BidiClass = BidiClass(12);
-    /// (`AL`) any strong right-to-left (Arabic-type) character
-    pub const ArabicLetter: BidiClass = BidiClass(13);
-    /// (`RLE`) U+202B: the RL embedding control
-    pub const RightToLeftEmbedding: BidiClass = BidiClass(14);
-    /// (`RLO`) U+202E: the RL override control
-    pub const RightToLeftOverride: BidiClass = BidiClass(15);
-    /// (`PDF`) U+202C: terminates an embedding or override control
-    pub const PopDirectionalFormat: BidiClass = BidiClass(16);
-    /// (`NSM`) any nonspacing mark
-    pub const NonspacingMark: BidiClass = BidiClass(17);
-    /// (`BN`) most format characters, control codes, or noncharacters
-    pub const BoundaryNeutral: BidiClass = BidiClass(18);
-    /// (`FSI`) U+2068: the first strong isolate control
-    pub const FirstStrongIsolate: BidiClass = BidiClass(19);
-    /// (`LRI`) U+2066: the LR isolate control
-    pub const LeftToRightIsolate: BidiClass = BidiClass(20);
-    /// (`RLI`) U+2067: the RL isolate control
-    pub const RightToLeftIsolate: BidiClass = BidiClass(21);
-    /// (`PDI`) U+2069: terminates an isolate control
-    pub const PopDirectionalIsolate: BidiClass = BidiClass(22);
-}
-#[test]
-fn bidi_props_consts();
+impl Default for BidiClass {
+    fn default() -> Self {
+        Self::LeftToRight
+    }
 }
 
 make_enumerated_property! {
@@ -234,6 +117,42 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
+/// Enumerated property `Block`.
+///
+/// See Section 3.4, D10B in The Unicode Standard.
+///
+/// # Example
+///
+/// ```
+/// use icu::properties::{CodePointMapData, props::Block};
+///
+/// assert_eq!(
+///     CodePointMapData::<Block>::new().get('α'),
+///     Block::GreekAndCoptic,
+/// );
+/// assert_eq!(CodePointMapData::<Block>::new().get('a'), Block::BasicLatin,);
+/// ```
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[allow(clippy::exhaustive_structs)] // newtype
+#[repr(transparent)]
+pub struct Block(pub(crate) u16);
+
+impl Default for Block {
+    fn default() -> Self {
+        Self::NoBlock
+    }
+}
+
+make_enumerated_property! {
+    name: "Block";
+    short_name: "blk";
+    ident: Block;
+    data_marker: crate::provider::PropertyEnumBlockV1;
+    singleton: SINGLETON_PROPERTY_ENUM_BLOCK_V1;
+    ule_ty: <u16 as zerovec::ule::AsULE>::ULE;
+}
+
 /// Enumerated property `Numeric_Type`.
 ///
 /// See Section 4.6, Numeric Value in The Unicode Standard for the summary of
@@ -242,7 +161,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::NumericType, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::NumericType};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<NumericType>::new().get('0'),
@@ -261,35 +180,27 @@ pub struct NumericType(pub(crate) u8);
 
 impl NumericType {
     /// Returns an ICU4C `UNumericType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UNumericType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(non_upper_case_globals)]
-impl NumericType {
-    /// Characters without numeric value
-    pub const None: NumericType = NumericType(0);
-    /// (`De`) Characters of positional decimal systems
-    ///
-    /// These are coextensive with [`GeneralCategory::DecimalNumber`].
-    pub const Decimal: NumericType = NumericType(1);
-    /// (`Di`) Variants of positional or sequences thereof.
-    ///
-    /// The distinction between [`NumericType::Digit`] and [`NumericType::Numeric`]
-    /// has not proven to be useful, so no further characters will be added to
-    /// this type.
-    pub const Digit: NumericType = NumericType(2);
-    /// (`Nu`) Other characters with numeric value
-    pub const Numeric: NumericType = NumericType(3);
-}
-#[test]
-fn numeric_type_consts();
+impl Default for NumericType {
+    fn default() -> Self {
+        Self::None
+    }
 }
 
 make_enumerated_property! {
@@ -301,160 +212,35 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-// This exists to encapsulate GeneralCategoryULE so that it can exist in the provider module rather than props
-pub(crate) mod gc {
-    /// Enumerated property `General_Category`.
-    ///
-    /// `General_Category` specifies the most general classification of a code point, usually
-    /// determined based on the primary characteristic of the assigned character. For example, is the
-    /// character a letter, a mark, a number, punctuation, or a symbol, and if so, of what type?
-    ///
-    /// `GeneralCategory` only supports specific subcategories (eg `UppercaseLetter`).
-    /// It does not support grouped categories (eg `Letter`). For grouped categories, use [`GeneralCategoryGroup`](
-    /// crate::props::GeneralCategoryGroup).
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use icu::properties::{props::GeneralCategory, CodePointMapData};
-    ///
-    /// assert_eq!(
-    ///     CodePointMapData::<GeneralCategory>::new().get('木'),
-    ///     GeneralCategory::OtherLetter
-    /// ); // U+6728
-    /// assert_eq!(
-    ///     CodePointMapData::<GeneralCategory>::new().get('🎃'),
-    ///     GeneralCategory::OtherSymbol
-    /// ); // U+1F383 JACK-O-LANTERN
-    /// ```
-    #[derive(Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash)]
-    #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-    #[cfg_attr(feature = "datagen", derive(databake::Bake))]
-    #[cfg_attr(feature = "datagen", databake(path = icu_properties::props))]
-    #[allow(clippy::exhaustive_enums)] // this type is stable
-    #[zerovec::make_ule(GeneralCategoryULE)]
-    #[cfg_attr(not(feature = "alloc"), zerovec::skip_derive(ZeroMapKV))]
-    #[repr(u8)]
-    pub enum GeneralCategory {
-        /// (`Cn`) A reserved unassigned code point or a noncharacter
-        Unassigned = 0,
+/// Enumerated property `General_Category`.
+///
+/// `General_Category` specifies the most general classification of a code point, usually
+/// determined based on the primary characteristic of the assigned character. For example, is the
+/// character a letter, a mark, a number, punctuation, or a symbol, and if so, of what type?
+///
+/// `GeneralCategory` only supports specific subcategories (eg `UppercaseLetter`).
+/// It does not support grouped categories (eg `Letter`). For grouped categories, use [`GeneralCategoryGroup`].
+///
+/// # Example
+///
+/// ```
+/// use icu::properties::{CodePointMapData, props::GeneralCategory};
+///
+/// assert_eq!(
+///     CodePointMapData::<GeneralCategory>::new().get('木'),
+///     GeneralCategory::OtherLetter
+/// ); // U+6728
+/// assert_eq!(
+///     CodePointMapData::<GeneralCategory>::new().get('🎃'),
+///     GeneralCategory::OtherSymbol
+/// ); // U+1F383 JACK-O-LANTERN
+/// ```
+pub use crate::enum_values::GeneralCategory;
 
-        /// (`Lu`) An uppercase letter
-        UppercaseLetter = 1,
-        /// (`Ll`) A lowercase letter
-        LowercaseLetter = 2,
-        /// (`Lt`) A digraphic letter, with first part uppercase
-        TitlecaseLetter = 3,
-        /// (`Lm`) A modifier letter
-        ModifierLetter = 4,
-        /// (`Lo`) Other letters, including syllables and ideographs
-        OtherLetter = 5,
-
-        /// (`Mn`) A nonspacing combining mark (zero advance width)
-        NonspacingMark = 6,
-        /// (`Mc`) A spacing combining mark (positive advance width)
-        SpacingMark = 8,
-        /// (`Me`) An enclosing combining mark
-        EnclosingMark = 7,
-
-        /// (`Nd`) A decimal digit
-        DecimalNumber = 9,
-        /// (`Nl`) A letterlike numeric character
-        LetterNumber = 10,
-        /// (`No`) A numeric character of other type
-        OtherNumber = 11,
-
-        /// (`Zs`) A space character (of various non-zero widths)
-        SpaceSeparator = 12,
-        /// (`Zl`) U+2028 LINE SEPARATOR only
-        LineSeparator = 13,
-        /// (`Zp`) U+2029 PARAGRAPH SEPARATOR only
-        ParagraphSeparator = 14,
-
-        /// (`Cc`) A C0 or C1 control code
-        Control = 15,
-        /// (`Cf`) A format control character
-        Format = 16,
-        /// (`Co`) A private-use character
-        PrivateUse = 17,
-        /// (`Cs`) A surrogate code point
-        Surrogate = 18,
-
-        /// (`Pd`) A dash or hyphen punctuation mark
-        DashPunctuation = 19,
-        /// (`Ps`) An opening punctuation mark (of a pair)
-        OpenPunctuation = 20,
-        /// (`Pe`) A closing punctuation mark (of a pair)
-        ClosePunctuation = 21,
-        /// (`Pc`) A connecting punctuation mark, like a tie
-        ConnectorPunctuation = 22,
-        /// (`Pi`) An initial quotation mark
-        InitialPunctuation = 28,
-        /// (`Pf`) A final quotation mark
-        FinalPunctuation = 29,
-        /// (`Po`) A punctuation mark of other type
-        OtherPunctuation = 23,
-
-        /// (`Sm`) A symbol of mathematical use
-        MathSymbol = 24,
-        /// (`Sc`) A currency sign
-        CurrencySymbol = 25,
-        /// (`Sk`) A non-letterlike modifier symbol
-        ModifierSymbol = 26,
-        /// (`So`) A symbol of other type
-        OtherSymbol = 27,
-    }
-}
-
-pub use gc::GeneralCategory;
-
-impl GeneralCategory {
-    /// All possible values of this enum
-    pub const ALL_VALUES: &'static [GeneralCategory] = &[
-        GeneralCategory::Unassigned,
-        GeneralCategory::UppercaseLetter,
-        GeneralCategory::LowercaseLetter,
-        GeneralCategory::TitlecaseLetter,
-        GeneralCategory::ModifierLetter,
-        GeneralCategory::OtherLetter,
-        GeneralCategory::NonspacingMark,
-        GeneralCategory::SpacingMark,
-        GeneralCategory::EnclosingMark,
-        GeneralCategory::DecimalNumber,
-        GeneralCategory::LetterNumber,
-        GeneralCategory::OtherNumber,
-        GeneralCategory::SpaceSeparator,
-        GeneralCategory::LineSeparator,
-        GeneralCategory::ParagraphSeparator,
-        GeneralCategory::Control,
-        GeneralCategory::Format,
-        GeneralCategory::PrivateUse,
-        GeneralCategory::Surrogate,
-        GeneralCategory::DashPunctuation,
-        GeneralCategory::OpenPunctuation,
-        GeneralCategory::ClosePunctuation,
-        GeneralCategory::ConnectorPunctuation,
-        GeneralCategory::InitialPunctuation,
-        GeneralCategory::FinalPunctuation,
-        GeneralCategory::OtherPunctuation,
-        GeneralCategory::MathSymbol,
-        GeneralCategory::CurrencySymbol,
-        GeneralCategory::ModifierSymbol,
-        GeneralCategory::OtherSymbol,
-    ];
-}
-
-#[test]
-fn gc_variants() {
-    for &variant in GeneralCategory::ALL_VALUES {
-        assert_eq!(
-            crate::names::PropertyNamesLong::<GeneralCategory>::new()
-                .get(variant)
-                .unwrap()
-                // Rust identifiers use camel case
-                .replace('_', ""),
-            format!("{variant:?}")
-        );
+#[allow(clippy::derivable_impls)] // declaration is codegen'd
+impl Default for GeneralCategory {
+    fn default() -> Self {
+        Self::Unassigned
     }
 }
 
@@ -505,95 +291,127 @@ impl crate::private::Sealed for GeneralCategoryGroup {}
 use GeneralCategory as GC;
 use GeneralCategoryGroup as GCG;
 
-#[allow(non_upper_case_globals)]
+#[allow(non_upper_case_globals, missing_docs)]
 impl GeneralCategoryGroup {
-    /// (`Lu`) An uppercase letter
+    /// An uppercase letter
     pub const UppercaseLetter: GeneralCategoryGroup = GCG(1 << (GC::UppercaseLetter as u32));
-    /// (`Ll`) A lowercase letter
+    pub const Lu: GeneralCategoryGroup = Self::UppercaseLetter;
+    /// A lowercase letter
+    pub const Ll: Self = Self::LowercaseLetter;
     pub const LowercaseLetter: GeneralCategoryGroup = GCG(1 << (GC::LowercaseLetter as u32));
-    /// (`Lt`) A digraphic letter, with first part uppercase
+    /// A digraphic letter, with first part uppercase
     pub const TitlecaseLetter: GeneralCategoryGroup = GCG(1 << (GC::TitlecaseLetter as u32));
-    /// (`Lm`) A modifier letter
+    pub const Lt: Self = Self::TitlecaseLetter;
+    /// A modifier letter
     pub const ModifierLetter: GeneralCategoryGroup = GCG(1 << (GC::ModifierLetter as u32));
-    /// (`Lo`) Other letters, including syllables and ideographs
+    pub const Lm: Self = Self::ModifierLetter;
+    /// Other letters, including syllables and ideographs
     pub const OtherLetter: GeneralCategoryGroup = GCG(1 << (GC::OtherLetter as u32));
-    /// (`LC`) The union of `UppercaseLetter`, `LowercaseLetter`, and `TitlecaseLetter`
+    pub const Lo: Self = Self::OtherLetter;
+    /// The union of `UppercaseLetter`, `LowercaseLetter`, and `TitlecaseLetter`
     pub const CasedLetter: GeneralCategoryGroup = GCG((1 << (GC::UppercaseLetter as u32))
         | (1 << (GC::LowercaseLetter as u32))
         | (1 << (GC::TitlecaseLetter as u32)));
-    /// (`L`) The union of all letter categories
+    pub const LC: Self = Self::CasedLetter;
+    /// The union of all letter categories
     pub const Letter: GeneralCategoryGroup = GCG((1 << (GC::UppercaseLetter as u32))
         | (1 << (GC::LowercaseLetter as u32))
         | (1 << (GC::TitlecaseLetter as u32))
         | (1 << (GC::ModifierLetter as u32))
         | (1 << (GC::OtherLetter as u32)));
+    pub const L: Self = Self::Letter;
 
-    /// (`Mn`) A nonspacing combining mark (zero advance width)
+    /// A nonspacing combining mark (zero advance width)
     pub const NonspacingMark: GeneralCategoryGroup = GCG(1 << (GC::NonspacingMark as u32));
-    /// (`Mc`) A spacing combining mark (positive advance width)
+    pub const Mn: Self = Self::NonspacingMark;
+    /// An enclosing combining mark
     pub const EnclosingMark: GeneralCategoryGroup = GCG(1 << (GC::EnclosingMark as u32));
-    /// (`Me`) An enclosing combining mark
+    pub const Me: Self = Self::EnclosingMark;
+    /// A spacing combining mark (positive advance width)
     pub const SpacingMark: GeneralCategoryGroup = GCG(1 << (GC::SpacingMark as u32));
-    /// (`M`) The union of all mark categories
+    pub const Mc: Self = Self::SpacingMark;
+    /// The union of all mark categories
     pub const Mark: GeneralCategoryGroup = GCG((1 << (GC::NonspacingMark as u32))
         | (1 << (GC::EnclosingMark as u32))
         | (1 << (GC::SpacingMark as u32)));
+    pub const M: Self = Self::Mark;
 
-    /// (`Nd`) A decimal digit
+    /// A decimal digit
     pub const DecimalNumber: GeneralCategoryGroup = GCG(1 << (GC::DecimalNumber as u32));
-    /// (`Nl`) A letterlike numeric character
+    pub const Nd: Self = Self::DecimalNumber;
+    /// A letterlike numeric character
     pub const LetterNumber: GeneralCategoryGroup = GCG(1 << (GC::LetterNumber as u32));
-    /// (`No`) A numeric character of other type
+    pub const Nl: Self = Self::LetterNumber;
+    /// A numeric character of other type
     pub const OtherNumber: GeneralCategoryGroup = GCG(1 << (GC::OtherNumber as u32));
-    /// (`N`) The union of all number categories
+    pub const No: Self = Self::OtherNumber;
+    /// The union of all number categories
     pub const Number: GeneralCategoryGroup = GCG((1 << (GC::DecimalNumber as u32))
         | (1 << (GC::LetterNumber as u32))
         | (1 << (GC::OtherNumber as u32)));
+    pub const N: Self = Self::Number;
 
-    /// (`Zs`) A space character (of various non-zero widths)
+    /// A space character (of various non-zero widths)
     pub const SpaceSeparator: GeneralCategoryGroup = GCG(1 << (GC::SpaceSeparator as u32));
-    /// (`Zl`) U+2028 LINE SEPARATOR only
+    pub const Zs: Self = Self::SpaceSeparator;
+    /// U+2028 LINE SEPARATOR only
     pub const LineSeparator: GeneralCategoryGroup = GCG(1 << (GC::LineSeparator as u32));
-    /// (`Zp`) U+2029 PARAGRAPH SEPARATOR only
+    pub const Zl: Self = Self::LineSeparator;
+    /// U+2029 PARAGRAPH SEPARATOR only
     pub const ParagraphSeparator: GeneralCategoryGroup = GCG(1 << (GC::ParagraphSeparator as u32));
-    /// (`Z`) The union of all separator categories
+    pub const Zp: Self = Self::ParagraphSeparator;
+    /// The union of all separator categories
     pub const Separator: GeneralCategoryGroup = GCG((1 << (GC::SpaceSeparator as u32))
         | (1 << (GC::LineSeparator as u32))
         | (1 << (GC::ParagraphSeparator as u32)));
+    pub const Z: Self = Self::Separator;
 
-    /// (`Cc`) A C0 or C1 control code
+    /// A C0 or C1 control code
     pub const Control: GeneralCategoryGroup = GCG(1 << (GC::Control as u32));
-    /// (`Cf`) A format control character
+    pub const Cc: Self = Self::Control;
+    /// A format control character
     pub const Format: GeneralCategoryGroup = GCG(1 << (GC::Format as u32));
-    /// (`Co`) A private-use character
+    pub const Cf: Self = Self::Format;
+    /// A private-use character
     pub const PrivateUse: GeneralCategoryGroup = GCG(1 << (GC::PrivateUse as u32));
-    /// (`Cs`) A surrogate code point
+    pub const Co: Self = Self::PrivateUse;
+    /// A surrogate code point
     pub const Surrogate: GeneralCategoryGroup = GCG(1 << (GC::Surrogate as u32));
-    /// (`Cn`) A reserved unassigned code point or a noncharacter
+    pub const Cs: Self = Self::Surrogate;
+    /// A reserved unassigned code point or a noncharacter
     pub const Unassigned: GeneralCategoryGroup = GCG(1 << (GC::Unassigned as u32));
-    /// (`C`) The union of all control code, reserved, and unassigned categories
+    pub const Cn: Self = Self::Unassigned;
+    /// The union of all control code, reserved, and unassigned categories
     pub const Other: GeneralCategoryGroup = GCG((1 << (GC::Control as u32))
         | (1 << (GC::Format as u32))
         | (1 << (GC::PrivateUse as u32))
         | (1 << (GC::Surrogate as u32))
         | (1 << (GC::Unassigned as u32)));
+    pub const C: Self = Self::Other;
 
-    /// (`Pd`) A dash or hyphen punctuation mark
+    /// A dash or hyphen punctuation mark
     pub const DashPunctuation: GeneralCategoryGroup = GCG(1 << (GC::DashPunctuation as u32));
-    /// (`Ps`) An opening punctuation mark (of a pair)
+    pub const Pd: Self = Self::DashPunctuation;
+    /// An opening punctuation mark (of a pair)
     pub const OpenPunctuation: GeneralCategoryGroup = GCG(1 << (GC::OpenPunctuation as u32));
-    /// (`Pe`) A closing punctuation mark (of a pair)
+    pub const Ps: Self = Self::OpenPunctuation;
+    /// A closing punctuation mark (of a pair)
     pub const ClosePunctuation: GeneralCategoryGroup = GCG(1 << (GC::ClosePunctuation as u32));
-    /// (`Pc`) A connecting punctuation mark, like a tie
+    pub const Pe: Self = Self::ClosePunctuation;
+    /// A connecting punctuation mark, like a tie
     pub const ConnectorPunctuation: GeneralCategoryGroup =
         GCG(1 << (GC::ConnectorPunctuation as u32));
-    /// (`Pi`) An initial quotation mark
+    pub const Pc: Self = Self::ConnectorPunctuation;
+    /// An initial quotation mark
     pub const InitialPunctuation: GeneralCategoryGroup = GCG(1 << (GC::InitialPunctuation as u32));
-    /// (`Pf`) A final quotation mark
+    pub const Pi: Self = Self::InitialPunctuation;
+    /// A final quotation mark
     pub const FinalPunctuation: GeneralCategoryGroup = GCG(1 << (GC::FinalPunctuation as u32));
-    /// (`Po`) A punctuation mark of other type
+    pub const Pf: Self = Self::FinalPunctuation;
+    /// A punctuation mark of other type
     pub const OtherPunctuation: GeneralCategoryGroup = GCG(1 << (GC::OtherPunctuation as u32));
-    /// (`P`) The union of all punctuation categories
+    pub const Po: Self = Self::OtherPunctuation;
+    /// The union of all punctuation categories
     pub const Punctuation: GeneralCategoryGroup = GCG((1 << (GC::DashPunctuation as u32))
         | (1 << (GC::OpenPunctuation as u32))
         | (1 << (GC::ClosePunctuation as u32))
@@ -601,28 +419,80 @@ impl GeneralCategoryGroup {
         | (1 << (GC::OtherPunctuation as u32))
         | (1 << (GC::InitialPunctuation as u32))
         | (1 << (GC::FinalPunctuation as u32)));
+    pub const P: Self = Self::Punctuation;
 
-    /// (`Sm`) A symbol of mathematical use
+    /// A symbol of mathematical use
     pub const MathSymbol: GeneralCategoryGroup = GCG(1 << (GC::MathSymbol as u32));
-    /// (`Sc`) A currency sign
+    pub const Sm: Self = Self::MathSymbol;
+    /// A currency sign
     pub const CurrencySymbol: GeneralCategoryGroup = GCG(1 << (GC::CurrencySymbol as u32));
-    /// (`Sk`) A non-letterlike modifier symbol
+    pub const Sc: Self = Self::CurrencySymbol;
+    /// A non-letterlike modifier symbol
     pub const ModifierSymbol: GeneralCategoryGroup = GCG(1 << (GC::ModifierSymbol as u32));
-    /// (`So`) A symbol of other type
+    pub const Sk: Self = Self::ModifierSymbol;
+    /// A symbol of other type
     pub const OtherSymbol: GeneralCategoryGroup = GCG(1 << (GC::OtherSymbol as u32));
-    /// (`S`) The union of all symbol categories
+    pub const So: Self = Self::OtherSymbol;
+    /// The union of all symbol categories
     pub const Symbol: GeneralCategoryGroup = GCG((1 << (GC::MathSymbol as u32))
         | (1 << (GC::CurrencySymbol as u32))
         | (1 << (GC::ModifierSymbol as u32))
         | (1 << (GC::OtherSymbol as u32)));
+    pub const S: Self = Self::Symbol;
 
     const ALL: u32 = (1 << (GC::FinalPunctuation as u32 + 1)) - 1;
+
+    #[cfg(feature = "datagen")]
+    #[doc(hidden)]
+    pub fn names() -> impl Iterator<Item = (&'static str, Self)> {
+        [
+            ("Lu", Self::UppercaseLetter),
+            ("Ll", Self::LowercaseLetter),
+            ("Lt", Self::TitlecaseLetter),
+            ("Lm", Self::ModifierLetter),
+            ("Lo", Self::OtherLetter),
+            ("LC", Self::CasedLetter),
+            ("L", Self::Letter),
+            ("Mn", Self::NonspacingMark),
+            ("Me", Self::EnclosingMark),
+            ("Mc", Self::SpacingMark),
+            ("M", Self::Mark),
+            ("Nd", Self::DecimalNumber),
+            ("Nl", Self::LetterNumber),
+            ("No", Self::OtherNumber),
+            ("N", Self::Number),
+            ("Zs", Self::SpaceSeparator),
+            ("Zl", Self::LineSeparator),
+            ("Zp", Self::ParagraphSeparator),
+            ("Z", Self::Separator),
+            ("Cc", Self::Control),
+            ("Cf", Self::Format),
+            ("Co", Self::PrivateUse),
+            ("Cs", Self::Surrogate),
+            ("Cn", Self::Unassigned),
+            ("C", Self::Other),
+            ("Pd", Self::DashPunctuation),
+            ("Ps", Self::OpenPunctuation),
+            ("Pe", Self::ClosePunctuation),
+            ("Pc", Self::ConnectorPunctuation),
+            ("Pi", Self::InitialPunctuation),
+            ("Pf", Self::FinalPunctuation),
+            ("Po", Self::OtherPunctuation),
+            ("P", Self::Punctuation),
+            ("Sm", Self::MathSymbol),
+            ("Sc", Self::CurrencySymbol),
+            ("Sk", Self::ModifierSymbol),
+            ("So", Self::OtherSymbol),
+            ("S", Self::Symbol),
+        ]
+        .into_iter()
+    }
 
     /// Return whether the code point belongs in the provided multi-value category.
     ///
     /// ```
-    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
     /// use icu::properties::CodePointMapData;
+    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
     ///
     /// let gc = CodePointMapData::<GeneralCategory>::new();
     ///
@@ -786,12 +656,18 @@ impl From<GeneralCategoryGroup> for u32 {
 /// Each character is assigned a single Script, but characters that are used in
 /// a particular subset of scripts will be in more than one `Script_Extensions` set.
 /// For example, `DEVANAGARI DIGIT NINE` has `Script=Devanagari`, but is also in the
-/// `Script_Extensions` set for Dogra, Kaithi, and Mahajani. If you are trying to
+/// `Script_Extensions` set for `Dogra`, `Kaithi`, and `Mahajani`. If you are trying to
 /// determine whether a code point belongs to a certain script, you should use
 /// [`ScriptWithExtensionsBorrowed::has_script`].
 ///
 /// For more information, see UAX #24: <https://www.unicode.org/reports/tr24/>.
-/// See `UScriptCode` in ICU4C.
+///
+/// Additional constants are provided for ISO 15924 script codes, even if these are not encoded in
+/// Unicode. For example, `Han` is a Unicode script (corresponding to the ISO 15924 code `Hani`),
+/// but ISO 15924 also defines `Hans` and `Hant` for simplified and traditional Han.
+///
+/// Such constants are documented as non-Unicode constants, and are not returned as the `Script`
+/// property for any code point.
 ///
 /// # Example
 ///
@@ -810,198 +686,39 @@ pub struct Script(pub(crate) u16);
 
 impl Script {
     /// Returns an ICU4C `UScriptCode` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u16 {
         self.0
     }
     /// Constructor from an ICU4C `UScriptCode` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u16) -> Self {
         Self(value)
     }
+    /// Deprecated: non-canonical spelling
+    #[deprecated(since = "2.3.0", note = "use Script::Ethiopic instead")]
+    #[allow(non_upper_case_globals)]
+    pub const Ethiopian: Self = Self::Ethiopic;
+    /// Deprecated: non-canonical spelling
+    #[deprecated(since = "2.3.0", note = "use Script::ArabicNastaliq instead")]
+    #[allow(non_upper_case_globals)]
+    pub const Nastaliq: Self = Self::ArabicNastaliq;
+    /// Deprecated: non-canonical spelling
+    #[deprecated(since = "2.4.0", note = "use Script::Blissymbols instead")]
+    #[allow(non_upper_case_globals)]
+    pub const BlisSymbols: Self = Self::Blissymbols;
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl Script {
-    pub const Adlam: Script = Script(167);
-    pub const Ahom: Script = Script(161);
-    pub const AnatolianHieroglyphs: Script = Script(156);
-    pub const Arabic: Script = Script(2);
-    pub const Armenian: Script = Script(3);
-    pub const Avestan: Script = Script(117);
-    pub const Balinese: Script = Script(62);
-    pub const Bamum: Script = Script(130);
-    pub const BassaVah: Script = Script(134);
-    pub const Batak: Script = Script(63);
-    pub const Bengali: Script = Script(4);
-    pub const BeriaErfe: Script = Script(208);
-    pub const Bhaiksuki: Script = Script(168);
-    pub const Bopomofo: Script = Script(5);
-    pub const Brahmi: Script = Script(65);
-    pub const Braille: Script = Script(46);
-    pub const Buginese: Script = Script(55);
-    pub const Buhid: Script = Script(44);
-    pub const CanadianAboriginal: Script = Script(40);
-    pub const Carian: Script = Script(104);
-    pub const CaucasianAlbanian: Script = Script(159);
-    pub const Chakma: Script = Script(118);
-    pub const Cham: Script = Script(66);
-    pub const Cherokee: Script = Script(6);
-    pub const Chorasmian: Script = Script(189);
-    pub const Common: Script = Script(0);
-    pub const Coptic: Script = Script(7);
-    pub const Cuneiform: Script = Script(101);
-    pub const Cypriot: Script = Script(47);
-    pub const CyproMinoan: Script = Script(193);
-    pub const Cyrillic: Script = Script(8);
-    pub const Deseret: Script = Script(9);
-    pub const Devanagari: Script = Script(10);
-    pub const DivesAkuru: Script = Script(190);
-    pub const Dogra: Script = Script(178);
-    pub const Duployan: Script = Script(135);
-    pub const EgyptianHieroglyphs: Script = Script(71);
-    pub const Elbasan: Script = Script(136);
-    pub const Elymaic: Script = Script(185);
-    pub const Ethiopian: Script = Script(11);
-    pub const Garay: Script = Script(201);
-    pub const Georgian: Script = Script(12);
-    pub const Glagolitic: Script = Script(56);
-    pub const Gothic: Script = Script(13);
-    pub const Grantha: Script = Script(137);
-    pub const Greek: Script = Script(14);
-    pub const Gujarati: Script = Script(15);
-    pub const GunjalaGondi: Script = Script(179);
-    pub const Gurmukhi: Script = Script(16);
-    pub const GurungKhema: Script = Script(202);
-    pub const Han: Script = Script(17);
-    pub const Hangul: Script = Script(18);
-    pub const HanifiRohingya: Script = Script(182);
-    pub const Hanunoo: Script = Script(43);
-    pub const Hatran: Script = Script(162);
-    pub const Hebrew: Script = Script(19);
-    pub const Hiragana: Script = Script(20);
-    pub const ImperialAramaic: Script = Script(116);
-    pub const Inherited: Script = Script(1);
-    pub const InscriptionalPahlavi: Script = Script(122);
-    pub const InscriptionalParthian: Script = Script(125);
-    pub const Javanese: Script = Script(78);
-    pub const Kaithi: Script = Script(120);
-    pub const Kannada: Script = Script(21);
-    pub const Katakana: Script = Script(22);
-    pub const Kawi: Script = Script(198);
-    pub const KayahLi: Script = Script(79);
-    pub const Kharoshthi: Script = Script(57);
-    pub const KhitanSmallScript: Script = Script(191);
-    pub const Khmer: Script = Script(23);
-    pub const Khojki: Script = Script(157);
-    pub const Khudawadi: Script = Script(145);
-    pub const KiratRai: Script = Script(203);
-    pub const Lao: Script = Script(24);
-    pub const Latin: Script = Script(25);
-    pub const Lepcha: Script = Script(82);
-    pub const Limbu: Script = Script(48);
-    pub const LinearA: Script = Script(83);
-    pub const LinearB: Script = Script(49);
-    pub const Lisu: Script = Script(131);
-    pub const Lycian: Script = Script(107);
-    pub const Lydian: Script = Script(108);
-    pub const Mahajani: Script = Script(160);
-    pub const Makasar: Script = Script(180);
-    pub const Malayalam: Script = Script(26);
-    pub const Mandaic: Script = Script(84);
-    pub const Manichaean: Script = Script(121);
-    pub const Marchen: Script = Script(169);
-    pub const MasaramGondi: Script = Script(175);
-    pub const Medefaidrin: Script = Script(181);
-    pub const MeeteiMayek: Script = Script(115);
-    pub const MendeKikakui: Script = Script(140);
-    pub const MeroiticCursive: Script = Script(141);
-    pub const MeroiticHieroglyphs: Script = Script(86);
-    pub const Miao: Script = Script(92);
-    pub const Modi: Script = Script(163);
-    pub const Mongolian: Script = Script(27);
-    pub const Mro: Script = Script(149);
-    pub const Multani: Script = Script(164);
-    pub const Myanmar: Script = Script(28);
-    pub const Nabataean: Script = Script(143);
-    pub const NagMundari: Script = Script(199);
-    pub const Nandinagari: Script = Script(187);
-    pub const Nastaliq: Script = Script(200);
-    pub const Newa: Script = Script(170);
-    pub const NewTaiLue: Script = Script(59);
-    pub const Nko: Script = Script(87);
-    pub const Nushu: Script = Script(150);
-    pub const NyiakengPuachueHmong: Script = Script(186);
-    pub const Ogham: Script = Script(29);
-    pub const OlChiki: Script = Script(109);
-    pub const OldHungarian: Script = Script(76);
-    pub const OldItalic: Script = Script(30);
-    pub const OldNorthArabian: Script = Script(142);
-    pub const OldPermic: Script = Script(89);
-    pub const OldPersian: Script = Script(61);
-    pub const OldSogdian: Script = Script(184);
-    pub const OldSouthArabian: Script = Script(133);
-    pub const OldTurkic: Script = Script(88);
-    pub const OldUyghur: Script = Script(194);
-    pub const OlOnal: Script = Script(204);
-    pub const Oriya: Script = Script(31);
-    pub const Osage: Script = Script(171);
-    pub const Osmanya: Script = Script(50);
-    pub const PahawhHmong: Script = Script(75);
-    pub const Palmyrene: Script = Script(144);
-    pub const PauCinHau: Script = Script(165);
-    pub const PhagsPa: Script = Script(90);
-    pub const Phoenician: Script = Script(91);
-    pub const PsalterPahlavi: Script = Script(123);
-    pub const Rejang: Script = Script(110);
-    pub const Runic: Script = Script(32);
-    pub const Samaritan: Script = Script(126);
-    pub const Saurashtra: Script = Script(111);
-    pub const Sharada: Script = Script(151);
-    pub const Shavian: Script = Script(51);
-    pub const Siddham: Script = Script(166);
-    pub const Sidetic: Script = Script(209);
-    pub const SignWriting: Script = Script(112);
-    pub const Sinhala: Script = Script(33);
-    pub const Sogdian: Script = Script(183);
-    pub const SoraSompeng: Script = Script(152);
-    pub const Soyombo: Script = Script(176);
-    pub const Sundanese: Script = Script(113);
-    pub const Sunuwar: Script = Script(205);
-    pub const SylotiNagri: Script = Script(58);
-    pub const Syriac: Script = Script(34);
-    pub const Tagalog: Script = Script(42);
-    pub const Tagbanwa: Script = Script(45);
-    pub const TaiLe: Script = Script(52);
-    pub const TaiTham: Script = Script(106);
-    pub const TaiViet: Script = Script(127);
-    pub const TaiYo: Script = Script(210);
-    pub const Takri: Script = Script(153);
-    pub const Tamil: Script = Script(35);
-    pub const Tangsa: Script = Script(195);
-    pub const Tangut: Script = Script(154);
-    pub const Telugu: Script = Script(36);
-    pub const Thaana: Script = Script(37);
-    pub const Thai: Script = Script(38);
-    pub const Tibetan: Script = Script(39);
-    pub const Tifinagh: Script = Script(60);
-    pub const Tirhuta: Script = Script(158);
-    pub const Todhri: Script = Script(206);
-    pub const TolongSiki: Script = Script(211);
-    pub const Toto: Script = Script(196);
-    pub const TuluTigalari: Script = Script(207);
-    pub const Ugaritic: Script = Script(53);
-    pub const Unknown: Script = Script(103);
-    pub const Vai: Script = Script(99);
-    pub const Vithkuqi: Script = Script(197);
-    pub const Wancho: Script = Script(188);
-    pub const WarangCiti: Script = Script(146);
-    pub const Yezidi: Script = Script(192);
-    pub const Yi: Script = Script(41);
-    pub const ZanabazarSquare: Script = Script(177);
-}
-#[test]
-fn script_consts();
+impl Default for Script {
+    fn default() -> Self {
+        Self::Unknown
+    }
 }
 
 impl Script {
@@ -1052,7 +769,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::HangulSyllableType, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::HangulSyllableType};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<HangulSyllableType>::new().get('ᄀ'),
@@ -1060,7 +777,7 @@ make_enumerated_property! {
 /// ); // U+1100
 /// assert_eq!(
 ///     CodePointMapData::<HangulSyllableType>::new().get('가'),
-///     HangulSyllableType::LeadingVowelSyllable
+///     HangulSyllableType::LVSyllable
 /// ); // U+AC00
 /// ```
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -1071,33 +788,35 @@ pub struct HangulSyllableType(pub(crate) u8);
 
 impl HangulSyllableType {
     /// Returns an ICU4C `UHangulSyllableType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UHangulSyllableType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
+    /// Deprecated: non-canonical spelling
+    #[deprecated(since = "2.3.0", note = "use HangulSyllableType::LVSyllable instead")]
+    #[allow(non_upper_case_globals)]
+    pub const LeadingVowelSyllable: Self = Self::LVSyllable;
+    /// Deprecated: non-canonical spelling
+    #[deprecated(since = "2.3.0", note = "use HangulSyllableType::LVTSyllable instead")]
+    #[allow(non_upper_case_globals)]
+    pub const LeadingVowelTrailingSyllable: Self = Self::LVTSyllable;
 }
 
-create_const_array! {
-#[allow(non_upper_case_globals)]
-impl HangulSyllableType {
-    /// (`NA`) not applicable (e.g. not a Hangul code point).
-    pub const NotApplicable: HangulSyllableType = HangulSyllableType(0);
-    /// (`L`) a conjoining leading consonant Jamo.
-    pub const LeadingJamo: HangulSyllableType = HangulSyllableType(1);
-    /// (`V`) a conjoining vowel Jamo.
-    pub const VowelJamo: HangulSyllableType = HangulSyllableType(2);
-    /// (`T`) a conjoining trailing consonant Jamo.
-    pub const TrailingJamo: HangulSyllableType = HangulSyllableType(3);
-    /// (`LV`) a precomposed syllable with a leading consonant and a vowel.
-    pub const LeadingVowelSyllable: HangulSyllableType = HangulSyllableType(4);
-    /// (`LVT`) a precomposed syllable with a leading consonant, a vowel, and a trailing consonant.
-    pub const LeadingVowelTrailingSyllable: HangulSyllableType = HangulSyllableType(5);
-}
-#[test]
-fn hangul_syllable_type_consts();
+impl Default for HangulSyllableType {
+    fn default() -> Self {
+        Self::NotApplicable
+    }
 }
 
 make_enumerated_property! {
@@ -1118,7 +837,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::EastAsianWidth, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::EastAsianWidth};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<EastAsianWidth>::new().get('ｱ'),
@@ -1137,28 +856,27 @@ pub struct EastAsianWidth(pub(crate) u8);
 
 impl EastAsianWidth {
     /// Returns an ICU4C `UEastAsianWidth` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UEastAsianWidth` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl EastAsianWidth {
-    pub const Neutral: EastAsianWidth = EastAsianWidth(0); //name="N"
-    pub const Ambiguous: EastAsianWidth = EastAsianWidth(1); //name="A"
-    pub const Halfwidth: EastAsianWidth = EastAsianWidth(2); //name="H"
-    pub const Fullwidth: EastAsianWidth = EastAsianWidth(3); //name="F"
-    pub const Narrow: EastAsianWidth = EastAsianWidth(4); //name="Na"
-    pub const Wide: EastAsianWidth = EastAsianWidth(5); //name="W"
-}
-#[test]
-fn east_asian_width_consts();
+impl Default for EastAsianWidth {
+    fn default() -> Self {
+        Self::Neutral
+    }
 }
 
 make_enumerated_property! {
@@ -1182,7 +900,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::LineBreak, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::LineBreak};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<LineBreak>::new().get(')'),
@@ -1201,75 +919,27 @@ pub struct LineBreak(pub(crate) u8);
 
 impl LineBreak {
     /// Returns an ICU4C `ULineBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `ULineBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl LineBreak {
-    pub const Unknown: LineBreak = LineBreak(0); // name="XX"
-    pub const Ambiguous: LineBreak = LineBreak(1); // name="AI"
-    pub const Alphabetic: LineBreak = LineBreak(2); // name="AL"
-    pub const BreakBoth: LineBreak = LineBreak(3); // name="B2"
-    pub const BreakAfter: LineBreak = LineBreak(4); // name="BA"
-    pub const BreakBefore: LineBreak = LineBreak(5); // name="BB"
-    pub const MandatoryBreak: LineBreak = LineBreak(6); // name="BK"
-    pub const ContingentBreak: LineBreak = LineBreak(7); // name="CB"
-    pub const ClosePunctuation: LineBreak = LineBreak(8); // name="CL"
-    pub const CombiningMark: LineBreak = LineBreak(9); // name="CM"
-    pub const CarriageReturn: LineBreak = LineBreak(10); // name="CR"
-    pub const Exclamation: LineBreak = LineBreak(11); // name="EX"
-    pub const Glue: LineBreak = LineBreak(12); // name="GL"
-    pub const Hyphen: LineBreak = LineBreak(13); // name="HY"
-    pub const Ideographic: LineBreak = LineBreak(14); // name="ID"
-    pub const Inseparable: LineBreak = LineBreak(15); // name="IN"
-    pub const InfixNumeric: LineBreak = LineBreak(16); // name="IS"
-    pub const LineFeed: LineBreak = LineBreak(17); // name="LF"
-    pub const Nonstarter: LineBreak = LineBreak(18); // name="NS"
-    pub const Numeric: LineBreak = LineBreak(19); // name="NU"
-    pub const OpenPunctuation: LineBreak = LineBreak(20); // name="OP"
-    pub const PostfixNumeric: LineBreak = LineBreak(21); // name="PO"
-    pub const PrefixNumeric: LineBreak = LineBreak(22); // name="PR"
-    pub const Quotation: LineBreak = LineBreak(23); // name="QU"
-    pub const ComplexContext: LineBreak = LineBreak(24); // name="SA"
-    pub const Surrogate: LineBreak = LineBreak(25); // name="SG"
-    pub const Space: LineBreak = LineBreak(26); // name="SP"
-    pub const BreakSymbols: LineBreak = LineBreak(27); // name="SY"
-    pub const ZWSpace: LineBreak = LineBreak(28); // name="ZW"
-    pub const NextLine: LineBreak = LineBreak(29); // name="NL"
-    pub const WordJoiner: LineBreak = LineBreak(30); // name="WJ"
-    pub const H2: LineBreak = LineBreak(31); // name="H2"
-    pub const H3: LineBreak = LineBreak(32); // name="H3"
-    pub const JL: LineBreak = LineBreak(33); // name="JL"
-    pub const JT: LineBreak = LineBreak(34); // name="JT"
-    pub const JV: LineBreak = LineBreak(35); // name="JV"
-    pub const CloseParenthesis: LineBreak = LineBreak(36); // name="CP"
-    pub const ConditionalJapaneseStarter: LineBreak = LineBreak(37); // name="CJ"
-    pub const HebrewLetter: LineBreak = LineBreak(38); // name="HL"
-    pub const RegionalIndicator: LineBreak = LineBreak(39); // name="RI"
-    pub const EBase: LineBreak = LineBreak(40); // name="EB"
-    pub const EModifier: LineBreak = LineBreak(41); // name="EM"
-    pub const ZWJ: LineBreak = LineBreak(42); // name="ZWJ"
-
-    // Added in ICU 74:
-    pub const Aksara: LineBreak = LineBreak(43); // name="AK"
-    pub const AksaraPrebase: LineBreak = LineBreak(44); // name="AP"
-    pub const AksaraStart: LineBreak = LineBreak(45); // name="AS"
-    pub const ViramaFinal: LineBreak = LineBreak(46); // name="VF"
-    pub const Virama: LineBreak = LineBreak(47); // name="VI"
-
-    // Added in ICU 78:
-    pub const UnambiguousHyphen: LineBreak = LineBreak(48); // name="HH"
-}
-#[test]
-fn line_break_consts();
+impl Default for LineBreak {
+    fn default() -> Self {
+        Self::Unknown
+    }
 }
 
 make_enumerated_property! {
@@ -1292,7 +962,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::GraphemeClusterBreak, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::GraphemeClusterBreak};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<GraphemeClusterBreak>::new().get('🇦'),
@@ -1311,44 +981,27 @@ pub struct GraphemeClusterBreak(pub(crate) u8);
 
 impl GraphemeClusterBreak {
     /// Returns an ICU4C `UGraphemeClusterBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UGraphemeClusterBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl GraphemeClusterBreak {
-    pub const Other: GraphemeClusterBreak = GraphemeClusterBreak(0); // name="XX"
-    pub const Control: GraphemeClusterBreak = GraphemeClusterBreak(1); // name="CN"
-    pub const CR: GraphemeClusterBreak = GraphemeClusterBreak(2); // name="CR"
-    pub const Extend: GraphemeClusterBreak = GraphemeClusterBreak(3); // name="EX"
-    pub const L: GraphemeClusterBreak = GraphemeClusterBreak(4); // name="L"
-    pub const LF: GraphemeClusterBreak = GraphemeClusterBreak(5); // name="LF"
-    pub const LV: GraphemeClusterBreak = GraphemeClusterBreak(6); // name="LV"
-    pub const LVT: GraphemeClusterBreak = GraphemeClusterBreak(7); // name="LVT"
-    pub const T: GraphemeClusterBreak = GraphemeClusterBreak(8); // name="T"
-    pub const V: GraphemeClusterBreak = GraphemeClusterBreak(9); // name="V"
-    pub const SpacingMark: GraphemeClusterBreak = GraphemeClusterBreak(10); // name="SM"
-    pub const Prepend: GraphemeClusterBreak = GraphemeClusterBreak(11); // name="PP"
-    pub const RegionalIndicator: GraphemeClusterBreak = GraphemeClusterBreak(12); // name="RI"
-    /// This value is obsolete and unused.
-    pub const EBase: GraphemeClusterBreak = GraphemeClusterBreak(13); // name="EB"
-    /// This value is obsolete and unused.
-    pub const EBaseGAZ: GraphemeClusterBreak = GraphemeClusterBreak(14); // name="EBG"
-    /// This value is obsolete and unused.
-    pub const EModifier: GraphemeClusterBreak = GraphemeClusterBreak(15); // name="EM"
-    /// This value is obsolete and unused.
-    pub const GlueAfterZwj: GraphemeClusterBreak = GraphemeClusterBreak(16); // name="GAZ"
-    pub const ZWJ: GraphemeClusterBreak = GraphemeClusterBreak(17); // name="ZWJ"
-}
-#[test]
-fn gcb_consts();
+impl Default for GraphemeClusterBreak {
+    fn default() -> Self {
+        Self::Other
+    }
 }
 
 make_enumerated_property! {
@@ -1371,7 +1024,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::WordBreak, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::WordBreak};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<WordBreak>::new().get('.'),
@@ -1390,49 +1043,27 @@ pub struct WordBreak(pub(crate) u8);
 
 impl WordBreak {
     /// Returns an ICU4C `UWordBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UWordBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl WordBreak {
-    pub const Other: WordBreak = WordBreak(0); // name="XX"
-    pub const ALetter: WordBreak = WordBreak(1); // name="LE"
-    pub const Format: WordBreak = WordBreak(2); // name="FO"
-    pub const Katakana: WordBreak = WordBreak(3); // name="KA"
-    pub const MidLetter: WordBreak = WordBreak(4); // name="ML"
-    pub const MidNum: WordBreak = WordBreak(5); // name="MN"
-    pub const Numeric: WordBreak = WordBreak(6); // name="NU"
-    pub const ExtendNumLet: WordBreak = WordBreak(7); // name="EX"
-    pub const CR: WordBreak = WordBreak(8); // name="CR"
-    pub const Extend: WordBreak = WordBreak(9); // name="Extend"
-    pub const LF: WordBreak = WordBreak(10); // name="LF"
-    pub const MidNumLet: WordBreak = WordBreak(11); // name="MB"
-    pub const Newline: WordBreak = WordBreak(12); // name="NL"
-    pub const RegionalIndicator: WordBreak = WordBreak(13); // name="RI"
-    pub const HebrewLetter: WordBreak = WordBreak(14); // name="HL"
-    pub const SingleQuote: WordBreak = WordBreak(15); // name="SQ"
-    pub const DoubleQuote: WordBreak = WordBreak(16); // name=DQ
-    /// This value is obsolete and unused.
-    pub const EBase: WordBreak = WordBreak(17); // name="EB"
-    /// This value is obsolete and unused.
-    pub const EBaseGAZ: WordBreak = WordBreak(18); // name="EBG"
-    /// This value is obsolete and unused.
-    pub const EModifier: WordBreak = WordBreak(19); // name="EM"
-    /// This value is obsolete and unused.
-    pub const GlueAfterZwj: WordBreak = WordBreak(20); // name="GAZ"
-    pub const ZWJ: WordBreak = WordBreak(21); // name="ZWJ"
-    pub const WSegSpace: WordBreak = WordBreak(22); // name="WSegSpace"
-}
-#[test]
-fn word_break_consts();
+impl Default for WordBreak {
+    fn default() -> Self {
+        Self::Other
+    }
 }
 
 make_enumerated_property! {
@@ -1455,7 +1086,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::SentenceBreak, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::SentenceBreak};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<SentenceBreak>::new().get('９'),
@@ -1474,37 +1105,27 @@ pub struct SentenceBreak(pub(crate) u8);
 
 impl SentenceBreak {
     /// Returns an ICU4C `USentenceBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `USentenceBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl SentenceBreak {
-    pub const Other: SentenceBreak = SentenceBreak(0); // name="XX"
-    pub const ATerm: SentenceBreak = SentenceBreak(1); // name="AT"
-    pub const Close: SentenceBreak = SentenceBreak(2); // name="CL"
-    pub const Format: SentenceBreak = SentenceBreak(3); // name="FO"
-    pub const Lower: SentenceBreak = SentenceBreak(4); // name="LO"
-    pub const Numeric: SentenceBreak = SentenceBreak(5); // name="NU"
-    pub const OLetter: SentenceBreak = SentenceBreak(6); // name="LE"
-    pub const Sep: SentenceBreak = SentenceBreak(7); // name="SE"
-    pub const Sp: SentenceBreak = SentenceBreak(8); // name="SP"
-    pub const STerm: SentenceBreak = SentenceBreak(9); // name="ST"
-    pub const Upper: SentenceBreak = SentenceBreak(10); // name="UP"
-    pub const CR: SentenceBreak = SentenceBreak(11); // name="CR"
-    pub const Extend: SentenceBreak = SentenceBreak(12); // name="EX"
-    pub const LF: SentenceBreak = SentenceBreak(13); // name="LF"
-    pub const SContinue: SentenceBreak = SentenceBreak(14); // name="SC"
-}
-#[test]
-fn sentence_break_consts();
+impl Default for SentenceBreak {
+    fn default() -> Self {
+        Self::Other
+    }
 }
 
 make_enumerated_property! {
@@ -1520,16 +1141,13 @@ make_enumerated_property! {
 /// See UAX #15:
 /// <https://www.unicode.org/reports/tr15/>.
 ///
-/// See `icu::normalizer::properties::CanonicalCombiningClassMap` for the API
-/// to look up the `Canonical_Combining_Class` property by scalar value.
-///
-/// **Note:** See `icu::normalizer::CanonicalCombiningClassMap` for the preferred API
+/// **Note:** See `icu::normalizer::properties::CanonicalCombiningClassMap` for the preferred API
 /// to look up the `Canonical_Combining_Class` property by scalar value.
 ///
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::CanonicalCombiningClass, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::CanonicalCombiningClass};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<CanonicalCombiningClass>::new().get('a'),
@@ -1549,85 +1167,31 @@ make_enumerated_property! {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(clippy::exhaustive_structs)] // newtype
 #[repr(transparent)]
-pub struct CanonicalCombiningClass(pub(crate) u8);
+pub struct CanonicalCombiningClass(pub u8);
 
 impl CanonicalCombiningClass {
     /// Returns an ICU4C `UCanonicalCombiningClass` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UCanonicalCombiningClass` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-// These constant names come from PropertyValueAliases.txt
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl CanonicalCombiningClass {
-    pub const NotReordered: CanonicalCombiningClass = CanonicalCombiningClass(0); // name="NR"
-    pub const Overlay: CanonicalCombiningClass = CanonicalCombiningClass(1); // name="OV"
-    pub const HanReading: CanonicalCombiningClass = CanonicalCombiningClass(6); // name="HANR"
-    pub const Nukta: CanonicalCombiningClass = CanonicalCombiningClass(7); // name="NK"
-    pub const KanaVoicing: CanonicalCombiningClass = CanonicalCombiningClass(8); // name="KV"
-    pub const Virama: CanonicalCombiningClass = CanonicalCombiningClass(9); // name="VR"
-    pub const CCC10: CanonicalCombiningClass = CanonicalCombiningClass(10); // name="CCC10"
-    pub const CCC11: CanonicalCombiningClass = CanonicalCombiningClass(11); // name="CCC11"
-    pub const CCC12: CanonicalCombiningClass = CanonicalCombiningClass(12); // name="CCC12"
-    pub const CCC13: CanonicalCombiningClass = CanonicalCombiningClass(13); // name="CCC13"
-    pub const CCC14: CanonicalCombiningClass = CanonicalCombiningClass(14); // name="CCC14"
-    pub const CCC15: CanonicalCombiningClass = CanonicalCombiningClass(15); // name="CCC15"
-    pub const CCC16: CanonicalCombiningClass = CanonicalCombiningClass(16); // name="CCC16"
-    pub const CCC17: CanonicalCombiningClass = CanonicalCombiningClass(17); // name="CCC17"
-    pub const CCC18: CanonicalCombiningClass = CanonicalCombiningClass(18); // name="CCC18"
-    pub const CCC19: CanonicalCombiningClass = CanonicalCombiningClass(19); // name="CCC19"
-    pub const CCC20: CanonicalCombiningClass = CanonicalCombiningClass(20); // name="CCC20"
-    pub const CCC21: CanonicalCombiningClass = CanonicalCombiningClass(21); // name="CCC21"
-    pub const CCC22: CanonicalCombiningClass = CanonicalCombiningClass(22); // name="CCC22"
-    pub const CCC23: CanonicalCombiningClass = CanonicalCombiningClass(23); // name="CCC23"
-    pub const CCC24: CanonicalCombiningClass = CanonicalCombiningClass(24); // name="CCC24"
-    pub const CCC25: CanonicalCombiningClass = CanonicalCombiningClass(25); // name="CCC25"
-    pub const CCC26: CanonicalCombiningClass = CanonicalCombiningClass(26); // name="CCC26"
-    pub const CCC27: CanonicalCombiningClass = CanonicalCombiningClass(27); // name="CCC27"
-    pub const CCC28: CanonicalCombiningClass = CanonicalCombiningClass(28); // name="CCC28"
-    pub const CCC29: CanonicalCombiningClass = CanonicalCombiningClass(29); // name="CCC29"
-    pub const CCC30: CanonicalCombiningClass = CanonicalCombiningClass(30); // name="CCC30"
-    pub const CCC31: CanonicalCombiningClass = CanonicalCombiningClass(31); // name="CCC31"
-    pub const CCC32: CanonicalCombiningClass = CanonicalCombiningClass(32); // name="CCC32"
-    pub const CCC33: CanonicalCombiningClass = CanonicalCombiningClass(33); // name="CCC33"
-    pub const CCC34: CanonicalCombiningClass = CanonicalCombiningClass(34); // name="CCC34"
-    pub const CCC35: CanonicalCombiningClass = CanonicalCombiningClass(35); // name="CCC35"
-    pub const CCC36: CanonicalCombiningClass = CanonicalCombiningClass(36); // name="CCC36"
-    pub const CCC84: CanonicalCombiningClass = CanonicalCombiningClass(84); // name="CCC84"
-    pub const CCC91: CanonicalCombiningClass = CanonicalCombiningClass(91); // name="CCC91"
-    pub const CCC103: CanonicalCombiningClass = CanonicalCombiningClass(103); // name="CCC103"
-    pub const CCC107: CanonicalCombiningClass = CanonicalCombiningClass(107); // name="CCC107"
-    pub const CCC118: CanonicalCombiningClass = CanonicalCombiningClass(118); // name="CCC118"
-    pub const CCC122: CanonicalCombiningClass = CanonicalCombiningClass(122); // name="CCC122"
-    pub const CCC129: CanonicalCombiningClass = CanonicalCombiningClass(129); // name="CCC129"
-    pub const CCC130: CanonicalCombiningClass = CanonicalCombiningClass(130); // name="CCC130"
-    pub const CCC132: CanonicalCombiningClass = CanonicalCombiningClass(132); // name="CCC132"
-    pub const CCC133: CanonicalCombiningClass = CanonicalCombiningClass(133); // name="CCC133" // RESERVED
-    pub const AttachedBelowLeft: CanonicalCombiningClass = CanonicalCombiningClass(200); // name="ATBL"
-    pub const AttachedBelow: CanonicalCombiningClass = CanonicalCombiningClass(202); // name="ATB"
-    pub const AttachedAbove: CanonicalCombiningClass = CanonicalCombiningClass(214); // name="ATA"
-    pub const AttachedAboveRight: CanonicalCombiningClass = CanonicalCombiningClass(216); // name="ATAR"
-    pub const BelowLeft: CanonicalCombiningClass = CanonicalCombiningClass(218); // name="BL"
-    pub const Below: CanonicalCombiningClass = CanonicalCombiningClass(220); // name="B"
-    pub const BelowRight: CanonicalCombiningClass = CanonicalCombiningClass(222); // name="BR"
-    pub const Left: CanonicalCombiningClass = CanonicalCombiningClass(224); // name="L"
-    pub const Right: CanonicalCombiningClass = CanonicalCombiningClass(226); // name="R"
-    pub const AboveLeft: CanonicalCombiningClass = CanonicalCombiningClass(228); // name="AL"
-    pub const Above: CanonicalCombiningClass = CanonicalCombiningClass(230); // name="A"
-    pub const AboveRight: CanonicalCombiningClass = CanonicalCombiningClass(232); // name="AR"
-    pub const DoubleBelow: CanonicalCombiningClass = CanonicalCombiningClass(233); // name="DB"
-    pub const DoubleAbove: CanonicalCombiningClass = CanonicalCombiningClass(234); // name="DA"
-    pub const IotaSubscript: CanonicalCombiningClass = CanonicalCombiningClass(240); // name="IS"
-}
-#[test]
-fn ccc_consts();
+impl Default for CanonicalCombiningClass {
+    fn default() -> Self {
+        Self::NotReordered
+    }
 }
 
 make_enumerated_property! {
@@ -1646,7 +1210,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::IndicConjunctBreak, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::IndicConjunctBreak};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<IndicConjunctBreak>::new().get('a'),
@@ -1673,26 +1237,27 @@ pub struct IndicConjunctBreak(pub(crate) u8);
 
 impl IndicConjunctBreak {
     /// Returns an ICU4C `UIndicConjunctBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UIndicConjunctBreak` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl IndicConjunctBreak {
-    pub const None: IndicConjunctBreak = IndicConjunctBreak(0);
-    pub const Consonant: IndicConjunctBreak = IndicConjunctBreak(1);
-    pub const Extend: IndicConjunctBreak = IndicConjunctBreak(2);
-    pub const Linker: IndicConjunctBreak = IndicConjunctBreak(3);
-}
-#[test]
-fn indic_conjunct_break_consts();
+impl Default for IndicConjunctBreak {
+    fn default() -> Self {
+        Self::None
+    }
 }
 
 make_enumerated_property! {
@@ -1711,7 +1276,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::IndicSyllabicCategory, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::IndicSyllabicCategory};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<IndicSyllabicCategory>::new().get('a'),
@@ -1730,59 +1295,27 @@ pub struct IndicSyllabicCategory(pub(crate) u8);
 
 impl IndicSyllabicCategory {
     /// Returns an ICU4C `UIndicSyllabicCategory` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UIndicSyllabicCategory` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl IndicSyllabicCategory {
-    pub const Other: IndicSyllabicCategory = IndicSyllabicCategory(0);
-    pub const Avagraha: IndicSyllabicCategory = IndicSyllabicCategory(1);
-    pub const Bindu: IndicSyllabicCategory = IndicSyllabicCategory(2);
-    pub const BrahmiJoiningNumber: IndicSyllabicCategory = IndicSyllabicCategory(3);
-    pub const CantillationMark: IndicSyllabicCategory = IndicSyllabicCategory(4);
-    pub const Consonant: IndicSyllabicCategory = IndicSyllabicCategory(5);
-    pub const ConsonantDead: IndicSyllabicCategory = IndicSyllabicCategory(6);
-    pub const ConsonantFinal: IndicSyllabicCategory = IndicSyllabicCategory(7);
-    pub const ConsonantHeadLetter: IndicSyllabicCategory = IndicSyllabicCategory(8);
-    pub const ConsonantInitialPostfixed: IndicSyllabicCategory = IndicSyllabicCategory(9);
-    pub const ConsonantKiller: IndicSyllabicCategory = IndicSyllabicCategory(10);
-    pub const ConsonantMedial: IndicSyllabicCategory = IndicSyllabicCategory(11);
-    pub const ConsonantPlaceholder: IndicSyllabicCategory = IndicSyllabicCategory(12);
-    pub const ConsonantPrecedingRepha: IndicSyllabicCategory = IndicSyllabicCategory(13);
-    pub const ConsonantPrefixed: IndicSyllabicCategory = IndicSyllabicCategory(14);
-    pub const ConsonantSubjoined: IndicSyllabicCategory = IndicSyllabicCategory(15);
-    pub const ConsonantSucceedingRepha: IndicSyllabicCategory = IndicSyllabicCategory(16);
-    pub const ConsonantWithStacker: IndicSyllabicCategory = IndicSyllabicCategory(17);
-    pub const GeminationMark: IndicSyllabicCategory = IndicSyllabicCategory(18);
-    pub const InvisibleStacker: IndicSyllabicCategory = IndicSyllabicCategory(19);
-    pub const Joiner: IndicSyllabicCategory = IndicSyllabicCategory(20);
-    pub const ModifyingLetter: IndicSyllabicCategory = IndicSyllabicCategory(21);
-    pub const NonJoiner: IndicSyllabicCategory = IndicSyllabicCategory(22);
-    pub const Nukta: IndicSyllabicCategory = IndicSyllabicCategory(23);
-    pub const Number: IndicSyllabicCategory = IndicSyllabicCategory(24);
-    pub const NumberJoiner: IndicSyllabicCategory = IndicSyllabicCategory(25);
-    pub const PureKiller: IndicSyllabicCategory = IndicSyllabicCategory(26);
-    pub const RegisterShifter: IndicSyllabicCategory = IndicSyllabicCategory(27);
-    pub const SyllableModifier: IndicSyllabicCategory = IndicSyllabicCategory(28);
-    pub const ToneLetter: IndicSyllabicCategory = IndicSyllabicCategory(29);
-    pub const ToneMark: IndicSyllabicCategory = IndicSyllabicCategory(30);
-    pub const Virama: IndicSyllabicCategory = IndicSyllabicCategory(31);
-    pub const Visarga: IndicSyllabicCategory = IndicSyllabicCategory(32);
-    pub const Vowel: IndicSyllabicCategory = IndicSyllabicCategory(33);
-    pub const VowelDependent: IndicSyllabicCategory = IndicSyllabicCategory(34);
-    pub const VowelIndependent: IndicSyllabicCategory = IndicSyllabicCategory(35);
-    pub const ReorderingKiller: IndicSyllabicCategory = IndicSyllabicCategory(36);
-}
-#[test]
-fn indic_syllabic_category_consts();
+impl Default for IndicSyllabicCategory {
+    fn default() -> Self {
+        Self::Other
+    }
 }
 
 make_enumerated_property! {
@@ -1800,7 +1333,7 @@ make_enumerated_property! {
 /// each property value.
 ///
 /// ```
-/// use icu::properties::{props::JoiningGroup, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::JoiningGroup};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<JoiningGroup>::new().get('ع'),
@@ -1819,128 +1352,27 @@ pub struct JoiningGroup(pub(crate) u8);
 
 impl JoiningGroup {
     /// Returns an ICU4C `UJoiningType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UJoiningType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl JoiningGroup {
-    pub const NoJoiningGroup: JoiningGroup = JoiningGroup(0);
-    pub const Ain: JoiningGroup = JoiningGroup(1);
-    pub const Alaph: JoiningGroup = JoiningGroup(2);
-    pub const Alef: JoiningGroup = JoiningGroup(3);
-    pub const Beh: JoiningGroup = JoiningGroup(4);
-    pub const Beth: JoiningGroup = JoiningGroup(5);
-    pub const Dal: JoiningGroup = JoiningGroup(6);
-    pub const DalathRish: JoiningGroup = JoiningGroup(7);
-    pub const E: JoiningGroup = JoiningGroup(8);
-    pub const Feh: JoiningGroup = JoiningGroup(9);
-    pub const FinalSemkath: JoiningGroup = JoiningGroup(10);
-    pub const Gaf: JoiningGroup = JoiningGroup(11);
-    pub const Gamal: JoiningGroup = JoiningGroup(12);
-    pub const Hah: JoiningGroup = JoiningGroup(13);
-    pub const TehMarbutaGoal: JoiningGroup = JoiningGroup(14);
-    pub const He: JoiningGroup = JoiningGroup(15);
-    pub const Heh: JoiningGroup = JoiningGroup(16);
-    pub const HehGoal: JoiningGroup = JoiningGroup(17);
-    pub const Heth: JoiningGroup = JoiningGroup(18);
-    pub const Kaf: JoiningGroup = JoiningGroup(19);
-    pub const Kaph: JoiningGroup = JoiningGroup(20);
-    pub const KnottedHeh: JoiningGroup = JoiningGroup(21);
-    pub const Lam: JoiningGroup = JoiningGroup(22);
-    pub const Lamadh: JoiningGroup = JoiningGroup(23);
-    pub const Meem: JoiningGroup = JoiningGroup(24);
-    pub const Mim: JoiningGroup = JoiningGroup(25);
-    pub const Noon: JoiningGroup = JoiningGroup(26);
-    pub const Nun: JoiningGroup = JoiningGroup(27);
-    pub const Pe: JoiningGroup = JoiningGroup(28);
-    pub const Qaf: JoiningGroup = JoiningGroup(29);
-    pub const Qaph: JoiningGroup = JoiningGroup(30);
-    pub const Reh: JoiningGroup = JoiningGroup(31);
-    pub const ReversedPe: JoiningGroup = JoiningGroup(32);
-    pub const Sad: JoiningGroup = JoiningGroup(33);
-    pub const Sadhe: JoiningGroup = JoiningGroup(34);
-    pub const Seen: JoiningGroup = JoiningGroup(35);
-    pub const Semkath: JoiningGroup = JoiningGroup(36);
-    pub const Shin: JoiningGroup = JoiningGroup(37);
-    pub const SwashKaf: JoiningGroup = JoiningGroup(38);
-    pub const SyriacWaw: JoiningGroup = JoiningGroup(39);
-    pub const Tah: JoiningGroup = JoiningGroup(40);
-    pub const Taw: JoiningGroup = JoiningGroup(41);
-    pub const TehMarbuta: JoiningGroup = JoiningGroup(42);
-    pub const Teth: JoiningGroup = JoiningGroup(43);
-    pub const Waw: JoiningGroup = JoiningGroup(44);
-    pub const Yeh: JoiningGroup = JoiningGroup(45);
-    pub const YehBarree: JoiningGroup = JoiningGroup(46);
-    pub const YehWithTail: JoiningGroup = JoiningGroup(47);
-    pub const Yudh: JoiningGroup = JoiningGroup(48);
-    pub const YudhHe: JoiningGroup = JoiningGroup(49);
-    pub const Zain: JoiningGroup = JoiningGroup(50);
-    pub const Fe: JoiningGroup = JoiningGroup(51);
-    pub const Khaph: JoiningGroup = JoiningGroup(52);
-    pub const Zhain: JoiningGroup = JoiningGroup(53);
-    pub const BurushaskiYehBarree: JoiningGroup = JoiningGroup(54);
-    pub const FarsiYeh: JoiningGroup = JoiningGroup(55);
-    pub const Nya: JoiningGroup = JoiningGroup(56);
-    pub const RohingyaYeh: JoiningGroup = JoiningGroup(57);
-    pub const ManichaeanAleph: JoiningGroup = JoiningGroup(58);
-    pub const ManichaeanAyin: JoiningGroup = JoiningGroup(59);
-    pub const ManichaeanBeth: JoiningGroup = JoiningGroup(60);
-    pub const ManichaeanDaleth: JoiningGroup = JoiningGroup(61);
-    pub const ManichaeanDhamedh: JoiningGroup = JoiningGroup(62);
-    pub const ManichaeanFive: JoiningGroup = JoiningGroup(63);
-    pub const ManichaeanGimel: JoiningGroup = JoiningGroup(64);
-    pub const ManichaeanHeth: JoiningGroup = JoiningGroup(65);
-    pub const ManichaeanHundred: JoiningGroup = JoiningGroup(66);
-    pub const ManichaeanKaph: JoiningGroup = JoiningGroup(67);
-    pub const ManichaeanLamedh: JoiningGroup = JoiningGroup(68);
-    pub const ManichaeanMem: JoiningGroup = JoiningGroup(69);
-    pub const ManichaeanNun: JoiningGroup = JoiningGroup(70);
-    pub const ManichaeanOne: JoiningGroup = JoiningGroup(71);
-    pub const ManichaeanPe: JoiningGroup = JoiningGroup(72);
-    pub const ManichaeanQoph: JoiningGroup = JoiningGroup(73);
-    pub const ManichaeanResh: JoiningGroup = JoiningGroup(74);
-    pub const ManichaeanSadhe: JoiningGroup = JoiningGroup(75);
-    pub const ManichaeanSamekh: JoiningGroup = JoiningGroup(76);
-    pub const ManichaeanTaw: JoiningGroup = JoiningGroup(77);
-    pub const ManichaeanTen: JoiningGroup = JoiningGroup(78);
-    pub const ManichaeanTeth: JoiningGroup = JoiningGroup(79);
-    pub const ManichaeanThamedh: JoiningGroup = JoiningGroup(80);
-    pub const ManichaeanTwenty: JoiningGroup = JoiningGroup(81);
-    pub const ManichaeanWaw: JoiningGroup = JoiningGroup(82);
-    pub const ManichaeanYodh: JoiningGroup = JoiningGroup(83);
-    pub const ManichaeanZayin: JoiningGroup = JoiningGroup(84);
-    pub const StraightWaw: JoiningGroup = JoiningGroup(85);
-    pub const AfricanFeh: JoiningGroup = JoiningGroup(86);
-    pub const AfricanNoon: JoiningGroup = JoiningGroup(87);
-    pub const AfricanQaf: JoiningGroup = JoiningGroup(88);
-    pub const MalayalamBha: JoiningGroup = JoiningGroup(89);
-    pub const MalayalamJa: JoiningGroup = JoiningGroup(90);
-    pub const MalayalamLla: JoiningGroup = JoiningGroup(91);
-    pub const MalayalamLlla: JoiningGroup = JoiningGroup(92);
-    pub const MalayalamNga: JoiningGroup = JoiningGroup(93);
-    pub const MalayalamNna: JoiningGroup = JoiningGroup(94);
-    pub const MalayalamNnna: JoiningGroup = JoiningGroup(95);
-    pub const MalayalamNya: JoiningGroup = JoiningGroup(96);
-    pub const MalayalamRa: JoiningGroup = JoiningGroup(97);
-    pub const MalayalamSsa: JoiningGroup = JoiningGroup(98);
-    pub const MalayalamTta: JoiningGroup = JoiningGroup(99);
-    pub const HanifiRohingyaKinnaYa: JoiningGroup = JoiningGroup(100);
-    pub const HanifiRohingyaPa: JoiningGroup = JoiningGroup(101);
-    pub const ThinYeh: JoiningGroup = JoiningGroup(102);
-    pub const VerticalTail: JoiningGroup = JoiningGroup(103);
-    pub const KashmiriYeh: JoiningGroup = JoiningGroup(104);
-    pub const ThinNoon: JoiningGroup = JoiningGroup(105);
-}
-#[test]
-fn joining_group_consts();
+impl Default for JoiningGroup {
+    fn default() -> Self {
+        Self::NoJoiningGroup
+    }
 }
 
 make_enumerated_property! {
@@ -1960,7 +1392,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::JoiningType, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::JoiningType};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<JoiningType>::new().get('ؠ'),
@@ -1979,28 +1411,27 @@ pub struct JoiningType(pub(crate) u8);
 
 impl JoiningType {
     /// Returns an ICU4C `UJoiningType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UJoiningType` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl JoiningType {
-    pub const NonJoining: JoiningType = JoiningType(0); // name="U"
-    pub const JoinCausing: JoiningType = JoiningType(1); // name="C"
-    pub const DualJoining: JoiningType = JoiningType(2); // name="D"
-    pub const LeftJoining: JoiningType = JoiningType(3); // name="L"
-    pub const RightJoining: JoiningType = JoiningType(4); // name="R"
-    pub const Transparent: JoiningType = JoiningType(5); // name="T"
-}
-#[test]
-fn joining_type_consts();
+impl Default for JoiningType {
+    fn default() -> Self {
+        Self::NonJoining
+    }
 }
 
 make_enumerated_property! {
@@ -2020,7 +1451,7 @@ make_enumerated_property! {
 /// # Example
 ///
 /// ```
-/// use icu::properties::{props::VerticalOrientation, CodePointMapData};
+/// use icu::properties::{CodePointMapData, props::VerticalOrientation};
 ///
 /// assert_eq!(
 ///     CodePointMapData::<VerticalOrientation>::new().get('a'),
@@ -2047,26 +1478,27 @@ pub struct VerticalOrientation(pub(crate) u8);
 
 impl VerticalOrientation {
     /// Returns an ICU4C `UVerticalOrientation` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn to_icu4c_value(self) -> u8 {
         self.0
     }
     /// Constructor from an ICU4C `UVerticalOrientation` value.
+    #[deprecated(
+        since = "2.3.0",
+        note = "please comment on https://github.com/unicode-org/icu4x/issues/6067 if you need this"
+    )]
     pub const fn from_icu4c_value(value: u8) -> Self {
         Self(value)
     }
 }
 
-create_const_array! {
-#[allow(missing_docs)] // These constants don't need individual documentation.
-#[allow(non_upper_case_globals)]
-impl VerticalOrientation {
-    pub const Rotated: VerticalOrientation = VerticalOrientation(0); // name="R"
-    pub const TransformedRotated: VerticalOrientation = VerticalOrientation(1); // name="Tr"
-    pub const TransformedUpright: VerticalOrientation = VerticalOrientation(2); // name="Tu"
-    pub const Upright: VerticalOrientation = VerticalOrientation(3); // name="U"
-}
-#[test]
-fn vertical_orientation_consts();
+impl Default for VerticalOrientation {
+    fn default() -> Self {
+        Self::Rotated
+    }
 }
 
 make_enumerated_property! {
@@ -2094,10 +1526,12 @@ macro_rules! make_binary_property {
         #[non_exhaustive]
         pub struct $ident;
 
+        #[allow(deprecated)]
         impl crate::private::Sealed for $ident {}
 
+        #[allow(deprecated)]
         impl BinaryProperty for $ident {
-        type DataMarker = $data_marker;
+            type DataMarker = $data_marker;
             #[cfg(feature = "compiled_data")]
             const SINGLETON: &'static crate::provider::PropertyCodePointSet<'static> =
                 &crate::provider::Baked::$singleton;
@@ -3051,6 +2485,7 @@ make_binary_property! {
     data_marker: crate::provider::PropertyBinaryNfcInertV1;
     singleton: SINGLETON_PROPERTY_BINARY_NFC_INERT_V1;
     /// Characters that are inert under NFC, i.e., they do not interact with adjacent characters.
+    #[deprecated(since = "2.3.0", note = "not a UCD property")]
 }
 
 make_binary_property! {
@@ -3060,6 +2495,7 @@ make_binary_property! {
     data_marker: crate::provider::PropertyBinaryNfdInertV1;
     singleton: SINGLETON_PROPERTY_BINARY_NFD_INERT_V1;
     /// Characters that are inert under NFD, i.e., they do not interact with adjacent characters.
+    #[deprecated(since = "2.3.0", note = "not a UCD property")]
 }
 
 make_binary_property! {
@@ -3069,6 +2505,7 @@ make_binary_property! {
     data_marker: crate::provider::PropertyBinaryNfkcInertV1;
     singleton: SINGLETON_PROPERTY_BINARY_NFKC_INERT_V1;
     /// Characters that are inert under NFKC, i.e., they do not interact with adjacent characters.
+    #[deprecated(since = "2.3.0", note = "not a UCD property")]
 }
 
 make_binary_property! {
@@ -3078,6 +2515,7 @@ make_binary_property! {
     data_marker: crate::provider::PropertyBinaryNfkdInertV1;
     singleton: SINGLETON_PROPERTY_BINARY_NFKD_INERT_V1;
     /// Characters that are inert under NFKD, i.e., they do not interact with adjacent characters.
+    #[deprecated(since = "2.3.0", note = "not a UCD property")]
 }
 
 make_binary_property! {
@@ -3251,6 +2689,7 @@ make_binary_property! {
     singleton: SINGLETON_PROPERTY_BINARY_SEGMENT_STARTER_V1;
     /// Characters that are starters in terms of Unicode normalization and combining character
     /// sequences.
+    #[deprecated(since = "2.3.0", note = "not a UCD property")]
 }
 
 make_binary_property! {
@@ -3261,6 +2700,7 @@ make_binary_property! {
     singleton: SINGLETON_PROPERTY_BINARY_CASE_SENSITIVE_V1;
     /// Characters that are either the source of a case mapping or in the target of a case
     /// mapping.
+    #[deprecated(since = "2.3.0", note = "not a UCD property")]
 }
 
 make_binary_property! {
@@ -3525,132 +2965,4 @@ make_emoji_set! {
     /// assert!(basic_emoji.contains_str("\u{1F6E4}\u{FE0F}")); // railway track
     /// assert!(!basic_emoji.contains_str("\u{0033}\u{FE0F}\u{20E3}"));  // Emoji_Keycap_Sequence, keycap 3
     /// ```
-}
-
-#[cfg(test)]
-mod test_enumerated_property_completeness {
-    use super::*;
-    use std::collections::BTreeMap;
-
-    fn check_enum<'a, T: NamedEnumeratedProperty>(
-        lookup: &crate::provider::names::PropertyValueNameToEnumMap<'static>,
-        consts: impl IntoIterator<Item = &'a T>,
-    ) where
-        u16: From<T>,
-    {
-        let mut data: BTreeMap<_, _> = lookup
-            .map
-            .iter()
-            .map(|(name, value)| (value, (name, "Data")))
-            .collect();
-
-        let names = crate::PropertyNamesLong::<T>::new();
-        let consts = consts.into_iter().map(|value| {
-            (
-                u16::from(*value) as usize,
-                (
-                    names.get(*value).unwrap_or("<unknown>").to_string(),
-                    "Consts",
-                ),
-            )
-        });
-
-        let mut diff = Vec::new();
-        for t @ (value, _) in consts {
-            if data.remove(&value).is_none() {
-                diff.push(t);
-            }
-        }
-        diff.extend(data);
-
-        let mut fmt_diff = String::new();
-        for (value, (name, source)) in diff {
-            fmt_diff.push_str(&format!("{source}:\t{name} = {value:?}\n"));
-        }
-
-        assert!(
-            fmt_diff.is_empty(),
-            "Values defined in data do not match values defined in consts. Difference:\n{fmt_diff}"
-        );
-    }
-
-    #[test]
-    fn test_ea() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_EAST_ASIAN_WIDTH_V1,
-            EastAsianWidth::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_ccc() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_CANONICAL_COMBINING_CLASS_V1,
-            CanonicalCombiningClass::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_jt() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_JOINING_TYPE_V1,
-            JoiningType::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_insc() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_INDIC_SYLLABIC_CATEGORY_V1,
-            IndicSyllabicCategory::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_sb() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_SENTENCE_BREAK_V1,
-            SentenceBreak::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_wb() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_WORD_BREAK_V1,
-            WordBreak::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_bc() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_BIDI_CLASS_V1,
-            BidiClass::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_nt() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_NUMERIC_TYPE_V1,
-            NumericType::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_hst() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_HANGUL_SYLLABLE_TYPE_V1,
-            HangulSyllableType::ALL_VALUES,
-        );
-    }
-
-    #[test]
-    fn test_vo() {
-        check_enum(
-            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_VERTICAL_ORIENTATION_V1,
-            VerticalOrientation::ALL_VALUES,
-        );
-    }
 }

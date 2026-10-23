@@ -13,6 +13,14 @@
   },
   {
     "input": "und",
+    "output": "und"
+  },
+  {
+    "input": "und-Latn",
+    "output": "en"
+  },
+  {
+    "input": "und-US",
     "output": "en"
   },
   {

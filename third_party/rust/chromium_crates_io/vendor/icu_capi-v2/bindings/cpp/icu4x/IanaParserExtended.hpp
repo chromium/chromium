@@ -50,18 +50,18 @@ inline icu4x::diplomat::result<std::unique_ptr<icu4x::IanaParserExtended>, icu4x
     return result.is_ok ? icu4x::diplomat::result<std::unique_ptr<icu4x::IanaParserExtended>, icu4x::DataError>(icu4x::diplomat::Ok<std::unique_ptr<icu4x::IanaParserExtended>>(std::unique_ptr<icu4x::IanaParserExtended>(icu4x::IanaParserExtended::FromFFI(result.ok)))) : icu4x::diplomat::result<std::unique_ptr<icu4x::IanaParserExtended>, icu4x::DataError>(icu4x::diplomat::Err<icu4x::DataError>(icu4x::DataError::FromFFI(result.err)));
 }
 
-inline icu4x::TimeZoneAndCanonicalAndNormalized icu4x::IanaParserExtended::parse(std::string_view value) const {
+inline icu4x::TimeZoneAndCanonicalAndNormalized icu4x::IanaParserExtended::parse(std::string_view value) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_IanaParserExtended_parse_mv1(this->AsFFI(),
         {value.data(), value.size()});
     return icu4x::TimeZoneAndCanonicalAndNormalized::FromFFI(result);
 }
 
-inline std::unique_ptr<icu4x::TimeZoneAndCanonicalIterator> icu4x::IanaParserExtended::iter() const {
+inline std::unique_ptr<icu4x::TimeZoneAndCanonicalIterator> icu4x::IanaParserExtended::iter() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_IanaParserExtended_iter_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::TimeZoneAndCanonicalIterator>(icu4x::TimeZoneAndCanonicalIterator::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::TimeZoneAndCanonicalAndNormalizedIterator> icu4x::IanaParserExtended::iter_all() const {
+inline std::unique_ptr<icu4x::TimeZoneAndCanonicalAndNormalizedIterator> icu4x::IanaParserExtended::iter_all() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_IanaParserExtended_iter_all_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::TimeZoneAndCanonicalAndNormalizedIterator>(icu4x::TimeZoneAndCanonicalAndNormalizedIterator::FromFFI(result));
 }

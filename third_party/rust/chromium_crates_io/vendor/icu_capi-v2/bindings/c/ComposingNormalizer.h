@@ -29,6 +29,8 @@ icu4x_ComposingNormalizer_create_nfkc_with_provider_mv1_result icu4x_ComposingNo
 
 void icu4x_ComposingNormalizer_normalize_mv1(const ComposingNormalizer* self, DiplomatStringView s, DiplomatWrite* write);
 
+void icu4x_ComposingNormalizer_normalize_utf16_mv1(const ComposingNormalizer* self, DiplomatString16View s, DiplomatWrite* write);
+
 bool icu4x_ComposingNormalizer_is_normalized_utf8_mv1(const ComposingNormalizer* self, DiplomatStringView s);
 
 bool icu4x_ComposingNormalizer_is_normalized_utf16_mv1(const ComposingNormalizer* self, DiplomatString16View s);

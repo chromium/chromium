@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `VariantOffsets`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsets.html) for more information.
+ * See the [Rust documentation for `VariantOffsets`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsets.html) for more information.
  */
 export class VariantOffsets {
     #standard;
@@ -80,8 +80,8 @@ export class VariantOffsets {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#standard.ffiValue, Uint32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#daylight.ffiValue ?? 0, Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#standard instanceof UtcOffset ? this.#standard.ffiValue : typeError('this.#standard', 'UtcOffset'), Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#daylight === null || this.#daylight instanceof UtcOffset ? this.#daylight?.ffiValue ?? 0 : typeError('this.#daylight', 'UtcOffset'), Uint32Array);
     }
 
     // This struct contains borrowed fields, so this takes in a list of

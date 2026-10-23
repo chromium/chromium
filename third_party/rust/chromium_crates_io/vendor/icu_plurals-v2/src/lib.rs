@@ -91,10 +91,10 @@ use icu_provider::marker::ErasedMarker;
 use icu_provider::prelude::*;
 pub use operands::PluralOperands;
 pub use options::*;
-use provider::rules::runtime::test_rule;
 use provider::PluralRulesData;
 use provider::PluralsCardinalV1;
 use provider::PluralsOrdinalV1;
+use provider::rules::runtime::test_rule;
 
 #[cfg(feature = "unstable")]
 use provider::PluralsRangesV1;
@@ -126,7 +126,7 @@ use provider::UnvalidatedPluralRange;
 #[repr(u8)]
 #[zerovec::make_ule(PluralCategoryULE)]
 #[allow(clippy::exhaustive_enums)] // this type is mostly stable. new categories may potentially be added in the future,
-                                   // but at a cadence slower than the ICU4X release cycle
+// but at a cadence slower than the ICU4X release cycle
 pub enum PluralCategory {
     /// CLDR "zero" plural category. Used in Arabic and Latvian, among others.
     ///
@@ -582,10 +582,12 @@ impl PluralRulesWithRanges<PluralRules> {
 
     #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::try_new)]
     pub fn try_new_unstable(
-        provider: &(impl DataProvider<PluralsRangesV1>
-              + DataProvider<PluralsCardinalV1>
-              + DataProvider<PluralsOrdinalV1>
-              + ?Sized),
+        provider: &(
+             impl DataProvider<PluralsRangesV1>
+             + DataProvider<PluralsCardinalV1>
+             + DataProvider<PluralsOrdinalV1>
+             + ?Sized
+         ),
         prefs: PluralRulesPreferences,
         options: PluralRulesOptions,
     ) -> Result<Self, DataError> {
@@ -849,6 +851,61 @@ pub(crate) struct PluralElementsInner<T> {
     explicit_one: Option<T>,
 }
 
+impl<'a, T, C> zerofrom::ZeroFrom<'a, PluralElementsInner<C>> for PluralElementsInner<T>
+where
+    T: zerofrom::ZeroFrom<'a, C>,
+{
+    fn zero_from(other: &'a PluralElementsInner<C>) -> Self {
+        other.as_ref().map(|x| zerofrom::ZeroFrom::zero_from(x))
+    }
+}
+
+impl<T> PluralElementsInner<T> {
+    /// Converts from `&PluralElementsInner<T>` to `PluralElementsInner<&T>`.
+    pub fn as_ref(&self) -> PluralElementsInner<&T> {
+        PluralElementsInner {
+            other: &self.other,
+            zero: self.zero.as_ref(),
+            one: self.one.as_ref(),
+            two: self.two.as_ref(),
+            few: self.few.as_ref(),
+            many: self.many.as_ref(),
+            explicit_zero: self.explicit_zero.as_ref(),
+            explicit_one: self.explicit_one.as_ref(),
+        }
+    }
+
+    pub fn map<B, F: FnMut(T) -> B>(self, mut f: F) -> PluralElementsInner<B> {
+        let Ok(x) = self.try_map(move |x| Ok::<B, Infallible>(f(x)));
+        x
+    }
+
+    pub fn try_map<B, E, F: FnMut(T) -> Result<B, E>>(
+        self,
+        mut f: F,
+    ) -> Result<PluralElementsInner<B>, E> {
+        Ok(PluralElementsInner {
+            other: f(self.other)?,
+            zero: self.zero.map(&mut f).transpose()?,
+            one: self.one.map(&mut f).transpose()?,
+            two: self.two.map(&mut f).transpose()?,
+            few: self.few.map(&mut f).transpose()?,
+            many: self.many.map(&mut f).transpose()?,
+            explicit_zero: self.explicit_zero.map(&mut f).transpose()?,
+            explicit_one: self.explicit_one.map(&mut f).transpose()?,
+        })
+    }
+}
+
+impl<'a, T, C> zerofrom::ZeroFrom<'a, PluralElements<C>> for PluralElements<T>
+where
+    T: zerofrom::ZeroFrom<'a, C>,
+{
+    fn zero_from(other: &'a PluralElements<C>) -> Self {
+        other.as_ref().map(|x| zerofrom::ZeroFrom::zero_from(x))
+    }
+}
+
 impl<T> PluralElements<T> {
     /// Creates a new [`PluralElements`] with the given default value.
     pub fn new(other: T) -> Self {
@@ -899,7 +956,7 @@ impl<T> PluralElements<T> {
     /// # Examples
     ///
     /// ```
-    /// use icu_plurals::PluralElements;
+    /// use icu::plurals::PluralElements;
     ///
     /// let mut only_other = PluralElements::new("abc").with_one_value(Some("abc"));
     /// assert_eq!(only_other.try_into_other(), Some("abc"));
@@ -938,7 +995,7 @@ impl<T> PluralElements<T> {
     /// # Examples
     ///
     /// ```
-    /// use icu_plurals::PluralElements;
+    /// use icu::plurals::PluralElements;
     ///
     /// let x = PluralElements::new(11).with_one_value(Some(15));
     /// let y = x.map(|i| i * 2);
@@ -946,28 +1003,14 @@ impl<T> PluralElements<T> {
     /// assert_eq!(*y.other(), 22);
     /// assert_eq!(*y.one(), 30);
     /// ```
-    pub fn map<B, F: FnMut(T) -> B>(self, mut f: F) -> PluralElements<B> {
-        let Ok(x) = self.try_map(move |x| Ok::<B, Infallible>(f(x)));
-        x
+    pub fn map<B, F: FnMut(T) -> B>(self, f: F) -> PluralElements<B> {
+        PluralElements(self.0.map(f))
     }
 
     /// Applies a function `f` to convert all values to another type,
     /// propagating a possible error.
-    pub fn try_map<B, E, F: FnMut(T) -> Result<B, E>>(
-        self,
-        mut f: F,
-    ) -> Result<PluralElements<B>, E> {
-        let plural_elements = PluralElements(PluralElementsInner {
-            other: f(self.0.other)?,
-            zero: self.0.zero.map(&mut f).transpose()?,
-            one: self.0.one.map(&mut f).transpose()?,
-            two: self.0.two.map(&mut f).transpose()?,
-            few: self.0.few.map(&mut f).transpose()?,
-            many: self.0.many.map(&mut f).transpose()?,
-            explicit_zero: self.0.explicit_zero.map(&mut f).transpose()?,
-            explicit_one: self.0.explicit_one.map(&mut f).transpose()?,
-        });
-        Ok(plural_elements)
+    pub fn try_map<B, E, F: FnMut(T) -> Result<B, E>>(self, f: F) -> Result<PluralElements<B>, E> {
+        self.0.try_map(f).map(PluralElements)
     }
 
     /// Immutably applies a function `f` to each value.
@@ -998,7 +1041,7 @@ impl<T> PluralElements<T> {
     /// # Examples
     ///
     /// ```
-    /// use icu_plurals::PluralElements;
+    /// use icu::plurals::PluralElements;
     ///
     /// let mut x = PluralElements::new(11).with_one_value(Some(15));
     /// x.for_each_mut(|i| *i *= 2);
@@ -1033,16 +1076,48 @@ impl<T> PluralElements<T> {
 
     /// Converts from `&PluralElements<T>` to `PluralElements<&T>`.
     pub fn as_ref(&self) -> PluralElements<&T> {
-        PluralElements(PluralElementsInner {
-            other: &self.0.other,
-            zero: self.0.zero.as_ref(),
-            one: self.0.one.as_ref(),
-            two: self.0.two.as_ref(),
-            few: self.0.few.as_ref(),
-            many: self.0.many.as_ref(),
-            explicit_zero: self.0.explicit_zero.as_ref(),
-            explicit_one: self.0.explicit_one.as_ref(),
-        })
+        PluralElements(self.0.as_ref())
+    }
+
+    /// Returns the value for the given [`PluralOperands`] and [`PluralRules`].
+    ///
+    /// # Example
+    /// ```
+    /// use icu::locale::locale;
+    /// use icu::plurals::{PluralCategory, PluralElements, PluralRules};
+    ///
+    /// let rules = PluralRules::try_new_cardinal(locale!("fr").into()).unwrap();
+    ///
+    /// let elements = PluralElements::new("chats").with_one_value(Some("chat"));
+    ///
+    /// assert_eq!(*elements.get(0_usize.into(), &rules), "chat");
+    /// assert_eq!(*elements.get(1_usize.into(), &rules), "chat");
+    /// assert_eq!(*elements.get(12_usize.into(), &rules), "chats");
+    /// ```
+    pub fn get<'a>(&'a self, op: PluralOperands, rules: &PluralRules) -> &'a T {
+        let category = rules.category_for(op);
+
+        if op.is_exactly_zero()
+            && let Some(value) = self.0.explicit_zero.as_ref()
+        {
+            return value;
+        }
+
+        if op.is_exactly_one()
+            && let Some(value) = self.0.explicit_one.as_ref()
+        {
+            return value;
+        }
+
+        match category {
+            PluralCategory::Zero => self.0.zero.as_ref(),
+            PluralCategory::One => self.0.one.as_ref(),
+            PluralCategory::Two => self.0.two.as_ref(),
+            PluralCategory::Few => self.0.few.as_ref(),
+            PluralCategory::Many => self.0.many.as_ref(),
+            PluralCategory::Other => return &self.0.other,
+        }
+        .unwrap_or(&self.0.other)
     }
 }
 

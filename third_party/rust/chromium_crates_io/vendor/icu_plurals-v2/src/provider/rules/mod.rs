@@ -95,9 +95,9 @@
 //! matches:
 //!
 //! ```
+//! use icu::plurals::PluralOperands;
 //! use icu::plurals::provider::rules::reference::parse_condition;
 //! use icu::plurals::provider::rules::reference::test_condition;
-//! use icu::plurals::PluralOperands;
 //!
 //! let input = "i = 1 and v = 0 @integer 1";
 //!

@@ -64,12 +64,12 @@ inline bool icu4x::ScriptWithExtensions::has_script(char32_t ch, uint16_t script
     return result;
 }
 
-inline std::unique_ptr<icu4x::ScriptWithExtensionsBorrowed> icu4x::ScriptWithExtensions::as_borrowed() const {
+inline std::unique_ptr<icu4x::ScriptWithExtensionsBorrowed> icu4x::ScriptWithExtensions::as_borrowed() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_ScriptWithExtensions_as_borrowed_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::ScriptWithExtensionsBorrowed>(icu4x::ScriptWithExtensionsBorrowed::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::CodePointRangeIterator> icu4x::ScriptWithExtensions::iter_ranges_for_script(uint16_t script) const {
+inline std::unique_ptr<icu4x::CodePointRangeIterator> icu4x::ScriptWithExtensions::iter_ranges_for_script(uint16_t script) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_ScriptWithExtensions_iter_ranges_for_script_mv1(this->AsFFI(),
         script);
     return std::unique_ptr<icu4x::CodePointRangeIterator>(icu4x::CodePointRangeIterator::FromFFI(result));

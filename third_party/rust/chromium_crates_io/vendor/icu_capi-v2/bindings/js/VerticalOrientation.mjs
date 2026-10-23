@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `VerticalOrientation`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html) for more information.
+ * See the [Rust documentation for `VerticalOrientation`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html) for more information.
  */
 export class VerticalOrientation {
     #value = undefined;
@@ -67,25 +67,25 @@ export class VerticalOrientation {
     ];
 
     /**
-     * See the [Rust documentation for `Rotated`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.Rotated) for more information.
+     * See the [Rust documentation for `Rotated`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.Rotated) for more information.
      */
     static Rotated = VerticalOrientation.#objectValues[0];
     /**
-     * See the [Rust documentation for `TransformedRotated`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.TransformedRotated) for more information.
+     * See the [Rust documentation for `TransformedRotated`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.TransformedRotated) for more information.
      */
     static TransformedRotated = VerticalOrientation.#objectValues[1];
     /**
-     * See the [Rust documentation for `TransformedUpright`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.TransformedUpright) for more information.
+     * See the [Rust documentation for `TransformedUpright`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.TransformedUpright) for more information.
      */
     static TransformedUpright = VerticalOrientation.#objectValues[2];
     /**
-     * See the [Rust documentation for `Upright`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.Upright) for more information.
+     * See the [Rust documentation for `Upright`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html#associatedconstant.Upright) for more information.
      */
     static Upright = VerticalOrientation.#objectValues[3];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -103,7 +103,7 @@ export class VerticalOrientation {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -127,7 +127,7 @@ export class VerticalOrientation {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -151,7 +151,7 @@ export class VerticalOrientation {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -169,7 +169,7 @@ export class VerticalOrientation {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.VerticalOrientation.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.VerticalOrientation.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -190,6 +190,11 @@ export class VerticalOrientation {
         }
     }
 
+    /**
+     * Creates a `VerticalOrientation` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

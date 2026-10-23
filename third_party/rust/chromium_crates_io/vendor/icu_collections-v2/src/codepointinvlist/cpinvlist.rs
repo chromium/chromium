@@ -12,19 +12,13 @@ use core::{char, ops::RangeBounds, ops::RangeInclusive};
 use potential_utf::PotentialCodePoint;
 use yoke::Yokeable;
 use zerofrom::ZeroFrom;
-use zerovec::{ule::AsULE, zerovec, ZeroVec};
+use zerovec::{ZeroVec, ule::AsULE, zerovec};
 
 use super::InvalidSetError;
 use crate::codepointinvlist::utils::{deconstruct_range, is_valid_zv};
 
-/// Represents the end code point of the Basic Multilingual Plane range, starting from code point 0, inclusive
-const BMP_MAX: u32 = 0xFFFF;
-
-/// Represents the inversion list for a set of all code points in the Basic Multilingual Plane.
-const BMP_INV_LIST_VEC: ZeroVec<PotentialCodePoint> = zerovec!(PotentialCodePoint; PotentialCodePoint::to_unaligned; [PotentialCodePoint::from_u24(0x0), PotentialCodePoint::from_u24(BMP_MAX + 1)]);
-
-/// Represents the inversion list for all of the code points in the Unicode range.
-const ALL_VEC: ZeroVec<PotentialCodePoint> = zerovec!(PotentialCodePoint; PotentialCodePoint::to_unaligned; [PotentialCodePoint::from_u24(0x0), PotentialCodePoint::from_u24((char::MAX as u32) + 1)]);
+/// The exclusive end value of the the Unicode code point range.
+const SENTINEL: u32 = char::MAX as u32 + 1;
 
 /// A membership wrapper for [`CodePointInversionList`].
 ///
@@ -33,7 +27,7 @@ const ALL_VEC: ZeroVec<PotentialCodePoint> = zerovec!(PotentialCodePoint; Potent
 #[zerovec::make_varule(CodePointInversionListULE)]
 #[zerovec::skip_derive(Ord)]
 #[zerovec::derive(Debug)]
-#[derive(Debug, Eq, PartialEq, Clone, Yokeable, ZeroFrom)]
+#[derive(Debug, Eq, PartialEq, Clone, Yokeable, ZeroFrom, Hash)]
 #[cfg_attr(not(feature = "alloc"), zerovec::skip_derive(ZeroMapKV, ToOwned))]
 pub struct CodePointInversionList<'data> {
     // If we wanted to use an array to keep the memory on the stack, there is an unsafe nightly feature
@@ -117,7 +111,7 @@ struct UnicodeCodePoint(u32);
 #[cfg(feature = "serde")]
 impl UnicodeCodePoint {
     fn from_u32(cp: u32) -> Result<Self, String> {
-        if cp <= char::MAX as u32 {
+        if cp < SENTINEL {
             Ok(Self(cp))
         } else {
             Err(format!("Not a Unicode code point {cp}"))
@@ -331,8 +325,8 @@ impl<'data> CodePointInversionList<'data> {
     /// ```
     pub const fn all() -> Self {
         Self {
-            inv_list: ALL_VEC,
-            size: (char::MAX as u32) + 1,
+            inv_list: zerovec!(PotentialCodePoint; PotentialCodePoint::to_unaligned; [PotentialCodePoint::from_u24(0), PotentialCodePoint::from_u24(SENTINEL)]),
+            size: SENTINEL,
         }
     }
 
@@ -358,9 +352,12 @@ impl<'data> CodePointInversionList<'data> {
     /// );
     /// ```
     pub fn bmp() -> Self {
+        /// The exclusive end value of the Basic Multilingual Plane, i.e. the first code point in plane 2.
+        const BMP_SENTINEL: u32 = 0x10000;
+
         Self {
-            inv_list: BMP_INV_LIST_VEC,
-            size: BMP_MAX + 1,
+            inv_list: zerovec!(PotentialCodePoint; PotentialCodePoint::to_unaligned; [PotentialCodePoint::from_u24(0), PotentialCodePoint::from_u24(BMP_SENTINEL)]),
+            size: BMP_SENTINEL,
         }
     }
 
@@ -469,7 +466,7 @@ impl<'data> CodePointInversionList<'data> {
         };
         let end = if let Some(last) = self.inv_list.last() {
             let last = u32::from(last);
-            if last == char::MAX as u32 {
+            if last == SENTINEL {
                 None
             } else {
                 Some(last..=char::MAX as u32)
@@ -585,6 +582,45 @@ impl<'data> CodePointInversionList<'data> {
         self.contains_query(query).is_some()
     }
 
+    /// Returns the index of `query` in the [`CodePointInversionList`], or `None` if it is not contained.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use icu::collections::codepointinvlist::CodePointInversionList;
+    /// let example_list = [0x41, 0x43, 0x44, 0x45];
+    /// let example = CodePointInversionList::try_from_u32_inversion_list_slice(
+    ///     &example_list,
+    /// )
+    /// .unwrap();
+    /// assert_eq!(example.position('A'), Some(0));
+    /// assert_eq!(example.position('B'), Some(1));
+    /// assert_eq!(example.position('C'), None);
+    /// assert_eq!(example.position('D'), Some(2));
+    /// ```
+    #[inline]
+    pub fn position(&self, query: char) -> Option<usize> {
+        self.position32(query as u32)
+    }
+
+    /// Returns the index of `query` in the [`CodePointInversionList`], or `None` if it is not contained.
+    ///
+    /// See [`Self::position`].
+    #[inline]
+    pub fn position32(&self, query: u32) -> Option<usize> {
+        let mut offset = 0;
+        for r in self.iter_ranges() {
+            if query < *r.start() {
+                return None;
+            }
+            if query <= *r.end() {
+                return Some((offset + (query - r.start())) as usize);
+            }
+            offset += r.end() - r.start() + 1;
+        }
+        None
+    }
+
     /// Checks to see if the range is in the [`CodePointInversionList`]
     ///
     /// Runs a binary search in `O(log(n))` where `n` is the number of start and end points
@@ -617,7 +653,6 @@ impl<'data> CodePointInversionList<'data> {
     ///
     /// ```
     /// use icu::collections::codepointinvlist::CodePointInversionList;
-    /// use std::char;
     /// let check =
     ///     char::from_u32(0xD7FE).unwrap()..char::from_u32(0xE001).unwrap();
     /// let example_list = [0xD7FE, 0xD7FF, 0xE000, 0xE001];
@@ -659,8 +694,8 @@ impl<'data> CodePointInversionList<'data> {
     ///     &example_list,
     /// )
     /// .unwrap();
-    /// let a_to_d = CodePointInversionList::try_from_u32_inversion_list_slice(&[
-    ///     0x41, 0x45,
+    /// let a_b_d = CodePointInversionList::try_from_u32_inversion_list_slice(&[
+    ///     0x41, 0x42, 0x44, 0x45,
     /// ])
     /// .unwrap();
     /// let f_to_t = CodePointInversionList::try_from_u32_inversion_list_slice(&[
@@ -671,7 +706,7 @@ impl<'data> CodePointInversionList<'data> {
     ///     0x52, 0x58,
     /// ])
     /// .unwrap();
-    /// assert!(example.contains_set(&a_to_d)); // contains all
+    /// assert!(example.contains_set(&a_b_d)); // contains all
     /// assert!(!example.contains_set(&f_to_t)); // contains none
     /// assert!(!example.contains_set(&r_to_x)); // contains some
     /// ```
@@ -685,15 +720,15 @@ impl<'data> CodePointInversionList<'data> {
 
         let ranges = self.iter_ranges();
         for range in ranges {
-            match check_elem {
-                Some(ref check_range) => {
-                    if check_range.start() >= range.start()
-                        && check_range.end() <= &(range.end() + 1)
-                    {
-                        check_elem = set_ranges.next();
-                    }
+            loop {
+                let Some(ref check_range) = check_elem else {
+                    return true;
+                };
+                if check_range.start() >= range.start() && check_range.end() <= &(range.end() + 1) {
+                    check_elem = set_ranges.next();
+                } else {
+                    break;
                 }
-                _ => break,
             }
         }
         check_elem.is_none()

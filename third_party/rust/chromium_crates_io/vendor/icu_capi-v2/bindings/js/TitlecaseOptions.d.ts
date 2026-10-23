@@ -11,7 +11,7 @@ export type TitlecaseOptions_obj = {
 
 
 /**
- * See the [Rust documentation for `TitlecaseOptions`](https://docs.rs/icu/2.2.0/icu/casemap/options/struct.TitlecaseOptions.html) for more information.
+ * See the [Rust documentation for `TitlecaseOptions`](https://docs.rs/icu/2.4.0/icu/casemap/options/struct.TitlecaseOptions.html) for more information.
  */
 export class TitlecaseOptions {
     get leadingAdjustment(): LeadingAdjustment | null;
@@ -24,7 +24,7 @@ export class TitlecaseOptions {
 
 
     /**
-     * See the [Rust documentation for `default`](https://docs.rs/icu/2.2.0/icu/casemap/options/struct.TitlecaseOptions.html#method.default) for more information.
+     * See the [Rust documentation for `default`](https://docs.rs/icu/2.4.0/icu/casemap/options/struct.TitlecaseOptions.html#method.default) for more information.
      */
     constructor();
 }

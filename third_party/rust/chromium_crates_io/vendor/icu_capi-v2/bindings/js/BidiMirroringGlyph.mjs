@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `BidiMirroringGlyph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiMirroringGlyph.html) for more information.
+ * See the [Rust documentation for `BidiMirroringGlyph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiMirroringGlyph.html) for more information.
  */
 export class BidiMirroringGlyph {
     #mirroringGlyph;
@@ -53,7 +53,7 @@ export class BidiMirroringGlyph {
         }
 
         if ("pairedBracketType" in structObj) {
-            this.#pairedBracketType = structObj.pairedBracketType;
+            this.#pairedBracketType = new BidiPairedBracketType(structObj.pairedBracketType);
         } else {
             throw new Error("Missing required field pairedBracketType.");
         }
@@ -103,7 +103,7 @@ export class BidiMirroringGlyph {
     ) {
         diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#mirroringGlyph, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue, Uint32Array));
         diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 8, this.#mirrored, Uint8Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 12, this.#pairedBracketType.ffiValue, Int32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 12, new BidiPairedBracketType(this.#pairedBracketType).ffiValue, Int32Array);
     }
 
     // This struct contains borrowed fields, so this takes in a list of
@@ -128,7 +128,7 @@ export class BidiMirroringGlyph {
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 16, 4, false);

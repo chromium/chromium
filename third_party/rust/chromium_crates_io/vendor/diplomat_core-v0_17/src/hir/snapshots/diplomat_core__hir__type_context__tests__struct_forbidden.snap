@@ -1,0 +1,49 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+&'a str is FFI-unsafe, consider using DiplomatUtf8Str<'a>
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+&'a DiplomatStr is FFI-unsafe, consider using DiplomatStrSlice<'a>
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+&'a [u8] is FFI-unsafe, consider using DiplomatSlice<'a,u8>
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+Box<str> is FFI-unsafe, consider using DiplomatOwnedUtf8Str
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+Owned slices are not supported in this backend.
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+Box<DiplomatStr> is FFI-unsafe, consider using DiplomatOwnedStrSlice
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+Owned slices are not supported in this backend.
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+Box<[u8]> is FFI-unsafe, consider using Box<[u8]>
+Diplomat error: Lowering error in Crimes
+In src/hir/snapshots/span_testing/test_struct_forbidden.rs:3:12:
+...ruct Crimes<'a>...
+        ^^^^^^
+Owned slices are not supported in this backend.

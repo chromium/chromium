@@ -3,9 +3,9 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 use crate::provider::*;
-
-use icu_locale_core::subtags::{Language, Region, Script};
 use icu_locale_core::LanguageIdentifier;
+use icu_locale_core::subtags::{Language, Region, Script, region, script};
+use icu_locale_fallback::provider::{LikelySubtagsForLanguage, LocaleLikelySubtagsLanguageV1};
 use icu_provider::prelude::*;
 
 use crate::TransformResult;
@@ -35,7 +35,7 @@ use crate::TransformResult;
 /// Remove likely subtags:
 ///
 /// ```
-/// use icu::locale::{locale, LocaleExpander, TransformResult};
+/// use icu::locale::{LocaleExpander, TransformResult, locale};
 ///
 /// let lc = LocaleExpander::new_common();
 ///
@@ -52,7 +52,7 @@ use crate::TransformResult;
 /// locales for maximization, use [`try_new_extended`](Self::try_new_extended_unstable):
 ///
 /// ```
-/// use icu::locale::{locale, LocaleExpander, TransformResult};
+/// use icu::locale::{LocaleExpander, TransformResult, locale};
 ///
 /// let lc = LocaleExpander::new_extended();
 ///
@@ -224,7 +224,7 @@ impl LocaleExpander {
     pub const fn new_common() -> Self {
         LocaleExpander {
             likely_subtags_l: DataPayload::from_static_ref(
-                Baked::SINGLETON_LOCALE_LIKELY_SUBTAGS_LANGUAGE_V1,
+                icu_locale_fallback::provider::Baked::SINGLETON_LOCALE_LIKELY_SUBTAGS_LANGUAGE_V1,
             ),
             likely_subtags_sr: DataPayload::from_static_ref(
                 Baked::SINGLETON_LOCALE_LIKELY_SUBTAGS_SCRIPT_REGION_V1,
@@ -272,7 +272,7 @@ impl LocaleExpander {
     pub const fn new_extended() -> Self {
         LocaleExpander {
             likely_subtags_l: DataPayload::from_static_ref(
-                Baked::SINGLETON_LOCALE_LIKELY_SUBTAGS_LANGUAGE_V1,
+                icu_locale_fallback::provider::Baked::SINGLETON_LOCALE_LIKELY_SUBTAGS_LANGUAGE_V1,
             ),
             likely_subtags_sr: DataPayload::from_static_ref(
                 Baked::SINGLETON_LOCALE_LIKELY_SUBTAGS_SCRIPT_REGION_V1,
@@ -334,7 +334,7 @@ impl LocaleExpander {
     /// # Examples
     ///
     /// ```
-    /// use icu::locale::{locale, LocaleExpander, TransformResult};
+    /// use icu::locale::{LocaleExpander, TransformResult, locale};
     ///
     /// let lc = LocaleExpander::new_common();
     ///
@@ -352,7 +352,7 @@ impl LocaleExpander {
     /// more languages.
     ///
     /// ```
-    /// use icu::locale::{locale, LocaleExpander, TransformResult};
+    /// use icu::locale::{LocaleExpander, TransformResult, locale};
     ///
     /// let lc = LocaleExpander::new_common();
     ///
@@ -374,53 +374,70 @@ impl LocaleExpander {
     /// ```
     pub fn maximize(&self, langid: &mut LanguageIdentifier) -> TransformResult {
         let data = self.as_borrowed();
+        let (und_l, und_s, und_r) = data.get_und();
+
+        // Stripping a placeholder is itself a modification, even if no further
+        // maximization data is found afterwards (e.g. `und-Zzzz-ZZ` -> `und`).
+        let mut stripped_transform_result = TransformResult::Unmodified;
+        if langid.script == Some(script!("Zzzz")) {
+            langid.script = None;
+            stripped_transform_result = TransformResult::Modified;
+        }
+        if langid.region == Some(region!("ZZ")) {
+            langid.region = None;
+            stripped_transform_result = TransformResult::Modified;
+        }
 
         if !langid.language.is_unknown() && langid.script.is_some() && langid.region.is_some() {
-            return TransformResult::Unmodified;
+            return stripped_transform_result;
         }
 
         if !langid.language.is_unknown() {
-            if let Some(region) = langid.region {
-                if let Some(script) = data.get_lr(langid.language, region) {
-                    return update_langid(Language::UNKNOWN, Some(script), None, langid);
-                }
+            if let Some(region) = langid.region
+                && let Some(script) = data.get_lr(langid.language, region)
+            {
+                return update_langid(Language::UNKNOWN, Some(script), None, langid);
             }
-            if let Some(script) = langid.script {
-                if let Some(region) = data.get_ls(langid.language, script) {
-                    return update_langid(Language::UNKNOWN, None, Some(region), langid);
-                }
+            if let Some(script) = langid.script
+                && let Some(region) = data.get_ls(langid.language, script)
+            {
+                return update_langid(Language::UNKNOWN, None, Some(region), langid);
             }
             if let Some((script, region)) = data.get_l(langid.language) {
                 return update_langid(Language::UNKNOWN, Some(script), Some(region), langid);
             }
-            // Language not found: return unmodified.
-            return TransformResult::Unmodified;
+            // Language not found: return unmodified, unless we already
+            // stripped a placeholder subtag.
+            return stripped_transform_result;
         }
         if let Some(script) = langid.script {
-            if let Some(region) = langid.region {
-                if let Some(language) = data.get_sr(script, region) {
-                    return update_langid(language, None, None, langid);
-                }
+            if let Some(region) = langid.region
+                && let Some(language) = data
+                    .get_sr(script, region)
+                    .or_else(|| ((script, region) == (und_s, und_r)).then_some(und_l))
+            {
+                return update_langid(language, None, None, langid);
             }
-            if let Some((language, region)) = data.get_s(script) {
+            if let Some((language, region)) = data
+                .get_s(script)
+                .or_else(|| (script == und_s).then_some((und_l, und_r)))
+            {
                 return update_langid(language, None, Some(region), langid);
             }
         }
-        if let Some(region) = langid.region {
-            if let Some((language, script)) = data.get_r(region) {
-                return update_langid(language, Some(script), None, langid);
-            }
+        if let Some(region) = langid.region
+            && let Some((language, script)) = data
+                .get_r(region)
+                .or_else(|| (region == und_r).then_some((und_l, und_s)))
+        {
+            return update_langid(language, Some(script), None, langid);
         }
 
         // We failed to find anything in the und-SR, und-S, or und-R tables,
         // to fall back to bare "und"
         debug_assert!(langid.language.is_unknown());
-        update_langid(
-            data.get_und().0,
-            Some(data.get_und().1),
-            Some(data.get_und().2),
-            langid,
-        )
+
+        stripped_transform_result
     }
 
     /// This returns a new Locale that is the result of running the
@@ -436,7 +453,7 @@ impl LocaleExpander {
     /// # Examples
     ///
     /// ```
-    /// use icu::locale::{locale, LocaleExpander, TransformResult};
+    /// use icu::locale::{LocaleExpander, TransformResult, locale};
     ///
     /// let lc = LocaleExpander::new_common();
     ///
@@ -465,7 +482,7 @@ impl LocaleExpander {
     /// # Examples
     ///
     /// ```
-    /// use icu::locale::{locale, LocaleExpander, TransformResult};
+    /// use icu::locale::{LocaleExpander, TransformResult, locale};
     ///
     /// let lc = LocaleExpander::new_common();
     ///
@@ -534,41 +551,45 @@ impl LocaleExpander {
 
     // TODO(3492): consider turning this and a future get_likely_region/get_likely_language public
     #[inline]
-    pub(crate) fn get_likely_script(&self, langid: &LanguageIdentifier) -> Option<Script> {
+    #[doc(hidden)] // for testing in SourceDataProvider
+    pub fn get_likely_script(&self, langid: &LanguageIdentifier) -> Option<Script> {
         langid
             .script
+            .filter(|s| *s != script!("Zzzz"))
             .or_else(|| self.infer_likely_script(langid.language, langid.region))
     }
 
     fn infer_likely_script(&self, language: Language, region: Option<Region>) -> Option<Script> {
+        // This is an inlined and simplified `maximize`.
         let data = self.as_borrowed();
+        let (und_l, und_s, und_r) = data.get_und();
 
-        // proceed through _all possible cases_ in order of specificity
-        // (borrowed from LocaleExpander::maximize):
-        // 1. language + region
-        // 2. language
-        // 3. region
-        // we need to check all cases, because e.g. for "en-US" the default script is associated
-        // with "en" but not "en-US"
+        let region = region.filter(|r| *r != region!("ZZ"));
+
         if !language.is_unknown() {
-            if let Some(region) = region {
-                // 1. we know both language and region
-                if let Some(script) = data.get_lr(language, region) {
-                    return Some(script);
-                }
+            if let Some(region) = region
+                && let Some(script) = data.get_lr(language, region)
+            {
+                return Some(script);
             }
-            // 2. we know language, but we either do not know region or knowing region did not help
             if let Some((script, _)) = data.get_l(language) {
                 return Some(script);
             }
+            // Language not found: return None.
+            return None;
         }
-        if let Some(region) = region {
-            // 3. we know region, but we either do not know language or knowing language did not help
-            if let Some((_, script)) = data.get_r(region) {
-                return Some(script);
-            }
+        if let Some(region) = region
+            && let Some((_, script)) = data
+                .get_r(region)
+                .or_else(|| (region == und_r).then_some((und_l, und_s)))
+        {
+            return Some(script);
         }
-        // we could not figure out the script from the given locale
+
+        // We failed to find anything in the und-SR, und-S, or und-R tables,
+        // to fall back to bare "und"
+        debug_assert!(language.is_unknown());
+
         None
     }
 }
@@ -583,7 +604,7 @@ impl AsRef<LocaleExpander> for LocaleExpander {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use icu_locale_core::locale;
+    use icu_locale_core::{locale, subtags::script};
 
     #[test]
     fn test_minimize_favor_script() {
@@ -602,5 +623,112 @@ mod tests {
         let mut locale = locale!("yue-Hans");
         assert_eq!(lc.minimize(&mut locale.id), TransformResult::Modified);
         assert_eq!(locale, locale!("yue-CN"));
+    }
+
+    #[test]
+    fn test_get_likely_script() {
+        let lc = LocaleExpander::new_common();
+
+        assert_eq!(lc.get_likely_script(&locale!("und").id), None);
+
+        assert_eq!(
+            lc.get_likely_script(&locale!("en").id),
+            Some(script!("Latn"))
+        );
+        assert_eq!(
+            lc.get_likely_script(&locale!("en-US").id),
+            Some(script!("Latn"))
+        );
+        assert_eq!(
+            lc.get_likely_script(&locale!("und-US").id),
+            Some(script!("Latn"))
+        );
+
+        assert_eq!(
+            lc.get_likely_script(&locale!("und-SA").id),
+            Some(script!("Arab"))
+        );
+
+        assert_eq!(lc.get_likely_script(&locale!("tlh").id), None);
+        assert_eq!(lc.get_likely_script(&locale!("tlh-US").id), None);
+        assert_eq!(lc.get_likely_script(&locale!("tlh-SA").id), None);
+
+        // A placeholder 'Zzzz' script on the input shouldn't be returned
+        // verbatim; it should be treated like no script at all.
+        // Mirrors the cases covered for `maximize` above.
+        assert_eq!(
+            lc.get_likely_script(&locale!("de-Zzzz").id),
+            Some(script!("Latn"))
+        );
+        assert_eq!(
+            lc.get_likely_script(&locale!("de-Zzzz-ZZ").id),
+            Some(script!("Latn"))
+        );
+        assert_eq!(lc.get_likely_script(&locale!("und-ZZ").id), None);
+    }
+
+    #[test]
+    fn test_maximize() {
+        let lc = LocaleExpander::new_common();
+
+        let mut locale;
+
+        locale = locale!("und");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Unmodified);
+
+        locale = locale!("en");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("en-Latn-US"));
+
+        locale = locale!("en-US");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("en-Latn-US"));
+
+        locale = locale!("und-US");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("en-Latn-US"));
+
+        locale = locale!("und-SA");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("ar-Arab-SA"));
+
+        locale = locale!("tlh");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Unmodified);
+        locale = locale!("tlh-US");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Unmodified);
+        locale = locale!("tlh-SA");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Unmodified);
+    }
+
+    #[test]
+    fn test_maximize_strips_placeholder_subtags() {
+        let lc = LocaleExpander::new_extended();
+
+        let mut locale = locale!("de-Latn-ZZ");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("de-Latn-DE"));
+
+        let mut locale = locale!("de-Zzzz-DE");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("de-Latn-DE"));
+
+        let mut locale = locale!("de-Zzzz-ZZ");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("de-Latn-DE"));
+    }
+
+    #[test]
+    fn test_maximize_strips_placeholder_subtags_no_further_data() {
+        let lc = LocaleExpander::new_extended();
+
+        // Stripping the placeholders is itself a modification, even when no
+        // further maximization data is found afterwards.
+        let mut locale = locale!("und-Zzzz-ZZ");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("und"));
+
+        let mut locale = locale!("tlh-Zzzz-ZZ");
+        assert_eq!(lc.maximize(&mut locale.id), TransformResult::Modified);
+        assert_eq!(locale, locale!("tlh"));
     }
 }

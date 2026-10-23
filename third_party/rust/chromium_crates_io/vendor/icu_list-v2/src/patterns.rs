@@ -95,6 +95,9 @@ impl<'data> ListJoinerPattern<'data> {
                     && (allow_prefix || index_0 == 0)
                     && (allow_suffix || index_1 == pattern.len() - 3) =>
             {
+                // Because index0 < index1, we can guarantee that the string has
+                // at least 3 characters ("{0}") before index1, so index1 - 3
+                // will not wrap. This also tests that index0 < 256 since index0 <= index1 - 3.
                 if (index_0 > 0 && !cfg!(test)) || index_1 - 3 >= 256 {
                     return Err(DataError::custom(
                         "Found valid pattern that cannot be stored in ListFormatterPatterns",

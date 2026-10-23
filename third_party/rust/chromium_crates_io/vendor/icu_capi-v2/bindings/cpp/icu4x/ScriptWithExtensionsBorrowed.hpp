@@ -40,7 +40,7 @@ inline uint16_t icu4x::ScriptWithExtensionsBorrowed::get_script_val(char32_t ch)
     return result;
 }
 
-inline std::unique_ptr<icu4x::ScriptExtensionsSet> icu4x::ScriptWithExtensionsBorrowed::get_script_extensions_val(char32_t ch) const {
+inline std::unique_ptr<icu4x::ScriptExtensionsSet> icu4x::ScriptWithExtensionsBorrowed::get_script_extensions_val(char32_t ch) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_ScriptWithExtensionsBorrowed_get_script_extensions_val_mv1(this->AsFFI(),
         ch);
     return std::unique_ptr<icu4x::ScriptExtensionsSet>(icu4x::ScriptExtensionsSet::FromFFI(result));

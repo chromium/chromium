@@ -1,0 +1,80 @@
+// @generated
+/// Implement `DataProvider<PropertyNameShortBlockV1>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 4634B[^1] for the singleton data struct
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+///
+/// This macro requires the following crates:
+/// * `icu`
+/// * `icu_provider`
+/// * `zerovec`
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_property_name_short_block_v1 {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.88"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.88"]
+        impl $provider {
+            #[doc(hidden)]
+            pub const SINGLETON_PROPERTY_NAME_SHORT_BLOCK_V1: &'static <icu::properties::provider::PropertyNameShortBlockV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::properties::provider::names::PropertyEnumToValueNameLinearMap { map: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"b\x01\x02\0\x07\0\x12\0\x1D\0(\0/\0?\0K\0P\0X\0`\0f\0l\0r\0x\0\x82\0\x89\0\x91\0\x99\0\x9E\0\xA3\0\xA9\0\xB0\0\xB9\0\xC0\0\xC4\0\xC7\0\xCE\0\xD5\0\xDD\0\xE1\0\xE9\0\xF1\0\xF5\0\xFA\0\xFF\0\x04\x01\r\x01!\x01*\x015\x01B\x01R\x01j\x01|\x01\x88\x01\x8E\x01\x9C\x01\xAA\x01\xBA\x01\xBD\x01\xCE\x01\xD9\x01\xE7\x01\xF7\x01\x03\x02\x0B\x02\x12\x02\"\x02(\x02+\x026\x02>\x02F\x02N\x02Y\x02_\x02k\x02w\x02\x81\x02\x8A\x02\x8D\x02\x99\x02\xA4\x02\xAA\x02\xB9\x02\xCB\x02\xD9\x02\xDC\x02\xF1\x02\xFE\x02\t\x03\x13\x03#\x03.\x039\x03A\x03T\x03^\x03d\x03k\x03z\x03\x7F\x03\x8C\x03\x95\x03\xAE\x03\xB2\x03\xBE\x03\xC5\x03\xCC\x03\xD1\x03\xD9\x03\xEC\x03\xF8\x03\x04\x04\x17\x04)\x045\x047\x04@\x04I\x04N\x04T\x04a\x04m\x04x\x04~\x04\x90\x04\xA2\x04\xB0\x04\xB8\x04\xBF\x04\xC6\x04\xD7\x04\xE4\x04\xEA\x04\xFD\x04\x12\x05\x1C\x05$\x05/\x05?\x05E\x05Q\x05]\x05i\x05s\x05}\x05\x92\x05\x9D\x05\xA8\x05\xB8\x05\xC7\x05\xD3\x05\xDB\x05\xE9\x05\xEC\x05\xF4\x05\xFF\x05\n\x06\x12\x06\x1C\x06%\x066\x06B\x06K\x06Q\x06Y\x06g\x06j\x06x\x06\x82\x06\x8A\x06\x90\x06\x94\x06\xA3\x06\xAB\x06\xB1\x06\xB7\x06\xBD\x06\xC4\x06\xCA\x06\xD3\x06\xDB\x06\xE3\x06\xEC\x06\xF0\x06\xF5\x06\x07\x07\x15\x07\x1F\x07'\x074\x07<\x07H\x07R\x07b\x07s\x07z\x07\x90\x07\xA5\x07\xAF\x07\xB3\x07\xB9\x07\xCD\x07\xE2\x07\xFA\x07\x03\x08\n\x08\x0F\x08\x1D\x08#\x08,\x084\x08A\x08Q\x08Z\x08k\x08u\x08~\x08\x8A\x08\x95\x08\x9B\x08\xAB\x08\xBB\x08\xCF\x08\xD3\x08\xDA\x08\xE6\x08\xF3\x08\xF8\x08\x01\t\x13\t'\t7\t?\tF\tZ\ta\tg\tp\t{\t\x83\t\x8B\t\x95\t\xA2\t\xA6\t\xA9\t\xB6\t\xBF\t\xD0\t\xDA\t\xED\t\xF9\t\x02\n\r\n\x1C\n5\n<\nS\n_\nf\nq\nu\n\x8A\n\x96\n\x9F\n\xB7\n\xBD\n\xC4\n\xD1\n\xEC\n\xFE\n\x03\x0B\x0C\x0B\x1A\x0B(\x0B;\x0BB\x0BO\x0BS\x0BX\x0B^\x0Bo\x0Bx\x0B\x82\x0B\x8F\x0B\x94\x0B\x9B\x0B\xA5\x0B\xB5\x0B\xC2\x0B\xC7\x0B\xD3\x0B\xE0\x0B\xEF\x0B\x02\x0C\t\x0C\x17\x0C\"\x0C-\x0C4\x0CW\x0C^\x0Ci\x0C\x7F\x0C\x94\x0C\xA2\x0C\xBF\x0C\xC8\x0C\xCE\x0C\xD8\x0C\xE1\x0C\xEC\x0C\xFF\x0C\x07\r#\r-\r3\r?\rK\rY\rc\rn\ry\r\x83\r\x89\r\x8D\r\x97\r\x9F\r\xAD\r\xB9\r\xC2\r\xD0\r\xE0\r\xF1\r\xF5\r\0\x0E\t\x0E#\x0E(\x0E4\x0E=\x0EJ\x0EQ\x0EX\x0Ex\x0E~\x0E\x8B\x0E\x95\x0E\x9E\x0E\xAE\x0E\xB9\x0E\xC0\x0E\xC6\x0E\xDB\x0E\xE6\x0E\0\x0F\x0B\x0F\x12\x0F\"\x0F1\x0F:\x0FNBASCIILatin_1_SupLatin_Ext_ALatin_Ext_BIPA_ExtModifier_LettersDiacriticalsGreekCyrillicArmenianHebrewArabicSyriacThaanaDevanagariBengaliGurmukhiGujaratiOriyaTamilTeluguKannadaMalayalamSinhalaThaiLaoTibetanMyanmarGeorgianJamoEthiopicCherokeeUCASOghamRunicKhmerMongolianLatin_Ext_AdditionalGreek_ExtPunctuationSuper_And_SubCurrency_SymbolsDiacriticals_For_SymbolsLetterlike_SymbolsNumber_FormsArrowsMath_OperatorsMisc_TechnicalControl_PicturesOCREnclosed_AlphanumBox_DrawingBlock_ElementsGeometric_ShapesMisc_SymbolsDingbatsBrailleCJK_Radicals_SupKangxiIDCCJK_SymbolsHiraganaKatakanaBopomofoCompat_JamoKanbunBopomofo_ExtEnclosed_CJKCJK_CompatCJK_Ext_ACJKYi_SyllablesYi_RadicalsHangulHigh_SurrogatesHigh_PU_SurrogatesLow_SurrogatesPUACJK_Compat_IdeographsAlphabetic_PFArabic_PF_AHalf_MarksCJK_Compat_FormsSmall_FormsArabic_PF_BSpecialsHalf_And_Full_FormsOld_ItalicGothicDeseretByzantine_MusicMusicMath_AlphanumCJK_Ext_BCJK_Compat_Ideographs_SupTagsCyrillic_SupTagalogHanunooBuhidTagbanwaMisc_Math_Symbols_ASup_Arrows_ASup_Arrows_BMisc_Math_Symbols_BSup_Math_OperatorsKatakana_ExtVSSup_PUA_ASup_PUA_BLimbuTai_LeKhmer_SymbolsPhonetic_ExtMisc_ArrowsYijingLinear_B_SyllabaryLinear_B_IdeogramsAegean_NumbersUgariticShavianOsmanyaCypriot_SyllabaryTai_Xuan_JingVS_SupAncient_Greek_MusicAncient_Greek_NumbersArabic_SupBugineseCJK_StrokesDiacriticals_SupCopticEthiopic_ExtEthiopic_SupGeorgian_SupGlagoliticKharoshthiModifier_Tone_LettersNew_Tai_LueOld_PersianPhonetic_Ext_SupSup_PunctuationSyloti_NagriTifinaghVertical_FormsNKoBalineseLatin_Ext_CLatin_Ext_DPhags_PaPhoenicianCuneiformCuneiform_NumbersCounting_RodSundaneseLepchaOl_ChikiCyrillic_Ext_AVaiCyrillic_Ext_BSaurashtraKayah_LiRejangChamAncient_SymbolsPhaistosLycianCarianLydianMahjongDominoSamaritanUCAS_ExtTai_ThamVedic_ExtLisuBamumIndic_Number_FormsDevanagari_ExtJamo_Ext_AJavaneseMyanmar_Ext_ATai_VietMeetei_MayekJamo_Ext_BImperial_AramaicOld_South_ArabianAvestanInscriptional_ParthianInscriptional_PahlaviOld_TurkicRumiKaithiEgyptian_HieroglyphsEnclosed_Alphanum_SupEnclosed_Ideographic_SupCJK_Ext_CMandaicBatakEthiopic_Ext_ABrahmiBamum_SupKana_SupPlaying_CardsMisc_PictographsEmoticonsTransport_And_MapAlchemicalCJK_Ext_DArabic_Ext_AArabic_MathChakmaMeetei_Mayek_ExtMeroitic_CursiveMeroitic_HieroglyphsMiaoSharadaSora_SompengSundanese_SupTakriBassa_VahCaucasian_AlbanianCoptic_Epact_NumbersDiacriticals_ExtDuployanElbasanGeometric_Shapes_ExtGranthaKhojkiKhudawadiLatin_Ext_ELinear_AMahajaniManichaeanMende_KikakuiModiMroMyanmar_Ext_BNabataeanOld_North_ArabianOld_PermicOrnamental_DingbatsPahawh_HmongPalmyrenePau_Cin_HauPsalter_PahlaviShorthand_Format_ControlsSiddhamSinhala_Archaic_NumbersSup_Arrows_CTirhutaWarang_CitiAhomAnatolian_HieroglyphsCherokee_SupCJK_Ext_EEarly_Dynastic_CuneiformHatranMultaniOld_HungarianSup_Symbols_And_PictographsSutton_SignWritingAdlamBhaiksukiCyrillic_Ext_CGlagolitic_SupIdeographic_SymbolsMarchenMongolian_SupNewaOsageTangutTangut_ComponentsCJK_Ext_FKana_Ext_AMasaram_GondiNushuSoyomboSyriac_SupZanabazar_SquareChess_SymbolsDograGeorgian_ExtGunjala_GondiHanifi_RohingyaIndic_Siyaq_NumbersMakasarMayan_NumeralsMedefaidrinOld_SogdianSogdianEgyptian_Hieroglyph_Format_ControlsElymaicNandinagariNyiakeng_Puachue_HmongOttoman_Siyaq_NumbersSmall_Kana_ExtSymbols_And_Pictographs_Ext_ATamil_SupWanchoChorasmianCJK_Ext_GDives_AkuruKhitan_Small_ScriptLisu_SupSymbols_For_Legacy_ComputingTangut_SupYezidiArabic_Ext_BCypro_MinoanEthiopic_Ext_BKana_Ext_BLatin_Ext_FLatin_Ext_GOld_UyghurTangsaTotoUCAS_Ext_AVithkuqiZnamenny_MusicArabic_Ext_CCJK_Ext_HCyrillic_Ext_DDevanagari_Ext_AKaktovik_NumeralsKawiNag_MundariCJK_Ext_IEgyptian_Hieroglyphs_Ext_AGarayGurung_KhemaKirat_RaiMyanmar_Ext_COl_OnalSunuwarSymbols_For_Legacy_Computing_SupTodhriTulu_TigalariBeria_ErfeCJK_Ext_JMisc_Symbols_SupSharada_SupSideticTai_YoTangut_Components_SupTolong_SikiArchaic_Cuneiform_NumeralsBengali_SupJurchenJurchen_RadicalsMisc_Arrows_ExtMusic_SupSeal") } };
+        }
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DataProvider<icu::properties::provider::PropertyNameShortBlockV1> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::properties::provider::PropertyNameShortBlockV1>, icu_provider::DataError> {
+                if req.id.locale.is_unknown() {
+                    Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(Self::SINGLETON_PROPERTY_NAME_SHORT_BLOCK_V1), metadata: icu_provider::DataResponseMetadata::default() })
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::properties::provider::PropertyNameShortBlockV1 as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_property_name_short_block_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyNameShortBlockV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {
+        __impl_property_name_short_block_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DryDataProvider<icu::properties::provider::PropertyNameShortBlockV1> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_unknown() {
+                    Ok(icu_provider::DataResponseMetadata::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::properties::provider::PropertyNameShortBlockV1 as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , DRY , ITER) => {
+        __impl_property_name_short_block_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DryDataProvider<icu::properties::provider::PropertyNameShortBlockV1> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_unknown() {
+                    Ok(icu_provider::DataResponseMetadata::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::properties::provider::PropertyNameShortBlockV1 as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyNameShortBlockV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+}
+#[doc(inline)]
+pub use __impl_property_name_short_block_v1 as impl_property_name_short_block_v1;

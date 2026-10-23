@@ -5,12 +5,12 @@
 [package]
 name = "fixed_decimal"
 description = "An API for representing numbers in a human-readable form"
-version = "0.7.2"
+version = "0.7.3"
 categories.workspace = true
 keywords = ["decimals", "numbers"]
 
 authors.workspace = true
-edition.workspace = true
+edition = "2021"
 include.workspace = true
 license.workspace = true
 repository.workspace = true

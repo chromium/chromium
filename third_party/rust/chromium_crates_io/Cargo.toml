@@ -76,7 +76,7 @@ features = [
 ]
 
 [dependencies.icu_capi]
-version = "2.2"
+version = "2.4"
 default-features = false
 features = [
     "compiled_data",
@@ -88,36 +88,36 @@ features = [
 ]
 
 [dependencies.icu_casemap]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_experimental]
-version = "0.5.0"
+version = "0.7.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_locale]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_locale_core]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 
 [dependencies.icu_normalizer]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_properties]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_provider]
-version = "2.2.0"
+version = "2.4.0"
 default-features = false
 
 [dependencies.image]

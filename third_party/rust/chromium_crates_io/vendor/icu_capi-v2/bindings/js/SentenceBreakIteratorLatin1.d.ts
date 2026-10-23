@@ -4,7 +4,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `SentenceBreakIterator`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.SentenceBreakIterator.html) for more information.
+ * See the [Rust documentation for `SentenceBreakIterator`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.SentenceBreakIterator.html) for more information.
  */
 export class SentenceBreakIteratorLatin1 {
     /** @internal */
@@ -17,7 +17,7 @@ export class SentenceBreakIteratorLatin1 {
      * Finds the next breakpoint. Returns -1 if at the end of the string or if the index is
      * out of range of a 32-bit signed integer.
      *
-     * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.SentenceBreakIterator.html#method.next) for more information.
+     * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.SentenceBreakIterator.html#method.next) for more information.
      */
     next(): number;
 }

@@ -10,7 +10,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * A locale canonicalizer.
  *
- * See the [Rust documentation for `LocaleCanonicalizer`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleCanonicalizer.html) for more information.
+ * See the [Rust documentation for `LocaleCanonicalizer`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleCanonicalizer.html) for more information.
  */
 export class LocaleCanonicalizer {
     /** @internal */
@@ -20,33 +20,33 @@ export class LocaleCanonicalizer {
     /**
      * Create a new {@link LocaleCanonicalizer}.
      *
-     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_common) for more information.
+     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_common) for more information.
      */
     static createCommonWithProvider(provider: DataProvider): LocaleCanonicalizer;
 
     /**
      * Create a new {@link LocaleCanonicalizer} with extended data using compiled data.
      *
-     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_extended) for more information.
+     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_extended) for more information.
      */
     static createExtended(): LocaleCanonicalizer;
 
     /**
      * Create a new {@link LocaleCanonicalizer} with extended data.
      *
-     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_extended) for more information.
+     * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_extended) for more information.
      */
     static createExtendedWithProvider(provider: DataProvider): LocaleCanonicalizer;
 
     /**
-     * See the [Rust documentation for `canonicalize`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleCanonicalizer.html#method.canonicalize) for more information.
+     * See the [Rust documentation for `canonicalize`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleCanonicalizer.html#method.canonicalize) for more information.
      */
     canonicalize(locale: Locale): TransformResult;
 
     /**
      * Create a new {@link LocaleCanonicalizer} using compiled data.
      *
-     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_common) for more information.
+     * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleCanonicalizer.html#method.new_common) for more information.
      */
     constructor();
 }

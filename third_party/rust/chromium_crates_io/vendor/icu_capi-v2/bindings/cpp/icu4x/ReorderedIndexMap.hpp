@@ -32,7 +32,7 @@ namespace capi {
 } // namespace capi
 } // namespace
 
-inline icu4x::diplomat::span<const size_t> icu4x::ReorderedIndexMap::as_slice() const {
+inline icu4x::diplomat::span<const size_t> icu4x::ReorderedIndexMap::as_slice() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_ReorderedIndexMap_as_slice_mv1(this->AsFFI());
     return icu4x::diplomat::span<const size_t>(result.data, result.len);
 }

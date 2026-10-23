@@ -27,9 +27,9 @@ namespace capi {
 
 namespace icu4x {
 /**
- * 🚧 This API is unstable and may experience breaking changes outside major releases.
+ * See the [Rust documentation for `Style`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/enum.Style.html) for more information.
  *
- * See the [Rust documentation for `Style`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/enum.Style.html) for more information.
+ * 🚧 This API is unstable and may experience breaking changes outside major releases.
  */
 class DisplayNamesStyle {
 public:

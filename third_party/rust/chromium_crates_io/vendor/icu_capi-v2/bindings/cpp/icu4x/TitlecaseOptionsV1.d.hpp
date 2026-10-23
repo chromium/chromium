@@ -34,14 +34,14 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `TitlecaseOptions`](https://docs.rs/icu/2.2.0/icu/casemap/options/struct.TitlecaseOptions.html) for more information.
+ * See the [Rust documentation for `TitlecaseOptions`](https://docs.rs/icu/2.4.0/icu/casemap/options/struct.TitlecaseOptions.html) for more information.
  */
 struct TitlecaseOptionsV1 {
     std::optional<icu4x::LeadingAdjustment> leading_adjustment;
     std::optional<icu4x::TrailingCase> trailing_case;
 
   /**
-   * See the [Rust documentation for `default`](https://docs.rs/icu/2.2.0/icu/casemap/options/struct.TitlecaseOptions.html#method.default) for more information.
+   * See the [Rust documentation for `default`](https://docs.rs/icu/2.4.0/icu/casemap/options/struct.TitlecaseOptions.html#method.default) for more information.
    */
   inline static icu4x::TitlecaseOptionsV1 default_options();
 

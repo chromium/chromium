@@ -13,8 +13,12 @@ use icu_provider::prelude::*;
 /// This is an abstract forking provider that must be provided with a type implementing the
 /// [`ForkByErrorPredicate`] trait.
 ///
-/// [`ForkByErrorProvider`] does not support forking between [`DataProvider`]s. However, it
-/// supports forking between [`BufferProvider`], and [`DynamicDataProvider`].
+/// This provider supports any data provider trait as long as it is implemented by both
+/// child providers.
+///
+/// Some traits like [`BufferProvider`] work on all markers. However, [`DataProvider<M>`]
+/// is specific to a single marker type `M`. For this reason, [`DataProvider<M>`] is only
+/// implemented if both child providers implement it for the same `M`.
 #[derive(Debug, PartialEq, Eq)]
 pub struct ForkByErrorProvider<P0, P1, F>(P0, P1, F);
 
@@ -163,8 +167,12 @@ where
 /// This is an abstract forking provider that must be provided with a type implementing the
 /// [`ForkByErrorPredicate`] trait.
 ///
-/// [`MultiForkByErrorProvider`] does not support forking between [`DataProvider`]s. However, it
-/// supports forking between [`BufferProvider`], and [`DynamicDataProvider`].
+/// This provider supports any data provider trait as long as it is implemented by all
+/// child providers.
+///
+/// Some traits like [`BufferProvider`] work on all markers. However, [`DataProvider<M>`]
+/// is specific to a single marker type `M`. For this reason, [`DataProvider<M>`] is only
+/// implemented if all child providers implement it for the same `M`.
 #[derive(Debug)]
 pub struct MultiForkByErrorProvider<P, F> {
     providers: Vec<P>,

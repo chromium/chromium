@@ -66,7 +66,7 @@ impl ForkByErrorPredicate for MarkerNotFoundPredicate {
 /// use icu_provider_adapters::fork::predicates::IdentifierNotFoundPredicate;
 /// use icu_provider::prelude::*;
 /// use icu_provider::hello_world::*;
-/// use icu_locale::langid;
+/// use icu_locale::data_locale;
 ///
 /// struct SingleLocaleProvider(DataLocale);
 /// impl DataProvider<HelloWorldV1> for SingleLocaleProvider {
@@ -78,8 +78,8 @@ impl ForkByErrorPredicate for MarkerNotFoundPredicate {
 ///     }
 /// }
 ///
-/// let provider_de = SingleLocaleProvider(langid!("de").into());
-/// let provider_ro = SingleLocaleProvider(langid!("ro").into());
+/// let provider_de = SingleLocaleProvider(data_locale!("de"));
+/// let provider_ro = SingleLocaleProvider(data_locale!("ro"));
 ///
 /// // Create the forking provider:
 /// let provider = ForkByErrorProvider::new_with_predicate(
@@ -92,7 +92,7 @@ impl ForkByErrorPredicate for MarkerNotFoundPredicate {
 ///
 /// let german_hello_world: DataResponse<HelloWorldV1> = provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("de").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("de")),
 ///         ..Default::default()
 ///     })
 ///     .expect("Loading should succeed");
@@ -101,7 +101,7 @@ impl ForkByErrorPredicate for MarkerNotFoundPredicate {
 ///
 /// let romanian_hello_world: DataResponse<HelloWorldV1> = provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("ro").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("ro")),
 ///         ..Default::default()
 ///     })
 ///     .expect("Loading should succeed");
@@ -113,7 +113,7 @@ impl ForkByErrorPredicate for MarkerNotFoundPredicate {
 /// DataProvider::<HelloWorldV1>::load(
 ///     &provider,
 ///     DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("en").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("en")),
 ///         ..Default::default()
 ///     }
 /// )

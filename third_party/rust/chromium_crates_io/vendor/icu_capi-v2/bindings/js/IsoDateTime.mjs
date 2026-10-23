@@ -10,7 +10,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 /**
  * An ICU4X `DateTime` object capable of containing a ISO-8601 date and time.
  *
- * See the [Rust documentation for `DateTime`](https://docs.rs/icu/2.2.0/icu/time/struct.DateTime.html) for more information.
+ * See the [Rust documentation for `DateTime`](https://docs.rs/icu/2.4.0/icu/time/struct.DateTime.html) for more information.
  */
 export class IsoDateTime {
     #date;
@@ -84,8 +84,8 @@ export class IsoDateTime {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#date.ffiValue, Uint32Array);
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#time.ffiValue, Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#date instanceof IsoDate ? this.#date.ffiValue : typeError('this.#date', 'IsoDate'), Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 4, this.#time instanceof Time ? this.#time.ffiValue : typeError('this.#time', 'Time'), Uint32Array);
     }
 
     // This struct contains borrowed fields, so this takes in a list of
@@ -110,7 +110,7 @@ export class IsoDateTime {
     /**
      * Creates a new {@link IsoDateTime} from an IXDTF string.
      *
-     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.DateTime.html#method.try_from_str) for more information.
+     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.DateTime.html#method.try_from_str) for more information.
      */
     static fromString(v) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();

@@ -23,14 +23,14 @@ impl<D, F> FilterDataProvider<D, F>
 where
     F: Fn(DataIdentifierBorrowed) -> bool + Sync,
 {
-    /// Filter out data requests with certain langids according to the predicate function. The
-    /// predicate should return `true` to allow a langid and `false` to reject a langid.
+    /// Filter out data requests with certain locales according to the predicate function. The
+    /// predicate should return `true` to allow a locale and `false` to reject a locale.
     ///
     /// # Examples
     ///
     /// ```
     /// use icu_locale::LanguageIdentifier;
-    /// use icu_locale::{langid, subtags::language};
+    /// use icu_locale::{data_locale, subtags::language};
     /// use icu_provider::hello_world::*;
     /// use icu_provider::prelude::*;
     /// use icu_provider_adapters::filter::FilterDataProvider;
@@ -40,7 +40,7 @@ where
     ///         .with_filter(|id| id.locale.language != language!("en"));
     ///
     /// // German requests should succeed:
-    /// let de = DataIdentifierCow::from_locale(langid!("de").into());
+    /// let de = DataIdentifierCow::from_locale(data_locale!("de"));
     /// let response: Result<DataResponse<HelloWorldV1>, _> =
     ///     provider.load(DataRequest {
     ///         id: de.as_borrowed(),
@@ -49,7 +49,7 @@ where
     /// assert!(response.is_ok());
     ///
     /// // English requests should fail:
-    /// let en = DataIdentifierCow::from_locale(langid!("en-US").into());
+    /// let en = DataIdentifierCow::from_locale(data_locale!("en-US"));
     /// let response: Result<DataResponse<HelloWorldV1>, _> =
     ///     provider.load(DataRequest {
     ///         id: en.as_borrowed(),
@@ -69,10 +69,14 @@ where
     /// let available_ids = provider
     ///     .iter_ids()
     ///     .expect("Should successfully make an iterator of supported locales");
-    /// assert!(available_ids
-    ///     .contains(&DataIdentifierCow::from_locale(langid!("de").into())));
-    /// assert!(!available_ids
-    ///     .contains(&DataIdentifierCow::from_locale(langid!("en").into())));
+    /// assert!(
+    ///     available_ids
+    ///         .contains(&DataIdentifierCow::from_locale(data_locale!("de")))
+    /// );
+    /// assert!(
+    ///     !available_ids
+    ///         .contains(&DataIdentifierCow::from_locale(data_locale!("en")))
+    /// );
     /// ```
     #[expect(clippy::type_complexity)]
     pub fn with_filter<'a>(

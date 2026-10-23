@@ -14,7 +14,7 @@ const CanonicalDecomposition_box_destroy_registry = new FinalizationRegistry((pt
  *
  * Callers should generally use `DecomposingNormalizer` unless they specifically need raw composition operations
  *
- * See the [Rust documentation for `CanonicalDecomposition`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalDecomposition.html) for more information.
+ * See the [Rust documentation for `CanonicalDecomposition`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalDecomposition.html) for more information.
  */
 export class CanonicalDecomposition {
     // Internal ptr reference:
@@ -48,7 +48,7 @@ export class CanonicalDecomposition {
     /**
      * Construct a new `CanonicalDecomposition` instance for NFC using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalDecomposition.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalDecomposition.html#method.new) for more information.
      */
     #defaultConstructor() {
 
@@ -66,13 +66,13 @@ export class CanonicalDecomposition {
     /**
      * Construct a new `CanonicalDecomposition` instance for NFC using a particular data source.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalDecomposition.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalDecomposition.html#method.new) for more information.
      */
     static createWithProvider(provider) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_CanonicalDecomposition_create_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue);
+        const result = wasm.icu4x_CanonicalDecomposition_create_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -91,7 +91,7 @@ export class CanonicalDecomposition {
     /**
      * Performs non-recursive canonical decomposition (including for Hangul).
      *
-     * See the [Rust documentation for `decompose`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalDecompositionBorrowed.html#method.decompose) for more information.
+     * See the [Rust documentation for `decompose`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalDecompositionBorrowed.html#method.decompose) for more information.
      */
     decompose(c) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 8, 4, false);
@@ -112,7 +112,7 @@ export class CanonicalDecomposition {
     /**
      * Construct a new `CanonicalDecomposition` instance for NFC using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalDecomposition.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalDecomposition.html#method.new) for more information.
      */
     constructor() {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

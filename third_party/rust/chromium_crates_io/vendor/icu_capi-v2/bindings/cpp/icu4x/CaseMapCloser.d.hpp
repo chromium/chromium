@@ -30,7 +30,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `CaseMapCloser`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapCloser.html) for more information.
+ * See the [Rust documentation for `CaseMapCloser`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapCloser.html) for more information.
  */
 class CaseMapCloser {
 public:
@@ -38,14 +38,14 @@ public:
   /**
    * Construct a new `CaseMapCloser` instance using compiled data.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapCloser.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapCloser.html#method.new) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::CaseMapCloser>, icu4x::DataError> create();
 
   /**
    * Construct a new `CaseMapCloser` instance using a particular data source.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapCloser.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapCloser.html#method.new) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::CaseMapCloser>, icu4x::DataError> create_with_provider(const icu4x::DataProvider& provider);
 
@@ -53,7 +53,7 @@ public:
    * Adds all simple case mappings and the full case folding for `c` to `builder`.
    * Also adds special case closure mappings.
    *
-   * See the [Rust documentation for `add_case_closure_to`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapCloserBorrowed.html#method.add_case_closure_to) for more information.
+   * See the [Rust documentation for `add_case_closure_to`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapCloserBorrowed.html#method.add_case_closure_to) for more information.
    */
   inline void add_case_closure_to(char32_t c, icu4x::CodePointSetBuilder& builder) const;
 
@@ -63,7 +63,7 @@ public:
    *
    * Returns true if the string was found
    *
-   * See the [Rust documentation for `add_string_case_closure_to`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapCloserBorrowed.html#method.add_string_case_closure_to) for more information.
+   * See the [Rust documentation for `add_string_case_closure_to`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapCloserBorrowed.html#method.add_string_case_closure_to) for more information.
    */
   inline bool add_string_case_closure_to(std::string_view s, icu4x::CodePointSetBuilder& builder) const;
 

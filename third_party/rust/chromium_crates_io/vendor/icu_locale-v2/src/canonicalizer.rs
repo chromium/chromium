@@ -4,19 +4,19 @@
 
 //! The collection of code for locale canonicalization.
 
+use crate::LocaleExpander;
+use crate::TransformResult;
 use crate::provider::*;
 use alloc::vec::Vec;
 use core::cmp::Ordering;
-
-use crate::LocaleExpander;
-use crate::TransformResult;
 use icu_locale_core::extensions::Extensions;
 use icu_locale_core::subtags::{Language, Region, Script};
 use icu_locale_core::{
-    extensions::unicode::key,
-    subtags::{language, Variant, Variants},
     LanguageIdentifier, Locale,
+    extensions::unicode::key,
+    subtags::{Variant, Variants, language},
 };
+use icu_locale_fallback::provider::LocaleLikelySubtagsLanguageV1;
 use icu_provider::prelude::*;
 use tinystr::TinyAsciiStr;
 
@@ -176,18 +176,18 @@ fn uts35_check_language_rules(
             alias_data.get().language_len3.get(&lang.to_unvalidated())
         };
 
-        if let Some(replacement) = replacement {
-            if let Ok(new_langid) = replacement.parse() {
-                uts35_replacement::<core::iter::Empty<&str>>(
-                    langid,
-                    true,
-                    false,
-                    false,
-                    None,
-                    &new_langid,
-                );
-                return TransformResult::Modified;
-            }
+        if let Some(replacement) = replacement
+            && let Ok(new_langid) = replacement.parse()
+        {
+            uts35_replacement::<core::iter::Empty<&str>>(
+                langid,
+                true,
+                false,
+                false,
+                None,
+                &new_langid,
+            );
+            return TransformResult::Modified;
         }
     }
 
@@ -341,26 +341,24 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
 
             if !locale.id.language.is_unknown() {
                 // If the region is specified, check sgn-region rules first
-                if let Some(region) = locale.id.region {
-                    if locale.id.language == language!("sgn") {
-                        if let Some(&sgn_lang) = self
-                            .aliases
-                            .get()
-                            .sgn_region
-                            .get(&region.to_tinystr().to_unvalidated())
-                        {
-                            uts35_replacement::<core::iter::Empty<&str>>(
-                                &mut locale.id,
-                                true,
-                                false,
-                                true,
-                                None,
-                                &sgn_lang.into(),
-                            );
-                            result = TransformResult::Modified;
-                            continue;
-                        }
-                    }
+                if let Some(region) = locale.id.region
+                    && locale.id.language == language!("sgn")
+                    && let Some(&sgn_lang) = self
+                        .aliases
+                        .get()
+                        .sgn_region
+                        .get(&region.to_tinystr().to_unvalidated())
+                {
+                    uts35_replacement::<core::iter::Empty<&str>>(
+                        &mut locale.id,
+                        true,
+                        false,
+                        true,
+                        None,
+                        &sgn_lang.into(),
+                    );
+                    result = TransformResult::Modified;
+                    continue;
                 }
 
                 if uts35_check_language_rules(&mut locale.id, &self.aliases)
@@ -371,17 +369,16 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
                 }
             }
 
-            if let Some(script) = locale.id.script {
-                if let Some(&replacement) = self
+            if let Some(script) = locale.id.script
+                && let Some(&replacement) = self
                     .aliases
                     .get()
                     .script
                     .get(&script.to_tinystr().to_unvalidated())
-                {
-                    locale.id.script = Some(replacement);
-                    result = TransformResult::Modified;
-                    continue;
-                }
+            {
+                locale.id.script = Some(replacement);
+                result = TransformResult::Modified;
+                continue;
             }
 
             if let Some(region) = locale.id.region {
@@ -483,20 +480,17 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
 
         if !extensions.unicode.keywords.is_empty() {
             for key in [key!("rg"), key!("sd")] {
-                if let Some(value) = extensions.unicode.keywords.get_mut(&key) {
-                    if let Some(only_value) = value.as_single_subtag() {
-                        if let Some(modified_value) = self
-                            .aliases
-                            .get()
-                            .subdivision
-                            .get(&only_value.to_tinystr().resize().to_unvalidated())
-                        {
-                            if let Ok(modified_value) = modified_value.parse() {
-                                *value = modified_value;
-                                *result = TransformResult::Modified;
-                            }
-                        }
-                    }
+                if let Some(value) = extensions.unicode.keywords.get_mut(&key)
+                    && let Some(only_value) = value.as_single_subtag()
+                    && let Some(modified_value) = self
+                        .aliases
+                        .get()
+                        .subdivision
+                        .get(&only_value.to_tinystr().resize().to_unvalidated())
+                    && let Ok(modified_value) = modified_value.parse()
+                {
+                    *value = modified_value;
+                    *result = TransformResult::Modified;
                 }
             }
         }
@@ -513,18 +507,18 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
         {
             let raw_variants = raw_variants.split('-');
             // if is_iter_sorted(raw_variants.clone()) { // can we sort at construction?
-            if uts35_rule_matches(lid, lang, None, None, raw_variants.clone()) {
-                if let Ok(to) = raw_to.parse() {
-                    uts35_replacement(
-                        lid,
-                        !lang.is_unknown(),
-                        false,
-                        false,
-                        Some(raw_variants),
-                        &to,
-                    );
-                    return true;
-                }
+            if uts35_rule_matches(lid, lang, None, None, raw_variants.clone())
+                && let Ok(to) = raw_to.parse()
+            {
+                uts35_replacement(
+                    lid,
+                    !lang.is_unknown(),
+                    false,
+                    false,
+                    Some(raw_variants),
+                    &to,
+                );
+                return true;
             }
         }
         false
@@ -538,26 +532,25 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
             .iter()
             .map(zerofrom::ZeroFrom::zero_from)
         {
-            if let Ok(from) = raw_from.parse::<LanguageIdentifier>() {
-                if uts35_rule_matches(
+            if let Ok(from) = raw_from.parse::<LanguageIdentifier>()
+                && uts35_rule_matches(
                     lid,
                     from.language,
                     from.script,
                     from.region,
                     from.variants.iter().map(Variant::as_str),
-                ) {
-                    if let Ok(to) = raw_to.parse() {
-                        uts35_replacement(
-                            lid,
-                            !from.language.is_unknown(),
-                            from.script.is_some(),
-                            from.region.is_some(),
-                            Some(from.variants.iter().map(Variant::as_str)),
-                            &to,
-                        );
-                        return true;
-                    }
-                }
+                )
+                && let Ok(to) = raw_to.parse()
+            {
+                uts35_replacement(
+                    lid,
+                    !from.language.is_unknown(),
+                    from.script.is_some(),
+                    from.region.is_some(),
+                    Some(from.variants.iter().map(Variant::as_str)),
+                    &to,
+                );
+                return true;
             }
         }
         false

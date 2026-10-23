@@ -7,8 +7,8 @@ use core::{
     ops::{Bound::*, RangeBounds},
 };
 use potential_utf::PotentialCodePoint;
-use zerovec::ule::AsULE;
 use zerovec::ZeroVec;
+use zerovec::ule::AsULE;
 
 /// Returns whether the vector is sorted ascending non inclusive, of even length,
 /// and within the bounds of `0x0 -> 0x10FFFF + 1` inclusive.
@@ -16,7 +16,7 @@ use zerovec::ZeroVec;
 #[expect(clippy::unwrap_used)] // by is_empty check
 pub fn is_valid_zv(inv_list_zv: &ZeroVec<'_, PotentialCodePoint>) -> bool {
     inv_list_zv.is_empty()
-        || (inv_list_zv.len() % 2 == 0
+        || (inv_list_zv.len().is_multiple_of(2)
             && inv_list_zv.as_ule_slice().windows(2).all(|chunk| {
                 <PotentialCodePoint as AsULE>::from_unaligned(chunk[0])
                     < <PotentialCodePoint as AsULE>::from_unaligned(chunk[1])
@@ -44,8 +44,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::{deconstruct_range, is_valid_zv, PotentialCodePoint};
-    use core::char;
+    use super::{PotentialCodePoint, deconstruct_range, is_valid_zv};
     use zerovec::ZeroVec;
 
     fn make_zv(slice: &[u32]) -> ZeroVec<'_, PotentialCodePoint> {

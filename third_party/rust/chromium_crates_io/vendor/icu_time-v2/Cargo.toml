@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `icu_time-2.2.0` crate.
+# `icu_time-2.4.0` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "icu_time"
-version = "2.2.0"
+version = "2.4.0"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -36,26 +36,29 @@ default_features = false
 version = "^0.2.3"
 default_features = false
 [dependencies.icu_calendar]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_locale_core]
-version = "^2.2.0"
+version = "^2.4.0"
 default_features = false
 [dependencies.icu_provider]
-version = "^2.2.0"
+version = "^2.4.0"
 default_features = false
 [dependencies.icu_time_data]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.ixdtf]
-version = "^0.6.5"
+version = "^0.6.7"
 default_features = false
 [dependencies.serde]
 version = "^1.0.220"
 default_features = false
+[dependencies.writeable]
+version = "^0.6.4"
+default_features = false
 [dependencies.zerotrie]
-version = "^0.2.4"
+version = "^0.2.5"
 default_features = false
 [dependencies.zerovec]
-version = "^0.11.6"
+version = "^0.11.9"
 default_features = false

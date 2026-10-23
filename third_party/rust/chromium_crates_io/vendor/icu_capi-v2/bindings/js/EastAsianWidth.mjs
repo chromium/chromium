@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `EastAsianWidth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html) for more information.
+ * See the [Rust documentation for `EastAsianWidth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html) for more information.
  */
 export class EastAsianWidth {
     #value = undefined;
@@ -71,33 +71,33 @@ export class EastAsianWidth {
     ];
 
     /**
-     * See the [Rust documentation for `Neutral`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Neutral) for more information.
+     * See the [Rust documentation for `Neutral`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Neutral) for more information.
      */
     static Neutral = EastAsianWidth.#objectValues[0];
     /**
-     * See the [Rust documentation for `Ambiguous`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Ambiguous) for more information.
+     * See the [Rust documentation for `Ambiguous`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Ambiguous) for more information.
      */
     static Ambiguous = EastAsianWidth.#objectValues[1];
     /**
-     * See the [Rust documentation for `Halfwidth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Halfwidth) for more information.
+     * See the [Rust documentation for `Halfwidth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Halfwidth) for more information.
      */
     static Halfwidth = EastAsianWidth.#objectValues[2];
     /**
-     * See the [Rust documentation for `Fullwidth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Fullwidth) for more information.
+     * See the [Rust documentation for `Fullwidth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Fullwidth) for more information.
      */
     static Fullwidth = EastAsianWidth.#objectValues[3];
     /**
-     * See the [Rust documentation for `Narrow`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Narrow) for more information.
+     * See the [Rust documentation for `Narrow`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Narrow) for more information.
      */
     static Narrow = EastAsianWidth.#objectValues[4];
     /**
-     * See the [Rust documentation for `Wide`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Wide) for more information.
+     * See the [Rust documentation for `Wide`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#associatedconstant.Wide) for more information.
      */
     static Wide = EastAsianWidth.#objectValues[5];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -115,7 +115,7 @@ export class EastAsianWidth {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -139,7 +139,7 @@ export class EastAsianWidth {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -163,7 +163,7 @@ export class EastAsianWidth {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -181,7 +181,7 @@ export class EastAsianWidth {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.EastAsianWidth.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.EastAsianWidth.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -202,6 +202,11 @@ export class EastAsianWidth {
         }
     }
 
+    /**
+     * Creates a `EastAsianWidth` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

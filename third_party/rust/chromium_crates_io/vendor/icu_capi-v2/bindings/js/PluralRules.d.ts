@@ -10,7 +10,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `PluralRules`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html) for more information.
+ * See the [Rust documentation for `PluralRules`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html) for more information.
  */
 export class PluralRules {
     /** @internal */
@@ -22,42 +22,42 @@ export class PluralRules {
     /**
      * Construct an {@link PluralRules} for the given locale, for cardinal numbers, using compiled data.
      *
-     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.try_new_cardinal) for more information.
+     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.try_new_cardinal) for more information.
      */
     static createCardinal(locale: Locale): PluralRules;
 
     /**
      * Construct an {@link PluralRules} for the given locale, for cardinal numbers, using a particular data source.
      *
-     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.try_new_cardinal) for more information.
+     * See the [Rust documentation for `try_new_cardinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.try_new_cardinal) for more information.
      */
     static createCardinalWithProvider(provider: DataProvider, locale: Locale): PluralRules;
 
     /**
      * Construct an {@link PluralRules} for the given locale, for ordinal numbers, using compiled data.
      *
-     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.try_new_ordinal) for more information.
+     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.try_new_ordinal) for more information.
      */
     static createOrdinal(locale: Locale): PluralRules;
 
     /**
      * Construct an {@link PluralRules} for the given locale, for ordinal numbers, using a particular data source.
      *
-     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.try_new_ordinal) for more information.
+     * See the [Rust documentation for `try_new_ordinal`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.try_new_ordinal) for more information.
      */
     static createOrdinalWithProvider(provider: DataProvider, locale: Locale): PluralRules;
 
     /**
      * Get the category for a given number represented as operands
      *
-     * See the [Rust documentation for `category_for`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.category_for) for more information.
+     * See the [Rust documentation for `category_for`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.category_for) for more information.
      */
     categoryFor(op: PluralOperands): PluralCategory;
 
     /**
      * Get all of the categories needed in the current locale
      *
-     * See the [Rust documentation for `categories`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
+     * See the [Rust documentation for `categories`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
      */
     get categories(): PluralCategories;
 }

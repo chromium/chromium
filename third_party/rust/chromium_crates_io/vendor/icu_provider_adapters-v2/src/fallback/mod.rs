@@ -5,10 +5,10 @@
 //! A data provider wrapper that performs locale fallback.
 
 #[doc(no_inline)]
-pub use icu_locale::LocaleFallbacker;
-use icu_provider::prelude::*;
+pub use icu_locale_fallback::LocaleFallbacker;
 use icu_provider::DryDataProvider;
 use icu_provider::DynamicDryDataProvider;
+use icu_provider::prelude::*;
 
 /// A data provider wrapper that performs locale fallback. This enables arbitrary locales to be
 /// handled at runtime.
@@ -16,14 +16,14 @@ use icu_provider::DynamicDryDataProvider;
 /// # Examples
 ///
 /// ```
-/// use icu_locale::langid;
+/// use icu_locale::data_locale;
 /// use icu_provider::hello_world::*;
 /// use icu_provider::prelude::*;
 /// use icu_provider_adapters::fallback::LocaleFallbackProvider;
 ///
 /// let provider = HelloWorldProvider;
 ///
-/// let id = DataIdentifierCow::from_locale(langid!("ja-JP").into());
+/// let id = DataIdentifierCow::from_locale(data_locale!("ja-JP"));
 ///
 /// // The provider does not have data for "ja-JP":
 /// DataProvider::<HelloWorldV1>::load(
@@ -38,7 +38,7 @@ use icu_provider::DynamicDryDataProvider;
 /// // But if we wrap the provider in a fallback provider...
 /// let provider = LocaleFallbackProvider::new(
 ///     provider,
-///     icu_locale::LocaleFallbacker::new().static_to_owned(),
+///     icu_locale::fallback::LocaleFallbacker::new().static_to_owned(),
 /// );
 ///
 /// // ...then we can load "ja-JP" based on "ja" data
@@ -51,7 +51,7 @@ use icu_provider::DynamicDryDataProvider;
 /// )
 /// .expect("successful with vertical fallback");
 ///
-/// assert_eq!(response.metadata.locale.unwrap(), langid!("ja").into(),);
+/// assert_eq!(response.metadata.locale.unwrap(), data_locale!("ja"),);
 /// assert_eq!(response.payload.get().message, "こんにちは世界",);
 /// ```
 #[derive(Clone, Debug)]
@@ -69,15 +69,15 @@ impl<P> LocaleFallbackProvider<P> {
     /// # Examples
     ///
     /// ```
-    /// use icu_locale::langid;
-    /// use icu_locale::LocaleFallbacker;
+    /// use icu_locale::data_locale;
+    /// use icu_locale::fallback::LocaleFallbacker;
     /// use icu_provider::hello_world::*;
     /// use icu_provider::prelude::*;
     /// use icu_provider_adapters::fallback::LocaleFallbackProvider;
     ///
     /// let provider = HelloWorldProvider;
     ///
-    /// let id = DataIdentifierCow::from_locale(langid!("de-CH").into());
+    /// let id = DataIdentifierCow::from_locale(data_locale!("de-CH"));
     ///
     /// // There is no "de-CH" data in the `HelloWorldProvider`
     /// DataProvider::<HelloWorldV1>::load(

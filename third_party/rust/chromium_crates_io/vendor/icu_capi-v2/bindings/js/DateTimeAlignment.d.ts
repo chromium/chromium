@@ -4,7 +4,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `Alignment`](https://docs.rs/icu/2.2.0/icu/datetime/options/enum.Alignment.html) for more information.
+ * See the [Rust documentation for `Alignment`](https://docs.rs/icu/2.4.0/icu/datetime/options/enum.Alignment.html) for more information.
  */
 export class DateTimeAlignment {
 

@@ -1,0 +1,12 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo::takes_slice
+> &mut [f32] not supported in this backend. Try #[diplomat::cfg(supports=mutable_slices)] to restrict this API only to backends which support mutable slices.
+Diplomat error: Lowering error in Foo::takes_slice
+> &mut [Foo] not supported in this backend. Try #[diplomat::cfg(supports=mutable_slices)] to restrict this API only to backends which support mutable slices.
+Diplomat error: Lowering error in Foo::takes_slice
+> &mut [f32] not supported in this backend. Try #[diplomat::cfg(supports=mutable_slices)] to restrict this API only to backends which support mutable slices.
+Diplomat error: Lowering error in Foo::returns_abi_slice
+> &mut [Foo] not supported in this backend. Try #[diplomat::cfg(supports=mutable_slices)] to restrict this API only to backends which support mutable slices.

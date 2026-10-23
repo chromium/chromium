@@ -2,8 +2,8 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use regex_automata::dfa::sparse::DFA;
 use regex_automata::dfa::Automaton;
+use regex_automata::dfa::sparse::DFA;
 use regex_automata::util::{primitives::StateID, start::Config as StartConfig};
 use writeable::Writeable;
 

@@ -1,0 +1,70 @@
+// @generated
+/// Implement `DataProvider<CurrencyPatternsNoCurrencyV1>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 950B for the lookup data structure (164 data identifiers)
+/// * 336B[^1] for the actual data (7 unique structs)
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+///
+/// This macro requires the following crates:
+/// * `icu`
+/// * `icu_provider`
+/// * `icu_provider/baked`
+/// * `zerovec`
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_currency_patterns_no_currency_v1 {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.88"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.88"]
+        impl $provider {
+            const DATA_CURRENCY_PATTERNS_NO_CURRENCY_V1: icu_provider::baked::zerotrie::Data<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1> = {
+                const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1wabcdefghijklmnoprstuxyz\0\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x02\x03\x03\x03\xED\x1F=E\\\x8B\x9F\xB2\xB8\xBA\x07\x13BYa{\x8A\xBE\xDF\x08\x101\xC5fkmrs\x01\x02\x03\xDC\x80\x80\x80\x81\xC2\x1E-\x05arab\x82\xCEBDEIJKLMOPQSTY\x08\x10\"4<NV^fnv\xA3\xABH\x82\x1Elatn\x81J\x82\x1Elatn\x81\xC2GR\x07\x82\x1Elatn\x81\x82\x1Elatn\x81\xC2LQ\x07\x82\x1Elatn\x81\x82\x1Elatn\x81O\x82\x1Elatn\x81\xC2MW\x07\x82\x1Elatn\x81\x82\x1Elatn\x81B\x82\x1Elatn\x81R\x82\x1Elatn\x81M\x82\x1Elatn\x81S\x82\x1Elatn\x81A\x82\x1Elatn\x81\xC5ADOSY\x07\x0E\x15\x1C\x82\x1Elatn\x81\x82\x1Elatn\x81\x82\x1Elatn\x81\x82\x1Elatn\x81\x82\x1Elatn\x81D\x82\x1Elatn\x81E\x82\x1Elatn\x81\x80\x1Elatn\x80\xC4ghnr\x08\x0F!\x80c\x1Elatn\x82o\x1Elatn\x82\x80\xC2\x1E-\x05latn\x80IN\x1Ebeng\x80\x80x\x80\x1Edeva\x80\xC7aehkovy\x01\x03\x05\x0C\x0E\x0F\x80b\x80r\x80b\x1Elatn\x82p\x80\x80\x80oi\x1Edeva\x82\xC5nostu\x01\x02\x0B\x0C\x80\x80-\xC2AD\x02R\x80O\x80\x80\x80\xC6afiory\x13\x1E !\"\x83\xC2\x1E-\x05latn\x83AF\x84\x1Elatn\x84-Adlm\x1Elatn\x82l\x80\x80\x80\x85\xC4adlu\x03\x04\x05\x80a\x80\x80\x80\x80\x1Egujr\x80\xC2ei\x01\x86\xC2\x1E-\x05deva\x82Latn\x82\xC2ag\x01\x80\x80a\x80\xC6mnosux\x07\x0E\x16\x1C\x1D\x80\x1Ekhmr\x80\x80\x1Eknda\x80\x80k\x1Edeva\x82\x1Elatn\x82\x80v\x80-\xC3DOT\t\x12eva\x1Edeva\x82rya\x1Eorya\x82elu\x1Etelu\x82\xC2io\x02j\x80\x1Elaoo\x82\xC6alnrsy\x07\x0E\x15\x1C\x1Di\x1Edeva\x82\x80\x1Emlym\x80i\x1Elatn\x82\x80\x1Elatn\x80\x80\x1Elatn\x82\xC4eloq\x06\x07\x08\x1Elatn\x82\x80\x80o\x1Elatn\x82r\x80\x1Eorya\x80\xC4alst\x06\x07\x0E\x1Eguru\x82\x80\x80\x1Elatn\x80-PT\x80\xC3amo\x07\x08j\x1Elatn\x82\x80\x80\xC9acdikloqr\x0F\x10\x16\x17\x18\x19\x1A\x1B\xC2\x1Et\x05latn\x82\x1Elatn\x82\x80\x1Elatn\x80\x80\x80\x80\x80\x80\x80-Latn\x80\xC4aehr\n\x11\x18\x80\x1Etamldec\x80\x80\x1Etelu\x80\x80\x1Ethai\x80\x80\xC4gnrz\t\x0B \x1Earabext\x82d\x82\x80\xC2\x1E-\x08arabext\x80IN\x1Elatn\x80\x80nr\x1Edeva\x82\xC2ou\x01\x80e\x80\xC2\x1E-\x08hanidec\x80Hans\x80\x1Ehanidec\x80\xC2hu\x1B\x80\xC2\x1E-\x08hanidec\x80Hant\x80\x1Ehanidec\x80\x80" };
+                const VALUES: &'static [<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1 as icu_provider::baked::zerotrie::DynamicDataMarker>::DataStruct] = &[icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x02\0\x02\0\x02\x01\x04\x01()") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: None, accounting_positive: 0u8, accounting_negative: Some(1u8) } }, icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x04\0\x05\0\x0E\0\x12\0\x08\x01\xE2\x80\x8F\x10\x01\xE2\x80\x8F\xE2\x80\x8E-\x06\x01\xD8\x9C\x08\x01(\xD8\x9C)") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: Some(1u8), accounting_positive: 2u8, accounting_negative: Some(3u8) } }, icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\x02\x01") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: None, accounting_positive: 0u8, accounting_negative: None } }, icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x02\0\x05\0\x08\x01\xE2\x80\x8E\n\x01\xE2\x80\x8E()") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: None, accounting_positive: 0u8, accounting_negative: Some(1u8) } }, icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x02\0\x02\0\x02\x01\n\x01\xE2\x80\x8E()") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: None, accounting_positive: 0u8, accounting_negative: Some(1u8) } }, icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x02\0\x02\0\x02\x01\x02\x01-") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: Some(1u8), accounting_positive: 0u8, accounting_negative: Some(1u8) } }, icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrency { patterns: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x02\0\n\0\x08\x01\xE2\x80\x8F\xC2\xA0\xE2\x80\x8F\x10\x01\xE2\x80\x8F\xE2\x80\x8E-\xC2\xA0\xE2\x80\x8F") }, indices: icu::experimental::dimension::provider::currency::no_currency::NoCurrencyPatternIndices { standard: 0u8, standard_negative: Some(1u8), accounting_positive: 0u8, accounting_negative: Some(1u8) } }];
+                unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
+            };
+        }
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DataProvider<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1>, icu_provider::DataError> {
+                let mut metadata = icu_provider::DataResponseMetadata::default();
+                let payload = if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_CURRENCY_PATTERNS_NO_CURRENCY_V1, req.id, req.metadata.attributes_prefix_match) {
+                    payload
+                } else {
+                    const FALLBACKER: icu_locale_fallback::LocaleFallbackerWithConfig<'static> = icu_locale_fallback::LocaleFallbacker::new().for_config(<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1 as icu_provider::DataMarker>::INFO.fallback_config);
+                    let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
+                    loop {
+                        if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_CURRENCY_PATTERNS_NO_CURRENCY_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                            metadata.locale = Some(fallback_iterator.take());
+                            break payload;
+                        }
+                        if fallback_iterator.get().is_unknown() {
+                            return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1 as icu_provider::DataMarker>::INFO, req));
+                        }
+                        fallback_iterator.step();
+                    }
+                };
+                Ok(icu_provider::DataResponse { payload, metadata })
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_currency_patterns_no_currency_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::IterableDataProvider<icu::experimental::dimension::provider::currency::no_currency::CurrencyPatternsNoCurrencyV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider::baked::DataStore::iter(&Self::DATA_CURRENCY_PATTERNS_NO_CURRENCY_V1).collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {};
+    ($ provider : ty , DRY , ITER) => {
+        __impl_currency_patterns_no_currency_v1!($provider, ITER);
+    };
+}
+#[doc(inline)]
+pub use __impl_currency_patterns_no_currency_v1 as impl_currency_patterns_no_currency_v1;

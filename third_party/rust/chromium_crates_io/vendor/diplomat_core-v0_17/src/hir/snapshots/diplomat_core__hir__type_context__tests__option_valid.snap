@@ -1,0 +1,10 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo
+> found Option<Box<T>> in input, but box isn't allowed in inputs. T = u8
+Diplomat error: Lowering error in Foo::do_thing
+> found Option<Box<T>> in input, but box isn't allowed in inputs. T = u32
+Diplomat error: Lowering error in Foo::do_thing2
+> found Option<&T> in input, but T isn't a custom type and therefore not opaque. T = u32

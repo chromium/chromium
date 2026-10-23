@@ -4,7 +4,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `categories`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
+ * See the [Rust documentation for `categories`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralRules.html#method.categories) for more information.
  */
 export class PluralCategories {
     get zero(): boolean;

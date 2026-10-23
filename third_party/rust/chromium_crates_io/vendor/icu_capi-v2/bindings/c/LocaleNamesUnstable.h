@@ -1,0 +1,139 @@
+#ifndef LocaleNamesUnstable_H
+#define LocaleNamesUnstable_H
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include "diplomat_runtime.h"
+
+#include "DataError.d.h"
+#include "DataProvider.d.h"
+#include "LanguageDisplayUnstable.d.h"
+#include "Locale.d.h"
+
+#include "LocaleNamesUnstable.d.h"
+
+
+
+
+
+
+void icu4x_LocaleNamesUnstable_for_region_light_mv1(const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_region_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_region_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_region_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_region_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_region_tiny_mv1(const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_region_tiny_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_region_tiny_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_region_tiny_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_region_tiny_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_region_short_tiny_mv1(const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_region_short_tiny_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_region_short_tiny_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_region_short_tiny_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_region_short_tiny_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_region_short_light_mv1(const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_region_short_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_region_short_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_region_short_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_region_short_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView region, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_script_light_mv1(const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_script_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_script_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_script_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_script_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_script_tiny_mv1(const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_script_tiny_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_script_tiny_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_script_tiny_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_script_tiny_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_script_heavy_mv1(const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_script_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_script_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_script_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_script_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_script_short_heavy_mv1(const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_script_short_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_script_short_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_script_short_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_script_short_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView script, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_for_variant_heavy_mv1(const Locale* locale, DiplomatStringView variant, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_variant_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_variant_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_variant_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_variant_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, DiplomatStringView variant, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_light_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_light_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_light_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_light_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_tiny_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_tiny_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_tiny_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_tiny_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_tiny_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_tiny_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_tiny_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_tiny_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_light_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_light_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_light_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_light_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_long_light_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_long_light_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_long_light_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_long_light_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_long_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_long_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_long_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_long_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_menu_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_light_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_heavy_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_heavy_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_heavy_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_heavy_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_long_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_menu_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_mv1(const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+typedef struct icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_with_provider_mv1_result {union { DataError err;}; bool is_ok;} icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_with_provider_mv1_result;
+icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_with_provider_mv1_result icu4x_LocaleNamesUnstable_for_language_identifier_short_menu_heavy_with_provider_mv1(const DataProvider* provider, const Locale* locale, const Locale* langid, LanguageDisplayUnstable language_display, DiplomatWrite* write);
+
+void icu4x_LocaleNamesUnstable_destroy_mv1(LocaleNamesUnstable* self);
+
+
+
+
+
+#endif // LocaleNamesUnstable_H

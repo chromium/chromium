@@ -4,7 +4,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `HangulSyllableType`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html) for more information.
+ * See the [Rust documentation for `HangulSyllableType`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html) for more information.
  */
 export class HangulSyllableType {
 
@@ -17,64 +17,69 @@ export class HangulSyllableType {
     get ffiValue(): number;
 
     /**
-     * See the [Rust documentation for `NotApplicable`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.NotApplicable) for more information.
+     * See the [Rust documentation for `NotApplicable`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.NotApplicable) for more information.
      */
     static NotApplicable : HangulSyllableType;
     /**
-     * See the [Rust documentation for `LeadingJamo`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.LeadingJamo) for more information.
+     * See the [Rust documentation for `LeadingJamo`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.LeadingJamo) for more information.
      */
     static LeadingJamo : HangulSyllableType;
     /**
-     * See the [Rust documentation for `VowelJamo`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.VowelJamo) for more information.
+     * See the [Rust documentation for `VowelJamo`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.VowelJamo) for more information.
      */
     static VowelJamo : HangulSyllableType;
     /**
-     * See the [Rust documentation for `TrailingJamo`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.TrailingJamo) for more information.
+     * See the [Rust documentation for `TrailingJamo`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.TrailingJamo) for more information.
      */
     static TrailingJamo : HangulSyllableType;
     /**
-     * See the [Rust documentation for `LeadingVowelSyllable`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.LeadingVowelSyllable) for more information.
+     * See the [Rust documentation for `LVSyllable`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.LVSyllable) for more information.
      */
     static LeadingVowelSyllable : HangulSyllableType;
     /**
-     * See the [Rust documentation for `LeadingVowelTrailingSyllable`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.LeadingVowelTrailingSyllable) for more information.
+     * See the [Rust documentation for `LVTSyllable`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#associatedconstant.LVTSyllable) for more information.
      */
     static LeadingVowelTrailingSyllable : HangulSyllableType;
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch: codepoint): HangulSyllableType;
 
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName(): string | null;
 
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName(): string | null;
 
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue(): number;
 
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.HangulSyllableType.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.HangulSyllableType.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other: number): HangulSyllableType | null;
 
+    /**
+     * Creates a `HangulSyllableType` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s: string): HangulSyllableType | null;
 
     constructor(value: HangulSyllableType | string );

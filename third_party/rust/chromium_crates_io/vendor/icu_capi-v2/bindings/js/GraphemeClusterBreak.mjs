@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `GraphemeClusterBreak`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html) for more information.
+ * See the [Rust documentation for `GraphemeClusterBreak`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html) for more information.
  */
 export class GraphemeClusterBreak {
     #value = undefined;
@@ -95,81 +95,81 @@ export class GraphemeClusterBreak {
     ];
 
     /**
-     * See the [Rust documentation for `Other`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Other) for more information.
+     * See the [Rust documentation for `Other`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Other) for more information.
      */
     static Other = GraphemeClusterBreak.#objectValues[0];
     /**
-     * See the [Rust documentation for `Control`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Control) for more information.
+     * See the [Rust documentation for `Control`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Control) for more information.
      */
     static Control = GraphemeClusterBreak.#objectValues[1];
     /**
-     * See the [Rust documentation for `CR`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.CR) for more information.
+     * See the [Rust documentation for `CR`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.CR) for more information.
      */
     static Cr = GraphemeClusterBreak.#objectValues[2];
     /**
-     * See the [Rust documentation for `Extend`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Extend) for more information.
+     * See the [Rust documentation for `Extend`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Extend) for more information.
      */
     static Extend = GraphemeClusterBreak.#objectValues[3];
     /**
-     * See the [Rust documentation for `L`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.L) for more information.
+     * See the [Rust documentation for `L`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.L) for more information.
      */
     static L = GraphemeClusterBreak.#objectValues[4];
     /**
-     * See the [Rust documentation for `LF`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.LF) for more information.
+     * See the [Rust documentation for `LF`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.LF) for more information.
      */
     static Lf = GraphemeClusterBreak.#objectValues[5];
     /**
-     * See the [Rust documentation for `LV`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.LV) for more information.
+     * See the [Rust documentation for `LV`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.LV) for more information.
      */
     static Lv = GraphemeClusterBreak.#objectValues[6];
     /**
-     * See the [Rust documentation for `LVT`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.LVT) for more information.
+     * See the [Rust documentation for `LVT`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.LVT) for more information.
      */
     static Lvt = GraphemeClusterBreak.#objectValues[7];
     /**
-     * See the [Rust documentation for `T`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.T) for more information.
+     * See the [Rust documentation for `T`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.T) for more information.
      */
     static T = GraphemeClusterBreak.#objectValues[8];
     /**
-     * See the [Rust documentation for `V`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.V) for more information.
+     * See the [Rust documentation for `V`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.V) for more information.
      */
     static V = GraphemeClusterBreak.#objectValues[9];
     /**
-     * See the [Rust documentation for `SpacingMark`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.SpacingMark) for more information.
+     * See the [Rust documentation for `SpacingMark`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.SpacingMark) for more information.
      */
     static SpacingMark = GraphemeClusterBreak.#objectValues[10];
     /**
-     * See the [Rust documentation for `Prepend`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Prepend) for more information.
+     * See the [Rust documentation for `Prepend`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.Prepend) for more information.
      */
     static Prepend = GraphemeClusterBreak.#objectValues[11];
     /**
-     * See the [Rust documentation for `RegionalIndicator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.RegionalIndicator) for more information.
+     * See the [Rust documentation for `RegionalIndicator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.RegionalIndicator) for more information.
      */
     static RegionalIndicator = GraphemeClusterBreak.#objectValues[12];
     /**
-     * See the [Rust documentation for `EBase`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.EBase) for more information.
+     * See the [Rust documentation for `EBase`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.EBase) for more information.
      */
     static EBase = GraphemeClusterBreak.#objectValues[13];
     /**
-     * See the [Rust documentation for `EBaseGAZ`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.EBaseGAZ) for more information.
+     * See the [Rust documentation for `EBaseGAZ`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.EBaseGAZ) for more information.
      */
     static EBaseGaz = GraphemeClusterBreak.#objectValues[14];
     /**
-     * See the [Rust documentation for `EModifier`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.EModifier) for more information.
+     * See the [Rust documentation for `EModifier`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.EModifier) for more information.
      */
     static EModifier = GraphemeClusterBreak.#objectValues[15];
     /**
-     * See the [Rust documentation for `GlueAfterZwj`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.GlueAfterZwj) for more information.
+     * See the [Rust documentation for `GlueAfterZwj`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.GlueAfterZwj) for more information.
      */
     static GlueAfterZwj = GraphemeClusterBreak.#objectValues[16];
     /**
-     * See the [Rust documentation for `ZWJ`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.ZWJ) for more information.
+     * See the [Rust documentation for `ZWJ`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#associatedconstant.ZWJ) for more information.
      */
     static Zwj = GraphemeClusterBreak.#objectValues[17];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -187,7 +187,7 @@ export class GraphemeClusterBreak {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -211,7 +211,7 @@ export class GraphemeClusterBreak {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -235,7 +235,7 @@ export class GraphemeClusterBreak {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -253,7 +253,7 @@ export class GraphemeClusterBreak {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.GraphemeClusterBreak.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.GraphemeClusterBreak.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -274,6 +274,11 @@ export class GraphemeClusterBreak {
         }
     }
 
+    /**
+     * Creates a `GraphemeClusterBreak` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

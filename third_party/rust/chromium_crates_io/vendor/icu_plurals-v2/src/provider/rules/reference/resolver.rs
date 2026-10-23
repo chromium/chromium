@@ -17,9 +17,9 @@ use crate::provider::rules::reference::ast;
 /// # Examples
 ///
 /// ```
+/// use icu::plurals::PluralOperands;
 /// use icu::plurals::provider::rules::reference::parse_condition;
 /// use icu::plurals::provider::rules::reference::test_condition;
-/// use icu::plurals::PluralOperands;
 ///
 /// let operands = PluralOperands::from(5_usize);
 /// let condition =

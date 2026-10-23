@@ -66,6 +66,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -101,6 +102,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -132,6 +134,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -167,6 +170,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -198,6 +202,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -233,6 +238,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -264,6 +270,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -299,6 +306,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -330,6 +338,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -365,6 +374,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -396,6 +406,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -431,6 +442,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -462,6 +474,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -497,6 +510,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -528,6 +542,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -563,6 +578,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -655,6 +671,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -689,6 +706,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -719,6 +737,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -753,6 +772,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -783,6 +803,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -817,6 +838,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -847,6 +869,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -881,6 +904,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -911,6 +935,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -945,6 +970,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -975,6 +1001,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -1009,6 +1036,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -1039,6 +1067,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -1073,6 +1102,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set
@@ -1103,6 +1133,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter(
                     field_set
                 ),
@@ -1137,6 +1168,7 @@ pub mod ffi {
                         )?;
                     Ok(())
                 },
+                #[allow(clippy::result_large_err)] // probably not an issue in a closure?
                 |names, field_set| names.try_into_formatter_with_buffer_provider(
                     &provider,
                     field_set

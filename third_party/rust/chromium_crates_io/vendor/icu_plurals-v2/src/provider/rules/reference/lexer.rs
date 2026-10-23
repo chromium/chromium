@@ -145,11 +145,9 @@ impl<'l> Lexer<'l> {
                         let end = self.ptr;
 
                         let mut value = 0;
-                        #[expect(clippy::indexing_slicing)]
-                        // start..end are calculated to be within bounds.
-                        for ptr in start..end {
-                            let mul = 10_u32.pow((end - ptr - 1) as u32);
-                            value += ((self.chars[ptr] - b'0') as u32) * mul;
+                        for (idx, &c) in self.chars.iter().enumerate().take(end).skip(start) {
+                            let mul = 10_u32.pow((end - idx - 1) as u32);
+                            value += ((c - b'0') as u32) * mul;
                         }
                         Token::Number(value)
                     }

@@ -9,7 +9,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `CollatorOptions`](https://docs.rs/icu/2.2.0/icu/collator/options/struct.CollatorOptions.html) for more information.
+ * See the [Rust documentation for `CollatorOptions`](https://docs.rs/icu/2.4.0/icu/collator/options/struct.CollatorOptions.html) for more information.
  */
 export class CollatorOptions {
     #strength;
@@ -51,25 +51,25 @@ export class CollatorOptions {
         }
 
         if ("strength" in structObj) {
-            this.#strength = structObj.strength;
+            this.#strength = new CollatorStrength(structObj.strength);
         } else {
             this.#strength = null;
         }
 
         if ("alternateHandling" in structObj) {
-            this.#alternateHandling = structObj.alternateHandling;
+            this.#alternateHandling = new CollatorAlternateHandling(structObj.alternateHandling);
         } else {
             this.#alternateHandling = null;
         }
 
         if ("maxVariable" in structObj) {
-            this.#maxVariable = structObj.maxVariable;
+            this.#maxVariable = new CollatorMaxVariable(structObj.maxVariable);
         } else {
             this.#maxVariable = null;
         }
 
         if ("caseLevel" in structObj) {
-            this.#caseLevel = structObj.caseLevel;
+            this.#caseLevel = new CollatorCaseLevel(structObj.caseLevel);
         } else {
             this.#caseLevel = null;
         }
@@ -117,10 +117,10 @@ export class CollatorOptions {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#strength, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 8, this.#alternateHandling, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 16, this.#maxVariable, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
-        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 24, this.#caseLevel, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, jsValue.ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 0, this.#strength, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CollatorStrength(jsValue).ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 8, this.#alternateHandling, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CollatorAlternateHandling(jsValue).ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 16, this.#maxVariable, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CollatorMaxVariable(jsValue).ffiValue, Int32Array));
+        diplomatRuntime.writeOptionToArrayBuffer(arrayBuffer, offset + 24, this.#caseLevel, 4, 4, (arrayBuffer, offset, jsValue) => diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, new CollatorCaseLevel(jsValue).ffiValue, Int32Array));
     }
 
     // This struct contains borrowed fields, so this takes in a list of

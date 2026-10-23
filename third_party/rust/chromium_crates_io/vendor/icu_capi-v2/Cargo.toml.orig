@@ -47,6 +47,7 @@ buffer_provider = [
     "icu_decimal?/serde",
     "icu_list?/serde",
     "icu_locale?/serde",
+    "icu_locale_fallback?/serde",
     "icu_locale_core/serde",
     "icu_normalizer?/serde",
     "icu_plurals?/serde",
@@ -84,15 +85,16 @@ datetime = ["calendar", "dep:icu_datetime"]
 decimal = ["dep:icu_decimal", "dep:fixed_decimal", "dep:zerovec"]
 experimental = ["dep:icu_experimental"]
 list = ["dep:icu_list", "dep:potential_utf"]
-locale = ["dep:icu_locale"]
-normalizer = ["dep:icu_normalizer", "icu_normalizer?/utf8_iter", "icu_normalizer?/utf16_iter"]
+locale = ["dep:icu_locale", "locale_fallback"]
+locale_fallback = ["dep:icu_locale_fallback"]
+normalizer = ["dep:icu_normalizer", "icu_normalizer?/utf8_iter", "icu_normalizer?/utf16_iter", "dep:write16"]
 plurals = ["dep:icu_plurals", "dep:fixed_decimal"]
 properties = ["dep:icu_properties", "dep:icu_collections", "dep:unicode-bidi"]
 segmenter = ["dep:icu_segmenter"]
 timezone = ["calendar"]
 
 # Unstable features on individual components
-unstable = ["icu_calendar?/unstable", "icu_datetime?/unstable", "icu_plurals?/unstable", "icu_time?/unstable"]
+unstable = ["icu_calendar?/unstable", "icu_datetime?/unstable", "icu_locale?/unstable", "icu_plurals?/unstable", "icu_time?/unstable"]
 
 compiled_data = [
     "icu_calendar?/compiled_data",
@@ -102,6 +104,7 @@ compiled_data = [
     "icu_decimal?/compiled_data",
     "icu_list?/compiled_data",
     "icu_locale?/compiled_data",
+    "icu_locale_fallback?/compiled_data",
     "icu_normalizer?/compiled_data",
     "icu_plurals?/compiled_data",
     "icu_properties?/compiled_data",
@@ -136,6 +139,7 @@ icu_datetime = { workspace = true, optional = true }
 icu_decimal = { workspace = true, optional = true }
 icu_list = { workspace = true, optional = true }
 icu_locale = { workspace = true, optional = true }
+icu_locale_fallback = { workspace = true, optional = true }
 icu_normalizer = { workspace = true, optional = true }
 icu_plurals = { workspace = true, optional = true }
 icu_properties = { workspace = true, features = ["alloc", "unicode_bidi"], optional = true }
@@ -150,6 +154,7 @@ icu_provider_blob = { workspace = true, features = ["alloc"], optional = true }
 potential_utf = { workspace = true, features = ["writeable"], optional = true }
 tinystr = { workspace = true, optional = true }
 unicode-bidi = { workspace = true, optional = true }
+write16 = { workspace = true, optional = true }
 zerovec = { workspace = true, optional = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

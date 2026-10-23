@@ -26,7 +26,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `Length`](https://docs.rs/icu/2.2.0/icu/datetime/options/enum.Length.html) for more information.
+ * See the [Rust documentation for `Length`](https://docs.rs/icu/2.4.0/icu/datetime/options/enum.Length.html) for more information.
  */
 class DateTimeLength {
 public:

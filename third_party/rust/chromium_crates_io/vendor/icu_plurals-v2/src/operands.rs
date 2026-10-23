@@ -258,12 +258,16 @@ impl From<u128> for PluralOperands {
 }
 
 impl PluralOperands {
-    fn from_significand_and_exponent(dec: &UnsignedDecimal, exp: u8) -> PluralOperands {
+    #[doc(hidden)] // todo: figure out whether to expose this
+    /// Creates a [`PluralOperands`] from a significand and power of ten.
+    pub fn from_significand_and_exponent(dec: &UnsignedDecimal, exp: u8) -> PluralOperands {
         let exp_i16 = i16::from(exp);
 
         let mag_range = dec.magnitude_range();
-        let mag_high = (*mag_range.end() + exp_i16).clamp(0, 17);
-        let mag_low = (*mag_range.start() + exp_i16).clamp(-18, 0);
+        let upper_mag = (*mag_range.end()).saturating_add(exp_i16);
+        let lower_mag = (*mag_range.start()).saturating_add(exp_i16);
+        let mag_high = upper_mag.clamp(0, 17);
+        let mag_low = lower_mag.clamp(-18, 0);
 
         let mut i: u64 = 0;
         for magnitude in (0..=mag_high).rev() {
@@ -271,7 +275,7 @@ impl PluralOperands {
             i += dec.digit_at(magnitude - exp_i16) as u64;
         }
 
-        if *mag_range.end() + exp_i16 > 17 {
+        if upper_mag > 17 {
             i += LIMIT_18_DIGITS;
         }
 
@@ -451,5 +455,19 @@ mod tests {
 
         assert!(ops.i >= limit_18);
         assert_eq!(ops.i % 10, 8);
+    }
+
+    #[test]
+    fn test_compact_decimal_overflow() {
+        use fixed_decimal::CompactDecimal;
+        let limit_18 = LIMIT_18_DIGITS;
+
+        let mut s = "9".repeat(i16::MAX as usize);
+        s.push_str("c2");
+
+        let cd = CompactDecimal::from_str(&s).unwrap();
+        let ops = PluralOperands::from(&cd);
+
+        assert!(ops.i >= limit_18, "i should be offset");
     }
 }

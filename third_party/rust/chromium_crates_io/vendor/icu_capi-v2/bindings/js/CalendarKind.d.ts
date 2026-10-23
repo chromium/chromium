@@ -7,7 +7,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * The various calendar types currently supported by {@link Calendar}
  *
- * See the [Rust documentation for `AnyCalendarKind`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendarKind.html) for more information.
+ * See the [Rust documentation for `AnyCalendarKind`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendarKind.html) for more information.
  */
 export class CalendarKind {
 
@@ -86,6 +86,10 @@ export class CalendarKind {
      */
     static HijriUmmAlQura : CalendarKind;
     /**
+     * The kind of a Julian calendar,
+     */
+    static Julian : CalendarKind;
+    /**
      * The kind of a Persian calendar
      */
     static Persian : CalendarKind;
@@ -98,7 +102,7 @@ export class CalendarKind {
     /**
      * Creates a new {@link CalendarKind} for the specified locale, using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendarKind.html#method.new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendarKind.html#method.try_new) for more information.
      */
     static create(locale: Locale): CalendarKind;
 

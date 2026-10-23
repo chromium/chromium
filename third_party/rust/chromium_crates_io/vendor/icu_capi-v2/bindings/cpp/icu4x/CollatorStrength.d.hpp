@@ -28,7 +28,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `Strength`](https://docs.rs/icu/2.2.0/icu/collator/options/enum.Strength.html) for more information.
+ * See the [Rust documentation for `Strength`](https://docs.rs/icu/2.4.0/icu/collator/options/enum.Strength.html) for more information.
  */
 class CollatorStrength {
 public:

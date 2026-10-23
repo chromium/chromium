@@ -5,7 +5,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `TimeZoneIter`](https://docs.rs/icu/2.2.0/icu/time/zone/iana/struct.TimeZoneIter.html) for more information.
+ * See the [Rust documentation for `TimeZoneIter`](https://docs.rs/icu/2.4.0/icu/time/zone/iana/struct.TimeZoneIter.html) for more information.
  */
 export class TimeZoneIterator {
     /** @internal */

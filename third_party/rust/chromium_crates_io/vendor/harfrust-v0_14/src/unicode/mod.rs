@@ -700,7 +700,7 @@ mod icu {
     pub(crate) fn combining_class_for(c: u32) -> u8 {
         CodePointMapData::<IcuCanonicalCombiningClass>::new()
             .get32(c)
-            .to_icu4c_value()
+            .0
     }
 
     pub(crate) fn mirroring_for(c: u32) -> Option<Codepoint> {

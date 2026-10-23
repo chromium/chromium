@@ -8,6 +8,7 @@
 #include "diplomat_runtime.h"
 
 #include "Locale.d.h"
+#include "LocaleFallbackConfig.d.h"
 #include "LocaleFallbackIterator.d.h"
 
 #include "LocaleFallbackerWithConfig.d.h"
@@ -16,6 +17,8 @@
 
 
 
+
+LocaleFallbackConfig icu4x_LocaleFallbackerWithConfig_config_mv1(const LocaleFallbackerWithConfig* self);
 
 LocaleFallbackIterator* icu4x_LocaleFallbackerWithConfig_fallback_for_locale_mv1(const LocaleFallbackerWithConfig* self, const Locale* locale);
 

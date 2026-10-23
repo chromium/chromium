@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `icu_datetime-2.2.0` crate.
+// `icu_datetime-2.4.0` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.

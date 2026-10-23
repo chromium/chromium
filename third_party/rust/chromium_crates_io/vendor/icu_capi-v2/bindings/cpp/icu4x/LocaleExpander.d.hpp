@@ -33,7 +33,7 @@ namespace icu4x {
 /**
  * A locale expander.
  *
- * See the [Rust documentation for `LocaleExpander`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html) for more information.
+ * See the [Rust documentation for `LocaleExpander`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html) for more information.
  */
 class LocaleExpander {
 public:
@@ -41,43 +41,43 @@ public:
   /**
    * Create a new {@link LocaleExpander} using compiled data.
    *
-   * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.new_common) for more information.
+   * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.new_common) for more information.
    */
   inline static std::unique_ptr<icu4x::LocaleExpander> create_common();
 
   /**
    * Create a new {@link LocaleExpander} using a `new_common` data source.
    *
-   * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.new_common) for more information.
+   * See the [Rust documentation for `new_common`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.new_common) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::LocaleExpander>, icu4x::DataError> create_common_with_provider(const icu4x::DataProvider& provider);
 
   /**
    * Create a new {@link LocaleExpander} with extended data using compiled data.
    *
-   * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.new_extended) for more information.
+   * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.new_extended) for more information.
    */
   inline static std::unique_ptr<icu4x::LocaleExpander> create_extended();
 
   /**
    * Create a new {@link LocaleExpander} with extended data using a particular data source.
    *
-   * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.new_extended) for more information.
+   * See the [Rust documentation for `new_extended`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.new_extended) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::LocaleExpander>, icu4x::DataError> create_extended_with_provider(const icu4x::DataProvider& provider);
 
   /**
-   * See the [Rust documentation for `maximize`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.maximize) for more information.
+   * See the [Rust documentation for `maximize`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.maximize) for more information.
    */
   inline icu4x::TransformResult maximize(icu4x::Locale& locale) const;
 
   /**
-   * See the [Rust documentation for `minimize`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.minimize) for more information.
+   * See the [Rust documentation for `minimize`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.minimize) for more information.
    */
   inline icu4x::TransformResult minimize(icu4x::Locale& locale) const;
 
   /**
-   * See the [Rust documentation for `minimize_favor_script`](https://docs.rs/icu/2.2.0/icu/locale/struct.LocaleExpander.html#method.minimize_favor_script) for more information.
+   * See the [Rust documentation for `minimize_favor_script`](https://docs.rs/icu/2.4.0/icu/locale/struct.LocaleExpander.html#method.minimize_favor_script) for more information.
    */
   inline icu4x::TransformResult minimize_favor_script(icu4x::Locale& locale) const;
 

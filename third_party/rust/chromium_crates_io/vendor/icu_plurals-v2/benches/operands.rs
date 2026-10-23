@@ -4,7 +4,7 @@
 
 mod fixtures;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use fixed_decimal::Decimal;
 use icu_plurals::PluralOperands;
 
@@ -130,7 +130,7 @@ fn operands(c: &mut Criterion) {
             let mut group = c.benchmark_group("plurals/operands/create/from_fixed_decimal/samples");
             for s in samples.iter() {
                 group.bench_with_input(
-                    BenchmarkId::from_parameter(format!("{:?}", &s)),
+                    BenchmarkId::from_parameter(format!("{:?}", s)),
                     s,
                     |b, f| b.iter(|| PluralOperands::from(black_box(f))),
                 );

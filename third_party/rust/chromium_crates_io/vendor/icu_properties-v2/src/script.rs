@@ -13,8 +13,9 @@ use core::iter::FromIterator;
 use core::ops::RangeInclusive;
 #[cfg(feature = "alloc")]
 use icu_collections::codepointinvlist::CodePointInversionList;
+use icu_collections::codepointtrie::TrieValue;
 use icu_provider::prelude::*;
-use zerovec::{ule::AsULE, ZeroSlice};
+use zerovec::{ZeroSlice, ule::AsULE};
 
 #[cfg(feature = "harfbuzz_traits")]
 pub use crate::harfbuzz::{HarfbuzzScriptData, HarfbuzzScriptDataBorrowed};
@@ -48,7 +49,19 @@ pub struct ScriptWithExt(pub u16);
 #[allow(non_upper_case_globals)]
 #[doc(hidden)] // `ScriptWithExt` not intended as public-facing but for `ScriptWithExtensionsProperty` constructor
 impl ScriptWithExt {
-    pub const Unknown: ScriptWithExt = ScriptWithExt(0);
+    pub const Unknown: ScriptWithExt = Self::single(Script::Unknown);
+
+    pub const fn single(script: Script) -> Self {
+        Self(script.0 & SCRIPT_X_SCRIPT_VAL)
+    }
+
+    pub const fn new(script: Script, extensions: u16) -> Self {
+        match script {
+            Script::Common => Self(1 << SCRIPT_VAL_LENGTH | extensions & SCRIPT_X_SCRIPT_VAL),
+            Script::Inherited => Self(2 << SCRIPT_VAL_LENGTH | extensions & SCRIPT_X_SCRIPT_VAL),
+            _script => Self(3 << SCRIPT_VAL_LENGTH | extensions & SCRIPT_X_SCRIPT_VAL),
+        }
+    }
 }
 
 impl AsULE for ScriptWithExt {
@@ -194,12 +207,13 @@ impl<'a> ScriptExtensionsSet<'a> {
     /// use icu::properties::script::ScriptWithExtensions;
     /// let swe = ScriptWithExtensions::new();
     ///
-    /// assert!(swe
-    ///     .get_script_extensions_val('\u{11303}') // GRANTHA SIGN VISARGA
-    ///     .contains(&Script::Grantha));
+    /// assert!(
+    ///     swe.get_script_extensions_val('\u{11303}') // GRANTHA SIGN VISARGA
+    ///         .contains(&Script::Grantha)
+    /// );
     /// ```
     pub fn contains(&self, x: &Script) -> bool {
-        ZeroSlice::binary_search(self.values, x).is_ok()
+        ZeroSlice::binary_search_by(self.values, |y| y.to_u32().cmp(&x.to_u32())).is_ok()
     }
 
     /// Gets an iterator over the elements.
@@ -218,7 +232,7 @@ impl<'a> ScriptExtensionsSet<'a> {
     ///     [Script::Tamil, Script::Grantha]
     /// );
     /// ```
-    pub fn iter(&self) -> impl DoubleEndedIterator<Item = Script> + 'a {
+    pub fn iter(&self) -> impl DoubleEndedIterator<Item = Script> + 'a + use<'a> {
         ZeroSlice::iter(self.values)
     }
 
@@ -713,5 +727,11 @@ mod tests {
                 Script::Toto
             ]
         );
+    }
+
+    #[test]
+    fn test_high_discriminant() {
+        let swe = ScriptWithExtensions::new();
+        assert!(!swe.has_script32(0x0640, Script(0xAFFE)));
     }
 }

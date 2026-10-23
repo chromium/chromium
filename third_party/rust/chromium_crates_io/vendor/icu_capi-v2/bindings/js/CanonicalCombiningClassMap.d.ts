@@ -8,7 +8,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * Lookup of the `Canonical_Combining_Class` Unicode property
  *
- * See the [Rust documentation for `CanonicalCombiningClassMap`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalCombiningClassMap.html) for more information.
+ * See the [Rust documentation for `CanonicalCombiningClassMap`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalCombiningClassMap.html) for more information.
  */
 export class CanonicalCombiningClassMap {
     /** @internal */
@@ -18,21 +18,21 @@ export class CanonicalCombiningClassMap {
     /**
      * Construct a new `CanonicalCombiningClassMap` instance for NFC using a particular data source.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalCombiningClassMap.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalCombiningClassMap.html#method.new) for more information.
      */
     static createWithProvider(provider: DataProvider): CanonicalCombiningClassMap;
 
     /**
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalCombiningClassMapBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalCombiningClassMapBorrowed.html#method.get) for more information.
      *
-     * Additional information: [1](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html)
+     * Additional information: [1](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html)
      */
     get(ch: codepoint): number;
 
     /**
      * Construct a new `CanonicalCombiningClassMap` instance for NFC using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/normalizer/properties/struct.CanonicalCombiningClassMap.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/normalizer/properties/struct.CanonicalCombiningClassMap.html#method.new) for more information.
      */
     constructor();
 }

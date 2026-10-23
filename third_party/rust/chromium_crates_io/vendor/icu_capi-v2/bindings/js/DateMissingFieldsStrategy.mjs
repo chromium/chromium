@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `MissingFieldsStrategy`](https://docs.rs/icu/2.2.0/icu/calendar/options/enum.MissingFieldsStrategy.html) for more information.
+ * See the [Rust documentation for `MissingFieldsStrategy`](https://docs.rs/icu/2.4.0/icu/calendar/options/enum.MissingFieldsStrategy.html) for more information.
  */
 export class DateMissingFieldsStrategy {
     #value = undefined;

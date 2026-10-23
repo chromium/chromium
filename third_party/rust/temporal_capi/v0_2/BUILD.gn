@@ -43,7 +43,7 @@ cargo_crate("lib") {
 
   deps = [
     "//third_party/rust/diplomat/v0_16:lib",
-    "//third_party/rust/diplomat_runtime/v0_15:lib",
+    "//third_party/rust/diplomat_runtime/v0_16:lib",
     "//third_party/rust/icu_calendar/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/num_traits/v0_2:lib",

@@ -11,7 +11,7 @@ export type DateFromFieldsOptions_obj = {
 
 
 /**
- * See the [Rust documentation for `DateFromFieldsOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateFromFieldsOptions.html) for more information.
+ * See the [Rust documentation for `DateFromFieldsOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateFromFieldsOptions.html) for more information.
  */
 export class DateFromFieldsOptions {
     get overflow(): DateOverflow | null;

@@ -44,7 +44,7 @@ fn test_parsing_operands() {
             actual < f64::EPSILON,
             "actual: {}, for test: {:?}",
             actual,
-            &test
+            test
         );
     }
 }
@@ -67,7 +67,7 @@ fn test_from_fixed_decimals() {
         assert_eq!(
             expected, actual,
             "\n\t(expected==left; actual==right)\n\t\t{:?}",
-            &test
+            test
         );
     }
 }

@@ -29,30 +29,29 @@ namespace icu4x {
 /**
  * A slightly faster `ScriptWithExtensions` object
  *
- * See the [Rust documentation for `ScriptWithExtensionsBorrowed`](https://docs.rs/icu/2.2.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html) for more information.
+ * See the [Rust documentation for `ScriptWithExtensionsBorrowed`](https://docs.rs/icu/2.4.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html) for more information.
  */
 class ScriptWithExtensionsBorrowed {
 public:
 
   /**
    * Get the Script property value for a code point
-   * Get the Script property value for a code point
    *
-   * See the [Rust documentation for `get_script_val`](https://docs.rs/icu/2.2.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.get_script_val) for more information.
+   * See the [Rust documentation for `get_script_val`](https://docs.rs/icu/2.4.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.get_script_val) for more information.
    */
   inline uint16_t get_script_val(char32_t ch) const;
 
   /**
    * Get the Script property value for a code point
    *
-   * See the [Rust documentation for `get_script_extensions_val`](https://docs.rs/icu/2.2.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.get_script_extensions_val) for more information.
+   * See the [Rust documentation for `get_script_extensions_val`](https://docs.rs/icu/2.4.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.get_script_extensions_val) for more information.
    */
-  inline std::unique_ptr<icu4x::ScriptExtensionsSet> get_script_extensions_val(char32_t ch) const;
+  inline std::unique_ptr<icu4x::ScriptExtensionsSet> get_script_extensions_val(char32_t ch) const DIPLOMAT_LIFETIME_BOUND;
 
   /**
    * Check if the `Script_Extensions` property of the given code point covers the given script
    *
-   * See the [Rust documentation for `has_script`](https://docs.rs/icu/2.2.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.has_script) for more information.
+   * See the [Rust documentation for `has_script`](https://docs.rs/icu/2.4.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.has_script) for more information.
    */
   inline bool has_script(char32_t ch, uint16_t script) const;
 
@@ -60,7 +59,7 @@ public:
    * Build the `CodePointSetData` corresponding to a codepoints matching a particular script
    * in their `Script_Extensions`
    *
-   * See the [Rust documentation for `get_script_extensions_set`](https://docs.rs/icu/2.2.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.get_script_extensions_set) for more information.
+   * See the [Rust documentation for `get_script_extensions_set`](https://docs.rs/icu/2.4.0/icu/properties/script/struct.ScriptWithExtensionsBorrowed.html#method.get_script_extensions_set) for more information.
    */
   inline std::unique_ptr<icu4x::CodePointSetData> get_script_extensions_set(uint16_t script) const;
 

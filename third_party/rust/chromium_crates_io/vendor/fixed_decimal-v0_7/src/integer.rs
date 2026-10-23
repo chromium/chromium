@@ -3,7 +3,6 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 use core::convert::TryFrom;
-use core::fmt;
 
 use core::str::FromStr;
 
@@ -68,11 +67,7 @@ impl_fixed_integer_from_integer_type!(u32);
 impl_fixed_integer_from_integer_type!(u16);
 impl_fixed_integer_from_integer_type!(u8);
 
-impl writeable::Writeable for FixedInteger {
-    fn write_to<W: fmt::Write + ?Sized>(&self, sink: &mut W) -> fmt::Result {
-        self.0.write_to(sink)
-    }
-}
+writeable::impl_writeable_delegate!(FixedInteger, |&self| &self.0);
 
 impl TryFrom<Decimal> for FixedInteger {
     type Error = LimitError;
@@ -105,4 +100,26 @@ impl FromStr for FixedInteger {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Self::try_from_str(s)
     }
+}
+
+#[test]
+fn test_from_str_scientific_bounds() {
+    assert_eq!(
+        Decimal::from(FixedInteger::from_str("0e5").unwrap()).to_string(),
+        "0"
+    );
+    assert_eq!(FixedInteger::from_str("1e99999"), Err(ParseError::Limit));
+    assert_eq!(FixedInteger::from_str("1e-99999"), Err(ParseError::Limit));
+    assert_eq!(
+        FixedInteger::from_str("1e999999999999999999999999999999"),
+        Err(ParseError::Limit)
+    );
+    assert_eq!(
+        FixedInteger::from_str("1e-999999999999999999999999999999"),
+        Err(ParseError::Limit)
+    );
+    assert_eq!(FixedInteger::from_str("10e32767"), Err(ParseError::Limit));
+    assert_eq!(FixedInteger::from_str("1e-"), Err(ParseError::Syntax));
+    assert_eq!(FixedInteger::from_str("0e-"), Err(ParseError::Syntax));
+    assert!(FixedInteger::from_str("1e32767").is_ok());
 }

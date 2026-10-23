@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `BidiClass`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html) for more information.
+ * See the [Rust documentation for `BidiClass`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html) for more information.
  */
 export class BidiClass {
     #value = undefined;
@@ -105,101 +105,101 @@ export class BidiClass {
     ];
 
     /**
-     * See the [Rust documentation for `LeftToRight`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRight) for more information.
+     * See the [Rust documentation for `LeftToRight`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRight) for more information.
      */
     static LeftToRight = BidiClass.#objectValues[0];
     /**
-     * See the [Rust documentation for `RightToLeft`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeft) for more information.
+     * See the [Rust documentation for `RightToLeft`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeft) for more information.
      */
     static RightToLeft = BidiClass.#objectValues[1];
     /**
-     * See the [Rust documentation for `EuropeanNumber`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.EuropeanNumber) for more information.
+     * See the [Rust documentation for `EuropeanNumber`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.EuropeanNumber) for more information.
      */
     static EuropeanNumber = BidiClass.#objectValues[2];
     /**
-     * See the [Rust documentation for `EuropeanSeparator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.EuropeanSeparator) for more information.
+     * See the [Rust documentation for `EuropeanSeparator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.EuropeanSeparator) for more information.
      */
     static EuropeanSeparator = BidiClass.#objectValues[3];
     /**
-     * See the [Rust documentation for `EuropeanTerminator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.EuropeanTerminator) for more information.
+     * See the [Rust documentation for `EuropeanTerminator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.EuropeanTerminator) for more information.
      */
     static EuropeanTerminator = BidiClass.#objectValues[4];
     /**
-     * See the [Rust documentation for `ArabicNumber`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.ArabicNumber) for more information.
+     * See the [Rust documentation for `ArabicNumber`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.ArabicNumber) for more information.
      */
     static ArabicNumber = BidiClass.#objectValues[5];
     /**
-     * See the [Rust documentation for `CommonSeparator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.CommonSeparator) for more information.
+     * See the [Rust documentation for `CommonSeparator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.CommonSeparator) for more information.
      */
     static CommonSeparator = BidiClass.#objectValues[6];
     /**
-     * See the [Rust documentation for `ParagraphSeparator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.ParagraphSeparator) for more information.
+     * See the [Rust documentation for `ParagraphSeparator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.ParagraphSeparator) for more information.
      */
     static ParagraphSeparator = BidiClass.#objectValues[7];
     /**
-     * See the [Rust documentation for `SegmentSeparator`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.SegmentSeparator) for more information.
+     * See the [Rust documentation for `SegmentSeparator`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.SegmentSeparator) for more information.
      */
     static SegmentSeparator = BidiClass.#objectValues[8];
     /**
-     * See the [Rust documentation for `WhiteSpace`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.WhiteSpace) for more information.
+     * See the [Rust documentation for `WhiteSpace`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.WhiteSpace) for more information.
      */
     static WhiteSpace = BidiClass.#objectValues[9];
     /**
-     * See the [Rust documentation for `OtherNeutral`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.OtherNeutral) for more information.
+     * See the [Rust documentation for `OtherNeutral`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.OtherNeutral) for more information.
      */
     static OtherNeutral = BidiClass.#objectValues[10];
     /**
-     * See the [Rust documentation for `LeftToRightEmbedding`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRightEmbedding) for more information.
+     * See the [Rust documentation for `LeftToRightEmbedding`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRightEmbedding) for more information.
      */
     static LeftToRightEmbedding = BidiClass.#objectValues[11];
     /**
-     * See the [Rust documentation for `LeftToRightOverride`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRightOverride) for more information.
+     * See the [Rust documentation for `LeftToRightOverride`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRightOverride) for more information.
      */
     static LeftToRightOverride = BidiClass.#objectValues[12];
     /**
-     * See the [Rust documentation for `ArabicLetter`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.ArabicLetter) for more information.
+     * See the [Rust documentation for `ArabicLetter`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.ArabicLetter) for more information.
      */
     static ArabicLetter = BidiClass.#objectValues[13];
     /**
-     * See the [Rust documentation for `RightToLeftEmbedding`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeftEmbedding) for more information.
+     * See the [Rust documentation for `RightToLeftEmbedding`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeftEmbedding) for more information.
      */
     static RightToLeftEmbedding = BidiClass.#objectValues[14];
     /**
-     * See the [Rust documentation for `RightToLeftOverride`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeftOverride) for more information.
+     * See the [Rust documentation for `RightToLeftOverride`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeftOverride) for more information.
      */
     static RightToLeftOverride = BidiClass.#objectValues[15];
     /**
-     * See the [Rust documentation for `PopDirectionalFormat`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.PopDirectionalFormat) for more information.
+     * See the [Rust documentation for `PopDirectionalFormat`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.PopDirectionalFormat) for more information.
      */
     static PopDirectionalFormat = BidiClass.#objectValues[16];
     /**
-     * See the [Rust documentation for `NonspacingMark`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.NonspacingMark) for more information.
+     * See the [Rust documentation for `NonspacingMark`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.NonspacingMark) for more information.
      */
     static NonspacingMark = BidiClass.#objectValues[17];
     /**
-     * See the [Rust documentation for `BoundaryNeutral`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.BoundaryNeutral) for more information.
+     * See the [Rust documentation for `BoundaryNeutral`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.BoundaryNeutral) for more information.
      */
     static BoundaryNeutral = BidiClass.#objectValues[18];
     /**
-     * See the [Rust documentation for `FirstStrongIsolate`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.FirstStrongIsolate) for more information.
+     * See the [Rust documentation for `FirstStrongIsolate`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.FirstStrongIsolate) for more information.
      */
     static FirstStrongIsolate = BidiClass.#objectValues[19];
     /**
-     * See the [Rust documentation for `LeftToRightIsolate`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRightIsolate) for more information.
+     * See the [Rust documentation for `LeftToRightIsolate`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.LeftToRightIsolate) for more information.
      */
     static LeftToRightIsolate = BidiClass.#objectValues[20];
     /**
-     * See the [Rust documentation for `RightToLeftIsolate`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeftIsolate) for more information.
+     * See the [Rust documentation for `RightToLeftIsolate`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.RightToLeftIsolate) for more information.
      */
     static RightToLeftIsolate = BidiClass.#objectValues[21];
     /**
-     * See the [Rust documentation for `PopDirectionalIsolate`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#associatedconstant.PopDirectionalIsolate) for more information.
+     * See the [Rust documentation for `PopDirectionalIsolate`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#associatedconstant.PopDirectionalIsolate) for more information.
      */
     static PopDirectionalIsolate = BidiClass.#objectValues[22];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -217,7 +217,7 @@ export class BidiClass {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -241,7 +241,7 @@ export class BidiClass {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -265,7 +265,7 @@ export class BidiClass {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -283,7 +283,7 @@ export class BidiClass {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.BidiClass.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.BidiClass.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -304,6 +304,11 @@ export class BidiClass {
         }
     }
 
+    /**
+     * Creates a `BidiClass` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

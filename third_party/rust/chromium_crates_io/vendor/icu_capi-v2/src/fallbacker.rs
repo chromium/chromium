@@ -13,12 +13,12 @@ pub mod ffi {
 
     /// An object that runs the ICU4X locale fallback algorithm.
     #[diplomat::opaque]
-    #[diplomat::rust_link(icu_locale::LocaleFallbacker, Struct)]
+    #[diplomat::rust_link(icu::locale::fallback::LocaleFallbacker, Struct)]
     #[diplomat::rust_link(icu::locale::fallback::LocaleFallbackerBorrowed, Struct, hidden)]
-    pub struct LocaleFallbacker(pub icu_locale::LocaleFallbacker);
+    pub struct LocaleFallbacker(pub icu_locale_fallback::LocaleFallbacker);
 
     /// Priority mode for the ICU4X fallback algorithm.
-    #[diplomat::enum_convert(icu_locale::fallback::LocaleFallbackPriority, needs_wildcard)]
+    #[diplomat::enum_convert(icu_locale_fallback::LocaleFallbackPriority, needs_wildcard)]
     #[diplomat::rust_link(icu::locale::fallback::LocaleFallbackPriority, Enum)]
     #[diplomat::rust_link(
         icu::locale::fallback::LocaleFallbackPriority::default,
@@ -46,20 +46,19 @@ pub mod ffi {
 
     /// An object that runs the ICU4X locale fallback algorithm with specific configurations.
     #[diplomat::opaque]
-    #[diplomat::rust_link(icu_locale::LocaleFallbacker, Struct)]
     #[diplomat::rust_link(icu::locale::fallback::LocaleFallbackerWithConfig, Struct)]
     pub struct LocaleFallbackerWithConfig<'a>(
-        pub icu_locale::fallback::LocaleFallbackerWithConfig<'a>,
+        pub icu_locale_fallback::LocaleFallbackerWithConfig<'a>,
     );
 
     /// An iterator over the locale under fallback.
     #[diplomat::opaque_mut]
     #[diplomat::rust_link(icu::locale::fallback::LocaleFallbackIterator, Struct)]
-    pub struct LocaleFallbackIterator<'a>(pub icu_locale::fallback::LocaleFallbackIterator<'a>);
+    pub struct LocaleFallbackIterator<'a>(pub icu_locale_fallback::LocaleFallbackIterator<'a>);
 
     impl LocaleFallbacker {
         /// Creates a new `LocaleFallbacker` from compiled data.
-        #[diplomat::rust_link(icu_locale::LocaleFallbacker::new, FnInStruct)]
+        #[diplomat::rust_link(icu::locale::fallback::LocaleFallbacker::new, FnInStruct)]
         #[diplomat::rust_link(
             icu::locale::fallback::LocaleFallbackerBorrowed::new,
             FnInStruct,
@@ -69,12 +68,12 @@ pub mod ffi {
         #[cfg(feature = "compiled_data")]
         pub fn create() -> Box<LocaleFallbacker> {
             Box::new(LocaleFallbacker(
-                icu_locale::LocaleFallbacker::new().static_to_owned(),
+                icu_locale_fallback::LocaleFallbacker::new().static_to_owned(),
             ))
         }
 
         /// Creates a new `LocaleFallbacker` from a data provider.
-        #[diplomat::rust_link(icu_locale::LocaleFallbacker::new, FnInStruct)]
+        #[diplomat::rust_link(icu::locale::fallback::LocaleFallbacker::new, FnInStruct)]
         #[diplomat::rust_link(
             icu::locale::fallback::LocaleFallbackerBorrowed::new,
             FnInStruct,
@@ -86,21 +85,26 @@ pub mod ffi {
             provider: &DataProvider,
         ) -> Result<Box<LocaleFallbacker>, DataError> {
             Ok(Box::new(LocaleFallbacker(
-                icu_locale::LocaleFallbacker::try_new_with_buffer_provider(provider.get()?)?,
+                icu_locale_fallback::LocaleFallbacker::try_new_with_buffer_provider(
+                    provider.get()?,
+                )?,
             )))
         }
 
         /// Creates a new `LocaleFallbacker` without data for limited functionality.
-        #[diplomat::rust_link(icu_locale::LocaleFallbacker::new_without_data, FnInStruct)]
+        #[diplomat::rust_link(
+            icu::locale::fallback::LocaleFallbacker::new_without_data,
+            FnInStruct
+        )]
         #[diplomat::attr(auto, named_constructor)]
         pub fn without_data() -> Box<LocaleFallbacker> {
             Box::new(LocaleFallbacker(
-                icu_locale::LocaleFallbacker::new_without_data(),
+                icu_locale_fallback::LocaleFallbacker::new_without_data(),
             ))
         }
 
         /// Associates this `LocaleFallbacker` with configuration options.
-        #[diplomat::rust_link(icu_locale::LocaleFallbacker::for_config, FnInStruct)]
+        #[diplomat::rust_link(icu::locale::fallback::LocaleFallbacker::for_config, FnInStruct)]
         #[diplomat::rust_link(
             icu::locale::fallback::LocaleFallbackerBorrowed::for_config,
             FnInStruct,
@@ -111,7 +115,7 @@ pub mod ffi {
             config: LocaleFallbackConfig,
         ) -> Box<LocaleFallbackerWithConfig<'a>> {
             Box::new(LocaleFallbackerWithConfig(self.0.for_config({
-                let mut c = icu_locale::fallback::LocaleFallbackConfig::default();
+                let mut c = icu_locale_fallback::LocaleFallbackConfig::default();
                 c.priority = config.priority.into();
                 c
             })))
@@ -119,8 +123,19 @@ pub mod ffi {
     }
 
     impl<'a> LocaleFallbackerWithConfig<'a> {
+        /// Returns the associated config.
+        #[diplomat::rust_link(
+            icu::locale::fallback::LocaleFallbackerWithConfig::config,
+            FnInStruct
+        )]
+        pub fn config(&self) -> LocaleFallbackConfig {
+            LocaleFallbackConfig {
+                priority: self.0.config().priority.into(),
+            }
+        }
+
         /// Creates an iterator from a locale with each step of fallback.
-        #[diplomat::rust_link(icu_locale::LocaleFallbacker::fallback_for, FnInStruct)]
+        #[diplomat::rust_link(icu::locale::fallback::LocaleFallbacker::fallback_for, FnInStruct)]
         #[diplomat::rust_link(
             icu::locale::fallback::LocaleFallbackerBorrowed::fallback_for,
             FnInStruct,
@@ -135,9 +150,17 @@ pub mod ffi {
             &'b self,
             locale: &'temp Locale,
         ) -> Box<LocaleFallbackIterator<'a>> {
-            Box::new(LocaleFallbackIterator(
-                self.0.fallback_for((&locale.0).into()),
-            ))
+            let prefs = icu_locale_core::preferences::LocalePreferences::from(&locale.0);
+            Box::new(LocaleFallbackIterator(self.0.fallback_for(
+                match self.0.config().priority {
+                    icu_locale_fallback::LocaleFallbackPriority::Region => {
+                        prefs.to_data_locale_region_priority()
+                    }
+                    icu_locale_fallback::LocaleFallbackPriority::Language | _ => {
+                        prefs.to_data_locale_language_priority()
+                    }
+                },
+            )))
         }
     }
 

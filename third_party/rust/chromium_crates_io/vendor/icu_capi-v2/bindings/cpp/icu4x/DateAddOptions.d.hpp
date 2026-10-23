@@ -30,7 +30,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `DateAddOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateAddOptions.html) for more information.
+ * See the [Rust documentation for `DateAddOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateAddOptions.html) for more information.
  */
 struct DateAddOptions {
     std::optional<icu4x::DateOverflow> overflow;

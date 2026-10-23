@@ -4,11 +4,11 @@
 
 //! Utilities for reading [`CodePointTrie`] data from TOML files.
 
-use crate::codepointtrie::error::Error;
 use crate::codepointtrie::CodePointTrie;
 use crate::codepointtrie::CodePointTrieHeader;
 use crate::codepointtrie::TrieType;
 use crate::codepointtrie::TrieValue;
+use crate::codepointtrie::error::Error;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::convert::TryFrom;

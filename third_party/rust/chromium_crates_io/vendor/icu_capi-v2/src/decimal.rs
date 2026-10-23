@@ -12,9 +12,9 @@ pub mod ffi {
     #[cfg(feature = "buffer_provider")]
     use crate::unstable::provider::ffi::DataProvider;
     use crate::unstable::{errors::ffi::DataError, fixed_decimal::ffi::Decimal};
-    use icu_decimal::options::DecimalFormatterOptions;
     #[cfg(any(feature = "compiled_data", feature = "buffer_provider"))]
     use icu_decimal::DecimalFormatterPreferences;
+    use icu_decimal::options::DecimalFormatterOptions;
 
     use writeable::Writeable;
 
@@ -98,7 +98,7 @@ pub mod ffi {
             use zerovec::VarZeroCow;
 
             fn str_to_cow(s: &'_ diplomat_runtime::DiplomatStr) -> VarZeroCow<'_, str> {
-                if let Ok(s) = core::str::from_utf8(s) {
+                if let Ok(s) = str::from_utf8(s) {
                     VarZeroCow::new_borrowed(s)
                 } else {
                     VarZeroCow::new_owned(

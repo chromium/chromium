@@ -16,17 +16,18 @@ cargo_crate("lib") {
   sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/lib.rs" ]
   inputs = [
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_japanese_modern_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_preferred_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_week_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/mod.rs",
   ]
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_calendar_data"
   cargo_pkg_description = "Data for the icu_calendar crate"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = false
 

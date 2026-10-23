@@ -8,7 +8,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
  *
  * Currently never returned by any API.
  *
- * Additional information: [1](https://docs.rs/icu/2.2.0/icu/datetime/unchecked/enum.FormattedDateTimeUncheckedError.html)
+ * Additional information: [1](https://docs.rs/icu/2.4.0/icu/datetime/unchecked/enum.FormattedDateTimeUncheckedError.html)
  */
 export class DateTimeWriteError {
 

@@ -34,18 +34,18 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_plurals"
   cargo_pkg_description = "Unicode Plural Rules categorizer for numeric input"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = true
 
   deps = [
     "//third_party/rust/fixed_decimal/v0_7:lib",
-    "//third_party/rust/icu_locale/v2:lib",
+    "//third_party/rust/icu_locale_fallback/v2:lib",
     "//third_party/rust/icu_plurals_data/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/zerovec/v0_11:lib",

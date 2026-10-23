@@ -1,0 +1,8 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo
+> Struct Ident("Foo", Some(Span { start: LineColumn { line: 1, col: 0 }, end: LineColumn { line: 1, col: 0 }, range: 0..0, span_location: None })) cannot have any lifetimes if it is marked as ABI compatible.
+Diplomat error: Lowering error in Foo
+> Cannot construct a slice of Ident("Foo", Some(Span { start: LineColumn { line: 1, col: 0 }, end: LineColumn { line: 1, col: 0 }, range: 0..0, span_location: None })) with non-primitive, non-enum, non-struct field "z"

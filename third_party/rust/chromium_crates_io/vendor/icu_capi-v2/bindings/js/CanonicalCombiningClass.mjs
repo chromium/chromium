@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `CanonicalCombiningClass`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html) for more information.
+ * See the [Rust documentation for `CanonicalCombiningClass`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html) for more information.
  */
 export class CanonicalCombiningClass {
     #value = undefined;
@@ -179,241 +179,241 @@ export class CanonicalCombiningClass {
     };
 
     /**
-     * See the [Rust documentation for `NotReordered`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.NotReordered) for more information.
+     * See the [Rust documentation for `NotReordered`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.NotReordered) for more information.
      */
     static NotReordered = CanonicalCombiningClass.#objectValues[0];
     /**
-     * See the [Rust documentation for `Overlay`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Overlay) for more information.
+     * See the [Rust documentation for `Overlay`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Overlay) for more information.
      */
     static Overlay = CanonicalCombiningClass.#objectValues[1];
     /**
-     * See the [Rust documentation for `HanReading`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.HanReading) for more information.
+     * See the [Rust documentation for `HanReading`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.HanReading) for more information.
      */
     static HanReading = CanonicalCombiningClass.#objectValues[6];
     /**
-     * See the [Rust documentation for `Nukta`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Nukta) for more information.
+     * See the [Rust documentation for `Nukta`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Nukta) for more information.
      */
     static Nukta = CanonicalCombiningClass.#objectValues[7];
     /**
-     * See the [Rust documentation for `KanaVoicing`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.KanaVoicing) for more information.
+     * See the [Rust documentation for `KanaVoicing`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.KanaVoicing) for more information.
      */
     static KanaVoicing = CanonicalCombiningClass.#objectValues[8];
     /**
-     * See the [Rust documentation for `Virama`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Virama) for more information.
+     * See the [Rust documentation for `Virama`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Virama) for more information.
      */
     static Virama = CanonicalCombiningClass.#objectValues[9];
     /**
-     * See the [Rust documentation for `CCC10`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC10) for more information.
+     * See the [Rust documentation for `CCC10`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC10) for more information.
      */
     static Ccc10 = CanonicalCombiningClass.#objectValues[10];
     /**
-     * See the [Rust documentation for `CCC11`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC11) for more information.
+     * See the [Rust documentation for `CCC11`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC11) for more information.
      */
     static Ccc11 = CanonicalCombiningClass.#objectValues[11];
     /**
-     * See the [Rust documentation for `CCC12`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC12) for more information.
+     * See the [Rust documentation for `CCC12`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC12) for more information.
      */
     static Ccc12 = CanonicalCombiningClass.#objectValues[12];
     /**
-     * See the [Rust documentation for `CCC13`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC13) for more information.
+     * See the [Rust documentation for `CCC13`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC13) for more information.
      */
     static Ccc13 = CanonicalCombiningClass.#objectValues[13];
     /**
-     * See the [Rust documentation for `CCC14`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC14) for more information.
+     * See the [Rust documentation for `CCC14`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC14) for more information.
      */
     static Ccc14 = CanonicalCombiningClass.#objectValues[14];
     /**
-     * See the [Rust documentation for `CCC15`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC15) for more information.
+     * See the [Rust documentation for `CCC15`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC15) for more information.
      */
     static Ccc15 = CanonicalCombiningClass.#objectValues[15];
     /**
-     * See the [Rust documentation for `CCC16`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC16) for more information.
+     * See the [Rust documentation for `CCC16`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC16) for more information.
      */
     static Ccc16 = CanonicalCombiningClass.#objectValues[16];
     /**
-     * See the [Rust documentation for `CCC17`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC17) for more information.
+     * See the [Rust documentation for `CCC17`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC17) for more information.
      */
     static Ccc17 = CanonicalCombiningClass.#objectValues[17];
     /**
-     * See the [Rust documentation for `CCC18`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC18) for more information.
+     * See the [Rust documentation for `CCC18`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC18) for more information.
      */
     static Ccc18 = CanonicalCombiningClass.#objectValues[18];
     /**
-     * See the [Rust documentation for `CCC19`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC19) for more information.
+     * See the [Rust documentation for `CCC19`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC19) for more information.
      */
     static Ccc19 = CanonicalCombiningClass.#objectValues[19];
     /**
-     * See the [Rust documentation for `CCC20`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC20) for more information.
+     * See the [Rust documentation for `CCC20`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC20) for more information.
      */
     static Ccc20 = CanonicalCombiningClass.#objectValues[20];
     /**
-     * See the [Rust documentation for `CCC21`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC21) for more information.
+     * See the [Rust documentation for `CCC21`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC21) for more information.
      */
     static Ccc21 = CanonicalCombiningClass.#objectValues[21];
     /**
-     * See the [Rust documentation for `CCC22`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC22) for more information.
+     * See the [Rust documentation for `CCC22`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC22) for more information.
      */
     static Ccc22 = CanonicalCombiningClass.#objectValues[22];
     /**
-     * See the [Rust documentation for `CCC23`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC23) for more information.
+     * See the [Rust documentation for `CCC23`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC23) for more information.
      */
     static Ccc23 = CanonicalCombiningClass.#objectValues[23];
     /**
-     * See the [Rust documentation for `CCC24`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC24) for more information.
+     * See the [Rust documentation for `CCC24`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC24) for more information.
      */
     static Ccc24 = CanonicalCombiningClass.#objectValues[24];
     /**
-     * See the [Rust documentation for `CCC25`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC25) for more information.
+     * See the [Rust documentation for `CCC25`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC25) for more information.
      */
     static Ccc25 = CanonicalCombiningClass.#objectValues[25];
     /**
-     * See the [Rust documentation for `CCC26`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC26) for more information.
+     * See the [Rust documentation for `CCC26`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC26) for more information.
      */
     static Ccc26 = CanonicalCombiningClass.#objectValues[26];
     /**
-     * See the [Rust documentation for `CCC27`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC27) for more information.
+     * See the [Rust documentation for `CCC27`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC27) for more information.
      */
     static Ccc27 = CanonicalCombiningClass.#objectValues[27];
     /**
-     * See the [Rust documentation for `CCC28`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC28) for more information.
+     * See the [Rust documentation for `CCC28`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC28) for more information.
      */
     static Ccc28 = CanonicalCombiningClass.#objectValues[28];
     /**
-     * See the [Rust documentation for `CCC29`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC29) for more information.
+     * See the [Rust documentation for `CCC29`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC29) for more information.
      */
     static Ccc29 = CanonicalCombiningClass.#objectValues[29];
     /**
-     * See the [Rust documentation for `CCC30`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC30) for more information.
+     * See the [Rust documentation for `CCC30`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC30) for more information.
      */
     static Ccc30 = CanonicalCombiningClass.#objectValues[30];
     /**
-     * See the [Rust documentation for `CCC31`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC31) for more information.
+     * See the [Rust documentation for `CCC31`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC31) for more information.
      */
     static Ccc31 = CanonicalCombiningClass.#objectValues[31];
     /**
-     * See the [Rust documentation for `CCC32`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC32) for more information.
+     * See the [Rust documentation for `CCC32`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC32) for more information.
      */
     static Ccc32 = CanonicalCombiningClass.#objectValues[32];
     /**
-     * See the [Rust documentation for `CCC33`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC33) for more information.
+     * See the [Rust documentation for `CCC33`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC33) for more information.
      */
     static Ccc33 = CanonicalCombiningClass.#objectValues[33];
     /**
-     * See the [Rust documentation for `CCC34`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC34) for more information.
+     * See the [Rust documentation for `CCC34`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC34) for more information.
      */
     static Ccc34 = CanonicalCombiningClass.#objectValues[34];
     /**
-     * See the [Rust documentation for `CCC35`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC35) for more information.
+     * See the [Rust documentation for `CCC35`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC35) for more information.
      */
     static Ccc35 = CanonicalCombiningClass.#objectValues[35];
     /**
-     * See the [Rust documentation for `CCC36`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC36) for more information.
+     * See the [Rust documentation for `CCC36`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC36) for more information.
      */
     static Ccc36 = CanonicalCombiningClass.#objectValues[36];
     /**
-     * See the [Rust documentation for `CCC84`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC84) for more information.
+     * See the [Rust documentation for `CCC84`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC84) for more information.
      */
     static Ccc84 = CanonicalCombiningClass.#objectValues[84];
     /**
-     * See the [Rust documentation for `CCC91`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC91) for more information.
+     * See the [Rust documentation for `CCC91`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC91) for more information.
      */
     static Ccc91 = CanonicalCombiningClass.#objectValues[91];
     /**
-     * See the [Rust documentation for `CCC103`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC103) for more information.
+     * See the [Rust documentation for `CCC103`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC103) for more information.
      */
     static Ccc103 = CanonicalCombiningClass.#objectValues[103];
     /**
-     * See the [Rust documentation for `CCC107`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC107) for more information.
+     * See the [Rust documentation for `CCC107`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC107) for more information.
      */
     static Ccc107 = CanonicalCombiningClass.#objectValues[107];
     /**
-     * See the [Rust documentation for `CCC118`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC118) for more information.
+     * See the [Rust documentation for `CCC118`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC118) for more information.
      */
     static Ccc118 = CanonicalCombiningClass.#objectValues[118];
     /**
-     * See the [Rust documentation for `CCC122`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC122) for more information.
+     * See the [Rust documentation for `CCC122`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC122) for more information.
      */
     static Ccc122 = CanonicalCombiningClass.#objectValues[122];
     /**
-     * See the [Rust documentation for `CCC129`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC129) for more information.
+     * See the [Rust documentation for `CCC129`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC129) for more information.
      */
     static Ccc129 = CanonicalCombiningClass.#objectValues[129];
     /**
-     * See the [Rust documentation for `CCC130`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC130) for more information.
+     * See the [Rust documentation for `CCC130`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC130) for more information.
      */
     static Ccc130 = CanonicalCombiningClass.#objectValues[130];
     /**
-     * See the [Rust documentation for `CCC132`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC132) for more information.
+     * See the [Rust documentation for `CCC132`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC132) for more information.
      */
     static Ccc132 = CanonicalCombiningClass.#objectValues[132];
     /**
-     * See the [Rust documentation for `CCC133`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC133) for more information.
+     * See the [Rust documentation for `CCC133`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.CCC133) for more information.
      */
     static Ccc133 = CanonicalCombiningClass.#objectValues[133];
     /**
-     * See the [Rust documentation for `AttachedBelowLeft`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedBelowLeft) for more information.
+     * See the [Rust documentation for `AttachedBelowLeft`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedBelowLeft) for more information.
      */
     static AttachedBelowLeft = CanonicalCombiningClass.#objectValues[200];
     /**
-     * See the [Rust documentation for `AttachedBelow`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedBelow) for more information.
+     * See the [Rust documentation for `AttachedBelow`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedBelow) for more information.
      */
     static AttachedBelow = CanonicalCombiningClass.#objectValues[202];
     /**
-     * See the [Rust documentation for `AttachedAbove`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedAbove) for more information.
+     * See the [Rust documentation for `AttachedAbove`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedAbove) for more information.
      */
     static AttachedAbove = CanonicalCombiningClass.#objectValues[214];
     /**
-     * See the [Rust documentation for `AttachedAboveRight`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedAboveRight) for more information.
+     * See the [Rust documentation for `AttachedAboveRight`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AttachedAboveRight) for more information.
      */
     static AttachedAboveRight = CanonicalCombiningClass.#objectValues[216];
     /**
-     * See the [Rust documentation for `BelowLeft`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.BelowLeft) for more information.
+     * See the [Rust documentation for `BelowLeft`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.BelowLeft) for more information.
      */
     static BelowLeft = CanonicalCombiningClass.#objectValues[218];
     /**
-     * See the [Rust documentation for `Below`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Below) for more information.
+     * See the [Rust documentation for `Below`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Below) for more information.
      */
     static Below = CanonicalCombiningClass.#objectValues[220];
     /**
-     * See the [Rust documentation for `BelowRight`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.BelowRight) for more information.
+     * See the [Rust documentation for `BelowRight`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.BelowRight) for more information.
      */
     static BelowRight = CanonicalCombiningClass.#objectValues[222];
     /**
-     * See the [Rust documentation for `Left`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Left) for more information.
+     * See the [Rust documentation for `Left`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Left) for more information.
      */
     static Left = CanonicalCombiningClass.#objectValues[224];
     /**
-     * See the [Rust documentation for `Right`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Right) for more information.
+     * See the [Rust documentation for `Right`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Right) for more information.
      */
     static Right = CanonicalCombiningClass.#objectValues[226];
     /**
-     * See the [Rust documentation for `AboveLeft`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AboveLeft) for more information.
+     * See the [Rust documentation for `AboveLeft`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AboveLeft) for more information.
      */
     static AboveLeft = CanonicalCombiningClass.#objectValues[228];
     /**
-     * See the [Rust documentation for `Above`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Above) for more information.
+     * See the [Rust documentation for `Above`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.Above) for more information.
      */
     static Above = CanonicalCombiningClass.#objectValues[230];
     /**
-     * See the [Rust documentation for `AboveRight`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AboveRight) for more information.
+     * See the [Rust documentation for `AboveRight`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.AboveRight) for more information.
      */
     static AboveRight = CanonicalCombiningClass.#objectValues[232];
     /**
-     * See the [Rust documentation for `DoubleBelow`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.DoubleBelow) for more information.
+     * See the [Rust documentation for `DoubleBelow`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.DoubleBelow) for more information.
      */
     static DoubleBelow = CanonicalCombiningClass.#objectValues[233];
     /**
-     * See the [Rust documentation for `DoubleAbove`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.DoubleAbove) for more information.
+     * See the [Rust documentation for `DoubleAbove`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.DoubleAbove) for more information.
      */
     static DoubleAbove = CanonicalCombiningClass.#objectValues[234];
     /**
-     * See the [Rust documentation for `IotaSubscript`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.IotaSubscript) for more information.
+     * See the [Rust documentation for `IotaSubscript`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#associatedconstant.IotaSubscript) for more information.
      */
     static IotaSubscript = CanonicalCombiningClass.#objectValues[240];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -431,7 +431,7 @@ export class CanonicalCombiningClass {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -455,7 +455,7 @@ export class CanonicalCombiningClass {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -479,7 +479,7 @@ export class CanonicalCombiningClass {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -497,7 +497,7 @@ export class CanonicalCombiningClass {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.CanonicalCombiningClass.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.CanonicalCombiningClass.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -518,6 +518,11 @@ export class CanonicalCombiningClass {
         }
     }
 
+    /**
+     * Creates a `CanonicalCombiningClass` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

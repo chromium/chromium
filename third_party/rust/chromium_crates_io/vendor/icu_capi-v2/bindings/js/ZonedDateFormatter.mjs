@@ -16,7 +16,7 @@ const ZonedDateFormatter_box_destroy_registry = new FinalizationRegistry((ptr) =
 });
 
 /**
- * See the [Rust documentation for `DateTimeFormatter`](https://docs.rs/icu/2.2.0/icu/datetime/struct.DateTimeFormatter.html) for more information.
+ * See the [Rust documentation for `DateTimeFormatter`](https://docs.rs/icu/2.4.0/icu/datetime/struct.DateTimeFormatter.html) for more information.
  */
 export class ZonedDateFormatter {
     // Internal ptr reference:
@@ -53,13 +53,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
+     * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
      */
     static createSpecificLong(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_specific_long_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_specific_long_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -81,13 +81,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
+     * See the [Rust documentation for `SpecificLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificLong.html) for more information.
      */
     static createSpecificLongWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_specific_long_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_specific_long_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -109,13 +109,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
+     * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
      */
     static createSpecificShort(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_specific_short_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_specific_short_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -137,13 +137,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
+     * See the [Rust documentation for `SpecificShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.SpecificShort.html) for more information.
      */
     static createSpecificShortWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_specific_short_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_specific_short_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -165,13 +165,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
+     * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
      */
     static createLocalizedOffsetLong(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_long_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_long_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -193,13 +193,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
+     * See the [Rust documentation for `LocalizedOffsetLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetLong.html) for more information.
      */
     static createLocalizedOffsetLongWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_long_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_long_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -221,13 +221,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
+     * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
      */
     static createLocalizedOffsetShort(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_short_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_short_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -249,13 +249,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
+     * See the [Rust documentation for `LocalizedOffsetShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.LocalizedOffsetShort.html) for more information.
      */
     static createLocalizedOffsetShortWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_short_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_localized_offset_short_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -277,13 +277,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
+     * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
      */
     static createGenericLong(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_generic_long_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_generic_long_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -305,13 +305,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
+     * See the [Rust documentation for `GenericLong`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericLong.html) for more information.
      */
     static createGenericLongWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_generic_long_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_generic_long_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -333,13 +333,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
+     * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
      */
     static createGenericShort(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_generic_short_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_generic_short_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -361,13 +361,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
+     * See the [Rust documentation for `GenericShort`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.GenericShort.html) for more information.
      */
     static createGenericShortWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_generic_short_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_generic_short_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -389,13 +389,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `Location`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
+     * See the [Rust documentation for `Location`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
      */
     static createLocation(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_location_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_location_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -417,13 +417,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `Location`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
+     * See the [Rust documentation for `Location`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.Location.html) for more information.
      */
     static createLocationWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_location_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_location_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -445,13 +445,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
+     * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
      */
     static createExemplarCity(locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_exemplar_city_mv1(diplomatReceive.buffer, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_exemplar_city_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -473,13 +473,13 @@ export class ZonedDateFormatter {
      * Caution: The locale provided here must match the locale used to construct the non-zoned formatter,
      * or else unexpected behavior may occur!
      *
-     * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.2.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
+     * See the [Rust documentation for `ExemplarCity`](https://docs.rs/icu/2.4.0/icu/datetime/fieldsets/zone/struct.ExemplarCity.html) for more information.
      */
     static createExemplarCityWithProvider(provider, locale, formatter) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_create_exemplar_city_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, formatter.ffiValue);
+        const result = wasm.icu4x_ZonedDateFormatter_create_exemplar_city_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), formatter instanceof DateFormatter ? formatter.ffiValue : typeError('formatter', 'DateFormatter'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -496,7 +496,7 @@ export class ZonedDateFormatter {
     }
 
     /**
-     * See the [Rust documentation for `format`](https://docs.rs/icu/2.2.0/icu/datetime/struct.DateTimeFormatter.html#method.format) for more information.
+     * See the [Rust documentation for `format`](https://docs.rs/icu/2.4.0/icu/datetime/struct.DateTimeFormatter.html#method.format) for more information.
      */
     formatIso(isoDate, zone) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -504,7 +504,7 @@ export class ZonedDateFormatter {
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_format_iso_mv1(diplomatReceive.buffer, this.ffiValue, isoDate.ffiValue, zone.ffiValue, write.buffer);
+        const result = wasm.icu4x_ZonedDateFormatter_format_iso_mv1(diplomatReceive.buffer, this.ffiValue, isoDate instanceof IsoDate ? isoDate.ffiValue : typeError('isoDate', 'IsoDate'), zone instanceof TimeZoneInfo ? zone.ffiValue : typeError('zone', 'TimeZoneInfo'), write.buffer);
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -522,7 +522,7 @@ export class ZonedDateFormatter {
     }
 
     /**
-     * See the [Rust documentation for `format_same_calendar`](https://docs.rs/icu/2.2.0/icu/datetime/struct.DateTimeFormatter.html#method.format_same_calendar) for more information.
+     * See the [Rust documentation for `format_same_calendar`](https://docs.rs/icu/2.4.0/icu/datetime/struct.DateTimeFormatter.html#method.format_same_calendar) for more information.
      */
     formatSameCalendar(date, zone) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 13, 4, true);
@@ -530,7 +530,7 @@ export class ZonedDateFormatter {
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
 
-        const result = wasm.icu4x_ZonedDateFormatter_format_same_calendar_mv1(diplomatReceive.buffer, this.ffiValue, date.ffiValue, zone.ffiValue, write.buffer);
+        const result = wasm.icu4x_ZonedDateFormatter_format_same_calendar_mv1(diplomatReceive.buffer, this.ffiValue, date instanceof Date ? date.ffiValue : typeError('date', 'Date'), zone instanceof TimeZoneInfo ? zone.ffiValue : typeError('zone', 'TimeZoneInfo'), write.buffer);
 
         try {
             if (!diplomatReceive.resultFlag) {

@@ -26,6 +26,12 @@ icu_provider::data_marker!(
     is_singleton = true
 );
 icu_provider::data_marker!(
+    /// `PropertyNameParseBlockV1`
+    PropertyNameParseBlockV1,
+    PropertyValueNameToEnumMap<'static>,
+    is_singleton = true
+);
+icu_provider::data_marker!(
     /// `PropertyNameParseCanonicalCombiningClassV1`
     PropertyNameParseCanonicalCombiningClassV1,
     PropertyValueNameToEnumMap<'static>,
@@ -130,6 +136,18 @@ icu_provider::data_marker!(
 icu_provider::data_marker!(
     /// `PropertyNameShortBidiClassV1`
     PropertyNameShortBidiClassV1,
+    PropertyEnumToValueNameLinearMap<'static>,
+    is_singleton = true
+);
+icu_provider::data_marker!(
+    /// `PropertyNameLongBlockV1`
+    PropertyNameLongBlockV1,
+    PropertyEnumToValueNameLinearMap<'static>,
+    is_singleton = true
+);
+icu_provider::data_marker!(
+    /// `PropertyNameShortBlockV1`
+    PropertyNameShortBlockV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );

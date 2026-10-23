@@ -6,6 +6,7 @@
 #[diplomat::abi_rename = "icu4x_{0}_mv1"]
 pub mod ffi {
     use alloc::boxed::Box;
+    use writeable::Writeable;
 
     #[cfg(feature = "buffer_provider")]
     use crate::unstable::errors::ffi::DataError;
@@ -114,6 +115,14 @@ pub mod ffi {
         #[diplomat::attr(auto, getter)]
         pub fn seconds_part(&self) -> u32 {
             self.0.seconds_part()
+        }
+
+        /// Formats the [`UtcOffset`] as a string.
+        #[diplomat::rust_link(icu::time::zone::UtcOffset::write_to, FnInStruct)]
+        #[diplomat::rust_link(icu::time::zone::UtcOffset::to_string, FnInStruct, hidden)]
+        #[diplomat::attr(auto, stringifier)]
+        pub fn to_string(&self, write: &mut diplomat_runtime::DiplomatWrite) {
+            let _infallible = self.0.write_to(write);
         }
     }
 

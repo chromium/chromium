@@ -13,7 +13,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * An ICU4X `ZonedDateTime` object capable of containing a ISO-8601 date, time, and zone.
  *
- * See the [Rust documentation for `ZonedDateTime`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedDateTime.html) for more information.
+ * See the [Rust documentation for `ZonedDateTime`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedDateTime.html) for more information.
  */
 export class ZonedIsoDateTime {
     get date(): IsoDate;
@@ -26,14 +26,14 @@ export class ZonedIsoDateTime {
     /**
      * Creates a new {@link ZonedIsoDateTime} from an IXDTF string.
      *
-     * See the [Rust documentation for `try_strict_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedDateTime.html#method.try_strict_from_str) for more information.
+     * See the [Rust documentation for `try_strict_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedDateTime.html#method.try_strict_from_str) for more information.
      */
     static strictFromString(v: string, ianaParser: IanaParser): ZonedIsoDateTime;
 
     /**
      * Creates a new {@link ZonedIsoDateTime} from an IXDTF string.
      *
-     * See the [Rust documentation for `try_full_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedDateTime.html#method.try_full_from_str) for more information.
+     * See the [Rust documentation for `try_full_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedDateTime.html#method.try_full_from_str) for more information.
      *
      * @deprecated use strict_from_string
      */
@@ -44,7 +44,7 @@ export class ZonedIsoDateTime {
      *
      * Note: {@link ZonedIsoDateTime}s created with this constructor can only be formatted using localized offset zone styles.
      *
-     * See the [Rust documentation for `from_epoch_milliseconds_and_utc_offset`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedDateTime.html#method.from_epoch_milliseconds_and_utc_offset) for more information.
+     * See the [Rust documentation for `from_epoch_milliseconds_and_utc_offset`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedDateTime.html#method.from_epoch_milliseconds_and_utc_offset) for more information.
      */
     static fromEpochMillisecondsAndUtcOffset(epochMilliseconds: bigint, utcOffset: UtcOffset): ZonedIsoDateTime;
 }

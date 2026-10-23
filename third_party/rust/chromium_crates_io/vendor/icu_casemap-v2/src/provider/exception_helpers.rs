@@ -27,10 +27,6 @@ use zerovec::ule::{AsULE, ULE};
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 #[cfg_attr(feature = "datagen", derive(serde::Serialize))]
 pub struct ExceptionBits {
-    /// Whether or not the slots are double-width.
-    ///
-    /// Unused in ICU4X
-    pub double_width_slots: bool,
     /// There is no simple casefolding, even if there is a simple lowercase mapping
     pub no_simple_case_folding: bool,
     /// The delta stored in the `Delta` slot is negative
@@ -39,8 +35,9 @@ pub struct ExceptionBits {
     pub is_sensitive: bool,
     /// The dot type of the character
     pub dot_type: DotType,
-    /// If the character has conditional special casing
-    pub has_conditional_special: bool,
+    /// If the character has conditional case mapping
+    #[cfg_attr(feature = "serde", serde(rename = "has_conditional_special"))]
+    pub has_conditional_map: bool,
     /// If the character has conditional case folding
     pub has_conditional_fold: bool,
 }
@@ -49,21 +46,19 @@ impl ExceptionBits {
     /// Extract from the upper half of an ICU4C-format u16
     pub(crate) fn from_integer(int: u8) -> Self {
         let ule = ExceptionBitsULE(int);
-        let double_width_slots = ule.double_width_slots();
         let no_simple_case_folding = ule.no_simple_case_folding();
         let negative_delta = ule.negative_delta();
         let is_sensitive = ule.is_sensitive();
-        let has_conditional_special = ule.has_conditional_special();
+        let has_conditional_map = ule.has_conditional_special();
         let has_conditional_fold = ule.has_conditional_fold();
         let dot_type = ule.dot_type();
 
         Self {
-            double_width_slots,
             no_simple_case_folding,
             negative_delta,
             is_sensitive,
             dot_type,
-            has_conditional_special,
+            has_conditional_map,
             has_conditional_fold,
         }
     }
@@ -74,9 +69,6 @@ impl ExceptionBits {
         let dot_data = (self.dot_type as u8) << ExceptionBitsULE::DOT_SHIFT;
         int |= dot_data;
 
-        if self.double_width_slots {
-            int |= ExceptionBitsULE::DOUBLE_SLOTS_FLAG
-        }
         if self.no_simple_case_folding {
             int |= ExceptionBitsULE::NO_SIMPLE_CASE_FOLDING_FLAG
         }
@@ -86,7 +78,7 @@ impl ExceptionBits {
         if self.is_sensitive {
             int |= ExceptionBitsULE::SENSITIVE_FLAG
         }
-        if self.has_conditional_special {
+        if self.has_conditional_map {
             int |= ExceptionBitsULE::CONDITIONAL_SPECIAL_FLAG
         }
         if self.has_conditional_fold {

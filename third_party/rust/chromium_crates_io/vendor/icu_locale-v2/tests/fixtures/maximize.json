@@ -161,6 +161,14 @@
   },
   {
     "input": "und",
+    "output": "und"
+  },
+  {
+    "input": "und-US",
+    "output": "en-Latn-US"
+  },
+  {
+    "input": "und-Latn",
     "output": "en-Latn-US"
   },
   {
@@ -177,11 +185,11 @@
   },
   {
     "input": "und-001",
-    "output": "en-Latn-001"
+    "output": "und-001"
   },
   {
     "input": "und-150",
-    "output": "en-Latn-150"
+    "output": "und-150"
   },
   {
     "input": "und-419",
@@ -194,6 +202,18 @@
   {
     "input": "und-Arab-AF",
     "output": "fa-Arab-AF"
+  },
+  {
+    "input": "und-XZ",
+    "output": "und-XZ"
+  },
+  {
+    "input": "und-Qaaz",
+    "output": "und-Qaaz"
+  },
+  {
+    "input": "und-Qaaz-XZ",
+    "output": "und-Qaaz-XZ"
   },
   {
     "input": "qaa",

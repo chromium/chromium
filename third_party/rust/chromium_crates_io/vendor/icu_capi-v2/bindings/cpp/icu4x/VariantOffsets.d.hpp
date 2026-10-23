@@ -31,11 +31,11 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `VariantOffsets`](https://docs.rs/icu/2.2.0/icu/time/zone/struct.VariantOffsets.html) for more information.
+ * See the [Rust documentation for `VariantOffsets`](https://docs.rs/icu/2.4.0/icu/time/zone/struct.VariantOffsets.html) for more information.
  */
 struct VariantOffsets {
     std::unique_ptr<icu4x::UtcOffset> standard;
-    std::unique_ptr<icu4x::UtcOffset> daylight;
+    icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::UtcOffset>> daylight;
 
     inline icu4x::capi::VariantOffsets AsFFI() const;
     inline static icu4x::VariantOffsets FromFFI(icu4x::capi::VariantOffsets c_struct);

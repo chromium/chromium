@@ -27,7 +27,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `GroupingStrategy`](https://docs.rs/icu/2.2.0/icu/decimal/options/enum.GroupingStrategy.html) for more information.
+ * See the [Rust documentation for `GroupingStrategy`](https://docs.rs/icu/2.4.0/icu/decimal/options/enum.GroupingStrategy.html) for more information.
  */
 class DecimalGroupingStrategy {
 public:

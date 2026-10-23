@@ -33,33 +33,33 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `JoiningType`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html) for more information.
+ * See the [Rust documentation for `JoiningType`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html) for more information.
  */
 class JoiningType {
 public:
     enum Value {
         /**
-         * See the [Rust documentation for `NonJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.NonJoining) for more information.
+         * See the [Rust documentation for `NonJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.NonJoining) for more information.
          */
         NonJoining = 0,
         /**
-         * See the [Rust documentation for `JoinCausing`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.JoinCausing) for more information.
+         * See the [Rust documentation for `JoinCausing`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.JoinCausing) for more information.
          */
         JoinCausing = 1,
         /**
-         * See the [Rust documentation for `DualJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.DualJoining) for more information.
+         * See the [Rust documentation for `DualJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.DualJoining) for more information.
          */
         DualJoining = 2,
         /**
-         * See the [Rust documentation for `LeftJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.LeftJoining) for more information.
+         * See the [Rust documentation for `LeftJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.LeftJoining) for more information.
          */
         LeftJoining = 3,
         /**
-         * See the [Rust documentation for `RightJoining`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.RightJoining) for more information.
+         * See the [Rust documentation for `RightJoining`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.RightJoining) for more information.
          */
         RightJoining = 4,
         /**
-         * See the [Rust documentation for `Transparent`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#associatedconstant.Transparent) for more information.
+         * See the [Rust documentation for `Transparent`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#associatedconstant.Transparent) for more information.
          */
         Transparent = 5,
     };
@@ -73,38 +73,43 @@ public:
     explicit operator bool() const = delete;
 
   /**
-   * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+   * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
    */
   inline static icu4x::JoiningType for_char(char32_t ch);
 
   /**
    * Get the "long" name of this property value (returns empty if property value is unknown)
    *
-   * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+   * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
    */
   inline std::optional<std::string_view> long_name() const;
 
   /**
    * Get the "short" name of this property value (returns empty if property value is unknown)
    *
-   * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+   * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
    */
   inline std::optional<std::string_view> short_name() const;
 
   /**
    * Convert to an integer value usable with ICU4C and `CodePointMapData`
    *
-   * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#method.to_icu4c_value) for more information.
+   * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#method.to_icu4c_value) for more information.
    */
   inline uint8_t to_integer_value() const;
 
   /**
    * Convert from an integer value from ICU4C or `CodePointMapData`
    *
-   * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningType.html#method.from_icu4c_value) for more information.
+   * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningType.html#method.from_icu4c_value) for more information.
    */
   inline static std::optional<icu4x::JoiningType> from_integer_value(uint8_t other);
 
+  /**
+   * Creates a `JoiningType` from a string.
+   *
+   * Short names, long names, and aliases are supported, and matching is case-insensitive.
+   */
   inline static std::optional<icu4x::JoiningType> try_from_str(std::string_view s);
 
     inline icu4x::capi::JoiningType AsFFI() const;

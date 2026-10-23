@@ -11,12 +11,13 @@
 //! For regex engines, [`crate::sets::load_for_ecma262_unstable()`] is a convenient API for working
 //! with properties at runtime tailored for the use case of ECMA262-compatible regex engines.
 
-use crate::provider::*;
 use crate::CodePointSetData;
+use crate::provider::*;
 #[cfg(doc)]
 use crate::{
+    CodePointMapData, PropertyParser,
     props::{GeneralCategory, GeneralCategoryGroup, Script},
-    script, CodePointMapData, PropertyParser,
+    script,
 };
 use icu_provider::prelude::*;
 

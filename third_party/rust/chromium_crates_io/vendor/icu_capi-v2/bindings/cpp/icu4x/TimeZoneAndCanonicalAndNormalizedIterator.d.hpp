@@ -24,15 +24,15 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `TimeZoneAndCanonicalAndNormalizedIter`](https://docs.rs/icu/2.2.0/icu/time/zone/iana/struct.TimeZoneAndCanonicalAndNormalizedIter.html) for more information.
+ * See the [Rust documentation for `TimeZoneAndCanonicalAndNormalizedIter`](https://docs.rs/icu/2.4.0/icu/time/zone/iana/struct.TimeZoneAndCanonicalAndNormalizedIter.html) for more information.
  */
 class TimeZoneAndCanonicalAndNormalizedIterator {
 public:
 
   /**
-   * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/time/zone/iana/struct.TimeZoneAndCanonicalAndNormalizedIter.html#method.next) for more information.
+   * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/time/zone/iana/struct.TimeZoneAndCanonicalAndNormalizedIter.html#method.next) for more information.
    */
-  inline std::optional<icu4x::TimeZoneAndCanonicalAndNormalized> next();
+  inline std::optional<icu4x::TimeZoneAndCanonicalAndNormalized> next() DIPLOMAT_LIFETIME_BOUND;
 
     inline const icu4x::capi::TimeZoneAndCanonicalAndNormalizedIterator* AsFFI() const;
     inline icu4x::capi::TimeZoneAndCanonicalAndNormalizedIterator* AsFFI();

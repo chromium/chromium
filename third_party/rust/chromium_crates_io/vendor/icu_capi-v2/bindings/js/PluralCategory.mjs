@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `PluralCategory`](https://docs.rs/icu/2.2.0/icu/plurals/enum.PluralCategory.html) for more information.
+ * See the [Rust documentation for `PluralCategory`](https://docs.rs/icu/2.4.0/icu/plurals/enum.PluralCategory.html) for more information.
  */
 export class PluralCategory {
     #value = undefined;
@@ -82,9 +82,9 @@ export class PluralCategory {
      * Construct from a string in the format
      * [specified in TR35](https://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules)
      *
-     * See the [Rust documentation for `get_for_cldr_string`](https://docs.rs/icu/2.2.0/icu/plurals/enum.PluralCategory.html#method.get_for_cldr_string) for more information.
+     * See the [Rust documentation for `get_for_cldr_string`](https://docs.rs/icu/2.4.0/icu/plurals/enum.PluralCategory.html#method.get_for_cldr_string) for more information.
      *
-     * See the [Rust documentation for `get_for_cldr_bytes`](https://docs.rs/icu/2.2.0/icu/plurals/enum.PluralCategory.html#method.get_for_cldr_bytes) for more information.
+     * See the [Rust documentation for `get_for_cldr_bytes`](https://docs.rs/icu/2.4.0/icu/plurals/enum.PluralCategory.html#method.get_for_cldr_bytes) for more information.
      */
     static getForCldrString(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();

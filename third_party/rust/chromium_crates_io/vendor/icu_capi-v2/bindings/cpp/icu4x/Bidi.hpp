@@ -55,7 +55,7 @@ inline icu4x::diplomat::result<std::unique_ptr<icu4x::Bidi>, icu4x::DataError> i
     return result.is_ok ? icu4x::diplomat::result<std::unique_ptr<icu4x::Bidi>, icu4x::DataError>(icu4x::diplomat::Ok<std::unique_ptr<icu4x::Bidi>>(std::unique_ptr<icu4x::Bidi>(icu4x::Bidi::FromFFI(result.ok)))) : icu4x::diplomat::result<std::unique_ptr<icu4x::Bidi>, icu4x::DataError>(icu4x::diplomat::Err<icu4x::DataError>(icu4x::DataError::FromFFI(result.err)));
 }
 
-inline std::unique_ptr<icu4x::BidiInfo> icu4x::Bidi::for_text(std::string_view text, std::optional<uint8_t> default_level) const {
+inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::BidiInfo>> icu4x::Bidi::for_text(std::string_view text DIPLOMAT_LIFETIME_BOUND, std::optional<uint8_t> default_level) const {
     auto result = icu4x::capi::icu4x_Bidi_for_text_utf8_mv1(this->AsFFI(),
         {text.data(), text.size()},
         default_level.has_value() ? (icu4x::diplomat::capi::OptionU8{ { default_level.value() }, true }) : (icu4x::diplomat::capi::OptionU8{ {}, false }));

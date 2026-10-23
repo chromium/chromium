@@ -44,7 +44,7 @@ inline icu4x::diplomat::result<std::unique_ptr<icu4x::WindowsParser>, icu4x::Dat
     return result.is_ok ? icu4x::diplomat::result<std::unique_ptr<icu4x::WindowsParser>, icu4x::DataError>(icu4x::diplomat::Ok<std::unique_ptr<icu4x::WindowsParser>>(std::unique_ptr<icu4x::WindowsParser>(icu4x::WindowsParser::FromFFI(result.ok)))) : icu4x::diplomat::result<std::unique_ptr<icu4x::WindowsParser>, icu4x::DataError>(icu4x::diplomat::Err<icu4x::DataError>(icu4x::DataError::FromFFI(result.err)));
 }
 
-inline std::unique_ptr<icu4x::TimeZone> icu4x::WindowsParser::parse(std::string_view value, std::string_view region) const {
+inline icu4x::diplomat::maybe_null<std::unique_ptr<icu4x::TimeZone>> icu4x::WindowsParser::parse(std::string_view value, std::string_view region) const {
     auto result = icu4x::capi::icu4x_WindowsParser_parse_mv1(this->AsFFI(),
         {value.data(), value.size()},
         {region.data(), region.size()});

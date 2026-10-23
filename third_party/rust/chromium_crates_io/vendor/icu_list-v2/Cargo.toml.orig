@@ -29,22 +29,30 @@ databake = { workspace = true, features = ["derive"], optional = true}
 serde = { workspace = true, features = ["derive"], optional = true }
 
 icu_list_data = { workspace = true, optional = true }
-icu_locale = { workspace = true, optional = true }
+icu_locale_fallback = { workspace = true, optional = true }
 
 [dev-dependencies]
 icu = { path = "../../components/icu", default-features = false }
+icu_locale_core = { workspace = true }
 postcard = { workspace = true, features = ["use-std"] }
 rmp-serde = { workspace = true }
 serde_json = { workspace = true }
 
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+criterion = { workspace = true }
 
 [features]
 default = ["compiled_data"]
 serde = ["dep:serde", "icu_provider/serde", "icu_provider/alloc", "zerovec/serde"]
 serde_human = ["serde", "regex-automata/dfa-build", "regex-automata/syntax", "alloc"]
 datagen = ["serde", "dep:databake", "regex-automata/dfa-build", "regex-automata/syntax", "zerovec/databake", "alloc", "serde_human", "icu_provider/export"]
-compiled_data = ["dep:icu_list_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
+compiled_data = ["dep:icu_list_data", "dep:icu_locale_fallback", "icu_locale_fallback?/compiled_data", "icu_provider/baked"]
 alloc = ["zerovec/alloc", "icu_provider/alloc", "serde?/alloc"]
+
+[[bench]]
+name = "list"
+harness = false
+required-features = ["compiled_data"]
 
 [lints]
 workspace = true

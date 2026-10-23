@@ -53,7 +53,7 @@ inline std::unique_ptr<icu4x::TimeZone> icu4x::IanaParser::parse(std::string_vie
     return std::unique_ptr<icu4x::TimeZone>(icu4x::TimeZone::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::TimeZoneIterator> icu4x::IanaParser::iter() const {
+inline std::unique_ptr<icu4x::TimeZoneIterator> icu4x::IanaParser::iter() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_IanaParser_iter_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::TimeZoneIterator>(icu4x::TimeZoneIterator::FromFFI(result));
 }

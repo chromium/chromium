@@ -39,7 +39,9 @@ namespace icu4x {
 /**
  * An ICU4X `ZonedTime` object capable of containing a ISO-8601 time, and zone.
  *
- * See the [Rust documentation for `ZonedTime`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedTime.html) for more information.
+ * See the [Rust documentation for `ZonedTime`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedTime.html) for more information.
+ *
+ * 🚧 This API is unstable and may experience breaking changes outside major releases.
  */
 struct ZonedTime {
     std::unique_ptr<icu4x::Time> time;
@@ -48,28 +50,36 @@ struct ZonedTime {
   /**
    * Creates a new {@link ZonedTime} from an IXDTF string.
    *
-   * See the [Rust documentation for `try_strict_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedTime.html#method.try_strict_from_str) for more information.
+   * See the [Rust documentation for `try_strict_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedTime.html#method.try_strict_from_str) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline static icu4x::diplomat::result<icu4x::ZonedTime, icu4x::Rfc9557ParseError> strict_from_string(std::string_view v, const icu4x::IanaParser& iana_parser);
 
   /**
    * Creates a new {@link ZonedTime} from a location-only IXDTF string.
    *
-   * See the [Rust documentation for `try_location_only_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedTime.html#method.try_location_only_from_str) for more information.
+   * See the [Rust documentation for `try_location_only_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedTime.html#method.try_location_only_from_str) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline static icu4x::diplomat::result<icu4x::ZonedTime, icu4x::Rfc9557ParseError> location_only_from_string(std::string_view v, const icu4x::IanaParser& iana_parser);
 
   /**
    * Creates a new {@link ZonedTime} from an offset-only IXDTF string.
    *
-   * See the [Rust documentation for `try_offset_only_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedTime.html#method.try_offset_only_from_str) for more information.
+   * See the [Rust documentation for `try_offset_only_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedTime.html#method.try_offset_only_from_str) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline static icu4x::diplomat::result<icu4x::ZonedTime, icu4x::Rfc9557ParseError> offset_only_from_string(std::string_view v);
 
   /**
    * Creates a new {@link ZonedTime} from an IXDTF string, without requiring the offset.
    *
-   * See the [Rust documentation for `try_lenient_from_str`](https://docs.rs/icu/2.2.0/icu/time/struct.ZonedTime.html#method.try_lenient_from_str) for more information.
+   * See the [Rust documentation for `try_lenient_from_str`](https://docs.rs/icu/2.4.0/icu/time/struct.ZonedTime.html#method.try_lenient_from_str) for more information.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
    */
   inline static icu4x::diplomat::result<icu4x::ZonedTime, icu4x::Rfc9557ParseError> lenient_from_string(std::string_view v, const icu4x::IanaParser& iana_parser);
 

@@ -23,22 +23,22 @@ pub use names::{
 };
 
 pub use names::{
-    PropertyNameLongBidiClassV1, PropertyNameLongEastAsianWidthV1,
+    PropertyNameLongBidiClassV1, PropertyNameLongBlockV1, PropertyNameLongEastAsianWidthV1,
     PropertyNameLongGeneralCategoryV1, PropertyNameLongGraphemeClusterBreakV1,
     PropertyNameLongHangulSyllableTypeV1, PropertyNameLongIndicConjunctBreakV1,
     PropertyNameLongIndicSyllabicCategoryV1, PropertyNameLongJoiningGroupV1,
     PropertyNameLongJoiningTypeV1, PropertyNameLongLineBreakV1, PropertyNameLongNumericTypeV1,
     PropertyNameLongScriptV1, PropertyNameLongSentenceBreakV1,
     PropertyNameLongVerticalOrientationV1, PropertyNameLongWordBreakV1,
-    PropertyNameParseBidiClassV1, PropertyNameParseCanonicalCombiningClassV1,
-    PropertyNameParseEastAsianWidthV1, PropertyNameParseGeneralCategoryMaskV1,
-    PropertyNameParseGeneralCategoryV1, PropertyNameParseGraphemeClusterBreakV1,
-    PropertyNameParseHangulSyllableTypeV1, PropertyNameParseIndicConjunctBreakV1,
-    PropertyNameParseIndicSyllabicCategoryV1, PropertyNameParseJoiningGroupV1,
-    PropertyNameParseJoiningTypeV1, PropertyNameParseLineBreakV1, PropertyNameParseNumericTypeV1,
-    PropertyNameParseScriptV1, PropertyNameParseSentenceBreakV1,
+    PropertyNameParseBidiClassV1, PropertyNameParseBlockV1,
+    PropertyNameParseCanonicalCombiningClassV1, PropertyNameParseEastAsianWidthV1,
+    PropertyNameParseGeneralCategoryMaskV1, PropertyNameParseGeneralCategoryV1,
+    PropertyNameParseGraphemeClusterBreakV1, PropertyNameParseHangulSyllableTypeV1,
+    PropertyNameParseIndicConjunctBreakV1, PropertyNameParseIndicSyllabicCategoryV1,
+    PropertyNameParseJoiningGroupV1, PropertyNameParseJoiningTypeV1, PropertyNameParseLineBreakV1,
+    PropertyNameParseNumericTypeV1, PropertyNameParseScriptV1, PropertyNameParseSentenceBreakV1,
     PropertyNameParseVerticalOrientationV1, PropertyNameParseWordBreakV1,
-    PropertyNameShortBidiClassV1, PropertyNameShortEastAsianWidthV1,
+    PropertyNameShortBidiClassV1, PropertyNameShortBlockV1, PropertyNameShortEastAsianWidthV1,
     PropertyNameShortGeneralCategoryV1, PropertyNameShortGraphemeClusterBreakV1,
     PropertyNameShortHangulSyllableTypeV1, PropertyNameShortIndicConjunctBreakV1,
     PropertyNameShortIndicSyllabicCategoryV1, PropertyNameShortJoiningGroupV1,
@@ -47,7 +47,7 @@ pub use names::{
     PropertyNameShortVerticalOrientationV1, PropertyNameShortWordBreakV1,
 };
 
-pub use crate::props::gc::GeneralCategoryULE;
+pub use crate::enum_values::GeneralCategoryULE;
 use crate::props::*;
 use crate::script::ScriptWithExt;
 use core::ops::RangeInclusive;
@@ -149,6 +149,7 @@ const _: () = {
     impl_property_binary_xid_continue_v1!(Baked);
     impl_property_binary_xid_start_v1!(Baked);
     impl_property_enum_bidi_class_v1!(Baked);
+    impl_property_enum_block_v1!(Baked);
     impl_property_enum_bidi_mirroring_glyph_v1!(Baked);
     impl_property_enum_canonical_combining_class_v1!(Baked);
     impl_property_enum_east_asian_width_v1!(Baked);
@@ -166,6 +167,7 @@ const _: () = {
     impl_property_enum_vertical_orientation_v1!(Baked);
     impl_property_enum_word_break_v1!(Baked);
     impl_property_name_long_bidi_class_v1!(Baked);
+    impl_property_name_long_block_v1!(Baked);
     #[cfg(feature = "alloc")]
     impl_property_name_long_canonical_combining_class_v1!(Baked);
     impl_property_name_long_east_asian_width_v1!(Baked);
@@ -183,6 +185,7 @@ const _: () = {
     impl_property_name_long_vertical_orientation_v1!(Baked);
     impl_property_name_long_word_break_v1!(Baked);
     impl_property_name_parse_bidi_class_v1!(Baked);
+    impl_property_name_parse_block_v1!(Baked);
     impl_property_name_parse_canonical_combining_class_v1!(Baked);
     impl_property_name_parse_east_asian_width_v1!(Baked);
     impl_property_name_parse_general_category_mask_v1!(Baked);
@@ -200,6 +203,7 @@ const _: () = {
     impl_property_name_parse_vertical_orientation_v1!(Baked);
     impl_property_name_parse_word_break_v1!(Baked);
     impl_property_name_short_bidi_class_v1!(Baked);
+    impl_property_name_short_block_v1!(Baked);
     #[cfg(feature = "alloc")]
     impl_property_name_short_canonical_combining_class_v1!(Baked);
     impl_property_name_short_east_asian_width_v1!(Baked);
@@ -640,6 +644,12 @@ icu_provider::data_marker!(
     is_singleton = true,
 );
 icu_provider::data_marker!(
+    /// Data marker for the 'Block' Unicode property
+    PropertyEnumBlockV1,
+    PropertyCodePointMap<'static, Block>,
+    is_singleton = true,
+);
+icu_provider::data_marker!(
     /// Data marker for the 'CanonicalCombiningClass' Unicode property
     PropertyEnumCanonicalCombiningClassV1,
     PropertyCodePointMap<'static, CanonicalCombiningClass>,
@@ -751,6 +761,7 @@ icu_provider::data_marker!(
 /// All data keys in this module.
 pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyNameLongBidiClassV1::INFO,
+    PropertyNameLongBlockV1::INFO,
     #[cfg(feature = "alloc")]
     PropertyNameLongCanonicalCombiningClassV1::INFO,
     PropertyNameLongEastAsianWidthV1::INFO,
@@ -768,6 +779,7 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyNameLongVerticalOrientationV1::INFO,
     PropertyNameLongWordBreakV1::INFO,
     PropertyNameParseBidiClassV1::INFO,
+    PropertyNameParseBlockV1::INFO,
     PropertyNameParseCanonicalCombiningClassV1::INFO,
     PropertyNameParseEastAsianWidthV1::INFO,
     PropertyNameParseGeneralCategoryMaskV1::INFO,
@@ -785,6 +797,7 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyNameParseVerticalOrientationV1::INFO,
     PropertyNameParseWordBreakV1::INFO,
     PropertyNameShortBidiClassV1::INFO,
+    PropertyNameShortBlockV1::INFO,
     #[cfg(feature = "alloc")]
     PropertyNameShortCanonicalCombiningClassV1::INFO,
     PropertyNameShortEastAsianWidthV1::INFO,
@@ -871,6 +884,7 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyBinaryXidContinueV1::INFO,
     PropertyBinaryXidStartV1::INFO,
     PropertyEnumBidiClassV1::INFO,
+    PropertyEnumBlockV1::INFO,
     PropertyEnumCanonicalCombiningClassV1::INFO,
     PropertyEnumEastAsianWidthV1::INFO,
     PropertyEnumGeneralCategoryV1::INFO,

@@ -4,15 +4,17 @@
 
 use super::Cow;
 use core::fmt::Write;
+#[cfg(feature = "unstable")]
+use icu_plurals::PluralOperands;
 use writeable::Part;
 
+use crate::DecimalFormatterPreferences;
 use crate::grouper;
 use crate::input::Decimal;
 use crate::options::*;
 use crate::parts;
 use crate::provider::*;
 use crate::size_test_macro::size_test;
-use crate::DecimalFormatterPreferences;
 #[cfg(feature = "alloc")]
 use alloc::string::String;
 use fixed_decimal::{Sign, UnsignedDecimal};
@@ -118,8 +120,7 @@ impl DecimalFormatter {
         ))
     }
 
-    #[doc(hidden)] // TODO(#3647): should be private
-    pub fn format_unsigned<'l>(
+    pub(crate) fn format_unsigned<'l>(
         &'l self,
         value: Cow<'l, UnsignedDecimal>,
     ) -> FormattedUnsignedDecimal<'l> {
@@ -131,8 +132,7 @@ impl DecimalFormatter {
         }
     }
 
-    #[doc(hidden)] // TODO(#3647): should be private
-    pub fn format_sign<'l, T>(&'l self, sign: Sign, value: T) -> FormattedSign<'l, T> {
+    pub(crate) fn format_sign<'l, T>(&'l self, sign: Sign, value: T) -> FormattedSign<'l, T> {
         FormattedSign {
             sign: match sign {
                 Sign::None => None,
@@ -174,6 +174,13 @@ pub struct FormattedUnsignedDecimal<'l> {
     pub(crate) options: &'l DecimalFormatterOptions,
     pub(crate) symbols: &'l DecimalSymbols<'l>,
     pub(crate) digits: &'l [char; 10],
+}
+
+impl FormattedUnsignedDecimal<'_> {
+    #[cfg(feature = "unstable")]
+    pub(crate) fn plural_operands(&self) -> PluralOperands {
+        PluralOperands::from_significand_and_exponent(&self.value, 0)
+    }
 }
 
 #[doc(hidden)] // TODO(#3647): should be private
@@ -238,38 +245,10 @@ impl Writeable for FormattedUnsignedDecimal<'_> {
     }
 }
 
-impl Writeable for FormattedDecimal<'_> {
-    fn write_to_parts<W>(&self, sink: &mut W) -> Result<(), core::fmt::Error>
-    where
-        W: PartsWrite + ?Sized,
-    {
-        self.0.write_to_parts(sink)
-    }
-}
-
+writeable::impl_writeable_delegate!(FormattedDecimal<'_>, |&self| &self.0, #[cfg(feature = "alloc")] fn write_to_string);
 writeable::impl_display_with_writeable!(FormattedDecimal<'_>, #[cfg(feature = "alloc")]);
 writeable::impl_display_with_writeable!(FormattedUnsignedDecimal<'_>, #[cfg(feature = "alloc")]);
-
-/// This trait is implemented for compatibility with [`fmt!`](core::fmt)
-/// To create a string, [`Writeable::write_to_string`] is usually more efficient
-impl<T: Writeable> core::fmt::Display for FormattedSign<'_, T> {
-    #[inline]
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        Writeable::write_to(&self, f)
-    }
-}
-#[cfg(feature = "alloc")]
-impl<T: Writeable> FormattedSign<'_, T> {
-    /// Converts the given value to a `String`.
-    ///
-    /// Under the hood, this uses an efficient [`Writeable`] implementation.
-    /// However, in order to avoid allocating a string, it is more efficient
-    /// to use [`Writeable`] directly.
-    #[allow(clippy::inherent_to_string_shadow_display)]
-    pub fn to_string(&self) -> String {
-        Writeable::write_to_string(self).into_owned()
-    }
-}
+writeable::impl_display_with_writeable!(FormattedSign<'_, T>, #[cfg(feature = "alloc")], where T: Writeable);
 
 #[test]
 fn test_numbering_resolution_fallback() {

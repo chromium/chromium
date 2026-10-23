@@ -28,7 +28,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `PluralOperands`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralOperands.html) for more information.
+ * See the [Rust documentation for `PluralOperands`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralOperands.html) for more information.
  */
 class PluralOperands {
 public:
@@ -36,7 +36,7 @@ public:
   /**
    * Construct for a given string representing a number
    *
-   * See the [Rust documentation for `from_str`](https://docs.rs/icu/2.2.0/icu/plurals/struct.PluralOperands.html#method.from_str) for more information.
+   * See the [Rust documentation for `from_str`](https://docs.rs/icu/2.4.0/icu/plurals/struct.PluralOperands.html#method.from_str) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::PluralOperands>, icu4x::DecimalParseError> from_string(std::string_view s);
 
@@ -51,6 +51,15 @@ public:
    * Retains at most 18 digits each from the integer and fraction parts.
    */
   inline static std::unique_ptr<icu4x::PluralOperands> from_fixed_decimal(const icu4x::Decimal& x);
+
+  /**
+   * Construct from a `FixedDecimal` significand and a compact/scientific exponent.
+   *
+   * Retains at most 18 digits each from the integer and fraction parts.
+   *
+   * 🚧 This API is unstable and may experience breaking changes outside major releases.
+   */
+  inline static std::unique_ptr<icu4x::PluralOperands> from_significand_and_exponent(const icu4x::Decimal& significand, uint8_t exponent);
 
     inline const icu4x::capi::PluralOperands* AsFFI() const;
     inline icu4x::capi::PluralOperands* AsFFI();

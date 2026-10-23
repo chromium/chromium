@@ -2,6 +2,12 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
+use std::borrow::Cow;
+
+use icu_normalizer::ComposingNormalizer;
+use icu_normalizer::ComposingNormalizerBorrowed;
+use icu_normalizer::DecomposingNormalizer;
+use icu_normalizer::DecomposingNormalizerBorrowed;
 use icu_normalizer::properties::CanonicalCombiningClassMap;
 use icu_normalizer::properties::CanonicalCombiningClassMapBorrowed;
 use icu_normalizer::properties::CanonicalComposition;
@@ -11,10 +17,6 @@ use icu_normalizer::properties::CanonicalDecompositionBorrowed;
 use icu_normalizer::properties::Decomposed;
 use icu_normalizer::uts46::Uts46Mapper;
 use icu_normalizer::uts46::Uts46MapperBorrowed;
-use icu_normalizer::ComposingNormalizer;
-use icu_normalizer::ComposingNormalizerBorrowed;
-use icu_normalizer::DecomposingNormalizer;
-use icu_normalizer::DecomposingNormalizerBorrowed;
 
 #[test]
 fn test_nfd_basic() {
@@ -64,7 +66,10 @@ fn test_nfkd_basic() {
     assert_eq!(normalizer.normalize("ﾍﾞ"), "ヘ\u{3099}"); // half-width to full-width
     assert_eq!(normalizer.normalize("ﾍﾟ"), "ヘ\u{309A}"); // half-width to full-width
     assert_eq!(normalizer.normalize("ﬁ"), "fi"); // ligature expanded
-    assert_eq!(normalizer.normalize("\u{FDFA}"), "\u{635}\u{644}\u{649} \u{627}\u{644}\u{644}\u{647} \u{639}\u{644}\u{64A}\u{647} \u{648}\u{633}\u{644}\u{645}");
+    assert_eq!(
+        normalizer.normalize("\u{FDFA}"),
+        "\u{635}\u{644}\u{649} \u{627}\u{644}\u{644}\u{647} \u{639}\u{644}\u{64A}\u{647} \u{648}\u{633}\u{644}\u{645}"
+    );
     // ligature expanded
     assert_eq!(normalizer.normalize("㈎"), "(\u{1100}\u{1161})"); // parenthetical expanded
     assert_eq!(normalizer.normalize("\u{0345}"), "\u{0345}"); // Iota subscript
@@ -84,7 +89,10 @@ fn test_nfkd_owned() {
     assert_eq!(normalizer.normalize("ﾍﾞ"), "ヘ\u{3099}"); // half-width to full-width
     assert_eq!(normalizer.normalize("ﾍﾟ"), "ヘ\u{309A}"); // half-width to full-width
     assert_eq!(normalizer.normalize("ﬁ"), "fi"); // ligature expanded
-    assert_eq!(normalizer.normalize("\u{FDFA}"), "\u{635}\u{644}\u{649} \u{627}\u{644}\u{644}\u{647} \u{639}\u{644}\u{64A}\u{647} \u{648}\u{633}\u{644}\u{645}");
+    assert_eq!(
+        normalizer.normalize("\u{FDFA}"),
+        "\u{635}\u{644}\u{649} \u{627}\u{644}\u{644}\u{647} \u{639}\u{644}\u{64A}\u{647} \u{648}\u{633}\u{644}\u{645}"
+    );
     // ligature expanded
     assert_eq!(normalizer.normalize("㈎"), "(\u{1100}\u{1161})"); // parenthetical expanded
     assert_eq!(normalizer.normalize("\u{0345}"), "\u{0345}"); // Iota subscript
@@ -141,7 +149,10 @@ fn test_nfkc_basic() {
     assert_eq!(normalizer.normalize("ﾍﾞ"), "ベ"); // half-width to full-width, the compose
     assert_eq!(normalizer.normalize("ﾍﾟ"), "ペ"); // half-width to full-width, the compose
     assert_eq!(normalizer.normalize("ﬁ"), "fi"); // ligature expanded
-    assert_eq!(normalizer.normalize("\u{FDFA}"), "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}");
+    assert_eq!(
+        normalizer.normalize("\u{FDFA}"),
+        "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}"
+    );
     // ligature expanded
     assert_eq!(normalizer.normalize("㈎"), "(가)"); // parenthetical expanded and partially recomposed
     assert_eq!(normalizer.normalize("\u{0345}"), "\u{0345}"); // Iota subscript
@@ -162,7 +173,10 @@ fn test_nfkc_owned() {
     assert_eq!(normalizer.normalize("ﾍﾞ"), "ベ"); // half-width to full-width, the compose
     assert_eq!(normalizer.normalize("ﾍﾟ"), "ペ"); // half-width to full-width, the compose
     assert_eq!(normalizer.normalize("ﬁ"), "fi"); // ligature expanded
-    assert_eq!(normalizer.normalize("\u{FDFA}"), "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}");
+    assert_eq!(
+        normalizer.normalize("\u{FDFA}"),
+        "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}"
+    );
     // ligature expanded
     assert_eq!(normalizer.normalize("㈎"), "(가)"); // parenthetical expanded and partially recomposed
     assert_eq!(normalizer.normalize("\u{0345}"), "\u{0345}"); // Iota subscript
@@ -207,7 +221,10 @@ fn test_uts46_map_normalize() {
     assert_eq!(mapper.map_normalize("ﾍﾞ".chars()).collect::<String>(), "ベ"); // half-width to full-width, the compose
     assert_eq!(mapper.map_normalize("ﾍﾟ".chars()).collect::<String>(), "ペ"); // half-width to full-width, the compose
     assert_eq!(mapper.map_normalize("ﬁ".chars()).collect::<String>(), "fi"); // ligature expanded
-    assert_eq!(mapper.map_normalize("\u{FDFA}".chars()).collect::<String>(), "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}");
+    assert_eq!(
+        mapper.map_normalize("\u{FDFA}".chars()).collect::<String>(),
+        "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}"
+    );
     // ligature expanded
     assert_eq!(
         mapper.map_normalize("㈎".chars()).collect::<String>(),
@@ -287,7 +304,10 @@ fn test_uts46_owned() {
     assert_eq!(mapper.map_normalize("ﾍﾞ".chars()).collect::<String>(), "ベ"); // half-width to full-width, the compose
     assert_eq!(mapper.map_normalize("ﾍﾟ".chars()).collect::<String>(), "ペ"); // half-width to full-width, the compose
     assert_eq!(mapper.map_normalize("ﬁ".chars()).collect::<String>(), "fi"); // ligature expanded
-    assert_eq!(mapper.map_normalize("\u{FDFA}".chars()).collect::<String>(), "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}");
+    assert_eq!(
+        mapper.map_normalize("\u{FDFA}".chars()).collect::<String>(),
+        "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}"
+    );
     // ligature expanded
     assert_eq!(
         mapper.map_normalize("㈎".chars()).collect::<String>(),
@@ -377,7 +397,12 @@ fn test_uts46_normalize_validate() {
         mapper.normalize_validate("ﬁ".chars()).collect::<String>(),
         "fi"
     ); // ligature expanded
-    assert_eq!(mapper.normalize_validate("\u{FDFA}".chars()).collect::<String>(), "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}");
+    assert_eq!(
+        mapper
+            .normalize_validate("\u{FDFA}".chars())
+            .collect::<String>(),
+        "\u{0635}\u{0644}\u{0649} \u{0627}\u{0644}\u{0644}\u{0647} \u{0639}\u{0644}\u{064A}\u{0647} \u{0648}\u{0633}\u{0644}\u{0645}"
+    );
     // ligature expanded
     assert_eq!(
         mapper.normalize_validate("㈎".chars()).collect::<String>(),
@@ -431,13 +456,11 @@ fn test_uts46_normalize_validate() {
     );
 }
 
-type StackString = arraystring::ArrayString<arraystring::typenum::U48>;
-
 #[test]
 fn test_nfd_str_to() {
     let normalizer = DecomposingNormalizerBorrowed::new_nfd();
 
-    let mut buf = StackString::new();
+    let mut buf = String::new();
     assert!(normalizer.normalize_to("ä", &mut buf).is_ok());
     assert_eq!(&buf, "a\u{0308}");
 
@@ -450,35 +473,41 @@ fn test_nfd_str_to() {
 fn test_nfd_utf8_to() {
     let normalizer = DecomposingNormalizerBorrowed::new_nfd();
 
-    let mut buf = StackString::new();
-    assert!(normalizer
-        .normalize_utf8_to("ä".as_bytes(), &mut buf)
-        .is_ok());
+    let mut buf = String::new();
+    assert!(
+        normalizer
+            .normalize_utf8_to("ä".as_bytes(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "a\u{0308}");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to("ệ".as_bytes(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to("ệ".as_bytes(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "e\u{0323}\u{0302}");
 }
-
-type StackVec = arrayvec::ArrayVec<u16, 32>;
 
 #[test]
 fn test_nfd_utf16_to() {
     let normalizer = DecomposingNormalizerBorrowed::new_nfd();
 
-    let mut buf = StackVec::new();
-    assert!(normalizer
-        .normalize_utf16_to([0x00E4u16].as_slice(), &mut buf)
-        .is_ok());
+    let mut buf = Vec::new();
+    assert!(
+        normalizer
+            .normalize_utf16_to([0x00E4u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0x0061u16, 0x0308u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to([0x1EC7u16].as_slice(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to([0x1EC7u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0x0065u16, 0x0323u16, 0x0302u16].as_slice());
 }
 
@@ -486,14 +515,16 @@ fn test_nfd_utf16_to() {
 fn test_nfc_str_to() {
     let normalizer = ComposingNormalizerBorrowed::new_nfc();
 
-    let mut buf = StackString::new();
+    let mut buf = String::new();
     assert!(normalizer.normalize_to("a\u{0308}", &mut buf).is_ok());
     assert_eq!(&buf, "ä");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_to("e\u{0323}\u{0302}", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_to("e\u{0323}\u{0302}", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "ệ");
 }
 
@@ -501,16 +532,20 @@ fn test_nfc_str_to() {
 fn test_nfc_utf8_to() {
     let normalizer = ComposingNormalizerBorrowed::new_nfc();
 
-    let mut buf = StackString::new();
-    assert!(normalizer
-        .normalize_utf8_to("a\u{0308}".as_bytes(), &mut buf)
-        .is_ok());
+    let mut buf = String::new();
+    assert!(
+        normalizer
+            .normalize_utf8_to("a\u{0308}".as_bytes(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "ä");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to("e\u{0323}\u{0302}".as_bytes(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to("e\u{0323}\u{0302}".as_bytes(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "ệ");
 }
 
@@ -518,16 +553,20 @@ fn test_nfc_utf8_to() {
 fn test_nfc_utf16_to() {
     let normalizer = ComposingNormalizerBorrowed::new_nfc();
 
-    let mut buf = StackVec::new();
-    assert!(normalizer
-        .normalize_utf16_to([0x0061u16, 0x0308u16].as_slice(), &mut buf)
-        .is_ok());
+    let mut buf = Vec::new();
+    assert!(
+        normalizer
+            .normalize_utf16_to([0x0061u16, 0x0308u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0x00E4u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to([0x0065u16, 0x0323u16, 0x0302u16].as_slice(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to([0x0065u16, 0x0323u16, 0x0302u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0x1EC7u16].as_slice());
 }
 
@@ -535,28 +574,36 @@ fn test_nfc_utf16_to() {
 fn test_nfc_utf8_to_errors() {
     let normalizer = ComposingNormalizerBorrowed::new_nfc();
 
-    let mut buf = StackString::new();
-    assert!(normalizer
-        .normalize_utf8_to(b"\xFFa\xCC\x88\xFF", &mut buf)
-        .is_ok());
+    let mut buf = String::new();
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"\xFFa\xCC\x88\xFF", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "\u{FFFD}ä\u{FFFD}");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to(b"\x80e\xCC\xA3\xCC\x82\x80", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"\x80e\xCC\xA3\xCC\x82\x80", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "\u{FFFD}ệ\u{FFFD}");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to(b"aaa\xFFaaa\xFFaaa", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"aaa\xFFaaa\xFFaaa", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "aaa\u{FFFD}aaa\u{FFFD}aaa");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to(b"aaa\xE2\x98aaa\xE2\x98aaa", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"aaa\xE2\x98aaa\xE2\x98aaa", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "aaa\u{FFFD}aaa\u{FFFD}aaa");
 }
 
@@ -564,132 +611,195 @@ fn test_nfc_utf8_to_errors() {
 fn test_nfd_utf8_to_errors() {
     let normalizer = DecomposingNormalizerBorrowed::new_nfd();
 
-    let mut buf = StackString::new();
-    assert!(normalizer
-        .normalize_utf8_to(b"\xFF\xC3\xA4\xFF", &mut buf)
-        .is_ok());
+    let mut buf = String::new();
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"\xFF\xC3\xA4\xFF", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "\u{FFFD}a\u{0308}\u{FFFD}");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to(b"\x80\xE1\xBB\x87\x80", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"\x80\xE1\xBB\x87\x80", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "\u{FFFD}e\u{0323}\u{0302}\u{FFFD}");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to(b"aaa\xFFaaa\xFFaaa", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"aaa\xFFaaa\xFFaaa", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "aaa\u{FFFD}aaa\u{FFFD}aaa");
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf8_to(b"aaa\xE2\x98aaa\xE2\x98aaa", &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf8_to(b"aaa\xE2\x98aaa\xE2\x98aaa", &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, "aaa\u{FFFD}aaa\u{FFFD}aaa");
+}
+
+#[test]
+fn test_utf8_errors_not_borrowed() {
+    let nfc = ComposingNormalizerBorrowed::new_nfc();
+    let nfd = DecomposingNormalizerBorrowed::new_nfd();
+
+    for (input, expected, prefix) in [
+        (&b"\xFF\xFE\xC3"[..], "\u{FFFD}\u{FFFD}\u{FFFD}", ""),
+        (b"a\xFFb", "a\u{FFFD}b", "a"),
+        (b"\xEF\xBF\xBD\xFF", "\u{FFFD}\u{FFFD}", "\u{FFFD}"),
+        (b"a\xE2\x98", "a\u{FFFD}", "a"),
+    ] {
+        let normalized_nfc = nfc.normalize_utf8(input);
+        let normalized_nfd = nfd.normalize_utf8(input);
+        assert!(matches!(normalized_nfc, Cow::Owned(_)));
+        assert!(matches!(normalized_nfd, Cow::Owned(_)));
+        assert_eq!(normalized_nfc, expected);
+        assert_eq!(normalized_nfd, expected);
+        let suffix = input.strip_prefix(prefix.as_bytes()).unwrap();
+        assert_eq!(nfc.split_normalized_utf8(input), (prefix, suffix));
+        assert_eq!(nfd.split_normalized_utf8(input), (prefix, suffix));
+        assert!(!nfc.is_normalized_utf8(input));
+        assert!(!nfd.is_normalized_utf8(input));
+    }
+
+    // Literal U+FFFD is well-formed and may stay borrowed.
+    assert!(matches!(
+        nfc.normalize_utf8("a\u{FFFD}b".as_bytes()),
+        Cow::Borrowed("a\u{FFFD}b")
+    ));
+    assert_eq!(
+        nfc.split_normalized_utf8(b"a\xEF\xBF\xBD\xFFb"),
+        ("a\u{FFFD}", &b"\xFFb"[..])
+    );
 }
 
 #[test]
 fn test_nfc_utf16_to_errors() {
     let normalizer = ComposingNormalizerBorrowed::new_nfc();
 
-    let mut buf = StackVec::new();
-    assert!(normalizer
-        .normalize_utf16_to([0xD800u16, 0x0061u16, 0x0308u16].as_slice(), &mut buf)
-        .is_ok());
+    let mut buf = Vec::new();
+    assert!(
+        normalizer
+            .normalize_utf16_to([0xD800u16, 0x0061u16, 0x0308u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0xFFFDu16, 0x00E4u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to([0xDC00u16, 0x0061u16, 0x0308u16].as_slice(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to([0xDC00u16, 0x0061u16, 0x0308u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0xFFFDu16, 0x00E4u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x0061u16, 0x0308u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x0061u16, 0x0308u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(&buf, [0x0061u16, 0xFFFDu16, 0x00E4u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x0061u16, 0x0308u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x0061u16, 0x0308u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(&buf, [0x0061u16, 0xFFFDu16, 0x00E4u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x0061u16, 0x0308u16, 0xD800u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x0061u16, 0x0308u16, 0xD800u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x00E4u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x0061u16, 0x0308u16, 0xDC00u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x0061u16, 0x0308u16, 0xDC00u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x00E4u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x0061u16, 0x0061u16, 0xD800u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x0061u16, 0x0061u16, 0xD800u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0061u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x0061u16, 0x0061u16, 0xDC00u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x0061u16, 0x0061u16, 0xDC00u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0061u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x0308u16, 0xD800u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x0308u16, 0xD800u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0308u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x0308u16, 0xDC00u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x0308u16, 0xDC00u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0308u16, 0xFFFDu16].as_slice()
@@ -700,106 +810,177 @@ fn test_nfc_utf16_to_errors() {
 fn test_nfd_utf16_to_errors() {
     let normalizer = DecomposingNormalizerBorrowed::new_nfd();
 
-    let mut buf = StackVec::new();
-    assert!(normalizer
-        .normalize_utf16_to([0xD800u16, 0x00E4u16].as_slice(), &mut buf)
-        .is_ok());
+    let mut buf = Vec::new();
+    assert!(
+        normalizer
+            .normalize_utf16_to([0xD800u16, 0x00E4u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0xFFFDu16, 0x0061u16, 0x0308u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to([0xDC00u16, 0x00E4u16].as_slice(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to([0xDC00u16, 0x00E4u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(&buf, [0xFFFDu16, 0x0061u16, 0x0308u16].as_slice());
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to([0x0061u16, 0xD800u16, 0x00E4u16].as_slice(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to([0x0061u16, 0xD800u16, 0x00E4u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0308u16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to([0x0061u16, 0xDC00u16, 0x00E4u16].as_slice(), &mut buf)
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to([0x0061u16, 0xDC00u16, 0x00E4u16].as_slice(), &mut buf)
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0308u16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x00E4u16, 0xD800u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x00E4u16, 0xD800u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0308u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x00E4u16, 0xDC00u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x00E4u16, 0xDC00u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0308u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x0061u16, 0x0061u16, 0xD800u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x0061u16, 0x0061u16, 0xD800u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0061u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x0061u16, 0x0061u16, 0xDC00u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x0061u16, 0x0061u16, 0xDC00u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0061u16, 0x0061u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xD800u16, 0x0308u16, 0xD800u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xD800u16, 0x0308u16, 0xD800u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0308u16, 0xFFFDu16].as_slice()
     );
 
     buf.clear();
-    assert!(normalizer
-        .normalize_utf16_to(
-            [0x0061u16, 0xDC00u16, 0x0308u16, 0xDC00u16].as_slice(),
-            &mut buf
-        )
-        .is_ok());
+    assert!(
+        normalizer
+            .normalize_utf16_to(
+                [0x0061u16, 0xDC00u16, 0x0308u16, 0xDC00u16].as_slice(),
+                &mut buf
+            )
+            .is_ok()
+    );
     assert_eq!(
         &buf,
         [0x0061u16, 0xFFFDu16, 0x0308u16, 0xFFFDu16].as_slice()
+    );
+}
+
+#[test]
+fn test_utf16_errors_not_borrowed() {
+    let nfc = ComposingNormalizerBorrowed::new_nfc();
+    let nfd = DecomposingNormalizerBorrowed::new_nfd();
+
+    for (input, expected, prefix) in [
+        (
+            &[0xD800u16, 0xDC00u16, 0xD800u16][..],
+            &[0xD800u16, 0xDC00u16, 0xFFFDu16][..],
+            &[0xD800u16, 0xDC00u16][..],
+        ),
+        (
+            &[0xDC00u16, 0xD800u16][..],
+            &[0xFFFDu16, 0xFFFDu16][..],
+            &[][..],
+        ),
+        (
+            &[0x0061u16, 0xD800u16, 0x0062u16][..],
+            &[0x0061u16, 0xFFFDu16, 0x0062u16][..],
+            &[0x0061u16][..],
+        ),
+        (
+            &[0xFFFDu16, 0xD800u16][..],
+            &[0xFFFDu16, 0xFFFDu16][..],
+            &[0xFFFDu16][..],
+        ),
+    ] {
+        let normalized_nfc = nfc.normalize_utf16(input);
+        let normalized_nfd = nfd.normalize_utf16(input);
+        assert!(matches!(normalized_nfc, Cow::Owned(_)));
+        assert!(matches!(normalized_nfd, Cow::Owned(_)));
+        assert_eq!(&*normalized_nfc, expected);
+        assert_eq!(&*normalized_nfd, expected);
+        let suffix = input.strip_prefix(prefix).unwrap();
+        assert_eq!(nfc.split_normalized_utf16(input), (prefix, suffix));
+        assert_eq!(nfd.split_normalized_utf16(input), (prefix, suffix));
+        assert!(!nfc.is_normalized_utf16(input));
+        assert!(!nfd.is_normalized_utf16(input));
+    }
+
+    // Literal U+FFFD is well-formed and may stay borrowed.
+    assert!(matches!(
+        nfc.normalize_utf16(&[0x0061, 0xFFFD, 0x0062]),
+        Cow::Borrowed(&[0x0061, 0xFFFD, 0x0062])
+    ));
+    assert_eq!(
+        nfc.split_normalized_utf16(&[0x0061, 0xFFFD, 0xD800, 0x0062]),
+        (&[0x0061u16, 0xFFFDu16][..], &[0xD800u16, 0x0062u16][..])
     );
 }
 
@@ -807,19 +988,19 @@ use atoi::FromRadix16;
 use icu_properties::props::CanonicalCombiningClass;
 
 /// Parse five semicolon-terminated strings consisting of space-separated hexadecimal scalar values
-fn parse_hex(mut hexes: &[u8]) -> [StackString; 5] {
+fn parse_hex(mut hexes: &[u8]) -> [String; 5] {
     let mut strings = [
-        StackString::new(),
-        StackString::new(),
-        StackString::new(),
-        StackString::new(),
-        StackString::new(),
+        String::new(),
+        String::new(),
+        String::new(),
+        String::new(),
+        String::new(),
     ];
     let mut current = 0;
     loop {
         let (scalar, mut offset) = u32::from_radix_16(hexes);
-        let c = core::char::from_u32(scalar).unwrap();
-        strings[current].try_push(c).unwrap();
+        let c = char::from_u32(scalar).unwrap();
+        strings[current].push(c);
         match hexes[offset] {
             b';' => {
                 current += 1;
@@ -862,18 +1043,22 @@ fn test_conformance() {
             if part == 2 {
                 for u in prev + 1..=0x10FFFF {
                     if let Some(c) = char::from_u32(u) {
-                        assert!(nfd
-                            .normalize_iter(core::iter::once(c))
-                            .eq(core::iter::once(c)));
-                        assert!(nfkd
-                            .normalize_iter(core::iter::once(c))
-                            .eq(core::iter::once(c)));
-                        assert!(nfc
-                            .normalize_iter(core::iter::once(c))
-                            .eq(core::iter::once(c)));
-                        assert!(nfkc
-                            .normalize_iter(core::iter::once(c))
-                            .eq(core::iter::once(c)));
+                        assert!(
+                            nfd.normalize_iter(core::iter::once(c))
+                                .eq(core::iter::once(c))
+                        );
+                        assert!(
+                            nfkd.normalize_iter(core::iter::once(c))
+                                .eq(core::iter::once(c))
+                        );
+                        assert!(
+                            nfc.normalize_iter(core::iter::once(c))
+                                .eq(core::iter::once(c))
+                        );
+                        assert!(
+                            nfkc.normalize_iter(core::iter::once(c))
+                                .eq(core::iter::once(c))
+                        );
                     }
                 }
             }
@@ -892,91 +1077,115 @@ fn test_conformance() {
             let current_u = u32::from(current);
             for u in prev + 1..current_u {
                 if let Some(c) = char::from_u32(u) {
-                    assert!(nfd
-                        .normalize_iter(core::iter::once(c))
-                        .eq(core::iter::once(c)));
-                    assert!(nfkd
-                        .normalize_iter(core::iter::once(c))
-                        .eq(core::iter::once(c)));
-                    assert!(nfc
-                        .normalize_iter(core::iter::once(c))
-                        .eq(core::iter::once(c)));
-                    assert!(nfkc
-                        .normalize_iter(core::iter::once(c))
-                        .eq(core::iter::once(c)));
+                    assert!(
+                        nfd.normalize_iter(core::iter::once(c))
+                            .eq(core::iter::once(c))
+                    );
+                    assert!(
+                        nfkd.normalize_iter(core::iter::once(c))
+                            .eq(core::iter::once(c))
+                    );
+                    assert!(
+                        nfc.normalize_iter(core::iter::once(c))
+                            .eq(core::iter::once(c))
+                    );
+                    assert!(
+                        nfkc.normalize_iter(core::iter::once(c))
+                            .eq(core::iter::once(c))
+                    );
                 }
             }
             prev = current_u;
         }
         // NFC
-        assert!(nfc
-            .normalize_iter(strings[0].chars())
-            .eq(strings[1].chars()));
-        assert!(nfc
-            .normalize_iter(strings[1].chars())
-            .eq(strings[1].chars()));
-        assert!(nfc
-            .normalize_iter(strings[2].chars())
-            .eq(strings[1].chars()));
+        assert!(
+            nfc.normalize_iter(strings[0].chars())
+                .eq(strings[1].chars())
+        );
+        assert!(
+            nfc.normalize_iter(strings[1].chars())
+                .eq(strings[1].chars())
+        );
+        assert!(
+            nfc.normalize_iter(strings[2].chars())
+                .eq(strings[1].chars())
+        );
 
-        assert!(nfc
-            .normalize_iter(strings[3].chars())
-            .eq(strings[3].chars()));
-        assert!(nfc
-            .normalize_iter(strings[4].chars())
-            .eq(strings[3].chars()));
+        assert!(
+            nfc.normalize_iter(strings[3].chars())
+                .eq(strings[3].chars())
+        );
+        assert!(
+            nfc.normalize_iter(strings[4].chars())
+                .eq(strings[3].chars())
+        );
 
         // NFD
-        assert!(nfd
-            .normalize_iter(strings[0].chars())
-            .eq(strings[2].chars()));
-        assert!(nfd
-            .normalize_iter(strings[1].chars())
-            .eq(strings[2].chars()));
-        assert!(nfd
-            .normalize_iter(strings[2].chars())
-            .eq(strings[2].chars()));
+        assert!(
+            nfd.normalize_iter(strings[0].chars())
+                .eq(strings[2].chars())
+        );
+        assert!(
+            nfd.normalize_iter(strings[1].chars())
+                .eq(strings[2].chars())
+        );
+        assert!(
+            nfd.normalize_iter(strings[2].chars())
+                .eq(strings[2].chars())
+        );
 
-        assert!(nfd
-            .normalize_iter(strings[3].chars())
-            .eq(strings[4].chars()));
-        assert!(nfd
-            .normalize_iter(strings[4].chars())
-            .eq(strings[4].chars()));
+        assert!(
+            nfd.normalize_iter(strings[3].chars())
+                .eq(strings[4].chars())
+        );
+        assert!(
+            nfd.normalize_iter(strings[4].chars())
+                .eq(strings[4].chars())
+        );
 
         // NFKC
-        assert!(nfkc
-            .normalize_iter(strings[0].chars())
-            .eq(strings[3].chars()));
-        assert!(nfkc
-            .normalize_iter(strings[1].chars())
-            .eq(strings[3].chars()));
-        assert!(nfkc
-            .normalize_iter(strings[2].chars())
-            .eq(strings[3].chars()));
-        assert!(nfkc
-            .normalize_iter(strings[3].chars())
-            .eq(strings[3].chars()));
-        assert!(nfkc
-            .normalize_iter(strings[4].chars())
-            .eq(strings[3].chars()));
+        assert!(
+            nfkc.normalize_iter(strings[0].chars())
+                .eq(strings[3].chars())
+        );
+        assert!(
+            nfkc.normalize_iter(strings[1].chars())
+                .eq(strings[3].chars())
+        );
+        assert!(
+            nfkc.normalize_iter(strings[2].chars())
+                .eq(strings[3].chars())
+        );
+        assert!(
+            nfkc.normalize_iter(strings[3].chars())
+                .eq(strings[3].chars())
+        );
+        assert!(
+            nfkc.normalize_iter(strings[4].chars())
+                .eq(strings[3].chars())
+        );
 
         // NFKD
-        assert!(nfkd
-            .normalize_iter(strings[0].chars())
-            .eq(strings[4].chars()));
-        assert!(nfkd
-            .normalize_iter(strings[1].chars())
-            .eq(strings[4].chars()));
-        assert!(nfkd
-            .normalize_iter(strings[2].chars())
-            .eq(strings[4].chars()));
-        assert!(nfkd
-            .normalize_iter(strings[3].chars())
-            .eq(strings[4].chars()));
-        assert!(nfkd
-            .normalize_iter(strings[4].chars())
-            .eq(strings[4].chars()));
+        assert!(
+            nfkd.normalize_iter(strings[0].chars())
+                .eq(strings[4].chars())
+        );
+        assert!(
+            nfkd.normalize_iter(strings[1].chars())
+                .eq(strings[4].chars())
+        );
+        assert!(
+            nfkd.normalize_iter(strings[2].chars())
+                .eq(strings[4].chars())
+        );
+        assert!(
+            nfkd.normalize_iter(strings[3].chars())
+                .eq(strings[4].chars())
+        );
+        assert!(
+            nfkd.normalize_iter(strings[4].chars())
+                .eq(strings[4].chars())
+        );
     }
 }
 
@@ -1007,30 +1216,24 @@ fn test_conformance() {
 //     }
 // }
 
-fn str_to_utf16(s: &str, sink: &mut StackVec) {
+fn str_to_utf16(s: &str, sink: &mut Vec<u16>) {
     sink.clear();
-    let mut buf = [0u16; 2];
-    for c in s.chars() {
-        sink.try_extend_from_slice(c.encode_utf16(&mut buf))
-            .unwrap();
-    }
+    sink.extend(s.encode_utf16());
 }
 
-fn char_to_utf16(c: char, sink: &mut StackVec) {
+fn char_to_utf16(c: char, sink: &mut Vec<u16>) {
     sink.clear();
-    let mut buf = [0u16; 2];
-    sink.try_extend_from_slice(c.encode_utf16(&mut buf))
-        .unwrap();
+    sink.extend(c.encode_utf16(&mut [0; 2]).iter());
 }
 
-fn str_to_str(s: &str, sink: &mut StackString) {
+fn str_to_str(s: &str, sink: &mut String) {
     sink.clear();
-    sink.try_push_str(s).unwrap();
+    sink.push_str(s);
 }
 
-fn char_to_str(c: char, sink: &mut StackString) {
+fn char_to_str(c: char, sink: &mut String) {
     sink.clear();
-    sink.try_push(c).unwrap();
+    sink.push(c);
 }
 
 #[test]
@@ -1040,9 +1243,9 @@ fn test_conformance_utf16() {
     let nfc = ComposingNormalizerBorrowed::new_nfc();
     let nfkc = ComposingNormalizerBorrowed::new_nfkc();
 
-    let mut input = StackVec::new();
-    let mut normalized = StackVec::new();
-    let mut expected = StackVec::new();
+    let mut input = Vec::new();
+    let mut normalized = Vec::new();
+    let mut expected = Vec::new();
 
     let mut prev = 0u32;
     let mut part = 0u8;
@@ -1253,9 +1456,9 @@ fn test_conformance_utf8() {
     let nfc = ComposingNormalizerBorrowed::new_nfc();
     let nfkc = ComposingNormalizerBorrowed::new_nfkc();
 
-    let mut input = StackString::new();
-    let mut normalized = StackString::new();
-    let mut expected = StackString::new();
+    let mut input = String::new();
+    let mut normalized = String::new();
+    let mut expected = String::new();
 
     let mut prev = 0u32;
     let mut part = 0u8;
@@ -1275,30 +1478,34 @@ fn test_conformance_utf8() {
                     if let Some(c) = char::from_u32(u) {
                         normalized.clear();
                         char_to_str(c, &mut input);
-                        assert!(nfd
-                            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                            .is_ok());
+                        assert!(
+                            nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                                .is_ok()
+                        );
                         assert_eq!(&normalized, &input);
 
                         normalized.clear();
                         char_to_str(c, &mut input);
-                        assert!(nfkd
-                            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                            .is_ok());
+                        assert!(
+                            nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                                .is_ok()
+                        );
                         assert_eq!(&normalized, &input);
 
                         normalized.clear();
                         char_to_str(c, &mut input);
-                        assert!(nfc
-                            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                            .is_ok());
+                        assert!(
+                            nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                                .is_ok()
+                        );
                         assert_eq!(&normalized, &input);
 
                         normalized.clear();
                         char_to_str(c, &mut input);
-                        assert!(nfkc
-                            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                            .is_ok());
+                        assert!(
+                            nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                                .is_ok()
+                        );
                         assert_eq!(&normalized, &input);
                     }
                 }
@@ -1320,30 +1527,34 @@ fn test_conformance_utf8() {
                 if let Some(c) = char::from_u32(u) {
                     normalized.clear();
                     char_to_str(c, &mut input);
-                    assert!(nfd
-                        .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                        .is_ok());
+                    assert!(
+                        nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                            .is_ok()
+                    );
                     assert_eq!(&normalized, &input);
 
                     normalized.clear();
                     char_to_str(c, &mut input);
-                    assert!(nfkd
-                        .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                        .is_ok());
+                    assert!(
+                        nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                            .is_ok()
+                    );
                     assert_eq!(&normalized, &input);
 
                     normalized.clear();
                     char_to_str(c, &mut input);
-                    assert!(nfc
-                        .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                        .is_ok());
+                    assert!(
+                        nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                            .is_ok()
+                    );
                     assert_eq!(&normalized, &input);
 
                     normalized.clear();
                     char_to_str(c, &mut input);
-                    assert!(nfkc
-                        .normalize_utf8_to(input.as_bytes(), &mut normalized)
-                        .is_ok());
+                    assert!(
+                        nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                            .is_ok()
+                    );
                     assert_eq!(&normalized, &input);
                 }
             }
@@ -1353,164 +1564,184 @@ fn test_conformance_utf8() {
         normalized.clear();
         str_to_str(&strings[0], &mut input);
         str_to_str(&strings[1], &mut expected);
-        assert!(nfc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[1], &mut input);
         str_to_str(&strings[1], &mut expected);
-        assert!(nfc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[2], &mut input);
         str_to_str(&strings[1], &mut expected);
-        assert!(nfc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[3], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[4], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         // NFD
         normalized.clear();
         str_to_str(&strings[0], &mut input);
         str_to_str(&strings[2], &mut expected);
-        assert!(nfd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[1], &mut input);
         str_to_str(&strings[2], &mut expected);
-        assert!(nfd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[2], &mut input);
         str_to_str(&strings[2], &mut expected);
-        assert!(nfd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[3], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[4], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         // NFKC
         normalized.clear();
         str_to_str(&strings[0], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfkc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[1], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfkc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[2], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfkc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[3], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfkc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[4], &mut input);
         str_to_str(&strings[3], &mut expected);
-        assert!(nfkc
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkc.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         // NFKD
         normalized.clear();
         str_to_str(&strings[0], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfkd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[1], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfkd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[2], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfkd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[3], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfkd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
 
         normalized.clear();
         str_to_str(&strings[4], &mut input);
         str_to_str(&strings[4], &mut expected);
-        assert!(nfkd
-            .normalize_utf8_to(input.as_bytes(), &mut normalized)
-            .is_ok());
+        assert!(
+            nfkd.normalize_utf8_to(input.as_bytes(), &mut normalized)
+                .is_ok()
+        );
         assert_eq!(&normalized, &expected);
     }
 }
@@ -1726,16 +1957,16 @@ fn test_is_normalized() {
     assert!(nfkc.is_normalized_utf16(aaa16));
 
     let affa = b"a\xFFa";
-    assert!(nfd.is_normalized_utf8(affa));
-    assert!(nfkd.is_normalized_utf8(affa));
-    assert!(nfc.is_normalized_utf8(affa));
-    assert!(nfkc.is_normalized_utf8(affa));
+    assert!(!nfd.is_normalized_utf8(affa));
+    assert!(!nfkd.is_normalized_utf8(affa));
+    assert!(!nfc.is_normalized_utf8(affa));
+    assert!(!nfkc.is_normalized_utf8(affa));
 
     let a_surrogate_a = [0x0061u16, 0xD800u16, 0x0061u16].as_slice();
-    assert!(nfd.is_normalized_utf16(a_surrogate_a));
-    assert!(nfkd.is_normalized_utf16(a_surrogate_a));
-    assert!(nfc.is_normalized_utf16(a_surrogate_a));
-    assert!(nfkc.is_normalized_utf16(a_surrogate_a));
+    assert!(!nfd.is_normalized_utf16(a_surrogate_a));
+    assert!(!nfkd.is_normalized_utf16(a_surrogate_a));
+    assert!(!nfc.is_normalized_utf16(a_surrogate_a));
+    assert!(!nfkc.is_normalized_utf16(a_surrogate_a));
 
     let note = "a𝅗\u{1D165}a";
     assert!(nfd.is_normalized(note));
@@ -2080,4 +2311,95 @@ fn test_is_normalized_up_to() {
             .len(),
         0
     );
+}
+
+#[test]
+fn test_reject_invalid_replacement_character_trie_value() {
+    use icu_collections::codepointtrie::{CodePointTrie, CodePointTrieHeader, TrieType};
+    use icu_normalizer::provider::{
+        DecompositionData, NormalizerNfcV1, NormalizerNfdDataV1, NormalizerNfdTablesV1,
+        NormalizerNfkdDataV1, NormalizerNfkdTablesV1, NormalizerUts46DataV1,
+    };
+    use icu_provider::prelude::*;
+    use zerovec::ZeroVec;
+
+    struct BogusProvider;
+
+    fn bogus_decomposition_data() -> DecompositionData<'static> {
+        // A valid Fast trie mapping all code points (including U+FFFD) to 0,
+        // violating the invariant that U+FFFD must have NON_ROUND_TRIP_MARKER set.
+        let header = CodePointTrieHeader {
+            high_start: 0,
+            shifted12_high_start: 0,
+            index3_null_offset: 0,
+            data_null_offset: 0,
+            null_value: 0,
+            trie_type: TrieType::Fast,
+        };
+        let index = ZeroVec::alloc_from_slice(&[0u16; 1024]);
+        let data = ZeroVec::alloc_from_slice(&[0u32; 64]);
+        let trie = CodePointTrie::try_new(header, index, data).unwrap();
+        assert_eq!(trie.get(char::REPLACEMENT_CHARACTER), 0);
+        DecompositionData {
+            trie,
+            passthrough_cap: 0xC0,
+        }
+    }
+
+    impl DataProvider<NormalizerNfdDataV1> for BogusProvider {
+        fn load(&self, _req: DataRequest) -> Result<DataResponse<NormalizerNfdDataV1>, DataError> {
+            Ok(DataResponse {
+                metadata: Default::default(),
+                payload: DataPayload::from_owned(bogus_decomposition_data()),
+            })
+        }
+    }
+
+    impl DataProvider<NormalizerNfkdDataV1> for BogusProvider {
+        fn load(&self, _req: DataRequest) -> Result<DataResponse<NormalizerNfkdDataV1>, DataError> {
+            Ok(DataResponse {
+                metadata: Default::default(),
+                payload: DataPayload::from_owned(bogus_decomposition_data()),
+            })
+        }
+    }
+
+    impl DataProvider<NormalizerUts46DataV1> for BogusProvider {
+        fn load(
+            &self,
+            _req: DataRequest,
+        ) -> Result<DataResponse<NormalizerUts46DataV1>, DataError> {
+            Ok(DataResponse {
+                metadata: Default::default(),
+                payload: DataPayload::from_owned(bogus_decomposition_data()),
+            })
+        }
+    }
+
+    impl DataProvider<NormalizerNfdTablesV1> for BogusProvider {
+        fn load(&self, req: DataRequest) -> Result<DataResponse<NormalizerNfdTablesV1>, DataError> {
+            icu_normalizer::provider::Baked.load(req)
+        }
+    }
+
+    impl DataProvider<NormalizerNfkdTablesV1> for BogusProvider {
+        fn load(
+            &self,
+            req: DataRequest,
+        ) -> Result<DataResponse<NormalizerNfkdTablesV1>, DataError> {
+            icu_normalizer::provider::Baked.load(req)
+        }
+    }
+
+    impl DataProvider<NormalizerNfcV1> for BogusProvider {
+        fn load(&self, req: DataRequest) -> Result<DataResponse<NormalizerNfcV1>, DataError> {
+            icu_normalizer::provider::Baked.load(req)
+        }
+    }
+
+    assert!(DecomposingNormalizer::try_new_nfd_unstable(&BogusProvider).is_err());
+    assert!(DecomposingNormalizer::try_new_nfkd_unstable(&BogusProvider).is_err());
+    assert!(ComposingNormalizer::try_new_nfc_unstable(&BogusProvider).is_err());
+    assert!(ComposingNormalizer::try_new_nfkc_unstable(&BogusProvider).is_err());
+    assert!(Uts46Mapper::try_new(&BogusProvider).is_err());
 }

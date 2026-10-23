@@ -13,9 +13,9 @@ export type DisplayNamesOptions_obj = {
 
 
 /**
- * 🚧 This API is unstable and may experience breaking changes outside major releases.
+ * See the [Rust documentation for `DisplayNamesOptions`](https://docs.rs/icu/2.4.0/icu/experimental/displaynames/struct.DisplayNamesOptions.html) for more information.
  *
- * See the [Rust documentation for `DisplayNamesOptions`](https://docs.rs/icu/2.2.0/icu/experimental/displaynames/struct.DisplayNamesOptions.html) for more information.
+ * @experimental
  */
 export class DisplayNamesOptions {
     get style(): DisplayNamesStyle | null;

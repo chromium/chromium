@@ -4,11 +4,11 @@
 
 mod fixtures;
 
+use icu_plurals::PluralOperands;
 use icu_plurals::provider::rules::{
     reference::test_condition,
-    reference::{parse, parse_condition, serialize, Lexer},
+    reference::{Lexer, parse, parse_condition, serialize},
 };
-use icu_plurals::PluralOperands;
 
 #[test]
 fn test_parsing_operands() {

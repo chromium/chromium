@@ -86,6 +86,8 @@ pub use names::{
 };
 mod runtime;
 
+#[rustfmt::skip]
+mod enum_values;
 // NOTE: The Pernosco debugger has special knowledge
 // of the `CanonicalCombiningClass` struct inside the `props`
 // module. Please do not change the crate-module-qualified
@@ -103,3 +105,13 @@ mod private {
 
 #[cfg(feature = "harfbuzz_traits")]
 mod harfbuzz;
+
+#[cfg(feature = "unstable")]
+#[cfg(feature = "alloc")]
+pub mod unicodeset_parse;
+
+#[cfg(not(feature = "unstable"))]
+#[cfg(feature = "alloc")]
+#[doc(hidden)]
+#[path = "unicodeset_parse/mod.rs"]
+pub mod unstable_unicodeset_parse;

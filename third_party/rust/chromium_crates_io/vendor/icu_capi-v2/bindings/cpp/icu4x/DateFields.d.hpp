@@ -30,7 +30,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `DateFields`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.DateFields.html) for more information.
+ * See the [Rust documentation for `DateFields`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.DateFields.html) for more information.
  */
 struct DateFields {
     std::optional<std::string_view> era;

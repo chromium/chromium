@@ -4,9 +4,9 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `TimePrecision`](https://docs.rs/icu/2.2.0/icu/datetime/options/enum.TimePrecision.html) for more information.
+ * See the [Rust documentation for `TimePrecision`](https://docs.rs/icu/2.4.0/icu/datetime/options/enum.TimePrecision.html) for more information.
  *
- * See the [Rust documentation for `SubsecondDigits`](https://docs.rs/icu/2.2.0/icu/datetime/options/enum.SubsecondDigits.html) for more information.
+ * See the [Rust documentation for `SubsecondDigits`](https://docs.rs/icu/2.4.0/icu/datetime/options/enum.SubsecondDigits.html) for more information.
  */
 export class TimePrecision {
 
@@ -34,7 +34,7 @@ export class TimePrecision {
 
 
     /**
-     * See the [Rust documentation for `try_from_int`](https://docs.rs/icu/2.2.0/icu/datetime/options/enum.SubsecondDigits.html#method.try_from_int) for more information.
+     * See the [Rust documentation for `try_from_int`](https://docs.rs/icu/2.4.0/icu/datetime/options/enum.SubsecondDigits.html#method.try_from_int) for more information.
      */
     static fromSubsecondDigits(digits: number): TimePrecision | null;
 

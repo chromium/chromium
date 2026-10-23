@@ -37,6 +37,8 @@ namespace capi {
 
     uint32_t icu4x_UtcOffset_seconds_part_mv1(const icu4x::capi::UtcOffset* self);
 
+    void icu4x_UtcOffset_to_string_mv1(const icu4x::capi::UtcOffset* self, icu4x::diplomat::capi::DiplomatWrite* write);
+
     void icu4x_UtcOffset_destroy_mv1(UtcOffset* self);
 
     } // extern "C"
@@ -81,6 +83,20 @@ inline uint32_t icu4x::UtcOffset::minutes_part() const {
 inline uint32_t icu4x::UtcOffset::seconds_part() const {
     auto result = icu4x::capi::icu4x_UtcOffset_seconds_part_mv1(this->AsFFI());
     return result;
+}
+
+inline std::string icu4x::UtcOffset::to_string() const {
+    std::string output;
+    icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteFromString(output);
+    icu4x::capi::icu4x_UtcOffset_to_string_mv1(this->AsFFI(),
+        &write);
+    return output;
+}
+template<typename W>
+inline void icu4x::UtcOffset::to_string_write(W& writeable) const {
+    icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteTrait<W>::Construct(writeable);
+    icu4x::capi::icu4x_UtcOffset_to_string_mv1(this->AsFFI(),
+        &write);
 }
 
 inline const icu4x::capi::UtcOffset* icu4x::UtcOffset::AsFFI() const {

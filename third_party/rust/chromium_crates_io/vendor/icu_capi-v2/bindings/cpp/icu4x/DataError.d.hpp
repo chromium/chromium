@@ -32,7 +32,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * Additional information: [1](https://docs.rs/icu_provider/2.2.0/icu_provider/struct.DataError.html), [2](https://docs.rs/icu_provider/2.2.0/icu_provider/enum.DataErrorKind.html)
+ * Additional information: [1](https://docs.rs/icu_provider/2.4.0/icu_provider/struct.DataError.html), [2](https://docs.rs/icu_provider/2.4.0/icu_provider/enum.DataErrorKind.html)
  */
 class DataError {
 public:

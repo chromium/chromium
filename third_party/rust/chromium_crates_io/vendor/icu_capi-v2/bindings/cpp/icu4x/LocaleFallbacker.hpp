@@ -52,7 +52,7 @@ inline std::unique_ptr<icu4x::LocaleFallbacker> icu4x::LocaleFallbacker::without
     return std::unique_ptr<icu4x::LocaleFallbacker>(icu4x::LocaleFallbacker::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::LocaleFallbackerWithConfig> icu4x::LocaleFallbacker::for_config(icu4x::LocaleFallbackConfig config) const {
+inline std::unique_ptr<icu4x::LocaleFallbackerWithConfig> icu4x::LocaleFallbacker::for_config(icu4x::LocaleFallbackConfig config) const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_LocaleFallbacker_for_config_mv1(this->AsFFI(),
         config.AsFFI());
     return std::unique_ptr<icu4x::LocaleFallbackerWithConfig>(icu4x::LocaleFallbackerWithConfig::FromFFI(result));

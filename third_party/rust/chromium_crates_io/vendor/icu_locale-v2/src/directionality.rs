@@ -2,10 +2,11 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use crate::provider::*;
 use crate::LocaleExpander;
-use icu_locale_core::subtags::Script;
+use crate::provider::*;
 use icu_locale_core::LanguageIdentifier;
+use icu_locale_core::subtags::Script;
+use icu_locale_fallback::provider::LocaleLikelySubtagsLanguageV1;
 use icu_provider::prelude::*;
 
 /// Represents the direction of a script.
@@ -27,7 +28,7 @@ pub enum Direction {
 /// # Examples
 ///
 /// ```
-/// use icu::locale::{langid, Direction, LocaleDirectionality};
+/// use icu::locale::{Direction, LocaleDirectionality, langid};
 ///
 /// let ld = LocaleDirectionality::new_common();
 ///
@@ -111,7 +112,7 @@ impl<Expander: AsRef<LocaleExpander>> LocaleDirectionality<Expander> {
     ///
     /// ```
     /// use icu::locale::{
-    ///     langid, Direction, LocaleDirectionality, LocaleExpander,
+    ///     Direction, LocaleDirectionality, LocaleExpander, langid,
     /// };
     ///
     /// let ld_default = LocaleDirectionality::new_common();
@@ -169,7 +170,7 @@ impl<Expander: AsRef<LocaleExpander>> LocaleDirectionality<Expander> {
     /// Using an existing locale:
     ///
     /// ```
-    /// use icu::locale::{langid, Direction, LocaleDirectionality};
+    /// use icu::locale::{Direction, LocaleDirectionality, langid};
     ///
     /// let ld = LocaleDirectionality::new_common();
     ///

@@ -29,7 +29,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * Additional information: [1](https://docs.rs/icu/2.2.0/icu/calendar/error/enum.DateDurationParseError.html)
+ * Additional information: [1](https://docs.rs/icu/2.4.0/icu/calendar/error/enum.DateDurationParseError.html)
  */
 class DateDurationParseError {
 public:

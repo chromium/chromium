@@ -7,8 +7,8 @@ use alloc::vec::Vec;
 use core::{char, cmp::Ordering, ops::RangeBounds};
 use potential_utf::PotentialCodePoint;
 
-use crate::codepointinvlist::{utils::deconstruct_range, CodePointInversionList};
-use zerovec::{ule::AsULE, ZeroVec};
+use crate::codepointinvlist::{CodePointInversionList, utils::deconstruct_range};
+use zerovec::{ZeroVec, ule::AsULE};
 
 /// A builder for [`CodePointInversionList`].
 ///
@@ -47,8 +47,8 @@ impl CodePointInversionListBuilder {
         let end_res = self.intervals.binary_search(&end);
         let mut start_ind = start_res.unwrap_or_else(|x| x);
         let mut end_ind = end_res.unwrap_or_else(|x| x);
-        let start_pos_check = (start_ind % 2 == 0) == add;
-        let end_pos_check = (end_ind % 2 == 0) == add;
+        let start_pos_check = start_ind.is_multiple_of(2) == add;
+        let end_pos_check = end_ind.is_multiple_of(2) == add;
         let start_eq_end = start_ind == end_ind;
 
         #[expect(clippy::indexing_slicing)] // all indices are binary search results
@@ -414,7 +414,7 @@ impl CodePointInversionListBuilder {
     ///     0x0,
     ///     0x41,
     ///     0x46,
-    ///     (std::char::MAX as u32) + 1,
+    ///     (char::MAX as u32) + 1,
     /// ])
     /// .unwrap();
     /// builder.add_set(&set);
@@ -532,7 +532,6 @@ impl CodePointInversionListBuilder {
 #[cfg(test)]
 mod tests {
     use super::{CodePointInversionList, CodePointInversionListBuilder};
-    use core::char;
 
     fn generate_tester(ex: &[u32]) -> CodePointInversionListBuilder {
         let check = CodePointInversionList::try_from_u32_inversion_list_slice(ex).unwrap();

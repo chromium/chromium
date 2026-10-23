@@ -3,9 +3,9 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 use crate::internals::{CaseMapLocale, FoldOptions, FullCaseWriteable, StringAndWriteable};
-use crate::provider::data::MappingKind;
 use crate::provider::CaseMap;
 use crate::provider::CaseMapV1;
+use crate::provider::data::MappingKind;
 use crate::set::ClosureSink;
 use crate::titlecase::{LeadingAdjustment, TitlecaseOptions, TrailingCase};
 use alloc::borrow::Cow;
@@ -108,7 +108,11 @@ impl<'a> CaseMapperBorrowed<'a> {
     ///
     /// See [`Self::lowercase_to_string()`] for the equivalent convenience function that returns a string,
     /// as well as for an example.
-    pub fn lowercase(self, src: &'a str, langid: &LanguageIdentifier) -> impl Writeable + 'a {
+    pub fn lowercase(
+        self,
+        src: &'a str,
+        langid: &LanguageIdentifier,
+    ) -> impl Writeable + 'a + use<'a> {
         self.data.full_helper_writeable::<false>(
             src,
             CaseMapLocale::from_langid(langid),
@@ -124,7 +128,11 @@ impl<'a> CaseMapperBorrowed<'a> {
     ///
     /// See [`Self::uppercase_to_string()`] for the equivalent convenience function that returns a string,
     /// as well as for an example.
-    pub fn uppercase(self, src: &'a str, langid: &LanguageIdentifier) -> impl Writeable + 'a {
+    pub fn uppercase(
+        self,
+        src: &'a str,
+        langid: &LanguageIdentifier,
+    ) -> impl Writeable + 'a + use<'a> {
         self.data.full_helper_writeable::<false>(
             src,
             CaseMapLocale::from_langid(langid),
@@ -161,7 +169,7 @@ impl<'a> CaseMapperBorrowed<'a> {
         src: &'a str,
         langid: &LanguageIdentifier,
         options: TitlecaseOptions,
-    ) -> impl Writeable + 'a {
+    ) -> impl Writeable + 'a + use<'a> {
         self.titlecase_segment_with_adjustment(src, langid, options, |data, ch| data.is_cased(ch))
     }
 

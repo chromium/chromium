@@ -33,7 +33,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `CaseMapper`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapper.html) for more information.
+ * See the [Rust documentation for `CaseMapper`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapper.html) for more information.
  */
 class CaseMapper {
 public:
@@ -41,21 +41,21 @@ public:
   /**
    * Construct a new `CaseMapper` instance using compiled data.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapper.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapper.html#method.new) for more information.
    */
   inline static std::unique_ptr<icu4x::CaseMapper> create();
 
   /**
    * Construct a new `CaseMapper` instance using a particular data source.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapper.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapper.html#method.new) for more information.
    */
   inline static icu4x::diplomat::result<std::unique_ptr<icu4x::CaseMapper>, icu4x::DataError> create_with_provider(const icu4x::DataProvider& provider);
 
   /**
    * Returns the full lowercase mapping of the given string
    *
-   * See the [Rust documentation for `lowercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.lowercase) for more information.
+   * See the [Rust documentation for `lowercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.lowercase) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> lowercase(std::string_view s, const icu4x::Locale& locale) const;
   template<typename W>
@@ -64,7 +64,7 @@ public:
   /**
    * Returns the full uppercase mapping of the given string
    *
-   * See the [Rust documentation for `uppercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.uppercase) for more information.
+   * See the [Rust documentation for `uppercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.uppercase) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> uppercase(std::string_view s, const icu4x::Locale& locale) const;
   template<typename W>
@@ -73,7 +73,7 @@ public:
   /**
    * Returns the full lowercase mapping of the given string, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `lowercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.lowercase) for more information.
+   * See the [Rust documentation for `lowercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.lowercase) for more information.
    */
   inline static icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> lowercase_with_compiled_data(std::string_view s, const icu4x::Locale& locale);
   template<typename W>
@@ -82,7 +82,7 @@ public:
   /**
    * Returns the full uppercase mapping of the given string, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `uppercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.uppercase) for more information.
+   * See the [Rust documentation for `uppercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.uppercase) for more information.
    */
   inline static icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> uppercase_with_compiled_data(std::string_view s, const icu4x::Locale& locale);
   template<typename W>
@@ -95,7 +95,7 @@ public:
    *
    * The `v1` refers to the version of the options struct, which may change as we add more options
    *
-   * See the [Rust documentation for `titlecase_segment_with_only_case_data`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.titlecase_segment_with_only_case_data) for more information.
+   * See the [Rust documentation for `titlecase_segment_with_only_case_data`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.titlecase_segment_with_only_case_data) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> titlecase_segment_with_only_case_data_v1(std::string_view s, const icu4x::Locale& locale, icu4x::TitlecaseOptionsV1 options) const;
   template<typename W>
@@ -109,7 +109,7 @@ public:
    *
    * The `v1` refers to the version of the options struct, which may change as we add more options
    *
-   * See the [Rust documentation for `titlecase_segment_with_only_case_data_to_string`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.titlecase_segment_with_only_case_data_to_string) for more information.
+   * See the [Rust documentation for `titlecase_segment_with_only_case_data_to_string`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.titlecase_segment_with_only_case_data_to_string) for more information.
    */
   inline static icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> titlecase_segment_with_only_case_compiled_data_v1(std::string_view s, const icu4x::Locale& locale, icu4x::TitlecaseOptionsV1 options);
   template<typename W>
@@ -118,7 +118,7 @@ public:
   /**
    * Case-folds the characters in the given string
    *
-   * See the [Rust documentation for `fold`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.fold) for more information.
+   * See the [Rust documentation for `fold`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.fold) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> fold(std::string_view s) const;
   template<typename W>
@@ -128,7 +128,7 @@ public:
    * Case-folds the characters in the given string
    * using Turkic (T) mappings for dotted/dotless I.
    *
-   * See the [Rust documentation for `fold_turkic`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.fold_turkic) for more information.
+   * See the [Rust documentation for `fold_turkic`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.fold_turkic) for more information.
    */
   inline icu4x::diplomat::result<std::string, icu4x::diplomat::Utf8Error> fold_turkic(std::string_view s) const;
   template<typename W>
@@ -147,7 +147,7 @@ public:
    * Identical to the similarly named method on `CaseMapCloser`, use that if you
    * plan on using string case closure mappings too.
    *
-   * See the [Rust documentation for `add_case_closure_to`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.add_case_closure_to) for more information.
+   * See the [Rust documentation for `add_case_closure_to`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.add_case_closure_to) for more information.
    */
   inline void add_case_closure_to(char32_t c, icu4x::CodePointSetBuilder& builder) const;
 
@@ -158,14 +158,14 @@ public:
    * Full mappings, which can map one char to a string, are not included.
    * For full mappings, use `CaseMapperBorrowed::lowercase`.
    *
-   * See the [Rust documentation for `simple_lowercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_lowercase) for more information.
+   * See the [Rust documentation for `simple_lowercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_lowercase) for more information.
    */
   inline char32_t simple_lowercase(char32_t ch) const;
 
   /**
    * Returns the simple lowercase mapping of the given character, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `simple_lowercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_lowercase) for more information.
+   * See the [Rust documentation for `simple_lowercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_lowercase) for more information.
    */
   inline static char32_t simple_lowercase_with_compiled_data(char32_t ch);
 
@@ -176,14 +176,14 @@ public:
    * Full mappings, which can map one char to a string, are not included.
    * For full mappings, use `CaseMapperBorrowed::uppercase`.
    *
-   * See the [Rust documentation for `simple_uppercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_uppercase) for more information.
+   * See the [Rust documentation for `simple_uppercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_uppercase) for more information.
    */
   inline char32_t simple_uppercase(char32_t ch) const;
 
   /**
    * Returns the simple uppercase mapping of the given character, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `simple_uppercase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_uppercase) for more information.
+   * See the [Rust documentation for `simple_uppercase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_uppercase) for more information.
    */
   inline static char32_t simple_uppercase_with_compiled_data(char32_t ch);
 
@@ -194,14 +194,14 @@ public:
    * Full mappings, which can map one char to a string, are not included.
    * For full mappings, use `CaseMapperBorrowed::titlecase_segment`.
    *
-   * See the [Rust documentation for `simple_titlecase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_titlecase) for more information.
+   * See the [Rust documentation for `simple_titlecase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_titlecase) for more information.
    */
   inline char32_t simple_titlecase(char32_t ch) const;
 
   /**
    * Returns the simple titlecase mapping of the given character, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `simple_titlecase`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_titlecase) for more information.
+   * See the [Rust documentation for `simple_titlecase`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_titlecase) for more information.
    */
   inline static char32_t simple_titlecase_with_compiled_data(char32_t ch);
 
@@ -211,14 +211,14 @@ public:
    * This function only implements simple folding.
    * For full folding, use `CaseMapperBorrowed::fold`.
    *
-   * See the [Rust documentation for `simple_fold`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold) for more information.
+   * See the [Rust documentation for `simple_fold`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold) for more information.
    */
   inline char32_t simple_fold(char32_t ch) const;
 
   /**
    * Returns the simple casefolding of the given character, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `simple_fold`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold) for more information.
+   * See the [Rust documentation for `simple_fold`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold) for more information.
    */
   inline static char32_t simple_fold_with_compiled_data(char32_t ch);
 
@@ -228,14 +228,14 @@ public:
    * This function only implements simple folding.
    * For full folding, use `CaseMapperBorrowed::fold_turkic`.
    *
-   * See the [Rust documentation for `simple_fold_turkic`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold_turkic) for more information.
+   * See the [Rust documentation for `simple_fold_turkic`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold_turkic) for more information.
    */
   inline char32_t simple_fold_turkic(char32_t ch) const;
 
   /**
    * Returns the simple Turkic casefolding of the given character, using compiled data (avoids having to allocate a `CaseMapper` object)
    *
-   * See the [Rust documentation for `simple_fold_turkic`](https://docs.rs/icu/2.2.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold_turkic) for more information.
+   * See the [Rust documentation for `simple_fold_turkic`](https://docs.rs/icu/2.4.0/icu/casemap/struct.CaseMapperBorrowed.html#method.simple_fold_turkic) for more information.
    */
   inline static char32_t simple_fold_turkic_with_compiled_data(char32_t ch);
 

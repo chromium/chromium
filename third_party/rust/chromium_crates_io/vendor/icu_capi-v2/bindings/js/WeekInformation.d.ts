@@ -11,7 +11,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * A Week calculator, useful to be passed in to `week_of_year()` on Date and `DateTime` types
  *
- * See the [Rust documentation for `WeekInformation`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekInformation.html) for more information.
+ * See the [Rust documentation for `WeekInformation`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekInformation.html) for more information.
  */
 export class WeekInformation {
     /** @internal */
@@ -21,33 +21,33 @@ export class WeekInformation {
     /**
      * Creates a new {@link WeekInformation} from locale data using a particular data source.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekInformation.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekInformation.html#method.try_new) for more information.
      */
     static createWithProvider(provider: DataProvider, locale: Locale): WeekInformation;
 
     /**
      * Returns the weekday that starts the week for this object's locale
      *
-     * See the [Rust documentation for `first_weekday`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekInformation.html#structfield.first_weekday) for more information.
+     * See the [Rust documentation for `first_weekday`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekInformation.html#structfield.first_weekday) for more information.
      */
     get firstWeekday(): Weekday;
 
     /**
-     * See the [Rust documentation for `weekend`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekInformation.html#structfield.weekend) for more information.
+     * See the [Rust documentation for `weekend`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekInformation.html#structfield.weekend) for more information.
      *
-     * See the [Rust documentation for `contains`](https://docs.rs/icu/2.2.0/icu/calendar/provider/struct.WeekdaySet.html#method.contains) for more information.
+     * See the [Rust documentation for `contains`](https://docs.rs/icu/2.4.0/icu/calendar/provider/struct.WeekdaySet.html#method.contains) for more information.
      */
     isWeekend(day: Weekday): boolean;
 
     /**
-     * See the [Rust documentation for `weekend`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekInformation.html#method.weekend) for more information.
+     * See the [Rust documentation for `weekend`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekInformation.html#method.weekend) for more information.
      */
     get weekend(): WeekdaySetIterator;
 
     /**
      * Creates a new {@link WeekInformation} from locale data using compiled data.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekInformation.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekInformation.html#method.try_new) for more information.
      */
     constructor(locale: Locale);
 }

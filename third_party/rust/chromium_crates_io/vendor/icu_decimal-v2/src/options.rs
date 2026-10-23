@@ -28,8 +28,8 @@ impl From<GroupingStrategy> for DecimalFormatterOptions {
 /// # Examples
 ///
 /// ```
-/// use icu::decimal::options;
 /// use icu::decimal::DecimalFormatter;
+/// use icu::decimal::options;
 /// use icu::locale::Locale;
 /// use writeable::assert_writeable_eq;
 ///

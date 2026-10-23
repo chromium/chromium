@@ -38,7 +38,6 @@ const _: () = {
     use icu_list_data::*;
     pub mod icu {
         pub use crate as list;
-        pub use icu_locale as locale;
     }
     make_provider!(Baked);
     impl_list_and_v1!(Baked);

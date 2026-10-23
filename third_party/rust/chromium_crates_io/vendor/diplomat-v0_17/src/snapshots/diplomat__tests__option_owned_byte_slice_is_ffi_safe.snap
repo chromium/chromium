@@ -1,0 +1,22 @@
+---
+source: macro/src/lib.rs
+expression: "pretty_print_code(gen_bridge(parse_quote!\n{\n    mod ffi\n    {\n        struct Foo {} impl Foo\n        { pub fn bar(&self) -> Option<Box<[u8]>> { unimplemented!() } }\n    }\n}).to_token_stream())"
+---
+mod ffi {
+    #[repr(C)]
+    struct Foo {}
+    impl Foo {
+        pub fn bar(&self) -> Option<Box<[u8]>> {
+            unimplemented!()
+        }
+    }
+    use diplomat_runtime::*;
+    use core::ffi::c_void;
+    #[no_mangle]
+    #[allow(deprecated)]
+    extern "C" fn Foo_bar(
+        this: &Foo,
+    ) -> diplomat_runtime::DiplomatResult<diplomat_runtime::DiplomatOwnedSlice<u8>, ()> {
+        this.bar().map(<diplomat_runtime::DiplomatOwnedSlice<u8>>::from).ok_or(()).into()
+    }
+}

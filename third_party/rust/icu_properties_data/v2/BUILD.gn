@@ -88,6 +88,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xid_start_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_bidi_class_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_bidi_mirroring_glyph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_block_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_canonical_combining_class_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_east_asian_width_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_general_category_v1.rs.data",
@@ -104,6 +105,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_vertical_orientation_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_word_break_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_block_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_canonical_combining_class_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_east_asian_width_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_general_category_v1.rs.data",
@@ -120,6 +122,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_vertical_orientation_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_word_break_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_block_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_canonical_combining_class_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_east_asian_width_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_general_category_mask_v1.rs.data",
@@ -137,6 +140,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_vertical_orientation_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_word_break_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_block_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_canonical_combining_class_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_east_asian_width_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_general_category_v1.rs.data",
@@ -156,12 +160,12 @@ cargo_crate("lib") {
   ]
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_properties_data"
   cargo_pkg_description = "Data for the icu_properties crate"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = false
 

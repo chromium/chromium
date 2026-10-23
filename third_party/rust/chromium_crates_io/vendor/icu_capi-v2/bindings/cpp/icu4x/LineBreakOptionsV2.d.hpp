@@ -33,7 +33,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `LineBreakOptions`](https://docs.rs/icu/2.2.0/icu/segmenter/options/struct.LineBreakOptions.html) for more information.
+ * See the [Rust documentation for `LineBreakOptions`](https://docs.rs/icu/2.4.0/icu/segmenter/options/struct.LineBreakOptions.html) for more information.
  */
 struct LineBreakOptionsV2 {
     std::optional<icu4x::LineBreakStrictness> strictness;

@@ -1,0 +1,6 @@
+---
+source: core/src/hir/attrs.rs
+expression: output
+---
+Diplomat error: Lowering error in Test
+> `ffi_error` not supported in backend tests

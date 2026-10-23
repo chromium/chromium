@@ -1,0 +1,70 @@
+// @generated
+/// Implement `DataProvider<LocaleNamesRegionShortTinyV1>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 215B for the lookup data structure (27 data identifiers)
+/// * 584B[^1] for the actual data (19 unique structs)
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+///
+/// This macro requires the following crates:
+/// * `icu`
+/// * `icu_provider`
+/// * `icu_provider/baked`
+/// * `zerovec`
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_locale_names_region_short_tiny_v1 {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.88"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.88"]
+        impl $provider {
+            const DATA_LOCALE_NAMES_REGION_SHORT_TINY_V1: icu_provider::baked::zerotrie::DataForVarULEs<icu::locale::provider::names::LocaleNamesRegionShortTinyV1> = {
+                const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xC8acegkpyz\x05\x13\\hmr\x8Dr\x1EPS\x8C\xC2hy\x06r\x1EUS\x90\0\x1EGB\x81\xC2ns5\xC2\x1E-\x1D\xC7CGHMPSU\x02\x04\x06\x08\n\x0CC\x80B\x82K\x84O\x87N\x8BH\x8DS\x90\0\xC20C\x0601\x1ESH\x8EA\x1E\xC2MS\x02O\x88H\x8F\xC2\x1E-\x04US\x90\x01419\x1EUS\x90\x02\xC2ad\x04\x1EGB\x83\x1EGB\x83o\x1EKR\x86t\x1EMO\x88ue\xC2\x1E-\x08\xC2HM\x02K\x85O\x89Hans\x1E\xC2HM\x02K\x85O\x8Ah\xC2\x1E-\x08\xC2HM\x02K\x85O\x8AHant\x1E\xC2HM\x02K\x85O\x89" };
+                const VALUES: &'static zerovec::VarZeroSlice<<<icu::locale::provider::names::LocaleNamesRegionShortTinyV1 as icu_provider::baked::zerotrie::DynamicDataMarker>::DataStruct as icu_provider::ule::MaybeAsVarULE>::EncodedStruct, zerovec::vecs::Index32> = unsafe { zerovec::vecs::VarZeroSlice32::from_bytes_unchecked(b"\x13\0\0\0\r\0\0\0\x0F\0\0\0\x11\0\0\0\x13\0\0\0\x1C\0\0\0\"\0\0\0(\0\0\0-\0\0\x002\0\0\08\0\0\0>\0\0\0F\0\0\0R\0\0\0\\\0\0\0e\0\0\0q\0\0\0s\0\0\0z\0\0\0Cocos IslandsDUUKRAHong Kong\xE9\xA6\x99\xE6\xB8\xAF\xED\x95\x9C\xEA\xB5\xADMacaoMacau\xE6\xBE\xB3\xE9\x96\x80\xE6\xBE\xB3\xE9\x97\xA8Pitcairn\xD9\x81\xD9\x84\xD8\xB3\xD8\xB7\xD9\x8A\xD9\x86St. HelenaSt HelenaSaint HelenaUSEE. UU.EE.UU.") };
+                unsafe { icu_provider::baked::zerotrie::DataForVarULEs::from_trie_and_values_unchecked(TRIE, VALUES) }
+            };
+        }
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DataProvider<icu::locale::provider::names::LocaleNamesRegionShortTinyV1> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::locale::provider::names::LocaleNamesRegionShortTinyV1>, icu_provider::DataError> {
+                let mut metadata = icu_provider::DataResponseMetadata::default();
+                let payload = if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_LOCALE_NAMES_REGION_SHORT_TINY_V1, req.id, req.metadata.attributes_prefix_match) {
+                    payload
+                } else {
+                    const FALLBACKER: icu_locale_fallback::LocaleFallbackerWithConfig<'static> = icu_locale_fallback::LocaleFallbacker::new().for_config(<icu::locale::provider::names::LocaleNamesRegionShortTinyV1 as icu_provider::DataMarker>::INFO.fallback_config);
+                    let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
+                    loop {
+                        if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_LOCALE_NAMES_REGION_SHORT_TINY_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                            metadata.locale = Some(fallback_iterator.take());
+                            break payload;
+                        }
+                        if fallback_iterator.get().is_unknown() {
+                            return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::locale::provider::names::LocaleNamesRegionShortTinyV1 as icu_provider::DataMarker>::INFO, req));
+                        }
+                        fallback_iterator.step();
+                    }
+                };
+                Ok(icu_provider::DataResponse { payload, metadata })
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_locale_names_region_short_tiny_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::IterableDataProvider<icu::locale::provider::names::LocaleNamesRegionShortTinyV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider::baked::DataStore::iter(&Self::DATA_LOCALE_NAMES_REGION_SHORT_TINY_V1).collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {};
+    ($ provider : ty , DRY , ITER) => {
+        __impl_locale_names_region_short_tiny_v1!($provider, ITER);
+    };
+}
+#[doc(inline)]
+pub use __impl_locale_names_region_short_tiny_v1 as impl_locale_names_region_short_tiny_v1;

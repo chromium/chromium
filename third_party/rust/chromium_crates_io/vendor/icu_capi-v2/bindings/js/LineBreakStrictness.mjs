@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `LineBreakStrictness`](https://docs.rs/icu/2.2.0/icu/segmenter/options/enum.LineBreakStrictness.html) for more information.
+ * See the [Rust documentation for `LineBreakStrictness`](https://docs.rs/icu/2.4.0/icu/segmenter/options/enum.LineBreakStrictness.html) for more information.
  */
 export class LineBreakStrictness {
     #value = undefined;

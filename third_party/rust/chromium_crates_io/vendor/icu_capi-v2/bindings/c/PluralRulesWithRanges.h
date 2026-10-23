@@ -10,6 +10,7 @@
 #include "DataError.d.h"
 #include "DataProvider.d.h"
 #include "Locale.d.h"
+#include "PluralCategories.d.h"
 #include "PluralCategory.d.h"
 #include "PluralOperands.d.h"
 
@@ -33,6 +34,12 @@ typedef struct icu4x_PluralRulesWithRanges_create_ordinal_with_provider_mv1_resu
 icu4x_PluralRulesWithRanges_create_ordinal_with_provider_mv1_result icu4x_PluralRulesWithRanges_create_ordinal_with_provider_mv1(const DataProvider* provider, const Locale* locale);
 
 PluralCategory icu4x_PluralRulesWithRanges_category_for_range_mv1(const PluralRulesWithRanges* self, const PluralOperands* start, const PluralOperands* end);
+
+PluralCategory icu4x_PluralRulesWithRanges_category_for_mv1(const PluralRulesWithRanges* self, const PluralOperands* op);
+
+PluralCategories icu4x_PluralRulesWithRanges_categories_mv1(const PluralRulesWithRanges* self);
+
+PluralCategory icu4x_PluralRulesWithRanges_resolve_range_mv1(const PluralRulesWithRanges* self, PluralCategory start, PluralCategory end);
 
 void icu4x_PluralRulesWithRanges_destroy_mv1(PluralRulesWithRanges* self);
 

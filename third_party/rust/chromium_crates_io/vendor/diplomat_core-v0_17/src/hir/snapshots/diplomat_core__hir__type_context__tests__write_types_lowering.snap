@@ -1,0 +1,8 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo::write_str16
+> DiplomatWrite16 is not supported in this backend. Try #[diplomat::cfg(supports = utf16_writeables)]
+Diplomat error: Lowering error in Foo::write_generic
+> DiplomatWriteGeneric is not supported in this backend. Try #[diplomat::cfg(supports = generic_writeables)]

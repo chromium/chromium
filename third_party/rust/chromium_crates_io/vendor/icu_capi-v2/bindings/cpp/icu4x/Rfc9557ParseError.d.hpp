@@ -28,7 +28,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * Additional information: [1](https://docs.rs/icu/2.2.0/icu/calendar/enum.ParseError.html), [2](https://docs.rs/icu/2.2.0/icu/time/enum.ParseError.html)
+ * Additional information: [1](https://docs.rs/icu/2.4.0/icu/calendar/enum.ParseError.html), [2](https://docs.rs/icu/2.4.0/icu/time/enum.ParseError.html)
  */
 class Rfc9557ParseError {
 public:

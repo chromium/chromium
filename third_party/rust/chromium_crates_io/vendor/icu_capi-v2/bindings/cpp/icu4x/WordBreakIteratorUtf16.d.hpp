@@ -24,7 +24,7 @@ namespace capi {
 
 namespace icu4x {
 /**
- * See the [Rust documentation for `WordBreakIterator`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.WordBreakIterator.html) for more information.
+ * See the [Rust documentation for `WordBreakIterator`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.WordBreakIterator.html) for more information.
  */
 class WordBreakIteratorUtf16 {
 public:
@@ -33,21 +33,21 @@ public:
    * Finds the next breakpoint. Returns -1 if at the end of the string or if the index is
    * out of range of a 32-bit signed integer.
    *
-   * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.WordBreakIterator.html#method.next) for more information.
+   * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.WordBreakIterator.html#method.next) for more information.
    */
   inline int32_t next();
 
   /**
    * Return the status value of break boundary.
    *
-   * See the [Rust documentation for `word_type`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.WordBreakIterator.html#method.word_type) for more information.
+   * See the [Rust documentation for `word_type`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.WordBreakIterator.html#method.word_type) for more information.
    */
   inline icu4x::SegmenterWordType word_type() const;
 
   /**
    * Return true when break boundary is word-like such as letter/number/CJK
    *
-   * See the [Rust documentation for `is_word_like`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.WordBreakIterator.html#method.is_word_like) for more information.
+   * See the [Rust documentation for `is_word_like`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.WordBreakIterator.html#method.is_word_like) for more information.
    */
   inline bool is_word_like() const;
 

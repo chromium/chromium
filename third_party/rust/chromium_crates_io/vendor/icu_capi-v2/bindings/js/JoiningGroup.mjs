@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `JoiningGroup`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html) for more information.
+ * See the [Rust documentation for `JoiningGroup`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html) for more information.
  */
 export class JoiningGroup {
     #value = undefined;
@@ -116,7 +116,17 @@ export class JoiningGroup {
         ["ThinYeh", 102],
         ["VerticalTail", 103],
         ["KashmiriYeh", 104],
-        ["ThinNoon", 105]
+        ["ThinNoon", 105],
+        ["CrownAin", 106],
+        ["CrownBeh", 107],
+        ["CrownFeh", 108],
+        ["CrownHah", 109],
+        ["CrownHeh", 110],
+        ["CrownKaf", 111],
+        ["CrownMeem", 112],
+        ["CrownSad", 113],
+        ["CrownSeen", 114],
+        ["CrownTah", 115]
     ]);
 
     static getAllEntries() {
@@ -268,436 +278,486 @@ export class JoiningGroup {
         new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 103),
         new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 104),
         new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 105),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 106),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 107),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 108),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 109),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 110),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 111),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 112),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 113),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 114),
+        new JoiningGroup(diplomatRuntime.internalConstructor, diplomatRuntime.internalConstructor, 115),
     ];
 
     /**
-     * See the [Rust documentation for `NoJoiningGroup`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.NoJoiningGroup) for more information.
+     * See the [Rust documentation for `NoJoiningGroup`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.NoJoiningGroup) for more information.
      */
     static NoJoiningGroup = JoiningGroup.#objectValues[0];
     /**
-     * See the [Rust documentation for `Ain`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Ain) for more information.
+     * See the [Rust documentation for `Ain`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Ain) for more information.
      */
     static Ain = JoiningGroup.#objectValues[1];
     /**
-     * See the [Rust documentation for `Alaph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Alaph) for more information.
+     * See the [Rust documentation for `Alaph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Alaph) for more information.
      */
     static Alaph = JoiningGroup.#objectValues[2];
     /**
-     * See the [Rust documentation for `Alef`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Alef) for more information.
+     * See the [Rust documentation for `Alef`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Alef) for more information.
      */
     static Alef = JoiningGroup.#objectValues[3];
     /**
-     * See the [Rust documentation for `Beh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Beh) for more information.
+     * See the [Rust documentation for `Beh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Beh) for more information.
      */
     static Beh = JoiningGroup.#objectValues[4];
     /**
-     * See the [Rust documentation for `Beth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Beth) for more information.
+     * See the [Rust documentation for `Beth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Beth) for more information.
      */
     static Beth = JoiningGroup.#objectValues[5];
     /**
-     * See the [Rust documentation for `Dal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Dal) for more information.
+     * See the [Rust documentation for `Dal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Dal) for more information.
      */
     static Dal = JoiningGroup.#objectValues[6];
     /**
-     * See the [Rust documentation for `DalathRish`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.DalathRish) for more information.
+     * See the [Rust documentation for `DalathRish`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.DalathRish) for more information.
      */
     static DalathRish = JoiningGroup.#objectValues[7];
     /**
-     * See the [Rust documentation for `E`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.E) for more information.
+     * See the [Rust documentation for `E`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.E) for more information.
      */
     static E = JoiningGroup.#objectValues[8];
     /**
-     * See the [Rust documentation for `Feh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Feh) for more information.
+     * See the [Rust documentation for `Feh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Feh) for more information.
      */
     static Feh = JoiningGroup.#objectValues[9];
     /**
-     * See the [Rust documentation for `FinalSemkath`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.FinalSemkath) for more information.
+     * See the [Rust documentation for `FinalSemkath`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.FinalSemkath) for more information.
      */
     static FinalSemkath = JoiningGroup.#objectValues[10];
     /**
-     * See the [Rust documentation for `Gaf`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Gaf) for more information.
+     * See the [Rust documentation for `Gaf`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Gaf) for more information.
      */
     static Gaf = JoiningGroup.#objectValues[11];
     /**
-     * See the [Rust documentation for `Gamal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Gamal) for more information.
+     * See the [Rust documentation for `Gamal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Gamal) for more information.
      */
     static Gamal = JoiningGroup.#objectValues[12];
     /**
-     * See the [Rust documentation for `Hah`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Hah) for more information.
+     * See the [Rust documentation for `Hah`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Hah) for more information.
      */
     static Hah = JoiningGroup.#objectValues[13];
     /**
-     * See the [Rust documentation for `TehMarbutaGoal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.TehMarbutaGoal) for more information.
+     * See the [Rust documentation for `TehMarbutaGoal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.TehMarbutaGoal) for more information.
      */
     static TehMarbutaGoal = JoiningGroup.#objectValues[14];
     /**
-     * See the [Rust documentation for `He`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.He) for more information.
+     * See the [Rust documentation for `He`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.He) for more information.
      */
     static He = JoiningGroup.#objectValues[15];
     /**
-     * See the [Rust documentation for `Heh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Heh) for more information.
+     * See the [Rust documentation for `Heh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Heh) for more information.
      */
     static Heh = JoiningGroup.#objectValues[16];
     /**
-     * See the [Rust documentation for `HehGoal`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.HehGoal) for more information.
+     * See the [Rust documentation for `HehGoal`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.HehGoal) for more information.
      */
     static HehGoal = JoiningGroup.#objectValues[17];
     /**
-     * See the [Rust documentation for `Heth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Heth) for more information.
+     * See the [Rust documentation for `Heth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Heth) for more information.
      */
     static Heth = JoiningGroup.#objectValues[18];
     /**
-     * See the [Rust documentation for `Kaf`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Kaf) for more information.
+     * See the [Rust documentation for `Kaf`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Kaf) for more information.
      */
     static Kaf = JoiningGroup.#objectValues[19];
     /**
-     * See the [Rust documentation for `Kaph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Kaph) for more information.
+     * See the [Rust documentation for `Kaph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Kaph) for more information.
      */
     static Kaph = JoiningGroup.#objectValues[20];
     /**
-     * See the [Rust documentation for `KnottedHeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.KnottedHeh) for more information.
+     * See the [Rust documentation for `KnottedHeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.KnottedHeh) for more information.
      */
     static KnottedHeh = JoiningGroup.#objectValues[21];
     /**
-     * See the [Rust documentation for `Lam`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Lam) for more information.
+     * See the [Rust documentation for `Lam`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Lam) for more information.
      */
     static Lam = JoiningGroup.#objectValues[22];
     /**
-     * See the [Rust documentation for `Lamadh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Lamadh) for more information.
+     * See the [Rust documentation for `Lamadh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Lamadh) for more information.
      */
     static Lamadh = JoiningGroup.#objectValues[23];
     /**
-     * See the [Rust documentation for `Meem`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Meem) for more information.
+     * See the [Rust documentation for `Meem`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Meem) for more information.
      */
     static Meem = JoiningGroup.#objectValues[24];
     /**
-     * See the [Rust documentation for `Mim`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Mim) for more information.
+     * See the [Rust documentation for `Mim`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Mim) for more information.
      */
     static Mim = JoiningGroup.#objectValues[25];
     /**
-     * See the [Rust documentation for `Noon`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Noon) for more information.
+     * See the [Rust documentation for `Noon`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Noon) for more information.
      */
     static Noon = JoiningGroup.#objectValues[26];
     /**
-     * See the [Rust documentation for `Nun`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Nun) for more information.
+     * See the [Rust documentation for `Nun`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Nun) for more information.
      */
     static Nun = JoiningGroup.#objectValues[27];
     /**
-     * See the [Rust documentation for `Pe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Pe) for more information.
+     * See the [Rust documentation for `Pe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Pe) for more information.
      */
     static Pe = JoiningGroup.#objectValues[28];
     /**
-     * See the [Rust documentation for `Qaf`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Qaf) for more information.
+     * See the [Rust documentation for `Qaf`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Qaf) for more information.
      */
     static Qaf = JoiningGroup.#objectValues[29];
     /**
-     * See the [Rust documentation for `Qaph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Qaph) for more information.
+     * See the [Rust documentation for `Qaph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Qaph) for more information.
      */
     static Qaph = JoiningGroup.#objectValues[30];
     /**
-     * See the [Rust documentation for `Reh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Reh) for more information.
+     * See the [Rust documentation for `Reh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Reh) for more information.
      */
     static Reh = JoiningGroup.#objectValues[31];
     /**
-     * See the [Rust documentation for `ReversedPe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ReversedPe) for more information.
+     * See the [Rust documentation for `ReversedPe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ReversedPe) for more information.
      */
     static ReversedPe = JoiningGroup.#objectValues[32];
     /**
-     * See the [Rust documentation for `Sad`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Sad) for more information.
+     * See the [Rust documentation for `Sad`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Sad) for more information.
      */
     static Sad = JoiningGroup.#objectValues[33];
     /**
-     * See the [Rust documentation for `Sadhe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Sadhe) for more information.
+     * See the [Rust documentation for `Sadhe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Sadhe) for more information.
      */
     static Sadhe = JoiningGroup.#objectValues[34];
     /**
-     * See the [Rust documentation for `Seen`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Seen) for more information.
+     * See the [Rust documentation for `Seen`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Seen) for more information.
      */
     static Seen = JoiningGroup.#objectValues[35];
     /**
-     * See the [Rust documentation for `Semkath`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Semkath) for more information.
+     * See the [Rust documentation for `Semkath`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Semkath) for more information.
      */
     static Semkath = JoiningGroup.#objectValues[36];
     /**
-     * See the [Rust documentation for `Shin`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Shin) for more information.
+     * See the [Rust documentation for `Shin`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Shin) for more information.
      */
     static Shin = JoiningGroup.#objectValues[37];
     /**
-     * See the [Rust documentation for `SwashKaf`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.SwashKaf) for more information.
+     * See the [Rust documentation for `SwashKaf`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.SwashKaf) for more information.
      */
     static SwashKaf = JoiningGroup.#objectValues[38];
     /**
-     * See the [Rust documentation for `SyriacWaw`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.SyriacWaw) for more information.
+     * See the [Rust documentation for `SyriacWaw`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.SyriacWaw) for more information.
      */
     static SyriacWaw = JoiningGroup.#objectValues[39];
     /**
-     * See the [Rust documentation for `Tah`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Tah) for more information.
+     * See the [Rust documentation for `Tah`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Tah) for more information.
      */
     static Tah = JoiningGroup.#objectValues[40];
     /**
-     * See the [Rust documentation for `Taw`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Taw) for more information.
+     * See the [Rust documentation for `Taw`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Taw) for more information.
      */
     static Taw = JoiningGroup.#objectValues[41];
     /**
-     * See the [Rust documentation for `TehMarbuta`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.TehMarbuta) for more information.
+     * See the [Rust documentation for `TehMarbuta`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.TehMarbuta) for more information.
      */
     static TehMarbuta = JoiningGroup.#objectValues[42];
     /**
-     * See the [Rust documentation for `Teth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Teth) for more information.
+     * See the [Rust documentation for `Teth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Teth) for more information.
      */
     static Teth = JoiningGroup.#objectValues[43];
     /**
-     * See the [Rust documentation for `Waw`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Waw) for more information.
+     * See the [Rust documentation for `Waw`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Waw) for more information.
      */
     static Waw = JoiningGroup.#objectValues[44];
     /**
-     * See the [Rust documentation for `Yeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Yeh) for more information.
+     * See the [Rust documentation for `Yeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Yeh) for more information.
      */
     static Yeh = JoiningGroup.#objectValues[45];
     /**
-     * See the [Rust documentation for `YehBarree`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.YehBarree) for more information.
+     * See the [Rust documentation for `YehBarree`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.YehBarree) for more information.
      */
     static YehBarree = JoiningGroup.#objectValues[46];
     /**
-     * See the [Rust documentation for `YehWithTail`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.YehWithTail) for more information.
+     * See the [Rust documentation for `YehWithTail`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.YehWithTail) for more information.
      */
     static YehWithTail = JoiningGroup.#objectValues[47];
     /**
-     * See the [Rust documentation for `Yudh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Yudh) for more information.
+     * See the [Rust documentation for `Yudh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Yudh) for more information.
      */
     static Yudh = JoiningGroup.#objectValues[48];
     /**
-     * See the [Rust documentation for `YudhHe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.YudhHe) for more information.
+     * See the [Rust documentation for `YudhHe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.YudhHe) for more information.
      */
     static YudhHe = JoiningGroup.#objectValues[49];
     /**
-     * See the [Rust documentation for `Zain`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Zain) for more information.
+     * See the [Rust documentation for `Zain`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Zain) for more information.
      */
     static Zain = JoiningGroup.#objectValues[50];
     /**
-     * See the [Rust documentation for `Fe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Fe) for more information.
+     * See the [Rust documentation for `Fe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Fe) for more information.
      */
     static Fe = JoiningGroup.#objectValues[51];
     /**
-     * See the [Rust documentation for `Khaph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Khaph) for more information.
+     * See the [Rust documentation for `Khaph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Khaph) for more information.
      */
     static Khaph = JoiningGroup.#objectValues[52];
     /**
-     * See the [Rust documentation for `Zhain`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Zhain) for more information.
+     * See the [Rust documentation for `Zhain`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Zhain) for more information.
      */
     static Zhain = JoiningGroup.#objectValues[53];
     /**
-     * See the [Rust documentation for `BurushaskiYehBarree`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.BurushaskiYehBarree) for more information.
+     * See the [Rust documentation for `BurushaskiYehBarree`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.BurushaskiYehBarree) for more information.
      */
     static BurushaskiYehBarree = JoiningGroup.#objectValues[54];
     /**
-     * See the [Rust documentation for `FarsiYeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.FarsiYeh) for more information.
+     * See the [Rust documentation for `FarsiYeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.FarsiYeh) for more information.
      */
     static FarsiYeh = JoiningGroup.#objectValues[55];
     /**
-     * See the [Rust documentation for `Nya`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Nya) for more information.
+     * See the [Rust documentation for `Nya`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.Nya) for more information.
      */
     static Nya = JoiningGroup.#objectValues[56];
     /**
-     * See the [Rust documentation for `RohingyaYeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.RohingyaYeh) for more information.
+     * See the [Rust documentation for `RohingyaYeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.RohingyaYeh) for more information.
      */
     static RohingyaYeh = JoiningGroup.#objectValues[57];
     /**
-     * See the [Rust documentation for `ManichaeanAleph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanAleph) for more information.
+     * See the [Rust documentation for `ManichaeanAleph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanAleph) for more information.
      */
     static ManichaeanAleph = JoiningGroup.#objectValues[58];
     /**
-     * See the [Rust documentation for `ManichaeanAyin`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanAyin) for more information.
+     * See the [Rust documentation for `ManichaeanAyin`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanAyin) for more information.
      */
     static ManichaeanAyin = JoiningGroup.#objectValues[59];
     /**
-     * See the [Rust documentation for `ManichaeanBeth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanBeth) for more information.
+     * See the [Rust documentation for `ManichaeanBeth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanBeth) for more information.
      */
     static ManichaeanBeth = JoiningGroup.#objectValues[60];
     /**
-     * See the [Rust documentation for `ManichaeanDaleth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanDaleth) for more information.
+     * See the [Rust documentation for `ManichaeanDaleth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanDaleth) for more information.
      */
     static ManichaeanDaleth = JoiningGroup.#objectValues[61];
     /**
-     * See the [Rust documentation for `ManichaeanDhamedh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanDhamedh) for more information.
+     * See the [Rust documentation for `ManichaeanDhamedh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanDhamedh) for more information.
      */
     static ManichaeanDhamedh = JoiningGroup.#objectValues[62];
     /**
-     * See the [Rust documentation for `ManichaeanFive`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanFive) for more information.
+     * See the [Rust documentation for `ManichaeanFive`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanFive) for more information.
      */
     static ManichaeanFive = JoiningGroup.#objectValues[63];
     /**
-     * See the [Rust documentation for `ManichaeanGimel`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanGimel) for more information.
+     * See the [Rust documentation for `ManichaeanGimel`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanGimel) for more information.
      */
     static ManichaeanGimel = JoiningGroup.#objectValues[64];
     /**
-     * See the [Rust documentation for `ManichaeanHeth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanHeth) for more information.
+     * See the [Rust documentation for `ManichaeanHeth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanHeth) for more information.
      */
     static ManichaeanHeth = JoiningGroup.#objectValues[65];
     /**
-     * See the [Rust documentation for `ManichaeanHundred`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanHundred) for more information.
+     * See the [Rust documentation for `ManichaeanHundred`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanHundred) for more information.
      */
     static ManichaeanHundred = JoiningGroup.#objectValues[66];
     /**
-     * See the [Rust documentation for `ManichaeanKaph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanKaph) for more information.
+     * See the [Rust documentation for `ManichaeanKaph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanKaph) for more information.
      */
     static ManichaeanKaph = JoiningGroup.#objectValues[67];
     /**
-     * See the [Rust documentation for `ManichaeanLamedh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanLamedh) for more information.
+     * See the [Rust documentation for `ManichaeanLamedh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanLamedh) for more information.
      */
     static ManichaeanLamedh = JoiningGroup.#objectValues[68];
     /**
-     * See the [Rust documentation for `ManichaeanMem`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanMem) for more information.
+     * See the [Rust documentation for `ManichaeanMem`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanMem) for more information.
      */
     static ManichaeanMem = JoiningGroup.#objectValues[69];
     /**
-     * See the [Rust documentation for `ManichaeanNun`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanNun) for more information.
+     * See the [Rust documentation for `ManichaeanNun`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanNun) for more information.
      */
     static ManichaeanNun = JoiningGroup.#objectValues[70];
     /**
-     * See the [Rust documentation for `ManichaeanOne`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanOne) for more information.
+     * See the [Rust documentation for `ManichaeanOne`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanOne) for more information.
      */
     static ManichaeanOne = JoiningGroup.#objectValues[71];
     /**
-     * See the [Rust documentation for `ManichaeanPe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanPe) for more information.
+     * See the [Rust documentation for `ManichaeanPe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanPe) for more information.
      */
     static ManichaeanPe = JoiningGroup.#objectValues[72];
     /**
-     * See the [Rust documentation for `ManichaeanQoph`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanQoph) for more information.
+     * See the [Rust documentation for `ManichaeanQoph`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanQoph) for more information.
      */
     static ManichaeanQoph = JoiningGroup.#objectValues[73];
     /**
-     * See the [Rust documentation for `ManichaeanResh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanResh) for more information.
+     * See the [Rust documentation for `ManichaeanResh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanResh) for more information.
      */
     static ManichaeanResh = JoiningGroup.#objectValues[74];
     /**
-     * See the [Rust documentation for `ManichaeanSadhe`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanSadhe) for more information.
+     * See the [Rust documentation for `ManichaeanSadhe`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanSadhe) for more information.
      */
     static ManichaeanSadhe = JoiningGroup.#objectValues[75];
     /**
-     * See the [Rust documentation for `ManichaeanSamekh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanSamekh) for more information.
+     * See the [Rust documentation for `ManichaeanSamekh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanSamekh) for more information.
      */
     static ManichaeanSamekh = JoiningGroup.#objectValues[76];
     /**
-     * See the [Rust documentation for `ManichaeanTaw`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTaw) for more information.
+     * See the [Rust documentation for `ManichaeanTaw`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTaw) for more information.
      */
     static ManichaeanTaw = JoiningGroup.#objectValues[77];
     /**
-     * See the [Rust documentation for `ManichaeanTen`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTen) for more information.
+     * See the [Rust documentation for `ManichaeanTen`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTen) for more information.
      */
     static ManichaeanTen = JoiningGroup.#objectValues[78];
     /**
-     * See the [Rust documentation for `ManichaeanTeth`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTeth) for more information.
+     * See the [Rust documentation for `ManichaeanTeth`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTeth) for more information.
      */
     static ManichaeanTeth = JoiningGroup.#objectValues[79];
     /**
-     * See the [Rust documentation for `ManichaeanThamedh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanThamedh) for more information.
+     * See the [Rust documentation for `ManichaeanThamedh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanThamedh) for more information.
      */
     static ManichaeanThamedh = JoiningGroup.#objectValues[80];
     /**
-     * See the [Rust documentation for `ManichaeanTwenty`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTwenty) for more information.
+     * See the [Rust documentation for `ManichaeanTwenty`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanTwenty) for more information.
      */
     static ManichaeanTwenty = JoiningGroup.#objectValues[81];
     /**
-     * See the [Rust documentation for `ManichaeanWaw`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanWaw) for more information.
+     * See the [Rust documentation for `ManichaeanWaw`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanWaw) for more information.
      */
     static ManichaeanWaw = JoiningGroup.#objectValues[82];
     /**
-     * See the [Rust documentation for `ManichaeanYodh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanYodh) for more information.
+     * See the [Rust documentation for `ManichaeanYodh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanYodh) for more information.
      */
     static ManichaeanYodh = JoiningGroup.#objectValues[83];
     /**
-     * See the [Rust documentation for `ManichaeanZayin`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanZayin) for more information.
+     * See the [Rust documentation for `ManichaeanZayin`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ManichaeanZayin) for more information.
      */
     static ManichaeanZayin = JoiningGroup.#objectValues[84];
     /**
-     * See the [Rust documentation for `StraightWaw`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.StraightWaw) for more information.
+     * See the [Rust documentation for `StraightWaw`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.StraightWaw) for more information.
      */
     static StraightWaw = JoiningGroup.#objectValues[85];
     /**
-     * See the [Rust documentation for `AfricanFeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.AfricanFeh) for more information.
+     * See the [Rust documentation for `AfricanFeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.AfricanFeh) for more information.
      */
     static AfricanFeh = JoiningGroup.#objectValues[86];
     /**
-     * See the [Rust documentation for `AfricanNoon`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.AfricanNoon) for more information.
+     * See the [Rust documentation for `AfricanNoon`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.AfricanNoon) for more information.
      */
     static AfricanNoon = JoiningGroup.#objectValues[87];
     /**
-     * See the [Rust documentation for `AfricanQaf`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.AfricanQaf) for more information.
+     * See the [Rust documentation for `AfricanQaf`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.AfricanQaf) for more information.
      */
     static AfricanQaf = JoiningGroup.#objectValues[88];
     /**
-     * See the [Rust documentation for `MalayalamBha`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamBha) for more information.
+     * See the [Rust documentation for `MalayalamBha`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamBha) for more information.
      */
     static MalayalamBha = JoiningGroup.#objectValues[89];
     /**
-     * See the [Rust documentation for `MalayalamJa`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamJa) for more information.
+     * See the [Rust documentation for `MalayalamJa`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamJa) for more information.
      */
     static MalayalamJa = JoiningGroup.#objectValues[90];
     /**
-     * See the [Rust documentation for `MalayalamLla`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamLla) for more information.
+     * See the [Rust documentation for `MalayalamLla`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamLla) for more information.
      */
     static MalayalamLla = JoiningGroup.#objectValues[91];
     /**
-     * See the [Rust documentation for `MalayalamLlla`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamLlla) for more information.
+     * See the [Rust documentation for `MalayalamLlla`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamLlla) for more information.
      */
     static MalayalamLlla = JoiningGroup.#objectValues[92];
     /**
-     * See the [Rust documentation for `MalayalamNga`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNga) for more information.
+     * See the [Rust documentation for `MalayalamNga`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNga) for more information.
      */
     static MalayalamNga = JoiningGroup.#objectValues[93];
     /**
-     * See the [Rust documentation for `MalayalamNna`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNna) for more information.
+     * See the [Rust documentation for `MalayalamNna`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNna) for more information.
      */
     static MalayalamNna = JoiningGroup.#objectValues[94];
     /**
-     * See the [Rust documentation for `MalayalamNnna`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNnna) for more information.
+     * See the [Rust documentation for `MalayalamNnna`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNnna) for more information.
      */
     static MalayalamNnna = JoiningGroup.#objectValues[95];
     /**
-     * See the [Rust documentation for `MalayalamNya`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNya) for more information.
+     * See the [Rust documentation for `MalayalamNya`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamNya) for more information.
      */
     static MalayalamNya = JoiningGroup.#objectValues[96];
     /**
-     * See the [Rust documentation for `MalayalamRa`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamRa) for more information.
+     * See the [Rust documentation for `MalayalamRa`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamRa) for more information.
      */
     static MalayalamRa = JoiningGroup.#objectValues[97];
     /**
-     * See the [Rust documentation for `MalayalamSsa`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamSsa) for more information.
+     * See the [Rust documentation for `MalayalamSsa`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamSsa) for more information.
      */
     static MalayalamSsa = JoiningGroup.#objectValues[98];
     /**
-     * See the [Rust documentation for `MalayalamTta`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamTta) for more information.
+     * See the [Rust documentation for `MalayalamTta`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.MalayalamTta) for more information.
      */
     static MalayalamTta = JoiningGroup.#objectValues[99];
     /**
-     * See the [Rust documentation for `HanifiRohingyaKinnaYa`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.HanifiRohingyaKinnaYa) for more information.
+     * See the [Rust documentation for `HanifiRohingyaKinnaYa`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.HanifiRohingyaKinnaYa) for more information.
      */
     static HanifiRohingyaKinnaYa = JoiningGroup.#objectValues[100];
     /**
-     * See the [Rust documentation for `HanifiRohingyaPa`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.HanifiRohingyaPa) for more information.
+     * See the [Rust documentation for `HanifiRohingyaPa`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.HanifiRohingyaPa) for more information.
      */
     static HanifiRohingyaPa = JoiningGroup.#objectValues[101];
     /**
-     * See the [Rust documentation for `ThinYeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ThinYeh) for more information.
+     * See the [Rust documentation for `ThinYeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ThinYeh) for more information.
      */
     static ThinYeh = JoiningGroup.#objectValues[102];
     /**
-     * See the [Rust documentation for `VerticalTail`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.VerticalTail) for more information.
+     * See the [Rust documentation for `VerticalTail`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.VerticalTail) for more information.
      */
     static VerticalTail = JoiningGroup.#objectValues[103];
     /**
-     * See the [Rust documentation for `KashmiriYeh`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.KashmiriYeh) for more information.
+     * See the [Rust documentation for `KashmiriYeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.KashmiriYeh) for more information.
      */
     static KashmiriYeh = JoiningGroup.#objectValues[104];
     /**
-     * See the [Rust documentation for `ThinNoon`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ThinNoon) for more information.
+     * See the [Rust documentation for `ThinNoon`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.ThinNoon) for more information.
      */
     static ThinNoon = JoiningGroup.#objectValues[105];
+    /**
+     * See the [Rust documentation for `CrownAin`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownAin) for more information.
+     */
+    static CrownAin = JoiningGroup.#objectValues[106];
+    /**
+     * See the [Rust documentation for `CrownBeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownBeh) for more information.
+     */
+    static CrownBeh = JoiningGroup.#objectValues[107];
+    /**
+     * See the [Rust documentation for `CrownFeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownFeh) for more information.
+     */
+    static CrownFeh = JoiningGroup.#objectValues[108];
+    /**
+     * See the [Rust documentation for `CrownHah`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownHah) for more information.
+     */
+    static CrownHah = JoiningGroup.#objectValues[109];
+    /**
+     * See the [Rust documentation for `CrownHeh`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownHeh) for more information.
+     */
+    static CrownHeh = JoiningGroup.#objectValues[110];
+    /**
+     * See the [Rust documentation for `CrownKaf`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownKaf) for more information.
+     */
+    static CrownKaf = JoiningGroup.#objectValues[111];
+    /**
+     * See the [Rust documentation for `CrownMeem`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownMeem) for more information.
+     */
+    static CrownMeem = JoiningGroup.#objectValues[112];
+    /**
+     * See the [Rust documentation for `CrownSad`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownSad) for more information.
+     */
+    static CrownSad = JoiningGroup.#objectValues[113];
+    /**
+     * See the [Rust documentation for `CrownSeen`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownSeen) for more information.
+     */
+    static CrownSeen = JoiningGroup.#objectValues[114];
+    /**
+     * See the [Rust documentation for `CrownTah`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#associatedconstant.CrownTah) for more information.
+     */
+    static CrownTah = JoiningGroup.#objectValues[115];
 
 
     /**
-     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.2.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
+     * See the [Rust documentation for `for_char`](https://docs.rs/icu/2.4.0/icu/properties/props/trait.EnumeratedProperty.html#tymethod.for_char) for more information.
      */
     static forChar(ch) {
 
@@ -715,7 +775,7 @@ export class JoiningGroup {
     /**
      * Get the "long" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesLongBorrowed.html#method.get) for more information.
      */
     longName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -739,7 +799,7 @@ export class JoiningGroup {
     /**
      * Get the "short" name of this property value (returns empty if property value is unknown)
      *
-     * See the [Rust documentation for `get`](https://docs.rs/icu/2.2.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
+     * See the [Rust documentation for `get`](https://docs.rs/icu/2.4.0/icu/properties/struct.PropertyNamesShortBorrowed.html#method.get) for more information.
      */
     shortName() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 9, 4, true);
@@ -763,7 +823,7 @@ export class JoiningGroup {
     /**
      * Convert to an integer value usable with ICU4C and `CodePointMapData`
      *
-     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#method.to_icu4c_value) for more information.
+     * See the [Rust documentation for `to_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#method.to_icu4c_value) for more information.
      */
     toIntegerValue() {
 
@@ -781,7 +841,7 @@ export class JoiningGroup {
     /**
      * Convert from an integer value from ICU4C or `CodePointMapData`
      *
-     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.2.0/icu/properties/props/struct.JoiningGroup.html#method.from_icu4c_value) for more information.
+     * See the [Rust documentation for `from_icu4c_value`](https://docs.rs/icu/2.4.0/icu/properties/props/struct.JoiningGroup.html#method.from_icu4c_value) for more information.
      */
     static fromIntegerValue(other) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -802,6 +862,11 @@ export class JoiningGroup {
         }
     }
 
+    /**
+     * Creates a `JoiningGroup` from a string.
+     *
+     * Short names, long names, and aliases are supported, and matching is case-insensitive.
+     */
     static tryFromStr(s) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
 

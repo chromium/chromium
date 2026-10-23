@@ -9,9 +9,9 @@ use core::{
 };
 
 use super::RangeError;
-use crate::codepointinvlist::utils::deconstruct_range;
 use crate::codepointinvlist::CodePointInversionList;
 use crate::codepointinvlist::CodePointInversionListBuilder;
+use crate::codepointinvlist::utils::deconstruct_range;
 use potential_utf::PotentialCodePoint;
 use zerovec::ZeroVec;
 

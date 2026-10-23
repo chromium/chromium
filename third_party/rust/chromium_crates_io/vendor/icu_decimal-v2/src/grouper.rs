@@ -45,18 +45,15 @@ pub fn check(
         sizes.secondary as i16
     };
     let magnitude_prime = magnitude - primary;
-    if magnitude_prime % secondary == 0 {
-        return true;
-    }
-    false
+    magnitude_prime % secondary == 0
 }
 
 #[test]
 fn test_grouper() {
+    use crate::DecimalFormatter;
     use crate::input::Decimal;
     use crate::options;
     use crate::provider::*;
-    use crate::DecimalFormatter;
     use icu_provider::prelude::*;
     use std::cell::RefCell;
     use writeable::assert_writeable_eq;

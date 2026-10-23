@@ -36,7 +36,7 @@ icu_pattern = { workspace = true, features = ["zerovec"], optional = true }
 displaydoc = { workspace = true }
 
 icu_decimal_data = { workspace = true, optional = true }
-icu_locale = { workspace = true, optional = true }
+icu_locale_fallback = { workspace = true, optional = true }
 
 [dev-dependencies]
 icu = { path = "../../components/icu", default-features = false }
@@ -53,7 +53,7 @@ criterion = { workspace = true }
 default = ["compiled_data"]
 serde = ["alloc", "dep:serde", "icu_provider/serde", "zerovec/serde", "icu_pattern?/serde", "icu_plurals?/serde"]
 datagen = ["serde", "dep:databake", "zerovec/databake", "icu_provider/export", "alloc", "icu_plurals?/datagen"]
-compiled_data = ["dep:icu_decimal_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked", "icu_plurals?/compiled_data"]
+compiled_data = ["dep:icu_decimal_data", "dep:icu_locale_fallback", "icu_locale_fallback?/compiled_data", "icu_provider/baked", "icu_plurals?/compiled_data"]
 ryu = ["fixed_decimal/ryu"]
 alloc = ["serde?/alloc", "zerovec/alloc"]
 unstable = ["dep:icu_pattern", "dep:icu_plurals"]

@@ -97,8 +97,12 @@ pub mod unstable {
     pub mod date;
     #[cfg(feature = "datetime")]
     pub mod date_formatter;
+    #[cfg(all(feature = "datetime", feature = "unstable"))]
+    pub mod date_range_formatter;
     #[cfg(feature = "datetime")]
     pub mod date_time_formatter;
+    #[cfg(all(feature = "datetime", feature = "unstable"))]
+    pub mod date_time_range_formatter;
     #[cfg(feature = "calendar")]
     pub mod datetime;
     #[cfg(feature = "datetime")]
@@ -109,7 +113,7 @@ pub mod unstable {
     pub mod displaynames;
     #[cfg(feature = "locale")]
     pub mod exemplar_chars;
-    #[cfg(feature = "locale")]
+    #[cfg(feature = "locale_fallback")]
     pub mod fallbacker;
     #[cfg(feature = "decimal")]
     pub mod fixed_decimal;
@@ -121,6 +125,8 @@ pub mod unstable {
     pub mod locale;
     #[cfg(feature = "locale")]
     pub mod locale_directionality;
+    #[cfg(all(feature = "locale", feature = "unstable"))]
+    pub mod locale_names;
     #[cfg(feature = "normalizer")]
     pub mod normalizer;
     #[cfg(feature = "normalizer")]
@@ -157,6 +163,8 @@ pub mod unstable {
     pub mod time;
     #[cfg(feature = "datetime")]
     pub mod time_formatter;
+    #[cfg(all(feature = "datetime", feature = "unstable"))]
+    pub mod time_range_formatter;
     #[cfg(feature = "datetime")]
     pub mod timezone;
     #[cfg(feature = "datetime")]

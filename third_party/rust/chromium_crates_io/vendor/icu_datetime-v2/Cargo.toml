@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `icu_datetime-2.2.0` crate.
+# `icu_datetime-2.4.0` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "icu_datetime"
-version = "2.2.0"
+version = "2.4.0"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -33,44 +33,44 @@ is_placeholder = true
 version = "^0.2.3"
 default_features = false
 [dependencies.fixed_decimal]
-version = "^0.7.2"
+version = "^0.7.3"
 default_features = false
 [dependencies.icu_calendar]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_datetime_data]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_decimal]
-version = "~2.2.0"
-default_features = false
-[dependencies.icu_locale]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_locale_core]
-version = "^2.2.0"
+version = "^2.4.0"
+default_features = false
+[dependencies.icu_locale_fallback]
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_pattern]
-version = "^0.4.2"
+version = "^0.5.1"
 default_features = false
 [dependencies.icu_plurals]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_provider]
-version = "^2.2.0"
+version = "^2.4.0"
 default_features = false
 [dependencies.icu_time]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.potential_utf]
 version = "^0.1.3"
 default_features = false
 [dependencies.tinystr]
-version = "^0.8.3"
+version = "^0.8.5"
 default_features = false
 [dependencies.writeable]
-version = "^0.6.1"
+version = "^0.6.4"
 default_features = false
 [dependencies.zerovec]
-version = "^0.11.6"
+version = "^0.11.9"
 default_features = false

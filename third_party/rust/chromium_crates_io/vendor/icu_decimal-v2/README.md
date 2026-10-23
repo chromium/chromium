@@ -15,8 +15,8 @@ follow [icu4x#275](https://github.com/unicode-org/icu4x/issues/275).
 ### Format a number with Bangla digits
 
 ```rust
-use icu::decimal::input::Decimal;
 use icu::decimal::DecimalFormatter;
+use icu::decimal::input::Decimal;
 use icu::locale::locale;
 use writeable::assert_writeable_eq;
 
@@ -32,8 +32,8 @@ assert_writeable_eq!(formatter.format(&decimal), "১০,০০,০০৭");
 ### Format a number with digits after the decimal separator
 
 ```rust
-use icu::decimal::input::Decimal;
 use icu::decimal::DecimalFormatter;
+use icu::decimal::input::Decimal;
 use icu::locale::Locale;
 use writeable::assert_writeable_eq;
 
@@ -55,8 +55,8 @@ assert_writeable_eq!(formatter.format(&decimal), "2,000.50");
 Numbering systems specified in the `-u-nu` subtag will be followed.
 
 ```rust
-use icu::decimal::input::Decimal;
 use icu::decimal::DecimalFormatter;
+use icu::decimal::input::Decimal;
 use icu::locale::locale;
 use writeable::assert_writeable_eq;
 

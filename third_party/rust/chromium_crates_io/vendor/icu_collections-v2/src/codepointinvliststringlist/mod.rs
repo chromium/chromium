@@ -165,10 +165,10 @@ impl<'data> CodePointInversionListAndStringList<'data> {
     /// ```
     pub fn contains_str(&self, s: &str) -> bool {
         let mut chars = s.chars();
-        if let Some(first_char) = chars.next() {
-            if chars.next().is_none() {
-                return self.contains(first_char);
-            }
+        if let Some(first_char) = chars.next()
+            && chars.next().is_none()
+        {
+            return self.contains(first_char);
         }
         self.str_list.binary_search(s).is_ok()
     }
@@ -177,10 +177,10 @@ impl<'data> CodePointInversionListAndStringList<'data> {
     pub fn contains_utf8(&self, s: &[u8]) -> bool {
         use utf8_iter::Utf8CharsEx;
         let mut chars = s.chars();
-        if let Some(first_char) = chars.next() {
-            if chars.next().is_none() {
-                return self.contains(first_char);
-            }
+        if let Some(first_char) = chars.next()
+            && chars.next().is_none()
+        {
+            return self.contains(first_char);
         }
         self.str_list
             .binary_search_by(|t| t.as_bytes().cmp(s))
@@ -255,11 +255,11 @@ impl<'a> FromIterator<&'a str> for CodePointInversionListAndStringList<'_> {
         let mut strings = Vec::<&str>::new();
         for s in it {
             let mut chars = s.chars();
-            if let Some(first_char) = chars.next() {
-                if chars.next().is_none() {
-                    builder.add_char(first_char);
-                    continue;
-                }
+            if let Some(first_char) = chars.next()
+                && chars.next().is_none()
+            {
+                builder.add_char(first_char);
+                continue;
             }
             strings.push(s);
         }

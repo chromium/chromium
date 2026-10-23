@@ -31,6 +31,8 @@
 //! - [`IdentiferNotFoundPredicate`]
 
 use alloc::vec::Vec;
+#[cfg(doc)]
+use icu_provider::prelude::*;
 
 mod by_error;
 
@@ -48,15 +50,19 @@ use predicates::MarkerNotFoundPredicate;
 /// even if the request failed for other reasons (such as an unsupported language). Therefore,
 /// you should add child providers that support disjoint sets of markers.
 ///
-/// [`ForkByMarkerProvider`] does not support forking between [`DataProvider`]s. However, it
-/// supports forking between [`BufferProvider`], and [`DynamicDataProvider`].
+/// This provider supports any data provider trait as long as it is implemented by both
+/// child providers.
+///
+/// Some traits like [`BufferProvider`] work on all markers. However, [`DataProvider<M>`]
+/// is specific to a single marker type `M`. For this reason, [`DataProvider<M>`] is only
+/// implemented if both child providers implement it for the same `M`.
 ///
 /// # Examples
 ///
 /// Normal usage:
 ///
 /// ```
-/// use icu_locale::langid;
+/// use icu_locale::data_locale;
 /// use icu_provider::hello_world::*;
 /// use icu_provider::prelude::*;
 /// use icu_provider_adapters::fork::ForkByMarkerProvider;
@@ -81,7 +87,7 @@ use predicates::MarkerNotFoundPredicate;
 ///
 /// let german_hello_world: DataResponse<HelloWorldV1> = provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("de").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("de")),
 ///         ..Default::default()
 ///     })
 ///     .expect("Loading should succeed");
@@ -92,7 +98,7 @@ use predicates::MarkerNotFoundPredicate;
 /// Stops at the first provider supporting a marker, even if the locale is not supported:
 ///
 /// ```
-/// use icu_locale::{subtags::language, langid};
+/// use icu_locale::{subtags::language, data_locale};
 /// use icu_provider::hello_world::*;
 /// use icu_provider::prelude::*;
 /// use icu_provider_adapters::filter::FilterDataProvider;
@@ -117,7 +123,7 @@ use predicates::MarkerNotFoundPredicate;
 /// // Chinese is the first provider, so this succeeds
 /// let chinese_hello_world = provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("zh").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("zh")),
 ///         ..Default::default()
 ///     })
 ///     .expect("Loading should succeed");
@@ -127,7 +133,7 @@ use predicates::MarkerNotFoundPredicate;
 /// // German is shadowed by Chinese, so this fails
 /// provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("de").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("de")),
 ///         ..Default::default()
 ///     })
 ///     .expect_err("Should stop at the first provider, even though the second has data");
@@ -154,13 +160,17 @@ impl<P0, P1> ForkByMarkerProvider<P0, P1> {
 /// even if the request failed for other reasons (such as an unsupported language). Therefore,
 /// you should add child providers that support disjoint sets of markers.
 ///
-/// [`MultiForkByMarkerProvider`] does not support forking between [`DataProvider`]s. However, it
-/// supports forking between [`BufferProvider`], and [`DynamicDataProvider`].
+/// This provider supports any data provider trait as long as it is implemented by all
+/// child providers.
+///
+/// Some traits like [`BufferProvider`] work on all markers. However, [`DataProvider<M>`]
+/// is specific to a single marker type `M`. For this reason, [`DataProvider<M>`] is only
+/// implemented if all child providers implement it for the same `M`.
 ///
 /// # Examples
 ///
 /// ```
-/// use icu_locale::{subtags::language, langid};
+/// use icu_locale::{subtags::language, data_locale};
 /// use icu_provider::hello_world::*;
 /// use icu_provider::prelude::*;
 /// use icu_provider_adapters::filter::FilterDataProvider;
@@ -187,7 +197,7 @@ impl<P0, P1> ForkByMarkerProvider<P0, P1> {
 /// // Chinese is the first provider, so this succeeds
 /// let chinese_hello_world = provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("zh").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("zh")),
 ///         ..Default::default()
 ///     })
 ///     .expect("Loading should succeed");
@@ -197,7 +207,7 @@ impl<P0, P1> ForkByMarkerProvider<P0, P1> {
 /// // German is shadowed by Chinese, so this fails
 /// provider
 ///     .load(DataRequest {
-///         id: DataIdentifierBorrowed::for_locale(&langid!("de").into()),
+///         id: DataIdentifierBorrowed::for_locale(&data_locale!("de")),
 ///         ..Default::default()
 ///     })
 ///     .expect_err("Should stop at the first provider, even though the second has data");

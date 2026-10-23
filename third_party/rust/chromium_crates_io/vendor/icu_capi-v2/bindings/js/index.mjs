@@ -86,9 +86,17 @@ export { DateFormatter } from "./DateFormatter.mjs"
 
 export { DateFormatterGregorian } from "./DateFormatterGregorian.mjs"
 
+export { DateRangeFormatter } from "./DateRangeFormatter.mjs"
+
+export { DateRangeFormatterGregorian } from "./DateRangeFormatterGregorian.mjs"
+
 export { DateTimeFormatter } from "./DateTimeFormatter.mjs"
 
 export { DateTimeFormatterGregorian } from "./DateTimeFormatterGregorian.mjs"
+
+export { DateTimeRangeFormatter } from "./DateTimeRangeFormatter.mjs"
+
+export { DateTimeRangeFormatterGregorian } from "./DateTimeRangeFormatterGregorian.mjs"
 
 export { DecimalFormatter } from "./DecimalFormatter.mjs"
 
@@ -125,6 +133,8 @@ export { LocaleExpander } from "./LocaleExpander.mjs"
 export { Locale } from "./Locale.mjs"
 
 export { LocaleDirectionality } from "./LocaleDirectionality.mjs"
+
+export { LocaleNamesUnstable } from "./LocaleNamesUnstable.mjs"
 
 export { Logger } from "./Logger.mjs"
 
@@ -201,6 +211,8 @@ export { WordSegmenter } from "./WordSegmenter.mjs"
 export { Time } from "./Time.mjs"
 
 export { TimeFormatter } from "./TimeFormatter.mjs"
+
+export { TimeRangeFormatter } from "./TimeRangeFormatter.mjs"
 
 export { TimeZone } from "./TimeZone.mjs"
 
@@ -308,11 +320,15 @@ export { TransformResult } from "./TransformResult.mjs"
 
 export { LocaleDirection } from "./LocaleDirection.mjs"
 
+export { LanguageDisplayUnstable } from "./LanguageDisplayUnstable.mjs"
+
 export { PluralCategory } from "./PluralCategory.mjs"
 
 export { BidiPairedBracketType } from "./BidiPairedBracketType.mjs"
 
 export { BidiClass } from "./BidiClass.mjs"
+
+export { Block } from "./Block.mjs"
 
 export { CanonicalCombiningClass } from "./CanonicalCombiningClass.mjs"
 

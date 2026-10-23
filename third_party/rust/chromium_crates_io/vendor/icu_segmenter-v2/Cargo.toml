@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `icu_segmenter-2.2.0` crate.
+# `icu_segmenter-2.4.0` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "icu_segmenter"
-version = "2.2.0"
+version = "2.4.0"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -24,28 +24,35 @@ is_placeholder = true
 "default" = []
 "lstm" = []
 "serde" = []
+"unstable" = []
 
 [dependencies.core_maths]
 version = "^0.1.0"
 default_features = false
 [dependencies.icu_collections]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
-[dependencies.icu_locale]
-version = "~2.2.0"
+[dependencies.icu_locale_fallback]
+version = "~2.4.0"
 default_features = false
 [dependencies.icu_provider]
-version = "^2.2.0"
+version = "^2.4.0"
 default_features = false
 [dependencies.icu_segmenter_data]
-version = "~2.2.0"
+version = "~2.4.0"
 default_features = false
 [dependencies.potential_utf]
 version = "^0.1.3"
 default_features = false
+[dependencies.smallvec]
+version = "^1.10.0"
+default_features = false
 [dependencies.utf8_iter]
-version = "^1.0.2"
+version = "^1.0.4"
+default_features = false
+[dependencies.zerotrie]
+version = "^0.2.5"
 default_features = false
 [dependencies.zerovec]
-version = "^0.11.6"
+version = "^0.11.9"
 default_features = false

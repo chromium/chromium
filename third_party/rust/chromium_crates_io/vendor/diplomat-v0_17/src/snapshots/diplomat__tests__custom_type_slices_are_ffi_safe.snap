@@ -1,0 +1,28 @@
+---
+source: macro/src/lib.rs
+expression: "pretty_print_code(gen_bridge(parse_quote!\n{\n    mod ffi\n    {\n        pub struct Foo { pub x: u32, } impl Foo\n        {\n            pub fn slices<'a>(s: &'a [Foo], m: &'a mut [Foo]) -> &'a [Foo]\n            { let _ = m; s }\n        }\n    }\n}).to_token_stream())"
+---
+mod ffi {
+    #[repr(C)]
+    pub struct Foo {
+        pub x: u32,
+    }
+    impl Foo {
+        pub fn slices<'a>(s: &'a [Foo], m: &'a mut [Foo]) -> &'a [Foo] {
+            let _ = m;
+            s
+        }
+    }
+    use diplomat_runtime::*;
+    use core::ffi::c_void;
+    #[no_mangle]
+    #[allow(deprecated)]
+    extern "C" fn Foo_slices<'a>(
+        s: diplomat_runtime::DiplomatSlice<'a, Foo>,
+        m: diplomat_runtime::DiplomatSliceMut<'a, Foo>,
+    ) -> diplomat_runtime::DiplomatSlice<'a, Foo> {
+        let s = s.into();
+        let m = m.into();
+        Foo::slices(s, m).into()
+    }
+}

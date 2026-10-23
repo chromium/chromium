@@ -19,7 +19,7 @@ const IsoDate_box_destroy_registry = new FinalizationRegistry((ptr) => {
 /**
  * An ICU4X Date object capable of containing a ISO-8601 date
  *
- * See the [Rust documentation for `Date`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html) for more information.
+ * See the [Rust documentation for `Date`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html) for more information.
  */
 export class IsoDate {
     // Internal ptr reference:
@@ -53,7 +53,7 @@ export class IsoDate {
     /**
      * Creates a new {@link IsoDate} from the specified date.
      *
-     * See the [Rust documentation for `try_new_iso`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.try_new_iso) for more information.
+     * See the [Rust documentation for `try_new_iso`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.try_new_iso) for more information.
      */
     #defaultConstructor(year, month, day) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -78,7 +78,7 @@ export class IsoDate {
     /**
      * Creates a new {@link IsoDate} from the given Rata Die
      *
-     * See the [Rust documentation for `from_rata_die`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.from_rata_die) for more information.
+     * See the [Rust documentation for `from_rata_die`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.from_rata_die) for more information.
      */
     static fromRataDie(rd) {
 
@@ -96,7 +96,7 @@ export class IsoDate {
     /**
      * Creates a new {@link IsoDate} from an IXDTF string.
      *
-     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.try_from_str) for more information.
+     * See the [Rust documentation for `try_from_str`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.try_from_str) for more information.
      */
     static fromString(v) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -126,11 +126,11 @@ export class IsoDate {
     /**
      * Convert this date to one in a different calendar
      *
-     * See the [Rust documentation for `to_calendar`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.to_calendar) for more information.
+     * See the [Rust documentation for `to_calendar`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.to_calendar) for more information.
      */
     toCalendar(calendar) {
 
-        const result = wasm.icu4x_IsoDate_to_calendar_mv1(this.ffiValue, calendar.ffiValue);
+        const result = wasm.icu4x_IsoDate_to_calendar_mv1(this.ffiValue, calendar instanceof Calendar ? calendar.ffiValue : typeError('calendar', 'Calendar'));
 
         try {
             return new Date(diplomatRuntime.internalConstructor, result, []);
@@ -142,7 +142,7 @@ export class IsoDate {
     }
 
     /**
-     * See the [Rust documentation for `to_any`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.to_any) for more information.
+     * See the [Rust documentation for `to_any`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.to_any) for more information.
      */
     toAny() {
 
@@ -160,7 +160,7 @@ export class IsoDate {
     /**
      * Returns this date's Rata Die
      *
-     * See the [Rust documentation for `to_rata_die`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.to_rata_die) for more information.
+     * See the [Rust documentation for `to_rata_die`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.to_rata_die) for more information.
      */
     get rataDie() {
 
@@ -178,7 +178,7 @@ export class IsoDate {
     /**
      * Returns the 1-indexed day in the year for this date
      *
-     * See the [Rust documentation for `day_of_year`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.day_of_year) for more information.
+     * See the [Rust documentation for `day_of_year`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.day_of_year) for more information.
      */
     get dayOfYear() {
 
@@ -196,7 +196,7 @@ export class IsoDate {
     /**
      * Returns the 1-indexed day in the month for this date
      *
-     * See the [Rust documentation for `day_of_month`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.day_of_month) for more information.
+     * See the [Rust documentation for `day_of_month`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.day_of_month) for more information.
      */
     get dayOfMonth() {
 
@@ -217,7 +217,7 @@ export class IsoDate {
      * This is *not* the day of the week, an ordinal number that is locale
      * dependent.
      *
-     * See the [Rust documentation for `day_of_week`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.day_of_week) for more information.
+     * See the [Rust documentation for `day_of_week`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.day_of_week) for more information.
      *
      * @deprecated use `weekday`
      */
@@ -237,7 +237,7 @@ export class IsoDate {
     /**
      * Returns the day in the week for this day
      *
-     * See the [Rust documentation for `weekday`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.weekday) for more information.
+     * See the [Rust documentation for `weekday`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.weekday) for more information.
      */
     get weekday() {
 
@@ -255,7 +255,7 @@ export class IsoDate {
     /**
      * Returns the week number in this year, using week data
      *
-     * See the [Rust documentation for `week_of_year`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.week_of_year) for more information.
+     * See the [Rust documentation for `week_of_year`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.week_of_year) for more information.
      */
     weekOfYear() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 8, 4, false);
@@ -276,9 +276,9 @@ export class IsoDate {
     /**
      * Returns 1-indexed number of the month of this date in its year
      *
-     * See the [Rust documentation for `ordinal`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.MonthInfo.html#structfield.ordinal) for more information.
+     * See the [Rust documentation for `ordinal`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.MonthInfo.html#structfield.ordinal) for more information.
      *
-     * Additional information: [1](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.month)
+     * Additional information: [1](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.month)
      */
     get month() {
 
@@ -298,7 +298,7 @@ export class IsoDate {
      *
      * For calendars without an era, returns the extended year
      *
-     * See the [Rust documentation for `extended_year`](https://docs.rs/icu/2.2.0/icu/calendar/types/enum.YearInfo.html#method.extended_year) for more information.
+     * See the [Rust documentation for `extended_year`](https://docs.rs/icu/2.4.0/icu/calendar/types/enum.YearInfo.html#method.extended_year) for more information.
      */
     get year() {
 
@@ -316,7 +316,7 @@ export class IsoDate {
     /**
      * Returns if the year is a leap year for this date
      *
-     * See the [Rust documentation for `is_in_leap_year`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.is_in_leap_year) for more information.
+     * See the [Rust documentation for `is_in_leap_year`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.is_in_leap_year) for more information.
      */
     get isInLeapYear() {
 
@@ -334,7 +334,7 @@ export class IsoDate {
     /**
      * Returns the number of months in the year represented by this date
      *
-     * See the [Rust documentation for `months_in_year`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.months_in_year) for more information.
+     * See the [Rust documentation for `months_in_year`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.months_in_year) for more information.
      */
     get monthsInYear() {
 
@@ -352,7 +352,7 @@ export class IsoDate {
     /**
      * Returns the number of days in the month represented by this date
      *
-     * See the [Rust documentation for `days_in_month`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.days_in_month) for more information.
+     * See the [Rust documentation for `days_in_month`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.days_in_month) for more information.
      */
     get daysInMonth() {
 
@@ -370,7 +370,7 @@ export class IsoDate {
     /**
      * Returns the number of days in the year represented by this date
      *
-     * See the [Rust documentation for `days_in_year`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.days_in_year) for more information.
+     * See the [Rust documentation for `days_in_year`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.days_in_year) for more information.
      */
     get daysInYear() {
 
@@ -388,7 +388,7 @@ export class IsoDate {
     /**
      * Returns a new {@link IsoDate} with the given duration added to it.
      *
-     * See the [Rust documentation for `try_added_with_options`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.try_added_with_options) for more information.
+     * See the [Rust documentation for `try_added_with_options`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.try_added_with_options) for more information.
      */
     tryAddWithOptions(duration, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -417,7 +417,7 @@ export class IsoDate {
     /**
      * Calculating the duration between `other - self`
      *
-     * See the [Rust documentation for `try_until_with_options`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.try_until_with_options) for more information.
+     * See the [Rust documentation for `try_until_with_options`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.try_until_with_options) for more information.
      */
     untilWithOptions(other, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -425,7 +425,7 @@ export class IsoDate {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 20, 4, false);
 
 
-        const result = wasm.icu4x_IsoDate_until_with_options_mv1(diplomatReceive.buffer, this.ffiValue, other.ffiValue, DateDifferenceOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(DateDifferenceOptions._sizeBytes), functionCleanupArena, {}, false));
+        const result = wasm.icu4x_IsoDate_until_with_options_mv1(diplomatReceive.buffer, this.ffiValue, other instanceof IsoDate ? other.ffiValue : typeError('other', 'IsoDate'), DateDifferenceOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(DateDifferenceOptions._sizeBytes), functionCleanupArena, {}, false));
 
         try {
             return DateDuration._fromFFI(diplomatRuntime.internalConstructor, diplomatReceive.buffer);
@@ -442,7 +442,7 @@ export class IsoDate {
     /**
      * Creates a new {@link IsoDate} from the specified date.
      *
-     * See the [Rust documentation for `try_new_iso`](https://docs.rs/icu/2.2.0/icu/calendar/struct.Date.html#method.try_new_iso) for more information.
+     * See the [Rust documentation for `try_new_iso`](https://docs.rs/icu/2.4.0/icu/calendar/struct.Date.html#method.try_new_iso) for more information.
      */
     constructor(year, month, day) {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

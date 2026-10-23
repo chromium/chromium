@@ -94,6 +94,8 @@ icu4x_Decimal_concatenate_end_mv1_result icu4x_Decimal_concatenate_end_mv1(Decim
 
 void icu4x_Decimal_to_string_mv1(const Decimal* self, DiplomatWrite* write);
 
+bool icu4x_Decimal_equals_mv1(const Decimal* self, const Decimal* other);
+
 void icu4x_Decimal_destroy_mv1(Decimal* self);
 
 

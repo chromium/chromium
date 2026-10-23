@@ -15,6 +15,7 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/abstract_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/compact_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/decimal_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/error.rs",
@@ -29,13 +30,13 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_decimal"
   cargo_pkg_description =
       "API for formatting basic decimal numbers in a locale-sensitive way"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = false
 
@@ -43,9 +44,9 @@ cargo_crate("lib") {
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/fixed_decimal/v0_7:lib",
     "//third_party/rust/icu_decimal_data/v2:lib",
-    "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
-    "//third_party/rust/icu_pattern/v0_4:lib",
+    "//third_party/rust/icu_locale_fallback/v2:lib",
+    "//third_party/rust/icu_pattern/v0_5:lib",
     "//third_party/rust/icu_plurals/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/writeable/v0_6:lib",

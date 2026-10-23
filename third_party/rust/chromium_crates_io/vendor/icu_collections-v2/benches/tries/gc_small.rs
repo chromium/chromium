@@ -4,7 +4,7 @@
 
 use icu_collections::codepointtrie::{CodePointTrieHeader, TrieType};
 use zerovec::ule::AsULE;
-use zerovec::{zerovec, ZeroVec};
+use zerovec::{ZeroVec, zerovec};
 
 #[rustfmt::skip]
 pub const INDEX: ZeroVec<u16> = zerovec!(u16; <u16 as AsULE>::ULE::from_unsigned;

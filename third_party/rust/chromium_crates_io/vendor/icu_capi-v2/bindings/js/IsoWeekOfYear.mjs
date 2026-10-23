@@ -5,7 +5,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `IsoWeekOfYear`](https://docs.rs/icu/2.2.0/icu/calendar/types/struct.IsoWeekOfYear.html) for more information.
+ * See the [Rust documentation for `IsoWeekOfYear`](https://docs.rs/icu/2.4.0/icu/calendar/types/struct.IsoWeekOfYear.html) for more information.
  */
 export class IsoWeekOfYear {
     #weekNumber;

@@ -534,12 +534,12 @@ inline bool icu4x::CodePointSetData::contains(char32_t cp) const {
     return result;
 }
 
-inline std::unique_ptr<icu4x::CodePointRangeIterator> icu4x::CodePointSetData::iter_ranges() const {
+inline std::unique_ptr<icu4x::CodePointRangeIterator> icu4x::CodePointSetData::iter_ranges() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_CodePointSetData_iter_ranges_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::CodePointRangeIterator>(icu4x::CodePointRangeIterator::FromFFI(result));
 }
 
-inline std::unique_ptr<icu4x::CodePointRangeIterator> icu4x::CodePointSetData::iter_ranges_complemented() const {
+inline std::unique_ptr<icu4x::CodePointRangeIterator> icu4x::CodePointSetData::iter_ranges_complemented() const DIPLOMAT_LIFETIME_BOUND {
     auto result = icu4x::capi::icu4x_CodePointSetData_iter_ranges_complemented_mv1(this->AsFFI());
     return std::unique_ptr<icu4x::CodePointRangeIterator>(icu4x::CodePointRangeIterator::FromFFI(result));
 }

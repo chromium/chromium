@@ -109,7 +109,7 @@ inline std::string icu4x::ListFormatter::format16(icu4x::diplomat::span<const di
     std::string output;
     icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteFromString(output);
     icu4x::capi::icu4x_ListFormatter_format_utf16_mv1(this->AsFFI(),
-        {reinterpret_cast<const icu4x::diplomat::capi::DiplomatStringView*>(list.data()), list.size()},
+        {reinterpret_cast<const icu4x::diplomat::capi::DiplomatString16View*>(list.data()), list.size()},
         &write);
     return output;
 }
@@ -117,7 +117,7 @@ template<typename W>
 inline void icu4x::ListFormatter::format16_write(icu4x::diplomat::span<const diplomat::u16string_view_for_slice> list, W& writeable) const {
     icu4x::diplomat::capi::DiplomatWrite write = icu4x::diplomat::WriteTrait<W>::Construct(writeable);
     icu4x::capi::icu4x_ListFormatter_format_utf16_mv1(this->AsFFI(),
-        {reinterpret_cast<const icu4x::diplomat::capi::DiplomatStringView*>(list.data()), list.size()},
+        {reinterpret_cast<const icu4x::diplomat::capi::DiplomatString16View*>(list.data()), list.size()},
         &write);
 }
 

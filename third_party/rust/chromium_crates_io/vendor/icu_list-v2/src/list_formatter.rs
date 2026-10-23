@@ -105,7 +105,7 @@ impl ListFormatter {
     ///
     /// ```
     /// use icu::list::options::*;
-    /// use icu::list::{parts, ListFormatter};
+    /// use icu::list::{ListFormatter, parts};
     /// # use icu::locale::locale;
     /// # use writeable::*;
     /// let formatteur = ListFormatter::try_new_and(
@@ -365,7 +365,7 @@ mod tests {
     macro_rules! test {
         ($locale:literal, $type:ident, $(($input:expr, $output:literal),)+) => {
             let f = ListFormatter::$type(
-                icu_locale::locale!($locale).into(),
+                icu_locale_core::locale!($locale).into(),
                 Default::default(),
             ).unwrap();
             $(

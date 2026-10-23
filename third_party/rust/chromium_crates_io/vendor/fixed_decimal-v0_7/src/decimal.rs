@@ -119,6 +119,7 @@ pub struct UnsignedDecimal {
 impl UnsignedDecimal {
     /// The number 1.
     pub const ONE: Self = Self {
+        // SAFETY: The requested length (1) is less than or equal to the array capacity (8).
         digits: unsafe { SmallVec::from_const_with_len_unchecked([1; 8], 1) },
         magnitude: 0,
         upper_magnitude: 0,
@@ -1972,6 +1973,9 @@ impl UnsignedDecimal {
             } else if *c == b'-' {
                 // Allow a single minus sign after the exponent
                 if has_exponent && exponent_index == i - 1 {
+                    if i == no_sign_str.len() - 1 {
+                        return Err(ParseError::Syntax);
+                    }
                     continue;
                 } else {
                     return Err(ParseError::Syntax);
@@ -2076,8 +2080,8 @@ impl UnsignedDecimal {
 
         // Extract the exponent part
         if has_exponent {
-            let mut pow = 0;
-            let mut pos_neg = 1;
+            let mut pow: i32 = 0;
+            let mut pos_neg: i32 = 1;
             #[expect(clippy::indexing_slicing)]
             // exponent_index is exist, then exponent_index + 1 will equal at most no_sign_str.len().
             for digit in &no_sign_str[exponent_index + 1..] {
@@ -2085,17 +2089,24 @@ impl UnsignedDecimal {
                     pos_neg = -1;
                     continue;
                 }
-                pow *= 10;
-                pow += (digit - b'0') as i16;
+                pow = pow
+                    .checked_mul(10)
+                    .and_then(|p| p.checked_add(i32::from(*digit - b'0')))
+                    .ok_or(ParseError::Limit)?;
             }
+            let pow = i16::try_from(pos_neg * pow).map_err(|_| ParseError::Limit)?;
 
-            dec.multiply_pow10(pos_neg * pow);
+            dec.multiply_pow10(pow);
+            if dec.is_zero() {
+                return Err(ParseError::Limit);
+            }
 
             // Clean up magnitude after multiplication
             if dec.magnitude > 0 {
                 dec.upper_magnitude = dec.magnitude;
             }
-            let neg_mag = dec.magnitude - dec.digits.len() as i16 + 1;
+            let neg_mag = (dec.magnitude as i32) - ((dec.digits.len() as i32) - 1);
+            let neg_mag = i16::try_from(neg_mag).map_err(|_| ParseError::Limit)?;
             if neg_mag < 0 {
                 dec.lower_magnitude = neg_mag;
             }
@@ -2597,6 +2608,94 @@ fn test_from_str_scientific() {
             .to_string();
         assert_eq!(cas.output, input_str_roundtrip);
     }
+}
+
+#[test]
+fn test_from_str_scientific_bounds_and_syntax() {
+    #[derive(Debug)]
+    struct TestCase {
+        pub input_str: &'static str,
+        pub expected_err: Option<ParseError>,
+        pub output: Option<&'static str>,
+    }
+    let cases = [
+        TestCase {
+            input_str: "1e0000000000000000000000000000005",
+            expected_err: None,
+            output: Some("100000"),
+        },
+        TestCase {
+            input_str: "0e5",
+            expected_err: None,
+            output: Some("0"),
+        },
+        TestCase {
+            input_str: "00.0e-10",
+            expected_err: None,
+            output: Some("00.0"),
+        },
+        TestCase {
+            input_str: "0e-",
+            expected_err: Some(ParseError::Syntax),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e99999",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e-99999",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e999999999999999999999999999999",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e-999999999999999999999999999999",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "10e32767",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e32768",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e-32769",
+            expected_err: Some(ParseError::Limit),
+            output: None,
+        },
+        TestCase {
+            input_str: "1e-",
+            expected_err: Some(ParseError::Syntax),
+            output: None,
+        },
+    ];
+    for cas in &cases {
+        match UnsignedDecimal::from_str(cas.input_str) {
+            Ok(dec) => {
+                assert_eq!(cas.expected_err, None, "{cas:?}");
+                let dec_str = dec.to_string();
+                assert_eq!(cas.output, Some(dec_str.as_str()), "{cas:?}");
+            }
+            Err(err) => {
+                assert_eq!(cas.expected_err, Some(err), "{cas:?}");
+            }
+        }
+    }
+
+    assert!(UnsignedDecimal::from_str("1e-32768").is_ok());
+    assert!(UnsignedDecimal::from_str("1e32767").is_ok());
+    assert!(UnsignedDecimal::from_str("1e-000000000000000000000000000032768").is_ok());
 }
 
 #[test]

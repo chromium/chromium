@@ -11,7 +11,7 @@ const TitlecaseMapper_box_destroy_registry = new FinalizationRegistry((ptr) => {
 });
 
 /**
- * See the [Rust documentation for `TitlecaseMapper`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html) for more information.
+ * See the [Rust documentation for `TitlecaseMapper`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html) for more information.
  */
 export class TitlecaseMapper {
     // Internal ptr reference:
@@ -45,7 +45,7 @@ export class TitlecaseMapper {
     /**
      * Construct a new `TitlecaseMapper` instance using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
      */
     #defaultConstructor() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
@@ -70,13 +70,13 @@ export class TitlecaseMapper {
     /**
      * Construct a new `TitlecaseMapper` instance using a particular data source.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
      */
     static createWithProvider(provider) {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_TitlecaseMapper_create_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue);
+        const result = wasm.icu4x_TitlecaseMapper_create_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -97,7 +97,7 @@ export class TitlecaseMapper {
      *
      * The `v1` refers to the version of the options struct, which may change as we add more options
      *
-     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
+     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
      */
     titlecaseSegment(s, locale, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -105,7 +105,7 @@ export class TitlecaseMapper {
         const sSlice = functionCleanupArena.alloc(diplomatRuntime.DiplomatBuf.sliceWrapper(wasm, diplomatRuntime.DiplomatBuf.str8(wasm, s)));
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
-    wasm.icu4x_TitlecaseMapper_titlecase_segment_v1_mv1(this.ffiValue, sSlice.ptr, locale.ffiValue, TitlecaseOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(TitlecaseOptions._sizeBytes), functionCleanupArena, {}, false), write.buffer);
+    wasm.icu4x_TitlecaseMapper_titlecase_segment_v1_mv1(this.ffiValue, sSlice.ptr, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), TitlecaseOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(TitlecaseOptions._sizeBytes), functionCleanupArena, {}, false), write.buffer);
 
         try {
             return write.readString8();
@@ -124,7 +124,7 @@ export class TitlecaseMapper {
      *
      * The `v1` refers to the version of the options struct, which may change as we add more options
      *
-     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
+     * See the [Rust documentation for `titlecase_segment`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapperBorrowed.html#method.titlecase_segment) for more information.
      */
     static titlecaseSegmentWithCompiledData(s, locale, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -132,7 +132,7 @@ export class TitlecaseMapper {
         const sSlice = functionCleanupArena.alloc(diplomatRuntime.DiplomatBuf.sliceWrapper(wasm, diplomatRuntime.DiplomatBuf.str8(wasm, s)));
         const write = new diplomatRuntime.DiplomatWriteBuf(wasm);
 
-    wasm.icu4x_TitlecaseMapper_titlecase_segment_with_compiled_data_v1_mv1(sSlice.ptr, locale.ffiValue, TitlecaseOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(TitlecaseOptions._sizeBytes), functionCleanupArena, {}, false), write.buffer);
+    wasm.icu4x_TitlecaseMapper_titlecase_segment_with_compiled_data_v1_mv1(sSlice.ptr, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), TitlecaseOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(TitlecaseOptions._sizeBytes), functionCleanupArena, {}, false), write.buffer);
 
         try {
             return write.readString8();
@@ -149,7 +149,7 @@ export class TitlecaseMapper {
     /**
      * Construct a new `TitlecaseMapper` instance using compiled data.
      *
-     * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
+     * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/casemap/struct.TitlecaseMapper.html#method.new) for more information.
      */
     constructor() {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

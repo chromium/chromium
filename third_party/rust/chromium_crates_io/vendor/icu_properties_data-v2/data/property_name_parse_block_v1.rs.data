@@ -1,0 +1,81 @@
+// @generated
+/// Implement `DataProvider<PropertyNameParseBlockV1>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 5497B[^1] for the singleton data struct
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+///
+/// This macro requires the following crates:
+/// * `icu`
+/// * `icu_provider`
+/// * `zerotrie`
+/// * `zerovec`
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_property_name_parse_block_v1 {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.88"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.88"]
+        impl $provider {
+            #[doc(hidden)]
+            pub const SINGLETON_PROPERTY_NAME_PARSE_BLOCK_V1: &'static <icu::properties::provider::PropertyNameParseBlockV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::properties::provider::names::PropertyValueNameToEnumMap { map: zerotrie::ZeroTrieSimpleAscii { store: unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"\xE1wABCDEGHIJKLMNOPRSTUVWYZ\x01\x02\x05\x05\x06\x07\x08\t\t\n\x0B\r\x0E\x0F\x10\x10\x12\x13\x14\x14\x14\x14v]K\xD5\xF2\xCE\xB6d\x95\x80o\xEC`E\x01(\xD5\xED=\x9C\xB0\xED\xE1hSdehlnrv\0\0\0\0\0\0\x01\x04\t\x17\x1BS\xA0WCII\x81lam\x91wgean_Numbers\x90gom\x91m\xC2cp\x13hemical\x91@_Symbols\x91@habetic_P\xC2Fr\x02\x90@esentation_Forms\x90@\xC2ac\x14tolian_Hieroglyphs\x91nient_\xC2GS$reek_\xC2MN\x13usic\x90nal_Notation\x90numbers\x90oymbols\x91\x15\xC4acmr\x8B\xA4\xAAbic\x8C_\xC4EMPS#Eqxt\xC2_e\x0C\xC3ABC\x02\x04\x91B\x92%\x921nded_\xC3ABC\x02\x04\x91B\x92%\x921ath\x91Cematical_Alphabetic_Symbols\x91C\xC2Fr\t_\xC2AB\x02\x90A\x90Eesentation_Forms\xC2-_\x03A\x90A\xC2AB\x02\x90A\x90Eup\x90pplement\x90phaic_Cuneiform_Numerals\x92Kenian\x8Aows\x90\x1Eestan\x91,\xC8aehloruy9[dr\x94\xAD\xBC\xC4lmst\x07\x1A-inese\x91\x03um\x91!_Sup\x91:plement\x91:\xC2is\x08c_Latin\x81a_Vah\x91Mak\x917\xC2nr\x15gali\x90\0_Sup\x92Lplement\x92Lia_Erfe\x92Caiksuki\x91xock_Elements\x90%\xC2px\x14omofo\x900_Ext\x903ended\x903_Drawing\x90$a\xC2hi\x04mi\x919lle\x90)_Patterns\x90)\xC2gh\x07inese\x90qid\x90Tzantine_Music\x90Kal_Symbols\x90K\xE1fJahouy\x01\x01\x01\x02\x02\n7t=tK\x907_\xC5CERSUQ|\x92\xB6ompat\x905\xC2_i\x1B\xC2FI\x06orms\x90Cdeographs\x90?_Sup\x90Obility\x905_\xC2FI\x06orms\x90Cdeographs\x90?_Supplement\x90Oxt_\xCAABCDEFGHIJ\x02\x04\x06\x08\n\x0C\x0E\x10\x12\x906\x90N\x915\x91A\x91p\x92\x02\x92\x1E\x922\x928\x92Dadicals_Sup\x90*plement\x90*\xC2ty\x07rokes\x90rmbols\x90-_And_Punctuation\x90-nified_Ideographs\x907_Extension_\xCAABCDEFGHIJ\x02\x04\x06\x08\n\x0C\x0E\x10\x12\x906\x90N\x915\x91A\x91p\x92\x02\x92\x1E\x922\x928\x92D\xC3nru\x11\x16adian_Syllabics\x90\x11ian\x91\x18casian_Albanian\x91N\xC3aeo\n.\xC2km\x04ma\x91D\x91\x14\xC2rs\x15okee\x90\x10_Sup\x91oplement\x91os_Symbols\x92\trasmian\x92\x1D\xC4mnpu\x87\x96\xAB\xC3bmpaxining_\xC3DHM8Ciacritical_Marks\x87_\xC3EFS\t\x15xtended\x91Por_Symbols\x90\x1Bupplement\x90salf_Marks\x90Barks_For_Symbols\x90\x1Bon_Indic_Number_Forms\x91\"at_Jamo\x901trol_Pictures\x90!tic\x90t_Epact_Numbers\x91Onting_Rod\x91\n_Numerals\x91\n\xC2nr$eiform\x91\x08_Numbers\x91\t_And_Punctuation\x91\trency_Symbols\x90\x1A\xC2pr\x1Cr\xC2io\x0Eot_Syllabary\x90k_Minoan\x92&illic\x89_\xC2ES+xt\xC2_e\x10\xC4ABCD\x02\x04\x06\x91\x0E\x91\x10\x91y\x923nded_\xC4ABCD\x02\x04\x06\x91\x0E\x91\x10\x91y\x923up\x90Qplement\x90Qary\x90Q\xC4eiou)ez\xC2sv\x06eret\x90Janagari\x8F_Ext\x91#\xC2_e\x03A\x924nded\x91#_A\x924\xC3anv%,criticals\x87_\xC3EFS\x04\x10xt\x91Por_Symbols\x90\x1Bup\x90sgbats\x90(es_Akuru\x92\x1F\xC2gm\x04ra\x92\nino\x91\x1B_Tiles\x91\x1Bployan\x91Q\xE1faglmnt\0\0\0\0\0\x18Scl\xD2rly_Dynastic_Cuneiform\x91qyptian_Hieroglyph\xC2_s\x11Format_Controls\x92\x14\x912_Ext\xC2_e\x03A\x929nded_A\x929\xC2by\x06asan\x91Rmaic\x92\x15oticons\x91>closed_\xC3ACI'@lphanum\x90#\xC2_e\x05Sup\x913ric\xC2_s\x0CSupplement\x913\x90#JK\x904_Letters_And_Months\x904deographic_Sup\x914plement\x914hiopic\x90\x0F_\xC2ES\x1Fxt\x90u\xC2_e\x08\xC2AB\x02\x918\x92'nded\x90u_\xC2AB\x02\x918\x92'up\x90vplement\x90v\xC6aeloru\x05]v|\xA3ray\x92:\xC2no\x12eral_Punctuation\x90\x18\xC2mr\x1Betric_Shapes\x90&_Ext\x91Sended\x91Sgian\x90\r_\xC2ES\x0Bxt\x92\x0Bended\x92\x0Bup\x90wplement\x90wagolitic\x90x_Sup\x91zplement\x91zthic\x90I\xC2ae\x06ntha\x91Tek\x88_\xC2AE\nnd_Coptic\x88xt\x90\x17ended\x90\x17\xC3jnr\x07\x13arati\x90\x02jala_Gondi\x92\x0C\xC2mu\x06ukhi\x90\x01ng_Khema\x92;\xC3aei\x9A\x9F\xC3lnt8\x8Ff\xC2_w\x19\xC2AM\x0Fnd_Full_Forms\x90Garks\x90Bidth_And_Fullwidth_Forms\x90G\xC3giu?Lul\x90:_\xC3CJS\x13*ompatibility_Jamo\x901amo\x90\x0E_Extended_\xC2AB\x02\x91$\x91)yllables\x90:fi_Rohingya\x92\rnoo\x90Sran\x91rbrew\x8B\xC2gr8h_\xC2PS'\xC2Ur\r_Surrogates\x90<ivate_Use_Surrogates\x90<urrogates\x90;agana\x90.\xC5DPdmn\x03\x11P`C\x90,A_Ext\x85ensions\x85eographic_\xC2DS\x17escription_Characters\x90,ymbols\x91{_And_Punctuation\x91{perial_Aramaic\x91*\xC2ds\"ic_\xC2NS\rumber_Forms\x91\"iyaq_Numbers\x92\x0Ecriptional_Pa\xC2hr\x06lavi\x91.thian\x91-\xC2au\x1B\xC2mv\x10o\x90\x0E_Ext_\xC2AB\x02\x91$\x91)anese\x91%rchen\x92M_Radicals\x92N\xC3ahi\x9C\xDC\xC6ikntwy\x05\x15b\x86\x89thi\x911tovik_Numerals\x925\xC4abgn-1@_\xC2ES\x1Bxt\xC2_e\x08\xC2AB\x02\x92\x03\x92(nded_\xC2AB\x02\x92\x03\x92(up\x91;plement\x91;un\x902xi\x90+_Radicals\x90+ada\x90\x06akana\x90/_\xC2EP\x04xt\x90[honetic_Extensions\x90[i\x926ah_Li\x91\x12\xC5aimou\t\x1B).roshthi\x90ytan_Small_Script\x92 er\x90\x14_Symbols\x90ajki\x91Udawadi\x91Vrat_Rai\x92<\xC5aeioyp\x8A\xC9\xD7\xC2ot\x02\x90\nin_\xC21E\x0E\x82_Sup\x82plement\x82xt\xC2_e%\xC7ABCDEFG\x0C\r\x0F\x11\x13\x15\x83dditional\x90\x16\x84\x91\x04\x91\x05\x91W\x92)\x92*nded_\xC7ABCDEFG\x0C\r\x0F\x11\x13\x15\x83dditional\x90\x16\x84\x91\x04\x91\x05\x91W\x92)\x92*\xC2pt\x05cha\x91\x0Cterlike_Symbols\x90\x1C\xC3mns\x04'bu\x90_ear_\xC2AB\x02\x91X_\xC2IS\ndeograms\x90fyllabary\x90eu\x91 _Sup\x92!plement\x92!w_Surrogates\x90=\xC2cd\x05ian\x91\x17ian\x91\x19\xE1gaeioruy\0\x01\x01\x02\x02\x02\xAC\x02\xCF\n\r<\xC8hklnrsty\x17\x1D%6<H\x8F\xC2aj\x06jani\x91Yong\x91\x1A_Tiles\x91\x1Aasar\x92\x0Fayalam\x90\x07\xC2di\x05aic\x916chaean\x91Zchen\x91|aram_Gondi\x92\x04h\xC2_e\x17\xC2AO\tlphanum\x90Mperators\x90\x1Fmatical_\xC2AO\x15lphanumeric_Symbols\x90Mperators\x90\x1Fan_Numerals\x92\x10\xC4denr\n$0efaidrin\x92\x11tei_Mayek\x91(_Ext\x91Eensions\x91Ede_Kikakui\x91[oitic_\xC2CH\x08ursive\x91Fieroglyphs\x91G\xC2as\x03o\x91Hc\xC2_eO\xC5AMPST\r!-;rrows\x90c_Ext\x92Oath_Symbols_\xC2AB\x02\x90V\x90Yictographs\x91=ymbols\x90'_Sup\x92Eechnical\x90 llaneous_\xC3MST\x1CYathematical_Symbols_\xC2AB\x02\x90V\x90Yymbols\x90'_\xC2AS%nd_\xC2AP\x12rrows\x90c_Extended\x92Oictographs\x91=upplement\x92Eechnical\x90 \xC2dn i\x91\\fier_\xC2LT\x07etters\x86one_Letters\x90zgolian\x90\x15_Sup\x91}plement\x91}o\x91]\xC2ls\x06tani\x91sic\x90L\xC2_a\x05Sup\x92Pl_Symbols\x90L_Supplement\x92Panmar\x90\x0C_Ext\xC2_e\x0C\xC3ABC\x02\x04\x91&\x91^\x92=nded_\xC3ABC\x02\x04\x91&\x91^\x92=\xC7BKaeouy\x01\x04&6=P\x80o\x91\x02\xC3bgn\x08\x12ataean\x91__Mundari\x927dinagari\x92\x16w\xC2_a\tTai_Lue\x90{\x91~_Block\x80\xC2ms\x0Bber_Forms\x90\x1Dhu\x92\x05iakeng_Puachue_Hmong\x92\x17\xC7Cglprst\x03\x08}\x9A\xB4\xC2R\x90\"ham\x90\x12\xC2_d\x0F\xC2CO\x06hiki\x91\rnal\x92>_\xC7HINPSTU\n\x11\x1F.ELungarian\x91ttalic\x90Horth_Arabian\x91`er\xC2ms\x04ic\x91aian\x90|o\xC2gu\x06dian\x92\x12th_Arabian\x91+urkic\x91/yghur\x92+tical_Character_Recognition\x90\"\xC2in\x04ya\x90\x03amental_Dingbats\x91b\xC2am\x04ge\x91\x7Fanya\x90jtoman_Siyaq_Numbers\x92\x18\xC7Uahlrsu\x03&u\x82\x94\xA3A\x90>\xC3hlu\x0B\x13awh_Hmong\x91cmyrene\x91d_Cin_Hau\x91e\xC2ao\x17\xC2gi\x06s_Pa\x91\x06stos\x91\x16_Disc\x91\x16\xC2en\x08nician\x91\x07etic_Ext\x90b\xC2_e\x05Sup\x90}nsions\x90b_Supplement\x90}aying_Cards\x91<ivate_Use\x90>_Area\x90>alter_Pahlavi\x91fnctuation\x90\x18\xC2eu\x06jang\x91\x13\xC2mn\x15i\x910_Numeral_Symbols\x910ic\x90\x13\xE1iaehimopuy\0\0\0\0\0\0\0\x02\x15\x19R|\xA8\xC5\xE6 \xC2mu\x08aritan\x91\x1Crashtra\x91\x11al\x92Q\xC2ao\x1D\xC2rv\x14ada\x91I_Sup\x92Fplement\x92Fian\x90irthand_Format_Controls\x91g\xC2dn\x0E\xC2de\x05ham\x91htic\x92Ghala\x90\x08_Archaic_Numbers\x91iall_\xC2FK\x13orm\xC2_s\nVariants\x90D\x90Dana_Ext\x92\x19ension\x92\x19\xC3gry\x06\x11dian\x92\x13a_Sompeng\x91Jombo\x92\x06\xC2ae\x16cing_Modifier_Letters\x86cials\x90F\xE1cnpt\0\x01\x1F \xC2du\x16anese\x91\x0B_Sup\x91Kplement\x91Kwar\x92?\xC3_epZ\x7F\xC4AMPS\x12!:rrows_\xC3ABC\x02\x04\x90W\x90X\x91jath_Operators\x90Z\xC2Uu\nA_\xC2AB\x02\x90]\x90^nctuation\x90~ymbols_And_Pictographs\x91ur\xC2_s\tAnd_Sub\x90\x19cripts_And_Subscripts\x90\x19lementa\xC2lrV_\xC4AMPS\x12)5rrows_\xC3ABC\x02\x04\x90W\x90X\x91jathematical_Operators\x90Zunctuation\x90~ymbols_And_Pictographs\x91uy_Private_Use_Area_\xC2AB\x02\x90]\x90^ton_SignWriting\x91v\xC3lmr\x0BYoti_Nagri\x90\x7Fbols_\xC2AF!nd_Pictographs_Ext\xC2_e\x03A\x92\x1Anded_A\x92\x1Aor_Legacy_Computing\x92\"_Sup\x92@plement\x92@iac\x8D_Sup\x92\x07plement\x92\x07\xE1gaehioru\0\0\0\0\0\0\x9A\xA0\xAA\xC3\xDB\xF6\xC5gikmn\x13BFY\xC3abs\x05\x0Blog\x90Ranwa\x90U\x90P_\xC5LTVXY\x03\x08\r!e\x90`ham\x91\x1Eiet\x91'uan_Jing\x90l_Symbols\x90lo\x92Hri\x91Lil\x90\x04_Sup\x92\x1Bplement\x92\x1Bg\xC2su\x03a\x92,t\x92\0_\xC2CS\x1Aomponents\x92\x01_Sup\x92Iplement\x92Iup\x92#plement\x92#lugu\x90\x05a\xC2ai\x03na\x8E\x90\t\xC3bfr\x06\retan\x90\x0Binagh\x91\0huta\x91k\xC3dlt\x05\x0Fhri\x92Aong_Siki\x92Jo\x92-ansport_And_Map\x91?_Symbols\x91?lu_Tigalari\x92B\xC3Cgn\x0E\x16AS\x90\x11_Ext\x91\x1D_A\x92.aritic\x90hified_Canadian_Aboriginal_Syllabics\x90\x11_Extended\x91\x1D_A\x92.\xC4Saei\x08-O\x90\\_Sup\x90m\xC2ir\x02\x91\x0Fiation_Selectors\x90\\_Supplement\x90m\xC2dr\x11ic_Ext\x91\x1Fensions\x91\x1Ftical_Forms\x91\x01thkuqi\x92/a\xC2nr\x05cho\x92\x1Cang_Citi\x91l\xC2ei\x06zidi\x92$\xC2_j\x17\xC2RS\tadicals\x909yllables\x908ing\x90d_Hexagram_Symbols\x90d\xC2an\x10nabazar_Square\x92\x08amenny_Music\x920al_Notation\x920") } } };
+        }
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DataProvider<icu::properties::provider::PropertyNameParseBlockV1> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::properties::provider::PropertyNameParseBlockV1>, icu_provider::DataError> {
+                if req.id.locale.is_unknown() {
+                    Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(Self::SINGLETON_PROPERTY_NAME_PARSE_BLOCK_V1), metadata: icu_provider::DataResponseMetadata::default() })
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::properties::provider::PropertyNameParseBlockV1 as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_property_name_parse_block_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyNameParseBlockV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {
+        __impl_property_name_parse_block_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DryDataProvider<icu::properties::provider::PropertyNameParseBlockV1> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_unknown() {
+                    Ok(icu_provider::DataResponseMetadata::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::properties::provider::PropertyNameParseBlockV1 as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , DRY , ITER) => {
+        __impl_property_name_parse_block_v1!($provider);
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::DryDataProvider<icu::properties::provider::PropertyNameParseBlockV1> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_unknown() {
+                    Ok(icu_provider::DataResponseMetadata::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::properties::provider::PropertyNameParseBlockV1 as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+        #[clippy::msrv = "1.88"]
+        impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyNameParseBlockV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+}
+#[doc(inline)]
+pub use __impl_property_name_parse_block_v1 as impl_property_name_parse_block_v1;

@@ -1,0 +1,8 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in Foo::apply_callback_owned_slice
+> Cannot return owned slices from callbacks
+Diplomat error: Lowering error in Foo::apply_callback_borrowed_struct
+> Cannot return references to structs from callbacks

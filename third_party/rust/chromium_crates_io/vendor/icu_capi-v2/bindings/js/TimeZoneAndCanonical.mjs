@@ -6,7 +6,7 @@ import * as diplomatRuntime from "./diplomat-runtime.mjs";
 
 
 /**
- * See the [Rust documentation for `TimeZoneAndCanonical`](https://docs.rs/icu/2.2.0/icu/time/zone/iana/struct.TimeZoneAndCanonical.html) for more information.
+ * See the [Rust documentation for `TimeZoneAndCanonical`](https://docs.rs/icu/2.4.0/icu/time/zone/iana/struct.TimeZoneAndCanonical.html) for more information.
  */
 export class TimeZoneAndCanonical {
     #timeZone;
@@ -83,7 +83,7 @@ export class TimeZoneAndCanonical {
         functionCleanupArena,
         appendArrayMap
     ) {
-        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#timeZone.ffiValue, Uint32Array);
+        diplomatRuntime.writeToArrayBuffer(arrayBuffer, offset + 0, this.#timeZone instanceof TimeZone ? this.#timeZone.ffiValue : typeError('this.#timeZone', 'TimeZone'), Uint32Array);
         diplomatRuntime.CleanupArena.maybeCreateWith(functionCleanupArena, ...appendArrayMap['aAppendArray']).alloc(diplomatRuntime.DiplomatBuf.str8(wasm, this.#canonical)).writePtrLenToArrayBuffer(arrayBuffer, offset + 4);
     }
 

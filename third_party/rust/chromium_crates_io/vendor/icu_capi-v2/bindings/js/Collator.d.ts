@@ -10,7 +10,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 
 
 /**
- * See the [Rust documentation for `Collator`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html) for more information.
+ * See the [Rust documentation for `Collator`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html) for more information.
  */
 export class Collator {
     /** @internal */
@@ -20,7 +20,7 @@ export class Collator {
     /**
      * Construct a new Collator instance using a particular data source.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
      */
     static createWithProvider(provider: DataProvider, locale: Locale, options: CollatorOptions_obj): Collator;
 
@@ -30,7 +30,7 @@ export class Collator {
      * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
      * to the WHATWG Encoding Standard.
      *
-     * See the [Rust documentation for `compare_utf16`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf16) for more information.
+     * See the [Rust documentation for `compare_utf16`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf16) for more information.
      */
     compare(left: string, right: string): number;
 
@@ -39,14 +39,14 @@ export class Collator {
      * and the options from locale data were combined. None of the struct fields
      * will have `Auto` as the value.
      *
-     * See the [Rust documentation for `resolved_options`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.resolved_options) for more information.
+     * See the [Rust documentation for `resolved_options`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.resolved_options) for more information.
      */
     get resolvedOptions(): CollatorResolvedOptions;
 
     /**
      * Construct a new Collator instance using compiled data.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
      */
     constructor(locale: Locale, options: CollatorOptions_obj);
 }

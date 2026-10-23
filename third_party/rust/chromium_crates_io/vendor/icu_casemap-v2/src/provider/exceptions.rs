@@ -19,8 +19,8 @@ use core::fmt;
 #[cfg(any(feature = "serde", feature = "datagen"))]
 use core::ops::Range;
 use core::ptr;
-use zerovec::ule::AsULE;
 use zerovec::VarZeroVec;
+use zerovec::ule::AsULE;
 
 const SURROGATES_START: u32 = 0xD800;
 const SURROGATES_LEN: u32 = 0xDFFF - SURROGATES_START + 1;
@@ -57,7 +57,7 @@ impl CaseMapExceptions<'_> {
         exception.unwrap_or(ExceptionULE::EMPTY_EXCEPTION)
     }
 
-    #[cfg(any(feature = "serde", feature = "datagen"))]
+    #[cfg(feature = "serde")]
     pub(crate) fn validate(&self) -> Result<Range<u16>, &'static str> {
         for exception in self.exceptions.iter() {
             exception.validate()?;
@@ -276,20 +276,7 @@ impl ExceptionULE {
             MappingKind::Upper => remaining_slice.get(i2..i3),
             MappingKind::Title => remaining_slice.get(i3..),
         }
-    }
-
-    // convenience function that lets us use the ? operator
-    fn get_all_fullmapping_slots(&self) -> Option<[Cow<'_, str>; 4]> {
-        Some([
-            self.get_fullmappings_slot_for_kind(MappingKind::Lower)?
-                .into(),
-            self.get_fullmappings_slot_for_kind(MappingKind::Fold)?
-                .into(),
-            self.get_fullmappings_slot_for_kind(MappingKind::Upper)?
-                .into(),
-            self.get_fullmappings_slot_for_kind(MappingKind::Title)?
-                .into(),
-        ])
+        .filter(|s| !s.is_empty())
     }
 
     // Given a mapping kind, returns the character for that kind, if it exists. Fold falls
@@ -308,10 +295,10 @@ impl ExceptionULE {
     }
 
     pub(crate) fn add_full_and_closure_mappings<S: ClosureSink>(&self, set: &mut S) {
-        if let Some(full) = self.get_fullmappings_slot_for_kind(MappingKind::Fold) {
-            if !full.is_empty() {
-                set.add_string(full);
-            }
+        if let Some(full) = self.get_fullmappings_slot_for_kind(MappingKind::Fold)
+            && !full.is_empty()
+        {
+            set.add_string(full);
         };
         if let Some(closure) = self.get_closure_slot() {
             for c in closure.chars() {
@@ -336,7 +323,18 @@ impl ExceptionULE {
         let titlecase = self.get_char_slot(ExceptionSlot::Title);
         let simple_case_delta = self.get_simple_case_delta();
         let closure = self.get_closure_slot().map(Into::into);
-        let full = self.get_all_fullmapping_slots();
+        let full_lowercase = self
+            .get_fullmappings_slot_for_kind(MappingKind::Lower)
+            .map(Cow::Borrowed);
+        let full_casefold = self
+            .get_fullmappings_slot_for_kind(MappingKind::Fold)
+            .map(Cow::Borrowed);
+        let full_uppercase = self
+            .get_fullmappings_slot_for_kind(MappingKind::Upper)
+            .map(Cow::Borrowed);
+        let full_titlecase = self
+            .get_fullmappings_slot_for_kind(MappingKind::Title)
+            .map(Cow::Borrowed);
 
         DecodedException {
             bits: ExceptionBits::from_unaligned(bits),
@@ -346,11 +344,14 @@ impl ExceptionULE {
             titlecase,
             simple_case_delta,
             closure,
-            full,
+            full_lowercase,
+            full_uppercase,
+            full_titlecase,
+            full_casefold,
         }
     }
 
-    #[cfg(any(feature = "serde", feature = "datagen"))]
+    #[cfg(feature = "serde")]
     pub(crate) fn validate(&self) -> Result<(), &'static str> {
         // check that ICU4C specific fields are not set
         // check that there is enough space for all the offsets
@@ -382,7 +383,11 @@ impl ExceptionULE {
         }
 
         if self.has_slot(ExceptionSlot::FullMappings) {
-            if decoded.full.is_some() {
+            if decoded.full_lowercase.is_some()
+                || decoded.full_casefold.is_some()
+                || decoded.full_uppercase.is_some()
+                || decoded.full_titlecase.is_some()
+            {
                 let data = self
                     .get_fullmappings_slot_data()
                     .ok_or("fullmappings slot doesn't parse")?;
@@ -441,8 +446,14 @@ pub struct DecodedException<'a> {
     pub simple_case_delta: Option<u32>,
     /// Closure mappings
     pub closure: Option<Cow<'a, str>>,
-    /// The four full-mappings strings, indexed by `MappingKind` `u8` value
-    pub full: Option<[Cow<'a, str>; 4]>,
+    /// The full lowercase mapping, if required. If not present, the simple mapping is used.
+    pub full_lowercase: Option<Cow<'a, str>>,
+    /// The full uppercase mapping, if required. If not present, the simple mapping is used.
+    pub full_uppercase: Option<Cow<'a, str>>,
+    /// The full titlecase mapping, if required. If not present, the simple mapping is used.
+    pub full_titlecase: Option<Cow<'a, str>>,
+    /// The full case folding, if required. If not present, the simple folding is used.
+    pub full_casefold: Option<Cow<'a, str>>,
 }
 
 impl DecodedException<'_> {
@@ -479,7 +490,11 @@ impl DecodedException<'_> {
 
         if let Some(ref closure) = self.closure {
             slot_presence.add_slot(ExceptionSlot::Closure);
-            if self.full.is_some() {
+            if self.full_lowercase.is_some()
+                || self.full_casefold.is_some()
+                || self.full_uppercase.is_some()
+                || self.full_titlecase.is_some()
+            {
                 // GIGO: if the closure length is more than 0xD800 this will error. Plenty of space.
                 debug_assert!(
                     closure.len() < 0xD800,
@@ -493,16 +508,29 @@ impl DecodedException<'_> {
             }
             data.push_str(closure);
         }
-        if let Some(ref full) = self.full {
+        if self.full_lowercase.is_some()
+            || self.full_casefold.is_some()
+            || self.full_uppercase.is_some()
+            || self.full_titlecase.is_some()
+        {
             slot_presence.add_slot(ExceptionSlot::FullMappings);
             let mut idx = 0;
             // iterate all elements except the last, whose length we can calculate from context
-            for mapping in full.iter().take(3) {
-                idx += mapping.len();
+            for mapping in [
+                self.full_lowercase.as_deref(),
+                self.full_casefold.as_deref(),
+                self.full_uppercase.as_deref(),
+            ] {
+                idx += mapping.unwrap_or_default().len();
                 data.push(char::try_from(u32::try_from(idx).unwrap_or(0)).unwrap_or('\0'));
             }
-            for mapping in full {
-                data.push_str(mapping);
+            for mapping in [
+                self.full_lowercase.as_deref(),
+                self.full_casefold.as_deref(),
+                self.full_uppercase.as_deref(),
+                self.full_titlecase.as_deref(),
+            ] {
+                data.push_str(mapping.unwrap_or_default());
             }
         }
         Exception {
@@ -551,16 +579,25 @@ mod tests {
         test_roundtrip_once(DecodedException {
             simple_case_delta: Some(10),
             closure: Some("hello world".into()),
-            full: Some(["你好世界".into(), "".into(), "hi".into(), "å".into()]),
+            full_lowercase: Some("你好世界".into()),
+            full_casefold: None,
+            full_uppercase: Some("hi".into()),
+            full_titlecase: Some("å".into()),
             ..Default::default()
         });
         test_roundtrip_once(DecodedException {
             closure: Some("hello world".into()),
-            full: Some(["aa".into(), "ț".into(), "".into(), "å".into()]),
+            full_lowercase: Some("aa".into()),
+            full_casefold: Some("ț".into()),
+            full_uppercase: None,
+            full_titlecase: Some("å".into()),
             ..Default::default()
         });
         test_roundtrip_once(DecodedException {
-            full: Some(["你好世界".into(), "".into(), "hi".into(), "å".into()]),
+            full_lowercase: Some("你好世界".into()),
+            full_casefold: None,
+            full_uppercase: Some("hi".into()),
+            full_titlecase: Some("å".into()),
             ..Default::default()
         });
     }

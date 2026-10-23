@@ -37,6 +37,7 @@ namespace capi {
       CalendarKind_HijriSimulatedMecca = 18,
       CalendarKind_HijriTabularTypeIIThursday = 14,
       CalendarKind_HijriUmmAlQura = 15,
+      CalendarKind_Julian = 19,
       CalendarKind_Persian = 16,
       CalendarKind_Roc = 17,
     };
@@ -49,7 +50,7 @@ namespace icu4x {
 /**
  * The various calendar types currently supported by {@link Calendar}
  *
- * See the [Rust documentation for `AnyCalendarKind`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendarKind.html) for more information.
+ * See the [Rust documentation for `AnyCalendarKind`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendarKind.html) for more information.
  */
 class CalendarKind {
 public:
@@ -121,6 +122,10 @@ public:
          */
         HijriUmmAlQura = 15,
         /**
+         * The kind of a Julian calendar,
+         */
+        Julian = 19,
+        /**
          * The kind of a Persian calendar
          */
         Persian = 16,
@@ -141,7 +146,7 @@ public:
   /**
    * Creates a new {@link CalendarKind} for the specified locale, using compiled data.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/calendar/enum.AnyCalendarKind.html#method.new) for more information.
+   * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/calendar/enum.AnyCalendarKind.html#method.try_new) for more information.
    */
   inline static icu4x::CalendarKind create(const icu4x::Locale& locale);
 

@@ -7,7 +7,7 @@ import type { pointer, codepoint } from "./diplomat-runtime.d.ts";
 /**
  * An iterator over the locale under fallback.
  *
- * See the [Rust documentation for `LocaleFallbackIterator`](https://docs.rs/icu/2.2.0/icu/locale/fallback/struct.LocaleFallbackIterator.html) for more information.
+ * See the [Rust documentation for `LocaleFallbackIterator`](https://docs.rs/icu/2.4.0/icu/locale/fallback/struct.LocaleFallbackIterator.html) for more information.
  */
 export class LocaleFallbackIterator {
     /** @internal */

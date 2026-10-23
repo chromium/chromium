@@ -1,0 +1,18 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Diplomat error: Lowering error in SomeStruct::callback_unit_type_not_okay
+> Backend callback return types are fallible. Return type must be a `-> Result<T, E>`. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.
+Diplomat error: Lowering error in SomeTrait::returns_unit_not_okay
+> Backend callback return types are fallible. Return type must be a `-> Result<T, E>`. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.
+Diplomat error: Lowering error in SomeTrait::returns_nullable_not_okay
+> Backend callback return types are fallible. Return type must be a `-> Result<T, E>`. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.
+Diplomat error: Lowering error in SomeTrait::returns_fallible_unit_not_okay
+> Found non #[diplomat::attr(*, ffi_error)] marked error type in trait return. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.
+Diplomat error: Lowering error in SomeTrait::returns_fallible_struct_not_okay
+> Found non #[diplomat::attr(*, ffi_error)] marked error type in trait return. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.
+Diplomat error: Lowering error in SomeTrait::returns_fallible_unmarked_enum_not_okay
+> Found non #[diplomat::attr(*, ffi_error)] marked error type in trait return. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.
+Diplomat error: Lowering error in SomeTrait::returns_fallible_primitive_not_okay
+> Found non #[diplomat::attr(*, ffi_error)] marked error type in trait return. See https://rust-diplomat.github.io/diplomat/attrs/fallible_callback_returns.html for more.

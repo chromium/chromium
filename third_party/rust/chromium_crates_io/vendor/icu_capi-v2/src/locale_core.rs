@@ -244,7 +244,7 @@ pub mod ffi {
 
         #[diplomat::rust_link(icu::locale::Locale::normalizing_eq, FnInStruct)]
         pub fn normalizing_eq(&self, other: &DiplomatStr) -> bool {
-            if let Ok(other) = core::str::from_utf8(other) {
+            if let Ok(other) = str::from_utf8(other) {
                 self.0.normalizing_eq(other)
             } else {
                 // invalid UTF8 won't be allowed in locales anyway
@@ -264,11 +264,5 @@ pub mod ffi {
         pub fn compare_to(&self, other: &Self) -> core::cmp::Ordering {
             self.0.total_cmp(&other.0)
         }
-    }
-}
-
-impl ffi::Locale {
-    pub fn to_datalocale(&self) -> icu_provider::DataLocale {
-        (&self.0).into()
     }
 }

@@ -408,7 +408,7 @@ pub mod ffi {
             s: &DiplomatStr,
             builder: &mut crate::unstable::collections_sets::ffi::CodePointSetBuilder,
         ) -> bool {
-            let s = core::str::from_utf8(s).unwrap_or("");
+            let s = str::from_utf8(s).unwrap_or("");
             self.0
                 .as_borrowed()
                 .add_string_case_closure_to(s, &mut builder.0)

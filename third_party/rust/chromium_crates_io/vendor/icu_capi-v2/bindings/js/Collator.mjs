@@ -12,7 +12,7 @@ const Collator_box_destroy_registry = new FinalizationRegistry((ptr) => {
 });
 
 /**
- * See the [Rust documentation for `Collator`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html) for more information.
+ * See the [Rust documentation for `Collator`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html) for more information.
  */
 export class Collator {
     // Internal ptr reference:
@@ -46,7 +46,7 @@ export class Collator {
     /**
      * Construct a new Collator instance using compiled data.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
      */
     #defaultConstructor(locale, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -54,7 +54,7 @@ export class Collator {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_Collator_create_v1_mv1(diplomatReceive.buffer, locale.ffiValue, CollatorOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(CollatorOptions._sizeBytes), functionCleanupArena, {}, false));
+        const result = wasm.icu4x_Collator_create_v1_mv1(diplomatReceive.buffer, locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), CollatorOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(CollatorOptions._sizeBytes), functionCleanupArena, {}, false));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -75,7 +75,7 @@ export class Collator {
     /**
      * Construct a new Collator instance using a particular data source.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
      */
     static createWithProvider(provider, locale, options) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -83,7 +83,7 @@ export class Collator {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 5, 4, true);
 
 
-        const result = wasm.icu4x_Collator_create_v1_with_provider_mv1(diplomatReceive.buffer, provider.ffiValue, locale.ffiValue, CollatorOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(CollatorOptions._sizeBytes), functionCleanupArena, {}, false));
+        const result = wasm.icu4x_Collator_create_v1_with_provider_mv1(diplomatReceive.buffer, provider instanceof DataProvider ? provider.ffiValue : typeError('provider', 'DataProvider'), locale instanceof Locale ? locale.ffiValue : typeError('locale', 'Locale'), CollatorOptions._fromSuppliedValue(diplomatRuntime.internalConstructor, options)._intoFFI(diplomatRuntime.FUNCTION_PARAM_ALLOC.alloc(CollatorOptions._sizeBytes), functionCleanupArena, {}, false));
 
         try {
             if (!diplomatReceive.resultFlag) {
@@ -107,7 +107,7 @@ export class Collator {
      * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
      * to the WHATWG Encoding Standard.
      *
-     * See the [Rust documentation for `compare_utf16`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf16) for more information.
+     * See the [Rust documentation for `compare_utf16`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.compare_utf16) for more information.
      */
     compare(left, right) {
         let functionCleanupArena = new diplomatRuntime.CleanupArena();
@@ -133,7 +133,7 @@ export class Collator {
      * and the options from locale data were combined. None of the struct fields
      * will have `Auto` as the value.
      *
-     * See the [Rust documentation for `resolved_options`](https://docs.rs/icu/2.2.0/icu/collator/struct.CollatorBorrowed.html#method.resolved_options) for more information.
+     * See the [Rust documentation for `resolved_options`](https://docs.rs/icu/2.4.0/icu/collator/struct.CollatorBorrowed.html#method.resolved_options) for more information.
      */
     get resolvedOptions() {
         const diplomatReceive = new diplomatRuntime.DiplomatReceiveBuf(wasm, 24, 4, false);
@@ -154,7 +154,7 @@ export class Collator {
     /**
      * Construct a new Collator instance using compiled data.
      *
-     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.2.0/icu/collator/struct.Collator.html#method.try_new) for more information.
+     * See the [Rust documentation for `try_new`](https://docs.rs/icu/2.4.0/icu/collator/struct.Collator.html#method.try_new) for more information.
      */
     constructor(locale, options) {
         if (arguments[0] === diplomatRuntime.exposeConstructor) {

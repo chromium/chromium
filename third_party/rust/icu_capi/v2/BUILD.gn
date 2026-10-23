@@ -22,7 +22,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/collections_sets.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/date.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/date_formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/date_range_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/date_time_formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/date_time_range_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/datetime.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/datetime_helpers.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/datetime_options.rs",
@@ -38,6 +40,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/locale.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/locale_core.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/locale_directionality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/locale_names.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/logging.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/normalizer.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/normalizer_properties.rs",
@@ -58,6 +61,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/segmenter_word.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/time.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/time_formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/time_range_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/timezone.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/timezone_formatter.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/src/variant_offset.rs",
@@ -72,26 +76,28 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_capi"
   cargo_pkg_description = "C interface to ICU4X"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.4.0"
 
   allow_unsafe = true
 
   deps = [
-    "//third_party/rust/diplomat/v0_15:lib",
-    "//third_party/rust/diplomat_runtime/v0_15:lib",
+    "//third_party/rust/diplomat/v0_17:lib",
+    "//third_party/rust/diplomat_runtime/v0_16:lib",
     "//third_party/rust/fixed_decimal/v0_7:lib",
     "//third_party/rust/icu_decimal/v2:lib",
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
+    "//third_party/rust/icu_locale_fallback/v2:lib",
     "//third_party/rust/icu_normalizer/v2:lib",
     "//third_party/rust/icu_plurals/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/icu_provider_adapters/v2:lib",
+    "//third_party/rust/write16/v1:lib",
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
@@ -99,6 +105,7 @@ cargo_crate("lib") {
     "compiled_data",
     "decimal",
     "locale",
+    "locale_fallback",
     "normalizer",
     "plurals",
     "unstable",

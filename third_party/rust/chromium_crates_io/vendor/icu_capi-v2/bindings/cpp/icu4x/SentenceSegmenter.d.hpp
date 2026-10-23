@@ -38,7 +38,7 @@ namespace icu4x {
 /**
  * An ICU4X sentence-break segmenter, capable of finding sentence breakpoints in strings.
  *
- * See the [Rust documentation for `SentenceSegmenter`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html) for more information.
+ * See the [Rust documentation for `SentenceSegmenter`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html) for more information.
  */
 class SentenceSegmenter {
 public:
@@ -46,7 +46,7 @@ public:
   /**
    * Construct a {@link SentenceSegmenter} using compiled data. This does not assume any content locale.
    *
-   * See the [Rust documentation for `new`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
+   * See the [Rust documentation for `new`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenter.html#method.new) for more information.
    */
   inline static std::unique_ptr<icu4x::SentenceSegmenter> create();
 
@@ -66,9 +66,9 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `segment_utf8`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf8) for more information.
+   * See the [Rust documentation for `segment_utf8`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf8) for more information.
    */
-  inline std::unique_ptr<icu4x::SentenceBreakIteratorUtf8> segment(std::string_view input) const;
+  inline std::unique_ptr<icu4x::SentenceBreakIteratorUtf8> segment(std::string_view input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND;
 
   /**
    * Segments a string.
@@ -76,16 +76,16 @@ public:
    * Ill-formed input is treated as if errors had been replaced with REPLACEMENT CHARACTERs according
    * to the WHATWG Encoding Standard.
    *
-   * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf16) for more information.
+   * See the [Rust documentation for `segment_utf16`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_utf16) for more information.
    */
-  inline std::unique_ptr<icu4x::SentenceBreakIteratorUtf16> segment16(std::u16string_view input) const;
+  inline std::unique_ptr<icu4x::SentenceBreakIteratorUtf16> segment16(std::u16string_view input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND;
 
   /**
    * Segments a Latin-1 string.
    *
-   * See the [Rust documentation for `segment_latin1`](https://docs.rs/icu/2.2.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_latin1) for more information.
+   * See the [Rust documentation for `segment_latin1`](https://docs.rs/icu/2.4.0/icu/segmenter/struct.SentenceSegmenterBorrowed.html#method.segment_latin1) for more information.
    */
-  inline std::unique_ptr<icu4x::SentenceBreakIteratorLatin1> segment_latin1(icu4x::diplomat::span<const uint8_t> input) const;
+  inline std::unique_ptr<icu4x::SentenceBreakIteratorLatin1> segment_latin1(icu4x::diplomat::span<const uint8_t> input DIPLOMAT_LIFETIME_BOUND) const DIPLOMAT_LIFETIME_BOUND;
 
     inline const icu4x::capi::SentenceSegmenter* AsFFI() const;
     inline icu4x::capi::SentenceSegmenter* AsFFI();

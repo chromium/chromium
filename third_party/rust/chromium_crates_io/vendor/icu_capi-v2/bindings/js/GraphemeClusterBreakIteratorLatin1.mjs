@@ -7,7 +7,7 @@ const GraphemeClusterBreakIteratorLatin1_box_destroy_registry = new Finalization
 });
 
 /**
- * See the [Rust documentation for `GraphemeClusterBreakIterator`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.GraphemeClusterBreakIterator.html) for more information.
+ * See the [Rust documentation for `GraphemeClusterBreakIterator`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.GraphemeClusterBreakIterator.html) for more information.
  */
 export class GraphemeClusterBreakIteratorLatin1 {
     // Internal ptr reference:
@@ -44,7 +44,7 @@ export class GraphemeClusterBreakIteratorLatin1 {
      * Finds the next breakpoint. Returns -1 if at the end of the string or if the index is
      * out of range of a 32-bit signed integer.
      *
-     * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/segmenter/iterators/struct.GraphemeClusterBreakIterator.html#method.next) for more information.
+     * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/segmenter/iterators/struct.GraphemeClusterBreakIterator.html#method.next) for more information.
      */
     next() {
 

@@ -15,6 +15,10 @@
 //!
 //! Read more about data providers: [`icu_provider`]
 
+#[cfg(feature = "unstable")]
+/// Data provider structs for locale display names.
+pub mod names;
+
 #[cfg(feature = "compiled_data")]
 #[derive(Debug)]
 /// Baked data
@@ -37,9 +41,7 @@ const _: () = {
     make_provider!(Baked);
     impl_locale_aliases_v1!(Baked);
     impl_locale_likely_subtags_extended_v1!(Baked);
-    impl_locale_likely_subtags_language_v1!(Baked);
     impl_locale_likely_subtags_script_region_v1!(Baked);
-    impl_locale_parents_v1!(Baked);
     impl_locale_script_direction_v1!(Baked);
 
     impl_locale_exemplar_characters_auxiliary_v1!(Baked);
@@ -47,6 +49,45 @@ const _: () = {
     impl_locale_exemplar_characters_main_v1!(Baked);
     impl_locale_exemplar_characters_numbers_v1!(Baked);
     impl_locale_exemplar_characters_punctuation_v1!(Baked);
+
+    #[cfg(feature = "unstable")]
+    impl_locale_names_region_medium_tiny_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_region_medium_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_region_short_tiny_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_region_short_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_medium_tiny_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_medium_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_medium_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_short_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_short_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_long_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_long_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_menu_medium_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_language_menu_medium_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_script_medium_tiny_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_script_medium_light_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_script_medium_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_script_short_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_variant_medium_heavy_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_locale_names_essentials_v1!(Baked);
 };
 
 icu_provider::data_marker!(
@@ -54,13 +95,6 @@ icu_provider::data_marker!(
     LocaleAliasesV1,
     "locale/aliases/v1",
     Aliases<'static>,
-    is_singleton = true
-);
-icu_provider::data_marker!(
-    /// Marker for data for likely subtags for languages.
-    LocaleLikelySubtagsLanguageV1,
-    "locale/likely/subtags/language/v1",
-    LikelySubtagsForLanguage<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
@@ -75,13 +109,6 @@ icu_provider::data_marker!(
     LocaleLikelySubtagsExtendedV1,
     "locale/likely/subtags/extended/v1",
     LikelySubtagsExtended<'static>,
-    is_singleton = true
-);
-icu_provider::data_marker!(
-    /// Marker for locale fallback parents data.
-    LocaleParentsV1,
-    "locale/parents/v1",
-    Parents<'static>,
     is_singleton = true
 );
 
@@ -134,10 +161,46 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     LocaleExemplarCharactersNumbersV1::INFO,
     LocaleExemplarCharactersPunctuationV1::INFO,
     LocaleLikelySubtagsExtendedV1::INFO,
-    LocaleLikelySubtagsLanguageV1::INFO,
     LocaleLikelySubtagsScriptRegionV1::INFO,
-    LocaleParentsV1::INFO,
     LocaleScriptDirectionV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesRegionMediumTinyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesRegionMediumLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesRegionShortTinyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesRegionShortLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageMediumTinyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageMediumLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageMediumHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageShortLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageShortHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageLongLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageLongHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageMenuMediumLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesLanguageMenuMediumHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesScriptMediumTinyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesScriptMediumLightV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesScriptMediumHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesScriptShortHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesVariantMediumHeavyV1::INFO,
+    #[cfg(feature = "unstable")]
+    names::LocaleNamesEssentialsV1::INFO,
 ];
 
 #[cfg(doc)]
@@ -146,7 +209,6 @@ use alloc::borrow::Cow;
 use icu_collections::codepointinvliststringlist::CodePointInversionListAndStringList;
 use icu_locale_core::subtags::{Language, Region, Script, Variant};
 use icu_provider::prelude::*;
-use potential_utf::PotentialUtf8;
 use tinystr::{TinyAsciiStr, UnvalidatedTinyAsciiStr};
 use zerovec::{VarZeroVec, ZeroMap, ZeroSlice, ZeroVec};
 
@@ -294,53 +356,6 @@ icu_provider::data_struct!(
 #[derive(Debug, PartialEq, Clone, yoke::Yokeable, zerofrom::ZeroFrom)]
 #[cfg_attr(feature = "datagen", derive(serde::Serialize, databake::Bake))]
 #[cfg_attr(feature = "datagen", databake(path = icu_locale::provider))]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize))]
-/// This likely subtags data is used for the minimize and maximize operations.
-///
-/// Each field defines a mapping from an old identifier to a new identifier,
-/// based upon the rules in
-/// <https://www.unicode.org/reports/tr35/#Likely_Subtags>.
-///
-/// The data is stored is broken down into smaller vectors based upon the rules
-/// defined for the likely subtags maximize algorithm.
-///
-/// For efficiency, only the relevant part of the [`LanguageIdentifier`] is stored
-/// for searching and replacing. E.g., the `language_script` field is used to store
-/// rules for [`LanguageIdentifier`]s that contain a language and a script, but not a
-/// region.
-///
-/// This struct contains mappings when the input contains a language subtag.
-/// Also see [`LikelySubtagsForScriptRegion`].
-///
-/// <div class="stab unstable">
-/// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
-/// including in SemVer minor releases. While the serde representation of data structs is guaranteed
-/// to be stable, their Rust representation might not be. Use with caution.
-/// </div>
-#[yoke(prove_covariance_manually)]
-pub struct LikelySubtagsForLanguage<'data> {
-    /// Language and script.
-    #[cfg_attr(feature = "serde", serde(borrow))]
-    pub language_script: ZeroMap<'data, (UnvalidatedLanguage, UnvalidatedScript), Region>,
-    /// Language and region.
-    #[cfg_attr(feature = "serde", serde(borrow))]
-    pub language_region: ZeroMap<'data, (UnvalidatedLanguage, UnvalidatedRegion), Script>,
-    /// Just language.
-    #[cfg_attr(feature = "serde", serde(borrow))]
-    pub language: ZeroMap<'data, UnvalidatedLanguage, (Script, Region)>,
-    /// Undefined.
-    pub und: (Language, Script, Region),
-}
-
-icu_provider::data_struct!(
-    LikelySubtagsForLanguage<'_>,
-    #[cfg(feature = "datagen")]
-);
-
-#[derive(Debug, PartialEq, Clone, yoke::Yokeable, zerofrom::ZeroFrom)]
-#[cfg_attr(feature = "datagen", derive(serde::Serialize, databake::Bake))]
-#[cfg_attr(feature = "datagen", databake(path = icu_locale::provider))]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 /// This likely subtags data is used for the minimize and maximize operations.
 ///
 /// Each field defines a mapping from an old identifier to a new identifier,
@@ -356,13 +371,14 @@ icu_provider::data_struct!(
 /// language.
 ///
 /// This struct contains mappings when the input does not contain a language subtag.
-/// Also see [`LikelySubtagsForLanguage`].
+/// Also see [`LikelySubtagsForLanguage`](icu_locale_fallback::provider::LikelySubtagsForLanguage).
 ///
 /// <div class="stab unstable">
 /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
 /// including in SemVer minor releases. While the serde representation of data structs is guaranteed
 /// to be stable, their Rust representation might not be. Use with caution.
 /// </div>
+#[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 #[yoke(prove_covariance_manually)]
 pub struct LikelySubtagsForScriptRegion<'data> {
     /// Script and region.
@@ -417,24 +433,6 @@ pub struct LikelySubtagsExtended<'data> {
 
 icu_provider::data_struct!(
     LikelySubtagsExtended<'_>,
-    #[cfg(feature = "datagen")]
-);
-
-/// Locale fallback rules derived from CLDR parent locales data.
-#[derive(Default, Clone, PartialEq, Debug, yoke::Yokeable, zerofrom::ZeroFrom)]
-#[cfg_attr(feature = "datagen", derive(serde::Serialize, databake::Bake))]
-#[cfg_attr(feature = "datagen", databake(path = icu_locale::provider))]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize))]
-#[yoke(prove_covariance_manually)]
-pub struct Parents<'data> {
-    /// Map from language identifier to language identifier, indicating that the language on the
-    /// left should inherit from the language on the right.
-    #[cfg_attr(feature = "serde", serde(borrow))]
-    pub parents: ZeroMap<'data, PotentialUtf8, (Language, Option<Script>, Option<Region>)>,
-}
-
-icu_provider::data_struct!(
-    Parents<'_>,
     #[cfg(feature = "datagen")]
 );
 

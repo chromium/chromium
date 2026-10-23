@@ -18,12 +18,13 @@ rust-version.workspace = true
 version.workspace = true
 
 [dependencies]
-icu_locale = { workspace = true }
+icu_locale_fallback = { workspace = true }
 icu_provider = { workspace = true, features = ["alloc"] }
 
 [dev-dependencies]
 icu_provider = { path = "../../provider/core", features = ["deserialize_json"] }
 icu_locale = { path = "../../components/locale" }
+icu_locale_fallback = { path = "../../components/locale_fallback" }
 writeable = { path = "../../utils/writeable" }
 
 [features]

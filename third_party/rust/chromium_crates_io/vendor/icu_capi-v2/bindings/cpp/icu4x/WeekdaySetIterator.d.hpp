@@ -26,13 +26,13 @@ namespace icu4x {
 /**
  * Documents which days of the week are considered to be a part of the weekend
  *
- * See the [Rust documentation for `WeekdaySetIterator`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekdaySetIterator.html) for more information.
+ * See the [Rust documentation for `WeekdaySetIterator`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekdaySetIterator.html) for more information.
  */
 class WeekdaySetIterator {
 public:
 
   /**
-   * See the [Rust documentation for `next`](https://docs.rs/icu/2.2.0/icu/calendar/week/struct.WeekdaySetIterator.html#method.next) for more information.
+   * See the [Rust documentation for `next`](https://docs.rs/icu/2.4.0/icu/calendar/week/struct.WeekdaySetIterator.html#method.next) for more information.
    */
   inline std::optional<icu4x::Weekday> next();
 

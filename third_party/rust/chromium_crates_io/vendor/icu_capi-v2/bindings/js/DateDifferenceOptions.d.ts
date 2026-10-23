@@ -9,7 +9,7 @@ export type DateDifferenceOptions_obj = {
 
 
 /**
- * See the [Rust documentation for `DateDifferenceOptions`](https://docs.rs/icu/2.2.0/icu/calendar/options/struct.DateDifferenceOptions.html) for more information.
+ * See the [Rust documentation for `DateDifferenceOptions`](https://docs.rs/icu/2.4.0/icu/calendar/options/struct.DateDifferenceOptions.html) for more information.
  */
 export class DateDifferenceOptions {
     get largestUnit(): DateDurationUnit | null;
