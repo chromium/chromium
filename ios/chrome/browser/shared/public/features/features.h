@@ -1061,4 +1061,10 @@ BASE_DECLARE_FEATURE(kAppBarDisableLongPress);
 // Returns true if the AppBarDisableLongPress feature is enabled.
 bool IsAppBarDisableLongPressEnabled();
 
+// Enables the RemoteActorCredentialSharing feature.
+BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
+
+// Returns true if the RemoteActorCredentialSharing feature is enabled.
+bool IsRemoteActorCredentialSharingEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

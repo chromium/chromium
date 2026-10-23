@@ -1294,3 +1294,9 @@ BASE_FEATURE(kAppBarDisableLongPress, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAppBarDisableLongPressEnabled() {
   return base::FeatureList::IsEnabled(kAppBarDisableLongPress);
 }
+
+BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRemoteActorCredentialSharingEnabled() {
+  return base::FeatureList::IsEnabled(kRemoteActorCredentialSharing);
+}
