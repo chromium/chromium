@@ -288,6 +288,7 @@ test("media_perftests") {
     "//media/base:perftests",
     "//media/filters:perftests",
     "//media/test:pipeline_integration_perftests",
+    "//media/webrtc:perftests",
     "//testing/gmock",
     "//testing/gtest",
     "//testing/perf",

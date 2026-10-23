@@ -65,3 +65,11 @@ source_set("unit_tests") {
     "helpers_unittest.cc",
   ]
 }
+
+source_set("perftests") {
+  testonly = true
+  deps = []
+  if (chrome_wide_echo_cancellation_supported) {
+    deps += [ "//media/webrtc/voice_isolation:perftests" ]
+  }
+}

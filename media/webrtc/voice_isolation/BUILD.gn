@@ -100,6 +100,21 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("perftests") {
+  testonly = true
+  sources = [ "voice_isolation_perftest.cc" ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//media",
+    "//media/webrtc",
+    "//testing/gtest",
+    "//testing/perf",
+    "//third_party/tflite",
+  ]
+}
+
 if (chrome_wide_echo_cancellation_supported) {
   executable("voice_isolation_wav_tool") {
     testonly = true
