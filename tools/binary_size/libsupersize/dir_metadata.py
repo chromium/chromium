@@ -36,11 +36,16 @@ class _ComponentLookupContext:
   def __init__(self, source_directory, component_overrides):
     self._mixins_cache = {}
     self._dir_cache = _COMPONENT_DEFAULTS.copy()
+    self._path_cache = {}
     self._source_directory = source_directory
     self._component_overrides = component_overrides
 
   def ComponentForSourcePath(self, source_path):
-    return self._ComponentForDirectory(os.path.dirname(source_path))
+    component = self._path_cache.get(source_path)
+    if component is None:
+      component = self._ComponentForDirectory(os.path.dirname(source_path))
+      self._path_cache[source_path] = component
+    return component
 
   def _ParseComponentFromMetadata(self, path):
     """Extracts Component from DIR_METADATA."""

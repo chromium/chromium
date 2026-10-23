@@ -122,27 +122,33 @@ def _NormalizeNames(raw_symbols):
   found_prefixes = set()
   for symbol in raw_symbols:
     full_name = symbol.full_name
+    section_name = symbol.section_name
 
     # See comment in _CalculatePadding() about when this can happen. Don't
     # process names for non-native sections.
-    if symbol.IsPak():
+    if section_name in models.PAK_SECTIONS:
       # full_name: "about_ui_resources.grdp: IDR_ABOUT_UI_CREDITS_HTML".
       space_idx = full_name.rindex(' ')
       name = full_name[space_idx + 1 :]
       symbol.template_name = name
       symbol.name = name
-    elif full_name.startswith('**') or symbol.IsOverhead() or symbol.IsOther():
+    elif (
+      full_name.startswith('**')
+      or full_name.startswith('Overhead:')
+      or section_name == models.SECTION_OTHER
+    ):
       symbol.template_name = full_name
       symbol.name = full_name
-    elif symbol.IsStringLiteral():  # Handles native and DEX strings.
+    elif full_name == models.STRING_LITERAL_NAME or full_name.startswith('"'):
+      # Handles native and DEX strings.
       symbol.full_name = full_name
       symbol.template_name = full_name
       symbol.name = full_name
-    elif symbol.IsDex():
+    elif section_name in models.DEX_SECTIONS:
       symbol.full_name, symbol.template_name, symbol.name = (
         function_signature.ParseJava(full_name)
       )
-    elif symbol.IsNative():
+    elif section_name in models.NATIVE_SECTIONS:
       # Remove [clone] suffix, and set flag accordingly.
       # Search from left-to-right, as multiple [clone]s can exist.
       # Example name suffixes:
@@ -157,7 +163,7 @@ def _NormalizeNames(raw_symbols):
         symbol.flags |= models.FLAG_CLONE
 
       # Clones for C symbols.
-      if symbol.section == 't':
+      if section_name == models.SECTION_TEXT:
         idx = full_name.rfind('.')
         if idx != -1 and full_name[idx + 1 :].isdigit():
           new_name = full_name[:idx]
@@ -192,14 +198,17 @@ def _NormalizeNames(raw_symbols):
       )
 
       # Remove anonymous namespaces (they just harm clustering).
-      symbol.template_name = symbol.template_name.replace(
-        '(anonymous namespace)::', ''
-      )
-      symbol.full_name = symbol.full_name.replace('(anonymous namespace)::', '')
-      non_anonymous_name = symbol.name.replace('(anonymous namespace)::', '')
-      if symbol.name != non_anonymous_name:
-        symbol.flags |= models.FLAG_ANONYMOUS
-        symbol.name = non_anonymous_name
+      if '(anonymous namespace)::' in full_name:
+        symbol.template_name = symbol.template_name.replace(
+          '(anonymous namespace)::', ''
+        )
+        symbol.full_name = symbol.full_name.replace(
+          '(anonymous namespace)::', ''
+        )
+        non_anonymous_name = symbol.name.replace('(anonymous namespace)::', '')
+        if symbol.name != non_anonymous_name:
+          symbol.flags |= models.FLAG_ANONYMOUS
+          symbol.name = non_anonymous_name
 
     # Allow using "is" to compare names (and should help with RAM). This applies
     # to all symbols.

@@ -20,23 +20,24 @@ def _FindParameterListParen(name):
     idx = name.find('(', start_idx)
     if idx == -1:
       return -1
-    template_balance_count += name.count('<', start_idx, idx) - name.count(
-      '>', start_idx, idx
-    )
-    # Special: operators with angle brackets.
-    operator_idx = name.find('operator<', start_idx, idx)
-    if operator_idx != -1:
-      if name[operator_idx + 9] == '<':
-        template_balance_count -= 2
-      else:
-        template_balance_count -= 1
-    else:
-      operator_idx = name.find('operator>', start_idx, idx)
+    lt_count = name.count('<', start_idx, idx)
+    gt_count = name.count('>', start_idx, idx)
+    if lt_count or gt_count:
+      template_balance_count += lt_count - gt_count
+      # Special: operators with angle brackets.
+      operator_idx = name.find('operator<', start_idx, idx) if lt_count else -1
       if operator_idx != -1:
-        if name[operator_idx + 9] == '>':
-          template_balance_count += 2
+        if name[operator_idx + 9] == '<':
+          template_balance_count -= 2
         else:
-          template_balance_count += 1
+          template_balance_count -= 1
+      elif gt_count:
+        operator_idx = name.find('operator>', start_idx, idx)
+        if operator_idx != -1:
+          if name[operator_idx + 9] == '>':
+            template_balance_count += 2
+          else:
+            template_balance_count += 1
 
     # No need to count "(" since |idx| is the first one after |start_idx|.
     paren_balance_count -= name.count(')', start_idx, idx)
