@@ -280,10 +280,13 @@ interface WebTransport {
   GetReceiveStreamStats(uint32 stream_id)
       => (WebTransportReceiveStreamStats? stats);
 
-  // Provides the latest send statistics for a currently active stream.
-  // Returns null when the stream is unavailable.
-  GetSendStreamStats(uint32 stream_id)
-      => (WebTransportSendStreamStats? stats);
+  // Returns the latest send statistics for each requested outgoing stream. The
+  // response contains one entry for each `stream_ids` entry, in the same order.
+  // An entry is null when statistics are unavailable. Final statistics may
+  // still arrive in a subsequent terminal WebTransportClient notification
+  // because the response and notification travel over different Mojo pipes.
+  GetSendStreamStats(array<uint32> stream_ids)
+      => (array<WebTransportSendStreamStats?> stats);
 
   // https://w3c.github.io/webtransport/#session-terminate
   // This is the last message and it is not allowed to call methods after
@@ -318,6 +321,13 @@ interface WebTransportClient {
   // send statistics were already unavailable.
   OnOutgoingStreamClosed(uint32 stream_id,
                          WebTransportSendStreamStats? final_stats);
+
+  // Notifies that an outgoing stream stopped being tracked without another
+  // terminal outgoing-stream notification. `final_stats` is null only if send
+  // statistics were already unavailable.
+  OnOutgoingStreamStatsFinalized(
+      uint32 stream_id,
+      WebTransportSendStreamStats? final_stats);
 
   // Called when an outgoing or bidirectional stream gets a STOP_SENDING signal.
   // https://w3c.github.io/webtransport/#stream-signal-stop_sending

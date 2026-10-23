@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -154,6 +155,10 @@ class MODULES_EXPORT WebTransport final
       uint32_t stream_id,
       network::mojom::blink::WebTransportSendStreamStatsPtr final_stats)
       override;
+  void OnOutgoingStreamStatsFinalized(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats)
+      override;
   void OnReceivedResetStream(uint32_t stream_id,
                              uint32_t stream_error_code,
                              uint64_t bytes_received) override;
@@ -188,9 +193,8 @@ class MODULES_EXPORT WebTransport final
   void SetStreamPriority(
       uint32_t stream_id,
       network::mojom::blink::WebTransportStreamPriorityPtr priority);
-  using SendStreamStatsCallback =
-      network::mojom::blink::WebTransport::GetSendStreamStatsCallback;
-  void GetSendStreamStats(uint32_t stream_id, SendStreamStatsCallback callback);
+  void RequestSendStreamStats(Vector<uint32_t> stream_ids,
+                              base::OnceClosure callback);
 
   // Removes the reference to a stream. |has_received_close| indicates whether
   // OnIncomingStreamClosed() was called for this stream before it was
@@ -324,13 +328,14 @@ class MODULES_EXPORT WebTransport final
   // the active stream when terminal handling still needs to close or error it.
   OutgoingStream* ApplyFinalSendStreamStats(
       uint32_t stream_id,
-      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats);
+      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats,
+      bool finalize_forgotten_without_stats = false);
   void OnAbortStreamResponse(
       uint32_t stream_id,
       network::mojom::blink::WebTransportSendStreamStatsPtr final_stats);
   void OnSendStreamStatsResponse(
-      uint32_t stream_id,
-      network::mojom::blink::WebTransportSendStreamStatsPtr stats);
+      Vector<uint32_t> stream_ids,
+      Vector<network::mojom::blink::WebTransportSendStreamStatsPtr> stats);
   void RunPendingSendStreamStatsCallbacksForStream(
       uint32_t stream_id,
       network::mojom::blink::WebTransportSendStreamStatsPtr stats = nullptr);
@@ -453,7 +458,7 @@ class MODULES_EXPORT WebTransport final
   // Coalesces concurrent requests for a stream until a live response, a final
   // stream notification, or WebTransport Mojo disconnection completes them.
   HashMap<uint32_t,
-          Vector<SendStreamStatsCallback>,
+          Vector<base::OnceClosure>,
           IntWithZeroKeyHashTraits<uint32_t>>
       pending_send_stream_stats_callbacks_;
 

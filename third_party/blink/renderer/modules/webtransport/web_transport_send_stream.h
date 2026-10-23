@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "services/network/public/mojom/web_transport.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -52,7 +51,8 @@ class MODULES_EXPORT WebTransportSendStream final : public WritableStream {
     outgoing_stream_->InitWithExistingWritableStream(this, exception_state);
   }
 
-  OutgoingStream* GetOutgoingStream() { return outgoing_stream_.Get(); }
+  uint32_t stream_id() const { return stream_id_; }
+  OutgoingStream* GetOutgoingStream() const { return outgoing_stream_.Get(); }
 
   // Returns the WebTransport that owns this stream.
   WebTransport* GetTransport() const { return transport_.Get(); }
@@ -74,10 +74,9 @@ class MODULES_EXPORT WebTransportSendStream final : public WritableStream {
   void Trace(Visitor*) const override;
 
  private:
+  void OnSendStatsFinalized();
+  void SetSendGroup(WebTransportSendGroup*);
   void SendPriorityUpdate();
-  void OnGetStatsResponse(
-      ScriptPromiseResolver<WebTransportSendStreamStats>*,
-      network::mojom::blink::WebTransportSendStreamStatsPtr);
   void ResolveGetStats(
       ScriptPromiseResolver<WebTransportSendStreamStats>*) const;
 

@@ -527,6 +527,9 @@ void OutgoingStream::SetFinalSendStats(
     network::mojom::blink::WebTransportSendStreamStatsPtr stats) {
   UpdateSendStats(std::move(stats));
   send_stats_finalized_ = true;
+  if (send_stats_finalized_callback_) {
+    std::move(send_stats_finalized_callback_).Run();
+  }
 }
 
 void OutgoingStream::Dispose() {

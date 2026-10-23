@@ -142,7 +142,11 @@ class WebTransport::Stream final {
         }
       }
       if (stream->outgoing_) {
-        stream->transport_->UnregisterSendStream(stream->id_);
+        auto stats = stream->transport_->TakeSendStreamStats(stream->id_);
+        if (stream->transport_->client_) {
+          stream->transport_->client_->OnOutgoingStreamStatsFinalized(
+              stream->id_, std::move(stats));
+        }
         stream->readable_watcher_.Cancel();
         stream->readable_.reset();
         stream->outgoing_ = nullptr;
@@ -1548,16 +1552,21 @@ void WebTransport::GetReceiveStreamStats(
   std::move(callback).Run(std::move(stats));
 }
 
-void WebTransport::GetSendStreamStats(uint32_t stream_id,
+void WebTransport::GetSendStreamStats(const std::vector<uint32_t>& stream_ids,
                                       GetSendStreamStatsCallback callback) {
   if (torn_down_) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        std::vector<std::optional<net::WebTransportSendStreamStats>>(
+            stream_ids.size()));
     return;
   }
 
-  const std::optional<net::WebTransportSendStreamStats> stats =
-      transport_->GetSendStreamStats(stream_id);
-  std::move(callback).Run(stats);
+  std::vector<std::optional<net::WebTransportSendStreamStats>> stats;
+  stats.reserve(stream_ids.size());
+  for (uint32_t stream_id : stream_ids) {
+    stats.push_back(transport_->GetSendStreamStats(stream_id));
+  }
+  std::move(callback).Run(std::move(stats));
 }
 
 void WebTransport::RegisterSendStream(uint32_t stream_id) {
@@ -1570,10 +1579,6 @@ WebTransport::TakeSendStreamStats(uint32_t stream_id) {
       transport_->GetSendStreamStats(stream_id);
   transport_->UnregisterSendStream(stream_id);
   return stats;
-}
-
-void WebTransport::UnregisterSendStream(uint32_t stream_id) {
-  transport_->UnregisterSendStream(stream_id);
 }
 
 void WebTransport::TearDown() {

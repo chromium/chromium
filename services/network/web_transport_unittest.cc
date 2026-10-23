@@ -187,10 +187,13 @@ AcceptedBidirectionalStream AcceptBidirectionalStream(
 std::optional<net::WebTransportSendStreamStats> GetSendStreamStats(
     mojo::Remote<mojom::WebTransport>& transport_remote,
     uint32_t stream_id) {
-  base::test::TestFuture<std::optional<net::WebTransportSendStreamStats>>
+  base::test::TestFuture<
+      const std::vector<std::optional<net::WebTransportSendStreamStats>>&>
       stats_future;
-  transport_remote->GetSendStreamStats(stream_id, stats_future.GetCallback());
-  return stats_future.Take();
+  transport_remote->GetSendStreamStats({stream_id}, stats_future.GetCallback());
+  auto stats = stats_future.Take();
+  CHECK_EQ(stats.size(), 1u);
+  return stats.front();
 }
 
 class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
@@ -312,6 +315,11 @@ class TestClient final : public mojom::WebTransportClient {
     if (quit_closure_for_outgoing_stream_closure_) {
       std::move(quit_closure_for_outgoing_stream_closure_).Run();
     }
+  }
+  void OnOutgoingStreamStatsFinalized(
+      uint32_t stream_id,
+      std::optional<net::WebTransportSendStreamStats> final_stats) override {
+    final_send_stream_stats_.insert_or_assign(stream_id, final_stats);
   }
   void OnReceivedResetStream(uint32_t stream_id, uint32_t, uint64_t) override {}
   void OnReceivedStopSending(

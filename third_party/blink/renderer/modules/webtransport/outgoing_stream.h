@@ -7,8 +7,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -92,6 +94,9 @@ class MODULES_EXPORT OutgoingStream final
   uint64_t BytesSent() const { return bytes_sent_; }
   uint64_t BytesAcknowledged() const { return bytes_acknowledged_; }
   bool AreSendStatsFinalized() const { return send_stats_finalized_; }
+  void SetSendStatsFinalizedCallback(base::OnceClosure callback) {
+    send_stats_finalized_callback_ = std::move(callback);
+  }
   void UpdateSendStats(
       network::mojom::blink::WebTransportSendStreamStatsPtr stats);
   void SetFinalSendStats(
@@ -188,6 +193,7 @@ class MODULES_EXPORT OutgoingStream final
   // the inactive network-service stream, even if no final snapshot was
   // available.
   bool send_stats_finalized_ = false;
+  base::OnceClosure send_stats_finalized_callback_;
 
   Member<WritableStream> writable_;
   Member<AbortSignal::AlgorithmHandle> send_stream_abort_handle_;

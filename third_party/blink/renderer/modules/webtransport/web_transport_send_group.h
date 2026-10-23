@@ -10,13 +10,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class ScriptState;
 class WebTransport;
+class WebTransportSendStream;
 class WebTransportSendStreamStats;
 
 // Implements the WebTransportSendGroup interface.
@@ -48,9 +51,22 @@ class MODULES_EXPORT WebTransportSendGroup final : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
+  void AddStream(WebTransportSendStream&);
+  void RemoveStream(WebTransportSendStream&);
+  void OnStreamStatsFinalized(WebTransportSendStream&);
+
  private:
+  void AddFinalizedStreamStats(const WebTransportSendStream&);
+  void RemoveFinalizedStreamStats(const WebTransportSendStream&);
+
   const Member<WebTransport> transport_;
   const uint32_t group_id_;
+  // Active streams are retained so their latest counters can be refreshed.
+  // Finalized streams are folded into the totals below and released.
+  HeapHashSet<Member<WebTransportSendStream>> streams_;
+  uint64_t finalized_bytes_written_ = 0;
+  uint64_t finalized_bytes_sent_ = 0;
+  uint64_t finalized_bytes_acknowledged_ = 0;
 };
 
 }  // namespace blink
