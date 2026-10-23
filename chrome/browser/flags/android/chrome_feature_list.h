@@ -109,6 +109,7 @@ BASE_DECLARE_FEATURE(kBackGestureReflectsDesktopBehavior);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBlueBubbleIphCooldownGroup);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
+BASE_DECLARE_FEATURE(kBookmarkWidgetV2);
 BASE_DECLARE_FEATURE(kBookmarksBarContextMenu);
 BASE_DECLARE_FEATURE(kBookmarksBarNTP);
 BASE_DECLARE_FEATURE(kBottomControlsJankImprovement);

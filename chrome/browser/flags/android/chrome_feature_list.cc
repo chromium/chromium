@@ -331,6 +331,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBlockIntentsWhileLocked,
     &kBlueBubbleIphCooldownGroup,
     &kBookmarkPaneAndroid,
+    &kBookmarkWidgetV2,
     &kBookmarksBarContextMenu,
     &kBookmarksBarNTP,
     &kBottomControlsJankImprovement,
@@ -756,6 +757,10 @@ BASE_FEATURE(kBackGestureReflectsDesktopBehavior, base::FEATURE_ENABLED_BY_DEFAU
 BASE_FEATURE(kBlockIntentsWhileLocked, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBlueBubbleIphCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarkPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+// Splits the bookmark widget into separate implementations: API 29/30 keep the
+// RemoteViewsService-backed collection, while API 31+ uses
+// RemoteViews.RemoteCollectionItems instead of RemoteViewsService.
+BASE_FEATURE(kBookmarkWidgetV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarksBarContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarksBarNTP, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBottomControlsJankImprovement, base::FEATURE_DISABLED_BY_DEFAULT);
