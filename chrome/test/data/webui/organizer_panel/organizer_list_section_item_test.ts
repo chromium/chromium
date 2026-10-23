@@ -169,6 +169,8 @@ suite('OrganizerListSectionItemTest', () => {
     assertFalse(actionButton.hasAttribute('title'));
 
     // Action button should be hidden when not hovered.
+    listItem.classList.remove('hovered');
+    listItem.$.crUrlListItem.classList.remove('hovered');
     assertFalse(isVisible(actionButton));
 
     // Action button should be displayed when hovered.
@@ -217,6 +219,8 @@ suite('OrganizerListSectionItemTest', () => {
     assertTrue(!!actionButton);
 
     // Initially, trailing icon is visible and action button is hidden.
+    listItem.classList.remove('hovered');
+    listItem.$.crUrlListItem.classList.remove('hovered');
     assertTrue(isVisible(trailingIcon));
     assertFalse(isVisible(actionButton));
 

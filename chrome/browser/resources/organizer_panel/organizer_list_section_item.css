@@ -70,14 +70,12 @@
   display: none;
 }
 
-:host(:hover) #actionButton,
 :host(.hovered) #actionButton,
 :host(:focus-within) #actionButton,
 #crUrlListItem.hovered #actionButton {
   display: inline-flex;
 }
 
-:host(:hover) #trailingIcon.has-action-button,
 :host(.hovered) #trailingIcon.has-action-button,
 :host(:focus-within) #trailingIcon.has-action-button,
 #crUrlListItem.hovered #trailingIcon.has-action-button {
