@@ -30,6 +30,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/40147906
 #include "components/metrics/demographics/user_demographics.h"
@@ -255,7 +256,7 @@ enum {
   kProfileDefaultContentSettingValuesMouselock = 100192,
   kProfileDefaultContentSettingValuesPopups = 100193,
   kProfileDefaultContentSettingValuesWindowPlacement = 100194,
-  kWebauthnCablev2Pairings = 100195,
+  // kWebauthnCablev2Pairings = 100195, // deprecated
   kDynamicColorColorScheme = 100196,
   kDynamicColorSeedColor = 100197,
   kLongPressDiacritics = 100198,
@@ -1551,9 +1552,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},
-    // This is not exposed in a header.
-    // TODO(crbug.com/40896017): Declare this in the corresponding header.
-    {"user_image_info",
+    {ash::user_image::prefs::kUserImageInfo,
      {syncable_prefs_ids::kUserImageInfo, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
@@ -2111,13 +2110,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},
 #endif
-    // This is not exposed in a header.
-    // TODO(crbug.com/40896017): Declare this in the corresponding header.
-    {"webauthn.cablev2_pairings",
-     {syncable_prefs_ids::kWebauthnCablev2Pairings, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone,
-      sync_preferences::WriteBehavior::kWriteToBoth}},
     {promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
      {syncable_prefs_ids::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,

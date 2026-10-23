@@ -14,6 +14,9 @@ namespace ash::user_image::prefs {
 // profile image or custom local images.
 extern const char kUserAvatarCustomizationSelectorsEnabled[];
 
+// Dictionary preference containing info about user image.
+inline constexpr char kUserImageInfo[] = "user_image_info";
+
 // Register profile prefs with pref registry.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

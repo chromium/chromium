@@ -621,7 +621,7 @@ chromium-metrics-reviews@google.com.
   <int value="100193" label="ProfileDefaultContentSettingValuesPopups"/>
   <int value="100194"
       label="ProfileDefaultContentSettingValuesWindowPlacement"/>
-  <int value="100195" label="WebauthnCablev2Pairings"/>
+  <int value="100195" label="(obsolete) WebauthnCablev2Pairings"/>
   <int value="100196" label="DynamicColorColorScheme"/>
   <int value="100197" label="DynamicColorSeedColor"/>
   <int value="100198" label="LongPressDiacritics"/>

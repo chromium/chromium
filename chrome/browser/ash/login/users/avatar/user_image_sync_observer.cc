@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -23,8 +24,6 @@
 namespace ash {
 namespace {
 
-// A dictionary containing info about user image.
-const char kUserImageInfo[] = "user_image_info";
 // Path to value with image index.
 const char kImageIndex[] = "image_index";
 
@@ -68,7 +67,7 @@ UserImageSyncObserver::~UserImageSyncObserver() {
 void UserImageSyncObserver::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry_) {
   registry_->RegisterDictionaryPref(
-      kUserImageInfo,
+      user_image::prefs::kUserImageInfo,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 }
 
@@ -77,7 +76,7 @@ void UserImageSyncObserver::OnProfileGained(Profile* profile) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
-      kUserImageInfo,
+      user_image::prefs::kUserImageInfo,
       base::BindRepeating(&UserImageSyncObserver::OnPreferenceChanged,
                           base::Unretained(this)));
   is_synced_ = prefs_->AreOsPriorityPrefsSyncing();
@@ -144,7 +143,7 @@ void UserImageSyncObserver::UpdateSyncedImageFromLocal() {
   if (GetSyncedImageIndex(&synced_index) && (synced_index == local_index)) {
     return;
   }
-  ScopedDictPrefUpdate update(prefs_, kUserImageInfo);
+  ScopedDictPrefUpdate update(prefs_, user_image::prefs::kUserImageInfo);
   base::DictValue& dict = update.Get();
   dict.Set(kImageIndex, local_index);
   VLOG(1) << "Saved avatar index " << local_index << " to sync.";
@@ -169,7 +168,8 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
 
 bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
   *index = user_manager::UserImage::Type::kInvalid;
-  const base::DictValue& dict = prefs_->GetDict(kUserImageInfo);
+  const base::DictValue& dict =
+      prefs_->GetDict(user_image::prefs::kUserImageInfo);
   std::optional<int> maybe_index = dict.FindInt(kImageIndex);
   if (!maybe_index.has_value()) {
     *index = user_manager::UserImage::Type::kInvalid;
