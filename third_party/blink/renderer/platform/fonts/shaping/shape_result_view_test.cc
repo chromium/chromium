@@ -603,7 +603,7 @@ TEST_F(ShapeResultViewTest, TrimEndOfView) {
   EXPECT_EQ(view2->NumGlyphs(), 14u);
 }
 
-TEST_F(ShapeResultViewTest, SpacesInLTR) {
+TEST_F(ShapeResultViewTest, SpacesInLtr) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr wtf_size_t kStartIndex = 0;
@@ -626,7 +626,7 @@ TEST_F(ShapeResultViewTest, SpacesInLTR) {
 }
 
 // http://crbug.com/1160582
-TEST_F(ShapeResultViewTest, SpacesInRTL) {
+TEST_F(ShapeResultViewTest, SpacesInRtl) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr wtf_size_t kStartIndex = 0;
@@ -648,7 +648,7 @@ TEST_F(ShapeResultViewTest, SpacesInRTL) {
   EXPECT_EQ(view2->NumGlyphs(), 1u);
 }
 
-TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
+TEST_F(ShapeResultViewTest, TabulationCharactersInLtr) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr float kPosition = 0;
@@ -671,7 +671,7 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
 }
 
 // http://crbug.com/1255310
-TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
+TEST_F(ShapeResultViewTest, TabulationCharactersInRtl) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr float kPosition = 0;

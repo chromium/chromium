@@ -66,11 +66,11 @@ base::apple::ScopedCFTypeRef<CTFontRef> MatchSystemUIFont(
 int ToAppKitFontWeight(FontSelectionValue);
 
 PLATFORM_EXPORT
-int ToCSSFontWeight(float ct_font_weight);
+int ToCssFontWeight(float ct_font_weight);
 
 float ToCTFontWeight(int css_weight);
 
-int AppKitToCSSFontWeight(int appkit_font_weight);
+int AppKitToCssFontWeight(int appkit_font_weight);
 
 }  // namespace blink
 

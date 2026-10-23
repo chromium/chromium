@@ -332,7 +332,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
 
 // See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
-TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
+TEST_F(StretchyOperatorShaperTest, NonBmpCodePoint) {
   Font* math = CreateMathFont("operators.woff");
 
   StretchyOperatorShaper horizontal_shaper(
@@ -387,7 +387,7 @@ TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
   }
 }
 
-TEST_F(StretchyOperatorShaperTest, RTLGlyphMirroring) {
+TEST_F(StretchyOperatorShaperTest, RtlGlyphMirroring) {
   // This font contains the 0x221A character (radical), and a mirrored version
   // using the rtlm font feature (radical.rtlm). The base, variant and assembly
   // widths of the original character are 4em, while the ones from the rtlm

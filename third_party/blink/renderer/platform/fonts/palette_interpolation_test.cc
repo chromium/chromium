@@ -56,7 +56,7 @@ class PaletteInterpolationTest : public FontTestBase {
         sk_ref_sp(non_color_font->PrimaryFont()->PlatformData().Typeface());
   }
 
-  void ExpectColorsEqualInSRGB(
+  void ExpectColorsEqualInSrgb(
       Vector<FontPalette::FontPaletteOverride> overrides1,
       Vector<FontPalette::FontPaletteOverride> overrides2) {
     EXPECT_EQ(overrides1.size(), overrides2.size());
@@ -141,7 +141,7 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesAtHalfTime) {
       {6, Color::FromRGBA(253, 45, 155, 255)},
       {7, Color::FromRGBA(0, 255, 169, 255)},
   };
-  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
+  ExpectColorsEqualInSrgb(actual_color_records, expected_color_records);
 }
 
 TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
@@ -191,7 +191,7 @@ TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
       {6, Color::FromRGBA(210, 169, 147, 255)},
       {7, Color::FromRGBA(173, 255, 166, 255)},
   };
-  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
+  ExpectColorsEqualInSrgb(actual_color_records, expected_color_records);
 }
 
 TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
@@ -223,7 +223,7 @@ TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
       {6, Color::FromRGBA(0, 255, 255, 255)},
       {7, Color::FromRGBA(255, 255, 255, 255)},
   };
-  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
+  ExpectColorsEqualInSrgb(actual_color_records, expected_color_records);
 }
 
 TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
@@ -271,7 +271,7 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
       {6, Color::FromRGBA(254, 39, 112, 255)},
       {7, Color::FromRGBA(0, 255, 128, 255)},
   };
-  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
+  ExpectColorsEqualInSrgb(actual_color_records, expected_color_records);
 }
 
 TEST_F(PaletteInterpolationTest, MixCustomPalettesInSRGB) {
@@ -320,7 +320,7 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInSRGB) {
       {6, Color::FromRGBA(255, 0, 77, 255)},
       {7, Color::FromRGBA(0, 255, 77, 255)},
   };
-  ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);
+  ExpectColorsEqualInSrgb(actual_color_records, expected_color_records);
 }
 
 }  // namespace blink

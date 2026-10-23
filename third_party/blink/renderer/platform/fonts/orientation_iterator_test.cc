@@ -107,7 +107,7 @@ TEST_F(OrientationIteratorTest, Japanese) {
       {{"いろはにほへと", OrientationIterator::kOrientationKeep}});
 }
 
-TEST_F(OrientationIteratorTest, IVS) {
+TEST_F(OrientationIteratorTest, Ivs) {
   CHECK_ORIENTATION(
       {{"愉\xF3\xA0\x84\x81", OrientationIterator::kOrientationKeep}});
 }

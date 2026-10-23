@@ -69,7 +69,7 @@ FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(
 
   if (typeface->getTableSize(
           SkFontTableTag(SkSetFourByteTag('C', 'F', 'F', '2'))))
-    return VariableFontSubType::kVariableCFF2;
+    return VariableFontSubType::kVariableCff2;
   return VariableFontSubType::kVariableTrueType;
 }
 

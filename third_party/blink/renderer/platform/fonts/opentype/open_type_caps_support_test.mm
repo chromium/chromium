@@ -51,7 +51,7 @@ void EnsureHasNativeSmallCaps(const String& font_family_name) {
   ASSERT_FALSE(caps_support.NeedsRunCaseSplitting());
 }
 
-TEST_F(OpenTypeCapsSupportTest, SmallCapsForMacAATFonts) {
+TEST_F(OpenTypeCapsSupportTest, SmallCapsForMacAatFonts) {
   Vector<String> test_fonts = {
       [NSFont systemFontOfSize:12].familyName,  // has OpenType small-caps
       "Apple Chancery",  // has old-style (feature id 3,"Letter Case")

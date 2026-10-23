@@ -35,13 +35,13 @@ bool OpenTypeCapsSupport::SupportsOpenTypeFeature(hb_script_t script,
       static_cast<hb_script_t>(script), HB_LANGUAGE_INVALID,
       &num_returned_script_tags, script_tags, nullptr, nullptr);
 
-  const hb_tag_t kGSUB = HB_TAG('G', 'S', 'U', 'B');
+  const hb_tag_t kGsub = HB_TAG('G', 'S', 'U', 'B');
   wtf_size_t script_index = 0;
   // Identify for which script a GSUB table is available.
-  hb_ot_layout_table_select_script(face, kGSUB, num_returned_script_tags,
+  hb_ot_layout_table_select_script(face, kGsub, num_returned_script_tags,
                                    script_tags, &script_index, nullptr);
 
-  if (hb_ot_layout_language_find_feature(face, kGSUB, script_index,
+  if (hb_ot_layout_language_find_feature(face, kGsub, script_index,
                                          HB_OT_LAYOUT_DEFAULT_LANGUAGE_INDEX,
                                          tag, nullptr)) {
     return true;

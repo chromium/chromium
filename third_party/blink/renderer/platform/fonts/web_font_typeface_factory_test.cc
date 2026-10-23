@@ -86,7 +86,7 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysColrV1) {
                                          g_expect_fontations);
 }
 
-TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCFF2) {
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCff2) {
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsCff2OutlineFont())

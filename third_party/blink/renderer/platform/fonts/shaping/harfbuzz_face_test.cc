@@ -20,7 +20,7 @@ namespace blink {
 
 namespace {
 
-String WPTFontPath(const String& font_name) {
+String WptFontPath(const String& font_name) {
   return test::BlinkWebTestsDir() +
          "/external/wpt/css/css-fonts/resources/vs/" + font_name;
 }
@@ -46,7 +46,7 @@ hb_codepoint_t GetGlyphForEmojiVsFromFontWithVs15(
     VariationSelectorMode variation_selector_mode) {
   Font* font =
       test::CreateTestFont(AtomicString("Noto Emoji"),
-                           WPTFontPath("NotoEmoji-Regular_subset.ttf"), 11);
+                           WptFontPath("NotoEmoji-Regular_subset.ttf"), 11);
   return GetGlyphForVariationSequenceFromFont(
       font, character, variation_selector, variation_selector_mode);
 }
@@ -57,7 +57,7 @@ hb_codepoint_t GetGlyphForEmojiVsFromFontWithVs16(
     VariationSelectorMode variation_selector_mode) {
   Font* font = test::CreateTestFont(
       AtomicString("Noto Color Emoji"),
-      WPTFontPath("NotoColorEmoji-Regular_subset.ttf"), 11);
+      WptFontPath("NotoColorEmoji-Regular_subset.ttf"), 11);
   return GetGlyphForVariationSequenceFromFont(
       font, character, variation_selector, variation_selector_mode);
 }
@@ -171,7 +171,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
+TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVsOverrideVariantEmoji) {
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = uchar::kVariationSelector15;
 

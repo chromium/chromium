@@ -48,7 +48,7 @@ const SkFontTableTag kHheaTag = OT_MAKE_TAG('h', 'h', 'e', 'a');
 const SkFontTableTag kHmtxTag = OT_MAKE_TAG('h', 'm', 't', 'x');
 const SkFontTableTag kVheaTag = OT_MAKE_TAG('v', 'h', 'e', 'a');
 const SkFontTableTag kVmtxTag = OT_MAKE_TAG('v', 'm', 't', 'x');
-const SkFontTableTag kVORGTag = OT_MAKE_TAG('V', 'O', 'R', 'G');
+const SkFontTableTag kVorgTag = OT_MAKE_TAG('V', 'O', 'R', 'G');
 
 #pragma pack(1)
 
@@ -112,7 +112,7 @@ struct VmtxTable {
   } entries[1];
 };
 
-struct VORGTable {
+struct VorgTable {
   DISALLOW_NEW();
   open_type::UInt16 major_version;
   open_type::UInt16 minor_version;
@@ -197,14 +197,14 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   }
 
   // Load VORG. This table is optional.
-  CopyOpenTypeTable(typeface, open_type::kVORGTag, buffer);
-  const open_type::VORGTable* vorg =
-      open_type::ValidateTable<open_type::VORGTable>(buffer);
+  CopyOpenTypeTable(typeface, open_type::kVorgTag, buffer);
+  const open_type::VorgTable* vorg =
+      open_type::ValidateTable<open_type::VorgTable>(buffer);
   if (vorg && buffer.size() >= vorg->RequiredSize()) {
     default_vert_origin_y_ = vorg->default_vert_origin_y;
     uint16_t count_vert_origin_y_metrics = vorg->num_vert_origin_y_metrics;
     if (!count_vert_origin_y_metrics) {
-      // Add one entry so that hasVORG() becomes true
+      // Add one entry so that HasVorg() becomes true
       vert_origin_y_.Set(0, default_vert_origin_y_);
     } else {
       // SAFETY: buffer.size() >= vorg->RequiredSize() confirms it holds
@@ -241,8 +241,9 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
 
   // VORG is preferred way to calculate vertical origin than vmtx,
   // so load topSideBearing from vmtx only if VORG is missing.
-  if (HasVORG())
+  if (HasVorg()) {
     return;
+  }
 
   wtf_size_t size_extra =
       buffer.size() - sizeof(open_type::VmtxTable::Entry) * count_vmtx_entries;
@@ -304,7 +305,7 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
     base::span<float> out_xy_array) const {
   wtf_size_t count_widths = advance_widths_.size();
   DCHECK_GT(count_widths, 0u);
-  bool use_vorg = HasVORG();
+  bool use_vorg = HasVorg();
   wtf_size_t count_top_side_bearings = top_side_bearings_.size();
   float default_vert_origin_y = std::numeric_limits<float>::quiet_NaN();
 

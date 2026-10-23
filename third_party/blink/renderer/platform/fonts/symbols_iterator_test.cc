@@ -88,7 +88,7 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Latin) {
   CheckRuns({{"Aa", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, BMPEmoji) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, BmpEmoji) {
   CheckRuns({{"⌚⌛⌚⌛⌚⌛⌚⌛", FontFallbackPriority::kEmojiEmoji}});
 }
 
@@ -251,7 +251,7 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiZwsSequences) {
        {"\U0000200Defgh", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, AllEmojiZWSSequences) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, AllEmojiZwsSequences) {
   // clang-format gets confused by Emojis, http://llvm.org/PR30530
   // clang-format off
   CheckRuns(

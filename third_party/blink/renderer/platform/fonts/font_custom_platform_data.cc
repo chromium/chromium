@@ -134,7 +134,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
   bool synthetic_italic = synthesize_italic;
   if (font_sub_type ==
           FontFormatCheck::VariableFontSubType::kVariableTrueType ||
-      font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCFF2) {
+      font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCff2) {
     Vector<SkFontArguments::VariationPosition::Coordinate, 0> variation;
 
     SkFontArguments::VariationPosition::Coordinate weight_coordinate = {

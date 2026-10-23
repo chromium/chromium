@@ -402,7 +402,7 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
         if (NSDictionary* traits = CFToNSPtrCast(traits_ref.get())) {
           if (NSNumber* weight_num = ObjCCast<NSNumber>(
                   traits[CFToNSPtrCast(kCTFontWeightTrait)])) {
-            resolved_weight = ToCSSFontWeight(weight_num.floatValue);
+            resolved_weight = ToCssFontWeight(weight_num.floatValue);
           }
         }
       }
@@ -411,7 +411,7 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
     if (resolved_weight) {
       candidate_weight = *resolved_weight;
     } else if (NSNumber* candidate_weight_ns = font_info[2]) {
-      candidate_weight = AppKitToCSSFontWeight(candidate_weight_ns.intValue);
+      candidate_weight = AppKitToCssFontWeight(candidate_weight_ns.intValue);
     }
 
     CTFontSymbolicTraits candidate_traits = kCTNormalTraitsValue;
@@ -506,7 +506,7 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
         NSNumber* candidate_weight_num =
             ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
         if (candidate_weight_num) {
-          candidate_weight = ToCSSFontWeight(candidate_weight_num.floatValue);
+          candidate_weight = ToCssFontWeight(candidate_weight_num.floatValue);
         }
       }
     }
@@ -946,7 +946,7 @@ int ToAppKitFontWeight(FontSelectionValue font_weight) {
 
 // CoreText font weight ranges are taken from `GetFontWeightFromCTFont` in
 // `ui/gfx/platform_font_mac.mm`
-int ToCSSFontWeight(float ct_font_weight) {
+int ToCssFontWeight(float ct_font_weight) {
   constexpr struct {
     float weight_lower;
     float weight_upper;
@@ -992,7 +992,7 @@ float ToCTFontWeight(int css_weight) {
 
 // AppKit font weight ranges are taken from `ToNSFontManagerWeight` in
 // `ui/gfx/platform_font_mac.mm`.
-int AppKitToCSSFontWeight(int appkit_font_weight) {
+int AppKitToCssFontWeight(int appkit_font_weight) {
   if (appkit_font_weight < 0) {
     return kNormalWeightValue;
   }

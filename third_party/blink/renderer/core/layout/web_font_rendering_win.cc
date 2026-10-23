@@ -50,7 +50,7 @@ void WebFontRendering::SetAntialiasedTextEnabled(bool enabled) {
 
 // static
 void WebFontRendering::SetLCDTextEnabled(bool enabled) {
-  FontCache::SetLCDTextEnabled(enabled);
+  FontCache::SetLcdTextEnabled(enabled);
 }
 
 }  // namespace blink

@@ -38,7 +38,7 @@ class PLATFORM_EXPORT FontFormatCheck {
   enum class VariableFontSubType {
     kNotVariable,
     kVariableTrueType,
-    kVariableCFF2
+    kVariableCff2
   };
 
   static VariableFontSubType ProbeVariableFont(sk_sp<SkTypeface>);

@@ -180,7 +180,7 @@ class PLATFORM_EXPORT FontCache final {
   static void SetAntialiasedTextEnabled(bool enabled) {
     antialiased_text_enabled_ = enabled;
   }
-  static void SetLCDTextEnabled(bool enabled) { lcd_text_enabled_ = enabled; }
+  static void SetLcdTextEnabled(bool enabled) { lcd_text_enabled_ = enabled; }
   // Functions to cache and retrieve the system font metrics.
   static void SetMenuFontMetrics(const AtomicString& family_name,
                                  int32_t font_height);
