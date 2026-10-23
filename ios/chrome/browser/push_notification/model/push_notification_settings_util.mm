@@ -17,7 +17,7 @@ namespace push_notification_settings {
 ClientPermissionState GetNotificationPermissionState(
     const GaiaId& gaia_id,
     PrefService* pref_service) {
-  static std::vector<PushNotificationClientId> client_ids =
+  std::vector<PushNotificationClientId> client_ids =
       PushNotificationClientManager::GetClients();
   size_t enabled_clients_count = 0;
   size_t disabled_clients_count = 0;

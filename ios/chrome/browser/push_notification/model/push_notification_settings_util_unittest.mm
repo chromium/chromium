@@ -104,8 +104,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
 // When 0 clients are enabled, the state is DISABLED.
 // When `enabled` >= 1 AND `disabled` >= 1, the state is INDETERMINANT
 // When `enabled` >=1 and `disabled` == 0, then state is ENABLED.
-// TODO(crbug.com/370742354): re-enable
-TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
+TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
   // Enable Notifications in random order.
   ClientPermissionState state =
       GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
@@ -125,6 +124,9 @@ TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
   state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnNotificationForKey(YES, kSendTabNotificationKey, pref_service_);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
   state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
@@ -136,6 +138,9 @@ TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
   state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnAppLevelNotificationForKey(NO, kSafetyCheckNotificationKey);
+  state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnNotificationForKey(NO, kSendTabNotificationKey, pref_service_);
   state = GetNotificationPermissionState(fake_id_.gaiaId, pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(NO, kCommerceNotificationKey, pref_service_);
