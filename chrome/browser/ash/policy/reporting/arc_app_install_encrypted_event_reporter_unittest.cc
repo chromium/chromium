@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
