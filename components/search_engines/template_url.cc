@@ -734,7 +734,7 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
   }
 
   // Host, port, and path must match.
-  if (url.GetHost() != host_ || url.GetPort() != port_ ||
+  if (url.host() != host_ || url.port() != port_ ||
       (!PathIsEqual(url) && (search_term_key_location_ != url::Parsed::PATH))) {
     return false;
   }
