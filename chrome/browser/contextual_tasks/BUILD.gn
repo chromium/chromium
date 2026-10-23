@@ -287,6 +287,7 @@ source_set("ui") {
     sources += [
       "contextual_tasks_ghost_loader_view.h",
       "contextual_tasks_location_bar.h",
+      "contextual_tasks_onboarding_tooltip_controller.h",
       "contextual_tasks_panel_host_desktop.h",
       "contextual_tasks_web_view.h",
       "location_bar_stub.h",
@@ -352,6 +353,7 @@ source_set("ui") {
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/contextual_tasks:onboarding_bubble",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/permissions/chip",
@@ -524,6 +526,7 @@ source_set("ui_impl") {
     sources += [
       "contextual_tasks_ghost_loader_view.cc",
       "contextual_tasks_location_bar.cc",
+      "contextual_tasks_onboarding_tooltip_controller.cc",
       "contextual_tasks_panel_host_desktop.cc",
       "contextual_tasks_web_view.cc",
       "location_bar_stub.cc",
@@ -541,6 +544,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/contextual_tasks:onboarding_bubble",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/user_education",
@@ -548,6 +552,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/webui/webui_toolbar:layout_css_helper",
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
+      "//components/feature_engagement/public",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/blink/public/common:headers",
@@ -773,6 +778,7 @@ source_set("unit_tests") {
     sources += [ "android/contextual_tasks_bridge_unittest.cc" ]
   } else {
     sources += [
+      "contextual_tasks_onboarding_tooltip_controller_unittest.cc",
       "contextual_tasks_panel_host_desktop_unittest.cc",
       "contextual_tasks_permission_controller_unittest.cc",
       "contextual_tasks_utils_unittest.cc",
@@ -856,6 +862,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/feature_engagement",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/hats:test_support",
@@ -863,13 +870,18 @@ source_set("unit_tests") {
       "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/views/contextual_tasks:onboarding_bubble",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/test/user_education:impl",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/test:test_support",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
       "//services/network/public/cpp",
       "//ui/shell_dialogs",
       "//ui/shell_dialogs:test_support",
+      "//ui/views",
+      "//ui/views:test_support",
     ]
   }
 
