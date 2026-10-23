@@ -13,6 +13,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace content {
+class BrowserContext;
+}
+
 class ContextHubPageHandler;
 class ContextHubUI;
 
@@ -21,6 +25,9 @@ class ContextHubUIConfig
  public:
   ContextHubUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIContextHubHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class ContextHubUI : public ui::MojoWebUIController,

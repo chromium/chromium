@@ -183,6 +183,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "context_hub_page_handler_unittest.cc" ]
   deps = [
+    ":context_hub",
     ":context_hub_page_handler",
     "//base/test:test_support",
     "//chrome/browser/context_hub",

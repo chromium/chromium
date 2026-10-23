@@ -40,6 +40,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub_ui.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -4695,6 +4696,19 @@ TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording_ServiceDisabled) {
   EXPECT_TRUE(session_data->actions.empty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST(ContextHubUIConfigTest, IsWebUIEnabled) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ContextHubUIConfig config;
+
+  EXPECT_TRUE(config.IsWebUIEnabled(&profile));
+
+  Profile* incognito_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_FALSE(config.IsWebUIEnabled(incognito_profile));
+  EXPECT_FALSE(config.IsWebUIEnabled(nullptr));
+}
 
 }  // namespace
 }  // namespace context_hub
