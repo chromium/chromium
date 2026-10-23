@@ -129,7 +129,7 @@ public class ExtensionsMenuMediatorTest {
 
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
-        when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
+        when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
                 .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
         when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
                 .thenReturn(mActionContextMenuModelBridge);
@@ -623,7 +623,7 @@ public class ExtensionsMenuMediatorTest {
         // Verify the context menu is shown.
         verify(mActionContextMenuBridgeJniMock)
                 .init(
-                        eq(BROWSER_WINDOW_POINTER),
+                        eq(mBrowserWindow),
                         eq("id_a"),
                         eq(mWebContents),
                         eq(ContextMenuSource.MENU_ITEM));

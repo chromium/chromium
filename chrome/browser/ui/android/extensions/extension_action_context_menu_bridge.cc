@@ -65,12 +65,10 @@ void ExtensionActionContextMenuBridge::Destroy(JNIEnv* env) {
 
 static int64_t JNI_ExtensionActionContextMenuBridge_Init(
     JNIEnv* env,
-    int64_t browser_window_interface_ptr,
+    BrowserWindowInterface* browser,
     const ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
     ExtensionContextMenuModel::ContextMenuSource context_menu_source) {
-  BrowserWindowInterface* browser =
-      reinterpret_cast<BrowserWindowInterface*>(browser_window_interface_ptr);
   auto* bridge = new ExtensionActionContextMenuBridge(
       browser, action_id, web_contents, context_menu_source);
   // The bridge is owned by the Java object and will be destroyed when

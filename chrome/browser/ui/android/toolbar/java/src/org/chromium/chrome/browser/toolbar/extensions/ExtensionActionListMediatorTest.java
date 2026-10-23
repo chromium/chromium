@@ -34,6 +34,7 @@ import android.view.ViewConfiguration;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction.HoverCardState;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
@@ -112,7 +114,6 @@ public class ExtensionActionListMediatorTest {
     }
 
     private static final int TAB_ID = 111;
-    private static final long BROWSER_WINDOW_POINTER = 1000L;
     private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
 
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
@@ -134,6 +135,7 @@ public class ExtensionActionListMediatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeAndroidTask mTask;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private WebContents mWebContents;
@@ -162,11 +164,11 @@ public class ExtensionActionListMediatorTest {
         Context context = ApplicationProvider.getApplicationContext();
 
         // Mock AndroidChromeTask.
-        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindow(mProfile)).thenReturn(mBrowserWindow);
 
         // Mock JNI for Context Menu Bridge.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
-        when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
+        when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
                 .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
         when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
                 .thenReturn(mMenuModelBridge);

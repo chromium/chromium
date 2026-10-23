@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -43,7 +45,7 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
         mNativeExtensionActionContextMenuBridge =
                 ExtensionActionContextMenuBridgeJni.get()
                         .init(
-                                task.getOrCreateNativeBrowserWindowPtr(profile),
+                                task.getOrCreateNativeBrowserWindow(profile),
                                 actionId,
                                 webContents,
                                 contextMenuSource);
@@ -75,7 +77,7 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
     @NativeMethods
     public interface Native {
         long init(
-                long androidBrowserWindowPtr,
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
                 @JniType("std::string") String actionId,
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("ExtensionContextMenuModel::ContextMenuSource") int contextMenuSource);

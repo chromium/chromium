@@ -127,7 +127,7 @@ public class ExtensionsMenuCoordinatorTest {
         when(mExtensionsMenuBridgeJniMock.init(any(), any(), anyLong())).thenReturn(1L);
 
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
-        when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
+        when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
                 .thenReturn(10000L);
         when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
                 .thenReturn(mActionContextMenuModelBridge);
@@ -245,7 +245,7 @@ public class ExtensionsMenuCoordinatorTest {
         contextMenuButton.performClick();
 
         verify(mActionContextMenuBridgeJniMock)
-                .init(eq(BROWSER_WINDOW_POINTER), eq("id_a"), eq(webContents), anyInt());
+                .init(eq(mBrowserWindow), eq("id_a"), eq(webContents), anyInt());
     }
 
     /** Tests that the reload page prompt is shown and clicking reload notifies native. */
