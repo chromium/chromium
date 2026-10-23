@@ -258,9 +258,9 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchLoggingApiTest,
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
       {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
-  log.StopCapturingLogs();
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  log.StopCapturingLogs();
 }
 
 // Test that a natively-initiated connection from a host not supporting
