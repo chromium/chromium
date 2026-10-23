@@ -192,8 +192,6 @@ class ToolbarController : public OverflowMenu::Delegate {
   // Shows the overflow menu that is anchored to the `overflow_button_`.
   void ShowMenu();
 
-  bool IsMenuRunning() const { return overflow_menu_.IsMenuRunning(); }
-
   views::MenuItemView* root_menu_item() {
     return overflow_menu_.root_menu_item();
   }
