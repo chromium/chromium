@@ -46,6 +46,7 @@ void XRGPUTextureArraySwapChain::SetLayer(XRCompositionLayer* layer) {
 }
 
 void XRGPUTextureArraySwapChain::OnFrameStart() {
+  XRGPUSwapChain::OnFrameStart();
   wrapped_swap_chain_->OnFrameStart();
 }
 

@@ -396,6 +396,8 @@ XrResult OpenXrGraphicsBinding::WaitSwapchainImages(
       if (result == XR_TIMEOUT_EXPIRED) {
         return_result = result;
       }
+    } else if (base_layer_->has_active_swapchain_image()) {
+      OnSwapchainImageReady(*base_layer_, sii);
     }
   }
 
@@ -411,6 +413,8 @@ XrResult OpenXrGraphicsBinding::WaitSwapchainImages(
       if (result == XR_TIMEOUT_EXPIRED) {
         return_result = result;
       }
+    } else if (layer_it->second->has_active_swapchain_image()) {
+      OnSwapchainImageReady(*layer_it->second, sii);
     }
   }
 

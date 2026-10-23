@@ -88,6 +88,7 @@ void XRWebGLTextureArraySwapChain::SetLayer(XRCompositionLayer* layer) {
 }
 
 void XRWebGLTextureArraySwapChain::OnFrameStart() {
+  XRWebGLSwapChain::OnFrameStart();
   wrapped_swap_chain_->OnFrameStart();
 }
 

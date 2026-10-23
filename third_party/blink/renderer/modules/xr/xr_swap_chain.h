@@ -31,13 +31,13 @@ class XRSwapChain : public GarbageCollected<XRSwapChain<Texture>> {
     if (!current_texture_) {
       current_texture_ = ProduceTexture();
     }
-    if (!texture_queried_) {
-      texture_queried_ = true;
+    if (!was_texture_queried_) {
+      was_texture_queried_ = true;
       OnTextureQueried();
     }
     return current_texture_;
   }
-  virtual void OnFrameStart() { texture_queried_ = false; }
+  virtual void OnFrameStart() { was_texture_queried_ = false; }
   virtual void OnFrameEnd() { ResetCurrentTexture(); }
 
   // Manage the XRCompositorLayer this swap chain is associated with.
@@ -45,7 +45,7 @@ class XRSwapChain : public GarbageCollected<XRSwapChain<Texture>> {
   XRCompositionLayer* layer() { return layer_.Get(); }
 
   // Indicates if the texture was queried during the most recent frame.
-  bool texture_was_queried() const { return texture_queried_; }
+  bool texture_was_queried() const { return was_texture_queried_; }
 
   virtual void Trace(Visitor* visitor) const {
     visitor->Trace(current_texture_);
@@ -73,7 +73,7 @@ class XRSwapChain : public GarbageCollected<XRSwapChain<Texture>> {
   Member<Texture> current_texture_;
   Member<XRCompositionLayer> layer_;
 
-  bool texture_queried_;
+  bool was_texture_queried_ = false;
 };
 
 }  // namespace blink
