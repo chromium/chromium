@@ -36,12 +36,12 @@ namespace {
 
 namespace mojom = ::browser::context_hub::mojom;
 
-// A history visit that survives minimization, linked to its Topic.
+// A visit that survives minimization, linked to its Topic.
 struct ExportedVisit {
   base::Time visit_time;
   // Minimized URL.
   GURL url;
-  // Points into `TopicsFeedbackExportData::visits`.
+  // Points into `TopicsFeedbackExportData::visits` or `journeys`.
   raw_ref<const std::u16string> title;
   bool is_foreign;
   // Id of the Topic the visit belongs to, or null if it is unclustered. Points
@@ -49,40 +49,72 @@ struct ExportedVisit {
   raw_ptr<const std::string> topic_id;
 };
 
+// A visit of a Topic in `TopicsFeedbackExportData::journeys`, and whether a
+// history visit was linked to it.
+struct TopicVisit {
+  raw_ref<const history::journeys::JourneyVisit> visit;
+  raw_ref<const std::string> topic_id;
+  bool linked = false;
+};
+
 // Drops visits that must not be exported, minimizes the URLs of the rest, and
 // links each to the first Topic with a visit at the same time to the same
-// minimized URL.
+// minimized URL. Then adds the Topic visits since `data.window_start` that
+// are missing from `data.visits`, and returns all the visits newest first.
 std::vector<ExportedVisit> MinimizeAndLinkVisits(
     const TopicsFeedbackExportData& data) {
-  std::map<std::pair<base::Time, std::string>, const std::string*>
-      topic_id_by_visit;
+  std::map<std::pair<base::Time, std::string>, TopicVisit> topic_visits;
   for (const history::journeys::Journey& journey : data.journeys) {
     for (const history::journeys::JourneyVisit& visit : journey.visits) {
       if (std::optional<GURL> url = MinimizeUrlForTopicsFeedback(visit.url)) {
         // `emplace()` keeps the first Topic if a visit is in several.
-        topic_id_by_visit.emplace(std::make_pair(visit.visit_time, url->spec()),
-                                  &journey.journey_id);
+        topic_visits.emplace(
+            std::make_pair(visit.visit_time, url->spec()),
+            TopicVisit{.visit = raw_ref(visit),
+                       .topic_id = raw_ref(journey.journey_id)});
       }
     }
   }
 
   std::vector<ExportedVisit> exported_visits;
-  exported_visits.reserve(data.visits.size());
+  exported_visits.reserve(data.visits.size() + topic_visits.size());
   for (const TopicsFeedbackHistoryVisit& visit : data.visits) {
     std::optional<GURL> url = MinimizeUrlForTopicsFeedback(visit.url);
     if (!url) {
       continue;
     }
-    auto it =
-        topic_id_by_visit.find(std::make_pair(visit.visit_time, url->spec()));
+    const std::string* topic_id = nullptr;
+    auto it = topic_visits.find(std::make_pair(visit.visit_time, url->spec()));
+    if (it != topic_visits.end()) {
+      it->second.linked = true;
+      topic_id = &it->second.topic_id.get();
+    }
     exported_visits.push_back(ExportedVisit{
         .visit_time = visit.visit_time,
         .url = std::move(*url),
         .title = raw_ref<const std::u16string>(visit.title),
         .is_foreign = visit.is_foreign,
-        .topic_id = it != topic_id_by_visit.end() ? it->second : nullptr,
+        .topic_id = topic_id,
     });
   }
+
+  // History doesn't return some visits that Topics contain, e.g. ones replaced
+  // by a client redirect.
+  for (const auto& [key, topic_visit] : topic_visits) {
+    const history::journeys::JourneyVisit& visit = *topic_visit.visit;
+    if (topic_visit.linked || visit.visit_time < data.window_start) {
+      continue;
+    }
+    exported_visits.push_back(ExportedVisit{
+        .visit_time = visit.visit_time,
+        .url = GURL(key.second),
+        .title = raw_ref<const std::u16string>(visit.title),
+        .is_foreign = visit.is_foreign,
+        .topic_id = &topic_visit.topic_id.get(),
+    });
+  }
+  std::ranges::stable_sort(exported_visits, std::ranges::greater(),
+                           &ExportedVisit::visit_time);
   return exported_visits;
 }
 

@@ -1632,6 +1632,7 @@ void ContextHubPageHandler::FetchTopicsFeedbackExportData(
     base::Time window_start,
     base::OnceCallback<void(context_hub::TopicsFeedbackExportData)> callback) {
   auto data = std::make_unique<context_hub::TopicsFeedbackExportData>();
+  data->window_start = window_start;
   if (context_hub::ContextHubService* service =
           ContextHubServiceFactory::GetForProfile(profile_)) {
     data->feedbacks = service->GetTopicFeedbacks();

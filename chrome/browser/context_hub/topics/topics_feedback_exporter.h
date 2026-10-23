@@ -59,9 +59,11 @@ struct TopicsFeedbackExportData {
   // Resolved Topics, in the order they are exported. If a visit belongs to
   // more than one, it is linked to the first.
   std::vector<history::journeys::Journey> journeys;
-  // Visits in the export window, in the order they are exported (newest
-  // first).
+  // Visits in the export window, newest first.
   std::vector<TopicsFeedbackHistoryVisit> visits;
+  // Start of the export window. Topic visits since then that are missing from
+  // `visits` are exported too.
+  base::Time window_start;
   // Number of stored Topics that could not be resolved on this device.
   size_t unresolvable_topics = 0;
   // Stored fishfood feedback.
@@ -102,9 +104,10 @@ BuildTopicsFeedbackExportPreview(const TopicsFeedbackExportData& data);
 // Returns the schema_version 1 JSON bundle. Visits with non-http(s) URLs are
 // dropped and the remaining URLs are minimized with
 // `MinimizeUrlForTopicsFeedback()`. Each visit is linked to the Topic
-// containing a visit with the same time and minimized URL. Visits to
-// `options.excluded_domains` or `options.excluded_urls` are exported as
-// stubs without a URL or title.
+// containing a visit with the same time and minimized URL, and Topic visits
+// since `data.window_start` that are missing from `data.visits` are added.
+// Visits to `options.excluded_domains` or `options.excluded_urls` are exported
+// as stubs without a URL or title.
 std::string BuildTopicsFeedbackBundle(
     const TopicsFeedbackExportData& data,
     const TopicsFeedbackExportContext& context,
