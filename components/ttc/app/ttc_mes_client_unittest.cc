@@ -14,11 +14,13 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/ttc_backend.h"
+#include "components/ttc/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,7 +120,8 @@ class TtcMesClientTest : public testing::Test {
  protected:
   TestTtcMesClient& client() { return *client_; }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeObserver observer_;
   testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
@@ -183,6 +186,35 @@ TEST_F(TtcMesClientTest, ReportsErrorWhenModelExecutorIsNull) {
   client.Connect(&observer);
 
   EXPECT_EQ(observer.last_error(), ErrorCode::kOptimizationGuideUnavailable);
+}
+
+TEST_F(TtcMesClientTest, ReportsSetupTimeoutAsError) {
+  task_environment_.FastForwardBy(kTtcSetupTimeout.Get() - base::Seconds(1));
+  EXPECT_EQ(observer_.last_error(), std::nullopt);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(observer_.last_error(), ErrorCode::kSetupTimeout);
+  EXPECT_EQ(client().GetExecutionSessionForTesting(), nullptr);
+}
+
+TEST_F(TtcMesClientTest, SessionConnectedStatusStopsSetupTimeout) {
+  optimization_guide::proto::TtcServerFrame frame;
+  frame.mutable_session_status()->set_state(
+      optimization_guide::proto::SessionStatusResponse::STATE_CONNECTED);
+  client().HandleServerFrame(frame);
+
+  task_environment_.FastForwardBy(kTtcSetupTimeout.Get());
+
+  EXPECT_EQ(observer_.last_error(), std::nullopt);
+  EXPECT_NE(client().GetExecutionSessionForTesting(), nullptr);
+}
+
+TEST_F(TtcMesClientTest, CloseStopsSetupTimeout) {
+  client().Close();
+
+  task_environment_.FastForwardBy(kTtcSetupTimeout.Get());
+
+  EXPECT_EQ(observer_.last_error(), std::nullopt);
 }
 
 }  // namespace ttc

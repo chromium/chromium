@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_TTC_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "components/ttc/features.h"  // IWYU pragma: export
 
 namespace ttc {
-
-// Enables TTC feature.
-BASE_DECLARE_FEATURE(kTtc);
 
 // Enables the first run experience feature for TTC. While FRE is under
 // development, this is used to hide the unfinished FRE. Once FRE is complete,

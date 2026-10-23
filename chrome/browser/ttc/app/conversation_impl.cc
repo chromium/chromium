@@ -34,14 +34,7 @@ ConversationImpl::~ConversationImpl() {
 
 void ConversationImpl::Start() {
   audio_controller_observation_.Observe(audio_controller_.get());
-  audio_controller_->StartCapture(/*device_id=*/"");
-
   backend_->Connect(this);
-
-  // TODO(b/562979451): This needs to be called once we've received a reply.
-  // Also audio playback/capture should be started only then too. Make this
-  // change once backend is reliably hooked up.
-  session_controller_->OnSessionInitialized();
 }
 
 void ConversationImpl::Stop() {
@@ -86,8 +79,14 @@ void ConversationImpl::OnAudioError(ErrorCode error) {
 }
 
 void ConversationImpl::OnBackendInitialized() {
+  if (session_controller_->GetSessionLifecycle() ==
+      SessionLifecycle::kFinished) {
+    return;
+  }
   backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
   session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
+  audio_controller_->StartCapture(/*device_id=*/"");
+  session_controller_->OnSessionInitialized();
 }
 
 void ConversationImpl::OnBackendClosed() {

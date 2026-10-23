@@ -90,7 +90,7 @@ class FakeSessionController : public SessionController {
   void OnOutputTranscription(const std::string& text) override {
     last_output_transcription_ = text;
   }
-  void OnSessionInitialized() override {}
+  void OnSessionInitialized() override { ++session_initialized_count_; }
   void OnError(ErrorCode error) override {
     last_error_ = error;
     ++error_count_;
@@ -102,6 +102,7 @@ class FakeSessionController : public SessionController {
   std::optional<ErrorCode> last_error() const { return last_error_; }
   int error_count() const { return error_count_; }
   int end_session_count() const { return end_session_count_; }
+  int session_initialized_count() const { return session_initialized_count_; }
   int turn_started_count() const { return turn_started_count_; }
   int turn_complete_count() const { return turn_complete_count_; }
   int interrupted_count() const { return interrupted_count_; }
@@ -125,6 +126,7 @@ class FakeSessionController : public SessionController {
   std::optional<ErrorCode> last_error_;
   int error_count_ = 0;
   int end_session_count_ = 0;
+  int session_initialized_count_ = 0;
   int turn_started_count_ = 0;
   int turn_complete_count_ = 0;
   int interrupted_count_ = 0;
@@ -286,6 +288,9 @@ TEST_F(ConversationImplTest, StartAndStopWiring) {
 
   EXPECT_CALL(backend(), Connect(&conversation)).Times(1);
   conversation.Start();
+  EXPECT_FALSE(audio_controller().is_capturing());
+
+  conversation.OnBackendInitialized();
   EXPECT_TRUE(audio_controller().is_capturing());
 
   EXPECT_CALL(backend(), Close()).Times(1);
@@ -404,6 +409,7 @@ TEST_F(ConversationImplTest, AudioCaptureErrorIsReported) {
   ConversationImpl& conversation = CreateConversation();
 
   conversation.Start();
+  conversation.OnBackendInitialized();
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return session_controller_.error_count() > 0; }));
 
@@ -448,6 +454,23 @@ TEST_F(ConversationImplTest,
   conversation.OnGenerationStateChanged(/*started=*/false, /*completed=*/true,
                                         /*interrupted=*/false);
   EXPECT_EQ(session_controller_.turn_complete_count(), 1);
+}
+
+TEST_F(ConversationImplTest, SessionGoesLiveOnlyOnceBackendInitialized) {
+  ConversationImpl& conversation = CreateConversation();
+
+  EXPECT_CALL(backend(), Connect(&conversation)).WillOnce([&] {
+    EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+              SessionLifecycle::kInitializing);
+  });
+  conversation.Start();
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kInitializing);
+  EXPECT_EQ(session_controller_.session_initialized_count(), 0);
+
+  conversation.OnBackendInitialized();
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
+  EXPECT_EQ(session_controller_.session_initialized_count(), 1);
 }
 
 }  // namespace ttc

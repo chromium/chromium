@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -23,6 +24,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/ttc/app/public/server_journal_event.h"
+#include "components/ttc/features.h"
 
 namespace ttc {
 
@@ -192,6 +194,9 @@ void TtcMesClient::Connect(Observer* observer) {
   setup->set_audio_codec(optimization_guide::proto::AUDIO_CODEC_PCM16K16BIT);
   setup->set_enable_turn_metrics(true);
   SendFrame(setup_frame);
+  setup_timer_.Start(
+      FROM_HERE, kTtcSetupTimeout.Get(),
+      base::BindOnce(&TtcMesClient::OnSetupTimeout, base::Unretained(this)));
 }
 
 void TtcMesClient::OnConnectionStateChanged(
@@ -232,11 +237,18 @@ void TtcMesClient::OnStreamingResult(
   HandleServerFrame(server_frame);
 }
 
+void TtcMesClient::OnSetupTimeout() {
+  Observer* observer = observer_;
+  Close();
+  observer->OnBackendError(ErrorCode::kSetupTimeout);
+}
+
 void TtcMesClient::HandleServerFrame(
     const optimization_guide::proto::TtcServerFrame& frame) {
   LogServerFrame(frame);
 
   if (frame.has_session_status()) {
+    setup_timer_.Stop();
     session_id_ = frame.session_status().server_session_id();
     // TODO(b/564241442): SessionStatus could be unsuccessful.
     observer_->OnBackendInitialized();
@@ -591,6 +603,7 @@ void TtcMesClient::Log(std::string_view event_name,
 }
 
 void TtcMesClient::Close() {
+  setup_timer_.Stop();
   if (session_) {
     session_->RemoveObserver(this);
     session_.reset();

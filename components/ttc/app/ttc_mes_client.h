@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
@@ -72,6 +73,7 @@ class TtcMesClient
  private:
   void OnStreamingResult(
       optimization_guide::OptimizationGuideModelStreamingResult result);
+  void OnSetupTimeout();
   void HandleToolCall(const optimization_guide::proto::ToolCall& tool_call);
   void OnToolExecutionComplete(const std::string& call_id,
                                const std::string& tool_name,
@@ -92,6 +94,8 @@ class TtcMesClient
   bool is_transport_connected_ = false;
 
   std::string session_id_;
+
+  base::OneShotTimer setup_timer_;
 
   base::WeakPtrFactory<TtcMesClient> weak_factory_{this};
 };

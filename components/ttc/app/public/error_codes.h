@@ -37,6 +37,9 @@ enum class ErrorCode {
 
   // Audio capture encountered an unknown error.
   kAudioUnknownError = 1005,
+
+  // The backend didn't respond to the session setup request in time.
+  kSetupTimeout = 1006,
 };
 
 // Whether an error is fatal to the session. Fatal errors end the session.

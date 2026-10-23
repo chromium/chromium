@@ -27,6 +27,7 @@ ToastId GetToastIdForError(ErrorCode error) {
     case ErrorCode::kOptimizationGuideUnavailable:
     case ErrorCode::kExecutionSessionCreationFailed:
     case ErrorCode::kAudioUnknownError:
+    case ErrorCode::kSetupTimeout:
       return ToastId::kTtcGenericError;
 
     case ErrorCode::kAudioNoMicrophoneDetected:
