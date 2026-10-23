@@ -264,6 +264,16 @@ class MockAutofillClient : public TestAutofillClient {
           .WillByDefault(Return(true));
       return checker;
     });
+    // Like the real client, provide an authenticator whenever the checker says
+    // that the device can authenticate. Authentication succeeds by default.
+    ON_CALL(*this, GetDeviceAuthenticator).WillByDefault([](std::string) {
+      auto authenticator =
+          std::make_unique<NiceMock<device_reauth::MockDeviceAuthenticator>>();
+      ON_CALL(*authenticator, AuthenticateWithMessage)
+          .WillByDefault(
+              base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
+      return authenticator;
+    });
   }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
