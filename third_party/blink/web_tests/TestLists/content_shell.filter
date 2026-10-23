@@ -294,12 +294,8 @@ external/wpt/resize-observer/scrollbars.html
 external/wpt/resize-observer/svg.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy-attribute.https.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy.https.html
-external/wpt/scroll-animations/css/animation-fill-outside-range-test.html
 external/wpt/scroll-animations/css/animation-range-visual-test.html
-external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html
 external/wpt/scroll-animations/css/view-timeline-range-animation.html
-external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html
-external/wpt/scroll-animations/view-timelines/range-boundary.html
 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html
 external/wpt/service-workers/service-worker/client-navigate.https.html
 external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html
