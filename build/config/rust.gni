@@ -443,6 +443,10 @@ if (toolchain_for_rust_host_build_tools) {
 rust_prebuilt_stdlib =
     !use_chromium_rust_toolchain || toolchain_for_rust_host_build_tools
 
+# `rust_sysroot` is the toolchain root (and the default sysroot of rustc),
+# but the locally built stdlib uses a different sysroot.
+local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
+
 # `cpp_api_from_rust` (aka `cc_bindings_from_rs`) is available when building
 # Chromium, but may be missing or can't be used in some other cases.
 # `enable_cpp_api_from_rust` is checked under `//build/rust/*.gni` (and may be

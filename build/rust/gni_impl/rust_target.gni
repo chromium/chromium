@@ -386,6 +386,34 @@ template("rust_target") {
       }
     }
 
+    # `_output_dir` and `_output_name` are equivalents of `{{output_dir}}` and
+    # `{{target_output_name}}` in the toolchain.
+    _output_dir = target_out_dir
+    if (defined(invoker.output_dir) && invoker.output_dir != "") {
+      _output_dir = invoker.output_dir
+    }
+    if (defined(invoker.output_name)) {
+      _output_name = invoker.output_name
+    } else {
+      # Note that file names of libraries must start with the crate name in
+      # order for the compiler to find transitive dependencies in the
+      # directory search paths (since they are not all explicitly specified).
+      #
+      # For bin targets, we expect the target name to be unique, and the name
+      # of the exe should not add magic stuff to it. And bin crates can not be
+      # transitive dependencies.
+      if (invoker.target_type == "executable") {
+        _output_name = _target_name
+      } else {
+        # TODO(danakj): Since the crate name includes the whole path for 1p
+        # libraries, we could move the output_dir to `root_out_dir` here for
+        # them, which would make for shorter file paths. But we need to not
+        # do the same for 3p crates or those with a `crate_name` set
+        # explicitly.
+        _output_name = _crate_name
+      }
+    }
+
     if (_override_crate_type_as_dylib) {
       # Building a `--crate-type=dylib` means that `rustc` generates a `.dll` /
       # `.so` in target-specific subdirectories of the build directory.  This
@@ -404,13 +432,6 @@ template("rust_target") {
         # of replicating how `...toolchain.gni` calculates the `.so` path in the
         # `outputs` of `tool("rust_dylib")` (which feels rather fragile).
         #
-        # `_source_dir` is an equivalent of `{{output_dir}}` in the toolchain.
-        _source_dir = target_out_dir
-        if (defined(invoker.output_dir)) {
-          _source_dir = invoker.output_dir
-        }
-        _source_dir += "/"
-
         # `_source_ext` is an equivalent of `{{output_extension}}`
         _source_ext = shlib_extension
 
@@ -425,13 +446,11 @@ template("rust_target") {
         # `_source_prefix` is an equivalent of `output_prefix` in `tool`.
         _source_prefix = shlib_prefix
 
-        # `_source_name` is an equivalent of `{{target_output_name}}`.
         assert(defined(invoker.output_name))  # Only tested with `cargo_crate`.
-        _source_name = invoker.output_name
 
         # `_source_path` is the equivalent of `dllname` in the toolchain.
-        _source_filename = "${_source_prefix}${_source_name}${_source_ext}"
-        _source_path = "${_source_dir}${_source_filename}"
+        _source_filename = "${_source_prefix}${_output_name}${_source_ext}"
+        _source_path = "${_output_dir}/${_source_filename}"
 
         # `_target_dir` is the equivalent of `default_output_dir` in toolchain.
         if (defined(invoker.default_shlib_subdir)) {
@@ -578,6 +597,7 @@ template("rust_target") {
                                    "features",
                                    "inputs",
                                    "no_clippy",
+                                   "output_name",
                                    "public_deps",
                                    "rustenv",
                                    "rustflags",
@@ -627,26 +647,7 @@ template("rust_target") {
 
       sources = _rust_sources
       inputs = _rust_inputs
-
-      if (!defined(output_name)) {
-        # Note that file names of libraries must start with the crate name in
-        # order for the compiler to find transitive dependencies in the
-        # directory search paths (since they are not all explicitly specified).
-        #
-        # For bin targets, we expect the target name to be unique, and the name
-        # of the exe should not add magic stuff to it. And bin crates can not be
-        # transitive dependencies.
-        if (invoker.target_type == "executable") {
-          output_name = _target_name
-        } else {
-          # TODO(danakj): Since the crate name includes the whole path for 1p
-          # libraries, we could move the output_dir to `root_out_dir` here for
-          # them, which would make for shorter file paths. But we need to not
-          # do the same for 3p crates or those with a `crate_name` set
-          # explicitly.
-          output_name = _crate_name
-        }
-      }
+      output_name = _output_name
 
       if (!_allow_unsafe) {
         configs += [ "//build/rust:forbid_unsafe" ]
@@ -755,6 +756,12 @@ template("rust_target") {
       }
 
       if (_enable_cpp_api_from_rust_for_this_target) {
+        # TODO(https://crbug.com/gn/490160737): If `get_target_outputs` can
+        # support binary targets (unclear) then it should be used here, instead
+        # of replicating how `...toolchain.gni` calculates `rmetaname` in the
+        # `outputs` of `tool("rust_rlib")` (which feels rather fragile).
+        _rmeta_path = "${_output_dir}/lib${_output_name}.rmeta"
+
         cpp_api_from_rust(_cpp_api_from_rust_target_name) {
           forward_variables_from(_secondary_rust_compiler_attrs,
                                  _SECONDARY_RUST_COMPILER_ATTR_NAMES)
@@ -762,6 +769,7 @@ template("rust_target") {
           rustc_env_and_flags = _rustc_env_and_flags
           original_attributes = _cpp_api_from_rust_attributes
           crate_name = _crate_name
+          rmeta_path = _rmeta_path
 
           if (defined(_cpp_api_from_rust_attributes.h_out)) {
             h_out = _cpp_api_from_rust_attributes.h_out
@@ -777,6 +785,10 @@ template("rust_target") {
           }
         }
       }
+    }
+    if (!_override_crate_type_as_dylib &&
+        !_enable_cpp_api_from_rust_for_this_target) {
+      not_needed([ "_output_dir" ])
     }
   }
 }

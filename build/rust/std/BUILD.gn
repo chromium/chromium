@@ -178,8 +178,6 @@ if (toolchain_has_rust) {
   sysroot_lib_subdir = "lib/rustlib/$rust_abi_target/lib"
 
   if (!rust_prebuilt_stdlib) {
-    local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
-
     # All std targets starting with core build with our sysroot. It starts empty
     # and is incrementally built. The directory must exist at the start.
     generated_file("empty_sysroot_for_std_build") {
@@ -428,7 +426,6 @@ if (toolchain_has_rust) {
       ]
       foreach(_bindings, _prebuilt_stdlib_bindings) {
         cpp_api_from_rust("prebuilt_${_bindings.crate_name}_bindings") {
-          use_rmeta_interface = true
           rust_target = ":std"
           crate_name = _bindings.crate_name
           h_out = "$root_gen_dir/third_party/crubit/support/rs_std/" +

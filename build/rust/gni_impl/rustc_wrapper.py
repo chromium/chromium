@@ -334,7 +334,7 @@ def _RecommendApplyFixesScript(tool, rustc_env_and_flags):
     print(f" {os.path.basename(tool)} {rustc_env_and_flags}", file=sys.stderr)
 
 
-def _ExpandNestedRustStyleRspFiles(rsp_args):
+def ExpandNestedRustStyleRspFiles(rsp_args):
     # `rustc` doesn't support using `@<file.rsp>` from **inside** `@another.rsp`.
     # And things like `@cargo_flags.rs` (see build script handling inside
     # `cargo_crate.gni`) may end up in `rustflags`.  And since `rustflags` are
@@ -411,7 +411,7 @@ def main():
             remove_lib_suffix_from_extern_args(arg) for arg in rustc_args
         ]
     rsp_args = [remove_gn_escaping_from_rsp_args(arg) for arg in rsp_args]
-    rsp_args = _ExpandNestedRustStyleRspFiles(rsp_args)
+    rsp_args = ExpandNestedRustStyleRspFiles(rsp_args)
     out_rsp = str(args.rsp) + ".rust"
     with open(out_rsp, 'w') as rspfile:
         # rustc needs the rsp file to be separated by newlines. Note that GN
