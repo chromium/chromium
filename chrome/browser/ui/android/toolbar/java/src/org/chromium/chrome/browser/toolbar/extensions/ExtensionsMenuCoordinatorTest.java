@@ -30,6 +30,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jni_zero.JniPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinatorImpl.MenuButtonPinningDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
@@ -93,6 +95,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private Profile mProfile;
     @Mock private TabCreator mTabCreator;
     @Mock private ChromeAndroidTask mTask;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
     @Mock private Tab mTab;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
@@ -121,7 +124,7 @@ public class ExtensionsMenuCoordinatorTest {
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
-        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong(), anyLong())).thenReturn(1L);
+        when(mExtensionsMenuBridgeJniMock.init(any(), any(), anyLong())).thenReturn(1L);
 
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
         when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
@@ -139,6 +142,7 @@ public class ExtensionsMenuCoordinatorTest {
         activity.setContentView(mExtensionsMenuButton);
 
         when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindow(mProfile)).thenReturn(mBrowserWindow);
         WeakReference<Activity> mockActivityRef = new WeakReference<>(mContext);
         when(mWindowAndroid.getActivity()).thenReturn(mockActivityRef);
         when(mTab.getProfile()).thenReturn(mProfile);
@@ -155,7 +159,7 @@ public class ExtensionsMenuCoordinatorTest {
                             return EXTENSIONS_MENU_BRIDGE_POINTER;
                         })
                 .when(mExtensionsMenuBridgeJniMock)
-                .init(any(), anyLong(), anyLong());
+                .init(any(), any(), anyLong());
 
         // Default to not ready, so we can test the waiting logic.
         when(mExtensionsMenuBridgeJniMock.isReady(anyLong())).thenReturn(false);

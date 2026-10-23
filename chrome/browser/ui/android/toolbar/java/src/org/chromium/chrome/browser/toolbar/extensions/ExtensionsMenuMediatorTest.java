@@ -25,6 +25,7 @@ import android.widget.CompoundButton;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
@@ -90,6 +92,7 @@ public class ExtensionsMenuMediatorTest {
     @Rule public final FakeExtensionUiBackendRule mUiBackendRule = new FakeExtensionUiBackendRule();
 
     @Mock private ChromeAndroidTask mTask;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
     @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
     @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
@@ -122,6 +125,7 @@ public class ExtensionsMenuMediatorTest {
     public void setUp() {
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindow(mProfile)).thenReturn(mBrowserWindow);
 
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -143,7 +147,7 @@ public class ExtensionsMenuMediatorTest {
                         /* hasTooltip= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(mSiteSettingsState);
-        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong(), anyLong()))
+        when(mExtensionsMenuBridgeJniMock.init(any(), any(), anyLong()))
                 .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
 
         // Set the current tab.
@@ -168,7 +172,7 @@ public class ExtensionsMenuMediatorTest {
                         mOnReadyRunnable);
 
         // Capture the bridge instance created inside the constructor
-        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), anyLong(), anyLong());
+        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), any(), anyLong());
     }
 
     @After

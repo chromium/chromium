@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class ExtensionsMenuBridge implements Destroyable {
                 ExtensionsMenuBridgeJni.get()
                         .init(
                                 this,
-                                task.getOrCreateNativeBrowserWindowPtr(profile),
+                                task.getOrCreateNativeBrowserWindow(profile),
                                 toolbarBridge.getNativePtr());
     }
 
@@ -316,11 +318,11 @@ public class ExtensionsMenuBridge implements Destroyable {
          * Initializes the native ExtensionsMenuDelegateAndroid and returns its pointer.
          *
          * @param bridge The Java bridge object.
-         * @param browserWindowInterfacePtr The pointer to the native BrowserWindowInterface.
+         * @param browserWindow The native BrowserWindowInterface.
          */
         long init(
                 ExtensionsMenuBridge bridge,
-                long browserWindowInterfacePtr,
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
                 long nativeExtensionsToolbarAndroid);
 
         /** Destroys the native ExtensionsMenuDelegateAndroid. */

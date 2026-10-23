@@ -162,6 +162,7 @@ if (enable_extensions_core) {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsToolbarBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/RequestAccessButtonParams.java",
     ]
+    deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
   }
 }
 

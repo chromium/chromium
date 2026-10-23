@@ -389,10 +389,8 @@ void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleChanged(
 static int64_t JNI_ExtensionsMenuBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,
-    int64_t j_browser_window_interface,
+    BrowserWindowInterface* browser,
     int64_t j_toolbar_android) {
-  BrowserWindowInterface* browser =
-      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
   ExtensionsToolbarAndroid* toolbar_android =
       reinterpret_cast<ExtensionsToolbarAndroid*>(j_toolbar_android);
   return reinterpret_cast<int64_t>(
