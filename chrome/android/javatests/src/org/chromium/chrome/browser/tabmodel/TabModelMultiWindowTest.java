@@ -23,6 +23,7 @@ import android.os.Build;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.jni_zero.JniPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -105,7 +107,8 @@ public class TabModelMultiWindowTest {
         assertNotNull(activity2);
         assertNotEquals(activity1, activity2);
 
-        long nativeBrowserWindow2 = getNativeBrowserWindow(activity2);
+        JniPtr<NativeBrowserWindowInterface> nativeBrowserWindow2 =
+                getNativeBrowserWindow(activity2);
 
         runOnUiThreadBlocking(
                 () -> mTabModelJni.moveTabToWindowForTesting(tabToMove, nativeBrowserWindow2, 0));
@@ -133,7 +136,8 @@ public class TabModelMultiWindowTest {
         assertNotNull(activity2);
         assertNotEquals(activity1, activity2);
 
-        long nativeBrowserWindow2 = getNativeBrowserWindow(activity2);
+        JniPtr<NativeBrowserWindowInterface> nativeBrowserWindow2 =
+                getNativeBrowserWindow(activity2);
 
         runOnUiThreadBlocking(
                 () -> {
@@ -170,7 +174,8 @@ public class TabModelMultiWindowTest {
         ChromeTabbedActivity activity2 = createNewWindow(activity1);
         assertNotNull(activity2);
         assertNotEquals(activity1, activity2);
-        long nativeBrowserWindow2 = getNativeBrowserWindow(activity2);
+        JniPtr<NativeBrowserWindowInterface> nativeBrowserWindow2 =
+                getNativeBrowserWindow(activity2);
 
         // Try to move an invalid group.
         runOnUiThreadBlocking(
@@ -182,13 +187,14 @@ public class TabModelMultiWindowTest {
                 });
     }
 
-    private long getNativeBrowserWindow(ChromeTabbedActivity activity) {
+    private JniPtr<NativeBrowserWindowInterface> getNativeBrowserWindow(
+            ChromeTabbedActivity activity) {
         return runOnUiThreadBlocking(
                 () -> {
                     var taskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
                     var chromeTask = taskTracker.get(activity.getTaskId());
                     var profile = activity.getTabModelSelector().getCurrentModel().getProfile();
-                    return chromeTask.getOrCreateNativeBrowserWindowPtr(profile);
+                    return chromeTask.getOrCreateNativeBrowserWindow(profile);
                 });
     }
 

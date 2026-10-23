@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
@@ -216,17 +218,18 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         }
     }
 
-    protected void moveTabToWindowForTesting(Tab tab, long nativeBrowserWindowPtr, int newIndex) {
+    protected void moveTabToWindowForTesting(
+            Tab tab, JniPtr<NativeBrowserWindowInterface> browserWindow, int newIndex) {
         TabModelJniBridgeJni.get()
                 .moveTabToWindowForTesting( // IN-TEST
-                        mNativeTabModelJniBridge, tab, nativeBrowserWindowPtr, newIndex);
+                        mNativeTabModelJniBridge, tab, browserWindow, newIndex);
     }
 
     protected boolean moveTabGroupToWindowForTesting(
-            Token tabGroupId, long nativeBrowserWindowPtr, int newIndex) {
+            Token tabGroupId, JniPtr<NativeBrowserWindowInterface> browserWindow, int newIndex) {
         return TabModelJniBridgeJni.get()
                 .moveTabGroupToWindowForTesting( // IN-TEST
-                        mNativeTabModelJniBridge, tabGroupId, nativeBrowserWindowPtr, newIndex);
+                        mNativeTabModelJniBridge, tabGroupId, browserWindow, newIndex);
     }
 
     /**
@@ -782,13 +785,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         void moveTabToWindowForTesting( // IN-TEST
                 long nativeTabModelJniBridge,
                 @JniType("TabAndroid*") Tab tab,
-                long nativeBrowserWindowPtr,
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
                 int newIndex);
 
         boolean moveTabGroupToWindowForTesting( // IN-TEST
                 long nativeTabModelJniBridge,
                 @JniType("base::Token") Token tabGroupId,
-                long nativeBrowserWindowPtr,
+                JniPtr<NativeBrowserWindowInterface> browserWindow,
                 int newIndex);
 
         int getNativeSessionId(long nativeTabModelJniBridge);

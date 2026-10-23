@@ -2961,6 +2961,7 @@ if (_is_default_toolchain) {
       sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
     }
 
+    deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
     public_deps = [
       ":base_module_jni",
       "//chrome/browser/bookmarks/android:jni_headers",

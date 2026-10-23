@@ -22,6 +22,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
 class SessionID;
 class TabAndroid;
 class TabModelObserverJniBridge;
@@ -54,10 +55,10 @@ class TabModelJniBridge : public TabModel {
   void TabAddedToModel(TabAndroid* tab);
   TabAndroid* DuplicateTab(JNIEnv* env, TabAndroid* tab);
   void MoveTabToWindowForTesting(TabAndroid* tab,
-                                 int64_t native_browser_window_ptr,
+                                 BrowserWindowInterface* browser_window,
                                  int new_index);
   bool MoveTabGroupToWindowForTesting(const base::Token& group_id,
-                                      int64_t native_browser_window_ptr,
+                                      BrowserWindowInterface* browser_window,
                                       int new_index);
   void SetMuteSetting(const std::vector<TabAndroid*>& tabs, bool mute);
   int32_t GetNativeSessionId();

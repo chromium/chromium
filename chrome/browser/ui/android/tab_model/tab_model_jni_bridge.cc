@@ -179,21 +179,17 @@ TabAndroid* TabModelJniBridge::DuplicateTab(JNIEnv* env, TabAndroid* tab) {
 
 void TabModelJniBridge::MoveTabToWindowForTesting(
     TabAndroid* tab,
-    int64_t native_browser_window_ptr,
+    BrowserWindowInterface* browser_window,
     int new_index) {
-  SessionID destination_window_id =
-      reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr)
-          ->GetSessionID();
+  SessionID destination_window_id = browser_window->GetSessionID();
   MoveTabToWindow(tab->GetHandle(), destination_window_id, new_index);
 }
 
 bool TabModelJniBridge::MoveTabGroupToWindowForTesting(
     const base::Token& group_id,
-    int64_t native_browser_window_ptr,
+    BrowserWindowInterface* browser_window,
     int new_index) {
-  SessionID destination_window_id =
-      reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr)
-          ->GetSessionID();
+  SessionID destination_window_id = browser_window->GetSessionID();
   return MoveTabGroupToWindow(tab_groups::TabGroupId::FromRawToken(group_id),
                               destination_window_id, new_index);
 }
