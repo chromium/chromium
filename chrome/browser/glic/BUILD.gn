@@ -561,6 +561,7 @@ source_set("impl") {
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/gemini_enterprise",
     "//chrome/browser/glic/gemini_enterprise:geic_enabling",
+    "//chrome/browser/glic/gemini_enterprise:geic_init",
     "//chrome/browser/glic/media",
     "//chrome/browser/glic/public:request_headers",
     "//chrome/browser/glic/suggestions",

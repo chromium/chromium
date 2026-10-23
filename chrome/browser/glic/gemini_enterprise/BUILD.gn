@@ -45,6 +45,49 @@ source_set("url_allowlist") {
   ]
 }
 
+# GEiC pref names and registration. Registered from
+# chrome/browser/prefs/browser_prefs.cc.
+source_set("geic_pref_names") {
+  sources = [
+    "geic_pref_names.cc",
+    "geic_pref_names.h",
+  ]
+
+  deps = [ "//components/pref_registry" ]
+}
+
+# GEiC first-run experience (FRE) status. Like geic_enabling, including these
+# headers is restricted to allowlists in chrome/browser/glic/DEPS and
+# chrome/browser/glic/host/DEPS.
+source_set("geic_fre") {
+  sources = [
+    "geic_fre.cc",
+    "geic_fre.h",
+  ]
+
+  public_deps = [ ":geic_pref_names" ]
+
+  deps = [
+    ":geic_enabling",
+    "//base",
+    "//chrome/browser/glic/public:features",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs",
+  ]
+}
+
+# Per-profile GEiC setup, called from GlicKeyedService. Like geic_enabling,
+# including geic_init.h is restricted to allowlists in chrome/browser/glic/DEPS.
+source_set("geic_init") {
+  sources = [
+    "geic_init.cc",
+    "geic_init.h",
+  ]
+
+  deps = [ ":geic_fre" ]
+}
+
 source_set("gemini_enterprise") {
   sources = [
     "geic_managed_tab.cc",
@@ -77,11 +120,15 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "geic_enabling_unittest.cc",
+    "geic_fre_unittest.cc",
     "glic_gemini_enterprise_manager_unittest.cc",
   ]
 
   deps = [
     ":geic_enabling",
+    ":geic_fre",
+    ":geic_init",
+    ":geic_pref_names",
     ":gemini_enterprise",
     "//base",
     "//base/test:test_support",

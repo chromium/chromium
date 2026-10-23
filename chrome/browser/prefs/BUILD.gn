@@ -77,6 +77,7 @@ source_set("impl") {
     "//chrome/browser/first_run",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/gemini_enterprise:geic_pref_names",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/gpu",
     "//chrome/browser/hid",

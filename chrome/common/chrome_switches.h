@@ -1065,6 +1065,13 @@ inline constexpr char kGlicGuestURL[] = "glic-guest-url";
 // Overrides the GEiC guest URL.
 inline constexpr char kGeicGuestURL[] = "geic-guest-url";
 
+// Treats the GEiC FRE as completed without persisting anything. GEiC
+// counterpart of `--glic-always-skip-fre`.
+inline constexpr char kGeicAlwaysSkipFre[] = "geic-always-skip-fre";
+
+// Clears all GEiC FRE status at startup. `--geic-always-skip-fre` wins over it.
+inline constexpr char kGeicResetFre[] = "geic-reset-fre";
+
 inline constexpr char kSkillsV2Origin[] = "skills-v2-origin";
 
 

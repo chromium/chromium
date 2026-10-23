@@ -1765,6 +1765,11 @@ inline constexpr char kGeicEnabledDescription[] =
     "of GEiC and fall back to consumer Gemini, even if a Gemini Enterprise "
     "policy or experiment applies to this profile.";
 
+inline constexpr char kGeicFreName[] = "GEiC first-run experience";
+inline constexpr char kGeicFreDescription[] =
+    "Enables the Gemini Enterprise in Chrome (GEiC) first-run experience. "
+    "Requires GEiC to be enabled.";
+
 inline constexpr char kGeicGuestUrlName[] = "GEiC guest URL";
 inline constexpr char kGeicGuestUrlDescription[] =
     "Configures the guest URL loaded into the Gemini Enterprise in Chrome "

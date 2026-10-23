@@ -8449,6 +8449,7 @@ from previous Chrome versions.
   <int value="-1961931929" label="ContextualSuggestionsBottomSheet:enabled"/>
   <int value="-1961755742" label="LightweightReactions:enabled"/>
   <int value="-1961648833" label="show_summary"/>
+  <int value="-1961308150" label="GeicFre:enabled"/>
   <int value="-1961102654" label="WebNotesStylize:enabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
   <int value="-1961040358" label="SyncSharedTabGroupAccountData:enabled"/>
@@ -13337,6 +13338,7 @@ from previous Chrome versions.
   <int value="-500187265"
       label="NtpFeatureOptimizationDismissModulesRemoval:enabled"/>
   <int value="-500107766" label="OmniboxShortcutsAndroid:disabled"/>
+  <int value="-500094648" label="GeicFre:disabled"/>
   <int value="-500044371" label="ShowFeaturedEnterpriseSiteSearchIPH:enabled"/>
   <int value="-499923792" label="MigrateSyncingUserToSignedIn:disabled"/>
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>

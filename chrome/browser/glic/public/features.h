@@ -179,6 +179,9 @@ BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
 BASE_DECLARE_FEATURE(kGlicProcessCounterAbuseVerdict);
 BASE_DECLARE_FEATURE(kGlicNoWebUiLoader);
 
+// TODO(b/576288240): Move the GEiC features below into a GEiC-specific
+// header and namespace under chrome/browser/glic/gemini_enterprise/.
+
 // Enables Gemini Enterprise in Chrome (GEiC), the standalone enterprise
 // surface.
 BASE_DECLARE_FEATURE(kGeic);
@@ -189,6 +192,11 @@ extern const base::FeatureParam<bool> kGeicEnabledParam;
 // GEiC mode without an explicit GEiC URL is a misconfiguration, so callers
 // error rather than fall back to the consumer Gemini URL.
 extern const base::FeatureParam<std::string> kGeicGuestURL;
+// Enables the Gemini Enterprise in Chrome (GEiC) first-run experience (FRE).
+// When enabled for a GEiC profile, Chrome stores FRE completion per GE instance
+// in `geic.completed_fre`.
+// TODO(b/576047045): Gate GEiC features on FRE completion.
+BASE_DECLARE_FEATURE(kGeicFre);
 
 BASE_DECLARE_FEATURE(kGlicMarketingAutoOpen);
 extern const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist;

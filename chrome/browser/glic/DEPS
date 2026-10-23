@@ -4,12 +4,14 @@ include_rules = [
   "+components/security_interstitials/content",
   "+components/security_interstitials/core",
 
-  # geic_enabling is a GLiC-internal helper rather than a general purpose
-  # enablement check; see the comment in geic_enabling.h. Callers should go
-  # through GLiC's enablement utilities instead. The allowlist lives in
-  # specific_include_rules below; please loop in the GEiC owners before adding
-  # to it.
+  # geic_enabling, geic_fre and geic_init are GLiC-internal helpers rather than
+  # general purpose enablement checks; see the comments in their headers.
+  # Callers should go through GLiC's enablement utilities instead. The
+  # allowlists live in specific_include_rules below; please loop in
+  # the GEiC owners before adding to them.
   "-chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  "-chrome/browser/glic/gemini_enterprise/geic_fre.h",
+  "-chrome/browser/glic/gemini_enterprise/geic_init.h",
 ]
 
 specific_include_rules = {
@@ -18,6 +20,9 @@ specific_include_rules = {
   ],
   "glic_provider_latch_factory\\.cc": [
     "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  ],
+  "glic_keyed_service\\.cc": [
+    "+chrome/browser/glic/gemini_enterprise/geic_init.h",
   ],
   "glic_actor_attempt_otp_filling_.*": [
     "+components/one_time_tokens/core/browser",
