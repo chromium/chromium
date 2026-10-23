@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -74,17 +73,12 @@ void OpensPasswordsInOtherApps() {
   [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:YES];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  @"kSettingsAutofillAndPasswordsCellId")];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            SettingsMenuPasswordsButton()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                @"kSettingsAutofillAndPasswordsCellId")];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsMenuPasswordsButton()]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsToolbarSettingsButtonId)]
       performAction:grey_tap()];
