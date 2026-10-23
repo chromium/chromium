@@ -93,8 +93,6 @@ class CORE_EXPORT RemoteFrameView final
 
   void Trace(Visitor*) const override;
 
-  void ResetFrozenSize() { frozen_size_ = std::nullopt; }
-
   mojom::blink::WebFeature SvgFilterPaintedCounter() const override;
 
  protected:
@@ -118,9 +116,6 @@ class CORE_EXPORT RemoteFrameView final
   // animations.
   gfx::Rect ComputeCompositingRect() const;
 
-  // Fetch the frozen size, if any, from the associated LayoutObject.
-  void UpdateFrozenSize();
-
   // The properties and handling of the cycle between RemoteFrame
   // and its RemoteFrameView corresponds to that between LocalFrame
   // and LocalFrameView. Please see the LocalFrameView::frame_ comment for
@@ -128,7 +123,6 @@ class CORE_EXPORT RemoteFrameView final
   Member<RemoteFrame> remote_frame_;
   mojom::blink::ViewportIntersectionState last_intersection_state_;
   gfx::Rect compositing_rect_;
-  std::optional<gfx::Size> frozen_size_;
   float compositing_scale_factor_ = 1.0f;
 
   std::optional<NaturalSizingInfo> natural_sizing_info_;

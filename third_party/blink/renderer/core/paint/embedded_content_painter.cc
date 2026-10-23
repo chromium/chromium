@@ -70,15 +70,11 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
       RemoveSvgFilterPaint(layout_embedded_content_, paint_info);
 
   // Apply the translation to offset the content within the object's border-box
-  // only if we're not using a transform node for this. If the frame size is
-  // frozen then |ReplacedContentTransform| is used instead.
-  gfx::Point paint_location;
-  if (!layout_embedded_content_.FrozenFrameSize().has_value()) {
-    // LINT.IfChange(FramePixelSnapping)
-    paint_location = ToRoundedPoint(
-        paint_offset + layout_embedded_content_.ReplacedContentRect().offset);
-    // LINT.ThenChange(../layout/layout_embedded_content.cc:FramePixelSnapping)
-  }
+  // only if we're not using a transform node for this.
+  // LINT.IfChange(FramePixelSnapping)
+  gfx::Point paint_location = ToRoundedPoint(
+      paint_offset + layout_embedded_content_.ReplacedContentRect().offset);
+  // LINT.ThenChange(../layout/layout_embedded_content.cc:FramePixelSnapping)
 
   gfx::Vector2d view_paint_offset = paint_location.OffsetFromOrigin();
   CullRect adjusted_cull_rect;

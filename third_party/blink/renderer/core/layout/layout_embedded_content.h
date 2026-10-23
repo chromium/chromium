@@ -79,10 +79,6 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
 
   bool IsThrottledFrameView() const;
 
-  // The size of the child frame when it should be "frozen"; i.e., it should not
-  // change even when the size of |this| changes.
-  virtual const std::optional<PhysicalSize> FrozenFrameSize() const;
-
   // A transform mapping from the coordinate space of the embedded content
   // rendered by this object to the object's border-box.
   AffineTransform EmbeddedContentTransform() const;

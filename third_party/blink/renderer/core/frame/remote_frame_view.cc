@@ -241,15 +241,7 @@ void RemoteFrameView::UpdateCompositingRect() {
   // local coordinate space) which should be rasterized/composited. Its based on
   // the child frame's intersection with the viewport and an optimization to
   // avoid large iframes rasterizing their complete viewport.
-  // Since this rectangle is dependent on the child frame's position in the
-  // embedding frame, updating this can be used for communication with a fenced
-  // frame. So if the frame size is frozen, we use the complete viewport of the
-  // child frame as its compositing rect.
-  if (frozen_size_) {
-    compositing_rect_ = gfx::Rect(*frozen_size_);
-  } else {
-    compositing_rect_ = ComputeCompositingRect();
-  }
+  compositing_rect_ = ComputeCompositingRect();
 
   if (compositing_rect_ != previous_rect) {
     SetNeedsFrameRectPropagation();
@@ -317,30 +309,14 @@ void RemoteFrameView::Dispose() {
 }
 
 void RemoteFrameView::SetFrameRect(const gfx::Rect& rect) {
-  const std::optional<gfx::Size> old_frozen_size = frozen_size_;
-  UpdateFrozenSize();
   const bool frame_rect_changed = DeprecatedFrameRect() != rect;
   EmbeddedContentView::SetFrameRect(rect);
-  if (frame_rect_changed || old_frozen_size != frozen_size_) {
+  if (frame_rect_changed) {
     UpdateCompositingRect();
   }
   if (NeedsFrameRectPropagation()) {
     PropagateFrameRects();
   }
-}
-
-void RemoteFrameView::UpdateFrozenSize() {
-  auto* layout_embedded_content = GetLayoutEmbeddedContent();
-  if (!layout_embedded_content)
-    return;
-  std::optional<PhysicalSize> frozen_phys_size =
-      layout_embedded_content->FrozenFrameSize();
-  if (!frozen_phys_size)
-    return;
-  const gfx::Size rounded_frozen_size(frozen_phys_size->width.Ceil(),
-                                      frozen_phys_size->height.Ceil());
-  frozen_size_ = rounded_frozen_size;
-  SetNeedsFrameRectPropagation();
 }
 
 void RemoteFrameView::ZoomFactorChanged(float zoom_factor) {
@@ -368,7 +344,7 @@ void RemoteFrameView::PropagateFrameRectsInternal() {
     }
   }
 
-  gfx::Size frame_size = frozen_size_.value_or(Size());
+  gfx::Size frame_size = Size();
   remote_frame_->FrameRectsChanged(frame_size, rect_in_local_root);
 }
 

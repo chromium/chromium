@@ -548,13 +548,7 @@ static bool NeedsScrollAndScrollTranslation(
 }
 
 static bool NeedsReplacedContentTransform(const LayoutObject& object) {
-  if (object.IsSVGRoot())
-    return true;
-
-  if (auto* layout_embedded_object = DynamicTo<LayoutEmbeddedContent>(object))
-    return layout_embedded_object->FrozenFrameSize().has_value();
-
-  return false;
+  return object.IsSVGRoot();
 }
 
 static bool NeedsPaintOffsetTranslationForOverflowControls(
@@ -3508,15 +3502,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
   if (NeedsPaintPropertyUpdate() && !NeedsReplacedContentTransform(object_)) {
     OnClearTransform(properties_->ClearReplacedContentTransform());
   } else if (NeedsPaintPropertyUpdate()) {
-    AffineTransform content_to_parent_space;
-    if (object_.IsSVGRoot()) {
-      content_to_parent_space =
-          SVGRootPainter(To<LayoutSVGRoot>(object_))
-              .TransformToPixelSnappedBorderBox(context_.current.paint_offset);
-    } else if (object_.IsLayoutEmbeddedContent()) {
-      content_to_parent_space =
-          To<LayoutEmbeddedContent>(object_).EmbeddedContentTransform();
-    }
+    AffineTransform content_to_parent_space =
+        SVGRootPainter(To<LayoutSVGRoot>(object_))
+            .TransformToPixelSnappedBorderBox(context_.current.paint_offset);
     if (!content_to_parent_space.IsIdentity()) {
       TransformPaintPropertyNode::State state;
       state.transform_and_origin = {content_to_parent_space.ToTransform()};

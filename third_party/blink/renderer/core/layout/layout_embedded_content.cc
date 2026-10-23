@@ -92,12 +92,6 @@ EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
   return nullptr;
 }
 
-const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
-    const {
-  NOT_DESTROYED();
-  return std::nullopt;
-}
-
 PhysicalNaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
   NOT_DESTROYED();
   return PhysicalNaturalSizingInfo::None();
@@ -105,19 +99,9 @@ PhysicalNaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
 
 AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
   NOT_DESTROYED();
-  auto frozen_size = FrozenFrameSize();
-  if (!frozen_size || frozen_size->IsEmpty()) {
-    const PhysicalOffset content_box_offset = PhysicalContentBoxRect().offset;
-    return AffineTransform().Translate(content_box_offset.left,
-                                       content_box_offset.top);
-  }
-
-  AffineTransform translate_and_scale;
-  auto replaced_rect = ReplacedContentRect();
-  translate_and_scale.Translate(replaced_rect.X(), replaced_rect.Y());
-  translate_and_scale.Scale(replaced_rect.Width() / frozen_size->width,
-                            replaced_rect.Height() / frozen_size->height);
-  return translate_and_scale;
+  const PhysicalOffset content_box_offset = PhysicalContentBoxRect().offset;
+  return AffineTransform().Translate(content_box_offset.left,
+                                     content_box_offset.top);
 }
 
 bool LayoutEmbeddedContent::ShowsUnavailablePluginIndicator() const {
@@ -395,16 +379,6 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
   if (ChildFrameView() && View() && IsEffectiveRootScroller()) {
     content_rect.offset = PhysicalOffset();
     content_rect.size = View()->ViewRect().size;
-  }
-
-  if (const std::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
-    // TODO(kojii): Setting the `offset` to non-zero values breaks
-    // hit-testing/inputs. Even different size is suspicious, as the input
-    // system forwards mouse events to the child frame even when the mouse is
-    // outside of the child frame. Revisit this when the input system supports
-    // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
-    content_rect = ComputeReplacedContentRect(
-        base_content_rect, PhysicalNaturalSizingInfo::MakeFixed(*frozen_size));
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the
