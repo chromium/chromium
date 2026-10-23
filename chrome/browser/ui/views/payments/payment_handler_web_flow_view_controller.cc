@@ -299,6 +299,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   PaymentHandlerWebFlowViewControllerWebContentsWrapper::CreateForWebContents(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
   web_contents()->SetDelegate(this);
+  SetReferenceView(web_view);
+  SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
   content::WebContents* parent_tab_web_contents = state()->GetWebContents();
 
   CHECK_NE(parent_tab_web_contents, web_contents(), base::NotFatalUntil::M162);
@@ -511,14 +513,6 @@ content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
                            disposition, window_features);
   }
   return nullptr;
-}
-
-bool PaymentHandlerWebFlowViewController::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  return content_view() && content_view()->GetFocusManager() &&
-         unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-             event, content_view()->GetFocusManager());
 }
 
 // We explicitly ignore close requests from the WebContents (e.g., via
