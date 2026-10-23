@@ -21,9 +21,6 @@ namespace {
 // Declared in the anonymous namespace so `ResetForTesting()` can reset state
 // between tests.
 bool g_is_startup_first_paint_recorded = false;
-bool g_is_startup_reload_first_paint_recorded = false;
-bool g_is_startup_reload_first_contentful_paint_recorded = false;
-bool g_is_startup_process_recorded = false;
 bool g_process_startup_delta_recorded = false;
 
 }  // namespace
@@ -236,13 +233,11 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonCreated() {
 }
 
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
-    base::TimeTicks timestamp) {
+    base::TimeTicks timestamp,
+    bool is_startup) {
   if (should_skip_latency_metrics_ || timestamp.is_null()) {
     return;
   }
-  // Ensures only one startup reload button is recorded per browser process.
-  bool& is_startup_first_paint_recorded =
-      g_is_startup_reload_first_paint_recorded;
   CHECK(waap_service_);
 
   if (!reload_button_first_paint_time_.has_value()) {
@@ -272,8 +267,10 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
     RecordPaintDeltaIfAvailable();
   }
 
-  if (!is_startup_first_paint_recorded && !skip_startup_metrics_for_testing_) {
-    is_startup_first_paint_recorded = true;
+  if (is_startup) {
+    is_new_window_reload_button_first_paint_recorded_ = true;
+  } else if (!WaapUIMetricsService::IsStartupFirstPaintRecorded() &&
+             !skip_startup_metrics_for_testing_) {
     is_new_window_reload_button_first_paint_recorded_ = true;
     waap_service_->OnFirstPaint(timestamp);
   } else if (!is_new_window_reload_button_first_paint_recorded_ &&
@@ -286,18 +283,17 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
 }
 
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
-    base::TimeTicks timestamp) {
+    base::TimeTicks timestamp,
+    bool is_startup) {
   if (should_skip_latency_metrics_ || timestamp.is_null()) {
     return;
   }
-  // Ensures only one startup reload button is recorded per browser process.
-  bool& is_startup_first_contentful_paint_recorded =
-      g_is_startup_reload_first_contentful_paint_recorded;
   CHECK(waap_service_);
 
-  if (!is_startup_first_contentful_paint_recorded &&
-      !skip_startup_metrics_for_testing_) {
-    is_startup_first_contentful_paint_recorded = true;
+  if (is_startup) {
+    is_new_window_reload_button_first_contentful_paint_recorded_ = true;
+  } else if (!WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded() &&
+             !skip_startup_metrics_for_testing_) {
     is_new_window_reload_button_first_contentful_paint_recorded_ = true;
     waap_service_->OnFirstContentfulPaint(timestamp);
   } else if (!is_new_window_reload_button_first_contentful_paint_recorded_ &&
@@ -306,24 +302,6 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
     waap_service_->OnNewWindowReloadButtonFirstContentfulPaint(
         creation_source_, was_created_with_existing_windows_,
         *new_window_start_time_, timestamp);
-  }
-}
-
-void InitialWebUIWindowMetricsManager::
-    OnReloadButtonRendererProcessCreatedAndLaunched(
-        base::TimeTicks created_timestamp,
-        base::TimeTicks launched_timestamp) {
-  if (should_skip_latency_metrics_) {
-    return;
-  }
-  // Ensures only one startup process launch is recorded per browser process.
-  bool& is_startup_process_recorded = g_is_startup_process_recorded;
-  CHECK(waap_service_);
-
-  if (!is_startup_process_recorded && !skip_startup_metrics_for_testing_) {
-    is_startup_process_recorded = true;
-    waap_service_->OnReloadButtonRendererProcessCreatedAndLaunched(
-        created_timestamp, launched_timestamp);
   }
 }
 
@@ -378,9 +356,6 @@ void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
 // static
 void InitialWebUIWindowMetricsManager::ResetForTesting() {
   g_is_startup_first_paint_recorded = false;
-  g_is_startup_reload_first_paint_recorded = false;
-  g_is_startup_reload_first_contentful_paint_recorded = false;
-  g_is_startup_process_recorded = false;
   g_process_startup_delta_recorded = false;
   WaapUIMetricsService::ResetForTesting();
 }

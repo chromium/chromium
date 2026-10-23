@@ -29,6 +29,7 @@ namespace {
 bool g_is_browser_window_first_paint_recorded = false;
 bool g_is_first_paint_recorded = false;
 bool g_is_first_contentful_paint_recorded = false;
+bool g_is_startup_process_recorded = false;
 
 // Returns the `CreationSource` histogram variant for `source`.
 // LINT.IfChange(CreationSourceToString)
@@ -217,6 +218,11 @@ void WaapUIMetricsService::OnReloadButtonCreated() {
 void WaapUIMetricsService::OnReloadButtonRendererProcessCreatedAndLaunched(
     base::TimeTicks created_timestamp,
     base::TimeTicks launched_timestamp) {
+  if (g_is_startup_process_recorded) {
+    return;
+  }
+  g_is_startup_process_recorded = true;
+
   // TODO(crbug.com/490810407): Record this and the other metrics as UKM as
   // well, so that we can see the progression of renderer process creation
   // requested
@@ -239,7 +245,25 @@ void WaapUIMetricsService::ResetForTesting() {
   g_is_browser_window_first_paint_recorded = false;
   g_is_first_paint_recorded = false;
   g_is_first_contentful_paint_recorded = false;
+  g_is_startup_process_recorded = false;
   startup_metric_utils::GetBrowser().ResetSessionForTesting();
+}
+
+// static
+void WaapUIMetricsService::SkipStartupForTesting() {
+  g_is_first_paint_recorded = true;
+  g_is_first_contentful_paint_recorded = true;
+  g_is_startup_process_recorded = true;
+}
+
+// static
+bool WaapUIMetricsService::IsStartupFirstPaintRecorded() {
+  return g_is_first_paint_recorded;
+}
+
+// static
+bool WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded() {
+  return g_is_first_contentful_paint_recorded;
 }
 
 void WaapUIMetricsService::OnBrowserWindowFirstPresentation(

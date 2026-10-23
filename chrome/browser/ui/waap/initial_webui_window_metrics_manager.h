@@ -67,22 +67,31 @@ class InitialWebUIWindowMetricsManager {
   void OnReloadButtonCreated();
 
   // Called when the ReloadButton paints its first frame.
-  // This handles reload button metrics in both startup window and new window.
-  void OnReloadButtonFirstPaint(base::TimeTicks timestamp);
+  // This handles reload button paint delta and new window metrics.
+  void OnReloadButtonFirstPaint(base::TimeTicks timestamp,
+                                bool is_startup = false);
 
   // Called when the ReloadButton paints its first contentful paint.
-  // This handles reload button metrics in both startup window and new window.
-  void OnReloadButtonFirstContentfulPaint(base::TimeTicks timestamp);
-
-  // Called when the renderer process is created and launched.
-  void OnReloadButtonRendererProcessCreatedAndLaunched(
-      base::TimeTicks created_timestamp,
-      base::TimeTicks launched_timestamp);
+  // This handles reload button new window metrics.
+  void OnReloadButtonFirstContentfulPaint(base::TimeTicks timestamp,
+                                          bool is_startup = false);
 
   // Called when the reload button renderer process terminates or crashes.
   void OnReloadButtonRenderProcessGone();
 
-  // Skips recording startup metrics for testing.
+  // Returns true if latency metrics should be skipped for this window (e.g.
+  // when the window is initially shown or restored in a minimized state).
+  bool should_skip_latency_metrics() const {
+    return should_skip_latency_metrics_;
+  }
+
+  // Returns true if startup metrics should not be recorded for this window.
+  // Only set via `SkipStartupForTesting()`.
+  bool should_skip_startup_metrics() const {
+    return skip_startup_metrics_for_testing_;
+  }
+
+  // Skips recording startup metrics for this window, for testing.
   void SkipStartupForTesting();
 
   // Resets the static markers tracking whether startup metrics have been

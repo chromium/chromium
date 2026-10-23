@@ -6,16 +6,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
-#include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
+#include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -57,8 +51,8 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
     return;
   }
 
-  first_paint_time_ = timing.monotonic_paint_timing->first_paint.value();
-  FlushMetricsToManager();
+  GetMetricsDispatcher().OnFirstPaint(
+      timing.monotonic_paint_timing->first_paint.value());
 }
 
 void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
@@ -68,9 +62,8 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
     return;
   }
 
-  first_contentful_paint_time_ =
-      timing.monotonic_paint_timing->first_contentful_paint.value();
-  FlushMetricsToManager();
+  GetMetricsDispatcher().OnFirstContentfulPaint(
+      timing.monotonic_paint_timing->first_contentful_paint.value());
 }
 
 void InitialWebUIPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
@@ -144,9 +137,7 @@ InitialWebUIPageLoadMetricsObserver::OnCommit(
     base::TimeTicks init_time = rfh->GetProcess()->GetLastInitTime();
     base::TimeTicks launched_time = rfh->GetProcess()->GetProcessLaunchedTime();
 
-    renderer_process_times_ = RendererProcessTimes{
-        .init_time = init_time, .launched_time = launched_time};
-    FlushMetricsToManager();
+    GetMetricsDispatcher().OnCommit(init_time, launched_time);
   }
 
   const net::HttpResponseHeaders* response_headers =
@@ -172,15 +163,6 @@ InitialWebUIPageLoadMetricsObserver::OnCommit(
   return CONTINUE_OBSERVING;
 }
 
-WaapUIMetricsService* InitialWebUIPageLoadMetricsObserver::service() const {
-  CHECK(GetDelegate().GetWebContents()->GetBrowserContext());
-  auto* profile = Profile::FromBrowserContext(
-      GetDelegate().GetWebContents()->GetBrowserContext());
-  auto* service = WaapUIMetricsService::Get(profile);
-  CHECK(service);
-  return service;
-}
-
 MetricsReporter& InitialWebUIPageLoadMetricsObserver::GetMetricsReporter() {
   MetricsReporterService* service = MetricsReporterService::GetFromWebContents(
       GetDelegate().GetWebContents());
@@ -190,52 +172,14 @@ MetricsReporter& InitialWebUIPageLoadMetricsObserver::GetMetricsReporter() {
   return *service->metrics_reporter();
 }
 
-InitialWebUIWindowMetricsManager*
-InitialWebUIPageLoadMetricsObserver::GetMetricsManager() const {
+InitialWebUIMetricsDispatcher&
+InitialWebUIPageLoadMetricsObserver::GetMetricsDispatcher() {
   content::WebContents* web_contents = GetDelegate().GetWebContents();
-  if (!web_contents) {
-    return nullptr;
-  }
-  if (BrowserWindowInterface* browser =
-          webui::GetBrowserWindowInterface(web_contents)) {
-    return InitialWebUIWindowMetricsManager::From(browser);
-  }
-  gfx::NativeWindow window = web_contents->GetTopLevelNativeWindow();
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(window);
-  return browser ? InitialWebUIWindowMetricsManager::From(browser) : nullptr;
-}
-
-void InitialWebUIPageLoadMetricsObserver::FlushMetricsToManager() {
-  auto* manager = GetMetricsManager();
-  if (!manager) {
-    // When the manager is not ready, subscribe to BrowserWindowInterface
-    // changes so that all held metrics can be flushed once it becomes
-    // available.
-    if (!bwi_subscription_ && GetDelegate().GetWebContents()) {
-      bwi_subscription_ = webui::RegisterBrowserWindowInterfaceChanged(
-          GetDelegate().GetWebContents(),
-          base::BindRepeating(
-              &InitialWebUIPageLoadMetricsObserver::FlushMetricsToManager,
-              weak_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-
-  if (renderer_process_times_.has_value()) {
-    manager->OnReloadButtonRendererProcessCreatedAndLaunched(
-        renderer_process_times_->init_time,
-        renderer_process_times_->launched_time);
-    renderer_process_times_.reset();
-  }
-  if (first_paint_time_.has_value()) {
-    manager->OnReloadButtonFirstPaint(*first_paint_time_);
-    first_paint_time_.reset();
-  }
-  if (first_contentful_paint_time_.has_value()) {
-    manager->OnReloadButtonFirstContentfulPaint(*first_contentful_paint_time_);
-    first_contentful_paint_time_.reset();
-  }
+  CHECK(web_contents);
+  auto* dispatcher =
+      InitialWebUIMetricsDispatcher::GetOrCreateForWebContents(web_contents);
+  CHECK(dispatcher);
+  return *dispatcher;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

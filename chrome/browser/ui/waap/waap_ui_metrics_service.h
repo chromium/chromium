@@ -36,6 +36,14 @@ class WaapUIMetricsService : public KeyedService {
   // Resets static markers tracking whether startup metrics have been emitted.
   static void ResetForTesting();
 
+  // Skips recording reload button startup metrics (first paint, first
+  // contentful paint and renderer process) for testing, marking them as
+  // already recorded. Browser window startup metrics are not affected.
+  static void SkipStartupForTesting();
+
+  static bool IsStartupFirstPaintRecorded();
+  static bool IsStartupFirstContentfulPaintRecorded();
+
   // Called when the browser window is created.
   void OnBrowserWindowCreated();
 
