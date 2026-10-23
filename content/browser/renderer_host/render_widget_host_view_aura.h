@@ -251,10 +251,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Unbounded element API overrides:
   void CreateUnboundedSurface(
-      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client,
-      const gfx::Rect& bounds_in_dips,
+      const gfx::Rect& bounds_in_screen,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view) override;
 
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;

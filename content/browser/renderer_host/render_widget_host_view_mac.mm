@@ -2764,15 +2764,10 @@ RenderWidgetHostViewMac::MaybeUpdateScreenInfosForHiDPI() {
 }
 
 void RenderWidgetHostViewMac::CreateUnboundedSurface(
-    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
-    const gfx::Rect& bounds_in_dips,
+    const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {
-  gfx::Rect bounds_in_screen =
-      ConvertSubframeBoundsToScreen(bounds_in_dips, subframe_view.get());
   unbounded_surface_window_ = std::make_unique<UnboundedSurfaceWindowMac>(
-      this, std::move(host), std::move(client), bounds_in_screen,
-      std::move(subframe_view));
+      this, bounds_in_screen, std::move(subframe_view));
 }
 
 bool RenderWidgetHostViewMac::IsHeadless() const {

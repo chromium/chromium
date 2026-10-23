@@ -110,8 +110,6 @@ namespace content {
 
 UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
     RenderWidgetHostViewMac* parent_view,
-    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
     : UnboundedSurfaceWindow(parent_view ? parent_view->GetWeakPtr() : nullptr,
@@ -119,14 +117,6 @@ UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
       frame_sink_id_(content::AllocateFrameSinkId()) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
         base::NotFatalUntil::M152);
-  if (host.is_valid()) {
-    receiver_.Bind(std::move(host));
-    receiver_.set_disconnect_handler(base::BindOnce(
-        &UnboundedSurfaceWindowMac::OnConnectionError, base::Unretained(this)));
-  }
-  if (client.is_valid()) {
-    client_remote_.Bind(std::move(client));
-  }
   InitWindow(bounds_in_screen);
 }
 
@@ -278,10 +268,6 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
     }
   }
   [window_ orderFront:nil];
-
-  if (client_remote_.is_bound()) {
-    client_remote_->OnSurfaceAllocated(GetFrameSinkId(), GetLocalSurfaceId());
-  }
 }
 
 void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
@@ -430,26 +416,10 @@ void UnboundedSurfaceWindowMac::RouteKeyboardEvent(NSEvent* ns_event) {
   }
 }
 
-void UnboundedSurfaceWindowMac::UpdateBounds(const gfx::Rect& bounds) {
-  if (!parent_view_) {
-    return;
-  }
-  parent_view_->UpdateUnboundedSurfaceBoundsInSubframeContext(
-      bounds, subframe_view_.get());
-  if (client_remote_.is_bound()) {
-    client_remote_->OnSurfaceAllocated(GetFrameSinkId(), GetLocalSurfaceId());
-  }
-}
-
 void UnboundedSurfaceWindowMac::TeardownAndDestroy() {
   if (parent_view_) {
     parent_view_->DestroyUnboundedSurface(GetWeakPtr());
   }
-}
-
-void UnboundedSurfaceWindowMac::OnConnectionError() {
-  dismiss_pending_ = true;
-  ScheduleDeferredDestroy();
 }
 
 void UnboundedSurfaceWindowMac::AcceleratedWidgetCALayerParamsUpdated(

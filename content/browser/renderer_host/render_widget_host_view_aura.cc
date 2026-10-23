@@ -3915,17 +3915,10 @@ void RenderWidgetHostViewAura::DidNavigate() {
 }
 
 void RenderWidgetHostViewAura::CreateUnboundedSurface(
-    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
-    const gfx::Rect& bounds_in_dips,
+    const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {
-  // `bounds_in_screen` must be computed before std::moving `subframe_view`
-  // below, as it requires accessing `subframe_view`'s raw pointer.
-  gfx::Rect bounds_in_screen =
-      ConvertSubframeBoundsToScreen(bounds_in_dips, subframe_view.get());
   unbounded_surface_window_ = UnboundedSurfaceWindowAura::Create(
-      this, std::move(host), std::move(client), bounds_in_screen,
-      std::move(subframe_view));
+      this, bounds_in_screen, std::move(subframe_view));
 }
 
 MouseWheelPhaseHandler* RenderWidgetHostViewAura::GetMouseWheelPhaseHandler() {

@@ -8,17 +8,15 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-#include "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
@@ -32,19 +30,40 @@ namespace content {
 
 class RenderWidgetHostViewBase;
 
-class CONTENT_EXPORT UnboundedSurfaceWindow
-    : public blink::mojom::UnboundedSurfaceHost {
+// The native window displaying an unbounded element. This is a platform object
+// owned by the root RenderWidgetHostView. The Mojo endpoints and the policy
+// (bounds constraints, dismissal handshake) live in UnboundedSurfaceHostImpl,
+// which is tied to the requesting document.
+class CONTENT_EXPORT UnboundedSurfaceWindow {
  public:
+  class Delegate {
+   public:
+    // Called when the user asks to dismiss the window (e.g. Esc, outside
+    // click).
+    virtual void OnDismissRequested() = 0;
+
+    // Called when the window is destroyed for a reason other than the
+    // delegate asking for it (e.g. another document opened a surface in the
+    // same tab, or the root view went away). The window must not be used
+    // anymore.
+    virtual void OnWindowDestroyed() = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   UnboundedSurfaceWindow(base::WeakPtr<RenderWidgetHostViewBase> parent_view,
                          base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
-  ~UnboundedSurfaceWindow() override;
+  virtual ~UnboundedSurfaceWindow();
+
+  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
   virtual bool IsValid() const = 0;
   virtual gfx::NativeWindow GetNativeWindow() const = 0;
   RenderWidgetHostViewBase* GetTargetView() const;
 
-  // Shared lifecycle and dismissal logic.
-  // To initiate the dismissal of this window, call Dismiss().
+  // Initiates the dismissal of this window. The delegate runs the dismissal
+  // handshake with the renderer. Without a delegate, the window is destroyed.
   void Dismiss();
 
   virtual void SetBounds(const gfx::Rect& bounds_in_screen) = 0;
@@ -75,21 +94,18 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
   virtual base::WeakPtr<UnboundedSurfaceWindow> GetWeakPtr() = 0;
   virtual void EnsureSurfaceSynchronizedForWebTest() = 0;
 
-  // blink::mojom::UnboundedSurfaceHost overrides:
-  void GetCompositorFrameSink(
+  virtual void GetCompositorFrameSink(
       mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink,
-      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client)
-      override = 0;
-  void UpdateBounds(const gfx::Rect& bounds) override = 0;
-  // Called when the client has completed its dismissal animation and submitted
-  // a frame. At this point, it is safe to destroy the window.
-  void DidPresentFrameAfterDismissal() override;
-  // Called if the client decides to cancel the dismissal.
-  void DidCancelDismissal() override;
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client) = 0;
 
  protected:
   // Helper to schedule DestroyInternal() on the current thread.
   void ScheduleDeferredDestroy();
+
+  // Tells the delegate, at most once, that the window is gone. Called on
+  // destruction, and by subclasses when the platform window is destroyed
+  // under them.
+  void NotifyWindowDestroyed();
 
   // Platform-specific teardown step that destroys platform surfaces and
   // triggers deletion of this object via the parent view.
@@ -97,8 +113,6 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
 
   base::WeakPtr<RenderWidgetHostViewBase> parent_view_;
   base::WeakPtr<RenderWidgetHostViewBase> subframe_view_;
-  bool dismiss_pending_ = false;
-  mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient> client_remote_;
 
  private:
   // Destroys the surface, ending the window's lifetime.
@@ -107,7 +121,7 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
   template <typename EventType>
   RenderWidgetHostViewBase* PrepareEventForTargetView(EventType& web_event);
 
-  base::OneShotTimer dismiss_fallback_timer_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace content

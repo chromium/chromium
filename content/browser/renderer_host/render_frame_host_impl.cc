@@ -159,6 +159,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/unbounded_surface_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/sandboxed_opaque_origin_creator.h"
@@ -5145,6 +5146,11 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   bool was_created = is_render_frame_created();
   render_frame_state_ = RenderFrameState::kDeleting;
   render_frame_scoped_weak_ptr_factory_.InvalidateWeakPtrs();
+  // Document-associated data outlives a crashed RenderFrame (see
+  // https://crbug.com/1099237), but its unbounded surface must not.
+  if (UnboundedSurfaceHostImpl::GetForCurrentDocument(this)) {
+    UnboundedSurfaceHostImpl::DeleteForCurrentDocument(this);
+  }
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
@@ -11471,20 +11477,12 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
   }
   RenderWidgetHostViewBase* parent_view = nullptr;
   if (auto* root_view = GetUnboundedSurfaceRootView(&parent_view)) {
-    // If an unbounded surface is already active, synchronously destroy it
-    // first to enforce that only one is active per window.
-    // TODO(crbug.com/567605448): The renderer may have canceled closing the
-    // previous element, but its window is destroyed here anyway, so the
-    // renderer and browser disagree about which element owns the surface.
-    if (root_view->HasActiveUnboundedSurface()) {
-      root_view->DestroyUnboundedSurface(
-          root_view->GetUnboundedSurfaceWindow()->GetWeakPtr());
+    if (UnboundedSurfaceHostImpl::GetForCurrentDocument(this)) {
+      UnboundedSurfaceHostImpl::DeleteForCurrentDocument(this);
     }
-    CHECK(!root_view->HasActiveUnboundedSurface());
-    root_view->SetUnboundedSurfaceFrame(GetWeakPtr());
-    root_view->CreateUnboundedSurface(
-        std::move(host), std::move(client), bounds,
-        parent_view ? parent_view->GetWeakPtr() : nullptr);
+    UnboundedSurfaceHostImpl::CreateForCurrentDocument(
+        this, *root_view, parent_view, std::move(host), std::move(client),
+        bounds);
   }
 }
 
@@ -19923,6 +19921,11 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
         last_committed_url_derived_site_info_);
     GetStoragePartition()->DecrementActiveDocumentCount(
         GetNetworkIsolationKey());
+    // The document is kept alive (e.g. BackForwardCache, unload), but it must
+    // not keep an unbounded surface on screen.
+    if (UnboundedSurfaceHostImpl::GetForCurrentDocument(this)) {
+      UnboundedSurfaceHostImpl::DeleteForCurrentDocument(this);
+    }
   } else if (old_state != LifecycleStateImpl::kActive &&
              new_state == LifecycleStateImpl::kActive) {
     GetSiteInstance()->IncrementActiveDocumentCount(

@@ -82,13 +82,10 @@ class UnboundedSurfaceWindowAura::DebugBorderDelegate
 // static
 std::unique_ptr<UnboundedSurfaceWindowAura> UnboundedSurfaceWindowAura::Create(
     RenderWidgetHostViewAura* parent_view,
-    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {
-  auto window = base::WrapUnique(new UnboundedSurfaceWindowAura(
-      parent_view, std::move(host), std::move(client),
-      std::move(subframe_view)));
+  auto window = base::WrapUnique(
+      new UnboundedSurfaceWindowAura(parent_view, std::move(subframe_view)));
   if (!window->InitWindow(bounds_in_screen)) {
     return nullptr;
   }
@@ -97,20 +94,9 @@ std::unique_ptr<UnboundedSurfaceWindowAura> UnboundedSurfaceWindowAura::Create(
 
 UnboundedSurfaceWindowAura::UnboundedSurfaceWindowAura(
     RenderWidgetHostViewAura* parent_view,
-    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
     : UnboundedSurfaceWindow(parent_view ? parent_view->GetWeakPtr() : nullptr,
                              std::move(subframe_view)) {
-  if (host.is_valid()) {
-    receiver_.Bind(std::move(host));
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&UnboundedSurfaceWindowAura::OnConnectionError,
-                       base::Unretained(this)));
-  }
-  if (client.is_valid()) {
-    client_remote_.Bind(std::move(client));
-  }
 }
 
 UnboundedSurfaceWindowAura::~UnboundedSurfaceWindowAura() {
@@ -238,6 +224,10 @@ void UnboundedSurfaceWindowAura::OnWindowDestroying(aura::Window* window) {
     // is destructed, it does not attempt to double-free or re-entrantly destroy
     // the aura::Window.
     window_.release();
+    NotifyWindowDestroyed();
+    // The native window is gone, so `this` is useless: remove it from the
+    // root view, so that it no longer reports an active surface.
+    ScheduleDeferredDestroy();
   } else if (window == root_window_) {
     root_window_->RemovePreTargetHandler(this);
     root_window_->RemoveObserver(this);
@@ -327,10 +317,6 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
   }
 
   window_->Show();
-
-  if (client_remote_.is_bound()) {
-    client_remote_->OnSurfaceAllocated(GetFrameSinkId(), GetLocalSurfaceId());
-  }
   return true;
 }
 
@@ -351,26 +337,10 @@ void UnboundedSurfaceWindowAura::SetBounds(const gfx::Rect& bounds_in_screen) {
   }
 }
 
-void UnboundedSurfaceWindowAura::UpdateBounds(const gfx::Rect& bounds) {
-  if (!parent_view_) {
-    return;
-  }
-  parent_view_->UpdateUnboundedSurfaceBoundsInSubframeContext(
-      bounds, subframe_view_.get());
-  if (client_remote_.is_bound()) {
-    client_remote_->OnSurfaceAllocated(GetFrameSinkId(), GetLocalSurfaceId());
-  }
-}
-
 void UnboundedSurfaceWindowAura::TeardownAndDestroy() {
   if (parent_view_) {
     parent_view_->DestroyUnboundedSurface(GetWeakPtr());
   }
-}
-
-void UnboundedSurfaceWindowAura::OnConnectionError() {
-  dismiss_pending_ = true;
-  ScheduleDeferredDestroy();
 }
 
 void UnboundedSurfaceWindowAura::GetCompositorFrameSink(

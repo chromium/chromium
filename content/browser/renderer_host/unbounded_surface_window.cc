@@ -5,9 +5,9 @@
 #include "content/browser/renderer_host/unbounded_surface_window.h"
 
 #include <type_traits>
+#include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -16,13 +16,6 @@
 
 namespace content {
 
-namespace {
-
-// Fallback timer duration to ensure the unbounded surface is destroyed if the
-// renderer fails to respond.
-constexpr base::TimeDelta kDismissFallbackTimeout = base::Seconds(10);
-
-}  // namespace
 
 // static
 std::optional<gfx::PointF>
@@ -67,7 +60,15 @@ UnboundedSurfaceWindow::UnboundedSurfaceWindow(
     : parent_view_(std::move(parent_view)),
       subframe_view_(std::move(subframe_view)) {}
 
-UnboundedSurfaceWindow::~UnboundedSurfaceWindow() = default;
+UnboundedSurfaceWindow::~UnboundedSurfaceWindow() {
+  NotifyWindowDestroyed();
+}
+
+void UnboundedSurfaceWindow::NotifyWindowDestroyed() {
+  if (Delegate* delegate = std::exchange(delegate_, nullptr)) {
+    delegate->OnWindowDestroyed();
+  }
+}
 
 RenderWidgetHostViewBase* UnboundedSurfaceWindow::GetTargetView() const {
   return subframe_view_ ? subframe_view_.get() : parent_view_.get();
@@ -105,39 +106,14 @@ void UnboundedSurfaceWindow::RouteMouseWheelEvent(
 }
 
 void UnboundedSurfaceWindow::Dismiss() {
-  if (!IsValid() || dismiss_pending_) {
+  if (!IsValid()) {
     return;
   }
-  dismiss_pending_ = true;
-
-  if (client_remote_.is_bound()) {
-    client_remote_->OnDismissed();
-  }
-
-  dismiss_fallback_timer_.Start(
-      FROM_HERE, kDismissFallbackTimeout,
-      base::BindOnce(&UnboundedSurfaceWindow::ScheduleDeferredDestroy,
-                     base::Unretained(this)));
-}
-
-void UnboundedSurfaceWindow::DidPresentFrameAfterDismissal() {
-  if (!dismiss_pending_) {
+  if (delegate_) {
+    delegate_->OnDismissRequested();
     return;
   }
-  dismiss_fallback_timer_.Stop();
   ScheduleDeferredDestroy();
-}
-
-void UnboundedSurfaceWindow::DidCancelDismissal() {
-  if (!dismiss_pending_) {
-    return;
-  }
-  dismiss_pending_ = false;
-  // TODO(crbug.com/567604594): Browser-initiated dismissal (outside click,
-  // Esc, focus loss) goes through a cancelable beforetoggle event, and
-  // stopping the fallback timer here lets the page keep the window open
-  // indefinitely.
-  dismiss_fallback_timer_.Stop();
 }
 
 void UnboundedSurfaceWindow::ScheduleDeferredDestroy() {
@@ -150,10 +126,6 @@ void UnboundedSurfaceWindow::ScheduleDeferredDestroy() {
 }
 
 void UnboundedSurfaceWindow::DestroyInternal() {
-  if (!dismiss_pending_) {
-    return;
-  }
-  client_remote_.reset();
   TeardownAndDestroy();
 }
 

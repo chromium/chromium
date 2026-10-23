@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/unbounded_surface_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_gesture_target.h"
@@ -114,6 +115,20 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
       }
     }
     ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  // Returns the browser-side host of the active surface, whichever frame of
+  // the primary page requested it.
+  UnboundedSurfaceHostImpl* GetActiveHost() {
+    UnboundedSurfaceHostImpl* result = nullptr;
+    primary_main_frame_host()->ForEachRenderFrameHost(
+        [&](RenderFrameHost* rfh) {
+          if (auto* host =
+                  UnboundedSurfaceHostImpl::GetForCurrentDocument(rfh)) {
+            result = host;
+          }
+        });
+    return result;
   }
 
   UnboundedSurfaceWindow* GetActiveWindow() {
@@ -1973,7 +1988,8 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   expected_initial_bounds.Offset(view->GetViewBounds().OffsetFromOrigin());
   EXPECT_EQ(expected_initial_bounds, window->GetBounds());
 
-  window->UpdateBounds(gfx::Rect(-1000, -1000, 10000, 10000));
+  ASSERT_TRUE(GetActiveHost());
+  GetActiveHost()->UpdateBounds(gfx::Rect(-1000, -1000, 10000, 10000));
   EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
 }
 
@@ -2033,7 +2049,8 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
 
   // Bypass the renderer entirely.
-  window->UpdateBounds(gfx::Rect(-1000, -1000, 10000, 10000));
+  ASSERT_TRUE(GetActiveHost());
+  GetActiveHost()->UpdateBounds(gfx::Rect(-1000, -1000, 10000, 10000));
   EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
 }
 
@@ -2114,7 +2131,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
       primary_main_frame_host()->GetRenderWidgetHost()->GetView());
   ASSERT_TRUE(view);
 
-  window->UpdateBounds(gfx::Rect(-100, -100, 3000, 3000));
+  GetActiveHost()->UpdateBounds(gfx::Rect(-100, -100, 3000, 3000));
   EXPECT_FALSE(view->GetViewBounds().Contains(window->GetBounds()));
 }
 
@@ -2211,7 +2228,7 @@ IN_PROC_BROWSER_TEST_P(
       primary_main_frame_host()->GetRenderWidgetHost()->GetView());
   ASSERT_TRUE(view);
 
-  window->UpdateBounds(gfx::Rect(-100, -100, 3000, 3000));
+  GetActiveHost()->UpdateBounds(gfx::Rect(-100, -100, 3000, 3000));
   EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
 }
 
@@ -2273,9 +2290,172 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(expected_bounds, window->GetBounds());
 
   // Bypass the renderer entirely.
-  window->UpdateBounds(gfx::Rect(-1000, -1000, 10000, 10000));
+  ASSERT_TRUE(GetActiveHost());
+  GetActiveHost()->UpdateBounds(gfx::Rect(-1000, -1000, 10000, 10000));
   EXPECT_EQ(expected_bounds, window->GetBounds());
 }
+
+namespace {
+
+// Appends to `parent` an <iframe> allowed to use unbounded elements, navigated
+// to `url`. Returns it once loaded.
+RenderFrameHost* AddUnboundedIframe(RenderFrameHost* parent, const GURL& url) {
+  constexpr char kScript[] = R"(
+    const iframe = document.createElement('iframe');
+    iframe.id = 'subframe';
+    iframe.allow = 'unbounded-element';
+    iframe.src = $1;
+    iframe.style.cssText = 'width:200px; height:200px; position:absolute; ' +
+        'top:50px; left:50px; border:none;';
+    document.body.appendChild(iframe);
+  )";
+  EXPECT_TRUE(ExecJs(parent, JsReplace(kScript, url)));
+  EXPECT_TRUE(WaitForLoadStop(WebContents::FromRenderFrameHost(parent)));
+  return ChildFrameAt(parent, 0);
+}
+
+// Shows an unbounded element in `rfh`.
+void ShowUnboundedElement(RenderFrameHost* rfh) {
+  EXPECT_TRUE(ExecJs(rfh, R"(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    document.getElementById('target').showUnboundedElement();
+  )"));
+}
+
+}  // namespace
+
+// The surface must not outlive the document that requested it: removing the
+// requesting <iframe> destroys the surface synchronously on the browser side,
+// without waiting for the renderer to dismiss it.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       RemovingRequestingFrameDestroysSurface) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHost* iframe = AddUnboundedIframe(primary_main_frame_host(), url);
+  ASSERT_TRUE(iframe);
+  ShowUnboundedElement(iframe);
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  auto tracker = CreateDestructionTracker(*window);
+
+  RenderFrameDeletedObserver deleted_observer(iframe);
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
+                     "document.getElementById('subframe').remove();"));
+  deleted_observer.WaitUntilDeleted();
+  EXPECT_FALSE(primary_main_frame_host()->GetUnboundedSurfaceWindow());
+  WaitForDestruction(std::move(tracker));
+}
+
+// Same as above, but the requesting <iframe> navigates to a new document.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       NavigatingRequestingFrameDestroysSurface) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHost* iframe = AddUnboundedIframe(primary_main_frame_host(), url);
+  ASSERT_TRUE(iframe);
+  ShowUnboundedElement(iframe);
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  auto tracker = CreateDestructionTracker(*window);
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      iframe, embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_FALSE(primary_main_frame_host()->GetUnboundedSurfaceWindow());
+  WaitForDestruction(std::move(tracker));
+}
+
+// When another document opens a surface in the same tab, the previous surface
+// is replaced, and the host of the previous document goes away with it.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       ReplacedSurfaceDestroysPreviousHost) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  // Use a cross-site iframe, so that the two surfaces are requested by
+  // different renderer processes, and only the browser can clean up the first
+  // one.
+  RenderFrameHost* iframe = AddUnboundedIframe(
+      primary_main_frame_host(),
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(iframe);
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), R"(
+    const target = document.createElement('div');
+    target.setAttribute('unbounded', '');
+    document.body.appendChild(target);
+    target.showUnboundedElement();
+  )"));
+  WaitForFrameReady();
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  auto tracker = CreateDestructionTracker(*window);
+  ASSERT_TRUE(UnboundedSurfaceHostImpl::GetForCurrentDocument(
+      primary_main_frame_host()));
+
+  ShowUnboundedElement(iframe);
+  WaitForDestruction(std::move(tracker));
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !UnboundedSurfaceHostImpl::GetForCurrentDocument(
+        primary_main_frame_host());
+  }));
+  EXPECT_TRUE(UnboundedSurfaceHostImpl::GetForCurrentDocument(iframe));
+  EXPECT_TRUE(primary_main_frame_host()->GetUnboundedSurfaceWindow());
+}
+
+// A document that stops being active (here, entering the BackForwardCache) is
+// kept alive, but its surface must be destroyed.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       InactiveRequestingDocumentDestroysSurface) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  ShowUnboundedElement(primary_main_frame_host());
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  auto tracker = CreateDestructionTracker(*window);
+  RenderFrameHostWrapper old_rfh(primary_main_frame_host());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  if (!old_rfh.IsDestroyed()) {
+    EXPECT_FALSE(
+        UnboundedSurfaceHostImpl::GetForCurrentDocument(old_rfh.get()));
+    EXPECT_FALSE(static_cast<RenderFrameHostImpl*>(old_rfh.get())
+                     ->GetUnboundedSurfaceWindow());
+  }
+  WaitForDestruction(std::move(tracker));
+}
+
+#if defined(USE_AURA)
+// The native window can be destroyed under the surface (e.g. by the window
+// manager). The surface must then be fully released: the root view no longer
+// holds it, and the host of the requesting document goes away.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       NativeWindowDestroyedExternally) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  ShowUnboundedElement(primary_main_frame_host());
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  ASSERT_TRUE(window->GetNativeWindow());
+  ASSERT_TRUE(UnboundedSurfaceHostImpl::GetForCurrentDocument(
+      primary_main_frame_host()));
+
+  delete window->GetNativeWindow();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return !primary_main_frame_host()->GetUnboundedSurfaceWindow(); }));
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !UnboundedSurfaceHostImpl::GetForCurrentDocument(
+        primary_main_frame_host());
+  }));
+}
+#endif  // defined(USE_AURA)
 
 INSTANTIATE_TEST_SUITE_P(All, UnboundedElementBrowserTest, testing::Bool());
 

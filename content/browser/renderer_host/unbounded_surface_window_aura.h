@@ -40,9 +40,6 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
  public:
   static std::unique_ptr<UnboundedSurfaceWindowAura> Create(
       RenderWidgetHostViewAura* parent_view,
-      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client,
       const gfx::Rect& bounds_in_screen,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
 
@@ -68,9 +65,6 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;
   void EnsureSurfaceSynchronizedForWebTest() override;
-
-  // blink::mojom::UnboundedSurfaceHost overrides:
-  void UpdateBounds(const gfx::Rect& bounds) override;
 
   // aura::WindowDelegate overrides:
   gfx::Size GetMinimumSize() const override;
@@ -113,17 +107,12 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
 
   UnboundedSurfaceWindowAura(
       RenderWidgetHostViewAura* parent_view,
-      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
   bool InitWindow(const gfx::Rect& bounds_in_screen);
-  void OnConnectionError();
 
   viz::FrameSinkId frame_sink_id_;
   viz::FrameSinkId parent_frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
-  mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost> receiver_{this};
   std::unique_ptr<aura::Window> window_;
   raw_ptr<aura::Window> root_window_ = nullptr;
   ui::MotionEventAura pointer_state_;

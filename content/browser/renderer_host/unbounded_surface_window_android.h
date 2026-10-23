@@ -36,9 +36,6 @@ class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
  public:
   static std::unique_ptr<UnboundedSurfaceWindowAndroid> Create(
       RenderWidgetHostViewAndroid* parent_view,
-      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client,
       const gfx::Rect& bounds_in_dips,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
 
@@ -64,9 +61,6 @@ class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;
   void EnsureSurfaceSynchronizedForWebTest() override;
-  // blink::mojom::UnboundedSurfaceHost overrides:
-  void UpdateBounds(const gfx::Rect& bounds) override;
-
   // viz::HostFrameSinkClient overrides:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
   }
@@ -88,19 +82,14 @@ class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
  private:
   UnboundedSurfaceWindowAndroid(
       RenderWidgetHostViewAndroid* parent_view,
-      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
 
   bool InitWindow(const gfx::Rect& bounds_in_dips);
-  void OnConnectionError();
 
   viz::FrameSinkId root_frame_sink_id_;
   viz::FrameSinkId client_frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;
   viz::ParentLocalSurfaceIdAllocator client_local_surface_id_allocator_;
-  mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost> receiver_{this};
 
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
   std::unique_ptr<AndroidSurfaceControlCompositor> compositor_;

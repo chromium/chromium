@@ -1047,25 +1047,8 @@ void RenderWidgetHostViewBase::DidNavigate() {
 }
 
 void RenderWidgetHostViewBase::CreateUnboundedSurface(
-    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
-    const gfx::Rect& bounds_in_dips,
+    const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {}
-
-void RenderWidgetHostViewBase::UpdateUnboundedSurfaceBoundsInSubframeContext(
-    const gfx::Rect& bounds_in_dips,
-    RenderWidgetHostViewBase* subframe_view) {
-  if (!unbounded_surface_window_) {
-    return;
-  }
-  UpdateUnboundedSurfaceBounds(
-      ConvertSubframeBoundsToScreen(bounds_in_dips, subframe_view));
-}
-
-void RenderWidgetHostViewBase::SetUnboundedSurfaceFrame(
-    base::WeakPtr<RenderFrameHostImpl> rfh) {
-  unbounded_surface_rfh_ = std::move(rfh);
-}
 
 gfx::Rect
 RenderWidgetHostViewBase::ConvertSubframeBoundsToScreenWithoutConstraints(
@@ -1085,47 +1068,6 @@ RenderWidgetHostViewBase::ConvertSubframeBoundsToScreenWithoutConstraints(
   return bounds_in_screen;
 }
 
-// TODO(crbug.com/567606993): Constraints are only applied when the renderer
-// sends new bounds. That doesn't happen when the window moves or when the
-// parent moves an OOPIF, so the surface can be left in a stale position.
-gfx::Rect RenderWidgetHostViewBase::ConvertSubframeBoundsToScreen(
-    const gfx::Rect& bounds_in_dips,
-    RenderWidgetHostViewBase* subframe_view) {
-  gfx::Rect unconstrained_bounds =
-      ConvertSubframeBoundsToScreenWithoutConstraints(bounds_in_dips,
-                                                      subframe_view);
-  gfx::Rect constrained_bounds = unconstrained_bounds;
-  // TODO(crbug.com/567605443): This fails open. If the requesting frame is
-  // gone, the clamp is skipped entirely, and nothing on the browser side
-  // closes the surface when the frame goes away.
-  if (unbounded_surface_rfh_) {
-    if (std::optional<gfx::Rect> constraining_bounds =
-            unbounded_surface_rfh_
-                ->GetUnboundedElementConstrainingBoundsInScreen(this)) {
-      constrained_bounds.Intersect(*constraining_bounds);
-      if (constrained_bounds.IsEmpty()) {
-        int max_x = std::max(constraining_bounds->x(),
-                             constraining_bounds->right() - 1);
-        int max_y = std::max(constraining_bounds->y(),
-                             constraining_bounds->bottom() - 1);
-        int clamped_x = std::clamp(unconstrained_bounds.x(),
-                                   constraining_bounds->x(), max_x);
-        int clamped_y = std::clamp(unconstrained_bounds.y(),
-                                   constraining_bounds->y(), max_y);
-        constrained_bounds = gfx::Rect(clamped_x, clamped_y, 1, 1);
-      }
-    }
-  }
-  return constrained_bounds;
-}
-
-void RenderWidgetHostViewBase::UpdateUnboundedSurfaceBounds(
-    const gfx::Rect& bounds_in_screen) {
-  if (unbounded_surface_window_) {
-    unbounded_surface_window_->SetBounds(bounds_in_screen);
-  }
-}
-
 void RenderWidgetHostViewBase::DismissUnboundedSurface() {
   if (unbounded_surface_window_) {
     unbounded_surface_window_->Dismiss();
@@ -1140,7 +1082,6 @@ void RenderWidgetHostViewBase::DestroyUnboundedSurface(
   // so we do nothing.
   if (window && unbounded_surface_window_.get() == window.get()) {
     unbounded_surface_window_.reset();
-    unbounded_surface_rfh_.reset();
   }
 }
 

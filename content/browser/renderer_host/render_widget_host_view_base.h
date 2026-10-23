@@ -90,7 +90,6 @@ namespace content {
 
 class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
-class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class UnboundedSurfaceWindow;
 class ScopedViewTransitionResources;
@@ -453,23 +452,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   bool destroy_pending() const { return destroy_pending_; }
 
   // Unbounded element API methods.
+  // Creates the native window of an unbounded element. Called by
+  // UnboundedSurfaceHostImpl, which owns the policy and Mojo endpoints.
   virtual void CreateUnboundedSurface(
-      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
-      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
-          client,
-      const gfx::Rect& bounds_in_dips,
+      const gfx::Rect& bounds_in_screen,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
-  virtual void UpdateUnboundedSurfaceBoundsInSubframeContext(
-      const gfx::Rect& bounds_in_dips,
-      RenderWidgetHostViewBase* subframe_view);
-  void SetUnboundedSurfaceFrame(base::WeakPtr<RenderFrameHostImpl> rfh);
   gfx::Rect ConvertSubframeBoundsToScreenWithoutConstraints(
       const gfx::Rect& bounds_in_dips,
       RenderWidgetHostViewBase* subframe_view);
-  gfx::Rect ConvertSubframeBoundsToScreen(
-      const gfx::Rect& bounds_in_dips,
-      RenderWidgetHostViewBase* subframe_view);
-  virtual void UpdateUnboundedSurfaceBounds(const gfx::Rect& bounds_in_screen);
   virtual void DismissUnboundedSurface();
   virtual void DestroyUnboundedSurface(
       base::WeakPtr<UnboundedSurfaceWindow> window);
@@ -729,7 +719,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() = 0;
 
   std::unique_ptr<UnboundedSurfaceWindow> unbounded_surface_window_;
-  base::WeakPtr<RenderFrameHostImpl> unbounded_surface_rfh_;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;
