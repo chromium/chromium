@@ -44,6 +44,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/test/mock_base_window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/switches.h"
@@ -68,6 +69,9 @@ class FakeBrowserWindow {
       : profile_(profile), tab_strip_model_(&delegate_, profile) {
     delegate_.SetBrowserWindowInterface(&browser_window_);
 
+    ON_CALL(browser_window_, GetWindow()).WillByDefault(Return(&base_window_));
+    ON_CALL(std::as_const(browser_window_), GetWindow())
+        .WillByDefault(Return(&base_window_));
     ON_CALL(browser_window_, GetTabStripModel())
         .WillByDefault(Return(&tab_strip_model_));
     ON_CALL(std::as_const(browser_window_), GetTabStripModel())
@@ -161,6 +165,7 @@ class FakeBrowserWindow {
   raw_ptr<TestingProfile> profile_;
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_;
+  NiceMock<ui::MockBaseWindow> base_window_;
   NiceMock<MockBrowserWindowInterface> browser_window_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)>
       active_tab_changed_callbacks_;
