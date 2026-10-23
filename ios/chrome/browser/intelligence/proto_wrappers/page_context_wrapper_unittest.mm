@@ -5932,6 +5932,7 @@ TEST_P(PageContextWrapperTest,
               "<div tabindex='-1' id='tabindex_minus_1'>Tab Index -1</div>"
               "<div onmousedown='void(0)' id='onmousedown'>Mouse Down</div>"
               "<div onmouseover='void(0)' id='onmouseover'>Mouse Over</div>"
+              "<div onmouseenter='void(0)' id='onmouseenter'>Mouse Enter</div>"
               "<div onkeydown='void(0)' id='onkeydown'>Key Down</div>"
               "<div aria-haspopup='true' id='aria_haspopup'>Has Popup</div>"
               "<div aria-expanded='true' id='aria_expanded_true'>Expanded "
@@ -5960,7 +5961,7 @@ TEST_P(PageContextWrapperTest,
   ASSERT_TRUE(page_context);
   const auto& root = page_context->annotated_page_content().root_node();
 
-  ASSERT_EQ(15, root.children_nodes_size());
+  ASSERT_EQ(16, root.children_nodes_size());
 
   // 1. Button (CLICKABILITY_REASON_CLICKABLE_CONTROL).
   const auto& btn = root.children_nodes(0);
@@ -6058,24 +6059,37 @@ TEST_P(PageContextWrapperTest,
           testing::Not(testing::Contains(
               optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER))));
 
-  // 12. Key Down (CLICKABILITY_REASON_KEY_EVENTS).
-  const auto& key_down = root.children_nodes(11);
+  // 12. Mouse Enter (CLICKABILITY_REASON_MOUSE_ENTER).
+  const auto& mouse_enter = root.children_nodes(11);
+  EXPECT_TRUE(mouse_enter.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      mouse_enter.content_attributes()
+          .interaction_info()
+          .clickability_reasons(),
+      testing::AllOf(
+          testing::Contains(
+              optimization_guide::proto::CLICKABILITY_REASON_MOUSE_ENTER),
+          testing::Not(testing::Contains(
+              optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER))));
+
+  // 13. Key Down (CLICKABILITY_REASON_KEY_EVENTS).
+  const auto& key_down = root.children_nodes(12);
   EXPECT_TRUE(key_down.content_attributes().has_interaction_info());
   EXPECT_THAT(
       key_down.content_attributes().interaction_info().clickability_reasons(),
       testing::Contains(
           optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS));
 
-  // 13. Aria Has Popup (CLICKABILITY_REASON_ARIA_HAS_POPUP).
-  const auto& has_popup = root.children_nodes(12);
+  // 14. Aria Has Popup (CLICKABILITY_REASON_ARIA_HAS_POPUP).
+  const auto& has_popup = root.children_nodes(13);
   EXPECT_TRUE(has_popup.content_attributes().has_interaction_info());
   EXPECT_THAT(
       has_popup.content_attributes().interaction_info().clickability_reasons(),
       testing::Contains(
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP));
 
-  // 14. Aria Expanded True (CLICKABILITY_REASON_ARIA_EXPANDED_TRUE).
-  const auto& expanded_true = root.children_nodes(13);
+  // 15. Aria Expanded True (CLICKABILITY_REASON_ARIA_EXPANDED_TRUE).
+  const auto& expanded_true = root.children_nodes(14);
   EXPECT_TRUE(expanded_true.content_attributes().has_interaction_info());
   EXPECT_THAT(
       expanded_true.content_attributes()
@@ -6084,8 +6098,8 @@ TEST_P(PageContextWrapperTest,
       testing::Contains(
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_TRUE));
 
-  // 15. Aria Expanded False (CLICKABILITY_REASON_ARIA_EXPANDED_FALSE).
-  const auto& expanded_false = root.children_nodes(14);
+  // 16. Aria Expanded False (CLICKABILITY_REASON_ARIA_EXPANDED_FALSE).
+  const auto& expanded_false = root.children_nodes(15);
   EXPECT_TRUE(expanded_false.content_attributes().has_interaction_info());
   EXPECT_THAT(
       expanded_false.content_attributes()
