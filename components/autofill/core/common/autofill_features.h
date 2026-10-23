@@ -186,11 +186,7 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kAutofillAmbientAutofillUnmaskedSpiiCacheTTL);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAmbientAutofillDriversLicense);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAmbientAutofillPassport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAmbientAutofillSourceAttribution);
 COMPONENT_EXPORT(AUTOFILL)

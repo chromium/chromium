@@ -459,17 +459,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "ambient_autofill_unmasked_spii_cache_ttl",
                    base::Minutes(1));
 
-// Controls whether Driver's license entities are supported in Ambient Autofill.
-BASE_FEATURE(kAutofillAmbientAutofillDriversLicense,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether Personal Context entities without attached sources are
 // filtered out during Ambient Autofill prefetch validation.
 BASE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether Passport entities are supported in Ambient Autofill.
-BASE_FEATURE(kAutofillAmbientAutofillPassport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Personal Context Autofill AI suggestions display detailed

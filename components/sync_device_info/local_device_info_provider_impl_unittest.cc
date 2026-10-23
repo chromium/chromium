@@ -365,7 +365,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, PersonalContextInfo) {
 
   const std::vector<uint8_t> kSerializedKeyset = {1, 2, 3, 4, 5};
   DeviceInfo::PersonalContextInfo personal_context_info{
-      .serialized_tink_keyset = kSerializedKeyset};
+      .serialized_tink_keyset = kSerializedKeyset, .eligible_for_spii = true};
   ON_CALL(device_info_sync_client_, GetLocalPersonalContextInfo())
       .WillByDefault(Return(personal_context_info));
 
@@ -374,6 +374,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, PersonalContextInfo) {
       provider_->GetLocalDeviceInfo()->personal_context_info();
   ASSERT_TRUE(local_info);
   EXPECT_EQ(kSerializedKeyset, local_info->serialized_tink_keyset);
+  EXPECT_TRUE(local_info->eligible_for_spii);
 }
 
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateFCMRegistrationToken) {

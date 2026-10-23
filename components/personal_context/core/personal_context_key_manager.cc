@@ -63,6 +63,13 @@ crypto::keypair::PrivateKey LoadOrGeneratePrivateKey(
       base::as_byte_span(*decoded).first<64>());
 }
 
+bool IsAmbientAutofillSpiiEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillAmbientAutofillPassport) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillAmbientAutofillDriversLicense);
+}
+
 }  // namespace
 
 PersonalContextKeyManager::PersonalContextKeyManager(
@@ -129,7 +136,8 @@ PersonalContextKeyManager::GetLocalPersonalContextInfo(
 
   std::string serialized = keyset.SerializeAsString();
   return syncer::DeviceInfo::PersonalContextInfo{
-      .serialized_tink_keyset = base::ToVector(base::as_byte_span(serialized))};
+      .serialized_tink_keyset = base::ToVector(base::as_byte_span(serialized)),
+      .eligible_for_spii = IsAmbientAutofillSpiiEnabled()};
 }
 
 // static

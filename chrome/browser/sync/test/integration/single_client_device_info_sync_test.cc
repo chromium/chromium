@@ -479,6 +479,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   sync_pb::PersonalContextSpecificFields expected_personal_context_fields;
   expected_personal_context_fields.set_serialized_tink_keyset(
       expected_public_key.data(), expected_public_key.size());
+  expected_personal_context_fields.set_eligible_for_spii(false);
 
   // The local device with the personal context public key should be committed
   // to the server.
@@ -526,6 +527,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   sync_pb::PersonalContextSpecificFields expected_personal_context_fields;
   expected_personal_context_fields.set_serialized_tink_keyset(
       expected_public_key.data(), expected_public_key.size());
+  expected_personal_context_fields.set_eligible_for_spii(false);
 
   // Verify that RefreshLocalDeviceInfo() was called and immediately triggered
   // a commit to the server with the new public key.
@@ -543,6 +545,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   sync_pb::DeviceInfoSpecifics specifics = CreateSpecifics(/*suffix=*/1);
   specifics.mutable_personal_context_fields()->set_serialized_tink_keyset(
       kRemoteKeyset.data(), kRemoteKeyset.size());
+  specifics.mutable_personal_context_fields()->set_eligible_for_spii(true);
   InjectDeviceInfoSpecificsToServer(specifics);
 
   ASSERT_TRUE(SetupSync());
@@ -559,6 +562,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   ASSERT_TRUE(remote_device->personal_context_info().has_value());
   EXPECT_EQ(remote_device->personal_context_info()->serialized_tink_keyset,
             kRemoteKeyset);
+  EXPECT_TRUE(remote_device->personal_context_info()->eligible_for_spii);
 }
 
 

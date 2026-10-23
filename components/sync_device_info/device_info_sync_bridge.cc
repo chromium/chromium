@@ -215,7 +215,8 @@ SpecificsToPersonalContextInfo(const DeviceInfoSpecifics& specifics) {
       specifics.personal_context_fields();
   return DeviceInfo::PersonalContextInfo{
       .serialized_tink_keyset =
-          base::ToVector(base::as_byte_span(fields.serialized_tink_keyset()))};
+          base::ToVector(base::as_byte_span(fields.serialized_tink_keyset())),
+      .eligible_for_spii = fields.eligible_for_spii()};
 }
 
 // Converts DeviceInfoSpecifics into DeviceInfo.
@@ -410,9 +411,13 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.personal_context_info();
   if (personal_context_info &&
       !personal_context_info->serialized_tink_keyset.empty()) {
-    specifics->mutable_personal_context_fields()->set_serialized_tink_keyset(
+    sync_pb::PersonalContextSpecificFields* personal_context_fields =
+        specifics->mutable_personal_context_fields();
+    personal_context_fields->set_serialized_tink_keyset(
         personal_context_info->serialized_tink_keyset.data(),
         personal_context_info->serialized_tink_keyset.size());
+    personal_context_fields->set_eligible_for_spii(
+        personal_context_info->eligible_for_spii);
   } else {
     specifics->clear_personal_context_fields();
   }

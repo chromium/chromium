@@ -276,5 +276,8 @@ message PersonalContextSpecificFields {
 
   // Serialized proto bytes of tink.Keyset
   optional bytes serialized_tink_keyset = 2;
+
+  // Whether the device is eligible for SPII (e.g. passport, driver's license).
+  optional bool eligible_for_spii = 3;
 }
 

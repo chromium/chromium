@@ -75,6 +75,57 @@ TEST_F(PersonalContextKeyManagerTest, GeneratesAndPersistsKey) {
 }
 
 TEST_F(PersonalContextKeyManagerTest,
+       GetLocalPersonalContextInfo_EligibleForSpii) {
+  // Default: neither passport nor driver's license flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kAutofillAmbientAutofillPassport,
+            features::kAutofillAmbientAutofillDriversLicense});
+    syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo status_or_info =
+        PersonalContextKeyManager::GetLocalPersonalContextInfo(
+            &pref_service_, &mock_eligibility_service_);
+    const auto* info =
+        std::get_if<syncer::DeviceInfo::PersonalContextInfo>(&status_or_info);
+    ASSERT_NE(info, nullptr);
+    EXPECT_FALSE(info->eligible_for_spii);
+  }
+
+  // Passport flag enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAmbientAutofillPassport},
+        /*disabled_features=*/{
+            features::kAutofillAmbientAutofillDriversLicense});
+    syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo status_or_info =
+        PersonalContextKeyManager::GetLocalPersonalContextInfo(
+            &pref_service_, &mock_eligibility_service_);
+    const auto* info =
+        std::get_if<syncer::DeviceInfo::PersonalContextInfo>(&status_or_info);
+    ASSERT_NE(info, nullptr);
+    EXPECT_TRUE(info->eligible_for_spii);
+  }
+
+  // Driver's license flag enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAmbientAutofillDriversLicense},
+        /*disabled_features=*/{features::kAutofillAmbientAutofillPassport});
+    syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo status_or_info =
+        PersonalContextKeyManager::GetLocalPersonalContextInfo(
+            &pref_service_, &mock_eligibility_service_);
+    const auto* info =
+        std::get_if<syncer::DeviceInfo::PersonalContextInfo>(&status_or_info);
+    ASSERT_NE(info, nullptr);
+    EXPECT_TRUE(info->eligible_for_spii);
+  }
+}
+
+TEST_F(PersonalContextKeyManagerTest,
        GetOrCreateLocalPublicKeyBytes_NullEligibilityServiceReturnsEmpty) {
   EXPECT_TRUE(std::holds_alternative<
               syncer::DeviceInfo::PersonalContextInfo::NotEligible>(

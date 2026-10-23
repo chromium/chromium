@@ -33,6 +33,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
@@ -910,11 +911,11 @@ DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {
     }
   }
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillPassport)) {
+          personal_context::features::kAutofillAmbientAutofillPassport)) {
     supported_types.insert(EntityType(EntityTypeName::kPassport));
   }
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillDriversLicense)) {
+          personal_context::features::kAutofillAmbientAutofillDriversLicense)) {
     supported_types.insert(EntityType(EntityTypeName::kDriversLicense));
   }
   return supported_types;

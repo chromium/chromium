@@ -27,6 +27,12 @@ BASE_DECLARE_FEATURE(kPersonalContextHandleEncryptedPayloads);
 // to be enabled.
 BASE_DECLARE_FEATURE(kPersonalContextRequireSettingsToggleForEncryption);
 
+// Controls whether Driver's license entities are supported in Ambient Autofill.
+BASE_DECLARE_FEATURE(kAutofillAmbientAutofillDriversLicense);
+
+// Controls whether Passport entities are supported in Ambient Autofill.
+BASE_DECLARE_FEATURE(kAutofillAmbientAutofillPassport);
+
 }  // namespace personal_context::features
 
 #endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FEATURES_H_

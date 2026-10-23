@@ -159,6 +159,10 @@ class DeviceInfo {
     // Serialized proto bytes of tink.Keyset.
     std::vector<uint8_t> serialized_tink_keyset;
 
+    // Whether the device supports any SPII entity types (e.g. passport or
+    // driver's license).
+    bool eligible_for_spii = false;
+
     friend bool operator==(const PersonalContextInfo&,
                            const PersonalContextInfo&) = default;
   };

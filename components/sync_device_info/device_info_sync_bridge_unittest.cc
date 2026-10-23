@@ -199,7 +199,11 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
                                     ->serialized_tink_keyset.begin(),
                                 arg.personal_context_info()
                                     ->serialized_tink_keyset.end())
-                  : "");
+                  : "") &&
+         expected_specifics.personal_context_fields().eligible_for_spii() ==
+             (arg.personal_context_info().has_value()
+                  ? arg.personal_context_info()->eligible_for_spii
+                  : false);
 }
 
 Matcher<std::unique_ptr<EntityData>> HasSpecifics(
@@ -1953,6 +1957,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   const std::vector<uint8_t> kSerializedKeyset = {1, 2, 3, 4, 5};
   specifics.mutable_personal_context_fields()->set_serialized_tink_keyset(
       kSerializedKeyset.data(), kSerializedKeyset.size());
+  specifics.mutable_personal_context_fields()->set_eligible_for_spii(true);
 
   std::optional<ModelError> error_on_add =
       bridge()->ApplyIncrementalSyncChanges(
@@ -1966,6 +1971,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   ASSERT_TRUE(info->personal_context_info().has_value());
   EXPECT_EQ(info->personal_context_info()->serialized_tink_keyset,
             kSerializedKeyset);
+  EXPECT_TRUE(info->personal_context_info()->eligible_for_spii);
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CommitLocalPersonalContextInfo) {
@@ -1973,22 +1979,22 @@ TEST_F(DeviceInfoSyncBridgeTest, CommitLocalPersonalContextInfo) {
   const std::vector<uint8_t> kSerializedKeyset = {1, 2, 3, 4, 5};
 
   InitializeAndPump();
-  local_device()->UpdatePersonalContextInfo(
-      DeviceInfo::PersonalContextInfo{
-          .serialized_tink_keyset = kSerializedKeyset});
+  local_device()->UpdatePersonalContextInfo(DeviceInfo::PersonalContextInfo{
+      .serialized_tink_keyset = kSerializedKeyset, .eligible_for_spii = true});
 
   EXPECT_CALL(
       *processor(),
       Put(kLocalGuid,
           HasSpecifics(Property(
               &sync_pb::EntitySpecifics::device_info,
-              Property(
-                  &DeviceInfoSpecifics::personal_context_fields,
-                  Property(
-                      &sync_pb::PersonalContextSpecificFields::
-                          serialized_tink_keyset,
-                      std::string(kSerializedKeyset.begin(),
-                                  kSerializedKeyset.end()))))),
+              Property(&DeviceInfoSpecifics::personal_context_fields,
+                       AllOf(Property(&sync_pb::PersonalContextSpecificFields::
+                                          serialized_tink_keyset,
+                                      std::string(kSerializedKeyset.begin(),
+                                                  kSerializedKeyset.end())),
+                             Property(&sync_pb::PersonalContextSpecificFields::
+                                          eligible_for_spii,
+                                      true))))),
           _));
 
   EnableSyncAndMergeInitialData(SyncMode::kFull);
@@ -2002,6 +2008,10 @@ TEST_F(DeviceInfoSyncBridgeTest, CommitLocalPersonalContextInfo) {
                 ->personal_context_info()
                 ->serialized_tink_keyset,
             kSerializedKeyset);
+  EXPECT_TRUE(local_device()
+                  ->GetLocalDeviceInfo()
+                  ->personal_context_info()
+                  ->eligible_for_spii);
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, GetDataForCommitWithPersonalContextFields) {
