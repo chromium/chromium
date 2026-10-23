@@ -8,10 +8,15 @@
 #import <cstdint>
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
+
+namespace enterprise_net {
+class EnterpriseProxyErrorService;
+}  // namespace enterprise_net
 
 namespace web {
 class NavigationContext;
@@ -21,7 +26,9 @@ class WebState;
 // Per-WebState helper that tracks the pending cross-document main frame
 // navigation for Enterprise Proxy authentication challenges. It records the
 // navigation ID and URL when the navigation starts, follows server redirects,
-// and drops both once that navigation finishes.
+// and drops both once that navigation finishes. When any navigation finishes,
+// it also drops the enterprise proxy error recorded for it, if left unused, as
+// it does for the pending navigation when the helper is destroyed.
 class EnterpriseProxyTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<EnterpriseProxyTabHelper> {
@@ -53,11 +60,17 @@ class EnterpriseProxyTabHelper
  private:
   friend class web::WebStateUserData<EnterpriseProxyTabHelper>;
 
-  explicit EnterpriseProxyTabHelper(web::WebState* web_state);
+  // `error_service` must not be null. It is a profile keyed service, so it
+  // outlives the WebStates of its profile.
+  EnterpriseProxyTabHelper(
+      web::WebState* web_state,
+      enterprise_net::EnterpriseProxyErrorService* error_service);
 
   // Returns whether `navigation_context` is the pending navigation.
   bool IsPendingNavigation(web::NavigationContext* navigation_context) const;
 
+  // Drops errors recorded for finished navigations.
+  raw_ptr<enterprise_net::EnterpriseProxyErrorService> error_service_ = nullptr;
   std::optional<int64_t> pending_navigation_id_;
   GURL pending_navigation_url_;
 

@@ -9,6 +9,7 @@
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
 #import "components/data_sharing/public/features.h"
 #import "components/enterprise/browser/reporting/reporting_features.h"
+#import "components/enterprise/net/core/features.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/history/core/browser/top_sites.h"
@@ -55,6 +56,8 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -441,6 +444,15 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
           attacher.IsForStandardNavigation() &&
           ShouldRegisterDeviceTrust(profile))
       .WithFactory<DeviceTrustServiceFactoryIOS>(profile);
+
+  // Lets `ProxyServiceController` attribute proxy auth challenges to the
+  // pending navigation. Not needed for prerendering, which is cancelled on auth
+  // challenges, nor in Incognito, where the controller doesn't exist.
+  attacher
+      .CreateDeferredWhen<EnterpriseProxyTabHelper>(
+          !attacher.IsOffTheRecord() && !attacher.IsForPrerender() &&
+          enterprise_net::IsDynamicRouteFetchingEnabled())
+      .WithFactory<EnterpriseProxyErrorServiceFactoryIOS>(profile);
 
   if (web::features::IsCobaltEnabled()) {
     ios::provider::AttachCobaltTabHelpers(attacher);

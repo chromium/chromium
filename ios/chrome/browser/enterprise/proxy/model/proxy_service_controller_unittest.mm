@@ -26,6 +26,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/proxy/proxy_config.h"
 #import "ios/web/public/proxy/proxy_configuration_provider.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -60,6 +62,8 @@ using CredentialFetchOutcome =
     enterprise_net::EnterpriseProxyService::CredentialFetchOutcome;
 
 NSString* const kDestinationURL = @"https://destination.example.com/page";
+constexpr char kOtherURL[] = "https://other.example.com/";
+constexpr char kFragment[] = "#section";
 NSString* const kRealm = @"Enterprise Realm";
 constexpr std::string_view kProxyHost = "proxy.example.com";
 constexpr uint16_t kProxyPort = 8443;
@@ -217,14 +221,16 @@ class ProxyServiceControllerTest : public PlatformTest {
 
     proxy_service_ = static_cast<FakeEnterpriseProxyService*>(
         EnterpriseProxyServiceFactoryIOS::GetForProfile(personal_profile_));
+    error_service_ =
+        EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(personal_profile_);
     web_state_.SetBrowserState(personal_profile_);
+    EnterpriseProxyTabHelper::CreateForWebState(&web_state_,
+                                                error_service_.get());
 
     proxy_configuration_provider_ =
         std::make_unique<TestProxyConfigurationProvider>(personal_profile_);
     controller_ = std::make_unique<ProxyServiceController>(
-        proxy_service_,
-        EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(personal_profile_),
-        proxy_configuration_provider_.get());
+        proxy_service_, error_service_, proxy_configuration_provider_.get());
   }
 
  protected:
@@ -242,6 +248,16 @@ class ProxyServiceControllerTest : public PlatformTest {
     return HandleChallenge(MakeProxyProtectionSpace(), Make407Response());
   }
 
+  // Starts a cross-document main-frame navigation to `url` in `web_state_`.
+  std::unique_ptr<web::FakeNavigationContext> StartNavigation(const GURL& url) {
+    auto context = std::make_unique<web::FakeNavigationContext>();
+    context->SetWebState(&web_state_);
+    context->SetUrl(url);
+    context->SetIsSameDocument(false);
+    web_state_.OnNavigationStarted(context.get());
+    return context;
+  }
+
   // Declared first so that the feature state is set before any other member
   // inspects it.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -250,6 +266,7 @@ class ProxyServiceControllerTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> personal_profile_ = nullptr;
   raw_ptr<FakeEnterpriseProxyService> proxy_service_ = nullptr;
+  raw_ptr<enterprise_net::EnterpriseProxyErrorService> error_service_ = nullptr;
   web::FakeWebState web_state_;
   std::unique_ptr<TestProxyConfigurationProvider> proxy_configuration_provider_;
   std::unique_ptr<ProxyServiceController> controller_;
@@ -492,6 +509,101 @@ TEST_F(ProxyServiceControllerTest, ChallengeWithoutFailureResponse) {
   EXPECT_TRUE(proxy_service_->last_auth_info()->challenge.empty());
   EXPECT_FALSE(proxy_service_->last_response_headers());
   EXPECT_TRUE(proxy_service_->last_destination_url().is_empty());
+}
+
+// Test that a challenge for the pending navigation's URL that gets no
+// credentials records the error for that navigation.
+TEST_F(ProxyServiceControllerTest, PendingNavigationChallengeRecordsError) {
+  proxy_service_->SetDecision(Decision::kDisguisedError);
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+
+  EXPECT_TRUE(HandleDefaultChallenge());
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                  .has_value());
+}
+
+// Test that the fragment of the pending navigation's URL is ignored when
+// attributing a challenge.
+TEST_F(ProxyServiceControllerTest, AttributionIgnoresFragment) {
+  proxy_service_->SetDecision(Decision::kDisguisedError);
+  std::unique_ptr<web::FakeNavigationContext> context = StartNavigation(
+      GURL(base::SysNSStringToUTF8(kDestinationURL) + kFragment));
+
+  EXPECT_TRUE(HandleDefaultChallenge());
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_TRUE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                  .has_value());
+}
+
+// Test that a challenge for another URL than the pending navigation's, e.g. a
+// subresource of the previous page, is not attributed to the navigation.
+TEST_F(ProxyServiceControllerTest, OtherURLChallengeIsNotAttributed) {
+  proxy_service_->SetDecision(Decision::kDisguisedError);
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(kOtherURL));
+
+  EXPECT_TRUE(HandleDefaultChallenge());
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                   .has_value());
+}
+
+// Test that a challenge received after the navigation committed is not
+// attributed to it, even for the navigation's URL.
+TEST_F(ProxyServiceControllerTest, ChallengeAfterCommitIsNotAttributed) {
+  proxy_service_->SetDecision(Decision::kDisguisedError);
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+  web_state_.OnNavigationFinished(context.get());
+
+  EXPECT_TRUE(HandleDefaultChallenge());
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                   .has_value());
+}
+
+// Test that a challenge resolved after its navigation stopped being pending
+// drops the error recorded for that navigation.
+TEST_F(ProxyServiceControllerTest, ResolvedAfterNavigationFinishedDropsError) {
+  proxy_service_->SetDecision(Decision::kNeedsCredentials);
+  proxy_service_->SetFetchResult(CredentialFetchOutcome::kSignInRequired);
+  proxy_service_->DeferReply();
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+
+  ASSERT_TRUE(HandleDefaultChallenge());
+  web_state_.OnNavigationFinished(context.get());
+  proxy_service_->RunDeferredReply();
+
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                   .has_value());
+}
+
+// Test that a challenge resolved after its navigation was replaced by a new one
+// drops the error recorded for the replaced navigation.
+TEST_F(ProxyServiceControllerTest, ResolvedAfterNavigationReplacedDropsError) {
+  proxy_service_->SetDecision(Decision::kNeedsCredentials);
+  proxy_service_->SetFetchResult(CredentialFetchOutcome::kSignInRequired);
+  proxy_service_->DeferReply();
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+
+  ASSERT_TRUE(HandleDefaultChallenge());
+  std::unique_ptr<web::FakeNavigationContext> new_context =
+      StartNavigation(GURL(kOtherURL));
+  proxy_service_->RunDeferredReply();
+
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                   .has_value());
 }
 
 }  // namespace

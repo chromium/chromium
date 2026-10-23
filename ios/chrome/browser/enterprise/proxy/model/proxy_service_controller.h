@@ -58,6 +58,11 @@ class ProxyServiceController
   // asynchronously. Returns false if the caller should fall back to standard
   // auth handling, in which case `callback` is destroyed without running.
   //
+  // A handled challenge for the pending main-frame navigation of `source` is
+  // attributed to that navigation, so the error of the challenge, if it gets
+  // no credentials, is recorded for the navigation. Handled challenges without
+  // credentials only fail their own request.
+  //
   // `proposed_credential` is ignored: a credential is only proposed after a
   // previous attempt failed, and repeated failures are already bounded by the
   // retry limit that `CRWWKNavigationHandler` enforces before delegating.
