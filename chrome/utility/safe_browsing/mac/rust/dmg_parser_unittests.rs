@@ -25,9 +25,10 @@ use dmg_parser::hfs::{
 };
 use dmg_parser::udif::{
     parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkReadStream, UdifBlockChunkType,
-    UdifBlockData, UdifError, UdifParser, UdifResourceFile, MAX_CHUNK_COMPRESSED_SIZE,
-    MAX_CHUNK_DECOMPRESSED_SIZE, UDIF_BLOCK_DATA_SIGNATURE, UDIF_BLOCK_DATA_VERSION,
-    UDIF_RESOURCE_FILE_SIGNATURE, UDIF_RESOURCE_FILE_VERSION, UDIF_SECTOR_SIZE,
+    UdifBlockData, UdifError, UdifParser, UdifPartitionReadStream, UdifResourceFile,
+    MAX_CHUNK_COMPRESSED_SIZE, MAX_CHUNK_DECOMPRESSED_SIZE, UDIF_BLOCK_DATA_SIGNATURE,
+    UDIF_BLOCK_DATA_VERSION, UDIF_RESOURCE_FILE_SIGNATURE, UDIF_RESOURCE_FILE_VERSION,
+    UDIF_SECTOR_SIZE,
 };
 use dmg_parser::SharedStream;
 use rust_gtest_interop::prelude::*;
@@ -1611,4 +1612,749 @@ fn test_udif_bz2_short_payload_returns_bytes_produced() {
     expect_eq!(decompress_bz2(&compressed, &mut out).ok(), Some(payload.len()));
     expect_eq!(&out[..payload.len()], &payload[..]);
     expect_true!(out[payload.len()..].iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifPartitionTest, SeekVariantsAndBoundaries)]
+fn test_seek_variants_and_boundaries() {
+    let payload = b"0123456789abcdef";
+    let cursor = SharedStream::new(Cursor::new(payload.to_vec()));
+
+    let chunks = vec![UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 16,
+    }];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 16, &chunks, 1).unwrap();
+
+    // SeekFrom::Start
+    expect_eq!(stream.seek(SeekFrom::Start(5)).unwrap(), 5);
+    let mut b = [0u8; 3];
+    stream.read_exact(&mut b).unwrap();
+    expect_eq!(&b, b"567");
+
+    // SeekFrom::Current
+    expect_eq!(stream.seek(SeekFrom::Current(2)).unwrap(), 10);
+    stream.read_exact(&mut b).unwrap();
+    expect_eq!(&b, b"abc");
+
+    // SeekFrom::Current negative
+    expect_eq!(stream.seek(SeekFrom::Current(-5)).unwrap(), 8);
+    let mut b2 = [0u8; 2];
+    stream.read_exact(&mut b2).unwrap();
+    expect_eq!(&b2, b"89");
+
+    // SeekFrom::End
+    expect_eq!(stream.seek(SeekFrom::End(-4)).unwrap(), 12);
+    let mut b4 = [0u8; 4];
+    stream.read_exact(&mut b4).unwrap();
+    expect_eq!(&b4, b"cdef");
+
+    // Seek to exact end
+    expect_eq!(stream.seek(SeekFrom::End(0)).unwrap(), 16);
+    let mut eof_buf = [0u8; 10];
+    expect_eq!(stream.read(&mut eof_buf).unwrap(), 0);
+
+    // Stream position at EOF and seek backwards from current
+    expect_eq!(stream.stream_position().unwrap(), 16);
+    expect_eq!(stream.seek(SeekFrom::Current(-4)).unwrap(), 12);
+    expect_eq!(stream.stream_position().unwrap(), 12);
+    let mut tail = [0u8; 4];
+    stream.read_exact(&mut tail).unwrap();
+    expect_eq!(&tail, b"cdef");
+
+    // Seek past end errors
+    expect_true!(stream.seek(SeekFrom::Start(17)).is_err());
+    expect_true!(stream.seek(SeekFrom::End(1)).is_err());
+
+    // Seek before start errors
+    expect_true!(stream.seek(SeekFrom::Current(-100)).is_err());
+    expect_true!(stream.seek(SeekFrom::End(-20)).is_err());
+    expect_true!(stream.seek(SeekFrom::Current(i64::MIN)).is_err());
+    expect_true!(stream.seek(SeekFrom::End(i64::MIN)).is_err());
+
+    // Read past EOF multiple times returns 0
+    stream.seek(SeekFrom::End(0)).unwrap();
+    expect_eq!(stream.read(&mut eof_buf).unwrap(), 0);
+    expect_eq!(stream.read(&mut eof_buf).unwrap(), 0);
+}
+
+#[gtest(RustUdifPartitionTest, OverlappingChunksRejected)]
+fn test_overlapping_chunks_rejected() {
+    let cursor = SharedStream::new(Cursor::new(vec![0u8; 1024]));
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 10,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 5,
+            sector_count: 10,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let res = UdifPartitionReadStream::new(cursor, 512, &chunks, 20);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifPartitionTest, ChunksExceedingTotalSectorCountRejected)]
+fn test_chunks_exceeding_total_sector_count_rejected() {
+    let cursor = SharedStream::new(Cursor::new(vec![0u8; 1024]));
+    let chunks = vec![UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 10,
+        compressed_offset: 0,
+        compressed_length: 0,
+    }];
+
+    let res = UdifPartitionReadStream::new(cursor, 512, &chunks, 5);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifPartitionTest, ChunkAfterLastBlockRejected)]
+fn test_chunk_after_last_block_rejected() {
+    let cursor = SharedStream::new(Cursor::new(vec![0u8; 1024]));
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::LAST_BLOCK,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 0,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let res = UdifPartitionReadStream::new(cursor, 512, &chunks, 1);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifPartitionTest, UnsortedChunksRejected)]
+fn test_unsorted_chunks_rejected() {
+    let cursor = SharedStream::new(Cursor::new(vec![0u8; 1024]));
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 5,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 2,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let res = UdifPartitionReadStream::new(cursor, 512, &chunks, 6);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifPartitionTest, UnmappedGapSeekError)]
+fn test_unmapped_gap_seek_error() {
+    let cursor = SharedStream::new(Cursor::new(vec![0u8; 1024]));
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 3,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 512, &chunks, 4).unwrap();
+
+    // Seeking into sector 2 (offset 1024) is in an unmapped gap
+    let res = stream.seek(SeekFrom::Start(1024));
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidInput));
+}
+
+#[gtest(RustUdifPartitionTest, UnmappedGapReadErrorAndPositionPreservation)]
+fn test_unmapped_gap_read_error_and_position_preservation() {
+    let payload = b"ChunkZeroData___"; // 16 bytes
+    let cursor = SharedStream::new(Cursor::new(payload.to_vec()));
+
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 16,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 2,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 16, &chunks, 3).unwrap();
+
+    // Read chunk 0 completely (16 bytes)
+    let mut buf = [0u8; 16];
+    stream.read_exact(&mut buf).unwrap();
+    expect_eq!(&buf, payload);
+
+    // Verify stream_position is exactly at 16 (end of chunk 0)
+    expect_eq!(stream.stream_position().unwrap(), 16);
+
+    // Attempting to read into sector 1 (unmapped gap) must fail cleanly with
+    // InvalidData
+    let mut next_byte = [0u8; 1];
+    expect_eq!(err_kind(&stream.read(&mut next_byte)), Some(ErrorKind::InvalidData));
+
+    // Seeking to sector 2 (offset 32) skips the gap and lands on Chunk 1
+    expect_eq!(stream.seek(SeekFrom::Start(32)).unwrap(), 32);
+    expect_eq!(stream.stream_position().unwrap(), 32);
+
+    let mut chunk1_buf = [0xffu8; 16];
+    stream.read_exact(&mut chunk1_buf).unwrap();
+    expect_true!(chunk1_buf.iter().all(|&b| b == 0));
+    expect_eq!(stream.stream_position().unwrap(), 48);
+}
+
+#[gtest(RustUdifPartitionTest, ReadBufferLargerThanPartition)]
+fn test_read_buffer_larger_than_partition() {
+    let payload = b"SmallPartition";
+    let mut data = vec![0u8; 32];
+    data[..payload.len()].copy_from_slice(payload);
+    let cursor = SharedStream::new(Cursor::new(data));
+
+    let chunks = vec![UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 1, // 32 bytes
+        compressed_offset: 0,
+        compressed_length: 32,
+    }];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 32, &chunks, 1).unwrap();
+    let mut large_buf = vec![0u8; 1024];
+    let n = stream.read(&mut large_buf).unwrap();
+    expect_eq!(n, 32);
+    expect_eq!(&large_buf[..payload.len()], payload);
+    expect_eq!(stream.read(&mut large_buf).unwrap(), 0);
+}
+
+#[gtest(RustUdifPartitionTest, UdifParserPartitionStreamWiring)]
+fn test_udif_parser_partition_stream_wiring() {
+    let payload = b"PartitionData123";
+    let cursor = SharedStream::new(Cursor::new(payload.to_vec()));
+
+    let block0 = UdifBlock::new_for_testing(
+        1,
+        vec![UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: payload.len() as u64,
+        }],
+    );
+
+    let parser = UdifParser::with_blocks(cursor, 16, vec![block0]);
+
+    let mut part_stream = parser.partition_read_stream(0).expect("Stream 0 must exist");
+    let mut buf = vec![0u8; 16];
+    part_stream.read_exact(&mut buf).unwrap();
+    expect_eq!(&buf, payload);
+
+    expect_true!(parser.partition_read_stream(1).is_none());
+}
+
+#[gtest(RustUdifPartitionTest, ZeroSectorChunks)]
+fn test_zero_sector_chunks() {
+    let payload = b"Chunk2DataAfterZeroSectorChunk";
+    let mut data = vec![0u8; 64];
+    data[..payload.len()].copy_from_slice(payload);
+    let cursor = SharedStream::new(Cursor::new(data));
+
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 0, // 0-length chunk
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1, // 64 bytes
+            compressed_offset: 0,
+            compressed_length: 64,
+        },
+    ];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 64, &chunks, 1).unwrap();
+    let mut buf = vec![0u8; 64];
+    stream.read_exact(&mut buf).unwrap();
+    expect_eq!(&buf[..payload.len()], payload);
+}
+
+#[gtest(RustUdifPartitionTest, ZeroBlockSizeRejected)]
+fn test_zero_block_size_rejected() {
+    let cursor = SharedStream::new(Cursor::new(vec![]));
+    let chunks = vec![];
+    let res = UdifPartitionReadStream::new(cursor, 0, &chunks, 0);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidInput));
+}
+
+#[gtest(RustUdifPartitionTest, ArithmeticOverflowProtection)]
+fn test_arithmetic_overflow_protection() {
+    let cursor = SharedStream::new(Cursor::new(vec![]));
+    let overflow_chunks = vec![UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: u64::MAX,
+        compressed_offset: 0,
+        compressed_length: 0,
+    }];
+
+    let res = UdifPartitionReadStream::new(cursor, 512, &overflow_chunks, u64::MAX);
+    expect_eq!(err_kind(&res), Some(ErrorKind::InvalidData));
+}
+
+#[gtest(RustUdifPartitionTest, LargeUncompressedAndZerofillChunkExceeds128Mb)]
+fn test_large_uncompressed_and_zerofill_chunk_exceeds_128mb() {
+    let cursor = SharedStream::new(Cursor::new(vec![]));
+    // 300,000 sectors * 512 bytes = 153,600,000 bytes > 128 MB
+    let large_sector_count = 300_000u64;
+
+    let zerofill_chunk = UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::ZERO_FILL,
+        comment: 0,
+        start_sector: 0,
+        sector_count: large_sector_count,
+        compressed_offset: 0,
+        compressed_length: 0,
+    };
+
+    // ZeroFill chunks > 128 MB must succeed because they do not allocate
+    // decompression buffers.
+    let chunk_stream = UdifBlockChunkReadStream::new(cursor.clone(), 512, &zerofill_chunk);
+    expect_true!(chunk_stream.is_ok());
+
+    let chunks = vec![zerofill_chunk];
+    let partition_stream =
+        UdifPartitionReadStream::new(cursor.clone(), 512, &chunks, large_sector_count);
+    expect_true!(partition_stream.is_ok());
+    let mut stream = partition_stream.unwrap();
+
+    let mut buf = [0x55u8; 1024];
+    expect_eq!(stream.read(&mut buf).unwrap(), 1024);
+    expect_true!(buf.iter().all(|&b| b == 0));
+
+    // Seek to near the end (> 128 MB) and read zeros
+    let target = (large_sector_count - 1) * 512;
+    expect_eq!(stream.seek(SeekFrom::Start(target)).unwrap(), target);
+    expect_eq!(stream.read(&mut buf).unwrap(), 512);
+    expect_true!(buf[..512].iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifPartitionTest, TrailingUnmappedGapReadAndSeekError)]
+fn test_trailing_unmapped_gap_read_and_seek_error() {
+    let payload = b"MappedChunk0____"; // 16 bytes
+    let cursor = SharedStream::new(Cursor::new(payload.to_vec()));
+
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1, // 16 bytes
+            compressed_offset: 0,
+            compressed_length: 16,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::LAST_BLOCK,
+            comment: 0,
+            start_sector: 1,
+            sector_count: 0,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    // Total partition has 3 sectors (48 bytes), but only sector 0 is mapped.
+    // Sectors 1 and 2 are trailing unmapped gaps!
+    let mut stream = UdifPartitionReadStream::new(cursor, 16, &chunks, 3).unwrap();
+    expect_eq!(stream.seek(SeekFrom::End(0)).ok(), Some(48));
+    expect_eq!(stream.seek(SeekFrom::Start(0)).ok(), Some(0));
+
+    // Read chunk 0 completely
+    let mut buf = [0u8; 16];
+    stream.read_exact(&mut buf).unwrap();
+    expect_eq!(&buf, payload);
+
+    // Attempting to read into sector 1 (trailing unmapped gap) must fail
+    // cleanly with InvalidData, NOT return Ok(0) (EOF)
+    let mut gap_buf = [0u8; 1];
+    expect_eq!(err_kind(&stream.read(&mut gap_buf)), Some(ErrorKind::InvalidData));
+
+    // Seeking into sector 2 (offset 32) must fail with InvalidInput
+    expect_eq!(err_kind(&stream.seek(SeekFrom::Start(32))), Some(ErrorKind::InvalidInput));
+
+    // Seeking to exact EOF (offset 48) is valid
+    expect_eq!(stream.seek(SeekFrom::End(0)).unwrap(), 48);
+    // At exact EOF, read returns 0
+    expect_eq!(stream.read(&mut gap_buf).unwrap(), 0);
+}
+
+#[gtest(RustUdifPartitionTest, LeadingUnmappedGapReadAndSeekError)]
+fn test_leading_unmapped_gap_read_and_seek_error() {
+    let payload = b"SectorTwoData___"; // 16 bytes
+    let cursor = SharedStream::new(Cursor::new(payload.to_vec()));
+
+    let chunks = vec![UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+        comment: 0,
+        start_sector: 2, // Sectors 0 and 1 are unmapped!
+        sector_count: 1,
+        compressed_offset: 0,
+        compressed_length: 16,
+    }];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 16, &chunks, 3).unwrap();
+
+    // Reading at offset 0 (leading gap) must fail with InvalidData
+    let mut buf = [0u8; 1];
+    expect_eq!(err_kind(&stream.read(&mut buf)), Some(ErrorKind::InvalidData));
+
+    // Seeking into sector 0 or 1 must fail with InvalidInput
+    expect_true!(stream.seek(SeekFrom::Start(0)).is_err());
+    expect_true!(stream.seek(SeekFrom::Start(16)).is_err());
+
+    // Seeking to sector 2 (offset 32) succeeds
+    expect_eq!(stream.seek(SeekFrom::Start(32)).unwrap(), 32);
+    let mut chunk_buf = [0u8; 16];
+    stream.read_exact(&mut chunk_buf).unwrap();
+    expect_eq!(&chunk_buf, payload);
+}
+
+#[gtest(RustUdifPartitionTest, PartitionWithNoChunksAndNonZeroSectorsErrors)]
+fn test_partition_with_no_chunks_and_nonzero_sectors_errors() {
+    let cursor = SharedStream::new(Cursor::new(vec![]));
+    // 2 sectors declared, but empty chunk table
+    let mut stream = UdifPartitionReadStream::new(cursor.clone(), 16, &[], 2).unwrap();
+    let mut buf = [0u8; 1];
+    expect_eq!(err_kind(&stream.read(&mut buf)), Some(ErrorKind::InvalidData));
+    expect_true!(stream.seek(SeekFrom::Start(0)).is_err());
+
+    // Only LastBlock present, but 2 sectors declared
+    let last_block_only = vec![UdifBlockChunk {
+        chunk_type: UdifBlockChunkType::LAST_BLOCK,
+        comment: 0,
+        start_sector: 0,
+        sector_count: 0,
+        compressed_offset: 0,
+        compressed_length: 0,
+    }];
+    let mut stream2 = UdifPartitionReadStream::new(cursor, 16, &last_block_only, 2).unwrap();
+    expect_eq!(err_kind(&stream2.read(&mut buf)), Some(ErrorKind::InvalidData));
+    expect_true!(stream2.seek(SeekFrom::Start(0)).is_err());
+}
+
+#[gtest(RustUdifPartitionTest, EmptyPartitionZeroSectors)]
+fn test_empty_partition_zero_sectors() {
+    let cursor = SharedStream::new(Cursor::new(vec![]));
+    let mut stream = UdifPartitionReadStream::new(cursor, 512, &[], 0).unwrap();
+    expect_eq!(stream.seek(SeekFrom::End(0)).ok(), Some(0));
+    expect_eq!(stream.seek(SeekFrom::Start(0)).ok(), Some(0));
+
+    let mut buf = [0u8; 10];
+    expect_eq!(stream.read(&mut buf).unwrap(), 0);
+    expect_eq!(stream.seek(SeekFrom::Start(0)).unwrap(), 0);
+    expect_eq!(stream.seek(SeekFrom::End(0)).unwrap(), 0);
+    expect_eq!(stream.stream_position().unwrap(), 0);
+}
+
+#[gtest(RustUdifPartitionTest, Non512BlockSizes)]
+fn test_non_512_block_sizes() {
+    // Test with 2048-byte CD/DVD sectors and 4096-byte Advanced Format sectors
+    let payload2048 = vec![0x7au8; 2048];
+    let cursor = SharedStream::new(Cursor::new(payload2048.clone()));
+
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1, // 2048 bytes
+            compressed_offset: 0,
+            compressed_length: 2048,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 2, // Sector 1 is a 2048-byte gap!
+            sector_count: 1, // 2048 bytes
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 2048, &chunks, 3).unwrap();
+    expect_eq!(stream.seek(SeekFrom::End(0)).ok(), Some(6144));
+    expect_eq!(stream.seek(SeekFrom::Start(0)).ok(), Some(0));
+
+    let mut read_buf = vec![0u8; 2048];
+    stream.read_exact(&mut read_buf).unwrap();
+    expect_eq!(&read_buf, &payload2048);
+
+    // Reading into sector 1 (unmapped 2048-byte gap) fails
+    let mut single = [0u8; 1];
+    expect_eq!(err_kind(&stream.read(&mut single)), Some(ErrorKind::InvalidData));
+
+    // Seeking into sector 1 fails
+    expect_true!(stream.seek(SeekFrom::Start(2048)).is_err());
+    expect_true!(stream.seek(SeekFrom::Start(4095)).is_err());
+
+    // Seeking to sector 2 (offset 4096) succeeds
+    expect_eq!(stream.seek(SeekFrom::Start(4096)).unwrap(), 4096);
+    let mut zero_buf = vec![0xffu8; 2048];
+    stream.read_exact(&mut zero_buf).unwrap();
+    expect_true!(zero_buf.iter().all(|&b| b == 0));
+}
+
+#[gtest(RustUdifPartitionTest, SeekTransactionalSafetyOnFailure)]
+fn test_seek_transactional_safety_on_failure() {
+    let payload = b"InitialChunkData"; // 16 bytes
+    let cursor = SharedStream::new(Cursor::new(payload.to_vec()));
+
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 16,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 2, // Sector 1 is an unmapped gap
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 16, &chunks, 3).unwrap();
+
+    // Position at byte 5
+    expect_eq!(stream.seek(SeekFrom::Start(5)).unwrap(), 5);
+
+    // Attempt invalid seek into unmapped gap (sector 1 = byte 16)
+    let err = stream.seek(SeekFrom::Start(16));
+    expect_true!(err.is_err());
+
+    // Original position must remain 5
+    expect_eq!(stream.stream_position().unwrap(), 5);
+
+    // Subsequent read must read from offset 5, NOT from anywhere else
+    let mut buf = [0u8; 4];
+    stream.read_exact(&mut buf).unwrap();
+    expect_eq!(&buf, &payload[5..9]);
+}
+
+#[gtest(RustUdifPartitionTest, MultiChunkFourTypesSequentialRead)]
+fn test_multi_chunk_four_types_sequential_read() {
+    // 4 chunks: Uncompressed + ZeroFill + CompressZlib + CompressBz2
+    let p_uncompressed = b"1111222233334444"; // 16 bytes
+    let p_zlib = b"ZZZZYYYYXXXXWWWW"; // 16 bytes
+    let p_bz2 = b"BBBBCCCCDDDDEEEE"; // 16 bytes
+
+    let zlib_comp = compress_zlib(p_zlib);
+    let bz2_comp = compress_bz2(p_bz2).unwrap();
+
+    let mut backing = Vec::new();
+    let off_uncomp = 0u64;
+    backing.extend_from_slice(p_uncompressed);
+    let off_zlib = backing.len() as u64;
+    backing.extend_from_slice(&zlib_comp);
+    let off_bz2 = backing.len() as u64;
+    backing.extend_from_slice(&bz2_comp);
+
+    let cursor = SharedStream::new(Cursor::new(backing));
+
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1, // 16 bytes
+            compressed_offset: off_uncomp,
+            compressed_length: 16,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::ZERO_FILL,
+            comment: 0,
+            start_sector: 1,
+            sector_count: 1, // 16 bytes
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+            comment: 0,
+            start_sector: 2,
+            sector_count: 1, // 16 bytes
+            compressed_offset: off_zlib,
+            compressed_length: zlib_comp.len() as u64,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::COMPRESS_BZ2,
+            comment: 0,
+            start_sector: 3,
+            sector_count: 1, // 16 bytes
+            compressed_offset: off_bz2,
+            compressed_length: bz2_comp.len() as u64,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::LAST_BLOCK,
+            comment: 0,
+            start_sector: 4,
+            sector_count: 0,
+            compressed_offset: 0,
+            compressed_length: 0,
+        },
+    ];
+
+    let mut stream = UdifPartitionReadStream::new(cursor, 16, &chunks, 4).unwrap();
+    expect_eq!(stream.seek(SeekFrom::End(0)).ok(), Some(64));
+    expect_eq!(stream.seek(SeekFrom::Start(0)).ok(), Some(0));
+
+    // Read entire 64-byte partition spanning all 4 chunk types in a single
+    // read_exact
+    let mut full = [0u8; 64];
+    stream.read_exact(&mut full).unwrap();
+
+    expect_eq!(&full[0..16], p_uncompressed);
+    expect_true!(full[16..32].iter().all(|&b| b == 0));
+    expect_eq!(&full[32..48], p_zlib);
+    expect_eq!(&full[48..64], p_bz2);
+
+    // Intra-chunk and cross-chunk seeking across all 4 types
+    // 1. Seeking in Uncompressed chunk
+    expect_eq!(stream.seek(SeekFrom::Start(4)).unwrap(), 4);
+    let mut b4 = [0u8; 4];
+    stream.read_exact(&mut b4).unwrap();
+    expect_eq!(&b4, &p_uncompressed[4..8]);
+
+    // 2. Seeking across to ZeroFill chunk
+    expect_eq!(stream.seek(SeekFrom::Start(20)).unwrap(), 20);
+    stream.read_exact(&mut b4).unwrap();
+    expect_true!(b4.iter().all(|&b| b == 0));
+
+    // 3. Seeking into CompressZlib chunk
+    expect_eq!(stream.seek(SeekFrom::Start(36)).unwrap(), 36);
+    stream.read_exact(&mut b4).unwrap();
+    expect_eq!(&b4, &p_zlib[4..8]);
+
+    // 4. Seeking into CompressBz2 chunk
+    expect_eq!(stream.seek(SeekFrom::Start(52)).unwrap(), 52);
+    stream.read_exact(&mut b4).unwrap();
+    expect_eq!(&b4, &p_bz2[4..8]);
+
+    // 5. Seeking back to CompressZlib chunk (cache reload/eviction)
+    expect_eq!(stream.seek(SeekFrom::Start(40)).unwrap(), 40);
+    stream.read_exact(&mut b4).unwrap();
+    expect_eq!(&b4, &p_zlib[8..12]);
+
+    // Read byte by byte across all 4 chunk boundaries
+    expect_eq!(stream.seek(SeekFrom::Start(0)).unwrap(), 0);
+    let mut byte_by_byte = Vec::new();
+    let mut one = [0u8; 1];
+    while stream.read(&mut one).unwrap() > 0 {
+        byte_by_byte.push(one[0]);
+    }
+    expect_eq!(&byte_by_byte[..], &full[..]);
+}
+
+#[gtest(RustUdifPartitionTest, PartialReadBeforeChunkCreationErrorReturnsBytes)]
+fn test_partial_read_before_chunk_creation_error_returns_bytes() {
+    // Chunk 0 is a valid 1-sector uncompressed chunk. Chunk 1 passes table
+    // validation but fails UdifBlockChunkReadStream::new because its
+    // decompressed size exceeds MAX_CHUNK_DECOMPRESSED_SIZE.
+    let payload = vec![0xABu8; 512];
+    let stream = SharedStream::new(Cursor::new(payload.clone()));
+    let oversized_sectors = MAX_CHUNK_DECOMPRESSED_SIZE / 512 + 1;
+    let chunks = vec![
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::UNCOMPRESSED,
+            comment: 0,
+            start_sector: 0,
+            sector_count: 1,
+            compressed_offset: 0,
+            compressed_length: 512,
+        },
+        UdifBlockChunk {
+            chunk_type: UdifBlockChunkType::COMPRESS_ZLIB,
+            comment: 0,
+            start_sector: 1,
+            sector_count: oversized_sectors,
+            compressed_offset: 0,
+            compressed_length: 16,
+        },
+    ];
+    let mut part =
+        UdifPartitionReadStream::new(stream, 512, &chunks, 1 + oversized_sectors).unwrap();
+
+    // The first read returns the bytes from chunk 0 instead of an error.
+    let mut buf = vec![0u8; 1024];
+    expect_eq!(part.read(&mut buf).unwrap(), 512);
+    expect_eq!(&buf[..512], &payload[..]);
+    expect_eq!(part.stream_position().unwrap(), 512);
+
+    // The next read surfaces the error without moving the position.
+    expect_eq!(err_kind(&part.read(&mut buf)), Some(ErrorKind::InvalidData));
+    expect_eq!(part.stream_position().unwrap(), 512);
 }
