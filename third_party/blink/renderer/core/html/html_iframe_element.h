@@ -99,6 +99,7 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   // FrameOwner overrides:
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
+
   // HTML attributes of the iframe element that need to be tracked by the
   // browser changed, such as 'id' and 'src'. This will send an IPC to the
   // browser about the updates.

@@ -45,6 +45,7 @@ namespace blink {
 
 class Document;
 class Frame;
+class FrameSwapScope;
 class LayoutEmbeddedContent;
 class LazyLoadFrameObserver;
 class ResourceRequestHead;
@@ -52,6 +53,8 @@ class SecurityOrigin;
 
 class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
                                           public FrameOwner {
+  friend class FrameSwapScope;
+
  public:
   ~HTMLFrameOwnerElement() override;
 
@@ -150,7 +153,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // a load was initiated.
   bool LoadImmediatelyIfLazy();
 
-  bool IsSwappingFrames() const final { return is_swapping_frames_; }
+  bool IsSwappingFrames() const { return is_swapping_frames_; }
 
   void Trace(Visitor*) const override;
 
@@ -166,7 +169,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       UpdateBehavior update_behavior =
           UpdateBehavior::kStyleAndLayout) const override;
   FocusgroupFlags NativeArrowKeyAxes() const final;
-  void FrameOwnerPropertiesChanged() override;
+  void FrameOwnerPropertiesChanged();
+  virtual void DidChangeAttributes() {}
 
   // Return the origin which is to be used for permissions policy container
   // policies, as "the origin of the URL in the frame's src attribute" (see
@@ -223,7 +227,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool IsLocal() const final { return true; }
   bool IsRemote() const final { return false; }
   bool IsFrameOwnerElement() const final { return true; }
-  void SetIsSwappingFrames(bool is_swapping) final {
+  void SetIsSwappingFrames(bool is_swapping) {
     is_swapping_frames_ = is_swapping;
   }
 

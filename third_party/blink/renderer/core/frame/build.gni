@@ -80,6 +80,8 @@ blink_core_sources_frame = [
   "frame_owner.h",
   "frame_serializer.cc",
   "frame_serializer.h",
+  "frame_swap_scope.cc",
+  "frame_swap_scope.h",
   "frame_types.h",
   "frame_view.cc",
   "frame_view.h",
