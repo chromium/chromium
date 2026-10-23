@@ -130,9 +130,14 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/menu_test_utils.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_closure_animation_mac.h"
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -1814,6 +1819,15 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
         AppMenuSearchBarView::kBackButtonElementId));
   }
 
+  void ActivateMenuItemWithEnter(views::MenuItemView* item) {
+    views::MenuController* controller = item->GetMenuController();
+    ASSERT_NE(controller, nullptr);
+    controller->SelectItemAndOpenSubmenu(item);
+    ui::KeyEvent enter_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                             ui::EF_NONE);
+    controller->OnWillDispatchKeyEvent(&enter_event);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2073,6 +2087,51 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, ZoomSearchResultPersistsMenu) {
+#if BUILDFLAG(IS_MAC)
+  // Accepting a menu item on Mac plays a closure animation before the menu
+  // actually closes; skip it so WaitForMenuClosureAnimation() below suffices.
+  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
+      disable_closure_animations;
+#endif
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+
+  search_bar->SetText(u"Zoom In");
+  views::MenuItemView* zoom_in_item = root->GetMenuItemByID(kActionZoomPlus);
+  ASSERT_NE(zoom_in_item, nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(0);
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionZoomPlus, testing::_, testing::_))
+      .Times(2);
+  ActivateMenuItemWithEnter(zoom_in_item);
+  EXPECT_TRUE(menu.IsShowing());
+  ActivateMenuItemWithEnter(zoom_in_item);
+  EXPECT_TRUE(menu.IsShowing());
+  EXPECT_EQ(root->GetMenuItemByID(kActionZoomPlus), zoom_in_item);
+  testing::Mock::VerifyAndClearExpectations(&on_menu_closed);
+
+  // Regression guard: a non-zoom result still closes the menu on activation.
+  search_bar->SetText(u"Print");
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_NE(print_item, nullptr);
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, testing::_, testing::_))
+      .Times(1);
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  ActivateMenuItemWithEnter(print_item);
+  views::test::WaitForMenuClosureAnimation();
+  EXPECT_FALSE(menu.IsShowing());
 }
 
 TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {

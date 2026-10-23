@@ -398,6 +398,19 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
       BuildActionInvocationContext(base_action, mouse_event_flags));
 }
 
+bool ActionAppMenu::ShouldExecuteCommandWithoutClosingMenu(int id,
+                                                           const ui::Event& e) {
+  // Zoom in/out are repeatable; keep the menu open so search result rows
+  // behave like the inline AppMenuZoomView buttons.
+  auto action_iterator = command_to_action_map_.find(id);
+  if (action_iterator == command_to_action_map_.end()) {
+    return false;
+  }
+  const std::optional<actions::ActionId> action_id =
+      action_iterator->second->GetActionItem()->GetActionId();
+  return action_id == kActionZoomMinus || action_id == kActionZoomPlus;
+}
+
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   actions::ActionItem* action_to_execute = nullptr;
   actions::ActionInvocationContext action_context;

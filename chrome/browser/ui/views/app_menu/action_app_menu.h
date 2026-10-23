@@ -72,6 +72,8 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // views::MenuDelegate:
   void ExecuteCommand(int id, int mouse_event_flags) override;
+  bool ShouldExecuteCommandWithoutClosingMenu(int id,
+                                              const ui::Event& e) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
   void WillShowMenu(views::MenuItemView* menu) override;
   bool IsItemChecked(int id) const override;
