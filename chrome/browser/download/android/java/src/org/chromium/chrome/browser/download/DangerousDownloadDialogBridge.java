@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ActivityState;
@@ -30,6 +33,9 @@ import java.util.Map;
 /** Glues download dialogs UI code and handles the communication to download native backend. */
 @NullMarked
 public class DangerousDownloadDialogBridge {
+    @JniType("::DangerousDownloadDialogBridge")
+    interface NativeDangerousDownloadDialogBridge extends JniTypeToken {}
+
     private static class PendingDialog {
         final @Nullable WindowAndroid mWindowAndroid;
         final String mGuid;
@@ -57,7 +63,8 @@ public class DangerousDownloadDialogBridge {
         }
     }
 
-    private long mNativeDangerousDownloadDialogBridge;
+    private @Nullable JniRawPtr<NativeDangerousDownloadDialogBridge>
+            mNativeDangerousDownloadDialogBridge;
     private final Map<String, PendingDialog> mPendingDialogs = new HashMap<>();
     private final Map<String, DangerousDownloadDialog> mShowingDialogs = new HashMap<>();
     private @Nullable ActivityStateListener mActivityStateListener;
@@ -67,12 +74,14 @@ public class DangerousDownloadDialogBridge {
      *
      * @param nativeDangerousDownloadDialogBridge Pointer to the native object.
      */
-    public DangerousDownloadDialogBridge(long nativeDangerousDownloadDialogBridge) {
+    public DangerousDownloadDialogBridge(
+            JniRawPtr<NativeDangerousDownloadDialogBridge> nativeDangerousDownloadDialogBridge) {
         mNativeDangerousDownloadDialogBridge = nativeDangerousDownloadDialogBridge;
     }
 
     @CalledByNative
-    public static DangerousDownloadDialogBridge create(long nativeDialog) {
+    public static DangerousDownloadDialogBridge create(
+            JniRawPtr<NativeDangerousDownloadDialogBridge> nativeDialog) {
         return new DangerousDownloadDialogBridge(nativeDialog);
     }
 
@@ -265,7 +274,10 @@ public class DangerousDownloadDialogBridge {
 
     @CalledByNative
     private void destroy() {
-        mNativeDangerousDownloadDialogBridge = 0;
+        if (mNativeDangerousDownloadDialogBridge != null) {
+            mNativeDangerousDownloadDialogBridge.release();
+            mNativeDangerousDownloadDialogBridge = null;
+        }
         if (mActivityStateListener != null) {
             ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
             mActivityStateListener = null;
@@ -278,14 +290,14 @@ public class DangerousDownloadDialogBridge {
     }
 
     private void onAccepted(String guid) {
-        if (mNativeDangerousDownloadDialogBridge != 0) {
+        if (mNativeDangerousDownloadDialogBridge != null) {
             DangerousDownloadDialogBridgeJni.get()
                     .accepted(mNativeDangerousDownloadDialogBridge, guid);
         }
     }
 
     private void onCancel(String guid, @Nullable WindowAndroid windowAndroid) {
-        if (mNativeDangerousDownloadDialogBridge != 0) {
+        if (mNativeDangerousDownloadDialogBridge != null) {
             DangerousDownloadDialogBridgeJni.get()
                     .cancelled(mNativeDangerousDownloadDialogBridge, guid);
         }
@@ -297,9 +309,11 @@ public class DangerousDownloadDialogBridge {
     @NativeMethods
     interface Natives {
         void accepted(
-                long nativeDangerousDownloadDialogBridge, @JniType("std::string") String guid);
+                JniPtr<NativeDangerousDownloadDialogBridge> self,
+                @JniType("std::string") String guid);
 
         void cancelled(
-                long nativeDangerousDownloadDialogBridge, @JniType("std::string") String guid);
+                JniPtr<NativeDangerousDownloadDialogBridge> self,
+                @JniType("std::string") String guid);
     }
 }

@@ -19,6 +19,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/url_formatter/elide_url.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -46,8 +47,8 @@ std::u16string GetDownloadDomain(download::DownloadItem* item) {
 
 DangerousDownloadDialogBridge::DangerousDownloadDialogBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_object_.Reset(Java_DangerousDownloadDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_object_.Reset(
+      Java_DangerousDownloadDialogBridge_create(env, jni_zero::MakeRaw(this)));
 }
 
 DangerousDownloadDialogBridge::~DangerousDownloadDialogBridge() {
