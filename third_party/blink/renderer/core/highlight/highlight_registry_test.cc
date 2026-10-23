@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_static_range_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -1101,6 +1102,111 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPointShadowRoot) {
   EXPECT_EQ(highlight_hit_results_at_point.size(), 0u);
   highlight_hit_results_at_point = registry->highlightsFromPoint(x, y, nullptr);
   EXPECT_EQ(highlight_hit_results_at_point.size(), 0u);
+}
+
+namespace {
+
+// A range that, once armed, adds ranges to a Highlight the first time its end
+// offset is read. highlightsFromPoint() reads the end offset while resolving a
+// range's geometry, so this grows the range set at a point where the registry
+// is in the middle of iterating it, as would happen if script ran there.
+class HighlightGrowingRange final : public NodeRange {
+ public:
+  HighlightGrowingRange(Text* text, unsigned start_offset, unsigned end_offset)
+      : text_(text), start_offset_(start_offset), end_offset_(end_offset) {}
+
+  void GrowHighlightOnNextEndOffset(Highlight* highlight, unsigned count) {
+    highlight_to_grow_ = highlight;
+    count_to_add_ = count;
+  }
+  bool did_grow() const { return did_grow_; }
+
+  Node* startContainer() const override { return text_.Get(); }
+  unsigned startOffset() const override { return start_offset_; }
+  Node* endContainer() const override { return text_.Get(); }
+  unsigned endOffset() const override {
+    MaybeGrowHighlight();
+    return end_offset_;
+  }
+  bool collapsed() const override { return start_offset_ == end_offset_; }
+  bool IsStaticRange() const override { return false; }
+  Document& OwnerDocument() const override { return text_->GetDocument(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(text_);
+    visitor->Trace(highlight_to_grow_);
+    ScriptWrappable::Trace(visitor);
+  }
+
+ private:
+  void MaybeGrowHighlight() const {
+    if (!highlight_to_grow_ || did_grow_) {
+      return;
+    }
+    did_grow_ = true;
+    for (unsigned i = 0; i < count_to_add_; ++i) {
+      highlight_to_grow_->addForBinding(
+          nullptr,
+          MakeGarbageCollected<Range>(text_->GetDocument(), text_.Get(), 0,
+                                      text_.Get(), 0),
+          ASSERT_NO_EXCEPTION);
+    }
+  }
+
+  Member<Text> text_;
+  unsigned start_offset_;
+  unsigned end_offset_;
+  Member<Highlight> highlight_to_grow_;
+  unsigned count_to_add_ = 0;
+  mutable bool did_grow_ = false;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/576984708. Growing a Highlight's range set
+// reallocates its backing store, so highlightsFromPoint() must not hold on to
+// a reference to one of its entries while it resolves that range's geometry.
+TEST_F(HighlightsFromPointTest, RangeSetGrowsWhileResolvingRangeGeometry) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* growing_range = MakeGarbageCollected<HighlightGrowingRange>(text, 0, 4);
+  auto* trailing_range =
+      MakeGarbageCollected<Range>(GetDocument(), text, 1, text, 3);
+  HeapVector<Member<AbstractRange>> range_vector;
+  range_vector.push_back(growing_range);
+  range_vector.push_back(trailing_range);
+  auto* highlight = Highlight::Create(range_vector);
+  HighlightRegistry* registry =
+      HighlightRegistry::From(*GetDocument().domWindow());
+  registry->SetForTesting(AtomicString("TestHighlight"), highlight);
+  UpdateAllLifecyclePhasesForTest();
+
+  // The center of |trailing_range|, which is inside both ranges.
+  gfx::Rect rect =
+      ComputeTextRect(EphemeralRange(Position(text, 1), Position(text, 3)));
+  const float x = rect.CenterPoint().x() / GetDocument().DevicePixelRatio();
+  const float y = rect.CenterPoint().y() / GetDocument().DevicePixelRatio();
+
+  const Member<AbstractRange>* const first_entry =
+      &*highlight->GetRanges().begin();
+  constexpr unsigned kRangesToAdd = 64;
+  growing_range->GrowHighlightOnNextEndOffset(highlight, kRangesToAdd);
+
+  HeapVector<Member<HighlightHitResult>> hit_results =
+      registry->highlightsFromPoint(x, y, nullptr);
+
+  ASSERT_TRUE(growing_range->did_grow());
+  EXPECT_EQ(highlight->size(), 2u + kRangesToAdd);
+  // The test is only meaningful if growing the set moved its backing store,
+  // which is what leaves references to its previous entries dangling.
+  EXPECT_NE(first_entry, &*highlight->GetRanges().begin());
+
+  ASSERT_EQ(hit_results.size(), 1u);
+  EXPECT_EQ(hit_results[0]->highlight(), highlight);
+  ASSERT_EQ(hit_results[0]->ranges().size(), 2u);
+  EXPECT_EQ(hit_results[0]->ranges()[0].Get(), growing_range);
+  EXPECT_EQ(hit_results[0]->ranges()[1].Get(), trailing_range);
 }
 
 TEST_F(HighlightRegistryTest, LiveIterationBasic) {
