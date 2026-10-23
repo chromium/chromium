@@ -139,7 +139,16 @@ void SpellCheckLanguage::Initialize(const std::string& language) {
 void SpellCheckLanguage::CheckSpelling(const std::string& word,
                                        CheckSpellingCallback callback) {
   if (!dictionary_initialized_) {
-    std::move(callback).Run(false);
+    if (!dictionary_file_ready_) {
+      std::move(callback).Run(false);
+      return;
+    }
+    // Lazily launch the spell check service on first use and re-run
+    // `CheckSpelling()` once `OnDictionaryCreated()` finishes.
+    pending_check_ =
+        base::BindOnce(&SpellCheckLanguage::CheckSpelling,
+                       weak_factory_.GetWeakPtr(), word, std::move(callback));
+    InitializeSpellCheckService();
     return;
   }
 
@@ -206,10 +215,14 @@ void SpellCheckLanguage::OnDictionaryCreated(
   if (dictionary.is_valid()) {
     dictionary_.Bind(std::move(dictionary));
     dictionary_initialized_ = true;
-    return;
+  } else {
+    dictionary_file_ready_ = false;
+    MaybeRetryInitialize();
   }
 
-  MaybeRetryInitialize();
+  if (pending_check_) {
+    std::move(pending_check_).Run();
+  }
 }
 
 void SpellCheckLanguage::MaybeRetryInitialize() {
@@ -261,7 +274,8 @@ void SpellCheckLanguage::OnPathExistsComplete(bool path_exists) {
     return;
   }
 
-  InitializeSpellCheckService();
+  // Defer `InitializeSpellCheckService()` until `CheckSpelling()` is called.
+  dictionary_file_ready_ = true;
 }
 
 void SpellCheckLanguage::OnSaveDictionaryDataComplete(bool dictionary_saved) {
@@ -270,7 +284,8 @@ void SpellCheckLanguage::OnSaveDictionaryDataComplete(bool dictionary_saved) {
     return;
   }
 
-  InitializeSpellCheckService();
+  // Defer `InitializeSpellCheckService()` until `CheckSpelling()` is called.
+  dictionary_file_ready_ = true;
 }
 
 void SpellCheckLanguage::OnOpenDictionaryFileComplete(base::File file) {

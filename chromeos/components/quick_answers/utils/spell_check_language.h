@@ -73,8 +73,14 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
 
   std::string language_;
 
+  // Whether the spell check dictionary file is ready on disk.
+  bool dictionary_file_ready_ = false;
+
   // Whether the spell check dictionary has been successfully initialized.
   bool dictionary_initialized_ = false;
+
+  // Pending CheckSpelling() call waiting for the dictionary to initialize.
+  base::OnceClosure pending_check_;
 
   // Number of retries used for initializing the spell check service.
   int num_retries_ = 0;
