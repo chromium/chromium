@@ -199,8 +199,7 @@ class AppMenu final : public views::MenuDelegate,
   // If |selected_menu_model_| is non-null after the menu completes
   // ActivatedAt is invoked. This is done so that ActivatedAt isn't invoked
   // while the message loop is nested.
-  raw_ptr<ui::ButtonMenuItemModel, DanglingUntriaged> selected_menu_model_ =
-      nullptr;
+  raw_ptr<ui::ButtonMenuItemModel> selected_menu_model_ = nullptr;
   size_t selected_index_ = 0;
 
   std::vector<base::CallbackListSubscription>

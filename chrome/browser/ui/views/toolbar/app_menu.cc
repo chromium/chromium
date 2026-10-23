@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -320,24 +321,27 @@ class InMenuButtonBackground : public views::Background {
   const ButtonShape shape_;
 };
 
+std::u16string GetAcceleratorTextForAppMenuItem(ButtonMenuItemModel* model,
+                                                size_t item_index,
+                                                bool add_accelerator_text) {
+  ui::Accelerator menu_accelerator;
+  if (add_accelerator_text &&
+      model->GetAcceleratorAt(item_index, &menu_accelerator)) {
+    return ui::Accelerator(menu_accelerator.key_code(),
+                           menu_accelerator.modifiers())
+        .GetShortcutText();
+  }
+  return std::u16string();
+}
+
 std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
                                                size_t item_index,
                                                int accessible_string_id,
                                                bool add_accelerator_text) {
-  std::u16string accessible_name =
-      l10n_util::GetStringUTF16(accessible_string_id);
-  std::u16string accelerator_text;
-
-  ui::Accelerator menu_accelerator;
-  if (add_accelerator_text &&
-      model->GetAcceleratorAt(item_index, &menu_accelerator)) {
-    accelerator_text = ui::Accelerator(menu_accelerator.key_code(),
-                                       menu_accelerator.modifiers())
-                           .GetShortcutText();
-  }
-
   return MenuItemView::GetAccessibleNameForMenuItem(
-      accessible_name, accelerator_text, /*badge_type=*/std::nullopt);
+      l10n_util::GetStringUTF16(accessible_string_id),
+      GetAcceleratorTextForAppMenuItem(model, item_index, add_accelerator_text),
+      /*badge_type=*/std::nullopt);
 }
 
 // A button that lives inside a menu item.
@@ -492,8 +496,7 @@ class AppMenuView : public views::View {
   METADATA_HEADER(AppMenuView, views::View)
 
  public:
-  AppMenuView(AppMenu* menu, ButtonMenuItemModel* menu_model)
-      : menu_(menu->AsWeakPtr()), menu_model_(menu_model) {
+  explicit AppMenuView(AppMenu* menu) : menu_(menu->AsWeakPtr()) {
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
   }
   AppMenuView(const AppMenuView&) = delete;
@@ -504,9 +507,10 @@ class AppMenuView : public views::View {
       views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
+      ButtonMenuItemModel* menu_model,
       size_t index) {
     return CreateButtonWithAccessibleName(
-        std::move(callback), string_id, type, index, string_id,
+        std::move(callback), string_id, type, menu_model, index, string_id,
         /*add_accelerator_text=*/true,
         /*use_accessible_name_as_tooltip_text=*/false);
   }
@@ -515,6 +519,7 @@ class AppMenuView : public views::View {
       views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
+      ButtonMenuItemModel* menu_model,
       size_t index,
       int accessible_name_id,
       bool add_accelerator_text,
@@ -529,9 +534,9 @@ class AppMenuView : public views::View {
                  vector_icon);
     menu_button = std::move(button);
     menu_button->GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
-        menu_model_, index, accessible_name_id, add_accelerator_text));
+        menu_model, index, accessible_name_id, add_accelerator_text));
     menu_button->set_tag(index);
-    menu_button->SetEnabled(menu_model_->IsEnabledAt(index));
+    menu_button->SetEnabled(menu_model->IsEnabledAt(index));
     if (use_accessible_name_as_tooltip_text) {
       menu_button->SetTooltipText(
           l10n_util::GetStringUTF16(accessible_name_id));
@@ -552,9 +557,6 @@ class AppMenuView : public views::View {
  private:
   // Hosting AppMenu.
   base::WeakPtr<AppMenu> menu_;
-
-  // The menu model containing the increment/decrement/reset items.
-  raw_ptr<ButtonMenuItemModel> menu_model_;
 };
 
 BEGIN_METADATA(AppMenuView)
@@ -565,16 +567,23 @@ class FullscreenButton : public ImageButton {
   METADATA_HEADER(FullscreenButton, ImageButton)
 
  public:
-  explicit FullscreenButton(PressedCallback callback,
-                            ButtonMenuItemModel& menu_model,
-                            size_t button_index)
+  FullscreenButton(PressedCallback callback,
+                   ButtonMenuItemModel& menu_model,
+                   size_t button_index)
       : ImageButton(std::move(callback)),
-        menu_model_(menu_model),
-        button_index_(button_index) {
+        // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
+        // mode on most ChromeOS devices which cannot be specified in the
+        // standard way here, so omit the accelerator to avoid providing
+        // misleading or confusing information to screen reader users.
+        // See crbug.com/40708624 for more context.
+        accelerator_text_(GetAcceleratorTextForAppMenuItem(
+            &menu_model,
+            button_index,
+            /*add_accelerator_text=*/!BUILDFLAG(IS_CHROMEOS))) {
     // Since |fullscreen_button_| will reside in a menu, make it ALWAYS
     // focusable regardless of the platform.
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    set_tag(button_index_);
+    set_tag(button_index);
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(
@@ -592,20 +601,11 @@ class FullscreenButton : public ImageButton {
         is_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN
                       : (can_fullscreen ? IDS_ACCNAME_FULLSCREEN
                                         : IDS_ACCNAME_FULLSCREEN_DISABLED);
-    SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
-    GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
-        &menu_model_.get(), button_index_, accname_string_id,
-#if BUILDFLAG(IS_CHROMEOS)
-        // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
-        // mode on most ChromeOS devices which cannot be specified in the
-        // standard way here, so omit the accelerator to avoid providing
-        // misleading or confusing information to screen reader users.
-        // See crbug.com/40708624 for more context.
-        /*add_accelerator_text=*/false
-#else
-        /*add_accelerator_text=*/true
-#endif
-        ));
+    const std::u16string accname_string =
+        l10n_util::GetStringUTF16(accname_string_id);
+    SetTooltipText(accname_string);
+    GetViewAccessibility().SetName(MenuItemView::GetAccessibleNameForMenuItem(
+        accname_string, accelerator_text_, /*badge_type=*/std::nullopt));
   }
 
   // Overridden from ImageButton.
@@ -618,10 +618,7 @@ class FullscreenButton : public ImageButton {
   }
 
  private:
-  // The menu model that contains the fullscreen button.
-  const raw_ref<ButtonMenuItemModel> menu_model_;
-  // The index of the fullscreen button in `menu_model_`.
-  const size_t button_index_;
+  const std::u16string accelerator_text_;
 };
 
 BEGIN_METADATA(FullscreenButton)
@@ -641,7 +638,7 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
                    size_t cut_index,
                    size_t copy_index,
                    size_t paste_index)
-      : AppMenuView(menu, menu_model) {
+      : AppMenuView(menu) {
     const auto cancel_and_evaluate =
         [](AppMenu* menu, ButtonMenuItemModel* menu_model, size_t index) {
           menu->CancelAndEvaluate(menu_model, index);
@@ -649,17 +646,18 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
     CreateAndConfigureButton(
         base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
                             menu_model, cut_index),
-        IDS_CUT, InMenuButtonBackground::ButtonType::kLeadingBorder, cut_index);
+        IDS_CUT, InMenuButtonBackground::ButtonType::kLeadingBorder, menu_model,
+        cut_index);
     CreateAndConfigureButton(
         base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
                             menu_model, copy_index),
         IDS_COPY, InMenuButtonBackground::ButtonType::kLeadingBorder,
-        copy_index);
+        menu_model, copy_index);
     CreateAndConfigureButton(
         base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
                             menu_model, paste_index),
         IDS_PASTE, InMenuButtonBackground::ButtonType::kLeadingBorder,
-        paste_index);
+        menu_model, paste_index);
   }
   CutCopyPasteView(const CutCopyPasteView&) = delete;
   CutCopyPasteView& operator=(const CutCopyPasteView&) = delete;
@@ -713,7 +711,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
            size_t decrement_index,
            size_t increment_index,
            size_t fullscreen_index)
-      : AppMenuView(menu, menu_model) {
+      : AppMenuView(menu) {
     browser_zoom_subscription_ =
         zoom::ZoomEventManager::GetForBrowserContext(
             menu->browser_->GetProfile())
@@ -733,7 +731,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     decrement_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, decrement_index),
         IDS_ZOOM_MINUS2, InMenuButtonBackground::ButtonType::kNoBorder,
-        decrement_index, IDS_ACCNAME_ZOOM_MINUS2,
+        menu_model, decrement_index, IDS_ACCNAME_ZOOM_MINUS2,
         /*add_accelerator_text=*/false,
         /*use_accessible_name_as_tooltip_text=*/true,
         /*vector_icon=*/
@@ -770,7 +768,8 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     increment_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, increment_index),
         IDS_ZOOM_PLUS2, InMenuButtonBackground::ButtonType::kNoBorder,
-        increment_index, IDS_ACCNAME_ZOOM_PLUS2, /*add_accelerator_text=*/false,
+        menu_model, increment_index, IDS_ACCNAME_ZOOM_PLUS2,
+        /*add_accelerator_text=*/false,
         /*use_accessible_name_as_tooltip_text=*/true,
         /*vector_icon=*/
         features::IsRoundedIconsEnabled() ? kAddIcon
@@ -1475,8 +1474,9 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
     bookmark_menu_delegate_.reset();
   }
 
-  if (selected_menu_model_) {
-    selected_menu_model_->ActivatedAt(selected_index_);
+  if (ButtonMenuItemModel* selected_menu_model =
+          std::exchange(selected_menu_model_, nullptr)) {
+    selected_menu_model->ActivatedAt(selected_index_);
   }
 }
 
