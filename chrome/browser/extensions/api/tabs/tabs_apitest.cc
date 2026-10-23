@@ -188,13 +188,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Pinned) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
 }
 
-// Flakes reported on Linux debug and Mac, see crbug.com/40936001.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_MAC)
-#define MAYBE_Move DISABLED_Move
-#else
-#define MAYBE_Move Move
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Move) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Move) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/move")) << message_;
 }
 
