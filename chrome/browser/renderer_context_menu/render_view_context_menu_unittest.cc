@@ -3843,6 +3843,22 @@ TEST_F(RenderViewContextMenuOrderTest, CanvasMenu_Order) {
                                    IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, PluginMenu_Order) {
+  content::ContextMenuParams params = CreateParams(0);
+  params.page_url = GURL("https://www.example.com/");
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kPlugin;
+  params.src_url = GURL("https://www.example.com/plugin.pdf");
+  params.media_flags = blink::ContextMenuData::kMediaCanSave |
+                       blink::ContextMenuData::kMediaCanRotate;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAre(IDC_CONTENT_CONTEXT_SAVEPLUGINAS, IDC_PRINT,
+                                   kSeparatorId, IDC_CONTENT_CONTEXT_ROTATECW,
+                                   IDC_CONTENT_CONTEXT_ROTATECCW, kSeparatorId,
+                                   IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
