@@ -183,6 +183,7 @@ class SelectionOverlayController
   void ExecuteSuggestedAction(
       const base::UnguessableToken& action_id,
       mojo::GenericPendingAssociatedReceiver channel) override;
+  void OpenSettings() override;
 
  private:
   void OnScreenshotTaken(const SkBitmap& bitmap);

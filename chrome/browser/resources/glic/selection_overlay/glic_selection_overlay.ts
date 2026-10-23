@@ -19,7 +19,6 @@ import type {OverlayBorderGlowElement} from '/lens/overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from '/lens/overlay_shimmer_canvas.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from '/lens/post_selection_renderer.js';
 import type {RegionSelectionElement} from '/lens/region_selection.js';
-import {RegionSource} from '/lens/selection_overlay_base_handler.js';
 import {SelectionOverlayBaseLitElement} from '/lens/selection_overlay_base_lit.js';
 import {DragFeature, GestureState} from '/lens/selection_utils.js';
 
@@ -634,14 +633,8 @@ export class GlicSelectionOverlayElement extends
     event.stopPropagation();
   }
 
-  protected onCloseRegionClick(event: Event) {
-    if (this.activeRegionId) {
-      const source =
-          (event instanceof PointerEvent && event.pointerType === '') ?
-          RegionSource.KEYBOARD :
-          RegionSource.CLICK;
-      this.baseHandler.deleteRegion(this.activeRegionId, source);
-    }
+  protected onSettingsClick(event: Event) {
+    (this.baseHandler as SelectionOverlayBaseHandlerImpl).openSettings();
     event.stopPropagation();
   }
 

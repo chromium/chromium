@@ -337,7 +337,7 @@
 }
 
 .action-chip,
-.close-region-button {
+.settings-button {
   --cr-button-background-color: var(--cr-fallback-color-surface);
   --cr-button-border: none;
   --cr-button-height: 30px;
@@ -355,21 +355,21 @@
   padding-inline-start: 5px;
 }
 
-.close-region-button {
+.settings-button {
   padding: 5px;
   width: 30px;
 }
 
 /* The hover background is a capsule inset from the edge of the button. */
 .action-chip::part(hoverBackground),
-.close-region-button::part(hoverBackground) {
+.settings-button::part(hoverBackground) {
   background: var(--cr-hover-on-subtle-background-color);
   border-radius: inherit;
   inset: 2px;
 }
 
 .chip-icon,
-.close-region-icon {
+.settings-icon {
   background-color: var(--cr-fallback-color-on-surface-subtle);
   flex-shrink: 0;
   height: var(--cr-icon-size);
@@ -387,8 +387,8 @@
   mask-image: url('/spark_mono.svg');
 }
 
-.close-region-icon {
-  mask-image: url('/lens/icon_clear.svg');
+.settings-icon {
+  mask-image: url('/settings.svg');
 }
 
 #inlineFulfillmentHost {
@@ -494,7 +494,7 @@
   #cursorImg,
   #inlineFulfillmentHost .ask-gemini-icon,
   .chip-icon,
-  .close-region-icon {
+  .settings-icon {
     /* Set the icon color to hcm (high contrast mode) value. */
     background-color: ButtonText;
   }
@@ -502,7 +502,7 @@
   /* Add a border since the shadow is not visible in hcm. */
   #inlineFulfillmentHost,
   .action-chip,
-  .close-region-button {
+  .settings-button {
     border: 1px solid ButtonBorder;
   }
 }
