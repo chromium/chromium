@@ -1192,7 +1192,6 @@ void X11Window::SetOpaqueRegion(
 void X11Window::SetInputRegion(
     std::optional<std::vector<gfx::Rect>> region_px) {
   if (!region_px.has_value() || region_px->empty()) {
-    // Reset the input region.
     connection_->shape().Mask({
         .operation = x11::Shape::So::Set,
         .destination_kind = x11::Shape::Sk::Input,
@@ -1200,16 +1199,22 @@ void X11Window::SetInputRegion(
     });
     return;
   }
-  DCHECK_EQ(1u, region_px->size());
+
+  // The rectangles in a Shape::Rectangles request must be in YXBanded order,
+  // so build a region from all of them rather than assuming there is exactly
+  // one rectangle.
+  SkRegion native_region;
+  for (const gfx::Rect& rect : *region_px) {
+    native_region.op(gfx::RectToSkIRect(rect), SkRegion::kUnion_Op);
+  }
+  std::unique_ptr<std::vector<x11::Rectangle>> region =
+      x11::CreateRegionFromSkRegion(native_region);
   connection_->shape().Rectangles(x11::Shape::RectanglesRequest{
       .operation = x11::Shape::So::Set,
       .destination_kind = x11::Shape::Sk::Input,
       .ordering = x11::ClipOrdering::YXBanded,
       .destination_window = xwindow_,
-      .rectangles = {{static_cast<int16_t>((*region_px)[0].x()),
-                      static_cast<int16_t>((*region_px)[0].y()),
-                      static_cast<uint16_t>((*region_px)[0].width()),
-                      static_cast<uint16_t>((*region_px)[0].height())}},
+      .rectangles = *region,
   });
 }
 

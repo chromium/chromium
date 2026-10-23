@@ -221,6 +221,22 @@ std::vector<gfx::Rect> GetShapeRects(x11::Window window) {
   return shape_vector;
 }
 
+// Returns the list of rectangles which describe |window|'s input region via the
+// X shape extension.
+std::vector<gfx::Rect> GetInputShapeRects(x11::Window window) {
+  std::vector<gfx::Rect> shape_vector;
+  if (auto shape = x11::Connection::Get()
+                       ->shape()
+                       .GetRectangles({window, x11::Shape::Sk::Input})
+                       .Sync()) {
+    shape_vector.reserve(shape->rectangles.size());
+    for (const auto& rect : shape->rectangles) {
+      shape_vector.emplace_back(rect.x, rect.y, rect.width, rect.height);
+    }
+  }
+  return shape_vector;
+}
+
 // Returns true if one of |rects| contains point (x,y).
 bool ShapeRectContainsPoint(const std::vector<gfx::Rect>& shape_rects,
                             int x,
@@ -416,6 +432,128 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
   EXPECT_TRUE(ShapeRectContainsPoint(shape_rects, 95, 15));
   EXPECT_TRUE(ShapeRectContainsPoint(shape_rects, 105, 15));
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 500, 500));
+}
+
+// A single-rectangle input region must be applied as one XShape rectangle, and
+// nullopt must reset it back to the whole window.
+TEST_F(X11WindowTest, SetInputRegion) {
+  if (!IsShapeExtensionAvailable()) {
+    return;
+  }
+
+  TestPlatformWindowDelegate delegate;
+  constexpr gfx::Rect kBounds(30, 80, 800, 600);
+  auto window = CreateX11Window(&delegate, kBounds, nullptr);
+  delegate.set_window(window.get());
+  window->Show(false);
+
+  const x11::Window x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_TRUE(x11_window != x11::Window::None);
+
+  auto* connection = x11::Connection::Get();
+  connection->DispatchAll();
+
+  window->SetInputRegion(std::vector<gfx::Rect>{{10, 10, 100, 100}});
+  connection->DispatchAll();
+
+  std::vector<gfx::Rect> input_rects = GetInputShapeRects(x11_window);
+  ASSERT_FALSE(input_rects.empty());
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 10, 10));
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 109, 109));
+  EXPECT_FALSE(ShapeRectContainsPoint(input_rects, 9, 9));
+  EXPECT_FALSE(ShapeRectContainsPoint(input_rects, 110, 110));
+
+  window->SetInputRegion(std::nullopt);
+  connection->DispatchAll();
+
+  input_rects = GetInputShapeRects(x11_window);
+  ASSERT_FALSE(input_rects.empty());
+  const gfx::Size window_size = window->GetBoundsInPixels().size();
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 0, 0));
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, window_size.width() - 1,
+                                     window_size.height() - 1));
+
+  // The delegate outlives the window, so drop its back-pointer first.
+  delegate.set_window(nullptr);
+}
+
+TEST_F(X11WindowTest, SetInputRegionMultipleRects) {
+  if (!IsShapeExtensionAvailable()) {
+    return;
+  }
+
+  TestPlatformWindowDelegate delegate;
+  constexpr gfx::Rect kBounds(30, 80, 800, 600);
+  auto window = CreateX11Window(&delegate, kBounds, nullptr);
+  delegate.set_window(window.get());
+  window->Show(false);
+
+  const x11::Window x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_TRUE(x11_window != x11::Window::None);
+  ASSERT_GE(window->GetBoundsInPixels().width(), 350);
+  ASSERT_GE(window->GetBoundsInPixels().height(), 350);
+
+  auto* connection = x11::Connection::Get();
+  connection->DispatchAll();
+
+  // Deliberately not in YXBanded order.
+  window->SetInputRegion(std::vector<gfx::Rect>{
+      {300, 300, 50, 50}, {0, 0, 100, 100}, {120, 0, 100, 100}});
+  connection->DispatchAll();
+
+  std::vector<gfx::Rect> input_rects = GetInputShapeRects(x11_window);
+  ASSERT_FALSE(input_rects.empty());
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 10, 10));
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 130, 10));
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 310, 310));
+  EXPECT_FALSE(ShapeRectContainsPoint(input_rects, 110, 10));
+  EXPECT_FALSE(ShapeRectContainsPoint(input_rects, 10, 200));
+  EXPECT_FALSE(ShapeRectContainsPoint(input_rects, 400, 400));
+
+  window->SetInputRegion(
+      std::vector<gfx::Rect>{{0, 0, 100, 100}, {50, 50, 100, 100}});
+  connection->DispatchAll();
+
+  input_rects = GetInputShapeRects(x11_window);
+  ASSERT_FALSE(input_rects.empty());
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 10, 10));
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 60, 60));
+  EXPECT_TRUE(ShapeRectContainsPoint(input_rects, 140, 140));
+  EXPECT_FALSE(ShapeRectContainsPoint(input_rects, 160, 160));
+
+  delegate.set_window(nullptr);
+}
+
+// A non-empty list of degenerate rectangles produces an empty input region
+// rather than resetting it to the whole window.
+TEST_F(X11WindowTest, SetInputRegionDegenerateRects) {
+  if (!IsShapeExtensionAvailable()) {
+    return;
+  }
+
+  TestPlatformWindowDelegate delegate;
+  constexpr gfx::Rect kBounds(30, 80, 800, 600);
+  auto window = CreateX11Window(&delegate, kBounds, nullptr);
+  delegate.set_window(window.get());
+  window->Show(false);
+
+  const auto x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_NE(x11_window, x11::Window::None);
+
+  auto* connection = x11::Connection::Get();
+  connection->DispatchAll();
+
+  // A normal region is observable, so the empty result below is meaningful.
+  window->SetInputRegion(std::vector<gfx::Rect>{{10, 10, 100, 100}});
+  connection->DispatchAll();
+  ASSERT_FALSE(GetInputShapeRects(x11_window).empty());
+
+  window->SetInputRegion(std::vector<gfx::Rect>{{0, 0, 0, 0}});
+  connection->DispatchAll();
+
+  EXPECT_TRUE(GetInputShapeRects(x11_window).empty());
+
+  delegate.set_window(nullptr);
 }
 
 // Flaky on Linux ASAN and ChromeOS. https://crbug.com/1291868
