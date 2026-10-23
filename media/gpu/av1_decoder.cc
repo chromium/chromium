@@ -244,11 +244,11 @@ void AV1Decoder::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearCurrentFrame();
 
-  // We must reset the |current_sequence_header_| to ensure we don't try to
-  // decode frames using an incorrect sequence header. If the first
-  // DecoderBuffer after the reset doesn't contain a sequence header, we'll just
-  // skip it and will keep skipping until we get a sequence header.
-  current_sequence_header_.reset();
+  // We must require a new sequence header after a reset to ensure we don't try
+  // to decode frames using an incorrect sequence header, while keeping
+  // `current_sequence_header_` so the first post-reset sequence header can be
+  // compared against the current hardware configuration.
+  need_sequence_header_ = true;
   stream_id_ = 0;
   on_error_ = false;
 
@@ -285,8 +285,9 @@ void AV1Decoder::SetStream(int32_t id,
     return;
   }
 
-  if (current_sequence_header_)
+  if (current_sequence_header_ && !need_sequence_header_) {
     parser_->set_sequence_header(*current_sequence_header_);
+  }
   if (decoder_buffer_->decrypt_config()) {
     decrypt_config_ = decoder_buffer_->decrypt_config()->Clone();
   } else {
@@ -453,6 +454,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
                                          new_sequence_header);
 
         current_sequence_header_ = new_sequence_header;
+        need_sequence_header_ = false;
         ClearReferenceFrames();
 
         // Issue kConfigChange if the sequence header changed significantly,
@@ -483,7 +485,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       }
     }
 
-    if (!current_sequence_header_) {
+    if (need_sequence_header_) {
       // Decoding is not doable because we haven't received a sequence header.
       // This occurs when seeking a video.
       DVLOG(3) << "Discarded the current frame because no sequence header has "

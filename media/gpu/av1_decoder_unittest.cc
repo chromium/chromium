@@ -841,6 +841,86 @@ TEST_F(AV1DecoderTest, ConfigChangeOnSequenceHeaderToolFlags) {
             seq_header_b.use_128x128_superblock);
 }
 
+// Same as ConfigChangeOnSequenceHeaderToolFlags, but the new coded video
+// sequence arrives right after a Reset() (e.g. on seek or Flush()). Reset()
+// does not destroy the accelerator's hardware context, so a coding-tool flag
+// change in sequence B must still emit kConfigChange before any frame of B is
+// submitted.
+TEST_F(AV1DecoderTest, ResetThenConfigChangeOnSequenceHeaderToolFlags) {
+  constexpr uint8_t kSequenceA[] = {0x12, 0x00, 0x0a, 0x0c, 0x00, 0x00, 0x00,
+                                    0x63, 0xfc, 0x13, 0xfc, 0x0b, 0x3c, 0x01,
+                                    0x00, 0x14, 0x32, 0x08, 0x10, 0x46, 0x40,
+                                    0x00, 0x00, 0x18, 0x00, 0x80};
+  constexpr uint8_t kSequenceB[] = {0x12, 0x00, 0x0a, 0x0d, 0x00, 0x00, 0x00,
+                                    0x63, 0xfc, 0x13, 0xfc, 0x0b, 0x3c, 0xff,
+                                    0xcc, 0x00, 0xa0, 0x32, 0x09, 0x10, 0x00,
+                                    0x8c, 0x80, 0x00, 0x00, 0x30, 0x00, 0x80};
+  constexpr gfx::Size kFrameSize(1280, 720);
+
+  const std::vector<DecodeResult> expected = {
+      DecodeResult::kConfigChange, DecodeResult::kRanOutOfStreamData};
+
+  // Use a non-zero stream id so that the Reset() helper's sanity checks apply.
+  bitstream_id_ = 1;
+
+  libgav1::ObuSequenceHeader seq_header_a = {};
+  {
+    ::testing::InSequence sequence;
+    EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_))
+        .WillOnce(Return(base::MakeRefCounted<FakeAV1Picture>()));
+    EXPECT_CALL(*mock_accelerator_, SubmitDecode(_, _, _, _, _))
+        .WillOnce(DoAll(SaveArg<1>(&seq_header_a),
+                        Return(AV1Decoder::AV1Accelerator::Status::kOk)));
+    EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).WillOnce(Return(true));
+    auto buffer = DecoderBuffer::CopyFrom(kSequenceA);
+    ASSERT_EQ(Decode(buffer), expected);
+    testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+  }
+  ASSERT_FALSE(seq_header_a.enable_order_hint);
+  ASSERT_FALSE(seq_header_a.enable_ref_frame_mvs);
+  ASSERT_EQ(decoder_->GetPicSize(), kFrameSize);
+
+  Reset();
+  EXPECT_EQ(decoder_->GetPicSize(), kFrameSize);
+  EXPECT_EQ(decoder_->GetProfile(), AV1PROFILE_PROFILE_MAIN);
+  EXPECT_EQ(decoder_->GetBitDepth(), 8u);
+
+  // A frame OBU without a preceding sequence header OBU after Reset() must not
+  // be decoded using the retained pre-reset sequence header. Bytes 16..26 of
+  // kSequenceA are the standalone OBU_FRAME (key frame) without the leading
+  // temporal delimiter and sequence header OBUs.
+  {
+    EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_)).Times(0);
+    EXPECT_CALL(*mock_accelerator_, SubmitDecode(_, _, _, _, _)).Times(0);
+    auto headerless_frame =
+        DecoderBuffer::CopyFrom(base::span(kSequenceA).subspan(16u));
+    EXPECT_EQ(Decode(headerless_frame),
+              std::vector<DecodeResult>{DecodeResult::kDecodeError});
+    testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+  }
+
+  decoder_->Reset();
+
+  libgav1::ObuSequenceHeader seq_header_b = {};
+  {
+    ::testing::InSequence sequence;
+    EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_))
+        .WillOnce(Return(base::MakeRefCounted<FakeAV1Picture>()));
+    EXPECT_CALL(*mock_accelerator_, SubmitDecode(_, _, _, _, _))
+        .WillOnce(DoAll(SaveArg<1>(&seq_header_b),
+                        Return(AV1Decoder::AV1Accelerator::Status::kOk)));
+    EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).WillOnce(Return(true));
+    auto buffer = DecoderBuffer::CopyFrom(kSequenceB);
+    EXPECT_EQ(Decode(buffer), expected);
+    testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+  }
+  EXPECT_TRUE(seq_header_b.enable_order_hint);
+  EXPECT_TRUE(seq_header_b.enable_ref_frame_mvs);
+  EXPECT_NE(seq_header_a.order_hint_bits, seq_header_b.order_hint_bits);
+  EXPECT_EQ(seq_header_a.max_frame_width, seq_header_b.max_frame_width);
+  EXPECT_EQ(seq_header_a.max_frame_height, seq_header_b.max_frame_height);
+}
+
 TEST_F(AV1DecoderTest, Reset) {
   constexpr gfx::Size kFrameSize(320, 240);
   constexpr gfx::Size kRenderSize(320, 240);
