@@ -275,6 +275,7 @@ struct AccessibilityPageObjects {
   std::vector<AccessibilityImageInfo> images;
   std::vector<AccessibilityHighlightInfo> highlights;
   std::vector<AccessibilityFormGraphicInfo> graphics;
+  std::vector<AccessibilityLineSegment> line_segments;
 };
 
 enum class FocusObjectType {

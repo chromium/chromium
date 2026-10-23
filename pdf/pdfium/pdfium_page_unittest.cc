@@ -715,8 +715,8 @@ TEST_P(PDFiumPageHeuristicEnhancementsTest, GetLineSegmentInfo) {
     return gfx::PointF(x * 4.0f / 3.0f, (400.0f - y) * 4.0f / 3.0f);
   };
 
-  // Segments appear in path order. The curve and the filled-only rectangle
-  // are skipped.
+  // Segments appear in path order. The curve, the filled-only rectangle, and
+  // the zero-length line are skipped.
   const auto kExpectedSegments = std::to_array<AccessibilityLineSegment>({
       // 3x3 grid.
       {to_pixel(50, 300), to_pixel(350, 300)},

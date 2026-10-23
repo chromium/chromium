@@ -84,6 +84,7 @@ source_set("unit_tests") {
 
   deps = [
     ":renderer",
+    "//base/test:test_support",
     "//pdf:accessibility",
     "//pdf:pdf_accessibility_constants_helper",
     "//pdf/mojom",

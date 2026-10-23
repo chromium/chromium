@@ -5,6 +5,7 @@
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <map>
 #include <optional>
@@ -417,6 +418,16 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
       index += graphic.text_range.count;
       if (graphic.text_range.count == 0 || !index.IsValid() ||
           index.ValueOrDie() > text_runs.size()) {
+        return false;
+      }
+    }
+
+    for (const chrome_pdf::AccessibilityLineSegment& segment :
+         page_objects.line_segments) {
+      if (!std::isfinite(segment.start.x()) ||
+          !std::isfinite(segment.start.y()) ||
+          !std::isfinite(segment.end.x()) || !std::isfinite(segment.end.y()) ||
+          segment.start == segment.end) {
         return false;
       }
     }

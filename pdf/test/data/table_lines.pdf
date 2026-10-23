@@ -13,6 +13,7 @@
 % 7. Paths without straight stroked segments, which must be ignored:
 %    - A cubic Bezier curve
 %    - A filled-only rectangle
+%    - A zero-length line
 1 0 obj <<
   /Type /Catalog
   /Pages 2 0 R
@@ -32,7 +33,7 @@ endobj
 >>
 endobj
 4 0 obj <<
-  /Length 579
+  /Length 597
 >>
 stream
 % 1. 3x3 grid
@@ -59,19 +60,20 @@ q 2 0 0 2 10 10 cm 20 30 m 70 30 l S Q
 % 7. Ignored paths
 200 50 m 220 80 240 80 260 50 c S
 300 60 40 20 re f
+10 20 m 10 20 l S
 endstream
 endobj
 xref
 0 5
 0000000000 65535 f 
-0000000659 00000 n 
-0000000712 00000 n 
-0000000801 00000 n 
-0000000870 00000 n 
+0000000685 00000 n 
+0000000738 00000 n 
+0000000827 00000 n 
+0000000896 00000 n 
 trailer <<
   /Root 1 0 R
   /Size 5
 >>
 startxref
-1502
+1546
 %%EOF

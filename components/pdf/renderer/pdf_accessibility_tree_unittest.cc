@@ -4,11 +4,16 @@
 
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 
+#include <limits>
 #include <utility>
 
+#include "base/containers/to_vector.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace pdf {
@@ -298,6 +303,54 @@ TEST(PdfAccessibilityTreeUnitTest, AreStylesEquivalent) {
   // Both bold and italic.
   style1.is_italic = true;
   EXPECT_TRUE(PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2));
+}
+
+TEST(PdfAccessibilityTreeUnitTest, LineSegmentsValidation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  const std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs = {
+      kFirstTextRun, kSecondTextRun};
+  const std::vector<chrome_pdf::AccessibilityCharInfo> chars =
+      base::ToVector(kDummyCharsData);
+
+  // Valid segments, including diagonal and reversed ones.
+  chrome_pdf::AccessibilityPageObjects valid_objects;
+  valid_objects.line_segments = {
+      {gfx::PointF(10.0f, 20.0f), gfx::PointF(50.0f, 20.0f)},
+      {gfx::PointF(30.0f, 10.0f), gfx::PointF(30.0f, 40.0f)},
+      {gfx::PointF(10.0f, 10.0f), gfx::PointF(40.0f, 30.0f)},
+      {gfx::PointF(50.0f, 20.0f), gfx::PointF(10.0f, 20.0f)},
+  };
+  EXPECT_TRUE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                          valid_objects));
+
+  // Invalid segment: zero length.
+  chrome_pdf::AccessibilityPageObjects invalid_zero_length;
+  invalid_zero_length.line_segments = {
+      {gfx::PointF(10.0f, 20.0f), gfx::PointF(10.0f, 20.0f)},
+  };
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(
+      text_runs, chars, invalid_zero_length));
+
+  // Invalid segment: NaN coordinate.
+  chrome_pdf::AccessibilityPageObjects invalid_nan;
+  invalid_nan.line_segments = {
+      {gfx::PointF(std::numeric_limits<float>::quiet_NaN(), 20.0f),
+       gfx::PointF(50.0f, 20.0f)},
+  };
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           invalid_nan));
+
+  // Invalid segment: infinite coordinate.
+  chrome_pdf::AccessibilityPageObjects invalid_inf;
+  invalid_inf.line_segments = {
+      {gfx::PointF(30.0f, 10.0f),
+       gfx::PointF(30.0f, std::numeric_limits<float>::infinity())},
+  };
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           invalid_inf));
 }
 
 }  // namespace pdf

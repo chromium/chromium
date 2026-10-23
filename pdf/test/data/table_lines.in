@@ -12,6 +12,7 @@
 % 7. Paths without straight stroked segments, which must be ignored:
 %    - A cubic Bezier curve
 %    - A filled-only rectangle
+%    - A zero-length line
 {{object 1 0}} <<
   /Type /Catalog
   /Pages 2 0 R
@@ -58,6 +59,7 @@ q 2 0 0 2 10 10 cm 20 30 m 70 30 l S Q
 % 7. Ignored paths
 200 50 m 220 80 240 80 260 50 c S
 300 60 40 20 re f
+10 20 m 10 20 l S
 endstream
 endobj
 {{xref}}
