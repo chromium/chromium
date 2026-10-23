@@ -764,7 +764,10 @@ void GlicNoWebviewContentsManager::Zoom(mojom::ZoomAction zoom_action,
 void GlicNoWebviewContentsManager::SetErrorCallback(
     base::RepeatingClosure callback) {
   error_callback_ = std::move(callback);
-  if (ShouldReloadOnShow()) {
+  // `GlicWebContentsWarmingPool::TakeContainer()` passes a null `callback` to
+  // clear the warming pool's error handler; only post a task if a non-null
+  // callback was registered.
+  if (error_callback_ && ShouldReloadOnShow()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                              error_callback_);
   }
