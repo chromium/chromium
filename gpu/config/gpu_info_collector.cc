@@ -929,16 +929,38 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   };
 #endif
 
-  for (wgpu::FeatureLevel featureLevel :
-       {wgpu::FeatureLevel::Compatibility, wgpu::FeatureLevel::Core}) {
-    adapter_options.featureLevel = featureLevel;
+  // Compatibility feature level is only relevant for backends that cannot
+  // support Core (such as OpenGLES, OpenGL, or D3D11). Probing Core backends
+  // (D3D12, Vulkan, Metal) for Compatibility mode is redundant because they
+  // always support Core and are discarded below. Only probe Compatibility mode
+  // for backends that may be Compatibility-only.
+  struct AdapterQuery {
+    wgpu::FeatureLevel feature_level;
+    wgpu::BackendType backend_type;
+  };
+  const AdapterQuery kQueries[] = {
+      {wgpu::FeatureLevel::Core, wgpu::BackendType::Undefined},
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+      {wgpu::FeatureLevel::Compatibility, wgpu::BackendType::OpenGLES},
+#endif
+#if BUILDFLAG(IS_WIN)
+      {wgpu::FeatureLevel::Compatibility, wgpu::BackendType::D3D11},
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+      {wgpu::FeatureLevel::Compatibility, wgpu::BackendType::OpenGL},
+#endif
+  };
+
+  for (const auto& query : kQueries) {
+    adapter_options.featureLevel = query.feature_level;
+    adapter_options.backendType = query.backend_type;
     std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
         reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
     for (dawn::native::Adapter& native_adapter : adapters) {
       wgpu::Adapter adapter(native_adapter.Get());
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
-      if (featureLevel == wgpu::FeatureLevel::Compatibility &&
+      if (query.feature_level == wgpu::FeatureLevel::Compatibility &&
           adapter.HasFeature(wgpu::FeatureName::CoreFeaturesAndLimits)) {
         // If this adapter also supports Core feature level, then skip listing it as Compat
         // mode adapter.
@@ -951,7 +973,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         std::string gpu_str = GetDawnAdapterTypeString(info.adapterType);
         gpu_str += " " + GetDawnBackendTypeString(info.backendType);
         gpu_str += " - " + std::string(info.device);
-        if (featureLevel == wgpu::FeatureLevel::Compatibility) {
+        if (query.feature_level == wgpu::FeatureLevel::Compatibility) {
           gpu_str += " (Compatibility Mode)";
         }
         dawn_info_list->push_back(gpu_str);
