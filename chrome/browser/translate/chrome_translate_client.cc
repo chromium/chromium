@@ -210,18 +210,6 @@ void ChromeTranslateClient::RevertPdfTranslation() {
     opened_side_panel_for_pdf_translation_ = false;
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_contents());
-    // Reading Mode is opened in the side panel for the translation, but the
-    // user may have switched it to the immersive overlay since, so close it in
-    // either presentation.
-    if (tab) {
-      if (auto* controller = ReadAnythingController::From(tab);
-          controller &&
-          controller->GetPresentationState() ==
-              ReadAnythingController::PresentationState::kInImmersiveOverlay) {
-        controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
-        return;
-      }
-    }
     SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
     if (side_panel_ui &&
         side_panel_ui->IsSidePanelEntryShowing(
@@ -234,8 +222,7 @@ void ChromeTranslateClient::RevertPdfTranslation() {
 
 void ChromeTranslateClient::OnSidePanelClosed() {
 #if !BUILDFLAG(IS_ANDROID)
-  // Revert translation specifically for PDF documents when Reading Mode UI
-  // closes.
+  // Revert translation specifically for PDF documents when Reading Mode UI closes.
   const bool is_pdf =
       translate_driver_ &&
       translate_driver_->GetContentsMimeType() == translate::kPdfMimeType;

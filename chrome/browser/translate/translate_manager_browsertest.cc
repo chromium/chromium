@@ -1665,33 +1665,6 @@ IN_PROC_BROWSER_TEST_F(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TranslateManagerReadingModeBrowserTest,
-    RevertPdfTranslationClosesImmersiveIfOpenedByPdfTranslation) {
-  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
-  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
-
-  chrome_translate_client->TriggerPdfTranslation();
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
-
-  // The user switches Reading Mode from the side panel to the immersive
-  // overlay.
-  auto* controller = ReadAnythingController::From(
-      browser()->tab_strip_model()->GetActiveTab());
-  ASSERT_TRUE(controller);
-  controller->TogglePresentation(/*is_user_initiated=*/false);
-  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
-    return controller->GetPresentationState() ==
-           ReadAnythingController::PresentationState::kInImmersiveOverlay;
-  }));
-
-  // Reverting the translation should still close Reading Mode.
-  chrome_translate_client->RevertPdfTranslation();
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
-}
-
 IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
                        RevertPdfTranslationDoesNotCloseSidePanelIfAlreadyOpen) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
