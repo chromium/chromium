@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_page.h"
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
@@ -126,6 +128,19 @@ constexpr struct {
     {5, 2, {1399, 46}},  // Super wide
     {6, 2, {46, 1399}},  // Super tall
 };
+
+// Expects `actual` to match `expected`, comparing points within 1 px.
+void ExpectLineSegmentsNear(base::span<const AccessibilityLineSegment> expected,
+                            base::span<const AccessibilityLineSegment> actual) {
+  ASSERT_EQ(expected.size(), actual.size());
+  for (size_t i = 0; i < expected.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << "at index " << i);
+    EXPECT_NEAR(expected[i].start.x(), actual[i].start.x(), 1.0f);
+    EXPECT_NEAR(expected[i].start.y(), actual[i].start.y(), 1.0f);
+    EXPECT_NEAR(expected[i].end.x(), actual[i].end.x(), 1.0f);
+    EXPECT_NEAR(expected[i].end.y(), actual[i].end.y(), 1.0f);
+  }
+}
 
 }  // namespace
 
@@ -679,6 +694,79 @@ TEST_P(PDFiumPageHeuristicEnhancementsTest, GetGraphicInfoWithRecursiveForms) {
   EXPECT_EQ(2u, graphics[0].text_range.index);
   EXPECT_EQ(1u, graphics[0].text_range.count);
   EXPECT_EQ(gfx::RectF(70.0f, 321.0f, 164.0f, 84.0f), graphics[0].bounds);
+}
+
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetLineSegmentInfo) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("table_lines.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  std::vector<AccessibilityLineSegment> line_segments =
+      page.GetLineSegmentInfo();
+  if (!HeuristicEnhancementsEnabled()) {
+    EXPECT_TRUE(line_segments.empty());
+    return;
+  }
+
+  // Converts PDF coordinates on the 400x400 pt page to pixels.
+  auto to_pixel = [](float x, float y) {
+    return gfx::PointF(x * 4.0f / 3.0f, (400.0f - y) * 4.0f / 3.0f);
+  };
+
+  // Segments appear in path order. The curve and the filled-only rectangle
+  // are skipped.
+  const auto kExpectedSegments = std::to_array<AccessibilityLineSegment>({
+      // 3x3 grid.
+      {to_pixel(50, 300), to_pixel(350, 300)},
+      {to_pixel(50, 280), to_pixel(350, 280)},
+      {to_pixel(50, 260), to_pixel(350, 260)},
+      {to_pixel(50, 240), to_pixel(350, 240)},
+      {to_pixel(50, 240), to_pixel(50, 300)},
+      {to_pixel(150, 240), to_pixel(150, 300)},
+      {to_pixel(250, 240), to_pixel(250, 300)},
+      {to_pixel(350, 240), to_pixel(350, 300)},
+      // Touching segments.
+      {to_pixel(50, 200), to_pixel(200, 200)},
+      {to_pixel(200, 200), to_pixel(350, 200)},
+      // Stroked rectangle.
+      {to_pixel(50, 120), to_pixel(350, 120)},
+      {to_pixel(350, 120), to_pixel(350, 160)},
+      {to_pixel(350, 160), to_pixel(50, 160)},
+      {to_pixel(50, 160), to_pixel(50, 120)},
+      // Transformed line.
+      {to_pixel(50, 70), to_pixel(150, 70)},
+      // Closed subpath starting with a curve.
+      {to_pixel(360, 30), to_pixel(360, 10)},
+      {to_pixel(360, 10), to_pixel(300, 10)},
+      // Diagonal line.
+      {to_pixel(50, 50), to_pixel(150, 90)},
+      // Short line.
+      {to_pixel(300, 50), to_pixel(305, 50)},
+  });
+
+  ExpectLineSegmentsNear(kExpectedSegments, line_segments);
+}
+
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetLineSegmentInfoCached) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("table_lines.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  EXPECT_EQ(page.GetLineSegmentInfo(), page.GetLineSegmentInfo());
+}
+
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetLineSegmentInfoNoPaths) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  EXPECT_TRUE(page.GetLineSegmentInfo().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

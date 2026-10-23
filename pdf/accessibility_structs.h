@@ -16,6 +16,7 @@
 #include "pdf/pdf_accessibility_constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -248,6 +249,17 @@ struct AccessibilityFormGraphicInfo {
   // Bounding box of the graphic.
   gfx::RectF bounds;
   AccessibilityTextRunRangeInfo text_range;
+};
+
+// A straight line segment stroked on a page, such as a table border, column
+// divider, or decorative separator, in the same pixel coordinates as
+// `AccessibilityTextRunInfo::bounds`.
+struct AccessibilityLineSegment {
+  friend bool operator==(const AccessibilityLineSegment&,
+                         const AccessibilityLineSegment&) = default;
+
+  gfx::PointF start;
+  gfx::PointF end;
 };
 
 struct AccessibilityPageObjects {

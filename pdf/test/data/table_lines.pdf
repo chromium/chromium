@@ -1,0 +1,77 @@
+%PDF-1.7
+% ò¤ô
+% Exercises extraction of straight line segments from top-level path objects.
+%
+% The page contains:
+% 1. A 3x3 grid of separate stroked lines (4 horizontals and 4 verticals).
+% 2. A horizontal line drawn as two touching segments.
+% 3. A stroked rectangle (yielding 4 edges).
+% 4. A transformed line under a 2x scale and translation matrix.
+% 5. A closed subpath that starts with a curve (yielding 1 vertical edge and a
+%    horizontal closing edge back to the subpath start).
+% 6. A diagonal line and a short line.
+% 7. Paths without straight stroked segments, which must be ignored:
+%    - A cubic Bezier curve
+%    - A filled-only rectangle
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 400 400]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 4 0 R
+>>
+endobj
+4 0 obj <<
+  /Length 579
+>>
+stream
+% 1. 3x3 grid
+50 300 m 350 300 l S
+50 280 m 350 280 l S
+50 260 m 350 260 l S
+50 240 m 350 240 l S
+50 240 m 50 300 l S
+150 240 m 150 300 l S
+250 240 m 250 300 l S
+350 240 m 350 300 l S
+% 2. Touching segments
+50 200 m 200 200 l S
+200 200 m 350 200 l S
+% 3. Stroked rectangle
+50 120 300 40 re S
+% 4. Transformed line
+q 2 0 0 2 10 10 cm 20 30 m 70 30 l S Q
+% 5. Closed subpath starting with a curve
+300 10 m 320 30 340 30 360 30 c 360 10 l h S
+% 6. Diagonal and short lines
+50 50 m 150 90 l S
+300 50 m 305 50 l S
+% 7. Ignored paths
+200 50 m 220 80 240 80 260 50 c S
+300 60 40 20 re f
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000659 00000 n 
+0000000712 00000 n 
+0000000801 00000 n 
+0000000870 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 5
+>>
+startxref
+1502
+%%EOF

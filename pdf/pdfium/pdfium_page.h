@@ -50,6 +50,7 @@ struct AccessibilityCharInfo;
 struct AccessibilityFormGraphicInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
+struct AccessibilityLineSegment;
 struct AccessibilityLinkInfo;
 struct AccessibilityStructureElement;
 struct AccessibilityTextFieldInfo;
@@ -186,6 +187,10 @@ class PDFiumPage {
   // text) on the page, get their underlying text ranges and bounding boxes,
   // sorted by text run index.
   std::vector<AccessibilityFormGraphicInfo> GetFormGraphicInfo();
+
+  // Returns the straight line segments stroked by the page's top-level path
+  // objects, such as table borders.
+  std::vector<AccessibilityLineSegment> GetLineSegmentInfo();
 
   // Traverses the entire struct tree of the page recursively and extracts the
   // text run type or the alt text from struct tree elements corresponding to
@@ -419,6 +424,8 @@ class PDFiumPage {
   void CalculateImages();
   // Calculate the locations and character ranges of graphics on the page.
   void CalculateGraphics();
+  // Returns the straight line segments on the page.
+  std::vector<AccessibilityLineSegment> CalculateLineSegments();
   // Populate annotations like highlight and text field on the page.
   void PopulateAnnotations();
   // Populate `highlights_` with `annot`.
@@ -491,6 +498,8 @@ class PDFiumPage {
   std::vector<Image> images_;
   bool calculated_graphics_ = false;
   std::vector<Graphic> graphics_;
+  // Null until calculated, since a page may have no line segments.
+  std::optional<std::vector<AccessibilityLineSegment>> line_segments_;
   bool calculated_annotations_ = false;
   std::vector<Highlight> highlights_;
   bool calculated_page_object_text_run_breaks_ = false;
