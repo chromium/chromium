@@ -2,4 +2,32 @@ team_email: "dbsc-chrome-team@google.com"
 buganizer_public: {
   component_id: 1455741
 }
-agentic_review {}
+# Gives the AI code reviewer DBSC-specific review guidance for CLs that touch
+# this directory: a skill with the architecture and context, plus
+# knowledge-base rules that all load for any code or proto change under this
+# directory.
+agentic_review: {
+  capability_groups: {
+    review_capability_skills: [
+      "agents/skills/device-bound-sessions-review/SKILL.md"
+    ]
+  }
+  capability_groups: {
+    path_expression: "net/device_bound_sessions/.*\\.(?:cc|h|proto)"
+    rules: "net/device_bound_sessions/knowledge_base/avoid-priority-inversion-in-key-restore.md"
+    rules: "net/device_bound_sessions/knowledge_base/check-protocol-visible-changes-against-the-spec.md"
+    rules: "net/device_bound_sessions/knowledge_base/complete-async-operations-exactly-once.md"
+    rules: "net/device_bound_sessions/knowledge_base/configure-every-fetch-and-recheck-redirects.md"
+    rules: "net/device_bound_sessions/knowledge_base/gate-web-visible-changes-behind-a-feature-flag.md"
+    rules: "net/device_bound_sessions/knowledge_base/keep-jwt-algorithm-key-type-and-audience-consistent.md"
+    rules: "net/device_bound_sessions/knowledge_base/keep-session-errors-and-refresh-results-meaningful.md"
+    rules: "net/device_bound_sessions/knowledge_base/keep-session-store-reads-side-effect-free.md"
+    rules: "net/device_bound_sessions/knowledge_base/keep-sessions-alive-on-transient-errors.md"
+    rules: "net/device_bound_sessions/knowledge_base/make-tests-fail-without-the-change.md"
+    rules: "net/device_bound_sessions/knowledge_base/manage-pre-provisioned-key-lifecycle.md"
+    rules: "net/device_bound_sessions/knowledge_base/never-match-failure-sentinels-against-provided-values.md"
+    rules: "net/device_bound_sessions/knowledge_base/revalidate-sessions-after-reentrant-calls.md"
+    rules: "net/device_bound_sessions/knowledge_base/scope-request-path-histograms-to-dbsc-requests.md"
+    rules: "net/device_bound_sessions/knowledge_base/validate-server-supplied-origins.md"
+  }
+}
