@@ -86,6 +86,11 @@ constexpr CGFloat kButtonVerticalPadding = 12;
 // Duration of the IPH show/hide animation.
 constexpr CGFloat kIPHAnimationDuration = 0.3;
 
+// Background opacity for the open new tab button circle in light and dark
+// modes.
+constexpr CGFloat kOpenNewTabButtonBackgroundLightAlpha = 0.07;
+constexpr CGFloat kOpenNewTabButtonBackgroundDarkAlpha = 0.25;
+
 // Returns the color to be used as foreground color for the buttons.
 UIColor* ButtonsForegroundColor() {
   return IsLightAppBarEnabled() ? [UIColor colorNamed:kGrey900Color]
@@ -114,7 +119,23 @@ UIImageSymbolConfiguration* AppBarSymbolConfiguration() {
 
 // Returns a symbol with the common configuration.
 UIImage* AppBarSymbol(Symbol symbol) {
-  return SymbolWithConfiguration(symbol, AppBarSymbolConfiguration());
+  UIImage* image = SymbolWithConfiguration(symbol, AppBarSymbolConfiguration());
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    if (symbol == SymbolPlusCircleFill) {
+      UIColor* newTabButtonBackgroundColor =
+          [UIColor colorWithDynamicProvider:^UIColor*(
+                       UITraitCollection* traitCollection) {
+            CGFloat alpha =
+                traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+                    ? kOpenNewTabButtonBackgroundDarkAlpha
+                    : kOpenNewTabButtonBackgroundLightAlpha;
+            return [UIColor.blackColor colorWithAlphaComponent:alpha];
+          }];
+      return SymbolWithPalette(
+          image, @[ ButtonsForegroundColor(), newTabButtonBackgroundColor ]);
+    }
+  }
+  return image;
 }
 
 // Returns the font size for the buttons.
@@ -1027,8 +1048,9 @@ UIColor* AssistantHighlightBackgroundColor() {
 // Returns a new "New Tab" button.
 - (UIButton*)createOpenNewTabButton {
   NSString* title = [self openNewTabButtonTitleForCurrentState];
-  UIImage* image = AppBarSymbol(
-      IsFiveButtonAppBarLayoutEnabled() ? SymbolPlus : SymbolPlusInCircle);
+  UIImage* image =
+      AppBarSymbol(IsFiveButtonAppBarLayoutEnabled() ? SymbolPlusCircleFill
+                                                     : SymbolPlusInCircle);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.accessibilityIdentifier = kAppBarNewTabButtonIdentifier;
 
@@ -1124,6 +1146,8 @@ UIColor* AssistantHighlightBackgroundColor() {
   CGFloat activeAlpha = isAssistantButtonHighlighted ? 1.0 : highlightAlpha;
   if (button == _tabGridButton) {
     _tabGridContentView.alpha = activeAlpha;
+  } else if (IsFiveButtonAppBarLayoutEnabled() && button == _openNewTabButton) {
+    button.alpha = activeAlpha;
   }
 
   config.baseForegroundColor =
