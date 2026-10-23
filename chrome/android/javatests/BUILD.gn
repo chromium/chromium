@@ -1876,6 +1876,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetTest.java",
     "src/org/chromium/chrome/test/crash/IntentionalCrashTest.java",
     "src/org/chromium/chrome/test/memory_leaks/ChromeInstrumentationLeaks.java",
+    "src/org/chromium/chrome/test/memory_leaks/LeakCanaryCheckerLeakDetectionTest.java",
     "src/org/chromium/chrome/test/memory_leaks/PublicTransitLeakTest.java",
   ]
 
@@ -1908,6 +1909,8 @@ android_library("chrome_test_java_various") {
     "//components/browser_ui/contacts_picker/android:java",
     "//components/browser_ui/http_auth/android:java",
     "//components/variations:variations_java",
+    "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
+    "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
     "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_java",
