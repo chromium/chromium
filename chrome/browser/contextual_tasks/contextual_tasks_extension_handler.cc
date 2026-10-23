@@ -8,6 +8,7 @@
 #include <iterator>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
@@ -40,10 +41,13 @@
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
 #endif
 
 namespace {
@@ -179,6 +183,33 @@ void ContextualTasksExtensionHandler::BindContextualTasksFactory(
         receiver) {
   contextual_tasks_factory_receiver_.reset();
   contextual_tasks_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ContextualTasksExtensionHandler::BindTrackedElementHandler(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        receiver) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!IsEmbeddedInSidePanel()) {
+    return;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  BrowserWindowInterface* browser_window = GetBrowserWindowInterface();
+  if (!web_contents || !browser_window) {
+    return;
+  }
+
+  BrowserElements* browser_elements = BrowserElements::From(browser_window);
+  if (!browser_elements) {
+    return;
+  }
+
+  ui::ElementContext context = browser_elements->GetContext();
+  tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
+      web_contents, std::move(receiver), context,
+      std::vector<ui::ElementIdentifier>{kContextualTasksFaviconsElementId},
+      &render_frame_host());
+#endif
 }
 
 // contextual_tasks::mojom::ExtensionPageHandlerFactory:

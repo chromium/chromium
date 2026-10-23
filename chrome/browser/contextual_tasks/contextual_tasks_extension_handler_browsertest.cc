@@ -28,7 +28,9 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
@@ -73,8 +75,11 @@
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
 namespace contextual_tasks {
 
@@ -5255,6 +5260,60 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(close_tab_state->attached[0].context_token, manual_tab1_token);
   EXPECT_FALSE(panel_controller->GetAutoSuggestedTabHandle().has_value());
   testing::Mock::VerifyAndClearExpectations(mock_controller_.get());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       BindTrackedElementHandler_TracksFaviconsElement) {
+  EmbedHandlerInSidePanel();
+  mojo::Remote<tracked_element::mojom::TrackedElementHandler> remote;
+  handler_->BindTrackedElementHandler(remote.BindNewPipeAndPassReceiver());
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  const ui::ElementContext context =
+      BrowserElements::From(browser())->GetContext();
+
+  EXPECT_FALSE(tracker->GetFirstMatchingElement(
+      kContextualTasksFaviconsElementId, context));
+
+  remote->TrackedElementVisibilityChanged(
+      tracked_element::mojom::TrackedElementIdentifier::New(
+          kContextualTasksFaviconsElementId.GetName(), "0"),
+      true, gfx::RectF(10, 20, 100, 30));
+  remote.FlushForTesting();
+
+  auto* const element = tracker->GetFirstMatchingElement(
+      kContextualTasksFaviconsElementId, context);
+  ASSERT_NE(element, nullptr);
+  EXPECT_EQ(element->identifier(), kContextualTasksFaviconsElementId);
+
+  remote->TrackedElementVisibilityChanged(
+      tracked_element::mojom::TrackedElementIdentifier::New(
+          kContextualTasksFaviconsElementId.GetName(), "0"),
+      false, gfx::RectF());
+  remote.FlushForTesting();
+
+  EXPECT_FALSE(tracker->GetFirstMatchingElement(
+      kContextualTasksFaviconsElementId, context));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       BindTrackedElementHandler_NotInSidePanel_DoesNothing) {
+  mojo::Remote<tracked_element::mojom::TrackedElementHandler> remote;
+  handler_->BindTrackedElementHandler(remote.BindNewPipeAndPassReceiver());
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  const ui::ElementContext context =
+      BrowserElements::From(browser())->GetContext();
+
+  remote->TrackedElementVisibilityChanged(
+      tracked_element::mojom::TrackedElementIdentifier::New(
+          kContextualTasksFaviconsElementId.GetName(), "0"),
+      true, gfx::RectF(10, 20, 100, 30));
+  remote.FlushForTesting();
+
+  EXPECT_EQ(tracker->GetFirstMatchingElement(kContextualTasksFaviconsElementId,
+                                             context),
+            nullptr);
 }
 
 }  // namespace contextual_tasks

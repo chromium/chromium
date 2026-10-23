@@ -198,7 +198,11 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
       kContextualTasksWebUIToolbarElementId,
       kContextualTasksWebUIOverflowMenuElementId,
       kContextualTasksWebUIOverflowMenuPinButtonElementId,
-      kContextualTasksSuperGButtonElementId};
+      kContextualTasksSuperGButtonElementId,
+      // `<contextual-tasks-context-library>` also mounts directly inside
+      // `chrome://contextual-tasks` (pre-rearchitecture `app.ts` and WebUI
+      // Mocha tests), not only in the component extension subframe.
+      kContextualTasksFaviconsElementId};
 #if !BUILDFLAG(IS_ANDROID)
   tracked_element_ids.push_back(
       PermissionChipView::kPermissionRequestChipElementId);

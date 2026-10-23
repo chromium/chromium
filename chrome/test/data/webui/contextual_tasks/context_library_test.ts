@@ -6,6 +6,7 @@ import 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js'
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextLibraryElement} from 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
+import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -282,4 +283,32 @@ suite('ContextLibraryTest', () => {
       window.history.replaceState({}, '', originalUrl);
     }
   });
+  test(
+      'Tracks and untracks faviconGroup with TrackedElementManager',
+      async () => {
+        const manager = TrackedElementManager.getInstance();
+        assertEquals(undefined, manager.getElementFor(app.$.faviconGroup));
+
+        app.tabs = [createTab(1, 'https://www.google.com')];
+        await microtasksFinished();
+        assertTrue(!!manager.getElementFor(app.$.faviconGroup));
+        assertEquals(
+            'kContextualTasksFaviconsElementId',
+            TrackedElementManager.getElementId(app.$.faviconGroup)
+                ?.nativeIdentifier);
+
+        app.tabs = [];
+        await microtasksFinished();
+        assertEquals(undefined, manager.getElementFor(app.$.faviconGroup));
+
+        app.tabs = [createTab(1, 'https://www.google.com')];
+        await microtasksFinished();
+        assertTrue(!!manager.getElementFor(app.$.faviconGroup));
+        app.remove();
+        assertEquals(undefined, manager.getElementFor(app.$.faviconGroup));
+
+        document.body.appendChild(app);
+        await microtasksFinished();
+        assertTrue(!!manager.getElementFor(app.$.faviconGroup));
+      });
 });

@@ -6,8 +6,9 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {CSSResultGroup} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {CSSResultGroup, PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './context_library.css.js';
@@ -47,6 +48,7 @@ export class ContextLibraryElement extends CrLitElement {
   accessor submittedTabIds: Set<number> = new Set();
   accessor darkMode: boolean = false;
 
+  private isTrackingFaviconGroup_: boolean = false;
   private resizeObserver_: ResizeObserver|null = null;
   private messageListener_: ((event: MessageEvent) => void)|null = null;
   private listenerIds_: number[] = [];
@@ -73,10 +75,15 @@ export class ContextLibraryElement extends CrLitElement {
           this.tabs = tabs;
           this.submittedTabIds = new Set(submittedTabIds);
         }));
+    this.updateFaviconTracking_();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    if (this.isTrackingFaviconGroup_) {
+      this.isTrackingFaviconGroup_ = false;
+      TrackedElementManager.getInstance().stopTracking(this.$.faviconGroup);
+    }
     this.resizeObserver_?.disconnect();
     this.resizeObserver_ = null;
     if (this.messageListener_) {
@@ -89,6 +96,26 @@ export class ContextLibraryElement extends CrLitElement {
       callbackRouter.removeListener(id);
     }
     this.listenerIds_ = [];
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('tabs')) {
+      this.updateFaviconTracking_();
+    }
+  }
+
+  private updateFaviconTracking_() {
+    const hasTabs = (this.tabs?.length ?? 0) > 0;
+    if (hasTabs && !this.isTrackingFaviconGroup_) {
+      this.isTrackingFaviconGroup_ = true;
+      TrackedElementManager.getInstance().startTracking(
+          this.$.faviconGroup, 'kContextualTasksFaviconsElementId');
+    } else if (!hasTabs && this.isTrackingFaviconGroup_) {
+      this.isTrackingFaviconGroup_ = false;
+      TrackedElementManager.getInstance().stopTracking(this.$.faviconGroup);
+    }
   }
 
   // <composebox-favicon-group> fires this to request a live favicon for a tab

@@ -30,6 +30,7 @@
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom-forward.h"
 #include "url/gurl.h"
 
 // Handles Mojo connection requests from the Contextual Tasks extension
@@ -56,6 +57,10 @@ class ClientToSearchMessage;
 namespace contextual_tasks {
 class ContextualTasksWebContentsUserData;
 }  // namespace contextual_tasks
+
+namespace ui {
+class TrackedElementHandler;
+}  // namespace ui
 
 class BrowserWindowInterface;
 class LensSearchController;
@@ -88,6 +93,10 @@ class ContextualTasksExtensionHandler
   void BindContextualTasksFactory(
       mojo::PendingReceiver<
           contextual_tasks::mojom::ExtensionPageHandlerFactory> receiver);
+
+  void BindTrackedElementHandler(
+      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+          receiver);
 
   // contextual_tasks::mojom::ExtensionPageHandlerFactory:
   void CreateExtensionPageHandler(
@@ -306,6 +315,8 @@ class ContextualTasksExtensionHandler
 
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
+
+  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
