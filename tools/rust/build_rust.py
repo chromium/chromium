@@ -34,7 +34,6 @@ TODO(crbug.com/40196262): Do a proper 3-stage build
 '''
 
 import argparse
-import base64
 import collections
 import functools
 import hashlib
@@ -64,7 +63,7 @@ from build import (
     CheckoutGitRepo,
     CopyFile,
     DownloadDebianSysroot,
-    FetchUrl,
+    FetchGitFile,
     GetLibXml2Dirs,
     GitCherryPick,
     GitRevert,
@@ -147,6 +146,8 @@ RUST_BOOTSTRAP_DIST_RS = os.path.join(
     RUST_SRC_DIR, 'src', 'bootstrap', 'dist.rs'
 )
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0')
+# `STAGE0_JSON_PATH` relative to the root of the Rust repo, in git's format.
+STAGE0_JSON_GIT_PATH = 'src/stage0'
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
 RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
@@ -262,13 +263,20 @@ def AddOpenSSLToEnv():
     return ssl_dir
 
 
-def VerifyStage0JsonHash(stage0_json_url=None):
+def VerifyStage0JsonHash(git_url=None, git_hash=None):
+    '''Exits if the hash of `src/stage0` differs from `STAGE0_JSON_SHA256`.
+
+    If `git_url` and `git_hash` are given, `src/stage0` is fetched from the
+    remote `git_url` at commit `git_hash`, without a checkout.  Otherwise, the
+    local checkout at `STAGE0_JSON_PATH` is used.
+    '''
+    assert (git_url is None) == (git_hash is None), (
+        '`git_url` and `git_hash` must be given together'
+    )
     hasher = hashlib.sha256()
-    if stage0_json_url:
-        print(stage0_json_url)
-        base64_text = FetchUrl(stage0_json_url).decode("utf-8")
-        stage0 = base64.b64decode(base64_text)
-        hasher.update(stage0)
+    if git_url:
+        print(f'Fetching {STAGE0_JSON_GIT_PATH} at {git_hash} from {git_url}')
+        hasher.update(FetchGitFile(git_url, git_hash, STAGE0_JSON_GIT_PATH))
     else:
         with open(STAGE0_JSON_PATH, 'rb') as input:
             hasher.update(input.read())
@@ -634,11 +642,7 @@ def MakeVersionStamp(
 
 def GetLatestRustCommit():
     """Get the latest commit hash in the Rust repo."""
-    url = (
-        'https://chromium.googlesource.com/external/'
-        + 'github.com/rust-lang/rust/+/refs/heads/main?format=JSON'  # nocheck
-    )
-    return GetLatestCommit(url)
+    return GetLatestCommit(RUST_GIT_URL)
 
 
 def RustTargetTriple():
@@ -1021,12 +1025,7 @@ def main():
 
     if not args.skip_checkout:
         if args.verify_stage0_hash:
-            VerifyStage0JsonHash(
-                'https://chromium.googlesource.com/external/github.com/'
-                'rust-lang/rust/+/{}/src/stage0?format=TEXT'.format(
-                    checkout_revision
-                )
-            )
+            VerifyStage0JsonHash(RUST_GIT_URL, checkout_revision)
             # The above function exits and prints the actual hash if
             # verification failed so we just quit here; if we reach this point,
             # the hash is valid.

@@ -24,7 +24,6 @@ import atexit
 import datetime
 import glob
 import io
-import json
 import multiprocessing
 import os
 import shlex
@@ -35,9 +34,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib
-import urllib.error
-import urllib.request
 
 from update import (
   CDS_URL,
@@ -97,6 +93,10 @@ GIT_EXE = 'git.bat' if sys.platform.startswith('win') else 'git'
 
 # Name of the file that `WriteGitCommitInfo` writes into a git checkout.
 GIT_COMMIT_INFO_FILENAME = 'git-commit-info'
+
+# Retry policy for `GitOutputWithRetry`.
+GIT_NETWORK_MAX_TRIES = 5
+GIT_NETWORK_INITIAL_RETRY_DELAY_SECONDS = 1
 
 BUG_REPORT_URL = (
   'https://crbug.com in the Tools>LLVM component,'
@@ -315,43 +315,71 @@ def GitRevert(git_repository, commit):
   )
 
 
-def FetchUrl(url, max_tries=5, delay_seconds=1):
-  """Fetch content from a URL. If the fetch fails, retry several times after a
-  short delay."""
-  for i in range(max_tries):
-    try:
-      with urllib.request.urlopen(url) as response:
-        return response.read()
-    except (ConnectionError, urllib.error.URLError) as e:
-      # If this was the last try or a permanent 404 client error, re-raise.
-      if i >= max_tries - 1 or (
-        isinstance(e, urllib.error.HTTPError) and e.code == 404
-      ):
-        raise e
+def GitOutputWithRetry(git_args):
+  """Returns the stdout (as `bytes`) of `git <git_args>`.
 
-      reason = getattr(e, 'reason', e)
+  Network operations against Git can fail transiently,
+  so failures are retried with exponential backoff."""
+  delay_seconds = GIT_NETWORK_INITIAL_RETRY_DELAY_SECONDS
+  for i in range(GIT_NETWORK_MAX_TRIES):
+    try:
+      return subprocess.check_output([GIT_EXE] + git_args)
+    except subprocess.CalledProcessError as e:
+      if i >= GIT_NETWORK_MAX_TRIES - 1:
+        raise e
       print(
-        f"Failed to fetch {url}: {reason} (attempt {i + 1}/{max_tries}). "
-        f"Retrying in {delay_seconds}s..."
+        f'Failed to run `git {" ".join(git_args)}` '
+        f'(attempt {i + 1}/{GIT_NETWORK_MAX_TRIES}). '
+        f'Retrying in {delay_seconds}s...'
       )
       time.sleep(delay_seconds)
       delay_seconds *= 2
 
 
-def GetLatestCommit(url):
-  """Get the latest commit hash from a git repository's JSON output. If the
-  fetch fails, retry several times after a short delay."""
-  main = json.loads(FetchUrl(url).decode("utf-8").replace(")]}'", ""))
-  return main['commit']
+def GetLatestCommit(git_url, ref='refs/heads/main'):
+  """Returns the commit hash that `ref` points to in the remote `git_url`."""
+  output = GitOutputWithRetry(['ls-remote', git_url, ref]).decode('utf-8')
+  # Each line is `<hash>\t<ref>`.  `git ls-remote` matches patterns against the
+  # tail of ref names, so compare the full name to rule out e.g.
+  # `refs/heads/foo/refs/heads/main`.
+  for line in output.splitlines():
+    commit, remote_ref = line.split('\t')
+    if remote_ref == ref:
+      return commit
+  raise RuntimeError(f'`{ref}` not found in {git_url}')
+
+
+def FetchGitFile(git_url, commit, path):
+  """Returns the contents (as `bytes`) of `path` at `commit` in the remote
+  `git_url`, without cloning the whole repository.
+
+  A shallow, blobless fetch only downloads the commit and its trees; `git show`
+  then lazily fetches the single blob for `path`."""
+  git_dir = tempfile.mkdtemp()
+  try:
+    GitOutputWithRetry(['init', '--quiet', git_dir])
+    GitOutputWithRetry(
+      [
+        '-C',
+        git_dir,
+        'fetch',
+        '--quiet',
+        '--depth=1',
+        '--filter=blob:none',
+        git_url,
+        commit,
+      ]
+    )
+    return GitOutputWithRetry(['-C', git_dir, 'show', f'{commit}:{path}'])
+  finally:
+    # `RmTree` (rather than `tempfile.TemporaryDirectory`) handles the
+    # read-only files that git creates on Windows.
+    RmTree(git_dir)
 
 
 def GetLatestLLVMCommit():
   """Get the latest commit hash in the LLVM monorepo."""
-  url = (
-    'https://chromium.googlesource.com/external/'
-    + 'github.com/llvm/llvm-project/+/refs/heads/main?format=JSON'
-  )
-  return GetLatestCommit(url)
+  return GetLatestCommit(LLVM_GIT_URL)
 
 
 def GetCommitDescription(commit):

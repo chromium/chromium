@@ -50,7 +50,7 @@ from build import (
     GetThirdPartyCMakeArgs,
     RunCommand,
 )
-from update import DownloadAndUnpack, ReadStampFile, WriteStampFile
+from update import ReadStampFile, WriteStampFile
 
 from build_rust import GetMacSdkPath, RUST_HOST_LLVM_INSTALL_DIR
 from host_tools import (
@@ -70,14 +70,13 @@ CRUBIT_GIT = (
     'https://chromium.googlesource.com/external/github.com/google/crubit'
 )
 
-ABSEIL_TARBALL_URL_PREFIX = (
-    'https://chromium.googlesource.com/external/'
-    'github.com/abseil/abseil-cpp/+archive/refs/tags'
+ABSEIL_GIT = (
+    'https://chromium.googlesource.com/external/github.com/abseil/abseil-cpp'
 )
 
-PROTOBUF_TARBALL_URL_PREFIX = (
+PROTOBUF_GIT = (
     'https://chromium.googlesource.com/external/'
-    'github.com/protocolbuffers/protobuf/+archive/refs/tags'
+    'github.com/protocolbuffers/protobuf'
 )
 
 # Directory for sources that are checked out or downloaded by this script (and
@@ -149,8 +148,7 @@ def GetCrubitCxxFlags():
 
 def GetLatestCrubitCommit():
     """Get the latest commit hash in the Crubit repo."""
-    url = CRUBIT_GIT + '/+/refs/heads/upstream/main?format=JSON'
-    return GetLatestCommit(url)
+    return GetLatestCommit(CRUBIT_GIT, 'refs/heads/upstream/main')
 
 
 def CheckDependencyVersion(module_name, pinned_version):
@@ -219,17 +217,18 @@ def CreateCMakePathFlag(var_name, path):
 
 def BuildCMakeProject(
     name,
-    url,
+    git_url,
+    git_tag,
     src_dir,
     build_dir,
     install_dir,
     extra_args,
     extra_stamp_lines=(),
 ):
-    """Downloads, builds, and installs a CMake project, unless up to date.
+    """Checks out, builds, and installs a CMake project, unless up to date.
 
-    The sources are downloaded from `url` into `src_dir` only when the project
-    has to be (re)built.
+    The sources are checked out from `git_url` at `git_tag` into `src_dir` only
+    when the project has to be (re)built.
 
     `install_dir` holds a stamp file with `name` (which includes the version),
     `extra_stamp_lines`, and all the CMake arguments.  If the stamp is
@@ -275,12 +274,10 @@ def BuildCMakeProject(
         print(f'{name} is up to date, skipping.')
         return stamp
 
-    print(f'Downloading {name} ...')
-    for d in [src_dir, build_dir, install_dir]:
+    for d in [build_dir, install_dir]:
         if os.path.exists(d):
             shutil.rmtree(d)
-    DownloadAndUnpack(url, src_dir)
-    print(f'Downloading {name} ... done.')
+    CheckoutGitRepo(name, git_url, git_tag, src_dir)
 
     print(f'Building {name} ...')
     os.makedirs(build_dir)
@@ -323,7 +320,8 @@ def BuildAbseil(build_dir, install_dir):
     extra_args = ['-DABSL_MSVC_STATIC_RUNTIME=ON'] if IS_WIN else []
     return BuildCMakeProject(
         f'Abseil {ABSEIL_VERSION}',
-        f'{ABSEIL_TARBALL_URL_PREFIX}/{ABSEIL_VERSION}.tar.gz',
+        ABSEIL_GIT,
+        f'refs/tags/{ABSEIL_VERSION}',
         ABSEIL_SRC_DIR,
         build_dir,
         install_dir,
@@ -355,7 +353,8 @@ def BuildProtobuf(abseil_install_dir, abseil_stamp, build_dir, install_dir):
     # the flags of Abseil change.
     BuildCMakeProject(
         f'Protobuf {PROTOBUF_VERSION}',
-        f'{PROTOBUF_TARBALL_URL_PREFIX}/v{PROTOBUF_VERSION}.tar.gz',
+        PROTOBUF_GIT,
+        f'refs/tags/v{PROTOBUF_VERSION}',
         PROTOBUF_SRC_DIR,
         build_dir,
         install_dir,
