@@ -758,12 +758,25 @@ ci.thin_tester(
             "interactive_ui_tests",
             "unit_tests",
         ],
+        mixins = [
+            "x86-64",
+            "isolate_profile_data",
+            "linux-jammy",
+        ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 args = [
                     "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
                 ],
                 swarming = targets.swarming(
+                    dimensions = {
+                        "kvm": "1",
+                    },
+                    optional_dimensions = {
+                        30: {
+                            "cpu": "x86-64-e4",
+                        },
+                    },
                     shards = 14,
                 ),
             ),
