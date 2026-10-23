@@ -2724,6 +2724,226 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIn('Replayed all 3 patch(es).', start_stdout)
         self.assertIn('State: replayed (3/3 patch(es)).', status_stdout)
 
+    def testContinueRollCommitsResolvedConflictRefreshesPatchAndAdvances(self):
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                _PLAN_CONFLICT_PATH:
+                _NumberedLines('conflict', line6='conflict line 6 (resolved)')
+            },
+        )
+
+        state = roll_protobuf.ContinueRoll(self.fixture.protobuf_directory)
+        refreshed_patch = pathlib.Path(
+            self.fixture.protobuf_directory, 'patches',
+            _PLAN_CONFLICT_PATCH).read_text(encoding='utf-8')
+
+        self.assertEqual(('conflict', 3), (state.phase, state.current_index))
+        self.assertEqual(
+            roll_protobuf.PatchReplayResult(
+                patch_name=_PLAN_CONFLICT_PATCH,
+                status=roll_protobuf.PatchReplayStatus.CLEAN,
+                changed_line_count_before=2,
+                changed_line_count_after=2,
+            ),
+            state.patch_results[2],
+        )
+        self.assertIn('+conflict line 6 (resolved)', refreshed_patch)
+        self.assertEqual(
+            f'Apply patches/{_PLAN_CONFLICT_PATCH}',
+            _RunGitCommand(self.repository_root, ['log', '-1', '--format=%s']),
+        )
+
+    def testContinueRollHandlesBinaryConflictsSpacedAddedPathsAndSetextHeadings(
+            self):
+        spaced_path = 'src/added space_\u00e9.cc'
+        binary_path = 'src/blob.bin'
+        # Add binary_path to both old and new upstream so a binary patch hunk
+        # conflicts on v37.0 without writing text conflict markers.
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['checkout', '--quiet', self.fixture.old_commit])
+        pathlib.Path(self.fixture.upstream_directory,
+                     *binary_path.split('/')).write_bytes(b'\x00\x01old\xff')
+        _RunGitCommand(self.fixture.upstream_directory, ['add', binary_path])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '--amend', '--no-edit'])
+        old_commit = _RunGitCommand(self.fixture.upstream_directory,
+                                    ['rev-parse', 'HEAD'])
+
+        # Generate a binary + spaced-added-path + text-conflict patch on old_commit.
+        _WriteFilesToDirectory(
+            self.fixture.upstream_directory,
+            {
+                _PLAN_CONFLICT_PATH:
+                _NumberedLines('conflict', line6='conflict line 6 (chromium)'),
+                spaced_path:
+                '// added file with space and UTF-8\n',
+            },
+        )
+        pathlib.Path(
+            self.fixture.upstream_directory,
+            *binary_path.split('/')).write_bytes(b'\x00\x01patched\xff')
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['add', '-f', '-A', '.'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '-m', 'Patch candidate'])
+        patch_bytes = roll_protobuf._RunScratchGit(
+            self.fixture.upstream_directory, 'diff', '--binary',
+            '--no-renames', 'HEAD~1', 'HEAD').stdout
+
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['checkout', '--quiet', self.fixture.new_commit])
+        pathlib.Path(self.fixture.upstream_directory,
+                     *binary_path.split('/')).write_bytes(b'\x00\x01new\xff')
+        _RunGitCommand(self.fixture.upstream_directory, ['add', binary_path])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '--amend', '--no-edit'])
+        new_commit = _RunGitCommand(self.fixture.upstream_directory,
+                                    ['rev-parse', 'HEAD'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['tag', '-f', 'v37.0', new_commit])
+
+        pathlib.Path(self.fixture.protobuf_directory, 'patches',
+                     _PLAN_CONFLICT_PATCH).write_bytes(patch_bytes)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                'README.chromium': ('Name: Protocol Buffers\n'
+                                    'Version: 36.0\n'
+                                    'CPEPrefix: cpe:/a:google:protobuf:36.0\n'
+                                    f'Revision: {old_commit}\n'),
+            },
+        )
+        _RunGitCommand(self.repository_root, ['add', '-A', '.'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Update conflict fixture'])
+
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {_PLAN_CONFLICT_PATH: '||||||| base\nresolved\n'},
+        )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Unresolved conflict markers remain'):
+            roll_protobuf.ContinueRoll(self.fixture.protobuf_directory)
+
+        # Markdown Setext H1 (`=======`) must not false-positive as a marker,
+        # while the untouched unmerged binary file must still block continue.
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {_PLAN_CONFLICT_PATH: 'Heading\n=======\nresolved\n'},
+        )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Unresolved unmerged files remain'):
+            roll_protobuf.ContinueRoll(self.fixture.protobuf_directory)
+
+        pathlib.Path(
+            self.fixture.protobuf_directory,
+            *binary_path.split('/')).write_bytes(b'\x00\x01merged\xff')
+        target_protobuf_dir = self.fixture.protobuf_directory
+        if sys.platform != 'win32':
+            target_protobuf_dir = os.path.join(self.temporary_directory,
+                                               'protobuf_link')
+            os.symlink(self.fixture.protobuf_directory, target_protobuf_dir)
+
+        state = roll_protobuf.ContinueRoll(target_protobuf_dir)
+        refreshed_patch = pathlib.Path(self.fixture.protobuf_directory,
+                                       'patches',
+                                       _PLAN_CONFLICT_PATCH).read_bytes()
+
+        self.assertEqual(('conflict', 3), (state.phase, state.current_index))
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(self.fixture.protobuf_directory,
+                             *spaced_path.split('/'))))
+        self.assertIn(b'GIT binary patch', refreshed_patch)
+        roll_protobuf._RunScratchGit(
+            self.repository_root,
+            'apply',
+            '--check',
+            '-R',
+            '--unidiff-zero',
+            '--directory=third_party/protobuf',
+            '-',
+            input_bytes=refreshed_patch,
+        )
+
+    def testContinueRollRefusesMarkersRejectFilesUnexpectedHeadAndExtraFiles(
+            self):
+
+        def AssertContinueRaises(pattern: str) -> None:
+            with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                        pattern):
+                roll_protobuf.ContinueRoll(self.fixture.protobuf_directory)
+
+        AssertContinueRaises(r'No conflicting protobuf patch is waiting')
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        AssertContinueRaises(r'Unresolved conflict markers remain')
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                _PLAN_CONFLICT_PATH:
+                _PLAN_NEW_UPSTREAM_FILES[_PLAN_CONFLICT_PATH]
+            },
+        )
+        AssertContinueRaises(r'No changes remain')
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                _PLAN_CONFLICT_PATH:
+                _NumberedLines('conflict', line6='conflict line 6 (resolved)'),
+                'src/leftover.rej':
+                '@@ -1 +1 @@\n',
+            },
+        )
+        AssertContinueRaises(r'Remove \.rej and \.orig files')
+        os.remove(
+            os.path.join(self.fixture.protobuf_directory, 'src',
+                         'leftover.rej'))
+
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'staged outside\n'})
+        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        AssertContinueRaises(r'Staged changes outside //third_party/protobuf')
+        _RunGitCommand(self.repository_root,
+                       ['checkout', 'HEAD', '--', 'OTHER_CHROMIUM_FILE'])
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'BUILD.gn': '# accidental edit\n'})
+        with self.assertRaisesRegex(
+                roll_protobuf.RollProtobufError,
+                r'Chromium-owned or bootstrap-generated files'):
+            roll_protobuf.ContinueRoll(self.fixture.protobuf_directory,
+                                       allow_extra_files=True)
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'BUILD.gn': ''})
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/unrelated.cc': '// extra\n'})
+        AssertContinueRaises(r'Modified files not touched by')
+
+        state = roll_protobuf.ContinueRoll(self.fixture.protobuf_directory,
+                                           allow_extra_files=True)
+        self.assertEqual(('conflict', 3), (state.phase, state.current_index))
+
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '--allow-empty', '-m', 'Manual'])
+        AssertContinueRaises(r'run `roll_protobuf\.py resume`')
+
 
 if __name__ == '__main__':
     unittest.main()

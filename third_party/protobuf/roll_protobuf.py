@@ -1102,11 +1102,16 @@ def _ResolveCheckoutPaths(protobuf_directory: str) -> _CheckoutPaths:
             f'{protobuf_directory} is not inside a git working tree.')
     repository_root, git_directory, prefix = (
         line.rstrip('\r') for line in process.stdout.decode().split('\n')[:3])
+    repository_root = os.path.normpath(repository_root)
+    git_directory = os.path.normpath(git_directory)
+    prefix = prefix.rstrip('/')
+    canonical_protobuf = (os.path.join(repository_root, *prefix.split('/'))
+                          if prefix else repository_root)
     roll_state_directory = os.path.join(git_directory, 'protobuf-roll')
     return _CheckoutPaths(
-        protobuf_directory,
+        canonical_protobuf,
         repository_root,
-        prefix.rstrip('/'),
+        prefix,
         roll_state_directory,
         os.path.join(roll_state_directory, 'state.json'),
         os.path.join(roll_state_directory, 'chain'),
@@ -1361,7 +1366,7 @@ def _RefreshPatchFileFromHeadCommit(checkout: _CheckoutPaths,
     relative_option = ([f'--relative={checkout.protobuf_prefix}']
                        if checkout.protobuf_prefix else [])
     refreshed_diff = _RunScratchGit(checkout.repository_root, 'diff',
-                                    '--no-renames', '--no-color',
+                                    '--binary', '--no-renames', '--no-color',
                                     '--no-ext-diff', '--no-textconv',
                                     *relative_option, 'HEAD~1', 'HEAD').stdout
     patch_file_path = os.path.join(checkout.protobuf_directory, 'patches',
@@ -1437,6 +1442,160 @@ def _ReplayRemainingPatches(checkout: _CheckoutPaths,
                                          patch_results=tuple(patch_results))
     _SaveRollState(checkout, replayed_state)
     return replayed_state
+
+
+def _RequireActiveConflictState(checkout: _CheckoutPaths,
+                                subcommand: str) -> RollState:
+    state = LoadRollState(checkout.protobuf_directory)
+    if (state is None or state.phase != 'conflict'
+            or not 0 <= state.current_index < len(state.patches)):
+        raise RollProtobufError(
+            f'No conflicting protobuf patch is waiting for `{subcommand}`; '
+            'run `roll_protobuf.py status` first.')
+    current_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                                  'HEAD').stdout.decode().strip()
+    if current_head != state.expected_head:
+        raise RollProtobufError(
+            f'HEAD is {current_head}, expected {state.expected_head}; '
+            'run `roll_protobuf.py resume` if you committed by hand.')
+    return state
+
+
+def _FindFilesWithConflictMarkers(
+        repository_root: str,
+        relative_paths: Iterable[str]) -> tuple[str, ...]:
+    flagged = []
+    for relative_path in sorted(set(relative_paths)):
+        full_path = os.path.join(repository_root, *relative_path.split('/'))
+        if not os.path.isfile(full_path):
+            continue
+        with open(full_path, 'rb') as file_handle:
+            # Match git's `diff --check` markers (`<`, `|`, `>`), omitting
+            # standalone `=======` so Markdown Setext H1 underlines (such as
+            # csharp/README.md) do not false-positive.
+            if any(
+                    re.match(rb'^(?:<{7}|\|{7}|>{7})(?: |\r?$)', line)
+                    for line in file_handle):
+                flagged.append(relative_path)
+    return tuple(flagged)
+
+
+def _PatchTouchedRepositoryPaths(checkout: _CheckoutPaths,
+                                 chain_patch: ChainPatch) -> set[str]:
+    upstream_paths = set(chain_patch.preimage_blobs)
+    if chain_patch.diff:
+        numstat = _RunScratchGit(checkout.repository_root,
+                                 'apply',
+                                 '--numstat',
+                                 '-z',
+                                 '-',
+                                 input_bytes=chain_patch.diff).stdout
+        upstream_paths |= {
+            record.split('\t', 2)[2]
+            for record in _SplitNulSeparatedPaths(numstat) if '\t' in record
+        }
+    return {
+        posixpath.join(checkout.protobuf_prefix, path)
+        for path in upstream_paths
+    }
+
+
+def ContinueRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY,
+                 allow_extra_files: bool = False) -> RollState:
+    """Commits a resolved patch conflict, refreshes its .patch, and continues."""
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    state = _RequireActiveConflictState(checkout, 'roll_protobuf.py continue')
+    leftover_rejects = tuple(
+        path
+        for path in _ListRegularFilesInDirectory(checkout.protobuf_directory)
+        if path.endswith(('.rej', '.orig')))
+    if leftover_rejects:
+        raise RollProtobufError(
+            'Remove .rej and .orig files under //third_party/protobuf before '
+            'continuing: ' + ', '.join(leftover_rejects))
+    protobuf_pathspec = checkout.protobuf_prefix or '.'
+    prefix_with_slash = (f'{checkout.protobuf_prefix}/'
+                         if checkout.protobuf_prefix else '')
+    if prefix_with_slash:
+        outside_staged = sorted(path for path in _SplitNulSeparatedPaths(
+            _RunScratchGit(checkout.repository_root, 'diff', '--cached',
+                           '--name-only', '-z').stdout)
+                                if not path.startswith(prefix_with_slash))
+        if outside_staged:
+            raise RollProtobufError(
+                'Staged changes outside //third_party/protobuf cannot be '
+                'included in a patch commit: ' + ', '.join(outside_staged))
+    changed_paths = sorted(
+        set(
+            _SplitNulSeparatedPaths(
+                _RunScratchGit(checkout.repository_root, 'diff', '--name-only',
+                               '-z', 'HEAD', '--', protobuf_pathspec).stdout))
+        | set(
+            _SplitNulSeparatedPaths(
+                _RunScratchGit(checkout.repository_root, 'ls-files',
+                               '--others', '--exclude-standard', '-z', '--',
+                               protobuf_pathspec).stdout)))
+    marked_files = _FindFilesWithConflictMarkers(
+        checkout.repository_root, (*changed_paths, *state.conflict_files))
+    if marked_files:
+        raise RollProtobufError('Unresolved conflict markers remain in: ' +
+                                ', '.join(marked_files))
+    chain_patch = state.patches[state.current_index]
+    if not changed_paths:
+        raise RollProtobufError(
+            f'No changes remain for {chain_patch.patch_name}; resolve any '
+            'binary conflict in the working tree or use '
+            '`roll_protobuf.py drop --reason "..."` to drop the patch.')
+    unmerged_paths = _SplitNulSeparatedPaths(
+        _RunScratchGit(checkout.repository_root, 'diff', '--name-only', '-z',
+                       '--diff-filter=U', '--', protobuf_pathspec).stdout)
+    unresolved_unmerged = sorted(set(unmerged_paths) - set(changed_paths))
+    if unresolved_unmerged:
+        raise RollProtobufError(
+            'Unresolved unmerged files remain at HEAD (write the merged file '
+            'or `git add` it to keep HEAD): ' + ', '.join(unresolved_unmerged))
+    non_upstream_paths = [
+        path for path in changed_paths
+        if IsChromiumOwnedFile(path.removeprefix(prefix_with_slash))
+        or path.removeprefix(prefix_with_slash) in BOOTSTRAP_GENERATED_FILES
+    ]
+    if non_upstream_paths:
+        raise RollProtobufError(
+            'Chromium-owned or bootstrap-generated files cannot be included '
+            'in an upstream patch commit: ' + ', '.join(non_upstream_paths))
+    extra_paths = sorted(
+        set(changed_paths) -
+        _PatchTouchedRepositoryPaths(checkout, chain_patch))
+    if extra_paths and not allow_extra_files:
+        raise RollProtobufError(
+            f'Modified files not touched by {chain_patch.patch_name} '
+            '(pass --allow-extra-files if intentional): ' +
+            ', '.join(extra_paths))
+    _RunScratchGit(checkout.repository_root, 'add', '--all', '--',
+                   protobuf_pathspec)
+    staged_numstat = _RunScratchGit(checkout.repository_root, 'diff',
+                                    '--cached', '--numstat', '-z',
+                                    '--no-renames', '--no-ext-diff').stdout
+    _RunScratchGit(checkout.repository_root, 'commit', '--quiet',
+                   '--no-verify', '-m',
+                   f'Apply patches/{chain_patch.patch_name}')
+    _RefreshPatchFileFromHeadCommit(checkout, chain_patch.patch_name)
+    new_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                              'HEAD').stdout.decode().strip()
+    resolved_result = PatchReplayResult(
+        chain_patch.patch_name,
+        PatchReplayStatus.CLEAN,
+        chain_patch.changed_line_count,
+        changed_line_count_after=_CountChangedLines(staged_numstat))
+    next_state = dataclasses.replace(
+        state,
+        expected_head=new_head,
+        current_index=state.current_index + 1,
+        conflict_files=(),
+        patch_results=(*state.patch_results[:state.current_index],
+                       resolved_result))
+    _SaveRollState(checkout, next_state)
+    return _ReplayRemainingPatches(checkout, next_state)
 
 
 def StartRoll(to_revision: str,
