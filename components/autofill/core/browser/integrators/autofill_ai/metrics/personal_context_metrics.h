@@ -6,8 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_PERSONAL_CONTEXT_METRICS_H_
 
 #include <cstddef>
+#include <optional>
 
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -76,6 +78,19 @@ enum class PersonalContextPrefetchEntityValidationResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchEntityValidationResult)
 
+// LINT.IfChange(AutofillAiPersonalContextDeduplicationAgainstRecordType)
+// The record type of the entity that a Personal Context entity is
+// deduplicated against. Logged to UMA.
+enum class PersonalContextDeduplicationAgainstRecordType {
+  kLocal = 0,
+  kServerWallet = 1,
+  // The Personal Context entity is not a duplicate of any entity of a
+  // different record type.
+  kNotDeduplicated = 2,
+  kMaxValue = kNotDeduplicated,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextDeduplicationAgainstRecordType)
+
 // LINT.IfChange(AutofillAiEntitySuppressionLoadDropReason)
 // Reasons why a stored entity suppression record is dropped when loading
 // suppressions from disk. Logged to UMA.
@@ -140,6 +155,13 @@ void LogPersonalContextPrefetchEntityValidationResult(
 // Logs the number of valid sources attached to an entity extracted from
 // Personal Context prefetch responses for Ambient Autofill.
 void LogPersonalContextPrefetchEntitySourceCount(EntityType type, size_t count);
+
+// Logs the record type of the entity that a Personal Context entity of `type`
+// is deduplicated against, or that it is not deduplicated if `record_type` is
+// `std::nullopt`.
+void LogPersonalContextDeduplicationAgainstRecordType(
+    EntityType type,
+    std::optional<EntityInstance::RecordType> record_type);
 
 // Logs the number of entities filtered out due to suppression during prefetch.
 void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count);
