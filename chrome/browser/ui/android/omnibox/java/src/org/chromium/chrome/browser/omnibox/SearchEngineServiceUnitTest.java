@@ -642,6 +642,7 @@ public class SearchEngineServiceUnitTest {
 
     @Test
     public void onAiModeButtonUiConfigChanged_retrievesFaviconAndIgnoresDuplicateConfig() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
         var faviconUrl = new GURL(LOGO_URL);
         var config = createTestAiModeButtonUiConfig(faviconUrl);
@@ -651,8 +652,12 @@ public class SearchEngineServiceUnitTest {
                 new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
+        int iconSizePx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
         var expectedParams =
-                ImageFetcher.Params.create(faviconUrl, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
+                ImageFetcher.Params.create(
+                        faviconUrl, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME, iconSizePx, iconSizePx);
         verify(mImageFetcher).fetchImage(eq(expectedParams), mImageFetcherCallbackCaptor.capture());
         mImageFetcherCallbackCaptor.getValue().onResult(mBitmap);
         assertEquals(
