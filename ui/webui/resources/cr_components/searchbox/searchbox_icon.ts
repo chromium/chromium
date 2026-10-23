@@ -418,15 +418,12 @@ export class SearchboxIconElement extends CrLitElement {
     if (this.isLensSearchbox_ && this.inSearchbox) {
       return `url(${this.defaultIcon})`;
     }
-    // Enterprise search aggregator people, starter pack/featured enterprise
-    // search suggestions, top-chrome searchbox (WebUI Omnibox), and suggestions
-    // whose secondary text isn't placed below the primary text should show icon
-    // even in searchbox.
+    // Enterprise search aggregator people, top-chrome searchbox (WebUI
+    // Omnibox), and suggestions whose secondary text isn't placed below the
+    // primary text should show icon even in searchbox.
     if (this.match &&
         (this.match.suggestTemplate.secondaryTextPlacement !==
              SecondaryTextPlacement.kBelowPrimaryText ||
-         this.match.type === STARTER_PACK ||
-         this.match.type === FEATURED_ENTERPRISE_SEARCH ||
          this.match.isEnterpriseSearchAggregatorPeopleType ||
          this.isTopChromeSearchbox_ || !this.inSearchbox)) {
       return `url(${this.match.iconPath})`;
