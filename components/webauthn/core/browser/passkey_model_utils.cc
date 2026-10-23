@@ -253,12 +253,14 @@ bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
 }
 
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
-GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
-                                 const PasskeyModel::UserEntity& user_entity,
-                                 base::span<const uint8_t> trusted_vault_key,
-                                 int32_t trusted_vault_key_version,
-                                 const ExtensionInputData& extension_input_data,
-                                 ExtensionOutputData* extension_output_data) {
+GeneratePasskeyAndEncryptSecrets(
+    std::string_view rp_id,
+    const PasskeyModel::UserEntity& user_entity,
+    base::span<const uint8_t> trusted_vault_key,
+    int32_t trusted_vault_key_version,
+    base::optional_ref<const DeviceAuthorizationKey> device_authorization_key,
+    const ExtensionInputData& extension_input_data,
+    ExtensionOutputData* extension_output_data) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
   specifics.set_credential_id(
@@ -277,11 +279,12 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   if (extension_input_data.has_prf) {
     encrypted.set_hmac_secret(base::RandBytesAsString(kHmacSecretSize));
   }
-  // TODO(crbug.com/434939433): Pass the device authorization key.
   CHECK(EncryptWebauthnCredentialSpecificsData(
-      trusted_vault_key, /*device_authorization_key=*/std::nullopt, encrypted,
-      &specifics));
-  CHECK(specifics.has_encrypted());
+      trusted_vault_key, device_authorization_key, encrypted, &specifics));
+  CHECK(base::FeatureList::IsEnabled(
+            features::kDeviceAuthorizationPasskeyEncryption)
+            ? specifics.has_security_domain_encrypted()
+            : specifics.has_encrypted());
   specifics.set_key_version(trusted_vault_key_version);
 
   if (extension_output_data) {

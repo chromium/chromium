@@ -185,6 +185,7 @@ ArchivableCredential* TestEncryptedPasskeyCredential() {
           SysNSStringToUTF8(kDefaultRpId), user_entity,
           GetTestTrustedVaultKey(),
           /*trusted_vault_key_version=*/0,
+          /*device_authorization_key=*/std::nullopt,
           /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
   return [[ArchivableCredential alloc] initWithFavicon:kDefaultFavicon
                                                   gaia:kDefaultGaia

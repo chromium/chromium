@@ -223,6 +223,7 @@ class PasskeyTabHelperTest : public PlatformTest {
             rp_id, {{1, 2, 3}, "test_user", "Test User"},
             std::vector<uint8_t>(32u, 0),
             /*trusted_vault_key_version=*/0,
+            /*device_authorization_key=*/std::nullopt,
             /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
     passkey_model_->CreatePasskey(specifics);
     return specifics;

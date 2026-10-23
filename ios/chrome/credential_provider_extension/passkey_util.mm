@@ -201,13 +201,15 @@ PasskeyCreationOutput PerformPasskeyCreation(
   webauthn::passkey_model_utils::ExtensionOutputData extension_output_data;
 
   // Generate a key pair containing the webauthn specifics and the public key.
+  // TODO(crbug.com/434939433): Pass the device authorization key.
   auto [passkey, public_key_spki_der] =
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id_str,
           webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                              user_name_str),
           std::move(trusted_vault_keys[0]), /*trusted_vault_key_version=*/0,
-          extension_input_data, &extension_output_data);
+          /*device_authorization_key=*/std::nullopt, extension_input_data,
+          &extension_output_data);
 
   if (!webauthn::passkey_model_utils::IsPasskeyValid(passkey)) {
     return {};

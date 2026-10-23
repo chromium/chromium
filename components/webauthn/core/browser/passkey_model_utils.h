@@ -115,19 +115,25 @@ bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
 bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
 
 // Generates a passkey for the given RP ID and user. `trusted_vault_key` must be
-// the security domain secret of the `hw_protected` domain. Returns a passkey
-// sync entity with the sealed `encrypted` member set, and the unsealed private
-// key. If `extension_input_data` has PRF enabled, the hmac_secret will be
-// created as part of the sealed `encrypted` member. If PRF is enabled and
+// the security domain secret of the `hw_protected` domain.
+// `device_authorization_key` must have the most recent version. Returns a
+// passkey sync entity with the sealed `encrypted` or
+// `security_domain_encrypted` member set, and the unsealed private key. If
+// `extension_input_data` has PRF enabled, the hmac_secret will be created as
+// part of the sealed `encrypted` member. If PRF is enabled and
 // `extension_output_data` is non null, `extension_output_data` will be written
 // to.
+// TODO(crbug.com/570578262): Pass `device_authorization_key` using
+// `crypto::ProcessBound`.
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
-GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
-                                 const PasskeyModel::UserEntity& user_entity,
-                                 base::span<const uint8_t> trusted_vault_key,
-                                 int32_t trusted_vault_key_version,
-                                 const ExtensionInputData& extension_input_data,
-                                 ExtensionOutputData* extension_output_data);
+GeneratePasskeyAndEncryptSecrets(
+    std::string_view rp_id,
+    const PasskeyModel::UserEntity& user_entity,
+    base::span<const uint8_t> trusted_vault_key,
+    int32_t trusted_vault_key_version,
+    base::optional_ref<const DeviceAuthorizationKey> device_authorization_key,
+    const ExtensionInputData& extension_input_data,
+    ExtensionOutputData* extension_output_data);
 
 // Attempts to decrypt data from the `encrypted_data` field of `in` and
 // deserialize it into `out`. The return value indicates whether decryption and

@@ -215,7 +215,8 @@ TEST(PasskeyModelUtilsTest, EncryptWebauthnCredentialSpecificsData) {
 
 TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
-      kRpId, kTestUser, kTestKey, kTestKeyVersion, /*extension_input_data=*/{},
+      kRpId, kTestUser, kTestKey, kTestKeyVersion,
+      /*device_authorization_key=*/std::nullopt, /*extension_input_data=*/{},
       /*extension_output_data=*/nullptr);
   EXPECT_EQ(passkey.sync_id().size(), 16u);
   EXPECT_EQ(passkey.credential_id().size(), 16u);
@@ -258,7 +259,8 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFAndEncryptSecrets) {
       device::PRFInput::FromUnhashedInputs(prf_input1, std::nullopt));
   ExtensionOutputData extension_output_data;
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
-      kRpId, kTestUser, kTestKey, kTestKeyVersion, extension_input_data,
+      kRpId, kTestUser, kTestKey, kTestKeyVersion,
+      /*device_authorization_key=*/std::nullopt, extension_input_data,
       &extension_output_data);
   EXPECT_EQ(passkey.sync_id().size(), 16u);
   EXPECT_EQ(passkey.credential_id().size(), 16u);
@@ -304,7 +306,8 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFWithoutEval) {
                                           /*prf_input=*/std::nullopt);
   ExtensionOutputData extension_output_data;
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
-      kRpId, kTestUser, kTestKey, kTestKeyVersion, extension_input_data,
+      kRpId, kTestUser, kTestKey, kTestKeyVersion,
+      /*device_authorization_key=*/std::nullopt, extension_input_data,
       &extension_output_data);
 
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted_data;
@@ -326,6 +329,7 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
   EXPECT_TRUE(input_data_0X.input1.empty());
   EXPECT_FALSE(input_data_0X.input2.has_value());
   GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   /*device_authorization_key=*/std::nullopt,
                                    ExtensionInputData(input_data_0X),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 32u);
@@ -336,6 +340,7 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
   EXPECT_FALSE(input_data_1X.input1.empty());
   EXPECT_FALSE(input_data_1X.input2.has_value());
   GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   /*device_authorization_key=*/std::nullopt,
                                    ExtensionInputData(input_data_1X),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 32u);
@@ -347,6 +352,7 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
   EXPECT_TRUE(input_data_00.input2.has_value());
   EXPECT_TRUE(input_data_00.input2->empty());
   GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   /*device_authorization_key=*/std::nullopt,
                                    ExtensionInputData(input_data_00),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
@@ -358,6 +364,7 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
   EXPECT_TRUE(input_data_01.input2.has_value());
   EXPECT_FALSE(input_data_01.input2->empty());
   GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   /*device_authorization_key=*/std::nullopt,
                                    ExtensionInputData(input_data_01),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
@@ -369,6 +376,7 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
   EXPECT_TRUE(input_data_10.input2.has_value());
   EXPECT_TRUE(input_data_10.input2->empty());
   GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   /*device_authorization_key=*/std::nullopt,
                                    ExtensionInputData(input_data_10),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
@@ -380,6 +388,7 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
   EXPECT_TRUE(input_data_11.input2.has_value());
   EXPECT_FALSE(input_data_11.input2->empty());
   GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   /*device_authorization_key=*/std::nullopt,
                                    ExtensionInputData(input_data_11),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 64u);

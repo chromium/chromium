@@ -108,10 +108,12 @@ CreatePasskeyAndAttestationObject(
     const passkey_model_utils::ExtensionInputData& extension_input_data,
     bool did_complete_uv) {
   passkey_model_utils::ExtensionOutputData extension_output_data;
+  // TODO(crbug.com/434939433): Pass the device authorization key.
   auto [passkey, public_key_spki_der] =
       passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key,
-          /*trusted_vault_key_version=*/0, extension_input_data,
+          /*trusted_vault_key_version=*/0,
+          /*device_authorization_key=*/std::nullopt, extension_input_data,
           &extension_output_data);
 
   device::AttestationObject attestation_object =
