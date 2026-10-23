@@ -49,68 +49,52 @@ TEST(CryptographerImplTest, ShouldCreateEmpty) {
   EXPECT_FALSE(cryptographer->DecryptToString(encrypted, &output));
 }
 
-TEST(CryptographerImplTest, ShouldEmplaceKey) {
+TEST(CryptographerImplTest, ShouldRotateDefaultKeyByDerivation) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
   ASSERT_FALSE(cryptographer->CanEncrypt());
 
-  const std::string key_name = cryptographer->EmplaceKey(
+  const std::string key_name = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
   EXPECT_THAT(key_name, Ne(std::string()));
+  EXPECT_TRUE(cryptographer->CanEncrypt());
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name));
 
   sync_pb::EncryptedData encrypted;
-  encrypted.set_key_name(key_name);
-  encrypted.set_blob("fakeblob");
-
+  EXPECT_TRUE(cryptographer->EncryptString("foo", &encrypted));
+  EXPECT_THAT(encrypted.key_name(), Eq(key_name));
   EXPECT_TRUE(cryptographer->CanDecrypt(encrypted));
-  EXPECT_FALSE(cryptographer->CanEncrypt());
 }
 
-TEST(CryptographerImplTest, ShouldEmplaceExistingKey) {
+TEST(CryptographerImplTest, ShouldRotateDefaultKeyByDerivationWithExistingKey) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  const std::string key_name = cryptographer->EmplaceKey(
+  const std::string key_name = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(std::string()));
-  EXPECT_THAT(cryptographer->EmplaceKey("password1",
-                                        KeyDerivationParams::CreateForPbkdf2()),
+  EXPECT_THAT(cryptographer->RotateDefaultKeyByDerivation(
+                  "password1", KeyDerivationParams::CreateForPbkdf2()),
               Eq(key_name));
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name));
 }
 
-TEST(CryptographerImplTest, ShouldEmplaceSecondKey) {
+TEST(CryptographerImplTest, ShouldRotateDefaultKeyByDerivationToSecondKey) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  const std::string key_name1 = cryptographer->EmplaceKey(
+  const std::string key_name1 = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
-  const std::string key_name2 = cryptographer->EmplaceKey(
+  const std::string key_name2 = cryptographer->RotateDefaultKeyByDerivation(
       "password2", KeyDerivationParams::CreateForPbkdf2());
 
   EXPECT_THAT(key_name1, Ne(std::string()));
   EXPECT_THAT(key_name2, Ne(std::string()));
   EXPECT_THAT(key_name1, Ne(key_name2));
-}
-
-TEST(CryptographerImplTest, ShouldSelectDefaultEncryptionKey) {
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::CreateEmpty();
-  ASSERT_THAT(cryptographer, NotNull());
-  ASSERT_FALSE(cryptographer->CanEncrypt());
-
-  const std::string key_name = cryptographer->EmplaceKey(
-      "password1", KeyDerivationParams::CreateForPbkdf2());
-  ASSERT_THAT(key_name, Ne(std::string()));
-
-  cryptographer->SelectDefaultEncryptionKey(key_name);
-  ASSERT_TRUE(cryptographer->CanEncrypt());
-
-  sync_pb::EncryptedData encrypted;
-  EXPECT_TRUE(cryptographer->EncryptString("foo", &encrypted));
-  EXPECT_THAT(encrypted.key_name(), Eq(key_name));
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name2));
 }
 
 TEST(CryptographerImplTest, ShouldSelectDefaultCrossUserSharingKey) {
@@ -180,20 +164,22 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(original_cryptographer, NotNull());
 
-  const std::string key_name1 = original_cryptographer->EmplaceKey(
-      "password1", KeyDerivationParams::CreateForPbkdf2());
-  const std::string key_name2 = original_cryptographer->EmplaceKey(
-      "password2", KeyDerivationParams::CreateForPbkdf2());
-  original_cryptographer->SetCrossUserSharingKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-
-  original_cryptographer->SelectDefaultEncryptionKey(key_name1);
+  const std::string key_name1 =
+      original_cryptographer->RotateDefaultKeyByDerivation(
+          "password1", KeyDerivationParams::CreateForPbkdf2());
   sync_pb::EncryptedData encrypted1;
   EXPECT_TRUE(original_cryptographer->EncryptString(kText1, &encrypted1));
+  EXPECT_THAT(encrypted1.key_name(), Eq(key_name1));
 
-  original_cryptographer->SelectDefaultEncryptionKey(key_name2);
+  const std::string key_name2 =
+      original_cryptographer->RotateDefaultKeyByDerivation(
+          "password2", KeyDerivationParams::CreateForPbkdf2());
   sync_pb::EncryptedData encrypted2;
   EXPECT_TRUE(original_cryptographer->EncryptString(kText2, &encrypted2));
+  EXPECT_THAT(encrypted2.key_name(), Eq(key_name2));
+
+  original_cryptographer->SetCrossUserSharingKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
 
   // Restore a new cryptographer from proto.
   std::unique_ptr<CryptographerImpl> restored_cryptographer =
@@ -216,11 +202,9 @@ TEST(CryptographerImplTest, ShouldExportDefaultKey) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  const std::string key_name = cryptographer->EmplaceKey(
+  const std::string key_name = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(std::string()));
-
-  cryptographer->SelectDefaultEncryptionKey(key_name);
   ASSERT_TRUE(cryptographer->CanEncrypt());
 
   sync_pb::NigoriKey exported_key = cryptographer->ExportDefaultKey();
@@ -246,30 +230,11 @@ TEST(CryptographerImplTest, ShouldSetCrossUserSharingKeyPair) {
   EXPECT_TRUE(cryptographer->HasCrossUserSharingKeyPair(0));
 }
 
-TEST(CryptographerImplTest, ShouldEmplaceKeysFrom) {
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::CreateEmpty();
-  ASSERT_THAT(cryptographer, NotNull());
-  NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name_1 =
-      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
-  const std::string key_name_2 =
-      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password2");
-  ASSERT_FALSE(cryptographer->HasKey(key_name_1));
-  ASSERT_FALSE(cryptographer->HasKey(key_name_2));
-
-  cryptographer->EmplaceKeysFrom(key_bag);
-
-  EXPECT_TRUE(cryptographer->HasKey(key_name_1));
-  EXPECT_TRUE(cryptographer->HasKey(key_name_2));
-}
-
 TEST(CryptographerImplTest, ShouldFollowRemoteKeyRotationWithKeyContinuity) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  const std::string key_name_1 = cryptographer->EmplaceKey(
+  const std::string key_name_1 = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(key_name_1);
   cryptographer->InvalidateDefaultEncryptionKey();
   ASSERT_FALSE(cryptographer->CanEncrypt());
 
@@ -291,9 +256,8 @@ TEST(CryptographerImplTest,
      ShouldRejectRemoteKeyRotationWithoutKeyContinuityWhenEnforced) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  const std::string key_name_1 = cryptographer->EmplaceKey(
+  const std::string key_name_1 = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(key_name_1);
   cryptographer->InvalidateDefaultEncryptionKey();
   ASSERT_FALSE(cryptographer->CanEncrypt());
 
@@ -463,39 +427,6 @@ TEST(CryptographerImplTest, ShouldClearCrossUserSharingKeys) {
   EXPECT_FALSE(cryptographer->HasCrossUserSharingKeyPair(1));
 }
 
-TEST(CryptographerImplTest, ShouldEmplaceAllNigoriKeysFrom) {
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::CreateEmpty();
-
-  ASSERT_THAT(cryptographer, NotNull());
-  ASSERT_FALSE(cryptographer->CanEncrypt());
-
-  const std::string key_name = cryptographer->EmplaceKey(
-      "password_local", KeyDerivationParams::CreateForPbkdf2());
-
-  ASSERT_THAT(key_name, Ne(std::string()));
-  cryptographer->SelectDefaultEncryptionKey(key_name);
-  ASSERT_TRUE(cryptographer->CanEncrypt());
-
-  std::unique_ptr<CryptographerImpl> other_cryptographer =
-      CryptographerImpl::CreateEmpty();
-
-  ASSERT_THAT(other_cryptographer, NotNull());
-  ASSERT_FALSE(other_cryptographer->CanEncrypt());
-
-  const std::string key_name_other = other_cryptographer->EmplaceKey(
-      "password_other", KeyDerivationParams::CreateForPbkdf2());
-
-  ASSERT_THAT(key_name_other, Ne(std::string()));
-  other_cryptographer->SelectDefaultEncryptionKey(key_name_other);
-  ASSERT_TRUE(other_cryptographer->CanEncrypt());
-
-  cryptographer->EmplaceAllNigoriKeysFrom(*other_cryptographer);
-
-  EXPECT_TRUE(cryptographer->HasKey(key_name));
-  EXPECT_TRUE(cryptographer->HasKey(key_name_other));
-}
-
 TEST(CryptographerImplTest, ShouldCloneDefaultCrossUserSharingKeyVersion) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
@@ -519,9 +450,8 @@ TEST(CryptographerImplTest, ShouldCloneDefaultCrossUserSharingKeyVersion) {
 TEST(CryptographerImplTest, ShouldSerializeToLocalProto) {
   std::unique_ptr<CryptographerImpl> original =
       CryptographerImpl::CreateEmpty();
-  const std::string key_name =
-      original->EmplaceKey("password", KeyDerivationParams::CreateForPbkdf2());
-  original->SelectDefaultEncryptionKey(key_name);
+  const std::string key_name = original->RotateDefaultKeyByDerivation(
+      "password", KeyDerivationParams::CreateForPbkdf2());
 
   sync_pb::CryptographerData proto = original->ToLocalProto();
   EXPECT_THAT(proto.default_key_name(), Eq(key_name));
@@ -552,9 +482,11 @@ TEST(CryptographerImplTest,
      ShouldReturnNullOnLocalProtoWithKeysButNoDefaultKey) {
   std::unique_ptr<CryptographerImpl> original =
       CryptographerImpl::CreateEmpty();
-  original->EmplaceKey("password", KeyDerivationParams::CreateForPbkdf2());
+  original->RotateDefaultKeyByDerivation(
+      "password", KeyDerivationParams::CreateForPbkdf2());
 
   sync_pb::CryptographerData proto = original->ToLocalProto();
+  proto.clear_default_key_name();
   ASSERT_TRUE(proto.default_key_name().empty());
   ASSERT_GT(proto.key_bag().key_size(), 0);
 
@@ -570,9 +502,8 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithOneKey) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
 
-  const std::string key_name = cryptographer->EmplaceKey(
+  const std::string key_name = cryptographer->RotateDefaultKeyByDerivation(
       "password", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(key_name);
 
   sync_pb::EncryptedData exported = cryptographer->ExportEncryptedKeyBag();
   EXPECT_TRUE(exported.has_blob());
@@ -594,11 +525,10 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithMultipleKeys) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
 
-  const std::string key_name1 = cryptographer->EmplaceKey(
+  const std::string key_name1 = cryptographer->RotateDefaultKeyByDerivation(
       "password1", KeyDerivationParams::CreateForPbkdf2());
-  const std::string key_name2 = cryptographer->EmplaceKey(
+  const std::string key_name2 = cryptographer->RotateDefaultKeyByDerivation(
       "password2", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(key_name2);
 
   sync_pb::EncryptedData exported = cryptographer->ExportEncryptedKeyBag();
   EXPECT_TRUE(exported.has_blob());
@@ -621,9 +551,8 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithMultipleKeys) {
 TEST(CryptographerImplTest, ShouldDisableAndEnableDefaultKey) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  const std::string key_name = cryptographer->EmplaceKey(
+  const std::string key_name = cryptographer->RotateDefaultKeyByDerivation(
       "password", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(key_name);
 
   ASSERT_TRUE(cryptographer->CanEncrypt());
   ASSERT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name));
@@ -635,8 +564,9 @@ TEST(CryptographerImplTest, ShouldDisableAndEnableDefaultKey) {
   // Keys should still exist (we can still decrypt).
   EXPECT_TRUE(cryptographer->HasKey(key_name));
 
-  // Re-enable by selecting it again.
-  cryptographer->SelectDefaultEncryptionKey(key_name);
+  // Re-enable by deriving/selecting it again.
+  cryptographer->RotateDefaultKeyByDerivation(
+      "password", KeyDerivationParams::CreateForPbkdf2());
   EXPECT_TRUE(cryptographer->CanEncrypt());
   EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name));
 }
@@ -644,9 +574,8 @@ TEST(CryptographerImplTest, ShouldDisableAndEnableDefaultKey) {
 TEST(CryptographerImplTest, ShouldResetInvalidatedStateOnClearAllKeys) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  const std::string key_name = cryptographer->EmplaceKey(
+  cryptographer->RotateDefaultKeyByDerivation(
       "password", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(key_name);
 
   ASSERT_TRUE(cryptographer->CanEncrypt());
 
@@ -658,10 +587,9 @@ TEST(CryptographerImplTest, ShouldResetInvalidatedStateOnClearAllKeys) {
   cryptographer->ClearAllKeys();
   ASSERT_FALSE(cryptographer->CanEncrypt());  // Still false because empty.
 
-  // Emplace key again and select it -> should CanEncrypt.
-  const std::string new_key_name = cryptographer->EmplaceKey(
+  // Rotate default key again -> should CanEncrypt.
+  const std::string new_key_name = cryptographer->RotateDefaultKeyByDerivation(
       "password", KeyDerivationParams::CreateForPbkdf2());
-  cryptographer->SelectDefaultEncryptionKey(new_key_name);
   EXPECT_TRUE(cryptographer->CanEncrypt());
   EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(new_key_name));
 }
@@ -669,9 +597,8 @@ TEST(CryptographerImplTest, ShouldResetInvalidatedStateOnClearAllKeys) {
 TEST(CryptographerImplTest, ShouldRestoreDisabledDefaultKey) {
   std::unique_ptr<CryptographerImpl> original =
       CryptographerImpl::CreateEmpty();
-  const std::string key_name =
-      original->EmplaceKey("password", KeyDerivationParams::CreateForPbkdf2());
-  original->SelectDefaultEncryptionKey(key_name);
+  const std::string key_name = original->RotateDefaultKeyByDerivation(
+      "password", KeyDerivationParams::CreateForPbkdf2());
 
   // Invalidate it.
   original->InvalidateDefaultEncryptionKey();

@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "components/sync/model/crypto/key_derivation_params.h"
-#include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -65,15 +64,8 @@ std::unique_ptr<KeystoreKeysCryptographer> KeystoreKeysCryptographer::Clone()
       key_bag_.Clone(), last_keystore_key_name_, keystore_keys_));
 }
 
-std::unique_ptr<CryptographerImpl>
-KeystoreKeysCryptographer::ToCryptographerImpl() const {
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::CreateEmpty();
-  cryptographer->EmplaceKeysFrom(key_bag_);
-  if (!last_keystore_key_name_.empty()) {
-    cryptographer->SelectDefaultEncryptionKey(last_keystore_key_name_);
-  }
-  return cryptographer;
+const std::string& KeystoreKeysCryptographer::GetLastKeystoreKeyName() const {
+  return last_keystore_key_name_;
 }
 
 bool KeystoreKeysCryptographer::EncryptKeystoreDecryptorToken(

@@ -29,9 +29,10 @@ namespace syncer {
 // sync data (eg. passwords). Each Nigori object knows how to handle data
 // protected with a particular encryption key.
 //
-// The implementation consists of a keybag representing all known keys and
-// optionally the notion of a default encryption key which, if it exists, is
-// present in the keybag.
+// The implementation consists of a keybag representing all known keys and a
+// default encryption key, which is present in the keybag whenever the keybag is
+// non-empty (though it may be temporarily invalidated while pending keys are
+// awaiting decryption).
 class CryptographerImpl : public Cryptographer {
  public:
   // Factory methods.
@@ -62,18 +63,16 @@ class CryptographerImpl : public Cryptographer {
   // to the Sync protocol.
   sync_pb::EncryptedData ExportEncryptedKeyBag() const;
 
-  // Creates and registers a new key after deriving Nigori keys. Returns the
-  // name of the key, or an empty string in case of error. Note that emplacing
-  // an already-known key is not considered an error (just a no-op).
-  //
-  // Does NOT set or change the default encryption key.
-  std::string EmplaceKey(const std::string& passphrase,
-                         const KeyDerivationParams& derivation_params);
-
-  // Adds all keys from `key_bag` that weren't previously known.
-  //
-  // Does NOT set or change the default encryption key.
-  void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
+  // Creates and registers a new key after deriving Nigori keys, and sets it as
+  // the default encryption key (which causes `CanEncrypt()` to return true and
+  // re-enables the default key if it was previously invalidated). Returns the
+  // name of the key, or an empty string in case of error (in which case the
+  // default encryption key remains unchanged). Note that deriving an
+  // already-known key is not considered an error (it simply selects that key as
+  // the default encryption key).
+  std::string RotateDefaultKeyByDerivation(
+      const std::string& passphrase,
+      const KeyDerivationParams& derivation_params);
 
   // Updates the cryptographer with keys from a remotely received `new_key_bag`
   // and selects `new_default_key_name` as the new default encryption key (which
@@ -97,14 +96,6 @@ class CryptographerImpl : public Cryptographer {
   // any pre-existing key pair for the given version if exists.
   void SetCrossUserSharingKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
                                   uint32_t version);
-
-  // Sets or changes the default encryption key, which causes CanEncrypt() to
-  // return true. `key_name` must not be empty and must represent a known key.
-  // If the default key was previously invalidated, this re-enables it.
-  void SelectDefaultEncryptionKey(const std::string& key_name);
-
-  // Adds all Nigori keys in `other` that weren't previously known.
-  void EmplaceAllNigoriKeysFrom(const CryptographerImpl& other);
 
   // Invalidates the default encryption key, which causes CanEncrypt() to return
   // false. The default key name is still kept in memory.
@@ -168,12 +159,20 @@ class CryptographerImpl : public Cryptographer {
       CrossUserSharingKeys cross_user_sharing_keys,
       std::optional<uint32_t> default_cross_user_sharing_key_version);
 
+  // Adds all keys from `key_bag` that weren't previously known.
+  // Does NOT set or change the default encryption key.
+  void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
+
+  // Sets or changes the default encryption key, which causes CanEncrypt() to
+  // return true. `key_name` must not be empty and must represent a known key.
+  // If the default key was previously invalidated, this re-enables it.
+  void SelectDefaultEncryptionKey(const std::string& key_name);
+
   // The actual keys we know about.
   NigoriKeyBag key_bag_;
 
-  // The key name associated with the default encryption key. If non-empty, it
-  // must correspond to a key within `key_bag_`. May be empty even if `key_bag_`
-  // is not.
+  // The key name associated with the default encryption key. Empty iff
+  // `key_bag_` is empty; otherwise must correspond to a key within `key_bag_`.
   std::string default_encryption_key_name_;
 
   // Whether the default encryption key is invalidated (e.g. during pending

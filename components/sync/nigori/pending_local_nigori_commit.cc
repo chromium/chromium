@@ -86,13 +86,13 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
     }
 
     const std::string default_key_name =
-        state.cryptographer->EmplaceKey(passphrase_, key_derivation_params_);
+        state.cryptographer->RotateDefaultKeyByDerivation(
+            passphrase_, key_derivation_params_);
     if (default_key_name.empty()) {
       DLOG(ERROR) << "Failed to set encryption passphrase";
       return false;
     }
 
-    state.cryptographer->SelectDefaultEncryptionKey(default_key_name);
     state.pending_keystore_decryptor_token.reset();
     state.passphrase_type = NigoriSpecifics::CUSTOM_PASSPHRASE;
     state.custom_passphrase_key_derivation_params = key_derivation_params_;
@@ -143,12 +143,10 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
       return false;
     }
 
-    std::unique_ptr<CryptographerImpl> cryptographer =
-        state.keystore_keys_cryptographer->ToCryptographerImpl();
-    DCHECK(!cryptographer->GetDefaultEncryptionKeyName().empty());
-    state.cryptographer->EmplaceAllNigoriKeysFrom(*cryptographer);
-    state.cryptographer->SelectDefaultEncryptionKey(
-        cryptographer->GetDefaultEncryptionKeyName());
+    CHECK(state.cryptographer->TryFollowRemoteKeyRotation(
+        state.keystore_keys_cryptographer->GetKeystoreKeybag(),
+        state.keystore_keys_cryptographer->GetLastKeystoreKeyName(),
+        /*enforce_key_continuity=*/false));
     state.passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
     state.keystore_migration_time = base::Time::Now();
 
@@ -243,12 +241,10 @@ class ImplicitPassphraseMigrator : public PendingLocalNigoriCommit {
       state.keystore_migration_time = base::Time();
     } else {
       CHECK(!state.keystore_keys_cryptographer->IsEmpty());
-      std::unique_ptr<CryptographerImpl> cryptographer =
-          state.keystore_keys_cryptographer->ToCryptographerImpl();
-      CHECK(!cryptographer->GetDefaultEncryptionKeyName().empty());
-      state.cryptographer->EmplaceAllNigoriKeysFrom(*cryptographer);
-      state.cryptographer->SelectDefaultEncryptionKey(
-          cryptographer->GetDefaultEncryptionKeyName());
+      CHECK(state.cryptographer->TryFollowRemoteKeyRotation(
+          state.keystore_keys_cryptographer->GetKeystoreKeybag(),
+          state.keystore_keys_cryptographer->GetLastKeystoreKeyName(),
+          /*enforce_key_continuity=*/false));
       state.passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
       state.keystore_migration_time = base::Time::Now();
       // Reset in case `NigoriState::CreateFromLocalProto()` populated

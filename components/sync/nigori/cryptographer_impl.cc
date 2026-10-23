@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -32,9 +33,9 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
     const std::string& passphrase,
     const KeyDerivationParams& derivation_params) {
   std::unique_ptr<CryptographerImpl> cryptographer = CreateEmpty();
-  std::string key_name =
-      cryptographer->EmplaceKey(passphrase, derivation_params);
-  cryptographer->SelectDefaultEncryptionKey(key_name);
+  std::string key_name = cryptographer->RotateDefaultKeyByDerivation(
+      passphrase, derivation_params);
+  CHECK(!key_name.empty());
   return cryptographer;
 }
 
@@ -78,8 +79,11 @@ CryptographerImpl::CryptographerImpl(
       default_cross_user_sharing_key_version_(
           default_cross_user_sharing_key_version),
       cross_user_sharing_keys_(std::move(cross_user_sharing_keys)) {
-  DCHECK(default_encryption_key_name_.empty() ||
-         key_bag_.HasKey(default_encryption_key_name_));
+  if (default_encryption_key_name_.empty()) {
+    CHECK_EQ(key_bag_.size(), 0u);
+  } else {
+    CHECK(key_bag_.HasKey(default_encryption_key_name_));
+  }
 }
 
 CryptographerImpl::~CryptographerImpl() = default;
@@ -107,10 +111,14 @@ sync_pb::EncryptedData CryptographerImpl::ExportEncryptedKeyBag() const {
   return encrypted;
 }
 
-std::string CryptographerImpl::EmplaceKey(
+std::string CryptographerImpl::RotateDefaultKeyByDerivation(
     const std::string& passphrase,
     const KeyDerivationParams& derivation_params) {
-  return key_bag_.AddKey(derivation_params, passphrase);
+  std::string key_name = key_bag_.AddKey(derivation_params, passphrase);
+  if (!key_name.empty()) {
+    SelectDefaultEncryptionKey(key_name);
+  }
+  return key_name;
 }
 
 void CryptographerImpl::SetCrossUserSharingKeyPair(
@@ -148,11 +156,6 @@ void CryptographerImpl::SelectDefaultEncryptionKey(
   DCHECK(key_bag_.HasKey(key_name));
   default_encryption_key_name_ = key_name;
   default_encryption_key_invalidated_ = false;
-}
-
-void CryptographerImpl::EmplaceAllNigoriKeysFrom(
-    const CryptographerImpl& other) {
-  EmplaceKeysFrom(other.key_bag_);
 }
 
 void CryptographerImpl::InvalidateDefaultEncryptionKey() {

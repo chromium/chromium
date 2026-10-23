@@ -36,11 +36,10 @@ TEST(NigoriStateTest, ShouldConvertCustomPassphraseStateToSpecifics) {
   state.custom_passphrase_key_derivation_params =
       KeyDerivationParams::CreateForPbkdf2();
 
-  const std::string key_name = state.cryptographer->EmplaceKey(
-      kKey, KeyDerivationParams::CreateForPbkdf2());
+  const std::string key_name =
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          kKey, KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(""));
-
-  state.cryptographer->SelectDefaultEncryptionKey(key_name);
 
   NigoriSpecifics specifics = state.ToSpecificsProto();
   EXPECT_THAT(specifics.passphrase_type(),
@@ -71,14 +70,14 @@ TEST(NigoriStateTest, ShouldConvertKeystoreStateToSpecifics) {
   state.passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
   state.keystore_migration_time = now;
   state.cryptographer = CryptographerImpl::CreateEmpty();
-  state.cryptographer->EmplaceKey(kKeystoreKey1,
-                                  KeyDerivationParams::CreateForPbkdf2());
-  const std::string last_keystore_key_name = state.cryptographer->EmplaceKey(
-      kKeystoreKey2, KeyDerivationParams::CreateForPbkdf2());
+  state.cryptographer->RotateDefaultKeyByDerivation(
+      kKeystoreKey1, KeyDerivationParams::CreateForPbkdf2());
+  const std::string last_keystore_key_name =
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          kKeystoreKey2, KeyDerivationParams::CreateForPbkdf2());
   const std::string default_encryption_key_name =
-      state.cryptographer->EmplaceKey(kDefaultEncryptionKey,
-                                      KeyDerivationParams::CreateForPbkdf2());
-  state.cryptographer->SelectDefaultEncryptionKey(default_encryption_key_name);
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          kDefaultEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
 
   ASSERT_THAT(last_keystore_key_name, Ne(""));
   ASSERT_THAT(default_encryption_key_name, Ne(""));
@@ -102,9 +101,9 @@ TEST(NigoriStateTest, ShouldConvertPublicKeyStateToSpecifics) {
   const std::string kDefaultEncryptionKey = "defaultkey";
   NigoriState state;
   const std::string default_encryption_key_name =
-      state.cryptographer->EmplaceKey(kDefaultEncryptionKey,
-                                      KeyDerivationParams::CreateForPbkdf2());
-  state.cryptographer->SelectDefaultEncryptionKey(default_encryption_key_name);
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          kDefaultEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
+  ASSERT_THAT(default_encryption_key_name, Ne(""));
   const std::vector<uint8_t> key(32, 0xDE);
   state.cross_user_sharing_public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
@@ -123,9 +122,9 @@ TEST(NigoriStateTest, ShouldContainPublicKeyInLocalProto) {
 
   NigoriState state;
   const std::string default_encryption_key_name =
-      state.cryptographer->EmplaceKey(kDefaultEncryptionKey,
-                                      KeyDerivationParams::CreateForPbkdf2());
-  state.cryptographer->SelectDefaultEncryptionKey(default_encryption_key_name);
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          kDefaultEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
+  ASSERT_THAT(default_encryption_key_name, Ne(""));
   state.cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
       kKeyPairVersion);
@@ -216,10 +215,10 @@ TEST(NigoriStateTest,
 
 TEST(NigoriStateTest, ShouldReturnNeedsGenerateCrossUserSharingKeyPair) {
   NigoriState state;
-  const std::string key_name = state.cryptographer->EmplaceKey(
-      "key1", KeyDerivationParams::CreateForPbkdf2());
+  const std::string key_name =
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          "key1", KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(""));
-  state.cryptographer->SelectDefaultEncryptionKey(key_name);
 
   // There is no public key, so the key pair needs to be generated.
   EXPECT_TRUE(state.NeedsGenerateCrossUserSharingKeyPair());
@@ -248,10 +247,10 @@ TEST(NigoriStateTest, ShouldReturnNeedsGenerateCrossUserSharingKeyPair) {
 TEST(NigoriStateTest,
      ShouldReturnNeedsGenerateCrossUserSharingKeyPairWhenInvalid) {
   NigoriState state;
-  const std::string key_name = state.cryptographer->EmplaceKey(
-      "key1", KeyDerivationParams::CreateForPbkdf2());
+  const std::string key_name =
+      state.cryptographer->RotateDefaultKeyByDerivation(
+          "key1", KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(""));
-  state.cryptographer->SelectDefaultEncryptionKey(key_name);
 
   // There is no public key, so the key pair needs to be generated.
   ASSERT_TRUE(state.NeedsGenerateCrossUserSharingKeyPair());

@@ -6,7 +6,6 @@
 
 #include "components/sync/model/crypto/key_derivation_params.h"
 #include "components/sync/model/crypto/nigori.h"
-#include "components/sync/nigori/cryptographer_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +14,7 @@ namespace syncer {
 namespace {
 
 using testing::Eq;
+using testing::IsEmpty;
 using testing::NotNull;
 
 std::string ComputeKeystoreKeyName(const std::string& keystore_key) {
@@ -30,11 +30,8 @@ TEST(KeystoreKeysCryptographerTest, ShouldCreateEmpty) {
 
   EXPECT_TRUE(keystore_keys_cryptographer->IsEmpty());
   EXPECT_TRUE(keystore_keys_cryptographer->keystore_keys().empty());
-
-  std::unique_ptr<CryptographerImpl> underlying_cryptographer =
-      keystore_keys_cryptographer->ToCryptographerImpl();
-  ASSERT_THAT(underlying_cryptographer, NotNull());
-  EXPECT_FALSE(underlying_cryptographer->CanEncrypt());
+  EXPECT_THAT(keystore_keys_cryptographer->GetLastKeystoreKeyName(), IsEmpty());
+  EXPECT_EQ(keystore_keys_cryptographer->GetKeystoreKeybag().size(), 0u);
 }
 
 // Verifies that `FromKeystoreKeys()` returns a non-null empty cryptographer
@@ -59,14 +56,12 @@ TEST(KeystoreKeysCryptographerTest, ShouldCreateNonEmpty) {
 
   EXPECT_FALSE(keystore_keys_cryptographer->IsEmpty());
   EXPECT_THAT(keystore_keys_cryptographer->keystore_keys(), Eq(kKeystoreKeys));
-
-  std::unique_ptr<CryptographerImpl> underlying_cryptographer =
-      keystore_keys_cryptographer->ToCryptographerImpl();
-  ASSERT_THAT(underlying_cryptographer, NotNull());
-  EXPECT_TRUE(underlying_cryptographer->CanEncrypt());
-  EXPECT_TRUE(underlying_cryptographer->HasKey(keystore_key_name1));
-  EXPECT_THAT(underlying_cryptographer->GetDefaultEncryptionKeyName(),
+  EXPECT_THAT(keystore_keys_cryptographer->GetLastKeystoreKeyName(),
               Eq(keystore_key_name2));
+  EXPECT_TRUE(keystore_keys_cryptographer->GetKeystoreKeybag().HasKey(
+      keystore_key_name1));
+  EXPECT_TRUE(keystore_keys_cryptographer->GetKeystoreKeybag().HasKey(
+      keystore_key_name2));
 }
 
 }  // namespace

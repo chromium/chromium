@@ -19,10 +19,8 @@ class NigoriKey;
 
 namespace syncer {
 
-class CryptographerImpl;
-
-// Wrapper of CryptographerImpl, which contains only keystore keys and uses the
-// last one as the default encryption key.
+// Manages keystore keys and provides operations to encrypt and decrypt the
+// keystore decryptor token using the last keystore key.
 class KeystoreKeysCryptographer {
  public:
   // Factory methods. Never return null.
@@ -44,9 +42,9 @@ class KeystoreKeysCryptographer {
 
   std::unique_ptr<KeystoreKeysCryptographer> Clone() const;
 
-  // Returns CryptographerImpl, which contains all keystore keys and uses the
-  // last one as the default encryption key.
-  std::unique_ptr<CryptographerImpl> ToCryptographerImpl() const;
+  // Returns the key name of the last keystore key, or an empty string if
+  // `IsEmpty()` is true.
+  const std::string& GetLastKeystoreKeyName() const;
 
   // Encrypts `keystore_decryptor_key` into `keystore_decryptor_token`.
   // `keystore_decryptor_token` must be not null. Returns false if there is no
