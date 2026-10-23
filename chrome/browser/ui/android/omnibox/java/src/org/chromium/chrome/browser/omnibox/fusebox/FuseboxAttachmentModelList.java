@@ -31,6 +31,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -362,7 +363,7 @@ public class FuseboxAttachmentModelList
 
     /** Returns a set of currently attached Tab IDs. */
     public Set<Integer> getAttachedTabIds() {
-        return mAttachedTabIds;
+        return Collections.unmodifiableSet(mAttachedTabIds);
     }
 
     /** Removes all suggested tab chips from the model list and backend. */
