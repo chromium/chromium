@@ -2612,6 +2612,10 @@ class RollProtobufStartTest(unittest.TestCase):
                       roll_protobuf.FormatRollStatusReport(conflict_status))
 
     def testAbortRollRestoresExactStartingCommitAndDeletesRollState(self):
+        _WriteFilesToDirectory(self.repository_root,
+                               {'.gitignore': '*.targets\n*.orig\n'})
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-am', 'Ignore .orig'])
         start_commit = _RunGitCommand(self.repository_root,
                                       ['rev-parse', 'HEAD'])
         roll_protobuf.StartRoll(
@@ -2619,8 +2623,13 @@ class RollProtobufStartTest(unittest.TestCase):
             protobuf_directory=self.fixture.protobuf_directory,
             upstream_repository_path=self.fixture.upstream_directory,
         )
-        _WriteFilesToDirectory(self.fixture.protobuf_directory,
-                               {'src/untracked.orig': 'leftover\n'})
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                'src/untracked.tmp': 'scratch\n',
+                'src/untracked_dir/untracked.orig': 'leftover\n',
+            },
+        )
 
         roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
 
@@ -2633,6 +2642,10 @@ class RollProtobufStartTest(unittest.TestCase):
                 roll_protobuf.LoadRollState(self.fixture.protobuf_directory),
             ),
         )
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.fixture.protobuf_directory, 'src',
+                             'untracked_dir')))
 
     def testAbortRollRaisesWhenNoRollIsInProgress(self):
         with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
@@ -2943,6 +2956,94 @@ class RollProtobufStartTest(unittest.TestCase):
         _RunGitCommand(self.repository_root,
                        ['commit', '--quiet', '--allow-empty', '-m', 'Manual'])
         AssertContinueRaises(r'run `roll_protobuf\.py resume`')
+
+    def testDropCurrentPatchDeletesPatchCommitsReasonAndReplaysRemaining(self):
+        _WriteFilesToDirectory(self.repository_root,
+                               {'.gitignore': '*.targets\n*.orig\n'})
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-am', 'Ignore .orig'])
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        for invalid_reason in ('   ', 'line 1\nline 2', 'line 1\rline 2'):
+            with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                        r'non-empty --reason'):
+                roll_protobuf.DropCurrentPatch(invalid_reason,
+                                               self.fixture.protobuf_directory)
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                'src/leftover.rej': '@@ -1 +1 @@\n',
+                'src/new_dir/leftover.orig': '// backup\n',
+                'src/untracked.tmp': '// scratch\n',
+            },
+        )
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'staged outside\n'})
+        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        with self.assertRaisesRegex(
+                roll_protobuf.RollProtobufError,
+                r'Staged changes outside //third_party/protobuf.*'
+                r'OTHER_CHROMIUM_FILE'):
+            roll_protobuf.DropCurrentPatch('obsolete in v37',
+                                           self.fixture.protobuf_directory)
+        self.assertTrue(
+            os.path.exists(
+                os.path.join(self.fixture.protobuf_directory, 'src',
+                             'untracked.tmp')))
+        _RunGitCommand(self.repository_root,
+                       ['checkout', 'HEAD', '--', 'OTHER_CHROMIUM_FILE'])
+
+        after_first_drop = roll_protobuf.DropCurrentPatch(
+            'obsolete in v37', self.fixture.protobuf_directory)
+        final_state = roll_protobuf.DropCurrentPatch(
+            'file removed upstream', self.fixture.protobuf_directory)
+        recent_subjects = _RunGitCommand(
+            self.repository_root, ['log', '-3', '--format=%s']).splitlines()
+
+        self.assertEqual(
+            ('conflict', 3),
+            (after_first_drop.phase, after_first_drop.current_index))
+        self.assertEqual(('replayed', 5),
+                         (final_state.phase, final_state.current_index))
+        self.assertEqual(
+            final_state,
+            roll_protobuf.LoadRollState(self.fixture.protobuf_directory))
+        self.assertEqual(
+            [
+                f'Apply patches/{_PLAN_STACKED_PATCH}',
+                f'Drop patches/{_PLAN_MISSING_FILE_PATCH} (file removed upstream)',
+                f'Drop patches/{_PLAN_CONFLICT_PATCH} (obsolete in v37)',
+            ],
+            recent_subjects,
+        )
+        self.assertEqual(
+            _PLAN_NEW_UPSTREAM_FILES[_PLAN_CONFLICT_PATH],
+            pathlib.Path(
+                self.fixture.protobuf_directory,
+                *_PLAN_CONFLICT_PATH.split('/')).read_text(encoding='utf-8'),
+        )
+        for cleaned_entry in ('leftover.rej', 'new_dir', 'untracked.tmp'):
+            self.assertFalse(
+                os.path.exists(
+                    os.path.join(self.fixture.protobuf_directory, 'src',
+                                 cleaned_entry)))
+        for dropped_patch in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            self.assertFalse(
+                os.path.exists(
+                    os.path.join(self.fixture.protobuf_directory, 'patches',
+                                 dropped_patch)))
+        with self.assertRaisesRegex(
+                roll_protobuf.RollProtobufError,
+                r'No conflicting protobuf patch is waiting for '
+                r'`roll_protobuf\.py drop`'):
+            roll_protobuf.DropCurrentPatch('already replayed',
+                                           self.fixture.protobuf_directory)
+        self.assertIn('dropped (obsolete in v37)',
+                      roll_protobuf.FormatRollStateReport(final_state))
 
 
 if __name__ == '__main__':

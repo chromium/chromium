@@ -773,6 +773,7 @@ class PatchReplayStatus(enum.Enum):
     # A file the patch modifies or deletes is gone. `git apply -3` does not
     # follow renames, so an upstream rename lands here too.
     MISSING_FILE = 'MISSING_FILE'
+    DROPPED = 'DROPPED'  # Explicitly dropped via `roll_protobuf.py drop`.
     ERROR = 'ERROR'  # `git apply` failed for any other reason.
 
 
@@ -795,7 +796,8 @@ class PatchReplayResult:
     conflicted_files: tuple[ConflictedFile, ...] = ()  # For CONFLICT.
     # Upstream-relative paths the new version lacks, for MISSING_FILE.
     missing_files: tuple[str, ...] = ()
-    error_message: str | None = None  # `git apply` diagnostics, for ERROR.
+    # Drop reason for DROPPED, or `git apply` diagnostics for ERROR.
+    error_message: str | None = None
 
     def ToDictionary(self) -> dict[str, object]:
         return {
@@ -1035,6 +1037,9 @@ def _DescribePatchReplayResult(result: PatchReplayResult) -> str:
                 f'{result.changed_line_count_after} changed lines')
     if result.status is PatchReplayStatus.EMPTY:
         return 'already upstream'
+    if result.status is PatchReplayStatus.DROPPED:
+        return (f'dropped ({result.error_message})'
+                if result.error_message else 'dropped')
     if result.status is PatchReplayStatus.CONFLICT:
         # `git apply -3` writes no conflict markers into binary files.
         return ', '.join(
@@ -1500,6 +1505,20 @@ def _PatchTouchedRepositoryPaths(checkout: _CheckoutPaths,
     }
 
 
+def _RejectStagedChangesOutsideProtobuf(checkout: _CheckoutPaths) -> None:
+    if not checkout.protobuf_prefix:
+        return
+    prefix_with_slash = f'{checkout.protobuf_prefix}/'
+    outside_staged = sorted(path for path in _SplitNulSeparatedPaths(
+        _RunScratchGit(checkout.repository_root, 'diff', '--cached',
+                       '--name-only', '-z').stdout)
+                            if not path.startswith(prefix_with_slash))
+    if outside_staged:
+        raise RollProtobufError(
+            'Staged changes outside //third_party/protobuf cannot be '
+            'included in a patch commit: ' + ', '.join(outside_staged))
+
+
 def ContinueRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY,
                  allow_extra_files: bool = False) -> RollState:
     """Commits a resolved patch conflict, refreshes its .patch, and continues."""
@@ -1516,15 +1535,7 @@ def ContinueRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY,
     protobuf_pathspec = checkout.protobuf_prefix or '.'
     prefix_with_slash = (f'{checkout.protobuf_prefix}/'
                          if checkout.protobuf_prefix else '')
-    if prefix_with_slash:
-        outside_staged = sorted(path for path in _SplitNulSeparatedPaths(
-            _RunScratchGit(checkout.repository_root, 'diff', '--cached',
-                           '--name-only', '-z').stdout)
-                                if not path.startswith(prefix_with_slash))
-        if outside_staged:
-            raise RollProtobufError(
-                'Staged changes outside //third_party/protobuf cannot be '
-                'included in a patch commit: ' + ', '.join(outside_staged))
+    _RejectStagedChangesOutsideProtobuf(checkout)
     changed_paths = sorted(
         set(
             _SplitNulSeparatedPaths(
@@ -1594,6 +1605,57 @@ def ContinueRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY,
         conflict_files=(),
         patch_results=(*state.patch_results[:state.current_index],
                        resolved_result))
+    _SaveRollState(checkout, next_state)
+    return _ReplayRemainingPatches(checkout, next_state)
+
+
+def _CleanUntrackedAndBackupFiles(protobuf_directory: str) -> None:
+    # Chromium's root .gitignore ignores *.orig and *.rej; remove them before
+    # `git clean -fdq` so untracked parent directories are pruned too, without
+    # `-x` wiping unrelated git-ignored files.
+    for path in _ListRegularFilesInDirectory(protobuf_directory):
+        if path.endswith(('.rej', '.orig')):
+            os.remove(os.path.join(protobuf_directory, *path.split('/')))
+    _RunScratchGit(protobuf_directory, 'clean', '-fdq')
+
+
+def DropCurrentPatch(
+        reason: str,
+        protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
+    """Discards the conflicting patch, removes its .patch file, and continues."""
+    reason = reason.strip()
+    if not reason or '\n' in reason or '\r' in reason:
+        raise RollProtobufError(
+            'Provide a single-line, non-empty --reason explaining why the '
+            'patch is being dropped.')
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    state = _RequireActiveConflictState(checkout, 'roll_protobuf.py drop')
+    _RejectStagedChangesOutsideProtobuf(checkout)
+    chain_patch = state.patches[state.current_index]
+    _RunScratchGit(checkout.repository_root, 'restore', '--quiet',
+                   '--source=HEAD', '--staged', '--worktree', '--',
+                   checkout.protobuf_directory)
+    _CleanUntrackedAndBackupFiles(checkout.protobuf_directory)
+    patch_file_path = os.path.join(checkout.protobuf_directory, 'patches',
+                                   chain_patch.patch_name)
+    _RunScratchGit(checkout.repository_root, 'rm', '--quiet', '--',
+                   patch_file_path)
+    _RunScratchGit(checkout.repository_root, 'commit', '--quiet',
+                   '--no-verify', '-m',
+                   f'Drop patches/{chain_patch.patch_name} ({reason})')
+    new_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                              'HEAD').stdout.decode().strip()
+    dropped_result = PatchReplayResult(chain_patch.patch_name,
+                                       PatchReplayStatus.DROPPED,
+                                       chain_patch.changed_line_count,
+                                       error_message=reason)
+    next_state = dataclasses.replace(
+        state,
+        expected_head=new_head,
+        current_index=state.current_index + 1,
+        conflict_files=(),
+        patch_results=(*state.patch_results[:state.current_index],
+                       dropped_result))
     _SaveRollState(checkout, next_state)
     return _ReplayRemainingPatches(checkout, next_state)
 
@@ -1698,7 +1760,7 @@ def AbortRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
                                 f'{checkout.state_file_path}).')
     _RunScratchGit(checkout.repository_root, 'reset', '--quiet', '--hard',
                    roll_state.start_commit)
-    _RunScratchGit(checkout.protobuf_directory, 'clean', '-fdq')
+    _CleanUntrackedAndBackupFiles(checkout.protobuf_directory)
     shutil.rmtree(checkout.roll_state_directory)
     return roll_state
 
