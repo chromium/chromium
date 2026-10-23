@@ -6168,7 +6168,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5707674184620508665">Votre organisation (<ph name="ACCOUNT_MANAGER" />) ne pourra pas voir ni gérer vos données existantes, qui resteront dans le profil existant.</translation>
 <translation id="5708171344853220004">Nom Microsoft principal</translation>
 <translation id="5712153969432126546">Les sites publient parfois des PDF, comme des documents, des contrats et des formulaires</translation>
-<translation id="571222594670061844">Les sites peuvent afficher les invites de connexion des services d'identité</translation>
+<translation id="571222594670061844">Autoriser les sites à afficher des invites de connexion de services d'identité</translation>
 <translation id="5713158217420111469">Connecté à <ph name="DEVICE" /></translation>
 <translation id="5713988532993992900">Inversé</translation>
 <translation id="5714100381896040477">Limitez les mouvements à l'écran</translation>
@@ -6385,7 +6385,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5876851302954717356">Nouvel onglet à droite</translation>
 <translation id="5877064549588274448">La version a été modifiée. Redémarrez votre appareil pour appliquer les modifications.</translation>
 <translation id="5877584842898320529">L'imprimante sélectionnée n'est pas disponible ou n'est pas installée correctement. <ph name="BR" /> Vérifiez votre imprimante ou sélectionnez-en une autre.</translation>
-<translation id="5878945009165002849">Bloquer les invites de connexion des services d'identité</translation>
+<translation id="5878945009165002849">Bloquer les invites de connexion de services d'identité</translation>
 <translation id="5881710783061958569">Si oui, veuillez modifier votre mot de passe enregistré dans <ph name="BRAND" /> pour qu'il corresponde à votre nouveau mot de passe.</translation>
 <translation id="5882919346125742463">Réseaux connus</translation>
 <translation id="5883356647197510494">Autorisations bloquées automatiquement : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
@@ -8842,7 +8842,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7766082757934713382">Aide à réduire la consommation de données réseau en suspendant les mises à jour automatiques du système et des applications</translation>
 <translation id="7767554953520855281">Les détails sont masqués lors du partage d'écran</translation>
 <translation id="7767972280546034736">Créez une clé d'accès pour <ph name="APP_NAME" /></translation>
-<translation id="7768507955883790804">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez</translation>
+<translation id="7768507955883790804">Les sites appliquent automatiquement ce paramètre lors de votre visite</translation>
 <translation id="7768770796815395237">Modifier</translation>
 <translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7769063984980522348">Passer à la vue compacte</translation>
@@ -9908,7 +9908,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8584280235376696778">Ou&amp;vrir la vidéo dans un nouvel onglet</translation>
 <translation id="8584843865238667486">Appareils HID associés à l'utilisation <ph name="USAGE" /> (sur la page <ph name="USAGE_PAGE" />)</translation>
 <translation id="8585480574870650651">Supprimer Crostini</translation>
-<translation id="8585841788766257444">Les sites répertoriés ci-dessous appliquent un paramètre personnalisé au lieu du paramètre par défaut</translation>
+<translation id="8585841788766257444">Les sites ci-dessous appliquent un paramètre personnalisé au lieu du paramètre par défaut</translation>
 <translation id="8587001564479545614">Créer un code de récupération</translation>
 <translation id="8587386584550433409">Ajuster automatiquement la luminosité de l'écran</translation>
 <translation id="8587660243683137365">Installer cette page en tant qu'appli</translation>
@@ -10844,7 +10844,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="994289308992179865">&amp;Répéter</translation>
 <translation id="995755448277384931">Ajouter un IBAN</translation>
 <translation id="996250603853062861">Établissement de la connexion sécurisée...</translation>
-<translation id="997143476478634194">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez. Les sites envoient généralement des notifications pour vous transmettre des alertes info ou vous informer que vous avez reçu un message dans un chat.</translation>
+<translation id="997143476478634194">Les sites appliquent automatiquement ce paramètre lors de votre visite. En général, ils envoient des notifications pour vous transmettre des alertes info ou vous signaler de nouveaux messages de chat.</translation>
 <translation id="99731366405731005">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour utiliser Sync Wi-Fi. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
 <translation id="998347228911661591">Synchronisez vos groupes d'onglets</translation>
 <translation id="998747458861718449">I&amp;nspecter</translation>
