@@ -40,9 +40,11 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -391,8 +393,47 @@ class SyncConfirmationUIDialogPixelTest
     controller->ShowModalSyncConfirmationDialog(
         sync_param.sync_style == SyncConfirmationStyle::kSigninInterceptModal,
         sync_param.is_sync_promo);
-    widget_waiter.WaitIfNeededAndGet();
+    views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
+
+    // Clear focus before waiting on the renderer so `VerifyPixelUi()` does not
+    // trigger an asynchronous blur of `#confirmButton[autofocus]` mid-capture.
+    if (auto* focus_manager = widget->GetFocusManager()) {
+      focus_manager->ClearFocus();
+    }
+
+    // Wait for the WebUI to exit `ScreenMode.PENDING` and force a full-frame
+    // repaint so partial damage from the button row or focus ring does not clip
+    // the SVG `<feGaussianBlur>` background gradient.
+    content::WebContents* web_contents =
+        controller->GetModalDialogWebContentsForTesting();
+    ASSERT_TRUE(web_contents);
+    EXPECT_EQ(true, content::EvalJs(web_contents, R"(
+      (async () => {
+        const componentName =
+            document.querySelector('sync-confirmation-app-refresh')
+                ? 'sync-confirmation-app-refresh'
+                : 'sync-confirmation-app';
+        await customElements.whenDefined(componentName);
+        const app = document.querySelector(componentName);
+        if (!app) {
+          return false;
+        }
+        while (app.isPending_ && app.isPending_()) {
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+        if (app.updateComplete) {
+          await app.updateComplete;
+        }
+        app.shadowRoot?.activeElement?.blur();
+        app.style.visibility = 'hidden';
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        app.style.visibility = '';
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        return true;
+      })();
+    )"));
   }
 };
 
