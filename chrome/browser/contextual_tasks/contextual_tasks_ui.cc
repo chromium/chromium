@@ -660,10 +660,10 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            contextual_tasks::GetIsContextualTasksWindowTrackingEnabled());
   dict.Set("supportsLensButtonInComposebox", !BUILDFLAG(IS_ANDROID));
   // Android delegates voice search to the platform recognition activity.
-  // Large-screen Android can opt into the in-panel WebUI voice search UI
-  // instead; phone Clank always stays on the platform path.
+  // Desktop Android can opt into the in-panel WebUI voice search UI instead;
+  // phone and tablet Clank always stay on the platform path.
   const bool use_webui_voice_search =
-      contextual_tasks::IsAndroidLargeFormFactor() &&
+      contextual_tasks::IsAndroidDesktopFormFactor() &&
       contextual_tasks::
           GetIsContextualTasksWebUiVoiceSearchDesktopAndroidEnabled();
   dict.Set("isSystemVoiceSearchEnabled",

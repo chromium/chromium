@@ -529,7 +529,7 @@ void SendInjectedInputRemovedUpdate(AimMessagePoster* message_poster,
 
 bool ShouldShowSidePanel() {
 #if BUILDFLAG(IS_ANDROID)
-  return IsAndroidLargeFormFactor() &&
+  return IsAndroidDesktopFormFactor() &&
          !base::FeatureList::IsEnabled(
              kContextualTasksOverrideShowBottomSheetOnLargeScreen);
 #else
@@ -545,11 +545,9 @@ bool IsAndroidMobileFormFactor() {
 #endif
 }
 
-bool IsAndroidLargeFormFactor() {
+bool IsAndroidDesktopFormFactor() {
 #if BUILDFLAG(IS_ANDROID)
-  const ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
-  return form_factor == ui::DEVICE_FORM_FACTOR_TABLET ||
-         form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP;
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP;
 #else
   return false;
 #endif

@@ -1030,10 +1030,10 @@ TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
   base::DictValue load_time_data =
       ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
 
-  // The in-panel WebUI voice search UI is only used on large-screen Android
-  // devices (tablet or desktop form factor); it is always false elsewhere.
+  // The in-panel WebUI voice search UI is only used on Android devices with the
+  // desktop form factor; it is always false elsewhere.
   const bool expect_webui_voice_search =
-      contextual_tasks::IsAndroidLargeFormFactor();
+      contextual_tasks::IsAndroidDesktopFormFactor();
 
   // Only set when the in-panel WebUI voice search UI in desktop Android is
   // active. It drives audio wave simulation, since that UI cannot open its own
@@ -1052,12 +1052,12 @@ TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// Covers the path the feature actually ships: a large-screen Android device
-// with the flag on, which swaps the platform voice recognition activity for
-// the in-panel WebUI voice search UI.
+// Covers the path the feature actually ships: a desktop Android device with
+// the flag on, which swaps the platform voice recognition activity for the
+// in-panel WebUI voice search UI.
 TEST_F(ContextualTasksUiTest,
-       GetContextualTasksLoadTimeData_WebUiVoiceSearchOnLargeScreen) {
-  // `IsAndroidLargeFormFactor()` reads `ui::GetDeviceFormFactor()`, which
+       GetContextualTasksLoadTimeData_WebUiVoiceSearchOnDesktopAndroid) {
+  // `IsAndroidDesktopFormFactor()` reads `ui::GetDeviceFormFactor()`, which
   // reports the desktop form factor when `device_info::is_desktop()` is set.
   base::android::device_info::set_is_desktop_for_testing(true);
   base::ScopedClosureRunner reset_form_factor(base::BindOnce(
