@@ -24,7 +24,7 @@ public class PopupLauncherPageStation extends WebPageStation {
     private final HtmlElement mLinkToOpenBasicPopup;
     private final HtmlElement mLinkToOpenPopupWithBounds;
     private final HtmlElement mLinkToOpenPopupWithSmallBounds;
-    private final HtmlElement mLinkToOpenPopupWithMediumBounds;
+    private final HtmlElement mLinkToOpenPopupWithMinUserResizableWidth;
     private final HtmlElement mLinkToClosePopup;
     private final HtmlElement mLinkToFocusPopup;
     private final HtmlElement mLinkToMovePopupTo;
@@ -39,7 +39,8 @@ public class PopupLauncherPageStation extends WebPageStation {
         mLinkToOpenBasicPopup = getElementById("link_open_popup");
         mLinkToOpenPopupWithBounds = getElementById("link_open_popup_bounds");
         mLinkToOpenPopupWithSmallBounds = getElementById("link_open_popup_small_bounds");
-        mLinkToOpenPopupWithMediumBounds = getElementById("link_open_popup_medium_bounds");
+        mLinkToOpenPopupWithMinUserResizableWidth =
+                getElementById("link_open_popup_min_user_resizable_width");
         mLinkToClosePopup = getElementById("link_close_popup");
         mLinkToFocusPopup = getElementById("link_focus_popup");
         mLinkToMovePopupTo = getElementById("link_move_popup_to");
@@ -91,12 +92,12 @@ public class PopupLauncherPageStation extends WebPageStation {
     }
 
     /**
-     * Opens a sample page as a pop-up with medium launch bounds specified.
+     * Opens a sample page as a pop-up whose launch bounds have the minimum user-resizable width.
      *
      * @return A {@link TripBuilder} representing the click trigger.
      */
-    public TripBuilder clickOpenPopupWithMediumBounds() {
-        return mLinkToOpenPopupWithMediumBounds.clickTo();
+    public TripBuilder clickOpenPopupWithMinUserResizableWidth() {
+        return mLinkToOpenPopupWithMinUserResizableWidth.clickTo();
     }
 
     /**

@@ -24,11 +24,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -267,12 +267,14 @@ public class PopupMultiwindowPTTest {
     }
 
     /**
-     * Tests whether specifying window features as {@code 'left=50, top=60, width=220, height=220'}
+     * Tests whether specifying window features as {@code 'left=50, top=60, width=386, height=220'}
      * in a {@code window.open()} call opens a new window so that its top-left corner is at (50, 60)
-     * in screen coordinates and the window's viewport is 220dp wide and tall.
+     * in screen coordinates and the window's viewport is 386dp wide and 220dp tall.
      *
-     * <p>All windows on Android must be at least 220dp wide and tall due to compatibility
-     * requirements.
+     * <p>386dp is the minimum width a user can drag a desktop window to in AOSP (WM Shell's {@code
+     * desktop_mode_minimum_window_width}); 220dp is the minimum window size required by the CDD.
+     * Narrower popups have no room for the popup header, so their viewport is taller than
+     * requested.
      *
      * @see <a
      *     href="https://source.android.com/docs/compatibility/16/android-16-cdd#3814_multi-windows">Android
@@ -282,21 +284,20 @@ public class PopupMultiwindowPTTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Build(product_name_includes = "brya", message = "See crbug.com/527558324")
-    public void testPopupOpensWithLaunchBounds_osWindowSizeLimit2() {
+    public void testPopupOpensWithLaunchBounds_minUserResizableWidth() {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
                 PopupLauncherPageStation.loadInCurrentTab(
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
 
-        // Opens a pop-up with features 'left=50, top=60, width=220, height=220'. These dimensions
+        // Opens a pop-up with features 'left=50, top=60, width=386, height=220'. These dimensions
         // are duplicated in popup_launcher.html.
         final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
         popup.declareEnterCondition(new WindowPositionCondition(popup, 50, 60));
         popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 50, 60));
-        popup.declareEnterCondition(new ViewportSizeCondition(popup, 220, 220));
-        popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 220, 220));
-        page.clickOpenPopupWithMediumBounds().inNewTask().arriveAt(popup);
+        popup.declareEnterCondition(new ViewportSizeCondition(popup, 386, 220));
+        popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 386, 220));
+        page.clickOpenPopupWithMinUserResizableWidth().inNewTask().arriveAt(popup);
 
         TransitAsserts.assertFinalDestinations(page, popup);
     }
@@ -490,12 +491,14 @@ public class PopupMultiwindowPTTest {
         TransitAsserts.assertFinalDestinations(page, resizedPopup);
     }
 
-    /** Tests whether the {@code window.resizeBy()} web API works. */
+    /**
+     * Tests whether the {@code window.resizeBy()} web API works. resizeBy() changes the outer
+     * window size, so the window size is asserted rather than the viewport size.
+     */
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
-    @DisableIf.Build(product_name_includes = "brya", message = "See crbug.com/527558324")
     public void testPopupResizesOnWindowResizeBy() throws Exception {
         assumeHasBrowserRole();
         final PopupLauncherPageStation page =
@@ -513,12 +516,21 @@ public class PopupMultiwindowPTTest {
 
         page.bringWindowToFront();
 
+        // Resizes the pop-up by (-15, 35). These deltas are duplicated in popup_launcher.html.
+        final Rect initialWindowBoundsDp =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> getWindowBoundsDpFromContext(popup.getActivity()));
+        final int expectedWidthDp = initialWindowBoundsDp.width() - 15;
+        final int expectedHeightDp = initialWindowBoundsDp.height() + 35;
+
         final CctPageStation resizedPopup = CctPageStation.newBuilder().initFrom(popup).build();
         resizedPopup.declareEnterCondition(new WindowPositionCondition(resizedPopup, 100, 100));
         resizedPopup.declareEnterCondition(
                 new WebApiWindowPositionCondition(resizedPopup, 100, 100));
-        resizedPopup.declareEnterCondition(new ViewportSizeCondition(resizedPopup, 285, 335));
-        resizedPopup.declareEnterCondition(new WebApiViewportSizeCondition(resizedPopup, 285, 335));
+        resizedPopup.declareEnterCondition(
+                new WindowSizeCondition(resizedPopup, expectedWidthDp, expectedHeightDp));
+        resizedPopup.declareEnterCondition(
+                new WebApiWindowSizeCondition(resizedPopup, expectedWidthDp, expectedHeightDp));
         page.clickResizePopupBy().withContext(popup).arriveAt(resizedPopup);
 
         TransitAsserts.assertFinalDestinations(page, resizedPopup);
