@@ -3739,6 +3739,22 @@ TEST_F(RenderViewContextMenuOrderTest, PasswordFieldMenu_WithSelectionOrder) {
               testing::ElementsAreArray(expected));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, ImageMenu_LoadedImageOrder) {
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.page_url = GURL("https://www.example.com/");
+  params.has_image_contents = true;
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB, IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
+          IDC_CONTENT_CONTEXT_COPYIMAGE, IDC_CONTENT_CONTEXT_COPYIMAGELOCATION,
+          IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
+          IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE, kSeparatorId,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
