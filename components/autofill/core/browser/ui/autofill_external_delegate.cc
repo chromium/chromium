@@ -1896,6 +1896,8 @@ bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
   }
   const bool newly_suppressed = suppression_manager->SuppressEntity(entity);
   if (newly_suppressed) {
+    LogEntitySuppressedWithSavedEntityPresent(
+        entity.type(), manager_->client().GetEntityDataManager());
     manager_->client().ShowAutofillAiSuggestionRemovedNotification(
         entity, base::BindOnce(
                     &AutofillExternalDelegate::OnAutofillAiSuppressionUndone,

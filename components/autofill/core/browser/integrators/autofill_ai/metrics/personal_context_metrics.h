@@ -195,6 +195,13 @@ void LogPersonalContextPrefetchEntityFunnelOutcome(
 // Logs the number of entities filtered out due to suppression during prefetch.
 void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count);
 
+// Logs whether the user already has at least one saved (`kLocal` or
+// `kServerWallet`) entity of `type` when manually suppressing a Personal
+// Context entity.
+void LogEntitySuppressedWithSavedEntityPresent(
+    EntityType type,
+    const EntityDataManager* entity_data_manager);
+
 // Logs the number of stored suppression records that were dropped while
 // loading suppressions from disk.
 void LogEntitySuppressionLoadDroppedRecordCount(size_t count);

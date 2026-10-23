@@ -159,6 +159,28 @@ void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count) {
       "Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch", count);
 }
 
+void LogEntitySuppressedWithSavedEntityPresent(
+    EntityType type,
+    const EntityDataManager* entity_data_manager) {
+  const bool has_saved_entity =
+      entity_data_manager &&
+      std::ranges::any_of(
+          entity_data_manager->GetEntityInstances(),
+          [&](const EntityInstance& entity) {
+            return entity.type() == type &&
+                   (entity.record_type() ==
+                        EntityInstance::RecordType::kLocal ||
+                    entity.record_type() ==
+                        EntityInstance::RecordType::kServerWallet);
+          });
+  base::UmaHistogramBoolean(
+      "Autofill.Ai.Suppression.SavedEntityOfSameTypePresent", has_saved_entity);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.Ai.Suppression.SavedEntityOfSameTypePresent.",
+                    EntityTypeToMetricsString(type)}),
+      has_saved_entity);
+}
+
 void LogEntitySuppressionLoadDroppedRecordCount(size_t count) {
   base::UmaHistogramCounts1000(
       "Autofill.Ai.Suppression.Load.DroppedRecordCount", count);

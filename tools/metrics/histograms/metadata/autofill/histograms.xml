@@ -2539,6 +2539,25 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.Ai.Suppression.SavedEntityOfSameTypePresent{EntityType}"
+    enum="Boolean" expires_after="2027-04-08">
+  <owner>vidhanj@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the user already had at least one saved (local or server
+    Wallet) entity of the same entity type when manually suppressing a Personal
+    Context entity suggestion. Emitted when a Personal Context entity is newly
+    suppressed by the user.
+
+    {EntityType}
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for all entity types (aggregate)."/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Ai.Suppression{EntityGranularity}.PersonalContext{Profile}"
     enum="Boolean" expires_after="2027-02-14">
   <owner>taminob@google.com</owner>

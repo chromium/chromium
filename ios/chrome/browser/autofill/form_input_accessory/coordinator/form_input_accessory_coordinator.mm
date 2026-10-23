@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
@@ -1137,6 +1138,9 @@ void UndoInSessionSuppressedEntity(
   // Only offer an undo if this call suppressed the entity, like on the other
   // platforms.
   if (suppressed) {
+    autofill::LogEntitySuppressedWithSavedEntityPresent(
+        entityCopy.type(),
+        IOSAutofillEntityDataManagerFactory::GetForProfile(self.profile));
     [self showUndoSnackbarForEntity:entityCopy];
   }
 }
