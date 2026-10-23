@@ -34,6 +34,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -213,6 +214,10 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(
+            sdk_is_greater_than = 35,
+            sdk_is_less_than = 37,
+            message = "https://crbug.com/576703594")
     public void testBookmarkSaveFlow_WithShoppingListItem() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
