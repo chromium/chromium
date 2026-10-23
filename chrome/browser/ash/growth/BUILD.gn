@@ -97,7 +97,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
-    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/prefs",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//components/metrics/structured:test_support",
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
+    "//components/session_manager/test:test_support",
     "//testing/gtest",
   ]
 }

@@ -23,8 +23,6 @@ namespace content {
 class WebContents;
 }
 
-class Profile;
-
 // Campaigns Manager session to store camapigns manager specific state, and to
 // observe related components changes to conditionally trigger proactive growth
 // slots.
@@ -59,8 +57,6 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   void MaybeTriggerCampaignsOnEvent(std::string_view event);
 
   aura::Window* GetOpenedWindow() { return opened_window_; }
-
-  void SetProfileForTesting(Profile* profile);
 
  private:
   void SetupWindowObserver();

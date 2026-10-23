@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/login/ui/lock_screen.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -25,9 +24,8 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
@@ -42,37 +40,57 @@
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
 
 CampaignsManagerSession* g_instance = nullptr;
 
-Profile* g_profile_for_testing = nullptr;
-
 // The time to trigger delayed campaigns.
 constexpr base::TimeDelta kTimeToTriggerDelayedCampaigns = base::Minutes(5);
 
 Profile* GetProfile() {
-  if (g_profile_for_testing) {
-    return g_profile_for_testing;
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    return nullptr;
   }
-
-  return ProfileManager::GetActiveUserProfile();
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          session->account_id());
+  if (!context) {
+    return nullptr;
+  }
+  return Profile::FromBrowserContext(context);
 }
 
 AccountId GetAccountId() {
-  return CHECK_DEREF(ash::AnnotatedAccountId::Get(GetProfile()));
+  return CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession())
+      .account_id();
+}
+
+user_manager::User* GetActiveSessionUser() {
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    return nullptr;
+  }
+  return user_manager::UserManager::Get()->FindUserAndModify(
+      session->account_id());
 }
 
 bool IsEligible() {
-  Profile* profile = GetProfile();
+  const user_manager::User* user = GetActiveSessionUser();
 
-  if (!profile) {
-    // Records metrics when profile is nullptr.
-    // TODO: b/367998596 - Change this to CHECK(profile).
+  if (!user) {
+    // Records metrics when there is no active user.
+    // TODO: b/367998596 - Change this to CHECK(user).
     // In the test ExtensionCrxInstallerTest.KioskOnlyTest, the call sequences
     // are this:
     // 1. CampaignsManagerSession::OnSessionStateChanged().
@@ -80,22 +98,22 @@ bool IsEligible() {
     // 3. Add a callback when the device owner is set: OnOwnershipDetermined().
     // 4. In OnOwnershipDetermined(), load the campaigns.
     // 5. When the campaigns are loaded, call MaybeTriggerRuntimeCampaigns().
-    // 6. Which calls IsEligible() again, and hits the CHECK(profile).
-    // The profile becames nullptr during steps 2-6.
+    // 6. Which calls IsEligible() again, and hits the CHECK(user).
+    // The user becomes nullptr during steps 2-6.
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNullptrProfile);
     return false;
   }
 
   // TODO(b/320789239): Enable for unicorn users.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+  if (user->is_managed().value_or(false)) {
     // Only enabled for consumer session for now.
     // Demo Mode session is handled separately at `DemoSession`.
     return false;
   }
 
   // TODO: b/341328441 - Enable Growth Framework on guest mode.
-  if (profile->IsGuestSession()) {
+  if (user->GetType() == user_manager::UserType::kGuest) {
     return false;
   }
 
@@ -324,18 +342,17 @@ bool HasValidPwaBrowserForAppId(const std::string& app_id) {
   return true;
 }
 
-void SetCampaignManagerPrefService(Profile* profile) {
+void SetCampaignManagerPrefService(user_manager::User* user) {
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  if (!profile) {
+  if (!user) {
     campaigns_manager->SetPrefs(nullptr);
     campaigns_manager->SetActiveAccountId(EmptyAccountId());
     return;
   }
-  campaigns_manager->SetPrefs(profile->GetPrefs());
-  campaigns_manager->SetActiveAccountId(
-      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)));
+  campaigns_manager->SetPrefs(user->GetProfilePrefs());
+  campaigns_manager->SetActiveAccountId(user->GetAccountId());
 }
 
 }  // namespace
@@ -367,7 +384,6 @@ CampaignsManagerSession::CampaignsManagerSession() {
 CampaignsManagerSession::~CampaignsManagerSession() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
-  g_profile_for_testing = nullptr;
   SetCampaignManagerPrefService(nullptr);
 }
 
@@ -396,7 +412,7 @@ void CampaignsManagerSession::OnSessionStateChanged() {
   }
 
   RecordSessionUnlockEvent();
-  SetCampaignManagerPrefService(GetProfile());
+  SetCampaignManagerPrefService(GetActiveSessionUser());
 
   ash::OwnerSettingsServiceAsh* service =
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(GetProfile());
@@ -513,10 +529,6 @@ void CampaignsManagerSession::PrimaryPageChanged(
   auto url = active_tab_web_contents->GetURL();
   campaigns_manager->SetActiveUrl(url);
   MaybeTriggerCampaignsWhenAppOpened();
-}
-
-void CampaignsManagerSession::SetProfileForTesting(Profile* profile) {
-  g_profile_for_testing = profile;
 }
 
 void CampaignsManagerSession::SetupWindowObserver() {
