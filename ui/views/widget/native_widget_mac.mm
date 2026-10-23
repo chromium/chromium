@@ -17,6 +17,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
@@ -180,18 +181,30 @@ void NativeWidgetMac::OnWindowKeyStatusChanged(
     bool is_key,
     bool is_content_first_responder) {
   Widget* widget = GetWidget();
-  if (!widget || !widget->OnNativeWidgetActivationChanged(is_key)) {
+  if (!widget || !widget->ShouldHandleNativeWidgetActivationChanged(is_key)) {
     return;
   }
 
   if (is_key) {
+    // Like Aura, restore focus before notifying activation observers, so that
+    // a View that requested focus while the widget was inactive (see
+    // FocusManager::SetFocusedViewWithReason()) is focused before observers
+    // run, rather than being overridden by focus changes they make.
+    base::WeakPtr<Widget> weak_widget = widget->GetWeakPtr();
     widget->OnNativeFocus();
     // GetFocusManager() can be null for detached child widgets during
     // reparenting.
     if (FocusManager* focus_manager = widget->GetFocusManager()) {
       focus_manager->RestoreFocusedView();
     }
+    // Restoring focus may destroy the widget.
+    if (weak_widget) {
+      weak_widget->OnNativeWidgetActivationChanged(is_key);
+    }
   } else {
+    if (!widget->OnNativeWidgetActivationChanged(is_key)) {
+      return;
+    }
     widget->OnNativeBlur();
     if (FocusManager* focus_manager = widget->GetFocusManager()) {
       focus_manager->StoreFocusedView(false);

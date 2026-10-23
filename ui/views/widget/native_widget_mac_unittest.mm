@@ -1515,6 +1515,60 @@ TEST_F(NativeWidgetMacTest, KeyStatusChangeWithNoTopLevelDoesNotCrash) {
   [native_parent close];
 }
 
+// Tests that when a widget's window becomes key, its stored focused View is
+// restored before activation observers are notified, like on Aura, so that a
+// View that requested focus while the widget was inactive (see
+// FocusManager::SetFocusedViewWithReason()) isn't overridden by observers that
+// also restore focus on activation.
+TEST_F(NativeWidgetMacTest, KeyStatusChangeRestoresFocusBeforeObservers) {
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  View* view =
+      widget->GetContentsView()->AddChildView(std::make_unique<View>());
+  view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  FocusManager* focus_manager = widget->GetFocusManager();
+  focus_manager->SetStoredFocusView(view);
+  ASSERT_FALSE(focus_manager->GetFocusedView());
+
+  // Records the focused View when the widget is activated.
+  class FocusOnActivationObserver : public WidgetObserver {
+   public:
+    void OnWidgetActivationChanged(Widget* widget, bool active) override {
+      if (active) {
+        notified_ = true;
+        focused_view_ = widget->GetFocusManager()->GetFocusedView();
+      }
+    }
+
+    bool notified() const { return notified_; }
+    View* focused_view() const { return focused_view_; }
+
+   private:
+    bool notified_ = false;
+    raw_ptr<View> focused_view_ = nullptr;
+  };
+  FocusOnActivationObserver observer;
+  base::ScopedObservation<Widget, WidgetObserver> observation(&observer);
+  observation.Observe(widget.get());
+
+  // Simulate the window becoming key.
+  remote_cocoa::mojom::NativeWidgetNSWindowHost* host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(host);
+  host->OnWindowKeyStatusChanged(/*is_key=*/true,
+                                 /*is_content_first_responder=*/true,
+                                 /*full_keyboard_access_enabled=*/false);
+
+  ASSERT_TRUE(observer.notified());
+  EXPECT_EQ(view, observer.focused_view());
+  EXPECT_EQ(view, focus_manager->GetFocusedView());
+
+  host->OnWindowKeyStatusChanged(/*is_key=*/false,
+                                 /*is_content_first_responder=*/true,
+                                 /*full_keyboard_access_enabled=*/false);
+}
+
 // Tests that CloseAllWidgets behaves in various configurations.
 TEST_F(NativeWidgetMacTest, CloseAllWidgetsValidState) {
   NativeWidgetMacTestWindow* __weak last_window_weak = nil;
