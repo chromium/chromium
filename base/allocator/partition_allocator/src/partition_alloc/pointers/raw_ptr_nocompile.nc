@@ -41,9 +41,10 @@ void DifferentTypeAssignment() {
   raw_ptr<Unrelated> ptr_u1 = &dp;                   // expected-error {{no viable conversion from 'struct DerivedProducer *' to 'raw_ptr<Unrelated>'}}
 
   // Reference binding
-  raw_ptr<DerivedProducer>& ptr_dp5 = ptr_p;  // expected-error {{non-const lvalue reference to type 'raw_ptr<DerivedProducer>' cannot bind to a value of unrelated type 'raw_ptr<Producer>'}}
+  // TODO(crbug.com/576944525): Remove regex check for old diagnostic once clang rolls.
+  raw_ptr<DerivedProducer>& ptr_dp5 = ptr_p;  // expected-error-re {{{{non-const lvalue reference to type 'raw_ptr<DerivedProducer>' cannot bind to a value of unrelated type 'raw_ptr<Producer>'|no viable conversion from 'raw_ptr<Producer>' to 'raw_ptr<DerivedProducer>'}}}}
   raw_ptr<DerivedProducer>& ptr_dp6 =
-      static_cast<raw_ptr<DerivedProducer>&>(ptr_p);  // expected-error {{non-const lvalue reference to type 'raw_ptr<DerivedProducer>' cannot bind to a value of unrelated type 'raw_ptr<Producer>'}}
+      static_cast<raw_ptr<DerivedProducer>&>(ptr_p);  // expected-error-re {{{{non-const lvalue reference to type 'raw_ptr<DerivedProducer>' cannot bind to a value of unrelated type 'raw_ptr<Producer>'|no viable conversion from 'raw_ptr<Producer>' to 'raw_ptr<DerivedProducer>'}}}}
 
   // Casting
   auto* ptr_u2 = static_cast<Unrelated*>(ptr_dp1);  // expected-error@*:* {{static_cast from 'DerivedProducer *' to 'Unrelated *', which are not related by inheritance, is not allowed}}
