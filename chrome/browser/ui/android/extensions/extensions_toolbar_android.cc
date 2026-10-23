@@ -405,9 +405,7 @@ void ExtensionsToolbarAndroid::MovePinnedAction(
 
 static int64_t JNI_ExtensionsToolbarBridge_Init(
     const jni_zero::JavaRef<jobject>& java_object,
-    int64_t j_browser_window_interface) {
-  BrowserWindowInterface* browser =
-      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
+    BrowserWindowInterface* browser) {
   return reinterpret_cast<int64_t>(
       new ExtensionsToolbarAndroid(browser, java_object));
 }

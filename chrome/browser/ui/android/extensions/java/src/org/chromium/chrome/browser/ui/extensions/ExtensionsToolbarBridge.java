@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -19,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.content_public.browser.WebContents;
 
@@ -37,7 +39,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public ExtensionsToolbarBridge(ChromeAndroidTask task, Profile profile) {
         mNativeExtensionsToolbarAndroid =
                 ExtensionsToolbarBridgeJni.get()
-                        .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
+                        .init(this, task.getOrCreateNativeBrowserWindow(profile));
     }
 
     @Override
@@ -347,7 +349,8 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     @NativeMethods
     public interface Natives {
-        long init(ExtensionsToolbarBridge bridge, long browserWindowInterfacePtr);
+        long init(
+                ExtensionsToolbarBridge bridge, JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         void destroy(long nativeExtensionsToolbarAndroid);
 
