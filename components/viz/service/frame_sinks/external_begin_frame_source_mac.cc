@@ -528,7 +528,8 @@ base::TimeDelta ExternalBeginFrameSourceMac::GetMinimumFrameInterval() {
     // the last known or default refresh interval instead. If the refresh rate
     // has changed, OnDisplayLinkCallback() will receive the updated interval
     // and invoke update_vsync_params_callback_ to update FrameIntervalDecider.
-    if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser() ||
+        ui::DisplayLinkMac::SupportsCADisplayLinkInGPU()) {
       min_interval = min_refresh_interval_;
     } else {
       min_interval = display_link_mac_->GetRefreshInterval();
