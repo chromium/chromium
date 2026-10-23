@@ -1436,7 +1436,6 @@ crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-002.html 
 crbug.com/1218721 fast/borders/border-radius-mask-video-shadow.html [ Failure ]
 crbug.com/1218721 fast/borders/border-radius-mask-video.html [ Failure ]
 
-crbug.com/637055 fast/css/outline-offset-large.html [ Crash Failure Pass Timeout ]
 
 # These tests pass but images do not match because of wrong half-leading in vertical-lr
 

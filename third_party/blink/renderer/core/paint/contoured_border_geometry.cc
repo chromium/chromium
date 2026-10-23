@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/line_f.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -224,42 +225,40 @@ ContouredRect ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
     PhysicalBoxSides sides_to_include) {
   return PixelSnappedContouredBorderWithOutsets(
       style, border_rect,
-      PhysicalBoxStrut::FromInts(
-          -style.BorderTopWidth(), -style.BorderRightWidth(),
-          -style.BorderBottomWidth(), -style.BorderLeftWidth()),
+      gfx::Outsets()
+          .set_top(-style.BorderTopWidth())
+          .set_right(-style.BorderRightWidth())
+          .set_bottom(-style.BorderBottomWidth())
+          .set_left(-style.BorderLeftWidth()),
       sides_to_include);
 }
 
 ContouredRect ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
-    const PhysicalBoxStrut& outsets,
+    const gfx::Outsets& outsets,
     PhysicalBoxSides sides_to_include) {
-  PhysicalBoxStrut adjusted_outsets(
-      sides_to_include.top ? outsets.top : LayoutUnit(),
-      sides_to_include.right ? outsets.right : LayoutUnit(),
-      sides_to_include.bottom ? outsets.bottom : LayoutUnit(),
-      sides_to_include.left ? outsets.left : LayoutUnit());
-  PhysicalRect rect_with_outsets = border_rect;
-  rect_with_outsets.Expand(adjusted_outsets);
-  rect_with_outsets.size.ClampNegativeToZero();
+  const gfx::Outsets adjusted_outsets =
+      gfx::Outsets()
+          .set_top(sides_to_include.top ? outsets.top() : 0)
+          .set_right(sides_to_include.right ? outsets.right() : 0)
+          .set_bottom(sides_to_include.bottom ? outsets.bottom() : 0)
+          .set_left(sides_to_include.left ? outsets.left() : 0);
 
-  // The standard ToPixelSnappedRect(const PhysicalRect&) will not
-  // let small sizes snap to zero, but that has the side effect here of
-  // preventing an inner border for a very thin element from snapping to
-  // zero size as occurs when a unit width border is applied to a sub-pixel
-  // sized element. So round without forcing non-near-zero sizes to one.
-  ContouredRect contoured_rect(FloatRoundedRect(gfx::Rect(
-      ToRoundedPoint(rect_with_outsets.offset),
-      gfx::Size(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
-                                            rect_with_outsets.X()),
-                SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
-                                            rect_with_outsets.Y())))));
+  gfx::Rect rect_with_outsets = ToPixelSnappedRect(border_rect);
+  rect_with_outsets.Outset(adjusted_outsets);
+  const FloatRoundedRect snapped_rect_with_outsets(rect_with_outsets);
+  ContouredRect contoured_rect(snapped_rect_with_outsets);
 
   if (style.HasBorderRadius()) {
     ContouredRect pixel_snapped_rounded_border =
         PixelSnappedContouredBorder(style, border_rect, sides_to_include);
-    pixel_snapped_rounded_border.Outset(gfx::OutsetsF(adjusted_outsets));
+    pixel_snapped_rounded_border.Outset(
+        gfx::OutsetsF()
+            .set_top(adjusted_outsets.top())
+            .set_right(adjusted_outsets.right())
+            .set_bottom(adjusted_outsets.bottom())
+            .set_left(adjusted_outsets.left()));
     contoured_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
     contoured_rect.SetCornerCurvature(
         pixel_snapped_rounded_border.GetCornerCurvature());

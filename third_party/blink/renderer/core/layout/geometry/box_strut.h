@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/outsets_f.h"
 
 namespace blink {
@@ -277,6 +278,14 @@ struct CORE_EXPORT PhysicalBoxStrut {
   bool operator==(const PhysicalBoxStrut& other) const {
     return top == other.top && right == other.right && bottom == other.bottom &&
            left == other.left;
+  }
+
+  gfx::Outsets ToRoundedOutsets() const {
+    return gfx::Outsets()
+        .set_top(top.Round())
+        .set_right(right.Round())
+        .set_bottom(bottom.Round())
+        .set_left(left.Round());
   }
 
   explicit operator gfx::OutsetsF() const {

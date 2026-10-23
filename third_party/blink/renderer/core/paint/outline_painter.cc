@@ -205,9 +205,9 @@ SkPath ShrinkRightAnglePath(const SkPath& input, int inset) {
 FloatRoundedRect::Radii ComputeCornerRadii(
     const ComputedStyle& style,
     const PhysicalRect& reference_border_rect,
-    float offset) {
+    int offset) {
   return ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
-             style, reference_border_rect, PhysicalBoxStrut(LayoutUnit(offset)))
+             style, reference_border_rect, gfx::Outsets(offset))
       .GetRadii();
 }
 
@@ -1043,9 +1043,7 @@ void OutlinePainter::PaintOutlineRects(
     gfx::Outsets offset =
         AdjustedOutlineOffset(*united_outline_rect, info.offset);
     BoxBorderPainter::PaintSingleRectOutline(
-        paint_info.context, style, outline_rects[0], info.width,
-        PhysicalBoxStrut::FromInts(offset.top(), offset.right(),
-                                   offset.bottom(), offset.left()));
+        paint_info.context, style, outline_rects[0], info.width, offset);
     return;
   }
 

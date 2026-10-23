@@ -7,12 +7,12 @@
 
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
-#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "ui/gfx/geometry/outsets.h"
 
 namespace blink {
 
@@ -52,7 +52,7 @@ class BoxBorderPainter {
                                      const ComputedStyle& style,
                                      const PhysicalRect& border_rect,
                                      int width,
-                                     const PhysicalBoxStrut& inner_outsets) {
+                                     const gfx::Outsets& inner_outsets) {
     BoxBorderPainter(context, style, border_rect, width, inner_outsets).Paint();
   }
 
@@ -93,7 +93,7 @@ class BoxBorderPainter {
                    const ComputedStyle&,
                    const PhysicalRect& border_rect,
                    int width,
-                   const PhysicalBoxStrut& inner_outsets);
+                   const gfx::Outsets& inner_outsets);
 
   void Paint() const;
 
@@ -153,9 +153,8 @@ class BoxBorderPainter {
                                     MiterType miter2,
                                     EBorderStyle);
 
-  PhysicalBoxStrut DoubleStripeOutsets(
-      BorderEdge::DoubleBorderStripe stripe) const;
-  PhysicalBoxStrut CenterOutsets() const;
+  gfx::Outsets DoubleStripeOutsets(BorderEdge::DoubleBorderStripe stripe) const;
+  gfx::Outsets CenterOutsets() const;
 
   bool ColorsMatchAtCorner(BoxSide side, BoxSide adjacent_side) const;
 
@@ -173,7 +172,7 @@ class BoxBorderPainter {
 
   // const inputs
   const PhysicalRect border_rect_;
-  const PhysicalBoxStrut outer_outsets_;
+  const gfx::Outsets outer_outsets_;
   const ComputedStyle& style_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;

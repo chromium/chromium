@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -3377,8 +3378,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
               LayoutReplaced::PreSnappedRectForPersistentSizing(content_rect);
         }
         // LayoutReplaced clips the foreground by rounded content box.
-        const PhysicalBoxStrut border_padding =
-            replaced.BorderOutsets() + replaced.PaddingOutsets();
+        const gfx::Outsets border_padding =
+            (replaced.BorderOutsets() + replaced.PaddingOutsets())
+                .ToRoundedOutsets();
         auto clip_rect =
             ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
                 replaced.Style(), content_rect, -border_padding)

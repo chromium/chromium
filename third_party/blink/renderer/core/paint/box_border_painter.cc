@@ -1249,7 +1249,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(style_, element_role_));
 
   // outer stripe
-  const PhysicalBoxStrut outer_third_outsets =
+  const gfx::Outsets outer_third_outsets =
       DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeOuter);
   FloatRoundedRect outer_third_rect =
       ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
@@ -1261,7 +1261,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
                           outer_third_rect, color, auto_dark_mode);
 
   // inner stripe
-  const PhysicalBoxStrut inner_third_outsets =
+  const gfx::Outsets inner_third_outsets =
       DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeInner);
   FloatRoundedRect inner_third_rect =
       ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
@@ -1401,10 +1401,10 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
                                    const ComputedStyle& style,
                                    const PhysicalRect& border_rect,
                                    int width,
-                                   const PhysicalBoxStrut& inner_outsets)
+                                   const gfx::Outsets& inner_outsets)
     : context_(context),
       border_rect_(border_rect),
-      outer_outsets_(inner_outsets + PhysicalBoxStrut(LayoutUnit(width))),
+      outer_outsets_(inner_outsets + gfx::Outsets(width)),
       style_(style),
       bleed_avoidance_(kBackgroundBleedNone),
       sides_to_include_(PhysicalBoxSides()),
@@ -1867,7 +1867,7 @@ void BoxBorderPainter::DrawCurvedDoubleBoxSide(Color color) const {
   // Draw inner border line
   {
     GraphicsContextStateSaver state_saver(context_);
-    const PhysicalBoxStrut inner_outsets =
+    const gfx::Outsets inner_outsets =
         DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeInner);
     ContouredRect inner_clip =
         ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
@@ -1881,12 +1881,12 @@ void BoxBorderPainter::DrawCurvedDoubleBoxSide(Color color) const {
   {
     GraphicsContextStateSaver state_saver(context_);
     PhysicalRect used_border_rect = border_rect_;
-    PhysicalBoxStrut outer_outsets =
+    gfx::Outsets outer_outsets =
         DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeOuter);
 
     if (BleedAvoidanceIsClipping(bleed_avoidance_)) {
       used_border_rect.Inflate(LayoutUnit(1));
-      outer_outsets.Inflate(LayoutUnit(-1));
+      outer_outsets += gfx::Outsets(-1);
     }
 
     ContouredRect outer_clip =
@@ -2464,22 +2464,25 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
   }
 }
 
-PhysicalBoxStrut BoxBorderPainter::DoubleStripeOutsets(
+gfx::Outsets BoxBorderPainter::DoubleStripeOutsets(
     BorderEdge::DoubleBorderStripe stripe) const {
   return outer_outsets_ -
-         PhysicalBoxStrut::FromInts(
-             Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe),
-             Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe),
-             Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe),
-             Edge(BoxSide::kLeft).GetDoubleBorderStripeWidth(stripe));
+         gfx::Outsets()
+             .set_top(Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe))
+             .set_right(
+                 Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe))
+             .set_bottom(
+                 Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe))
+             .set_left(Edge(BoxSide::kLeft).GetDoubleBorderStripeWidth(stripe));
 }
 
-PhysicalBoxStrut BoxBorderPainter::CenterOutsets() const {
+gfx::Outsets BoxBorderPainter::CenterOutsets() const {
   return outer_outsets_ -
-         PhysicalBoxStrut::FromInts(Edge(BoxSide::kTop).UsedWidth() * 0.5,
-                                    Edge(BoxSide::kRight).UsedWidth() * 0.5,
-                                    Edge(BoxSide::kBottom).UsedWidth() * 0.5,
-                                    Edge(BoxSide::kLeft).UsedWidth() * 0.5);
+         gfx::Outsets()
+             .set_top(Edge(BoxSide::kTop).UsedWidth() * 0.5)
+             .set_right(Edge(BoxSide::kRight).UsedWidth() * 0.5)
+             .set_bottom(Edge(BoxSide::kBottom).UsedWidth() * 0.5)
+             .set_left(Edge(BoxSide::kLeft).UsedWidth() * 0.5);
 }
 
 bool BoxBorderPainter::ColorsMatchAtCorner(BoxSide side,

@@ -9,11 +9,14 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class Outsets;
+}  // namespace gfx
+
 namespace blink {
 
 class ComputedStyle;
 class ContouredRect;
-struct PhysicalBoxStrut;
 struct PhysicalRect;
 
 class CORE_EXPORT ContouredBorderGeometry {
@@ -43,7 +46,7 @@ class CORE_EXPORT ContouredBorderGeometry {
   static ContouredRect PixelSnappedContouredBorderWithOutsets(
       const ComputedStyle&,
       const PhysicalRect& border_rect,
-      const PhysicalBoxStrut& outsets_from_border,
+      const gfx::Outsets& outsets_from_border,
       PhysicalBoxSides edges_to_include = PhysicalBoxSides());
 };
 
