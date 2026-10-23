@@ -182,7 +182,7 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
   auto button = CreateBubbleMenuItem(button_id, name, std::move(callback), icon,
                                      accelerator_text);
   button->SetBorder(views::CreateEmptyBorder(menu_item_insets));
-  button->SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  button->SetLabelStyle(views::style::STYLE_BODY_3);
   button->SetMinSize(gfx::Size(0, 32));
 
   return button;
