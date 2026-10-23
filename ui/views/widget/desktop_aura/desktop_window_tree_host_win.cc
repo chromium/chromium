@@ -111,6 +111,19 @@ void UpdateMouseLockRegion(aura::Window* window, bool locked) {
   ::ClipCursor(&window_rect);
 }
 
+// Sets the display affinity of `hwnd` unless it already has `affinity`.
+// `SetWindowDisplayAffinity()` makes DWM draw a hidden window as a blank
+// rectangle, even for `WDA_NONE` (https://crbug.com/359921643), so avoid
+// needless calls. Returns whether `affinity` is now in effect.
+bool SetDisplayAffinityIfChanged(HWND hwnd, DWORD affinity) {
+  DWORD current_affinity = WDA_NONE;
+  if (::GetWindowDisplayAffinity(hwnd, &current_affinity) &&
+      current_affinity == affinity) {
+    return true;
+  }
+  return ::SetWindowDisplayAffinity(hwnd, affinity);
+}
+
 // Applies display affinity to all active Win32 native system/popup menu
 // windows on the current thread.
 void ApplyAffinityToActiveSystemMenus(DWORD affinity) {
@@ -123,7 +136,7 @@ void ApplyAffinityToActiveSystemMenus(DWORD affinity) {
         if (len > 0 &&
             std::wstring_view(class_name, static_cast<size_t>(len)) ==
                 kSystemMenuClassName) {
-          ::SetWindowDisplayAffinity(hwnd, static_cast<DWORD>(lParam));
+          SetDisplayAffinityIfChanged(hwnd, static_cast<DWORD>(lParam));
         }
         return TRUE;
       },
@@ -138,8 +151,8 @@ DWORD GetExclusionAffinity() {
              : WDA_MONITOR;
 }
 
-// Enumerates all top-level windows owned by the given hwnd on the current
-// thread and applies the given display affinity to them.
+// Enumerates all visible top-level windows owned by the given hwnd on the
+// current thread and applies the given display affinity to them.
 void ApplyAffinityToOwnedWindows(HWND owner_hwnd, DWORD affinity) {
   struct EnumData {
     HWND owner;
@@ -150,6 +163,13 @@ void ApplyAffinityToOwnedWindows(HWND owner_hwnd, DWORD affinity) {
   ::EnumThreadWindows(
       ::GetCurrentThreadId(),
       [](HWND hwnd, LPARAM lParam) -> BOOL {
+        // Skip hidden windows, e.g. helper windows created on this thread by
+        // third-party input methods (see `SetDisplayAffinityIfChanged()`).
+        // Hidden Chromium widgets pick up the affinity in
+        // `UpdateDisplayAffinity()` when they are shown.
+        if (!::IsWindowVisible(hwnd)) {
+          return TRUE;
+        }
         EnumData* enum_data = reinterpret_cast<EnumData*>(lParam);
         HWND current_owner = ::GetWindow(hwnd, GW_OWNER);
         // Guard against infinite loops if an external process or cyclic
@@ -157,7 +177,7 @@ void ApplyAffinityToOwnedWindows(HWND owner_hwnd, DWORD affinity) {
         constexpr int kMaxOwnerDepth = 32;
         for (int depth = 0; current_owner && depth < kMaxOwnerDepth; ++depth) {
           if (current_owner == enum_data->owner) {
-            ::SetWindowDisplayAffinity(hwnd, enum_data->affinity);
+            SetDisplayAffinityIfChanged(hwnd, enum_data->affinity);
             break;
           }
           current_owner = ::GetWindow(current_owner, GW_OWNER);
@@ -1765,7 +1785,7 @@ void DesktopWindowTreeHostWin::UpdateDisplayAffinity() {
   }
 
   const bool set_affinity_succeeded =
-      SetWindowDisplayAffinity(GetHWND(), affinity);
+      SetDisplayAffinityIfChanged(GetHWND(), affinity);
 
   if (IsVisible() && exclude_from_capture_ &&
       !has_recorded_capture_exclusion_metric_) {
@@ -1785,8 +1805,8 @@ void DesktopWindowTreeHostWin::UpdateDisplayAffinity() {
   // Propagate the new display affinity to any active native system menu.
   ApplyAffinityToActiveSystemMenus(affinity);
 
-  // Propagate the new display affinity to all owned windows on the current
-  // thread.
+  // Propagate the new display affinity to all visible owned windows on the
+  // current thread.
   ApplyAffinityToOwnedWindows(GetHWND(), affinity);
 }
 
