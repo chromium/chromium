@@ -66,6 +66,8 @@
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_test_api.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -1363,6 +1365,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        ExpandOnHoverEnabledChanged) {
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  views::DisableActivationChangeHandlingForTests();
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
+
   // Fully collapse the tabstrip.
   state_controller()->RequestCollapse(true);
   ASSERT_TRUE(base::test::RunUntil(
