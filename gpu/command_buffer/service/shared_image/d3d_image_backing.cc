@@ -201,7 +201,7 @@ bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
-Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device(
+Microsoft::WRL::ComPtr<ID3D11Device> GetDawnD3D11Device(
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
     const bool is_graphite_device) {
@@ -1001,7 +1001,7 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         dawn_context_provider->GetDevice().Get() == device.Get();
 
     Microsoft::WRL::ComPtr<ID3D11Device> dawn_d3d11_device =
-        GetD3D11Device(device, backend_type, is_graphite_device);
+        GetDawnD3D11Device(device, backend_type, is_graphite_device);
     Microsoft::WRL::ComPtr<ID3D12Resource> unwrapped_d3d12_resource;
     // If there is no texture_d3d11_device_, it is safe to assume that the
     // resource was created with the Dawn D3D12 device.
@@ -1376,7 +1376,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   const bool is_graphite_device =
       backend_type == wgpu::BackendType::D3D12 && d3d12_resource_;
   Microsoft::WRL::ComPtr<ID3D11Device> dawn_d3d11_device =
-      GetD3D11Device(device, backend_type, is_graphite_device);
+      GetDawnD3D11Device(device, backend_type, is_graphite_device);
 
   // Dawn access is allowed without shared handle for single device scenarios.
   CHECK(dxgi_shared_handle_state_ ||
