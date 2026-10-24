@@ -186,7 +186,8 @@ bool BuildSearchString(const HTMLFormElement& form,
                        const TextEncoding& encoding,
                        const HTMLInputElement* text_element) {
   bool is_element_found = false;
-  for (ListedElement* item : form.ListedElements()) {
+  ListedElement::List elements(form.ListedElements());
+  for (ListedElement* item : elements) {
     auto* control = DynamicTo<HTMLFormControlElement>(item);
     if (!control)
       continue;
