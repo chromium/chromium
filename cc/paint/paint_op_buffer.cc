@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/safety_checks.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/display_item_list.h"
@@ -283,7 +284,16 @@ void PaintOpBuffer::Append(
 }
 
 PaintOpBuffer::~PaintOpBuffer() {
+  // Frees immutable serialized `PaintOp` value/Skia buffers and internal
+  // `AlignedAlloc` backing bytes with no JS/DOM callbacks or escaping
+  // untrusted pointers. Excluding paint teardown avoids quarantine churn on
+  // the backing buffer and allows immediate `ThreadCache` reuse of
+  // `SkTextBlob` and `SkPathData` allocations.
+  base::ScopedSafetyChecksExclusion excluded;
   DestroyOps();
+  // Explicitly free `data_` before `excluded` goes out of scope, since member
+  // destructors run after the destructor body exits.
+  data_ = BufferData();
 }
 
 PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
@@ -320,7 +330,14 @@ void PaintOpBuffer::DestroyOps() {
 
 void PaintOpBuffer::Reset() {
   DCHECK(is_mutable());
-  DestroyOps();
+  {
+    // Frees immutable serialized `PaintOp` value/Skia buffers with no JS/DOM
+    // callbacks or escaping untrusted pointers, allowing immediate
+    // `ThreadCache` reuse of `SkTextBlob` and `SkPathData` allocations during
+    // paint teardown.
+    base::ScopedSafetyChecksExclusion excluded;
+    DestroyOps();
+  }
   // Leave data_ allocated, reserved_ unchanged. ShrinkToFit() will take care
   // of that if called.
   ResetRetainingBuffer();
@@ -546,13 +563,23 @@ base::span<uint8_t> PaintOpBuffer::AllocatePaintOpSlowPath(
   while (required_size > new_size) {
     new_size *= 2;
   }
-  ReallocBuffer(new_size);
+  {
+    // Frees the superseded internal `AlignedAlloc` backing buffer during
+    // geometric growth, with no JS/DOM callbacks or escaping untrusted
+    // pointers, avoiding quarantine churn on transient intermediate buffers.
+    base::ScopedSafetyChecksExclusion excluded;
+    ReallocBuffer(new_size);
+  }
   DCHECK_LE(required_size, data_.size());
 
   return AllocatePaintOp(aligned_size);
 }
 
 void PaintOpBuffer::ShrinkToFit() {
+  // Frees excess internal `AlignedAlloc` backing bytes during buffer
+  // compaction, with no JS/DOM callbacks or escaping untrusted pointers,
+  // avoiding quarantine churn on the old backing buffer.
+  base::ScopedSafetyChecksExclusion excluded;
   ReallocIfNeededToFit();
 }
 
