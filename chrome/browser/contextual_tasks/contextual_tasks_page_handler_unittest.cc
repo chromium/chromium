@@ -14,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
@@ -609,6 +610,51 @@ TEST_F(ContextualTasksPageHandlerTest, IsShownInTab) {
     run_loop.Quit();
   }));
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       MoveActiveTabToNewThreadIfShared_ScopedToTab_MovesActiveTab) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+  EXPECT_CALL(*mock_panel_controller_, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_panel_controller_, GetActiveWebContents())
+      .WillOnce(Return(web_contents()));
+  EXPECT_CALL(*mock_panel_controller_, MoveActiveTabToNewThreadIfShared())
+      .WillOnce(Return(true));
+
+  base::test::TestFuture<bool> moved;
+  page_handler_->MoveActiveTabToNewThreadIfShared(moved.GetCallback());
+  EXPECT_TRUE(moved.Get());
+}
+
+TEST_F(
+    ContextualTasksPageHandlerTest,
+    MoveActiveTabToNewThreadIfShared_ScopedToTab_InactivePanel_CancelsWithoutMoving) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+  EXPECT_CALL(*mock_panel_controller_, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_panel_controller_, GetActiveWebContents())
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(*mock_panel_controller_, MoveActiveTabToNewThreadIfShared())
+      .Times(0);
+
+  // Returning true stops the inactive cached panel from navigating its shared
+  // thread in place.
+  base::test::TestFuture<bool> moved;
+  page_handler_->MoveActiveTabToNewThreadIfShared(moved.GetCallback());
+  EXPECT_TRUE(moved.Get());
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       MoveActiveTabToNewThreadIfShared_TabStateDisabled_DoesNotMove) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kContextualTasksSidePanelTabState);
+  EXPECT_CALL(*mock_panel_controller_, MoveActiveTabToNewThreadIfShared())
+      .Times(0);
+
+  base::test::TestFuture<bool> moved;
+  page_handler_->MoveActiveTabToNewThreadIfShared(moved.GetCallback());
+  EXPECT_FALSE(moved.Get());
 }
 
 TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_HandshakeResponse) {

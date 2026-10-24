@@ -91,6 +91,10 @@ class ContextualTasksPanelController {
   // Open the panel in zero state, or reset to zero state if already open.
   virtual void OpenInZeroState() = 0;
 
+  // Moves only the active tab to a new task with a zero-state panel if other
+  // tabs share its task. Returns whether the active tab was moved.
+  virtual bool MoveActiveTabToNewThreadIfShared() = 0;
+
   // Shares `tab_handles` when starting a new thread from the tab context menu.
   // If the side panel is already open on the active tab, attaches `tab_handles`
   // to the current task; otherwise, opens a fresh zero-state thread and

@@ -3807,6 +3807,93 @@ TEST_F(ContextualTasksUiTest, CreateNewThread_LegacyUI_ClearsThreadTitle) {
   EXPECT_EQ(controller.GetThreadTitle(), std::nullopt);
 }
 
+TEST_F(ContextualTasksUiTest,
+       CreateNewThread_ScopedToTab_MovesActiveTabToNewThread) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+  EXPECT_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillRepeatedly(Return(embedded_web_contents_.get()));
+
+  // The new thread starts in a new task for the active tab, so the shared
+  // panel `WebContents` is not navigated.
+  EXPECT_CALL(mock_panel_controller, MoveActiveTabToNewThreadIfShared())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrlForTask(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrl()).Times(0);
+
+  controller.SetThreadTitle("Existing Thread Title");
+  controller.CreateNewThread();
+
+  EXPECT_EQ(controller.GetThreadTitle(), std::nullopt);
+  EXPECT_TRUE(active_web_contents->GetVisibleURL().is_empty());
+}
+
+TEST_F(ContextualTasksUiTest,
+       CreateNewThread_ScopedToTab_NotShared_NavigatesInPlace) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+  EXPECT_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillRepeatedly(Return(embedded_web_contents_.get()));
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(mock_panel_controller, GetCurrentTask())
+      .WillRepeatedly(Return(ContextualTask(task_id)));
+
+  // No other tab shares the task, so the new thread replaces the current one in
+  // place.
+  EXPECT_CALL(mock_panel_controller, MoveActiveTabToNewThreadIfShared())
+      .WillOnce(Return(false));
+  GURL raw_url("https://www.google.com/search?udm=50");
+  EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrlForTask(task_id))
+      .WillOnce(Return(raw_url));
+
+  controller.CreateNewThread();
+
+  EXPECT_EQ(active_web_contents->GetVisibleURL(),
+            ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+                raw_url, active_web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiTest,
+       CreateNewThread_ScopedToTab_NonToolbarWebUI_SafeNoOp) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+  EXPECT_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(mock_panel_controller, MoveActiveTabToNewThreadIfShared())
+      .Times(0);
+
+  controller.CreateNewThread();
+
+  EXPECT_TRUE(active_web_contents->GetVisibleURL().is_empty());
+}
+
 TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_SafeNoOp) {
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());

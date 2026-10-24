@@ -149,6 +149,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "'new thread click when threadFrame src is empty does not throw')");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_NewThreadClickWhenBrowserMovesTabToNewThread) {
+  RunTest("contextual_tasks/app_test.js",
+          "runMochaTest('ContextualTasksAppTest', "
+          "'new thread click keeps thread when browser moves tab to new "
+          "thread')");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App_Composebox_BasicMode) {
   RunTest("contextual_tasks/app_composebox_basic_mode_test.js", "mocha.run();");
 }

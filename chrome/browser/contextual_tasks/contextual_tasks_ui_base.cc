@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/functional/bind.h"
@@ -591,6 +592,18 @@ void ContextualTasksUIBase::CreateNewThread() {
       panel_controller->GetActiveWebContents();
   if (!target_contents) {
     return;
+  }
+
+  // When scoped to the tab, start the new thread in a new task for the active
+  // tab only, so that other tabs sharing the task keep their thread.
+  if (contextual_tasks::ShouldScopeSidePanelStateToTab()) {
+    if (GetWebUIWebContents() != panel_controller->GetToolbarWebContents()) {
+      return;
+    }
+    if (panel_controller->MoveActiveTabToNewThreadIfShared()) {
+      SetThreadTitle(std::nullopt);
+      return;
+    }
   }
 
   std::optional<base::Uuid> task_id;

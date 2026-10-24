@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
+#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -1009,6 +1010,123 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   SetActiveTab(tab_a);
   EXPECT_FALSE(ShouldBeOpen());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       MoveActiveTabToNewThreadIfShared_MovesOnlyActiveTab) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  SessionID tab_a_id =
+      sessions::SessionTabHelper::IdForTab(tab_a->GetContents());
+  SessionID tab_b_id =
+      sessions::SessionTabHelper::IdForTab(tab_b->GetContents());
+
+  // Track the tab associations so that the coordinator sees tab B move.
+  std::map<SessionID, base::Uuid> tab_to_task = {{tab_a_id, task.GetTaskId()},
+                                                 {tab_b_id, task.GetTaskId()}};
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(
+          [&tab_to_task](SessionID tab_id) -> std::optional<ContextualTask> {
+            auto it = tab_to_task.find(tab_id);
+            if (it == tab_to_task.end()) {
+              return std::nullopt;
+            }
+            return ContextualTask(it->second);
+          });
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillByDefault([&tab_to_task](const base::Uuid& task_id) {
+        std::vector<SessionID> tab_ids;
+        for (const auto& [tab_id, associated_task_id] : tab_to_task) {
+          if (associated_task_id == task_id) {
+            tab_ids.push_back(tab_id);
+          }
+        }
+        return tab_ids;
+      });
+  ON_CALL(*mock_controller_, DisassociateTabFromTask(_, _))
+      .WillByDefault(
+          [&tab_to_task](const base::Uuid& task_id, SessionID tab_id) {
+            tab_to_task.erase(tab_id);
+          });
+  ON_CALL(*mock_controller_, AssociateTabWithTask(_, _))
+      .WillByDefault(
+          [&tab_to_task](const base::Uuid& task_id, SessionID tab_id) {
+            tab_to_task[tab_id] = task_id;
+          });
+  ON_CALL(*mock_controller_, CreateTask()).WillByDefault(Return(new_task));
+
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task.GetTaskId());
+  SetActiveTab(tab_b);
+  UpdateWebContentsForActiveTab();
+
+  EXPECT_TRUE(coordinator_->MoveActiveTabToNewThreadIfShared());
+
+  // Tab B moves to the new task with its own panel `WebContents`, while tab A
+  // keeps the existing panel `WebContents` and its thread.
+  EXPECT_EQ(new_task.GetTaskId(), tab_to_task[tab_b_id]);
+  EXPECT_EQ(task.GetTaskId(), tab_to_task[tab_a_id]);
+  content::WebContents* new_panel_contents =
+      GetWebContentsForTaskForTesting(new_task.GetTaskId());
+  ASSERT_TRUE(new_panel_contents);
+  EXPECT_NE(panel_contents, new_panel_contents);
+  EXPECT_EQ(new_panel_contents, coordinator_->GetActiveWebContents());
+  EXPECT_EQ(panel_contents, GetWebContentsForTaskForTesting(task.GetTaskId()));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       MoveActiveTabToNewThreadIfShared_PanelClosedOnActiveTab_ReturnsFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksSidePanelTabState, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab_a->GetContents()),
+          sessions::SessionTabHelper::IdForTab(tab_b->GetContents())}));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  SetActiveTab(tab_b);
+  UpdateWebContentsForActiveTab();
+  coordinator_->Close();
+  ASSERT_FALSE(ShouldBeOpen());
+
+  EXPECT_CALL(*mock_controller_, DisassociateTabFromTask(_, _)).Times(0);
+  EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
+
+  EXPECT_FALSE(coordinator_->MoveActiveTabToNewThreadIfShared());
+  EXPECT_FALSE(ShouldBeOpen());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       MoveActiveTabToNewThreadIfShared_NotShared_ReturnsFalse) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab_a->GetContents())}));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+
+  EXPECT_CALL(*mock_controller_, DisassociateTabFromTask(_, _)).Times(0);
+  EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
+
+  EXPECT_FALSE(coordinator_->MoveActiveTabToNewThreadIfShared());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

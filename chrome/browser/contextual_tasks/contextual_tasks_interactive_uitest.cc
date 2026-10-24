@@ -5796,9 +5796,9 @@ std::string RearchitectureParamName(const testing::TestParamInfo<bool>& info) {
 
 }  // namespace
 
-// Tests that closing the side panel only applies to the tab where the user took
-// the action. The test param controls whether the Contextual Tasks
-// rearchitecture is enabled.
+// Tests that closing the side panel or changing its thread only applies to the
+// tab where the user took the action. The test param controls whether the
+// Contextual Tasks rearchitecture is enabled.
 class ContextualTasksSidePanelTabStateInteractiveUiTest
     : public ContextualTasksInteractiveUiTestBase,
       public testing::WithParamInterface<bool> {
@@ -5807,6 +5807,9 @@ class ContextualTasksSidePanelTabStateInteractiveUiTest
     auto enabled = GetDefaultEnabledFeatures();
     enabled.push_back({kContextualTasksEphemeralBrandedEntryPoint,
                        {{"ContextualTasksEntryPoint", entry_point_}}});
+    if (notify_zero_state_rendered_) {
+      enabled.push_back({kEnableNotifyZeroStateRenderedCapability, {}});
+    }
     auto disabled = GetDefaultDisabledFeatures();
     if (tab_state_enabled_) {
       enabled.push_back({kContextualTasksSidePanelTabState, {}});
@@ -5943,8 +5946,48 @@ class ContextualTasksSidePanelTabStateInteractiveUiTest
                     ExecuteJsMode::kFireAndForget));
   }
 
+  // Clicks the toolbar's New thread button on tab0 while tab0 and tab2 share a
+  // thread, and verifies that only tab0 moves to a new thread.
+  void RunNewThreadButtonTest() {
+    content::WebContents* panel_contents = nullptr;
+    RunTestSequence(
+        OpenPanelWithSharedThread(),
+        Do([&]() { panel_contents = GetPanelContents(); }),
+
+        ClickToolbarButton("newThreadButton"),
+        PollUntil(
+            [&]() {
+              std::optional<base::Uuid> task_id = GetTaskIdForTab(0);
+              return task_id && *task_id != shared_task_id_;
+            },
+            "Wait for tab0 to move to a new thread."),
+        Do([&]() {
+          // The new thread starts in a new panel `WebContents` for tab0.
+          content::WebContents* new_thread_contents = GetPanelContents();
+          ASSERT_TRUE(new_thread_contents);
+          EXPECT_TRUE(IsPanelOpen());
+          EXPECT_NE(panel_contents, new_thread_contents);
+          EXPECT_FALSE(ShowsThread(new_thread_contents));
+
+          // tab2 keeps showing the existing thread in the original panel
+          // `WebContents`.
+          ActivateTab(2);
+          EXPECT_TRUE(IsPanelOpen());
+          EXPECT_EQ(shared_task_id_, GetTaskIdForTab(2));
+          EXPECT_EQ(panel_contents, GetPanelContents());
+          EXPECT_TRUE(ShowsThread(GetPanelContents()));
+
+          // tab0 still shows the new thread.
+          ActivateTab(0);
+          EXPECT_TRUE(IsPanelOpen());
+          EXPECT_EQ(new_thread_contents, GetPanelContents());
+          EXPECT_NE(shared_task_id_, GetTaskIdForTab(0));
+        }));
+  }
+
   std::string entry_point_ = "toolbar-ephemeral-branded";
   bool tab_state_enabled_ = true;
+  bool notify_zero_state_rendered_ = false;
   base::Uuid shared_task_id_;
 };
 
@@ -6034,6 +6077,15 @@ IN_PROC_BROWSER_TEST_P(
                   }));
 }
 
+// This tests the following CUJ:
+//  (1) The side panel is open with the same thread on tab0 and tab2.
+//  (2) User clicks the toolbar's New thread button on tab0.
+//  (3) tab0 moves to a new thread, and tab2 keeps showing the existing thread.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
+                       NewThreadButton_OnlyChangesThreadOnActiveTab) {
+  RunNewThreadButtonTest();
+}
+
 class ContextualTasksSidePanelTabStateNoEntryPointInteractiveUiTest
     : public ContextualTasksSidePanelTabStateInteractiveUiTest {
  public:
@@ -6092,8 +6144,31 @@ IN_PROC_BROWSER_TEST_P(
       }));
 }
 
-// With side panel tab state disabled, closing the panel applies to all tabs
-// that share the thread.
+// With the AI page notifying the browser when its zero state is rendered, the
+// legacy UI doesn't start a new task when the zero state loads, so the New
+// thread button can't rely on that to move only the active tab.
+class ContextualTasksSidePanelTabStateNotifyZeroStateInteractiveUiTest
+    : public ContextualTasksSidePanelTabStateInteractiveUiTest {
+ public:
+  ContextualTasksSidePanelTabStateNotifyZeroStateInteractiveUiTest() {
+    notify_zero_state_rendered_ = true;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksSidePanelTabStateNotifyZeroStateInteractiveUiTest,
+    testing::Bool(),
+    &RearchitectureParamName);
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelTabStateNotifyZeroStateInteractiveUiTest,
+    NewThreadButton_OnlyChangesThreadOnActiveTab) {
+  RunNewThreadButtonTest();
+}
+
+// With side panel tab state disabled, closing the panel or changing its thread
+// applies to all tabs that share the thread.
 class ContextualTasksSidePanelTabStateDisabledInteractiveUiTest
     : public ContextualTasksSidePanelTabStateInteractiveUiTest {
  public:
@@ -6117,6 +6192,26 @@ IN_PROC_BROWSER_TEST_P(
         ActivateTab(2);
         EXPECT_FALSE(IsPanelOpen());
       }));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelTabStateDisabledInteractiveUiTest,
+    NewThreadButton_ChangesThreadOnTabsSharingThread) {
+  content::WebContents* panel_contents = nullptr;
+  RunTestSequence(OpenPanelWithSharedThread(),
+                  Do([&]() { panel_contents = GetPanelContents(); }),
+                  ClickToolbarButton("newThreadButton"),
+                  PollUntil([&]() { return !ShowsThread(panel_contents); },
+                            "Wait for the new thread to load in the panel."),
+                  Do([&]() {
+                    // Both tabs show the new thread in the same panel
+                    // `WebContents`.
+                    EXPECT_EQ(GetTaskIdForTab(0), GetTaskIdForTab(2));
+                    ActivateTab(2);
+                    EXPECT_TRUE(IsPanelOpen());
+                    EXPECT_EQ(panel_contents, GetPanelContents());
+                    EXPECT_FALSE(ShowsThread(GetPanelContents()));
+                  }));
 }
 
 }  // namespace contextual_tasks

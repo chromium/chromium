@@ -60,6 +60,13 @@ interface PageHandler {
   // the WebUI to load in the hosted webview element.
   GetThreadUrl() => (url.mojom.Url url);
 
+  // Called when the user starts a new thread from the side panel. If the side
+  // panel state is scoped to the tab and other tabs share the thread, moves the
+  // active tab to a new thread in a new side panel `WebContents`, so that the
+  // other tabs keep the thread. Returns false if the page should start the new
+  // thread in place.
+  MoveActiveTabToNewThreadIfShared() => (bool moved);
+
   // Gets a URL for the provided task ID. This method should primarily be used
   // in the init flow for the feature, after a query is intercepted from UI like
   // the omnibox and we don't yet have a thread ID.

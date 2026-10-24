@@ -294,6 +294,27 @@ void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
   std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
 }
 
+void ContextualTasksPageHandler::MoveActiveTabToNewThreadIfShared(
+    MoveActiveTabToNewThreadIfSharedCallback callback) {
+  if (!contextual_tasks::ShouldScopeSidePanelStateToTab() ||
+      web_ui_controller_->IsShownInTab() || !panel_controller_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  // If this side panel `WebContents` is no longer the active panel (e.g. the
+  // user switched tabs while the click was in flight), return true so the
+  // caller doesn't navigate its shared thread in place or mutate the newly
+  // active tab.
+  if (!panel_controller_->IsPanelOpenForContextualTask() ||
+      web_ui_controller_->GetWebUIWebContents() !=
+          panel_controller_->GetActiveWebContents()) {
+    std::move(callback).Run(true);
+    return;
+  }
+  std::move(callback).Run(
+      panel_controller_->MoveActiveTabToNewThreadIfShared());
+}
+
 void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
                                                GetUrlForTaskCallback callback) {
   // Wrap the callback to ensure previous_query is set on the session handle

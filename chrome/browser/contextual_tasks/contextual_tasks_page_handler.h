@@ -52,6 +52,8 @@ class ContextualTasksPageHandler
 
   // contextual_tasks::mojom::PageHandler:
   void GetThreadUrl(GetThreadUrlCallback callback) override;
+  void MoveActiveTabToNewThreadIfShared(
+      MoveActiveTabToNewThreadIfSharedCallback callback) override;
   void GetUrlForTask(const base::Uuid& uuid,
                      GetUrlForTaskCallback callback) override;
   void SetTaskId(const base::Uuid& uuid) override;

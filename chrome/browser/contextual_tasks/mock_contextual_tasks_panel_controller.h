@@ -40,6 +40,7 @@ class MockContextualTasksPanelController
               (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));
+  MOCK_METHOD(bool, MoveActiveTabToNewThreadIfShared, (), (override));
   MOCK_METHOD(void,
               ShareTabsWithActiveOrNewThread,
               (const std::vector<tabs::TabHandle>&),

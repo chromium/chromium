@@ -550,6 +550,31 @@ suite('ContextualTasksAppTest', function() {
         assertEquals(newThreadUrl, appElement.getThreadUrlForTesting());
       });
 
+  test(
+      'new thread click keeps thread when browser moves tab to new thread',
+      async () => {
+        const {appElement, proxy} = await createContextualTasksAppElement(
+            /*url=*/ fixtureUrl,
+            /*setupProxy=*/ (p) => {
+              p.handler.setIsShownInTab(false);
+            });
+        const threadUrl = appElement.getThreadUrlForTesting();
+        proxy.handler.setMovedToNewThread(true);
+        proxy.handler.setThreadUrl(`${fixtureUrl}?new_thread=1`);
+        proxy.handler.resetResolver('getThreadUrl');
+
+        const toolbar = appElement.shadowRoot.querySelector('top-toolbar');
+        assertTrue(!!toolbar, 'Toolbar should be visible');
+        toolbar.fire('new-thread-click');
+        await proxy.handler.whenCalled('moveActiveTabToNewThreadIfShared');
+        await microtasksFinished();
+
+        // The browser shows the new thread in a new side panel, so this one
+        // keeps its thread.
+        assertEquals(0, proxy.handler.getCallCount('getThreadUrl'));
+        assertEquals(threadUrl, appElement.getThreadUrlForTesting());
+      });
+
   test('logs back button metric in full tab', async () => {
     const threadUuid = 'ab12';
     const url = new URL(window.location.href);

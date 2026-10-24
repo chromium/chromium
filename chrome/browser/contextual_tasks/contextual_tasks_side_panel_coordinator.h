@@ -164,6 +164,7 @@ class ContextualTasksSidePanelCoordinator
                 std::nullopt) override;
   void Close() override;
   void OpenInZeroState() override;
+  bool MoveActiveTabToNewThreadIfShared() override;
   void ShareTabsWithActiveOrNewThread(
       const std::vector<tabs::TabHandle>& tab_handles) override;
   void ShareTabsWithExistingThread(

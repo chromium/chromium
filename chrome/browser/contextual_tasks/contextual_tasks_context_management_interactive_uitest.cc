@@ -170,8 +170,13 @@ class ContextualTasksContextManagementInteractiveTestBase
     enabled_features.push_back({omnibox::kContextManagementInComposebox,
                                 {{"enable_tab_deselection", "true"}}});
     enabled_features.push_back({omnibox::kTabFaviconChipsToCoins, {}});
+    std::vector<base::test::FeatureRef> disabled_features =
+        GetDefaultDisabledFeatures();
+    // These tests expect New thread to start the new thread in the panel shared
+    // by the tabs in a task.
+    disabled_features.push_back(kContextualTasksSidePanelTabState);
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                GetDefaultDisabledFeatures());
+                                                disabled_features);
   }
 
   void SetUpOnMainThread() override {

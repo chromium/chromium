@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -754,6 +755,57 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
                  : std::make_optional(
                        ContextualTasksPanelController::EntrySource::
                            kEphemeralToolbarButton));
+}
+
+bool ContextualTasksSidePanelCoordinator::MoveActiveTabToNewThreadIfShared() {
+  TabListInterface* tab_list = TabListInterface::From(browser_window_);
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!tab_list || !contextual_tasks_service_ || !ui_service ||
+      !ShouldBeOpen()) {
+    return false;
+  }
+  tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!active_tab || !active_tab->GetContents() || !task) {
+    return false;
+  }
+
+  // A new thread can replace the current thread in place if no other tab in
+  // this window shares the task.
+  const SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  const std::set<SessionID> tab_ids = GetAllTabIdsInTabList(tab_list);
+  const bool is_shared = std::ranges::any_of(
+      contextual_tasks_service_->GetTabsAssociatedWithTask(task->GetTaskId()),
+      [&](SessionID tab_id) {
+        return tab_id != active_tab_id && tab_ids.contains(tab_id);
+      });
+  if (!is_shared) {
+    return false;
+  }
+
+  const EntrySource entry_source = GetActiveEntrySource();
+  const omnibox::ChromeAimEntryPoint entry_point =
+      ui_service->GetInitialEntryPointForTask(task->GetTaskId());
+
+  // Move only the active tab to a new task. Other tabs keep the current panel
+  // `WebContents` and its thread.
+  DisassociateTabFromTask(active_tab->GetContents());
+  ContextualTask new_task = contextual_tasks_service_->CreateTask();
+  ui_service->AssociateWebContentsToTask(active_tab->GetContents(),
+                                         new_task.GetTaskId());
+  MaybeCreateCachedWebContents(entry_point);
+  auto it = task_id_to_web_contents_cache_.find(new_task.GetTaskId());
+  if (it != task_id_to_web_contents_cache_.end()) {
+    it->second->entry_source = entry_source;
+    // The panel was already open, so don't record open latency or session
+    // duration metrics for the new thread's `WebContents`.
+    it->second->open_time_ticks = base::TimeTicks();
+  }
+  UpdateWebContentsForActiveTab();
+  UpdateContextualTaskUI();
+  NotifyActiveTaskContextProvider();
+  return true;
 }
 
 void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(

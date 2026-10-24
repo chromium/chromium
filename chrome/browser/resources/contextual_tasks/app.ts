@@ -1548,6 +1548,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   protected async onNewThreadClick_() {
     recordAction('ContextualTasks.WebUI.UserAction.OpenNewThread');
+    // The browser may start the new thread in a new side panel for the active
+    // tab, so that other tabs sharing this thread keep it.
+    const {moved} =
+        await this.browserProxy_.handler.moveActiveTabToNewThreadIfShared();
+    if (moved) {
+      return;
+    }
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     const newThreadUrl = new URL(url);
     const currentUrlString = this.$.threadFrame.src || this.pendingUrl_;
