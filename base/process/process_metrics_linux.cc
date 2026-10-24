@@ -989,7 +989,6 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
 #if defined(ARCH_CPU_X86_FAMILY)
   // Reading i915_gem_objects on intel platform with kernel 5.4 is slow and is
   // prohibited.
-  // TODO(b/170397975): Update if i915_gem_objects reading time is improved.
   static bool is_newer_kernel =
       base::StartsWith(base::SysInfo::KernelVersion(), "5.");
   static bool is_intel_cpu = base::CPU().vendor_name() == "GenuineIntel";
