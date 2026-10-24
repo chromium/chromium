@@ -96,6 +96,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/test_event_handler.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -4780,6 +4781,62 @@ TEST_F(ShelfViewWindowPreviewTest, RightClickOnPreviewDoesNotActivateWindow) {
   GetEventGenerator()->MoveMouseTo(preview_center);
   GetEventGenerator()->ClickRightButton();
   EXPECT_FALSE(wm::IsActiveWindow(window1_.get()));
+}
+
+TEST_F(ShelfViewWindowPreviewTest, TapOnPreviewActivatesWindow) {
+  ASSERT_FALSE(wm::IsActiveWindow(window1_.get()));
+
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ASSERT_TRUE(menu_adapter()->preview_bubble());
+
+  ui::test::TestEventHandler menu_handler;
+  aura::Window* menu_window = item0_->GetWidget()->GetNativeWindow();
+  menu_window->AddPreTargetHandler(&menu_handler);
+
+  const gfx::Point preview_center = menu_adapter()
+                                        ->preview_bubble()
+                                        ->GetWidget()
+                                        ->GetWindowBoundsInScreen()
+                                        .CenterPoint();
+
+  // Touch-dragging off the preview does not activate the window or leak touch
+  // or gesture events to the menu.
+  GetEventGenerator()->PressTouch(preview_center);
+  EXPECT_FALSE(wm::IsActiveWindow(window1_.get()));
+  ASSERT_TRUE(menu_adapter());
+  EXPECT_TRUE(menu_adapter()->preview_bubble());
+  GetEventGenerator()->MoveTouch({10, 10});
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_FALSE(wm::IsActiveWindow(window1_.get()));
+  ASSERT_TRUE(menu_adapter());
+  EXPECT_TRUE(menu_adapter()->preview_bubble());
+  EXPECT_EQ(0, menu_handler.num_touch_events());
+  EXPECT_EQ(0, menu_handler.num_gesture_events());
+
+  // Long-pressing on the preview does not activate the window, close the menu,
+  // or leak long-press/long-tap gestures to the menu.
+  GetEventGenerator()->PressTouch(preview_center);
+  task_environment()->FastForwardBy(base::Seconds(5));
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_FALSE(wm::IsActiveWindow(window1_.get()));
+  ASSERT_TRUE(menu_adapter());
+  EXPECT_TRUE(menu_adapter()->preview_bubble());
+  EXPECT_EQ(0, menu_handler.num_touch_events());
+  EXPECT_EQ(0, menu_handler.num_gesture_events());
+
+  menu_window->RemovePreTargetHandler(&menu_handler);
+
+  // Tapping the preview activates the window and closes the menu on release.
+  title_item_ = nullptr;
+  item0_ = nullptr;
+  item1_ = nullptr;
+  GetEventGenerator()->PressTouch(preview_center);
+  EXPECT_FALSE(wm::IsActiveWindow(window1_.get()));
+  ASSERT_TRUE(menu_adapter());
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_FALSE(menu_adapter());
+  EXPECT_TRUE(wm::IsActiveWindow(window1_.get()));
 }
 
 TEST_F(ShelfViewWindowPreviewTest,

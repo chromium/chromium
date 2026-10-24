@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/window_preview_view.h"
+#include "base/check_op.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -21,7 +22,9 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_target.h"
+#include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -188,16 +191,60 @@ bool ShelfWindowPreviewBubble::ShouldCloseOnMouseExit() {
 }
 
 void ShelfWindowPreviewBubble::OnEvent(ui::Event* event) {
-  if ((event->type() == ui::EventType::kMousePressed &&
-       event->AsMouseEvent()->IsOnlyLeftMouseButton()) ||
-      event->type() == ui::EventType::kTouchPressed ||
-      event->type() == ui::EventType::kGestureTap) {
-    ProcessPressedEvent(event->AsLocatedEvent());
-    if (event->handled()) {
+  // Handle global `Shell` pre-target events directly without forwarding to
+  // `ShelfBubble::OnEvent` (`View::OnTouchEvent` hits `NOTREACHED()`, and
+  // `View` mouse/key handlers expect widget-targeted events).
+  CHECK_EQ(event->phase(), ui::EP_PRETARGET);
+
+  if (event->IsMouseEvent()) {
+    ui::MouseEvent* mouse_event = event->AsMouseEvent();
+    if (mouse_event->type() == ui::EventType::kMousePressed &&
+        mouse_event->IsOnlyLeftMouseButton()) {
+      ProcessPressedEvent(mouse_event);
+    }
+    return;
+  }
+
+  if (event->IsTouchEvent()) {
+    ui::TouchEvent* touch_event = event->AsTouchEvent();
+    aura::Window* target = static_cast<aura::Window*>(touch_event->target());
+    CHECK(target);
+    if (touch_event->type() == ui::EventType::kTouchPressed &&
+        !gesture_consumer_ &&
+        IsPointOverBubble(target->GetScreenLocation(*touch_event))) {
+      CHECK(target->provider());
+      if (target->provider()->pointer_state().GetPointerCount() == 1) {
+        gesture_consumer_ = target->GetWeakPtrAsWindow();
+      }
+    }
+    if (target == gesture_consumer_.get()) {
+      // Stop propagation so `ShelfTooltipManager`, `MenuController`, and
+      // windows behind the preview do not react to raw touches, while still
+      // allowing `GestureRecognizer` to generate gestures.
+      touch_event->StopPropagation();
+      touch_event->ForceProcessGesture();
+    }
+    return;
+  }
+
+  if (event->IsGestureEvent()) {
+    ui::GestureEvent* gesture_event = event->AsGestureEvent();
+    CHECK(gesture_event->target());
+    if (gesture_event->target() != gesture_consumer_.get()) {
       return;
     }
+    gesture_event->SetHandled();
+    gesture_event->StopPropagation();
+    if (gesture_event->type() == ui::EventType::kGestureTap) {
+      // `ProcessPressedEvent` may synchronously destroy `this`.
+      ProcessPressedEvent(gesture_event);
+      return;
+    }
+    if (gesture_event->type() == ui::EventType::kGestureEnd &&
+        gesture_event->details().touch_points() == 1) {
+      gesture_consumer_.reset();
+    }
   }
-  ShelfBubble::OnEvent(event);
 }
 
 void ShelfWindowPreviewBubble::OnWindowDestroying(aura::Window* window) {
@@ -331,6 +378,7 @@ void ShelfWindowPreviewBubble::AddPreTargetHandler() {
 }
 
 void ShelfWindowPreviewBubble::RemovePreTargetHandler() {
+  gesture_consumer_.reset();
   if (is_pre_target_handler_ && Shell::HasInstance()) {
     Shell::Get()->RemovePreTargetHandler(this);
     is_pre_target_handler_ = false;

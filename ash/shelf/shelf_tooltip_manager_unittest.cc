@@ -451,6 +451,72 @@ TEST_F(ShelfTooltipManagerWindowPreviewTest, ClickOnPreviewActivatesWindow) {
   EXPECT_FALSE(tooltip_manager_->preview_bubble());
 }
 
+TEST_F(ShelfTooltipManagerWindowPreviewTest, TouchOnAndOutsidePreview) {
+  const ShelfID id("app_with_one_window");
+  views::View* button = AddAppItem(id);
+  std::unique_ptr<aura::Window> window = CreateWindowForShelfItem(id);
+  ui::test::TestEventHandler other_window_handler;
+  std::unique_ptr<aura::Window> other_window =
+      CreateToplevelTestWindow({800, 600});
+  wm::ActivateWindow(other_window.get());
+  ASSERT_FALSE(wm::IsActiveWindow(window.get()));
+  other_window->AddPreTargetHandler(&other_window_handler);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  tooltip_manager_->ShowTooltip(button);
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+
+  // Touching outside the preview closes it without crashing or activating the
+  // previewed window.
+  generator->PressTouch(gfx::Point{10, 10});
+  generator->ReleaseTouch();
+  EXPECT_FALSE(wm::IsActiveWindow(window.get()));
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_FALSE(tooltip_manager_->preview_bubble());
+  EXPECT_GT(other_window_handler.num_touch_events(), 0);
+  other_window_handler.Reset();
+
+  // Touch-dragging off the preview does not activate the window or leak touch
+  // or gesture events to the window behind the preview.
+  tooltip_manager_->ShowTooltip(button);
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+  const gfx::Point preview_center = tooltip_manager_->preview_bubble()
+                                        ->GetWidget()
+                                        ->GetWindowBoundsInScreen()
+                                        .CenterPoint();
+  ASSERT_TRUE(other_window->GetBoundsInScreen().Contains(preview_center));
+  generator->PressTouch(preview_center);
+  EXPECT_FALSE(wm::IsActiveWindow(window.get()));
+  EXPECT_TRUE(tooltip_manager_->preview_bubble());
+  generator->MoveTouch({10, 10});
+  generator->ReleaseTouch();
+  EXPECT_FALSE(wm::IsActiveWindow(window.get()));
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+  EXPECT_EQ(0, other_window_handler.num_touch_events());
+  EXPECT_EQ(0, other_window_handler.num_gesture_events());
+
+  // Long-pressing and releasing on the preview does not activate the window or
+  // leak long-press/long-tap gestures to the window behind the preview.
+  generator->PressTouch(preview_center);
+  task_environment()->FastForwardBy(base::Seconds(5));
+  generator->ReleaseTouch();
+  EXPECT_FALSE(wm::IsActiveWindow(window.get()));
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+  EXPECT_EQ(0, other_window_handler.num_touch_events());
+  EXPECT_EQ(0, other_window_handler.num_gesture_events());
+
+  // Tapping the preview activates the window and closes the preview on release.
+  generator->PressTouch(preview_center);
+  EXPECT_FALSE(wm::IsActiveWindow(window.get()));
+  EXPECT_TRUE(tooltip_manager_->preview_bubble());
+  generator->ReleaseTouch();
+  EXPECT_TRUE(wm::IsActiveWindow(window.get()));
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_FALSE(tooltip_manager_->preview_bubble());
+
+  other_window->RemovePreTargetHandler(&other_window_handler);
+}
+
 TEST_F(ShelfTooltipManagerWindowPreviewTest, PressingEscapeClosesPreview) {
   const ShelfID id("app_with_one_window");
   views::View* button = AddAppItem(id);

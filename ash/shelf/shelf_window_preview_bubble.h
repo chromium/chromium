@@ -9,6 +9,7 @@
 #include "ash/shelf/shelf_bubble.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -103,6 +104,9 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
   raw_ptr<WindowPreviewView> preview_view_ = nullptr;
   base::OnceClosure dismiss_callback_;
   bool is_pre_target_handler_ = false;
+  // Tracks the target window of a touch sequence that started over this bubble
+  // so subsequent touches and gestures on that consumer are consumed.
+  base::WeakPtr<aura::Window> gesture_consumer_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
