@@ -6,8 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_CONTENT_EXTRACTION_UTILS_H_
 
 #include <string>
-#include <string_view>
-#include <vector>
 
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 
@@ -21,25 +19,26 @@ std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens);
 // Locale should be obtained using this function:
 // base::i18n::GetConfiguredLocale(). The format of locale will be
 // language-country@variant. Country and variant are optional.
-std::vector<Token> ExtractContent(std::string_view content_id,
-                                  std::u16string_view text,
+std::vector<Token> ExtractContent(const std::string& content_id,
+                                  const std::u16string& text,
                                   double weight,
-                                  std::string_view locale);
+                                  const std::string& locale);
 
 // Checks if the locale is non Latin locales.
 // Locale should be obtained using this function:
 // base::i18n::GetConfiguredLocale(). The format of locale will be
 // language-country@variant. Country and variant are optional.
-bool IsNonLatinLocale(std::string_view locale);
+bool IsNonLatinLocale(const std::string& locale);
 
 // Checks if a word is a stopword given a locale. Locale will be in the
 // following format: language-country@variant (country and variant are
 // optional).
-bool IsStopword(std::u16string_view word, std::string_view locale);
+bool IsStopword(const std::u16string& word, const std::string& locale);
 
 // Returns a normalized version of a string16: removes diacritics, convert to
 // lower-case and possibly remove hyphen from the text (set to true by default).
-std::u16string Normalizer(std::u16string_view word, bool remove_hyphen = true);
+std::u16string Normalizer(const std::u16string& word,
+                          bool remove_hyphen = true);
 
 }  // namespace ash::local_search_service
 

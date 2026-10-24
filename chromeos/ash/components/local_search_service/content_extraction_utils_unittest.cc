@@ -4,9 +4,6 @@
 
 #include "chromeos/ash/components/local_search_service/content_extraction_utils.h"
 
-#include <string_view>
-#include <vector>
-
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +18,7 @@ constexpr double kDefaultWeight = 1.0;
 
 TEST(ContentExtractionUtilsTest, ConsolidateTokenTest) {
   {
-    const std::u16string_view text(
+    const std::u16string text(
         u"Check duplicate. Duplicate is ##$%^&##$%##$^##$ bad");
     const auto tokens = ConsolidateToken(
         ExtractContent("3rd test", text, kDefaultWeight, "en"));
@@ -78,7 +75,7 @@ TEST(ContentExtractionUtilsTest, ConsolidateTokenTest) {
 
 TEST(ContentExtractionUtilsTest, ExtractContentTest) {
   {
-    const std::u16string_view text(
+    const std::u16string text(
         u"Normal... English!!! paragraph: email@gmail.com. Here is a link: "
         u"https://google.com, ip=8.8.8.8");
     const auto tokens =
@@ -92,7 +89,7 @@ TEST(ContentExtractionUtilsTest, ExtractContentTest) {
     EXPECT_EQ(tokens[1].positions[0].position.length, 7u);
   }
   {
-    const std::u16string_view text(u"##$%#^你好!!!");
+    const std::u16string text(u"##$%#^你好!!!");
     const auto tokens = ExtractContent("2nd test", text, kDefaultWeight, "zh");
     EXPECT_EQ(tokens.size(), 1u);
 

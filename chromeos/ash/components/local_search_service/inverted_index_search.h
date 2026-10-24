@@ -53,7 +53,7 @@ class InvertedIndexSearch : public Index {
  private:
   void FinalizeAddOrUpdate(
       AddOrUpdateCallback callback,
-      std::vector<std::pair<std::string, std::vector<Token>>> documents);
+      const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
 
   // FinalizeDelete is called if Delete cannot be immediately done because
   // there's another index updating operation before it, i.e.
@@ -63,7 +63,7 @@ class InvertedIndexSearch : public Index {
 
   void FinalizeUpdateDocuments(
       UpdateDocumentsCallback callback,
-      std::vector<std::pair<std::string, std::vector<Token>>> documents);
+      const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
 
   std::unique_ptr<InvertedIndex> inverted_index_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;

@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -37,7 +38,8 @@ class InvertedIndexTest : public ::testing::Test {
  public:
   void SetUp() override {
     // All content weights are initialized to |kDefaultWeight|.
-    index_.doc_length_ = DocLength({{"doc1", 8}, {"doc2", 6}});
+    index_.doc_length_ =
+        std::unordered_map<std::string, uint32_t>({{"doc1", 8}, {"doc2", 6}});
 
     index_.dictionary_[u"A"] = PostingList(
         {{"doc1",
@@ -65,7 +67,6 @@ class InvertedIndexTest : public ::testing::Test {
                WeightedPosition(kDefaultWeight, Position("body", 3, 1)),
                WeightedPosition(kDefaultWeight, Position("header", 5, 1)),
                WeightedPosition(kDefaultWeight, Position("body", 7, 1))})}});
-    index_.terms_to_be_updated_.reserve(3);
     index_.terms_to_be_updated_.insert(u"A");
     index_.terms_to_be_updated_.insert(u"B");
     index_.terms_to_be_updated_.insert(u"C");
@@ -80,7 +81,7 @@ class InvertedIndexTest : public ::testing::Test {
   }
 
   std::vector<Result> FindMatchingDocumentsApproximately(
-      const TermSet& terms,
+      const std::unordered_set<std::u16string>& terms,
       double prefix_threshold,
       double block_threshold) {
     return index_.FindMatchingDocumentsApproximately(terms, prefix_threshold,
@@ -172,11 +173,17 @@ class InvertedIndexTest : public ::testing::Test {
 
   bool IsInvertedIndexBuilt() { return index_.IsInvertedIndexBuilt(); }
 
-  Dictionary GetDictionary() { return index_.dictionary_; }
+  std::unordered_map<std::u16string, PostingList> GetDictionary() {
+    return index_.dictionary_;
+  }
 
-  DocLength GetDocLength() { return index_.doc_length_; }
+  std::unordered_map<std::string, uint32_t> GetDocLength() {
+    return index_.doc_length_;
+  }
 
-  TfidfCache GetTfidfCache() { return index_.tfidf_cache_; }
+  std::unordered_map<std::u16string, std::vector<TfidfResult>> GetTfidfCache() {
+    return index_.tfidf_cache_;
+  }
 
   DocumentToUpdate GetDocumentsToUpdate() {
     return index_.documents_to_update_;
@@ -507,7 +514,6 @@ TEST_F(InvertedIndexTest, FindMatchingDocumentsApproximatelyTest) {
     // TODO(jiameng): for testing, we should  use another independent method to
     // verify scores.
     std::vector<float> actual_scores;
-    actual_scores.reserve(2);
     for (size_t i = 0; i < 2; ++i) {
       const auto& docid = expected_docids[i];
       float expected_score = 0;

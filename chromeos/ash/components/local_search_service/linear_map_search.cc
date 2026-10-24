@@ -29,10 +29,9 @@ void TokenizeSearchTags(const std::vector<Content>& contents,
                         std::vector<TokenizedStringWithId>* tokenized) {
   DCHECK(tokenized);
 
-  tokenized->reserve(tokenized->size() + contents.size());
   for (const auto& content : contents) {
-    tokenized->emplace_back(content.id,
-                            std::make_unique<TokenizedString>(content.content));
+    tokenized->push_back(std::make_pair(
+        content.id, std::make_unique<TokenizedString>(content.content)));
   }
 }
 
@@ -57,7 +56,8 @@ bool IsItemRelevant(const TokenizedString& query,
       *relevance_score = relevance;
       // Initialize the `length` and `start` to 0, as they are currently not
       // in-use by linear map search.
-      positions->emplace_back(tag.first, 0, 0);
+      Position position(tag.first, 0, 0);
+      positions->push_back(position);
       return true;
     }
   }
@@ -70,11 +70,8 @@ void UpdateData(const std::string& id,
                 const std::vector<Content>& contents,
                 KeyToTagVector* data) {
   DCHECK(data);
-  auto [it, inserted] = data->try_emplace(id);
-  if (!inserted) {
-    it->second.clear();
-  }
-  TokenizeSearchTags(contents, &it->second);
+  (*data)[id] = std::vector<TokenizedStringWithId>();
+  TokenizeSearchTags(contents, &((*data)[id]));
 }
 
 }  // namespace
@@ -90,7 +87,6 @@ void LinearMapSearch::GetSize(GetSizeCallback callback) {
 
 void LinearMapSearch::AddOrUpdate(const std::vector<Data>& data,
                                   AddOrUpdateCallback callback) {
-  data_.reserve(data_.size() + data.size());
   for (const auto& item : data) {
     const auto& id = item.id;
     DCHECK(!id.empty());
@@ -179,7 +175,11 @@ std::vector<Result> LinearMapSearch::GetSearchResults(
     if (IsItemRelevant(tokenized_query, item.second,
                        search_params_.relevance_threshold, &relevance_score,
                        &positions)) {
-      results.emplace_back(item.first, relevance_score, std::move(positions));
+      Result result;
+      result.id = item.first;
+      result.score = relevance_score;
+      result.positions = positions;
+      results.push_back(result);
     }
   }
 

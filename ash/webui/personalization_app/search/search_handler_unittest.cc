@@ -21,7 +21,6 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -317,19 +316,18 @@ TEST_F(PersonalizationAppSearchHandlerTest, RespondsToAltQuery) {
 
 TEST_F(PersonalizationAppSearchHandlerTest, HasBasicPersonalizationConcepts) {
   // Message id to expected relative url.
-  constexpr auto kMessageIdsToSearch = base::MakeFixedFlatMap<int, const char*>(
-      {{IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2, ""},
-       {IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2,
-        kWallpaperSubpageRelativeUrl},
-       {IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4,
-        kUserSubpageRelativeUrl}});
+  std::unordered_map<int, std::string> message_ids_to_search = {
+      {IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2, std::string()},
+      {IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2,
+       kWallpaperSubpageRelativeUrl},
+      {IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4,
+       kUserSubpageRelativeUrl},
+  };
 
-  for (const auto& [message_id, expected_url] : kMessageIdsToSearch) {
+  for (const auto& [message_id, expected_url] : message_ids_to_search) {
     std::vector<mojom::SearchResultPtr> search_results = RunSearch(message_id);
-    EXPECT_TRUE(std::ranges::any_of(
-        search_results, [&expected_url](const auto& result) {
-          return result->relative_url == expected_url;
-        }));
+    EXPECT_LE(1u, search_results.size());
+    EXPECT_EQ(expected_url, search_results.front()->relative_url);
   }
 }
 

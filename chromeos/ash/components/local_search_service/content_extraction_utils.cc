@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash::local_search_service {
 
@@ -50,9 +50,7 @@ std::unique_ptr<base::i18n::Transliterator> CreateHyphenRemover() {
 }  // namespace
 
 std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
-  absl::flat_hash_map<std::u16string_view, std::vector<WeightedPosition>>
-      dictionary;
-  dictionary.reserve(tokens.size());
+  std::unordered_map<std::u16string, std::vector<WeightedPosition>> dictionary;
   for (const auto& token : tokens) {
     base::Extend(dictionary[token.content], token.positions);
   }
@@ -60,15 +58,15 @@ std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
   std::vector<Token> results;
   results.reserve(dictionary.size());
   for (auto& item : dictionary) {
-    results.emplace_back(std::u16string(item.first), std::move(item.second));
+    results.emplace_back(item.first, std::move(item.second));
   }
   return results;
 }
 
-std::vector<Token> ExtractContent(std::string_view content_id,
-                                  std::u16string_view text,
+std::vector<Token> ExtractContent(const std::string& content_id,
+                                  const std::u16string& text,
                                   double weight,
-                                  std::string_view locale) {
+                                  const std::string& locale) {
   // Use two different string tokenizing algorithms for Latin and non Latin
   // locale.
   TokenizedString::Mode mode;
@@ -78,7 +76,7 @@ std::vector<Token> ExtractContent(std::string_view content_id,
     mode = TokenizedString::Mode::kWords;
   }
 
-  const TokenizedString tokenized_string(std::u16string(text), mode);
+  const TokenizedString tokenized_string(text, mode);
   DCHECK(tokenized_string.tokens().size() ==
          tokenized_string.mappings().size());
 
@@ -86,32 +84,30 @@ std::vector<Token> ExtractContent(std::string_view content_id,
   std::vector<Token> tokens;
 
   for (size_t i = 0; i < num_tokens; i++) {
-    std::u16string word = Normalizer(tokenized_string.tokens()[i]);
-    if (IsStopword(word, locale)) {
+    const std::u16string word = Normalizer(tokenized_string.tokens()[i]);
+    if (IsStopword(word, locale))
       continue;
-    }
-    std::vector<WeightedPosition> positions;
-    positions.emplace_back(
-        weight, Position(std::string(content_id),
-                         tokenized_string.mappings()[i].start(),
-                         tokenized_string.mappings()[i].end() -
-                             tokenized_string.mappings()[i].start()));
-    tokens.emplace_back(std::move(word), std::move(positions));
+    tokens.push_back(Token(
+        word,
+        {WeightedPosition(
+            weight, Position(content_id, tokenized_string.mappings()[i].start(),
+                             tokenized_string.mappings()[i].end() -
+                                 tokenized_string.mappings()[i].start()))}));
   }
 
   return tokens;
 }
 
-bool IsNonLatinLocale(std::string_view locale) {
+bool IsNonLatinLocale(const std::string& locale) {
   static constexpr auto kNonLatinLocales =
       base::MakeFixedFlatSet<std::string_view>(
           {"am", "ar", "be", "bg", "bn", "el", "fa", "gu", "hi", "hy", "iw",
            "ja", "ka", "kk", "km", "kn", "ko", "ky", "lo", "mk", "ml", "mn",
            "mr", "my", "pa", "ru", "sr", "ta", "te", "th", "uk", "zh"});
-  return kNonLatinLocales.contains(locale.substr(0, 2));
+  return kNonLatinLocales.contains(std::string_view(locale).substr(0, 2));
 }
 
-bool IsStopword(std::u16string_view word, std::string_view locale) {
+bool IsStopword(const std::u16string& word, const std::string& locale) {
   // TODO(thanhdng): Currently we support stopword list for English only. In the
   // future, when we need to support other languages, creates resource files to
   // store the stopwords.
@@ -161,7 +157,7 @@ bool IsStopword(std::u16string_view word, std::string_view locale) {
   return kEnglishStopWords.contains(word);
 }
 
-std::u16string Normalizer(std::u16string_view word, bool remove_hyphen) {
+std::u16string Normalizer(const std::u16string& word, bool remove_hyphen) {
   // Fast path for ASCII strings: pure ASCII characters have no combining
   // diacritics and cannot contain ł, ø, or đ, and the only ASCII characters in
   // the hyphen-removal set are '-' and '~'.

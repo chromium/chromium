@@ -56,7 +56,7 @@ float RelevanceCoefficient(const std::u16string& query,
 }
 
 bool CompareResults(const Result& r1, const Result& r2) {
-  return r1.score != r2.score ? r1.score > r2.score : r1.id < r2.id;
+  return r1.score > r2.score;
 }
 
 }  // namespace ash::local_search_service
