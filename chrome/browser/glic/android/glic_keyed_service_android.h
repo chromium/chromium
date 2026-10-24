@@ -71,7 +71,8 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   void ShowExperimentalOptInDialogForTesting(JNIEnv* env, TabAndroid* tab);
 
-  bool IsPanelShowingForBrowser(JNIEnv* env, int64_t browser_window_ptr);
+  bool IsPanelShowingForBrowser(JNIEnv* env,
+                                BrowserWindowInterface* browser_window);
 
   bool GetUserEnabledActuationOnWeb(JNIEnv* env);
   void SetUserEnabledActuationOnWeb(JNIEnv* env, bool enabled);

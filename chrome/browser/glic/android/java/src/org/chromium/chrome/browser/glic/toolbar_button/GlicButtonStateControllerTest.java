@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.jni_zero.JniPtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonStateController.ButtonState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +51,7 @@ public class GlicButtonStateControllerTest {
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     @Mock private ChromeAndroidTask mTask;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
     @Mock private GlicButtonStateController.Listener mListener;
 
     private GlicButtonStateController mController;
@@ -112,13 +115,13 @@ public class GlicButtonStateControllerTest {
     public void testOnGlobalShowHide() {
         mController.updateObservations(mProfile);
 
-        when(mTask.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(mTask.getNativeBrowserWindow(mProfile, mActivity)).thenReturn(mBrowserWindow);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(true);
 
         mController.onGlobalShowHide();
         verify(mListener).onStateChanged(ButtonState.DEFAULT, true);
 
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(false);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(false);
         mController.onGlobalShowHide();
         verify(mListener).onStateChanged(ButtonState.DEFAULT, false);
     }

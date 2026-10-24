@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
+import org.jni_zero.JniPtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.JUnitTestGURLs;
@@ -84,6 +86,7 @@ public class GlicToolbarButtonControllerTest {
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private ChromeAndroidTask mTask;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
     private Activity mActivity;
@@ -394,8 +397,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testIsPanelOpen_Initial() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(task.getNativeBrowserWindow(mProfile, mActivity)).thenReturn(mBrowserWindow);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(
@@ -417,8 +420,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testIsPanelOpen_GlobalShowHide() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(task.getNativeBrowserWindow(mProfile, mActivity)).thenReturn(mBrowserWindow);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(
@@ -439,7 +442,7 @@ public class GlicToolbarButtonControllerTest {
         Assert.assertTrue(buttonData.getButtonSpec().isChecked());
         Assert.assertTrue(buttonData.getButtonSpec().isSelected());
 
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(false);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(false);
         controller.onGlobalShowHideForTesting();
         buttonData = controller.get(mTab);
         Assert.assertFalse(buttonData.getButtonSpec().isChecked());
@@ -577,8 +580,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testShouldForciblyShowGlicButton_PanelOpen() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(task.getNativeBrowserWindow(mProfile, mActivity)).thenReturn(mBrowserWindow);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(

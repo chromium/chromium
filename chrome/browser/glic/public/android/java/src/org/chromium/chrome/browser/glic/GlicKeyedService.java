@@ -243,10 +243,10 @@ public interface GlicKeyedService {
     /**
      * Checks if the panel is showing for a specific browser window.
      *
-     * @param browserWindowPtr The native pointer (long) to the BrowserWindowInterface.
+     * @param browserWindow The native {@code BrowserWindowInterface}.
      * @return true if the panel is showing for the specified browser window.
      */
-    boolean isPanelShowingForBrowser(long browserWindowPtr);
+    boolean isPanelShowingForBrowser(JniPtr<NativeBrowserWindowInterface> browserWindow);
 
     /**
      * Checks if the user has enabled actuation on web.

@@ -203,10 +203,9 @@ void GlicKeyedServiceAndroid::ShareContextImage(JNIEnv* env,
 
 bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(
     JNIEnv* env,
-    int64_t browser_window_ptr) {
-  auto* window = reinterpret_cast<BrowserWindowInterface*>(browser_window_ptr);
-  CHECK(window);
-  return service_->IsPanelShowingForBrowser(*window);
+    BrowserWindowInterface* browser_window) {
+  CHECK(browser_window);
+  return service_->IsPanelShowingForBrowser(*browser_window);
 }
 
 bool GlicKeyedServiceAndroid::GetUserEnabledActuationOnWeb(JNIEnv* env) {

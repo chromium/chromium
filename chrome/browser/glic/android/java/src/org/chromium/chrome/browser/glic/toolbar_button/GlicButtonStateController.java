@@ -8,6 +8,8 @@ import android.app.Activity;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
@@ -19,6 +21,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.ElementType;
@@ -205,9 +208,10 @@ public class GlicButtonStateController
             ChromeAndroidTask task = mTaskSupplier.get();
             if (task == null) return;
 
-            long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
-            if (browserWindowPtr != 0 && !mActivity.isDestroyed()) {
-                isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+            JniPtr<NativeBrowserWindowInterface> browserWindow =
+                    task.getNativeBrowserWindow(mCurrentProfile, mActivity);
+            if (browserWindow != null && !mActivity.isDestroyed()) {
+                isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindow);
             }
         }
         if (mIsPanelOpen != isOpen) {

@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.jni_zero.JniPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
@@ -79,6 +81,7 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private ChromeAndroidTask mTaskMock;
+    @Mock private JniPtr<NativeBrowserWindowInterface> mBrowserWindow;
 
     @Captor
     private ArgumentCaptor<GlicKeyedService.GlobalShowHideObserver> mGlobalShowHideObserverCaptor;
@@ -261,8 +264,8 @@ public class GlicActionCoordinatorUnitTest {
     @Test
     public void testClick_panelOpen_recordsMetrics() {
         when(mTaskSupplier.get()).thenReturn(mTaskMock);
-        when(mTaskMock.getNativeBrowserWindowPtr(any(), any())).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(mTaskMock.getNativeBrowserWindow(any(), any())).thenReturn(mBrowserWindow);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBrowserWindow)).thenReturn(true);
 
         verify(mGlicKeyedService)
                 .addGlobalShowHideObserver(mGlobalShowHideObserverCaptor.capture());
