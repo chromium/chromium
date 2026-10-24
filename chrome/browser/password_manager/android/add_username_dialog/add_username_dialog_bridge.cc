@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/native_ui_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -28,8 +29,8 @@ class JniDelegateImpl : public JniDelegate {
   void Create(ui::WindowAndroid& window_android,
               AddUsernameDialogBridge* bridge) override {
     java_bridge_.Reset(Java_AddUsernameDialogBridge_Constructor(
-        base::android::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(bridge), window_android.GetJavaObject()));
+        base::android::AttachCurrentThread(), jni_zero::MakeRaw(bridge),
+        window_android.GetJavaObject()));
   }
 
   void ShowAddUsernameDialog(const std::u16string& password) override {

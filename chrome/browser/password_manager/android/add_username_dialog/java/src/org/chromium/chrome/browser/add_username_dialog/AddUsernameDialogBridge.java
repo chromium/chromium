@@ -9,7 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -18,13 +21,17 @@ import org.chromium.ui.base.WindowAndroid;
 
 @NullMarked
 public class AddUsernameDialogBridge implements AddUsernameDialogController.Delegate {
-    private long mNativeAddUsernameDialogBridge;
+    @JniType("::AddUsernameDialogBridge")
+    interface NativeAddUsernameDialogBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAddUsernameDialogBridge> mNativeAddUsernameDialogBridge;
     private final WindowAndroid mWindowAndroid;
     private @Nullable AddUsernameDialogController mController;
 
     @CalledByNative
     public AddUsernameDialogBridge(
-            long nativeAddUsernameDialogBridge, WindowAndroid windowAndroid) {
+            JniRawPtr<NativeAddUsernameDialogBridge> nativeAddUsernameDialogBridge,
+            WindowAndroid windowAndroid) {
         mNativeAddUsernameDialogBridge = nativeAddUsernameDialogBridge;
         mWindowAndroid = windowAndroid;
     }
@@ -44,27 +51,32 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
     public void dismiss() {
         assert mController != null : "Must not call `dismiss` before `showAddUsernameDialog`";
         mController.dismissDialog();
-        mNativeAddUsernameDialogBridge = 0;
+        if (mNativeAddUsernameDialogBridge != null) {
+            mNativeAddUsernameDialogBridge.release();
+            mNativeAddUsernameDialogBridge = null;
+        }
     }
 
     @Override
     public void onDialogAccepted(String username) {
-        if (mNativeAddUsernameDialogBridge == 0) return;
+        if (mNativeAddUsernameDialogBridge == null) return;
         AddUsernameDialogBridgeJni.get().onDialogAccepted(mNativeAddUsernameDialogBridge, username);
     }
 
     @Override
     public void onDialogDismissed() {
-        if (mNativeAddUsernameDialogBridge == 0) return;
+        if (mNativeAddUsernameDialogBridge == null) return;
         AddUsernameDialogBridgeJni.get().onDialogDismissed(mNativeAddUsernameDialogBridge);
-        mNativeAddUsernameDialogBridge = 0;
+        mNativeAddUsernameDialogBridge.release();
+        mNativeAddUsernameDialogBridge = null;
     }
 
     @NativeMethods
     interface Natives {
         void onDialogAccepted(
-                long nativeAddUsernameDialogBridge, @JniType("std::u16string") String username);
+                JniPtr<NativeAddUsernameDialogBridge> self,
+                @JniType("std::u16string") String username);
 
-        void onDialogDismissed(long nativeAddUsernameDialogBridge);
+        void onDialogDismissed(JniPtr<NativeAddUsernameDialogBridge> self);
     }
 }
