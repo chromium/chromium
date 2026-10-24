@@ -11691,6 +11691,24 @@
             ]
         }
     ],
+    "NtpAuroraV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_IncognitoChip",
+                    "params": {
+                        "action_chips": "1"
+                    },
+                    "enable_features": [
+                        "NtpAuroraV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpComposeboxDesktop": [
         {
             "platforms": [

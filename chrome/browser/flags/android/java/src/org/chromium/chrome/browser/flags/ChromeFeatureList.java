@@ -936,7 +936,7 @@ public abstract class ChromeFeatureList {
                             Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false),
                             Map.entry(GMSCORE_BIND_SERVICE_OPTIMIZATION, true),
                             Map.entry(NTP_AURORA, true),
-                            Map.entry(NTP_AURORA_V2, false),
+                            Map.entry(NTP_AURORA_V2, true),
                             Map.entry(UNIVERSAL_KEYBOARD_HANDLING, true));
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
@@ -1952,7 +1952,7 @@ public abstract class ChromeFeatureList {
                             Map.entry(
                                     NTP_AURORA_V2,
                                     Map.ofEntries(
-                                            Map.entry(NTP_AURORA_V2_ACTION_CHIPS, "0"),
+                                            Map.entry(NTP_AURORA_V2_ACTION_CHIPS, "1"),
                                             Map.entry(NTP_AURORA_V2_LAYOUT_TYPE, "0"))),
                             Map.entry(
                                     XPLAT_SYNCED_SETUP_THEMES,
