@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -293,6 +294,100 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
   browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_TRUE(IsPillVisibleOn(tab0_bar));
   EXPECT_EQ(u"+1", PillTextOn(tab0_bar));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InfoBarContainerPriorityTest,
+    ReplaceVisibleDefaultWithLowPromotesQueuedDefaultAndPreservesPillMetrics) {
+  base::HistogramTester histogram_tester;
+
+  infobars::InfoBar* default_1 = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
+  infobars::InfoBar* default_2 = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 2");
+  ASSERT_TRUE(IsPillVisibleOn(default_1));
+  ASSERT_EQ(u"+1", PillTextOn(default_1));
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.Shown",
+                                      infobars::InfoBarDelegate::TEST_INFOBAR,
+                                      1);
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.CountAtShow", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount("InfoBar.PendingIndicator.HostResolveTime",
+                                    0);
+
+  // Replacing the visible default with a low while a default is queued must
+  // promote the queued default and move the pill without a new Shown sample.
+  auto low_delegate = std::make_unique<PriorityInfoBarDelegate>(
+      infobars::InfoBarDelegate::InfobarPriority::kLow, u"Low 1");
+  infobars::InfoBar* low_1 = GetInfoBarManager()->ReplaceInfoBar(
+      default_1, ConfirmInfoBar::Create(std::move(low_delegate)));
+
+  EXPECT_EQ(std::vector<std::string>({"Default 2"}),
+            GetVisibleInfoBarMessages());
+  EXPECT_TRUE(IsPillVisibleOn(default_2));
+  EXPECT_EQ(u"+1", PillTextOn(default_2));
+  EXPECT_FALSE(IsPillVisibleOn(low_1));
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.Shown",
+                                      infobars::InfoBarDelegate::TEST_INFOBAR,
+                                      1);
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.CountAtShow", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount("InfoBar.PendingIndicator.HostResolveTime",
+                                    0);
+
+  // HostResolveTime is recorded once, when the pill finally goes away.
+  GetInfoBarManager()->RemoveInfoBar(default_2);
+  EXPECT_EQ(std::vector<std::string>({"Low 1"}), GetVisibleInfoBarMessages());
+  EXPECT_FALSE(IsPillVisibleOn(low_1));
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.Shown",
+                                      infobars::InfoBarDelegate::TEST_INFOBAR,
+                                      1);
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.CountAtShow", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount("InfoBar.PendingIndicator.HostResolveTime",
+                                    1);
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
+                       ReplaceVisibleDefaultInPlacePreservesPillMetrics) {
+  base::HistogramTester histogram_tester;
+
+  infobars::InfoBar* default_1 = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
+  infobars::InfoBar* default_2 = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 2");
+  ASSERT_TRUE(IsPillVisibleOn(default_1));
+  ASSERT_EQ(u"+1", PillTextOn(default_1));
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.Shown",
+                                      infobars::InfoBarDelegate::TEST_INFOBAR,
+                                      1);
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.CountAtShow", 1,
+                                      1);
+
+  auto replacement_delegate = std::make_unique<PriorityInfoBarDelegate>(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault,
+      u"Default Replacement");
+  infobars::InfoBar* replacement = GetInfoBarManager()->ReplaceInfoBar(
+      default_1, ConfirmInfoBar::Create(std::move(replacement_delegate)));
+
+  EXPECT_EQ(std::vector<std::string>({"Default Replacement"}),
+            GetVisibleInfoBarMessages());
+  EXPECT_TRUE(IsPillVisibleOn(replacement));
+  EXPECT_EQ(u"+1", PillTextOn(replacement));
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.Shown",
+                                      infobars::InfoBarDelegate::TEST_INFOBAR,
+                                      1);
+  histogram_tester.ExpectUniqueSample("InfoBar.PendingIndicator.CountAtShow", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount("InfoBar.PendingIndicator.HostResolveTime",
+                                    0);
+
+  GetInfoBarManager()->RemoveInfoBar(replacement);
+  EXPECT_EQ(std::vector<std::string>({"Default 2"}),
+            GetVisibleInfoBarMessages());
+  EXPECT_FALSE(IsPillVisibleOn(default_2));
+  histogram_tester.ExpectTotalCount("InfoBar.PendingIndicator.HostResolveTime",
+                                    1);
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest, CriticalStacksUpToCap) {

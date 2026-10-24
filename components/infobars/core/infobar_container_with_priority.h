@@ -85,6 +85,10 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
     bool closeable = true;
   };
 
+  // Returns true if `infobar` can be shown right now rather than queued.
+  bool CanAdmit(const InfoBar* infobar,
+                InfoBarDelegate::InfobarPriority priority) const;
+
   // Decides whether the infobar can be shown right now
   // (visible slots available, no higher-priority items blocking) or must be
   // queued for later promotion. Unless `allow_duplicate` is true, an infobar

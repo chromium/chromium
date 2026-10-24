@@ -46,13 +46,18 @@ class InfoBarContainerView : public views::AccessiblePaneView,
  protected:
   // infobars::InfoBarContainerWithPriority:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+  void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
+                         infobars::InfoBar* new_infobar) override;
 
  private:
   // Re-evaluates which infobar hosts the queued-count pill and its count.
   // Host: the bottom-most bar that is staying (skips `infobar` and bars
   // detached from their manager), unless it is kCriticalSecurity, which
-  // suppresses the pill entirely. Safe to call redundantly.
-  void UpdateQueuedCountPill(infobars::InfoBar* infobar = nullptr);
+  // suppresses the pill entirely. Safe to call redundantly. With
+  // `preserve_pill_host`, moving the pill to a new host does not count as a
+  // new Shown.
+  void UpdateQueuedCountPill(infobars::InfoBar* infobar = nullptr,
+                             bool preserve_pill_host = false);
 
   // This view draws the shadow over the web contents below the
   // lowest infobar. A separate view with a layer is used so it can
@@ -66,6 +71,9 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   // When the pill appeared on `queued_pill_host_`, it feeds HostResolveTime,
   // recorded in OnInfoBarRemoved so tab switches never contribute samples.
   base::TimeTicks pill_shown_on_host_at_;
+
+  // True while OnInfoBarReplaced runs, deferring pill updates until it settles.
+  bool replacing_infobar_ = false;
 
   // True when the focused view was inside this container at the moment an
   // infobar removal started. Used to restore focus back to the infobar region

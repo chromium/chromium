@@ -150,28 +150,30 @@ void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
 
 void InfoBarContainerWithPriority::OnInfoBarReplaced(InfoBar* old_infobar,
                                                      InfoBar* new_infobar) {
+  const auto new_priority = new_infobar->delegate()
+                                ? new_infobar->delegate()->GetPriority()
+                                : InfoBarDelegate::InfobarPriority::kDefault;
   const size_t pending_removed = std::erase_if(
       pending_infobars_, [old_infobar](const PendingInfoBarEntry& entry) {
         return entry.infobar == old_infobar;
       });
   if (pending_removed > 0) {
-    const auto new_priority = new_infobar->delegate()
-                                  ? new_infobar->delegate()->GetPriority()
-                                  : InfoBarDelegate::InfobarPriority::kDefault;
     AdmitOrQueue(new_infobar, new_priority, /*animate=*/false,
                  /*allow_duplicate=*/true);
     NotifyPendingCountChangedIfNeeded();
     return;
   }
 
-  // Track whether the old infobar was actually visible in this container.
-  const bool was_visible =
-      std::ranges::any_of(visible_, [old_infobar](const VisibleEntry& entry) {
-        return entry.infobar == old_infobar;
-      });
+  const bool was_visible = ClearVisible(old_infobar) > 0;
 
-  // Remove any tracking for the old infobar from our visibility buckets.
-  ClearVisible(old_infobar);
+  if (was_visible && !CanAdmit(new_infobar, new_priority)) {
+    // The replacement is outranked by a queued infobar: queue it and promote.
+    InfoBarContainer::OnInfoBarRemoved(old_infobar, /*animate=*/false);
+    EnqueueInfoBar(new_infobar, new_priority);
+    Promote();
+    NotifyPendingCountChangedIfNeeded();
+    return;
+  }
 
   // Let the base class update its own internal state (infobars_ list and
   // platform-specific views). This keeps the usual lifetime and container
@@ -181,10 +183,9 @@ void InfoBarContainerWithPriority::OnInfoBarReplaced(InfoBar* old_infobar,
   // If the old infobar was visible, the replacement should be tracked as
   // visible as well, under its priority.
   if (was_visible) {
-    const auto new_priority = new_infobar->delegate()
-                                  ? new_infobar->delegate()->GetPriority()
-                                  : InfoBarDelegate::InfobarPriority::kDefault;
     MarkVisible(new_infobar, new_priority);
+    Promote();
+    NotifyPendingCountChangedIfNeeded();
   }
 }
 
@@ -198,6 +199,44 @@ void InfoBarContainerWithPriority::AddInfoBarAndTrack(
   RecordInfoBarPendingQueueSize();
 }
 
+bool InfoBarContainerWithPriority::CanAdmit(
+    const InfoBar* infobar,
+    InfoBarDelegate::InfobarPriority priority) const {
+  if (!IsCloseable(infobar)) {
+    return true;
+  }
+
+  // 1) Handle CRITICAL priority.
+  if (priority == InfoBarDelegate::InfobarPriority::kCriticalSecurity) {
+    return CountVisible(priority) < GetInfoBarPriorityCapFor(priority);
+  }
+
+  // From this point on, only DEFAULT and LOW priorities are handled.
+  // Lower priorities are queued if any CRITICAL-priority infobar is visible
+  // or pending.
+  if (CountVisible(InfoBarDelegate::InfobarPriority::kCriticalSecurity) > 0 ||
+      HasPendingOfPriority(
+          InfoBarDelegate::InfobarPriority::kCriticalSecurity)) {
+    return false;
+  }
+
+  // 2) Handle DEFAULT priority.
+  if (priority == InfoBarDelegate::InfobarPriority::kDefault) {
+    // A DEFAULT-priority infobar is only shown if its cap has not been
+    // reached and it would not preempt an already-visible LOW-priority one.
+    return CountVisible(InfoBarDelegate::InfobarPriority::kLow) == 0 &&
+           CountVisible(priority) < GetInfoBarPriorityCapFor(priority);
+  }
+
+  // 3) Handle LOW priority.
+  //
+  // A LOW-priority infobar is only shown if no higher-priority infobars are
+  // visible or pending, and if its own cap has not been reached.
+  return CountVisible(InfoBarDelegate::InfobarPriority::kDefault) == 0 &&
+         !HasPendingOfPriority(InfoBarDelegate::InfobarPriority::kDefault) &&
+         CountVisible(priority) < GetInfoBarPriorityCapFor(priority);
+}
+
 void InfoBarContainerWithPriority::AdmitOrQueue(
     InfoBar* infobar,
     InfoBarDelegate::InfobarPriority priority,
@@ -209,50 +248,7 @@ void InfoBarContainerWithPriority::AdmitOrQueue(
     return;
   }
 
-  if (!IsCloseable(infobar)) {
-    AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
-    return;
-  }
-  // 1) Handle CRITICAL priority.
-  if (priority == InfoBarDelegate::InfobarPriority::kCriticalSecurity) {
-    if (CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
-      AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
-    } else {
-      EnqueueInfoBar(infobar, priority);
-    }
-    return;
-  }
-
-  // From this point on, only DEFAULT and LOW priorities are handled.
-  // Lower priorities are queued if any CRITICAL-priority infobar is visible
-  // or pending.
-  if (CountVisible(InfoBarDelegate::InfobarPriority::kCriticalSecurity) > 0 ||
-      HasPendingOfPriority(
-          InfoBarDelegate::InfobarPriority::kCriticalSecurity)) {
-    EnqueueInfoBar(infobar, priority);
-    return;
-  }
-
-  // 2) Handle DEFAULT priority.
-  if (priority == InfoBarDelegate::InfobarPriority::kDefault) {
-    // A DEFAULT-priority infobar is only shown if its cap has not been
-    // reached and it would not preempt an already-visible LOW-priority one.
-    if (CountVisible(InfoBarDelegate::InfobarPriority::kLow) == 0 &&
-        CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
-      AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
-    } else {
-      EnqueueInfoBar(infobar, priority);
-    }
-    return;
-  }
-
-  // 3) Handle LOW priority.
-  //
-  // A LOW-priority infobar is only shown if no higher-priority infobars are
-  // visible or pending, and if its own cap has not been reached.
-  if (CountVisible(InfoBarDelegate::InfobarPriority::kDefault) == 0 &&
-      !HasPendingOfPriority(InfoBarDelegate::InfobarPriority::kDefault) &&
-      CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
+  if (CanAdmit(infobar, priority)) {
     AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
   } else {
     EnqueueInfoBar(infobar, priority);

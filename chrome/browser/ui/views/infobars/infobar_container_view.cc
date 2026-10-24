@@ -8,6 +8,7 @@
 #include <memory>
 #include <numeric>
 
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -175,7 +176,9 @@ void InfoBarContainerView::PlatformSpecificAddInfoBar(
     size_t position) {
   AddChildViewAt(static_cast<InfoBarView*>(infobar),
                  static_cast<int>(position));
-  UpdateQueuedCountPill();
+  if (!replacing_infobar_) {
+    UpdateQueuedCountPill();
+  }
 }
 
 void InfoBarContainerView::PlatformSpecificRemoveInfoBar(
@@ -187,7 +190,9 @@ void InfoBarContainerView::PlatformSpecificRemoveInfoBar(
 
   infobar_view->SetQueuedInfoBarCount(0, base::PassKey<InfoBarContainerView>());
   RemoveChildView(infobar_view);
-  UpdateQueuedCountPill(infobar);
+  if (!replacing_infobar_) {
+    UpdateQueuedCountPill(infobar);
+  }
 }
 
 void InfoBarContainerView::PlatformSpecificWillRemoveInfoBar(
@@ -253,7 +258,9 @@ void InfoBarContainerView::PlatformSpecificInfoBarShown(
 
 void InfoBarContainerView::PlatformSpecificPendingInfoBarCountChanged(
     size_t count) {
-  UpdateQueuedCountPill();
+  if (!replacing_infobar_) {
+    UpdateQueuedCountPill();
+  }
 }
 
 void InfoBarContainerView::OnInfoBarRemoved(infobars::InfoBar* infobar,
@@ -268,7 +275,24 @@ void InfoBarContainerView::OnInfoBarRemoved(infobars::InfoBar* infobar,
   UpdateQueuedCountPill(infobar);
 }
 
-void InfoBarContainerView::UpdateQueuedCountPill(infobars::InfoBar* removing) {
+void InfoBarContainerView::OnInfoBarReplaced(infobars::InfoBar* old_infobar,
+                                             infobars::InfoBar* new_infobar) {
+  const bool was_pill_host = (old_infobar == queued_pill_host_);
+  const base::TimeTicks pill_shown_at = pill_shown_on_host_at_;
+  {
+    base::AutoReset<bool> replacing(&replacing_infobar_, true);
+    InfoBarContainerWithPriority::OnInfoBarReplaced(old_infobar, new_infobar);
+  }
+  UpdateQueuedCountPill(/*infobar=*/nullptr,
+                        /*preserve_pill_host=*/was_pill_host);
+  if (was_pill_host && !queued_pill_host_) {
+    base::UmaHistogramLongTimes("InfoBar.PendingIndicator.HostResolveTime",
+                                base::TimeTicks::Now() - pill_shown_at);
+  }
+}
+
+void InfoBarContainerView::UpdateQueuedCountPill(infobars::InfoBar* removing,
+                                                 bool preserve_pill_host) {
   if (!base::FeatureList::IsEnabled(features::kInfoBarQueuedCountPill)) {
     return;
   }
@@ -294,7 +318,8 @@ void InfoBarContainerView::UpdateQueuedCountPill(infobars::InfoBar* removing) {
         0, base::PassKey<InfoBarContainerView>());
   }
 
-  const bool newly_shown = host && host != queued_pill_host_;
+  const bool newly_shown =
+      host && host != queued_pill_host_ && !preserve_pill_host;
   queued_pill_host_ = host;
   if (!host) {
     return;

@@ -824,5 +824,73 @@ TEST_F(InfoBarContainerWithPriorityTest,
   EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar_2));
   container.ChangeInfoBarManager(nullptr);
 }
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReplaceVisibleDefaultWithLowPromotesQueuedDefault) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  auto* default_infobar_1 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* default_infobar_2 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  ASSERT_TRUE(container.IsCurrentlyVisible(default_infobar_1));
+  ASSERT_FALSE(container.IsCurrentlyVisible(default_infobar_2));
+  ASSERT_EQ(1u, container.PendingInfoBarCount());
+
+  auto low_replacement_unique =
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kLow));
+  auto* low_replacement = low_replacement_unique.get();
+  manager.ReplaceInfoBar(default_infobar_1, std::move(low_replacement_unique));
+
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar_2));
+  EXPECT_FALSE(container.IsCurrentlyVisible(low_replacement));
+  EXPECT_EQ(1u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(default_infobar_2);
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(low_replacement));
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(low_replacement);
+  EXPECT_EQ(0u, container.visible_count());
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReplaceVisibleDefaultWithDefaultKeepsQueuedDefaultWaiting) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  auto* default_infobar_1 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* default_infobar_2 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  ASSERT_TRUE(container.IsCurrentlyVisible(default_infobar_1));
+  ASSERT_FALSE(container.IsCurrentlyVisible(default_infobar_2));
+  ASSERT_EQ(1u, container.PendingInfoBarCount());
+
+  auto default_replacement_unique =
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kDefault));
+  auto* default_replacement = default_replacement_unique.get();
+  manager.ReplaceInfoBar(default_infobar_1,
+                         std::move(default_replacement_unique));
+
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_replacement));
+  EXPECT_FALSE(container.IsCurrentlyVisible(default_infobar_2));
+  EXPECT_EQ(1u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(default_replacement);
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar_2));
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(default_infobar_2);
+}
+
 }  // namespace
 }  // namespace infobars
