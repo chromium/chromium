@@ -155,6 +155,41 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
   bool UseOopif() const override { return GetParam(); }
 };
 
+// TODO(crbug.com/572671898): Rename back to `PDFExtensionJSTest` once all tests
+// have been migrated to Mocha.
+class PDFExtensionJSMochaTest : public WebUIMochaBrowserTest {
+ protected:
+  PDFExtensionJSMochaTest() {
+    set_test_loader_host(extension_misc::kPdfExtensionId);
+  }
+
+  void SetUpOnMainThread() override {
+    WebUIMochaBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void RunMochaTest(const std::string& filename,
+                    const std::string& pdf_filename) {
+    GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+    content::RenderFrameHost* extension_host =
+        pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
+    ASSERT_TRUE(extension_host);
+
+    ASSERT_TRUE(RunTestOnRenderFrameHost(extension_host, "pdf/" + filename,
+                                         "mocha.run()"));
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
   EXPECT_EQ(1, CountPDFProcesses());
@@ -192,8 +227,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ParamsParser) {
   RunTestsInJsModule("params_parser_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ZoomManager) {
-  RunTestsInJsModule("zoom_manager_test.js", "test.pdf");
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSMochaTest, ZoomManager) {
+  RunMochaTest("zoom_manager_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, GestureDetector) {
@@ -225,41 +260,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
-
-// TODO(crbug.com/572671898): Rename back to `PDFExtensionJSTest` once all tests
-// have been migrated to Mocha.
-class PDFExtensionJSMochaTest : public WebUIMochaBrowserTest {
- protected:
-  PDFExtensionJSMochaTest() {
-    set_test_loader_host(extension_misc::kPdfExtensionId);
-  }
-
-  void SetUpOnMainThread() override {
-    WebUIMochaBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    embedded_test_server()->StartAcceptingConnections();
-  }
-
-  void RunMochaTest(const std::string& filename,
-                    const std::string& pdf_filename) {
-    GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    content::WebContents* web_contents = GetActiveWebContents();
-    ASSERT_TRUE(web_contents);
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-    content::RenderFrameHost* extension_host =
-        pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
-    ASSERT_TRUE(extension_host);
-
-    ASSERT_TRUE(RunTestOnRenderFrameHost(extension_host, "pdf/" + filename,
-                                         "mocha.run()"));
-  }
-
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-};
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSMochaTest, Title) {
   RunMochaTest("title_test.js", "test-title.pdf");

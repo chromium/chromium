@@ -5,187 +5,170 @@
 import {ZoomBehavior, ZoomManager} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-chrome.test.runTests(function() {
-  'use strict';
+class MockViewport {
+  zooms: number[] = [];
+  zoom: number = 1;
+  browserOnlyZoomChange: boolean = false;
+  private tracker_: EventTracker = new EventTracker();
 
-  class MockViewport {
-    zooms: number[] = [];
-    zoom: number = 1;
-    browserOnlyZoomChange: boolean = false;
-    private tracker_: EventTracker = new EventTracker();
+  addZoomListeners(target: EventTarget) {
+    this.tracker_.add(
+        target, 'set-zoom',
+        (e: Event) => this.setZoom((e as CustomEvent<number>).detail));
+    this.tracker_.add(
+        target, 'update-zoom-from-browser',
+        (e: Event) => this.updateZoomFromBrowserChange(
+            (e as CustomEvent<number>).detail));
+  }
 
-    addZoomListeners(target: EventTarget) {
-      this.tracker_.add(
-          target, 'set-zoom',
-          (e: Event) => this.setZoom((e as CustomEvent<number>).detail));
-      this.tracker_.add(
-          target, 'update-zoom-from-browser',
-          (e: Event) => this.updateZoomFromBrowserChange(
-              (e as CustomEvent<number>).detail));
-    }
+  removeListeners() {
+    this.tracker_.removeAll();
+  }
 
-    removeListeners() {
-      this.tracker_.removeAll();
-    }
+  setZoom(zoom: number) {
+    this.zooms.push(zoom);
+    this.zoom = zoom;
+  }
 
-    setZoom(zoom: number) {
-      this.zooms.push(zoom);
-      this.zoom = zoom;
-    }
+  getZoom(): number {
+    return this.zoom;
+  }
 
-    getZoom(): number {
-      return this.zoom;
-    }
+  updateZoomFromBrowserChange(_oldBrowserZoom: number) {
+    this.browserOnlyZoomChange = true;
+  }
+}
 
-    updateZoomFromBrowserChange(_oldBrowserZoom: number) {
-      this.browserOnlyZoomChange = true;
-    }
+/**
+ * A mock implementation of the function used by ZoomManager to set the
+ * browser zoom level.
+ */
+class MockBrowserZoomSetter {
+  zoom: number = 1;
+  started: boolean = false;
+  private promiseResolver_: PromiseResolver<void>|null = null;
+
+  /**
+   * The function implementing setBrowserZoomFunction.
+   */
+  setBrowserZoom(zoom: number) {
+    assertFalse(this.started);
+
+    this.zoom = zoom;
+    this.started = true;
+    this.promiseResolver_ = new PromiseResolver();
+    return this.promiseResolver_.promise;
   }
 
   /**
-   * A mock implementation of the function used by ZoomManager to set the
-   * browser zoom level.
+   * Resolves the promise returned by a call to setBrowserZoom.
    */
-  class MockBrowserZoomSetter {
-    zoom: number = 1;
-    started: boolean = false;
-    private promiseResolver_: PromiseResolver<void>|null = null;
-
-    /**
-     * The function implementing setBrowserZoomFunction.
-     */
-    setBrowserZoom(zoom: number) {
-      chrome.test.assertFalse(this.started);
-
-      this.zoom = zoom;
-      this.started = true;
-      this.promiseResolver_ = new PromiseResolver();
-      return this.promiseResolver_.promise;
-    }
-
-    /**
-     * Resolves the promise returned by a call to setBrowserZoom.
-     */
-    complete() {
-      this.promiseResolver_!.resolve();
-      this.started = false;
-    }
+  complete() {
+    this.promiseResolver_!.resolve();
+    this.started = false;
   }
+}
 
-  function failCallback(_zoom: number): Promise<void> {
-    chrome.test.fail();
-  }
+function failCallback(_zoom: number): Promise<void> {
+  assertNotReached();
+}
 
-  return [
-    function testZoomChange() {
-      const viewport = new MockViewport();
-      const browserZoomSetter = new MockBrowserZoomSetter();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(),
-          zoom => browserZoomSetter.setBrowserZoom(zoom), 1);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
-      viewport.zoom = 2;
-      zoomManager.onPdfZoomChange();
-      chrome.test.assertEq(2, browserZoomSetter.zoom);
-      chrome.test.assertTrue(browserZoomSetter.started);
-      viewport.removeListeners();
-      chrome.test.succeed();
-    },
+suite('ZoomManager', function() {
+  let viewport: MockViewport;
+  let browserZoomSetter: MockBrowserZoomSetter;
 
-    function testBrowserZoomChange() {
-      const viewport = new MockViewport();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
-      zoomManager.onBrowserZoomChange(3);
-      chrome.test.assertEq(1, viewport.zooms.length);
-      chrome.test.assertEq(3, viewport.zooms[0]);
-      chrome.test.assertEq(3, viewport.zoom);
-      viewport.removeListeners();
-      chrome.test.succeed();
-    },
+  setup(function() {
+    viewport = new MockViewport();
+    browserZoomSetter = new MockBrowserZoomSetter();
+  });
 
-    function testBrowserZoomChangeEmbedded() {
-      const viewport = new MockViewport();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.PROPAGATE_PARENT, () => viewport.getZoom(), function() {
-            return Promise.reject();
-          }, 1);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
+  teardown(function() {
+    viewport.removeListeners();
+  });
 
-      // Zooming in the browser should not overwrite the viewport's zoom,
-      // but be applied seperately.
-      viewport.zoom = 2;
-      zoomManager.onBrowserZoomChange(3);
-      chrome.test.assertEq(2, viewport.zoom);
-      chrome.test.assertTrue(viewport.browserOnlyZoomChange);
-      viewport.removeListeners();
+  test('ZoomChange', function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.MANAGE, () => viewport.getZoom(),
+        zoom => browserZoomSetter.setBrowserZoom(zoom), 1);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
+    viewport.zoom = 2;
+    zoomManager.onPdfZoomChange();
+    assertEquals(2, browserZoomSetter.zoom);
+    assertTrue(browserZoomSetter.started);
+  });
 
-      chrome.test.succeed();
-    },
+  test('BrowserZoomChange', function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
+    zoomManager.onBrowserZoomChange(3);
+    assertEquals(1, viewport.zooms.length);
+    assertEquals(3, viewport.zooms[0]);
+    assertEquals(3, viewport.zoom);
+  });
 
-    function testSmallZoomChange() {
-      const viewport = new MockViewport();
-      const browserZoomSetter = new MockBrowserZoomSetter();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(),
-          zoom => browserZoomSetter.setBrowserZoom(zoom), 2);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
-      viewport.zoom = 2.0001;
-      zoomManager.onPdfZoomChange();
-      chrome.test.assertEq(1, browserZoomSetter.zoom);
-      chrome.test.assertFalse(browserZoomSetter.started);
-      viewport.removeListeners();
-      chrome.test.succeed();
-    },
+  test('BrowserZoomChangeEmbedded', function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.PROPAGATE_PARENT, () => viewport.getZoom(), failCallback,
+        1);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
 
-    function testSmallBrowserZoomChange() {
-      const viewport = new MockViewport();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
-      zoomManager.onBrowserZoomChange(0.999);
-      chrome.test.assertEq(0, viewport.zooms.length);
-      chrome.test.assertEq(1, viewport.zoom);
-      viewport.removeListeners();
-      chrome.test.succeed();
-    },
+    // Zooming in the browser should not overwrite the viewport's zoom,
+    // but be applied separately.
+    viewport.zoom = 2;
+    zoomManager.onBrowserZoomChange(3);
+    assertEquals(2, viewport.zoom);
+    assertTrue(viewport.browserOnlyZoomChange);
+  });
 
-    async function testMultiplePdfZoomChanges() {
-      const viewport = new MockViewport();
-      const browserZoomSetter = new MockBrowserZoomSetter();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(),
-          zoom => browserZoomSetter.setBrowserZoom(zoom), 1);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
-      viewport.zoom = 2;
-      zoomManager.onPdfZoomChange();
-      viewport.zoom = 3;
-      zoomManager.onPdfZoomChange();
-      chrome.test.assertTrue(browserZoomSetter.started);
-      chrome.test.assertEq(2, browserZoomSetter.zoom);
-      browserZoomSetter.complete();
-      await Promise.resolve();
-      chrome.test.assertTrue(browserZoomSetter.started);
-      chrome.test.assertEq(3, browserZoomSetter.zoom);
-      viewport.removeListeners();
-      chrome.test.succeed();
-    },
+  test('SmallZoomChange', function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.MANAGE, () => viewport.getZoom(),
+        zoom => browserZoomSetter.setBrowserZoom(zoom), 2);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
+    viewport.zoom = 2.0001;
+    zoomManager.onPdfZoomChange();
+    assertEquals(1, browserZoomSetter.zoom);
+    assertFalse(browserZoomSetter.started);
+  });
 
-    function testMultipleBrowserZoomChanges() {
-      const viewport = new MockViewport();
-      const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
-      viewport.addZoomListeners(zoomManager.getEventTarget());
-      zoomManager.onBrowserZoomChange(2);
-      zoomManager.onBrowserZoomChange(3);
-      chrome.test.assertEq(2, viewport.zooms.length);
-      chrome.test.assertEq(2, viewport.zooms[0]);
-      chrome.test.assertEq(3, viewport.zooms[1]);
-      chrome.test.assertEq(3, viewport.zoom);
-      viewport.removeListeners();
-      chrome.test.succeed();
-    },
-  ];
-}());
+  test('SmallBrowserZoomChange', function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
+    zoomManager.onBrowserZoomChange(0.999);
+    assertEquals(0, viewport.zooms.length);
+    assertEquals(1, viewport.zoom);
+  });
+
+  test('MultiplePdfZoomChanges', async function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.MANAGE, () => viewport.getZoom(),
+        zoom => browserZoomSetter.setBrowserZoom(zoom), 1);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
+    viewport.zoom = 2;
+    zoomManager.onPdfZoomChange();
+    viewport.zoom = 3;
+    zoomManager.onPdfZoomChange();
+    assertTrue(browserZoomSetter.started);
+    assertEquals(2, browserZoomSetter.zoom);
+    browserZoomSetter.complete();
+    await Promise.resolve();
+    assertTrue(browserZoomSetter.started);
+    assertEquals(3, browserZoomSetter.zoom);
+  });
+
+  test('MultipleBrowserZoomChanges', function() {
+    const zoomManager = ZoomManager.create(
+        ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
+    viewport.addZoomListeners(zoomManager.getEventTarget());
+    zoomManager.onBrowserZoomChange(2);
+    zoomManager.onBrowserZoomChange(3);
+    assertEquals(2, viewport.zooms.length);
+    assertEquals(2, viewport.zooms[0]);
+    assertEquals(3, viewport.zooms[1]);
+    assertEquals(3, viewport.zoom);
+  });
+});
