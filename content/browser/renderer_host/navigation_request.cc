@@ -6284,12 +6284,13 @@ void NavigationRequest::OnStartChecksComplete(
   // comment in the header for |loader_|.
   CHECK(!loader_);
 
-  // Only initialize the ServiceWorkerMainResourceHandle if it can be created
-  // for this frame.
+  // Only initialize the `ServiceWorkerMainResourceHandle` if it can be created
+  // for this frame. PDF content frames run in a restricted PDF renderer process
+  // that must not receive service worker capabilities for the hosting origin.
   bool can_create_service_worker =
-      (frame_tree_node_->pending_frame_policy().sandbox_flags &
-       network::mojom::WebSandboxFlags::kOrigin) !=
-      network::mojom::WebSandboxFlags::kOrigin;
+      !IsPdf() && (frame_tree_node_->pending_frame_policy().sandbox_flags &
+                   network::mojom::WebSandboxFlags::kOrigin) !=
+                      network::mojom::WebSandboxFlags::kOrigin;
   if (can_create_service_worker) {
     ServiceWorkerContextWrapper* service_worker_context =
         static_cast<ServiceWorkerContextWrapper*>(
@@ -7121,9 +7122,13 @@ void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
     return;
   }
 
-  if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
-       network::mojom::WebSandboxFlags::kOrigin) ==
-      network::mojom::WebSandboxFlags::kOrigin) {
+  // Do not inherit the parent's service worker controller if this frame is a
+  // PDF content frame or has an opaque sandboxed origin. PDF content frames run
+  // in a restricted PDF renderer process that must not receive service worker
+  // capabilities for the hosting origin.
+  if (IsPdf() || (frame_tree_node_->pending_frame_policy().sandbox_flags &
+                  network::mojom::WebSandboxFlags::kOrigin) ==
+                     network::mojom::WebSandboxFlags::kOrigin) {
     return;
   }
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(

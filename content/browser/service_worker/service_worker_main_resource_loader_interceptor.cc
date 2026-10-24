@@ -73,6 +73,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle,
     const NavigationRequestInfo& request_info) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(!request_info.is_pdf);
 
   if (!ShouldCreateForNavigation(
           url, request_info.common_params->request_destination,

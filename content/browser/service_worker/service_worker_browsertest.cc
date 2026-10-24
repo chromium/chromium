@@ -1507,6 +1507,54 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   EXPECT_FALSE(main_frame->GetLastCommittedServiceWorkerClient());
 }
 
+// A document committed as PDF content (`NavigationRequest::IsPdf()`, which
+// runs in a restricted PDF renderer process with `SiteInfo::is_pdf()`) must
+// not be given a service worker container host or controller in the browser
+// process, even when its URL is in the scope of an active service worker
+// registration.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       NoContainerHostForPdfDocument) {
+  StartServerAndNavigateToSetup();
+
+  // Register a service worker that controls /service_worker/.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_pass_through.js');"));
+
+  const GURL in_scope =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+
+  // Positive control: an ordinary navigation to `in_scope` receives a service
+  // worker client and controller.
+  EXPECT_TRUE(NavigateToURL(shell(), in_scope));
+  RenderFrameHostImpl* ordinary_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(ordinary_frame->GetSiteInstance()->GetSiteInfo().is_pdf());
+  ASSERT_TRUE(ordinary_frame->GetLastCommittedServiceWorkerClient());
+  EXPECT_TRUE(
+      ordinary_frame->GetLastCommittedServiceWorkerClient()->controller());
+
+  // Navigate to the same in-scope URL as PDF content (`params.is_pdf = true`).
+  // The frame commits in a PDF process without creating a `ServiceWorkerClient`
+  // or sending a `ServiceWorkerContainerHost` / `ControllerServiceWorkerInfo`
+  // to the PDF renderer.
+  Shell* pdf_shell = CreateBrowser();
+  ASSERT_TRUE(NavigateToURLWithPdf(pdf_shell->web_contents(), in_scope));
+  RenderFrameHostImpl* pdf_frame = static_cast<RenderFrameHostImpl*>(
+      pdf_shell->web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(pdf_frame->GetSiteInstance()->GetSiteInfo().is_pdf());
+  EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
+  EXPECT_FALSE(pdf_frame->GetLastCommittedServiceWorkerClient());
+  EXPECT_EQ(true,
+            EvalJs(pdf_frame, "navigator.serviceWorker.controller === null"));
+  EXPECT_EQ("InvalidStateError", EvalJs(pdf_frame, R"(
+    navigator.serviceWorker.register('fetch_event_pass_through.js')
+        .then(() => 'resolved', e => e.name)
+  )"));
+}
+
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, SubresourceTimingAllowPassed) {
   StartServerAndNavigateToSetup();
 
