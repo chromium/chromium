@@ -219,10 +219,10 @@ BookmarksDynamicMenu::~BookmarksDynamicMenu() {
 void BookmarksDynamicMenu::BuildBookmarksActions(
     actions::BaseAction* parent_item) {
   CHECK(parent_item);
-  bookmark_service_observation_.Reset();
 
   BookmarkMergedSurfaceService* service = GetBookmarkMergedSurfaceService();
   if (!service) {
+    bookmark_service_observation_.Reset();
     return;
   }
 
@@ -244,7 +244,13 @@ void BookmarksDynamicMenu::BuildBookmarksActions(
     dynamic_section_ = section->GetAsWeakPtr();
   }
 
-  if (!bookmark_service_observation_.IsObserving()) {
+  // Do not reset and re-add an existing observation: this method also runs
+  // from within `BookmarkMergedSurfaceServiceLoaded()`, and
+  // `base::ObserverList` notifies observers that are added during a
+  // notification. Re-adding here would re-enter this method indefinitely,
+  // rebuilding the bookmark actions each time and hanging the UI thread.
+  if (!bookmark_service_observation_.IsObservingSource(service)) {
+    bookmark_service_observation_.Reset();
     bookmark_service_observation_.Observe(service);
   }
 

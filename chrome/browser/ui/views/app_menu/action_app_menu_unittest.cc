@@ -723,6 +723,58 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   menu.CloseMenu();
 }
 
+// Regression test for a UI hang: if the bookmark service finishes loading while
+// the app menu is open, BookmarksDynamicMenu rebuilds its actions from within
+// the service's Loaded notification. It used to reset and re-add its service
+// observation while doing so, and since base::ObserverList notifies observers
+// added during a notification, this re-entered BuildBookmarksActions()
+// indefinitely. With the bug this test never completes.
+TEST_F(ActionAppMenuTest, BookmarksLoadedWhileMenuOpenDoesNotLoop) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(bookmark_model);
+  bookmark_model->LoadEmptyForTest();
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Google",
+                         GURL("https://www.google.com"));
+
+  // The merged surface service has not finished loading yet.
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(bookmark_service);
+  ASSERT_FALSE(bookmark_service->loaded());
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  // Finish loading while the menu is open. This notifies
+  // BookmarkMergedSurfaceServiceLoaded() on the dynamic menu.
+  bookmark_service->LoadForTesting({});
+  ASSERT_TRUE(bookmark_service->loaded());
+
+  views::MenuItemView* bookmarks_item =
+      menu.root_menu_item_for_testing()->GetMenuItemByID(
+          kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  menu.WillShowMenu(bookmarks_item);
+
+  bool found = false;
+  for (views::MenuItemView* item :
+       bookmarks_item->GetSubmenu()->GetMenuItems()) {
+    found |= item->title() == u"Google";
+  }
+  EXPECT_TRUE(found);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenuWithManagedFolder) {
   BookmarkModelFactory::GetInstance()->SetTestingFactory(
       profile_.get(), BookmarkModelFactory::GetDefaultFactory());
