@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<!--
+Tests WebGPU's Finch kill switches. pixel_test_pages.py loads this page once
+per kill switch, with browser args that set it, and the "test" query parameter
+selects the matching checks. If they pass, the page draws a green square.
+-->
+<head>
+  <script type="text/javascript">
+    'use strict';
+
+    function log(msg) {
+      if (window.domAutomationController) {
+        window.domAutomationController.log(msg);
+      } else {
+        console.log(msg);
+      }
+    }
+
+    function sendResult(status) {
+      if (window.domAutomationController) {
+        window.domAutomationController.send(status);
+      } else {
+        console.log(status);
+      }
+    }
+
+    let g_swapsBeforeAck = 15;
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        sendResult('SUCCESS');
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+
+    function check(condition, message) {
+      if (!condition) {
+        throw new Error(message);
+      }
+    }
+
+    async function requestAdapter() {
+      const adapter = await navigator.gpu?.requestAdapter();
+      check(adapter, 'requestAdapter() failed');
+      return adapter;
+    }
+
+    // Returns whether fn() runs without a validation error.
+    async function isValid(device, fn) {
+      device.pushErrorScope('validation');
+      fn();
+      const error = await device.popErrorScope();
+      if (error) {
+        log(error.message);
+      }
+      return !error;
+    }
+
+    // Fills the canvas with green using WebGPU. Besides signaling success,
+    // this shows that WebGPU keeps working when a kill switch only targets
+    // part of it.
+    function drawGreenSquare(device) {
+      const context = document.getElementById('canvas').getContext('webgpu');
+      context.configure({
+        device,
+        format: navigator.gpu.getPreferredCanvasFormat(),
+      });
+      const encoder = device.createCommandEncoder();
+      const pass = encoder.beginRenderPass({
+        colorAttachments: [{
+          view: context.getCurrentTexture().createView(),
+          clearValue: [0, 1, 0, 1],
+          loadOp: 'clear',
+          storeOp: 'store',
+        }],
+      });
+      pass.end();
+      device.queue.submit([encoder.finish()]);
+    }
+
+    // Run with UnsafeWGSLFeatures=chromium_testing_shipped_with_killswitch.
+    async function testWGSLLanguageFeature() {
+      const device = await (await requestAdapter()).requestDevice();
+      const compiles = (feature) => isValid(device, () => {
+        device.createShaderModule({code: `requires ${feature};`});
+      });
+
+      // chromium_testing_shipped isn't killed, so this checks that the testing
+      // features are exposed and the next check can't pass just because they
+      // aren't.
+      check(
+          await compiles('chromium_testing_shipped'),
+          'A shader requiring chromium_testing_shipped should compile');
+      check(
+          !(await compiles('chromium_testing_shipped_with_killswitch')),
+          'A shader requiring chromium_testing_shipped_with_killswitch ' +
+              'should not compile');
+
+      drawGreenSquare(device);
+    }
+
+    // Run with UnsafeFeatures=depth32float-stencil8,indirect-first-instance.
+    // D3D12 and Metal always support both, so the check isn't vacuous.
+    async function testWebGPUFeature() {
+      const adapter = await requestAdapter();
+      for (const feature of
+               ['depth32float-stencil8', 'indirect-first-instance']) {
+        check(
+            !adapter.features.has(feature),
+            `adapter.features should not contain ${feature}`);
+      }
+      drawGreenSquare(await adapter.requestDevice());
+    }
+
+    // Run with EnabledToggles=disable_base_instance, which makes Dawn reject
+    // draws with a non-zero first instance.
+    async function testDawnToggle() {
+      const device = await (await requestAdapter()).requestDevice();
+      const module = device.createShaderModule({
+        code: `
+          @vertex fn vs() -> @builtin(position) vec4f { return vec4f(); }
+          @fragment fn fs() -> @location(0) vec4f { return vec4f(); }
+        `,
+      });
+      const format = 'rgba8unorm';
+      const pipeline = device.createRenderPipeline({
+        layout: 'auto',
+        vertex: {module},
+        fragment: {module, targets: [{format}]},
+      });
+      const view = device.createTexture({
+        size: [1, 1],
+        format,
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
+      }).createView();
+      const drawIsValid = (firstInstance) => isValid(device, () => {
+        const encoder = device.createCommandEncoder();
+        const pass = encoder.beginRenderPass({
+          colorAttachments: [{view, loadOp: 'clear', storeOp: 'store'}],
+        });
+        pass.setPipeline(pipeline);
+        pass.draw(3, 1, 0, firstInstance);
+        pass.end();
+        encoder.finish();
+      });
+
+      // This checks that the pipeline and pass are valid, so the next check
+      // can't pass just because they aren't.
+      check(
+          await drawIsValid(0),
+          'A draw with a zero first instance should succeed');
+      check(
+          !(await drawIsValid(1)),
+          'A draw with a non-zero first instance should fail validation');
+
+      drawGreenSquare(device);
+    }
+
+    // Run with AdapterBlockList=* or --disable-features=WebGPUService.
+    async function testNoAdapter() {
+      check(
+          !navigator.gpu || (await navigator.gpu.requestAdapter()) === null,
+          'requestAdapter() should return null');
+
+      // There's no WebGPU to draw with, so show a green square instead.
+      document.getElementById('green_square').style.display = 'block';
+    }
+
+    const kTests = {
+      wgsl_language_feature: testWGSLLanguageFeature,
+      webgpu_feature: testWebGPUFeature,
+      dawn_toggle: testDawnToggle,
+      no_adapter: testNoAdapter,
+    };
+
+    async function main() {
+      const testName = new URLSearchParams(window.location.search).get('test');
+      try {
+        check(testName in kTests, `Unknown test: ${testName}`);
+        await kTests[testName]();
+      } catch (e) {
+        log(`FAILURE: ${e.message}`);
+        sendResult('FAILURE');
+        return;
+      }
+      waitForFinish();
+    }
+  </script>
+</head>
+
+<body onload="main()" style="background:white;">
+  <canvas id="canvas" width="150" height="150"
+      style="position:absolute; top:0px; left:0px; width:150px; height:150px;">
+  </canvas>
+  <div id="green_square"
+      style="display:none; position:absolute; top:0px; left:0px; width:150px;
+             height:150px; background:rgb(0, 255, 0);">
+  </div>
+</body>
+
+</html>

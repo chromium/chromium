@@ -984,6 +984,78 @@ class PixelTestPages:
 
     return testPages
 
+  @staticmethod
+  def WebGPUKillSwitchPages(base_name) -> list[PixelTestPage]:
+    """Tests that WebGPU's Finch kill switches work.
+
+    The kill switches are params on the WebGPUService feature (see
+    gpu/config/gpu_finch_features.cc and gpu/config/webgpu_blocklist_impl.cc).
+    In an emergency, a Finch config can use them to block adapters, WGSL
+    language features or WebGPU features, or to set Dawn toggles. It can also
+    disable WebGPUService entirely. These tests set them with
+    --enable-features=WebGPUService:<param>/<value>, which doesn't depend on
+    fieldtrial_testing_config.json.
+
+    These tests must not use --enable-unsafe-webgpu, which bypasses the kill
+    switches.
+    """
+    standard_crop = ca.NonWhiteContentCropAction(
+      initial_crop=ca.FixedRectCropAction(0, 0, 500, 500)
+    )
+    url = 'pixel_webgpu_kill_switch.html?test='
+
+    def kill_switch_arg(param: str, *values: str) -> str:
+      # Characters like ',' must be %-encoded in param values.
+      value = '%2C'.join(values)
+      return f'--enable-features=WebGPUService:{param}/{value}'
+
+    return [
+      PixelTestPage(
+        url + 'wgsl_language_feature',
+        base_name + '_WebGPUKillSwitch_WGSLLanguageFeature',
+        crop_action=standard_crop,
+        browser_args=[
+          # Exposes the chromium_testing_* WGSL language features, so that the
+          # test doesn't depend on which real features can currently be killed.
+          '--enable-dawn-features=expose_wgsl_testing_features',
+          kill_switch_arg(
+            'UnsafeWGSLFeatures', 'chromium_testing_shipped_with_killswitch'
+          ),
+        ],
+      ),
+      PixelTestPage(
+        url + 'webgpu_feature',
+        base_name + '_WebGPUKillSwitch_WebGPUFeature',
+        crop_action=standard_crop,
+        browser_args=[
+          kill_switch_arg(
+            'UnsafeFeatures', 'depth32float-stencil8', 'indirect-first-instance'
+          ),
+        ],
+      ),
+      PixelTestPage(
+        url + 'dawn_toggle',
+        base_name + '_WebGPUKillSwitch_DawnToggle',
+        crop_action=standard_crop,
+        browser_args=[
+          kill_switch_arg('EnabledToggles', 'disable_base_instance')
+        ],
+      ),
+      PixelTestPage(
+        url + 'no_adapter',
+        base_name + '_WebGPUKillSwitch_AdapterBlockList',
+        crop_action=standard_crop,
+        # '*' matches every adapter's vendor ID.
+        browser_args=[kill_switch_arg('AdapterBlockList', '*')],
+      ),
+      PixelTestPage(
+        url + 'no_adapter',
+        base_name + '_WebGPUKillSwitch_DisableWebGPU',
+        crop_action=standard_crop,
+        browser_args=['--disable-features=WebGPUService'],
+      ),
+    ]
+
   # Pages that should be run with GPU rasterization enabled.
   @staticmethod
   def GpuRasterizationPages(base_name: str) -> list[PixelTestPage]:

@@ -105,6 +105,7 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     pages += namespace.WebGPUPages(cls.test_base_name)
     pages += namespace.WebGPUCanvasCapturePages(cls.test_base_name)
     pages += namespace.WebGPUDeviceDestroyPages(cls.test_base_name)
+    pages += namespace.WebGPUKillSwitchPages(cls.test_base_name)
     pages += namespace.VideoFromCanvasPages(cls.test_base_name)
     pages += namespace.NoGpuProcessPages(cls.test_base_name)
     pages += namespace.MeetEffectsPages(cls.test_base_name)
