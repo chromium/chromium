@@ -81,6 +81,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
       SuggestionType::kManageOffers);
   Suggestion& manage_offers_suggestion = suggestions.back();
   manage_offers_suggestion.icon = Suggestion::Icon::kSettings;
+  manage_offers_suggestion.trailing_icon = Suggestion::Icon::kGoogleWallet;
   return suggestions;
 }
 

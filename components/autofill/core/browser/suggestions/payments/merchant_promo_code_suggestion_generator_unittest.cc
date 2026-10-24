@@ -244,6 +244,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT));
   EXPECT_EQ(promo_code_suggestions[3].type, SuggestionType::kManageOffers);
   EXPECT_EQ(promo_code_suggestions[3].icon, Suggestion::Icon::kSettings);
+  EXPECT_EQ(promo_code_suggestions[3].trailing_icon,
+            Suggestion::Icon::kGoogleWallet);
 }
 
 // Checks that at most 5 promo code suggestions are generated, even if more
