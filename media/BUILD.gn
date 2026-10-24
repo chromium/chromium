@@ -362,6 +362,7 @@ fuzzer_test("media_webm_muxer_fuzzer") {
   deps = [
     ":media",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/libwebm",
   ]
 }

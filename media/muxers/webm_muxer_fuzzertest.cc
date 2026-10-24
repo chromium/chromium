@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -21,6 +22,7 @@
 #include "media/base/video_frame.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/webm_muxer.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Min and max number of encodec video/audio packets to send in the WebmMuxer.
 const int kMinNumIterations = 1;
@@ -54,12 +56,12 @@ Env* env = new Env();
 void OnWriteCallback(base::span<const uint8_t> data) {}
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   std::mt19937_64 rng;
 
-  std::string str = std::string(reinterpret_cast<const char*>(data), size);
   {  // Seed rng from data.
-    std::size_t data_hash = std::hash<std::string>()(str);
+    std::size_t data_hash =
+        std::hash<std::string_view>()(base::as_string_view(data));
     rng.seed(data_hash);
   }
 
@@ -88,10 +90,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const auto has_alpha_frame = rng() % 4;
         auto parameters = media::Muxer::VideoParameters(*video_frame);
         parameters.codec = video_codec;
-        auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str));
+        auto buffer = media::DecoderBuffer::CopyFrom(data);
         if (has_alpha_frame) {
           buffer->WritableSideData().alpha_data =
-              base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(str));
+              base::HeapArray<uint8_t>::CopiedFrom(data);
         }
         buffer->set_is_key_frame(is_key_frame != 0 || is_first_frame);
         muxer.PutFrame(media::Muxer::EncodedFrame{parameters, std::nullopt,
@@ -111,7 +113,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const media::AudioParameters params(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
-        auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str));
+        auto buffer = media::DecoderBuffer::CopyFrom(data);
         buffer->set_is_key_frame(true);
         muxer.PutFrame(
             media::Muxer::EncodedFrame{params, std::nullopt, std::move(buffer)},
