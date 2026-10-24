@@ -1915,13 +1915,7 @@ TEST_F(AutofillMetricsTest, LogVerificationStatusesOfAddressTokens) {
 }
 
 // Verify that we correctly log metrics tracking the duration of form fill.
-// TODO(crbug.com/442816527): Reenable test on ios.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_FormFillDuration DISABLED_FormFillDuration
-#else
-#define MAYBE_FormFillDuration FormFillDuration
-#endif
-TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
+TEST_F(AutofillMetricsTest, FormFillDuration) {
   base::TimeTicks beginning = base::TimeTicks::Now();
   FormData empty_form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
