@@ -312,7 +312,7 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     const gfx::Point& point) {
   // Check the resize area first, it should always take precedence over other
   // children regardless of order.
-  if (IsHitInView(resize_area_, point)) {
+  if (resize_area_->GetVisible() && IsHitInView(resize_area_, point)) {
     return false;
   }
 
@@ -323,14 +323,16 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     return top_button_container_->IsPositionInWindowCaption(point_in_child);
   }
 
-  if (IsHitInView(bottom_button_container_, point)) {
+  if (content_area_view_->GetVisible() &&
+      IsHitInView(bottom_button_container_, point)) {
     gfx::Point point_in_child = point;
     views::View::ConvertPointToTarget(this, bottom_button_container_,
                                       &point_in_child);
     return bottom_button_container_->IsPositionInWindowCaption(point_in_child);
   }
 
-  if (organizer_panel_view_ && IsHitInView(organizer_panel_view_, point)) {
+  if (organizer_panel_view_ && organizer_panel_view_->GetVisible() &&
+      IsHitInView(organizer_panel_view_, point)) {
     const gfx::Point point_in_child =
         views::View::ConvertPointToTarget(this, organizer_panel_view_, point);
     if (auto* panel = views::AsViewClass<OrganizerPanelView>(
@@ -344,13 +346,16 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
 
   // For any of the other children, absorb the click as non window caption.
   for (views::View* child : children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
     if (child == content_area_view_) {
       for (views::View* grandchild : child->children()) {
         if (grandchild->GetVisible() && IsHitInView(grandchild, point)) {
           return false;
         }
       }
-    } else if (child->GetVisible() && IsHitInView(child, point)) {
+    } else if (IsHitInView(child, point)) {
       return false;
     }
   }

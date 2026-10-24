@@ -18,9 +18,11 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -33,12 +35,14 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_segmented_control.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
@@ -50,8 +54,10 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -65,8 +71,10 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -569,6 +577,85 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewOrganizerPanelTest,
   EXPECT_EQ(state_controller()->GetUncollapsedWidth(), 200);
   EXPECT_FALSE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_TRUE(top_container->GetComboButton()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewOrganizerPanelTest,
+                       IsPositionInWindowCaptionIgnoresHiddenContentAreaViews) {
+  RunScheduledLayouts();
+
+  views::View* tab_view = GetTabViewAt(0);
+  ASSERT_NE(tab_view, nullptr);
+  gfx::Point point_in_tab = tab_view->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToTarget(tab_view, region_view(), &point_in_tab);
+
+  auto* bottom_container = region_view()->GetBottomContainer();
+  ASSERT_NE(bottom_container, nullptr);
+  ASSERT_FALSE(bottom_container->children().empty());
+  views::View* new_tab_button = bottom_container->children()[0];
+  gfx::Point point_in_new_tab_button =
+      new_tab_button->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToTarget(new_tab_button, region_view(),
+                                    &point_in_new_tab_button);
+
+  // Empty space in the bottom container (below the new tab button) is treated
+  // as window caption when the tab strip is visible.
+  gfx::Point point_in_bottom_container =
+      bottom_container->GetLocalBounds().bottom_center() - gfx::Vector2d(0, 5);
+  views::View::ConvertPointToTarget(bottom_container, region_view(),
+                                    &point_in_bottom_container);
+
+  gfx::Point point_in_resize_area =
+      region_view()->resize_area_for_testing()->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToTarget(region_view()->resize_area_for_testing(),
+                                    region_view(), &point_in_resize_area);
+
+  // When the organizer panel is not shown, hits on the tab view, new tab
+  // button, and resize area are not in the window caption, while empty space in
+  // the bottom container is in the window caption.
+  EXPECT_FALSE(region_view()->IsPositionInWindowCaption(point_in_tab));
+  EXPECT_FALSE(
+      region_view()->IsPositionInWindowCaption(point_in_new_tab_button));
+  EXPECT_TRUE(
+      region_view()->IsPositionInWindowCaption(point_in_bottom_container));
+  EXPECT_FALSE(region_view()->IsPositionInWindowCaption(point_in_resize_area));
+
+  // Show the organizer panel, hiding `content_area_view_` and `resize_area_`.
+  OrganizerPanelController::From(browser())->SetOrganizerVisible(
+      true, /*immediate=*/true);
+  RunScheduledLayouts();
+
+  // The hidden `bottom_button_container_` should no longer intercept hits as
+  // window caption before `organizer_panel_view_` (which has no draggable
+  // region by default).
+  EXPECT_FALSE(
+      region_view()->IsPositionInWindowCaption(point_in_bottom_container));
+
+  // When the organizer panel defines a draggable region covering its bounds,
+  // the hidden `content_area_view_` (tab view, new tab button) and
+  // `resize_area_` should not block caption hit tests on the organizer panel.
+  views::View* organizer_panel =
+      BrowserElementsViews::From(browser())->GetView(kOrganizerPanelElementId);
+  ASSERT_NE(organizer_panel, nullptr);
+  ASSERT_FALSE(organizer_panel->children().empty());
+  auto* web_view =
+      views::AsViewClass<views::WebView>(organizer_panel->children()[0]);
+  ASSERT_NE(web_view, nullptr);
+  content::WebContents* web_contents = web_view->GetWebContents();
+  ASSERT_NE(web_contents, nullptr);
+
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto region = blink::mojom::DraggableRegion::New();
+  region->bounds = web_view->GetLocalBounds();
+  region->draggable = true;
+  regions.push_back(std::move(region));
+  web_contents->GetDelegate()->DraggableRegionsChanged(regions, web_contents);
+
+  EXPECT_TRUE(region_view()->IsPositionInWindowCaption(point_in_tab));
+  EXPECT_TRUE(
+      region_view()->IsPositionInWindowCaption(point_in_new_tab_button));
+  EXPECT_TRUE(
+      region_view()->IsPositionInWindowCaption(point_in_bottom_container));
+  EXPECT_TRUE(region_view()->IsPositionInWindowCaption(point_in_resize_area));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
