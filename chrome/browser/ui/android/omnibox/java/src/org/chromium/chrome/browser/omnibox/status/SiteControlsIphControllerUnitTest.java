@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -62,6 +63,8 @@ public class SiteControlsIphControllerUnitTest {
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
 
         IphCommand command = mIphCommandCaptor.getValue();
+        assertEquals(SiteControlsIphController.AUTO_DISMISS_TIMEOUT_MS, command.autoDismissTimeout);
+
         command.onShowCallback.run();
         verify(mAppMenuHandler).setMenuHighlight(R.id.info_menu_id);
 
