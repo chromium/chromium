@@ -7339,6 +7339,7 @@
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> അപ്‌ലോഡുചെ‌യ്തു</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">ശക്തമായ സുരക്ഷ</translation>
+<translation id="6630211688479622571">ഏറ്റവും പുതിയത് കാണിക്കുക</translation>
 <translation id="6630452975878488444">തിരഞ്ഞെടുക്കല്‍‌ കുറുക്കുവഴി</translation>
 <translation id="6630752851777525409">നിങ്ങൾക്കായി പ്രാമാണീകരിക്കുന്നതിന് <ph name="EXTENSION_NAME" /> ഒരു സർട്ടിഫിക്കറ്റിലേക്ക് സ്ഥിര ആക്‌സസ് ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{ഗ്രൂപ്പിൽ നിന്ന് പുറത്ത് കടക്കുക}other{ഗ്രൂപ്പുകളിൽ നിന്ന് പുറത്ത് കടക്കുക}}</translation>

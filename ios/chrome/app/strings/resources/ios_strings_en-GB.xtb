@@ -1942,6 +1942,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="6946722113367118030">Thinking</translation>
 <translation id="6947751977892029882">Something went wrong with this setting. Update and restart Chrome and iOS, and try again. If this error keeps happening, your iPhone might not support this setting.</translation>
 <translation id="6950522403736391608">Hidden</translation>
+<translation id="6957084631403333422">Try a focused new tab page</translation>
 <translation id="695965663642079255">Save and manage payment info to check out faster</translation>
 <translation id="6962809930976936328">Get insights with Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
@@ -2179,6 +2180,7 @@ You can restart at any time.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item saved in your Google Account, {email}}other{Items saved in your Google Account, {email}}}</translation>
 <translation id="7729458878441927652">To see tabs from your other devices, sync your tabs and history.</translation>
 <translation id="7730020510075123961">No, merge data</translation>
+<translation id="7730937523779541003">Focused new tab page applied</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Only on this device.</translation>
 <translation id="7737550920399185748">Home page photos from your photo library won't sync across your devices.</translation>
 <translation id="7738120385185846461">Report an issue…</translation>
@@ -2622,6 +2624,7 @@ You can restart at any time.</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
 <translation id="9038526468059454274">Sum it up with</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
+<translation id="9042363670218758847">Switch to a layout built for quick searches</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9044703854323320868">Gmail message <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Create tab groups to organise your open tabs and stay productive</translation>

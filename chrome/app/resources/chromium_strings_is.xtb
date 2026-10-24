@@ -373,6 +373,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4786083865378785874">Ef Gemini í Chromium er opið verður hliðarglugginn áfram opinn þegar nýir flipar eru búnir til</translation>
 <translation id="479167709087336770">Þetta notar sömu ritvilluleit og er notuð í Google-leit. Textinn sem þú skrifar í vafranum er sendur til Google. Þú getur alltaf breytt þessu í stillingunum.</translation>
 <translation id="4814736265800133385">Nota Chromium án reiknings</translation>
+<translation id="4839733921943823254">Festa flýtileið</translation>
 <translation id="4888717733111232871">Regla á innleið til að láta Chromium leyfa mDNS-umferð.</translation>
 <translation id="4893347770495441059">Endurræstu til að uppfæra &amp;Chromium</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
@@ -762,6 +763,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="856656450041460113">Leita í lista tungumála</translation>
 <translation id="8576826849825683917">Mörg fyrirtæki hafa umsjón með Chromium</translation>
 <translation id="8586442755830160949">Höfundarréttur <ph name="YEAR" /> höfundar Chromium. Allur réttur áskilinn.</translation>
+<translation id="8590782867495422699">Opna aftur gervigreindarstillingu Google-leitar</translation>
 <translation id="8619360774459241877">Ræsir Chromium...</translation>
 <translation id="8624541899164515475">Stillingar, opnast í nýjum flipa.</translation>
 <translation id="8648201657708811153">Ekki er hægt að gera Google Chrome for Testing að sjálfgefna vafranum þínum.</translation>
@@ -812,6 +814,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9056398481763999048">Notaðu bestu gervigreindarverkfæri Google með Chromium-forritinu í símanum þínum</translation>
 <translation id="9057625473949801035">Skráðu þig inn á Chromium til að fá aðgang að aðgangsorðum og fleiru í <ph name="DEVICE" /></translation>
 <translation id="9062666675513499497">Skráðu þig inn í Chromium þegar þú skráir þig inn í aðrar Google-þjónustur</translation>
+<translation id="9074041031320636790">Þetta tókst! Nú geturðu spurt spurninga á auðveldan hátt á meðan þú vafrar með gervigreindarstillingu Google-leitar</translation>
 <translation id="9078733879136747090">Chromium var lokað sjálfkrafa</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verður endurræst eftir klukkustund}one{Chromium verður endurræst eftir # klukkustund}other{Chromium verður endurræst eftir # klukkustundir}}</translation>

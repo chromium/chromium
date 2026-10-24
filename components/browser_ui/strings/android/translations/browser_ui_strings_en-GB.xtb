@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Price drop on your open tab, from <ph name="OLD_PRICE" /> to <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Revoke device permission for <ph name="NAME" /></translation>
 <translation id="6500423977866688905">When the window is narrow, request mobile view</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6530703012083415527">When on, sites can use pop-ups and redirects. When off, sites can't use pop-ups and redirects.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7201549776650881587">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="7219254577985949841">Delete site data?</translation>
+<translation id="7225256190577194089">Revoke all permissions for device <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Select images</translation>
 <translation id="7243246278722455312">Customise your new tab page bottom sheet</translation>
 <translation id="7243308994586599757">Options available near bottom of the screen</translation>

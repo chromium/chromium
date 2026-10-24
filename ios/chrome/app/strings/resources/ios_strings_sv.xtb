@@ -1942,6 +1942,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="6946722113367118030">Tänker</translation>
 <translation id="6947751977892029882">Något gick fel med den här inställningen. Uppdatera och starta om Chrome och iOS och försök igen. Om felet kvarstår kanske din iPhone inte har stöd för den här inställningen.</translation>
 <translation id="6950522403736391608">Dolda</translation>
+<translation id="6957084631403333422">Testa en fokuserad ny flik-sida</translation>
 <translation id="695965663642079255">Spara och hantera betalningsuppgifter för att betala snabbare</translation>
 <translation id="6962809930976936328">Få insikter med Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
@@ -2179,6 +2180,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Objektet har sparats i Google-kontot {email}}other{Objekten har sparats i Google-kontot {email}}}</translation>
 <translation id="7729458878441927652">Synkronisera flikar och historik om du vill se flikar från dina andra enheter</translation>
 <translation id="7730020510075123961">Nej, sammanfoga data</translation>
+<translation id="7730937523779541003">Fokuserad ny flik-sida har tillämpats</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bara på den här enheten.</translation>
 <translation id="7737550920399185748">Foton på startsidan från ditt fotobibliotek synkroniseras inte på dina enheter.</translation>
 <translation id="7738120385185846461">Rapportera ett problem …</translation>
@@ -2622,6 +2624,7 @@ Du kan starta om när som helst.</translation>
 <translation id="9032405509996909363">Bekräfta att du vill radera webbinformation</translation>
 <translation id="9038526468059454274">Sammanfatta med</translation>
 <translation id="9039373489628511875">Bandbredd</translation>
+<translation id="9042363670218758847">Byt till en layout utformad för snabbsökningar</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9044703854323320868">Gmail-meddelande <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Skapa flikgrupper för att ordna dina öppna flikar och vara produktiv</translation>

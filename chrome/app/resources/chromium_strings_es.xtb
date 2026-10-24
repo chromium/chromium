@@ -373,6 +373,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4786083865378785874">Si Gemini en Chromium está abierto, el panel lateral permanece abierto al crear nuevas pestañas</translation>
 <translation id="479167709087336770">Utiliza el mismo corrector ortográfico que se usa en la Búsqueda de Google. El texto que escribas en el navegador se enviará a Google. Puedes cambiar esta opción en cualquier momento desde los ajustes.</translation>
 <translation id="4814736265800133385">Usar Chromium sin una cuenta</translation>
+<translation id="4839733921943823254">Fijar acceso directo</translation>
 <translation id="4888717733111232871">Regla entrante para que Chromium permita tráfico mDNS.</translation>
 <translation id="4893347770495441059">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -763,6 +764,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
 <translation id="8576826849825683917">Varias organizaciones gestionan Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
+<translation id="8590782867495422699">Volver a abrir el Modo IA de la Búsqueda de Google</translation>
 <translation id="8619360774459241877">Iniciando Chromium...</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing no se puede establecer como navegador predeterminado.</translation>
@@ -813,6 +815,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="9056398481763999048">Usa las mejores herramientas de IA de Google con la aplicación Chromium en tu teléfono</translation>
 <translation id="9057625473949801035">Para acceder a tus contraseñas y otros elementos de <ph name="DEVICE" />, inicia sesión en Chromium</translation>
 <translation id="9062666675513499497">Iniciar sesión en Chromium al iniciar sesión en otros servicios de Google</translation>
+<translation id="9074041031320636790">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el Modo IA de la Búsqueda de Google</translation>
 <translation id="9078733879136747090">Chromium se ha cerrado automáticamente</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se reiniciará dentro de 1 hora}other{Chromium se reiniciará dentro de # horas}}</translation>

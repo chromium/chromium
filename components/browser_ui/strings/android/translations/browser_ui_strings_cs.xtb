@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Bránit webům v používání zařízení a dat pro virtuální realitu</translation>
 <translation id="6447842834002726250">Soubory cookie</translation>
 <translation id="6452138246455930388">Pokles ceny na otevřené kartě z <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Zrušit oprávnění k zařízení pro web <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Když je okno úzké, požádejte o mobilní zobrazení</translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="6530703012083415527">Když je tato možnost zapnutá, weby mohou používat vyskakovací okna a přesměrování. Když je vypnutá, weby vyskakovací okna ani přesměrování používat nemohou.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Data webu v zařízení</translation>
 <translation id="7201549776650881587">Touto akcí vymažete veškerá data a soubory cookie, které uložily weby v doméně <ph name="ORIGIN" /> nebo její aplikací na ploše</translation>
 <translation id="7219254577985949841">Vymazat data webu?</translation>
+<translation id="7225256190577194089">Zrušit všechna oprávnění pro zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Vyberte fotky</translation>
 <translation id="7243246278722455312">Spodní panel Přizpůsobení stránky Nová karta</translation>
 <translation id="7243308994586599757">Možnosti jsou k dispozici ve spodní části obrazovky</translation>

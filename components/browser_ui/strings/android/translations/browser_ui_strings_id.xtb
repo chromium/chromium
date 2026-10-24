@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Blokir situs agar tidak menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Penurunan harga di tab yang terbuka, dari <ph name="OLD_PRICE" /> menjadi <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Cabut izin perangkat untuk <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Jika jendela terlihat sempit, minta tampilan seluler</translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="6530703012083415527">Jika diaktifkan, situs dapat menggunakan pop-up dan pengalihan. Jika dinonaktifkan, situs tidak dapat menggunakan pop-up dan pengalihan.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Data situs di perangkat</translation>
 <translation id="7201549776650881587">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh semua situs di bawah <ph name="ORIGIN" /> atau oleh aplikasinya di Layar utama</translation>
 <translation id="7219254577985949841">Hapus data situs?</translation>
+<translation id="7225256190577194089">Cabut semua izin untuk perangkat <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Pilih gambar</translation>
 <translation id="7243246278722455312">Sheet bawah sesuaikan halaman tab baru</translation>
 <translation id="7243308994586599757">Opsi terdapat di dekat bagian bawah layar</translation>

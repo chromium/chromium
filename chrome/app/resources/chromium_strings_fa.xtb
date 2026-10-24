@@ -370,6 +370,7 @@
 <translation id="4786083865378785874">‏اگر «Gemini در Chromium» باز باشد، پانل کناری هنگام ایجاد زبانه‌های جدید باز می‌ماند</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
 <translation id="4814736265800133385">‏استفاده از Chromium بدون حساب</translation>
+<translation id="4839733921943823254">سنجاق کردن میان‌بر</translation>
 <translation id="4888717733111232871">‏قانون ترافیک ورودی برای Chromium جهت اجازه به ترافیک mDNS.</translation>
 <translation id="4893347770495441059">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
@@ -759,6 +760,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>
 <translation id="8576826849825683917">‏چندین سازمان Chromium را مدیریت می‌کنند</translation>
 <translation id="8586442755830160949">‏حق نشر <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
+<translation id="8590782867495422699">‏باز کردن مجدد «حالت هوشواره‌ای جستجوی Google»</translation>
 <translation id="8619360774459241877">‏درحال راه‌اندازی Chromium…</translation>
 <translation id="8624541899164515475">«تنظیمات»، در زبانه جدیدی باز می‌شود.</translation>
 <translation id="8648201657708811153">‏نمی‌توان Google Chrome for Testing را به‌عنوان مرورگر پیش‌فرض تنظیم کرد.</translation>
@@ -809,6 +811,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9056398481763999048">‏با برنامه Chromium در تلفنتان از بهترین ابزارهای هوشواره‌ای Google استفاده کنید</translation>
 <translation id="9057625473949801035">‏برای دریافت گذرواژه‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم Chromium وارد شوید</translation>
 <translation id="9062666675513499497">‏ورود به سیستم Chromium هنگام وارد شدن به سیستم دیگر سرویس‌های Google</translation>
+<translation id="9074041031320636790">‏انجام شد! اکنون می‌توانید با «حالت هوشواره‌ای جستجوی Google» به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="9078733879136747090">‏Chromium به‌طور خودکار بسته شد</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏Chromium یک ساعت دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium # ساعت دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium # ساعت دیگر راه‌اندازی مجدد می‌شود}}</translation>

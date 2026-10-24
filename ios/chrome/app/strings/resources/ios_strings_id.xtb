@@ -1942,6 +1942,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="6946722113367118030">Berpikir</translation>
 <translation id="6947751977892029882">Terjadi error pada setelan ini. Update dan mulai ulang Chrome serta iOS, lalu coba lagi. Jika error ini terus terjadi, iPhone Anda mungkin tidak mendukung setelan ini.</translation>
 <translation id="6950522403736391608">Tersembunyi</translation>
+<translation id="6957084631403333422">Coba halaman tab baru yang difokuskan</translation>
 <translation id="695965663642079255">Simpan dan kelola info pembayaran untuk checkout yang lebih cepat</translation>
 <translation id="6962809930976936328">Dapatkan insight dengan Gemini</translation>
 <translation id="6964300328304469089">Saat ini <ph name="NAME" />, <ph name="EMAIL" />, dipilih. Pilih akun.</translation>
@@ -2179,6 +2180,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item disimpan di Akun Google Anda, {email}}other{Item disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="7729458878441927652">Untuk melihat tab dari perangkat Anda yang lain, sinkronkan tab dan histori.</translation>
 <translation id="7730020510075123961">Tidak, gabungkan data</translation>
+<translation id="7730937523779541003">Halaman tab baru yang difokuskan diterapkan</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Hanya di perangkat ini.</translation>
 <translation id="7737550920399185748">Foto halaman beranda dari galeri foto Anda tidak akan disinkronkan di seluruh perangkat Anda.</translation>
 <translation id="7738120385185846461">Laporkan Masalah …</translation>
@@ -2366,7 +2368,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8264966119170358612">Beberapa sandi tersimpan Anda terekspos dalam pelanggaran data non-Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Buka menu Chrome</translation>
 <translation id="826614135184049678">Anda telah logout dari akun, <ph name="USER_NAME" />, sebagai bagian dari proses reset iPad. Untuk login kembali, ketuk "Lanjutkan" di bawah.</translation>
-<translation id="8266370374397811600">Pencapaian baru terbuka! 🥳</translation>
+<translation id="8266370374397811600">Anda dapat pencapaian baru! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Anda akan berganti profil</translation>
 <translation id="8275068909952022340">Lainnya…</translation>
@@ -2622,6 +2624,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="9032405509996909363">Konfirmasi penghapusan data penjelajahan</translation>
 <translation id="9038526468059454274">Buat ringkasan dengan</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
+<translation id="9042363670218758847">Beralih ke tata letak yang dirancang untuk penelusuran cepat</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
 <translation id="9044703854323320868">Pesan Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Buat grup tab untuk mengatur tab yang terbuka dan tetap produktif</translation>

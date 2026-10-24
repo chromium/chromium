@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Jika Gemini di Chromium terbuka, panel samping akan tetap terbuka saat membuat tab baru</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4814736265800133385">Gunakan Chromium tanpa akun</translation>
+<translation id="4839733921943823254">Sematkan Pintasan</translation>
 <translation id="4888717733111232871">Inbound rule untuk Chromium guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="4893347770495441059">Luncurkan kembali untuk Mengupdate &amp;Chromium</translation>
 <translation id="4918086044614829423">Terima</translation>
@@ -759,6 +760,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="856656450041460113">Telusuri daftar bahasa</translation>
 <translation id="8576826849825683917">Beberapa organisasi mengelola Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
+<translation id="8590782867495422699">Buka kembali Mode AI Google Penelusuran</translation>
 <translation id="8619360774459241877">Meluncurkan Chromium...</translation>
 <translation id="8624541899164515475">Setelan, terbuka di tab baru.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing tidak dapat dijadikan sebagai browser default.</translation>
@@ -809,6 +811,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="9056398481763999048">Gunakan alat AI terbaik Google dengan aplikasi Chromium di ponsel Anda</translation>
 <translation id="9057625473949801035">Untuk mendapatkan sandi dan data lainnya dari <ph name="DEVICE" />, login ke Chromium</translation>
 <translation id="9062666675513499497">Login ke Chromium saat Anda login ke layanan Google lainnya</translation>
+<translation id="9074041031320636790">Berhasil! Kini Anda dapat dengan mudah mengajukan pertanyaan saat menjelajah dengan Mode AI Google Penelusuran</translation>
 <translation id="9078733879136747090">Chromium ditutup secara otomatis</translation>
 <translation id="9089354809943900324">Chromium terlalu lawas</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium akan diluncurkan ulang dalam 1 jam}other{Chromium akan diluncurkan ulang dalam # jam}}</translation>

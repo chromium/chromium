@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Impedeix que els llocs web utilitzin les teves dades i el teu dispositiu de realitat virtual</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6452138246455930388">Baixada de preu a la pestanya oberta (abans <ph name="OLD_PRICE" />, ara <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
+<translation id="6495608040096939405">Revoca el permís del dispositiu per a <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Si la finestra és estreta, sol·licita la vista per a mòbils</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6530703012083415527">Quan aquesta opció està activada, els llocs web poden utilitzar finestres emergents i redireccions. Quan aquesta opció està desactivada, els llocs web no poden utilitzar finestres emergents ni redireccions.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
 <translation id="7201549776650881587">Aquesta acció suprimirà de la pantalla d'inici totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació</translation>
 <translation id="7219254577985949841">Vols suprimir les dades del lloc web?</translation>
+<translation id="7225256190577194089">Revoca tots els permisos del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Selecciona imatges</translation>
 <translation id="7243246278722455312">Full inferior de personalització de la pàgina Pestanya nova</translation>
 <translation id="7243308994586599757">Opcions disponibles a la part inferior de la pantalla</translation>

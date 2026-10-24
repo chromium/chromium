@@ -52,6 +52,7 @@
 <translation id="1080116354587839789">Aanpassen aan breedte</translation>
 <translation id="1081061862829655580">Lade 19</translation>
 <translation id="1082026381988252344">Scroll en zoom de content van je gedeelde tabblad</translation>
+<translation id="1083351079082239441">Bekijk de belangrijkste acties die Gemini heeft uitgevoerd terwijl deze voor je aan het browsen was</translation>
 <translation id="108859316315249327">Opnieuw proberen</translation>
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
 <translation id="1090629319939036170">VR-menu</translation>
@@ -541,6 +542,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1913037223029790376">CVC gebruiken voor deze virtuele kaart</translation>
 <translation id="191374271204266022">Kopiëren als json</translation>
 <translation id="1914326953223720820">Uitpakservice</translation>
+<translation id="1915335901851260370">Kan de naam van de kaarthouder nu niet opslaan</translation>
 <translation id="1919367280705858090">Hulp bij een specifieke foutmelding</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 site}other{# sites}}</translation>
@@ -916,6 +918,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="251033673027346551">Ga naar Google Wallet om <ph name="BEGIN_LINK" />voorkeuren voor gegevens en privacy<ph name="END_LINK" /> te beheren.</translation>
 <translation id="2512101340618156538">Niet toegestaan (standaard)</translation>
 <translation id="2512413427717747692">Knop Chrome instellen als standaardbrowser, druk op Enter om Chrome in te stellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
+<translation id="2513217232843681817">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, zoals bezoeken van automatisch browsen in je <ph name="BEGIN_LINK_GAA" />Gemini Apps-activiteit<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Check of je bereik hebt in je omgeving</translation>
 <translation id="2518584823165598232">Deze kaart is niet beschikbaar. Neem contact op met je kaartprovider.</translation>
 <translation id="2521385132275182522">Nietje rechtsonder</translation>
@@ -1360,6 +1363,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3282085321714087552">Je organisatie, <ph name="ENROLLMENT_DOMAIN" />, heeft bepaalde gegevens gestuurd naar de volgende websites, zoals instellingen of beleidsregels.</translation>
 <translation id="3286372614333682499">staand</translation>
 <translation id="3287510313208355388">Downloaden wanneer online</translation>
+<translation id="3288416906300127968">Ga naar Gemini-gesprek</translation>
 <translation id="3289578402369490638">Van andere winkels op internet</translation>
 <translation id="3293642807462928945">Meer informatie over het beleid <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Je wachtwoorden bekijken en beheren in de Chrome-instellingen</translation>
@@ -1380,6 +1384,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3325568918769906282">in aflopende volgorde</translation>
 <translation id="3325662270238538525">Recente bestandstoegang en -aanpassingen, waaronder bestandsnamen, digitale vingerafdrukken van de bestandscontent, downloadbron en metadata</translation>
+<translation id="3326857361043236066">Belangrijke browse-acties van Gemini</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3333762389743153920">Niet geschikt als virtuele kaart</translation>
 <translation id="3338095232262050444">Beveiligd</translation>
@@ -2013,6 +2018,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4333561522337981382">Vensters beheren op al je schermen</translation>
 <translation id="4333854382783149454">PKCS nr. 1 SHA-1 met RSA-versleuteling</translation>
 <translation id="4336913590841287350">Dit beleid wordt nog niet ondersteund als gebruikersbeleid voor iOS.</translation>
+<translation id="4338516934178140574">In de Chrome-geschiedenis kun je de belangrijkste acties zien die Gemini heeft uitgevoerd terwijl deze voor je aan het browsen was</translation>
 <translation id="4340575312453649552">Deze advertentie gebruikte te veel bronnen voor je apparaat, dus Chrome heeft de advertentie verwijderd.</translation>
 <translation id="4340810192899866471">Importeren vanuit json</translation>
 <translation id="4340982228985273705">Deze computer is niet gedetecteerd als een zakelijk beheerde computer. Overeenkomstig het beleid kunnen alleen automatisch extensies worden geïnstalleerd die worden gehost in de Chrome Web Store. De update-URL van de Chrome Web Store is <ph name="CWS_UPDATE_URL" />.</translation>
@@ -2106,6 +2112,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4510703642214459906">Locatie</translation>
 <translation id="4515275063822566619">Passen en adressen zijn afkomstig uit Chrome en je Google-account (<ph name="ACCOUNT_EMAIL" />). Je kunt ze beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="451601984112574365">Groen 3</translation>
+<translation id="4519245852815730903">Je wordt gevraagd om elk e-mailadres afzonderlijk toe te staan</translation>
 <translation id="4520048001084013693">Dit bestand downloaden is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelop Monarch</translation>
@@ -2376,6 +2383,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4969341057194253438">Opname verwijderen</translation>
 <translation id="4973922308112707173">Twee perforaties boven</translation>
 <translation id="4976702386844183910">Laatst bezocht: <ph name="DATE" /></translation>
+<translation id="4982928820514634045">Ga naar contactgegevens</translation>
 <translation id="498323057460789381">Schemavalidatiefout: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Microfoon gebruiken?</translation>
 <translation id="4989542687859782284">Niet beschikbaar</translation>
@@ -2385,6 +2393,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4994095017621319069">1 tabbladgroep is niet meer beschikbaar</translation>
 <translation id="4995474875135717171">Aangepast:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Site Search en je standaard zoekmachine te beheren</translation>
+<translation id="4996709766489151157">Contactgegevens ingevuld</translation>
 <translation id="4998950033665438990">Enkelzijdig</translation>
 <translation id="5000497292978544380">AI-modus in Google Zoeken</translation>
 <translation id="5001338033791319371">Als je het volledige scherm wilt sluiten en de download wilt bekijken, sleep je vanaf de bovenkant en tik je op de terugknop</translation>
@@ -2404,6 +2413,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5019293549442035120">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres wordt opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">bewegings- en lichtsensoren</translation>
 <translation id="5019952743397118625">Het beleid <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> is ingesteld. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> bepaalt niet de beschikbaarheid van de ontwikkelaarsmodus op de pagina Extensies.</translation>
+<translation id="502075697789439404">Bestand gedownload</translation>
 <translation id="5020862932518041900">Als je een suggestie selecteert of negeert, past Chrome zich aan zodat je alleen ziet wat relevant voor je is</translation>
 <translation id="5021500396464456616">Neem contact op met de persoon die deze link heeft gestuurd</translation>
 <translation id="5021557570875267742">Prijzen volgen met Chrome</translation>
@@ -2464,7 +2474,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
 <translation id="5115563688576182185">(64-bits)</translation>
 <translation id="5116015291385561204">Laten verifiëren dat jij het bent om gevoelige informatie automatisch in te vullen</translation>
-<translation id="5121592697493894155">Google Zoeken in zijvenster</translation>
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Voortgangsscherm voor Koop nu, betaal later is op halve hoogte geopend.</translation>
@@ -2951,6 +2960,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Zet deze instelling aan om Help me met schrijven te gebruiken</translation>
 <translation id="5932224571077948991">Site toont opdringerige of misleidende advertenties</translation>
+<translation id="5933647156166686601">Gemini-activiteit beoordelen</translation>
 <translation id="5937560539988385583">Pagina vertaald</translation>
 <translation id="5938153366081463283">Virtuele kaart toevoegen</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3424,6 +3434,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6721164594124191969">Labels (glanzend)</translation>
 <translation id="6726832600570791992">(32-bits emulatie)</translation>
 <translation id="6727094998759448074">SRA4</translation>
+<translation id="672853333773293432">Ingelogd met account</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6738516213925468394">Je gegevens zijn op <ph name="TIME" /> versleuteld met je <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="6740851646645036700">Je hebt voor nu je limiet voor schrijfhulp bereikt. Probeer het later opnieuw.</translation>
@@ -3488,6 +3499,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6852204201400771460">App opnieuw laden?</translation>
 <translation id="6854691830678097752">Sla deze CVC op in je account, <ph name="ACCOUNT_EMAIL" />, om sneller te betalen</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6858341433205161172"><ph name="DEVICE_NAME" /> (deze browser)</translation>
 <translation id="6860888819347870819">Kan vragen om scherm-in-scherm te openen</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Deze pas kan momenteel niet worden geverifieerd</translation>
@@ -3539,6 +3551,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6936976777388162184">Dit is een gebundeld apparaat dat niet kan worden ingeschreven bij de Kiosk &amp; Signage Upgrade.</translation>
 <translation id="6942444979237658241">Reacties - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Je hebt je wachtwoord ingevoerd op een site die niet door <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> wordt beheerd. Ter bescherming van je account kun je je wachtwoord beter niet hergebruiken voor andere apps en sites.</translation>
+<translation id="6945116087771548601">Ga naar downloads</translation>
 <translation id="6948051842255602737">Game over! Je score is <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Als je aankopen doet in Chrome, zie je Pix als optie</translation>
 <translation id="6948701128805548767">Selecteer een adres om ophaalmethoden en vereisten te bekijken</translation>
@@ -3607,6 +3620,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Je hebt geprobeerd <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat gepresenteerd waarvan de geldigheidsperiode te lang is om betrouwbaar te zijn.</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
+<translation id="7054563057916451424"><ph name="DESTINATION" />, wordt geopend in een nieuw tabblad</translation>
 <translation id="7054717457611655239">Sla je bestanden vanaf nu op in <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7057567173736333354">Beschrijf je afbeelding</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> heeft geverifieerd dat <ph name="ISSUER" /> het certificaat van deze website heeft uitgegeven.</translation>
@@ -3836,6 +3850,7 @@ Aanvullende informatie:
 <translation id="7425037327577270384">Help me met schrijven</translation>
 <translation id="7426745633088095666">Gedeelde tabbladen</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7430649113830485349">Belangrijke acties beoordelen</translation>
 <translation id="7432774160230062882">Laat verifiëren dat jij het bent zodat Chromium je betalingsgegevens kan invullen.</translation>
 <translation id="7437289804838430631">Contactgegevens toevoegen</translation>
 <translation id="7441627299479586546">Onjuist beleidsonderwerp</translation>
@@ -3981,6 +3996,7 @@ Aanvullende informatie:
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659327900411729175">Envelop Kaku 8</translation>
 <translation id="766014026101194726">{0,plural, =1{Dit bestand uploaden is geblokkeerd door het beheerdersbeleid}other{# bestanden kopiëren is geblokkeerd door het beheerdersbeleid}}</translation>
+<translation id="7660909719765799166">Ga naar accountinloggen</translation>
 <translation id="7661440329832413796">Help me te leren programmeren in Python</translation>
 <translation id="7662298039739062396">Instelling beheerd door een extensie</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> heeft de groep verlaten</translation>
@@ -3996,6 +4012,7 @@ Aanvullende informatie:
 <translation id="7675756033024037212">Scrollen en zoomen niet toegestaan</translation>
 <translation id="7676643023259824263">Zoeken naar klembordtekst, <ph name="TEXT" /></translation>
 <translation id="7676840398262504532">Je organisatie houdt kopiëren in de gaten</translation>
+<translation id="767806704757698045">Werkt alleen op ondersteunde sites</translation>
 <translation id="7678730592635586336">Video opnieuw opnemen</translation>
 <translation id="7679287273775285018">Betalen met eWallet</translation>
 <translation id="7679367271685653708">Je browsegeschiedenis bekijken en beheren in de Chrome-instellingen</translation>
@@ -4117,6 +4134,7 @@ Aanvullende informatie:
 <translation id="7885670691503039914">Je krijgt e-mailmeldingen bij een prijsdaling op een site. Deze pagina wordt opgeslagen in de bookmarkmap <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7887683347370398519">Controleer je CVC-code en probeer het opnieuw</translation>
 <translation id="7887885240995164102">Scherm-in-scherm openen</translation>
+<translation id="7888219259712865185">E-mailproviders zoals google.com kunnen je e-mailadres bevestigen, zodat je je inbox niet hoeft te controleren</translation>
 <translation id="7888367499748383555">Geen kosten, jaarlijkse rentevoet van 0% (als je hiervoor in aanmerking komt)</translation>
 <translation id="7888575728750733395">Weergave-intentie voor afdrukken</translation>
 <translation id="7890748547282909375">Log in bij Microsoft OneDrive om het screenshot op te slaan</translation>
@@ -4361,6 +4379,7 @@ Aanvullende informatie:
 <translation id="8298399736867690281">Kaart alleen opgeslagen op het apparaat</translation>
 <translation id="8300302621078931927">Identiteitskaart beveiligd opslaan in Google Wallet</translation>
 <translation id="8301894345671534559">Code opgeven</translation>
+<translation id="830342764194666561">Site-instellingen gewijzigd</translation>
 <translation id="830498451218851433">Enkele vouw</translation>
 <translation id="830868413617744215">Bèta</translation>
 <translation id="8310477433309274098">Geen kosten, jaarlijkse rentevoet van 0%</translation>
@@ -4495,6 +4514,7 @@ Aanvullende informatie:
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8544217240017914508">Google Chrome probeert instellingen voor het invullen van betaalmethoden aan te passen.</translation>
 <translation id="8544303911974837265">Polyester</translation>
+<translation id="8545237556624168656">Als je de functie wilt gebruiken, moet je zijn ingelogd op je e-mailaccount</translation>
 <translation id="854548366864113872">Dure optie</translation>
 <translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Waarom wil je dit uploaden? (vereist)</translation>
@@ -4514,6 +4534,7 @@ Aanvullende informatie:
 <translation id="8577192028579836704">Alle opties zijn meestal <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuele kaart niet beschikbaar</translation>
 <translation id="8579000896558714521">Toetsenbordoverschrijving</translation>
+<translation id="8579561564816585231">Ingelogd met een Google-service zoals Wachtwoordmanager</translation>
 <translation id="8581064022803799721">Deze pagina is opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Telnr. toevoegen</translation>
 <translation id="8587100480629037893">Handen volgen niet toegestaan</translation>
@@ -4603,6 +4624,7 @@ Aanvullende informatie:
 <translation id="8759274551635299824">Deze pas is verlopen</translation>
 <translation id="87601671197631245">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden, berichten of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
 <translation id="8762871163452985706">Annotatie ongedaan gemaakt</translation>
+<translation id="8762944800272172913">Kan Gemini-gesprek niet openen</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Link gestuurd vanaf <ph name="DEVICE_NAME" />}other{# links gestuurd vanaf <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-apparaat</translation>
 <translation id="8763986294015493060">Alle momenteel geopende incognitovensters sluiten</translation>

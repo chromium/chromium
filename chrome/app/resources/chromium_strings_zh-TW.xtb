@@ -370,6 +370,7 @@
 <translation id="4786083865378785874">建立新分頁時，如果 Chromium 內建 Gemini 已開啟，側邊面板也會保持開啟狀態</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
 <translation id="4814736265800133385">不登入帳戶使用 Chromium</translation>
+<translation id="4839733921943823254">固定捷徑</translation>
 <translation id="4888717733111232871">允許 mDNS 流量的 Chromium 輸入規則。</translation>
 <translation id="4893347770495441059">重新啟動以更新 &amp;Chromium</translation>
 <translation id="4918086044614829423">接受</translation>
@@ -758,6 +759,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>
 <translation id="8576826849825683917">Chromium 是由多個機構管理</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
+<translation id="8590782867495422699">重新開啟 Google 搜尋 AI 模式</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8624541899164515475">設定，在新分頁中開啟。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing 無法設為預設瀏覽器。</translation>
@@ -808,6 +810,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="9056398481763999048">使用手機版 Chromium，體驗 Google 最強大的 AI 工具</translation>
 <translation id="9057625473949801035">如要存取<ph name="DEVICE" />中的密碼和其他資料，請登入 Chromium</translation>
 <translation id="9062666675513499497">登入其他 Google 服務時一併登入 Chromium</translation>
+<translation id="9074041031320636790">大功告成！現在使用 Google 搜尋的 AI 模式，就能在瀏覽時輕鬆提問</translation>
 <translation id="9078733879136747090">Chromium 已自動關閉</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 將在 1 小時後重新啟動}other{Chromium 將在 # 小時後重新啟動}}</translation>

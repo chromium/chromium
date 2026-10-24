@@ -1942,6 +1942,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="6946722113367118030">Domāšana</translation>
 <translation id="6947751977892029882">Radās ar iestatījumu saistīta problēma. Atjauniniet un restartējiet pārlūku Chrome un operētājsistēmu iOS un mēģiniet vēlreiz. Ja šī kļūda atkārtojas, iespējams, jūsu iPhone tālrunī netiek atbalstīts šis iestatījums.</translation>
 <translation id="6950522403736391608">Paslēptas</translation>
+<translation id="6957084631403333422">Vienkāršotas jaunas cilnes lapas izmēģināšana</translation>
 <translation id="695965663642079255">Saglabājiet un pārvaldiet maksājumu informāciju, lai norēķinātos ātrāk.</translation>
 <translation id="6962809930976936328">Gūt ieskatus, izmantojot Gemini</translation>
 <translation id="6964300328304469089">Pašlaik ir atlasīts šāds konts: <ph name="NAME" />, <ph name="EMAIL" />. Izvēlieties kontu.</translation>
@@ -2179,6 +2180,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Vienums ir saglabāts jūsu Google kontā ({email})}zero{Vienumi ir saglabāti jūsu Google kontā ({email})}one{Vienumi ir saglabāti jūsu Google kontā ({email})}other{Vienumi ir saglabāti jūsu Google kontā ({email})}}</translation>
 <translation id="7729458878441927652">Lai skatītu cilnes no citām savām ierīcēm, sinhronizējiet cilnes un vēsturi.</translation>
 <translation id="7730020510075123961">Nē, sapludināt datus</translation>
+<translation id="7730937523779541003">Tika lietots vienkāršots jaunas cilnes lapas izkārtojums</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tikai šajā ierīcē.</translation>
 <translation id="7737550920399185748">Sākumlapas fotoattēli no jūsu fotoattēlu bibliotēkas netiks sinhronizēti jūsu ierīcēs.</translation>
 <translation id="7738120385185846461">Ziņot par problēmu…</translation>
@@ -2622,6 +2624,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="9032405509996909363">Apstiprināt pārlūkošanas datu dzēšanu</translation>
 <translation id="9038526468059454274">Apkopojiet, izmantojot</translation>
 <translation id="9039373489628511875">Joslas platums</translation>
+<translation id="9042363670218758847">Pārslēdzieties uz izkārtojumu, kas izveidots ātrai meklēšanai.</translation>
 <translation id="9042893549633094279">Konfidencialitāte un drošība</translation>
 <translation id="9044703854323320868">Gmail ziņojums <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Izveidojiet ciļņu grupas, lai kārtotu atvērtās cilnes un saglabātu produktivitāti</translation>

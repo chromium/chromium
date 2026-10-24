@@ -374,6 +374,7 @@
 <translation id="4786083865378785874">Chromium ရှိ Gemini ကို ဖွင့်ထားပါက တဘ်အသစ်များ ပြုလုပ်သောအခါ ဘေးအကန့် ဆက်ပွင့်နေမည်</translation>
 <translation id="479167709087336770">၎င်းက Google ရှာဖွေမှုတွင် အသုံးပြုထားသော စာလုံးပေါင်း စစ်စနစ် တစ်ခုတည်းကို အသုံးပြုသည်။ ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ပို့ပါသည်။ ဤလုပ်ဆောင်ပုံကို ဆက်တင်များတွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="4814736265800133385">Chromium ကို အကောင့်မပါဘဲ အသုံးပြုရန်</translation>
+<translation id="4839733921943823254">ဖြတ်လမ်း ပင်ထိုးရန်</translation>
 <translation id="4888717733111232871">Chromium အတွက် mDNS သွားလာမှု ခွင့်ပြုရေး အဝင် စည်းကမ်းချက်</translation>
 <translation id="4893347770495441059">&amp;Chromium အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
@@ -764,6 +765,7 @@ Chromium သည်သင့်ကြိုတင်ချိန်ညှိခ�
 <translation id="856656450041460113">ဘာသာစကား စာရင်းကို ရှာရန်</translation>
 <translation id="8576826849825683917">အဖွဲ့အစည်းမျိုးစုံက Chromium ကို စီမံသည်</translation>
 <translation id="8586442755830160949">မူပိုင်ခွင့် <ph name="YEAR" /> The Chromium ပြုစုသူများ။ မူပိုင်ခွင့်များ အားလုံးကို ချုပ်ထိန်းထားသည်။</translation>
+<translation id="8590782867495422699">Google Search AI မုဒ် ပြန်ဖွင့်ရန်</translation>
 <translation id="8619360774459241877">Chromium ကို ဖွင့်နေသည်...</translation>
 <translation id="8624541899164515475">ဆက်တင်များ၊ တဘ်အသစ်တွင် ဖွင့်သည်။</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ကို သင့်မူရင်းဘရောင်ဇာအဖြစ် မပြုလုပ်နိုင်ပါ။</translation>
@@ -814,6 +816,7 @@ Chromium သည်သင့်ကြိုတင်ချိန်ညှိခ�
 <translation id="9056398481763999048">သင့်ဖုန်းရှိ Chromium အက်ပ်ဖြင့် Google ၏ အကောင်းဆုံး AI တူးလ်များကို သုံးပါ</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> မှ စကားဝှက်နှင့် အခြားအရာများ ရယူရန် Chromium သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="9062666675513499497">အခြား Google ဝန်ဆောင်မှုများသို့ လက်မှတ်ထိုးဝင်သောအခါ Chromium သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="9074041031320636790">အောင်မြင်သွားပါပြီ။ ‘Google Search AI မုဒ်’ ဖြင့် ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများ အလွယ်တကူမေးနိုင်ပါပြီ</translation>
 <translation id="9078733879136747090">Chromium ကို အလိုအလျောက်ပိတ်လိုက်သည်</translation>
 <translation id="9089354809943900324">Chromium မှာ ဟောင်းသွားပြီ</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ကို ၁ နာရီအကြာတွင် ပြန်လည်စတင်ပါမည်}other{Chromium ကို # နာရီအကြာတွင် ပြန်လည်စတင်ပါမည်}}</translation>

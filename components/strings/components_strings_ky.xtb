@@ -52,6 +52,7 @@
 <translation id="1080116354587839789">Терезенин туурасына чактоо</translation>
 <translation id="1081061862829655580">19-түпкүч</translation>
 <translation id="1082026381988252344">Жалпы өтмөктүн контентин чоңойтуп/кичирейтүү жана сыдыруу</translation>
+<translation id="1083351079082239441">Gemini сиздин ордуңузга сайттарды карап жатканда аткарган негизги аракеттерди көрүү</translation>
 <translation id="108859316315249327">Кайталоо</translation>
 <translation id="1089439967362294234">Сызсөздү өзгөртүү</translation>
 <translation id="1090629319939036170">VR менюсу</translation>
@@ -541,6 +542,7 @@
 <translation id="1913037223029790376">Ушул виртуалдык картанын CVC кодун колдонуңуз</translation>
 <translation id="191374271204266022">JSON форматында көчүрүү</translation>
 <translation id="1914326953223720820">Файлдарды архивден чыгаруу кызматы</translation>
+<translation id="1915335901851260370">Учурда карточканын ээсинин аты-жөнүн сактоо мүмкүн эмес</translation>
 <translation id="1919367280705858090">Белгилүү бир каталар боюнча жардам алуу</translation>
 <translation id="1919526244108283799">400 x 600 мм.</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Бирөө да жок}=1{1 сайт}other{# сайт}}</translation>
@@ -916,6 +918,7 @@
 <translation id="251033673027346551"><ph name="BEGIN_LINK" />Маалыматты жана купуялык параметрлерин<ph name="END_LINK" /> тескөө үчүн Google Капчыкка өтүңүз.</translation>
 <translation id="2512101340618156538">Тыюу салынган (демейки)</translation>
 <translation id="2512413427717747692">Chrome'ду демейки серепчи катары коюу баскычы, iOS параметрлеринен Chrome'ду системанын демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
+<translation id="2513217232843681817">Көрүлгөн вебсайттардын башка түрлөрү, мисалы, <ph name="BEGIN_LINK_GAA" />Gemini колдонмолорундагы аракеттер<ph name="END_LINK_GAA" /> бөлүмүндөгү авто серептөө режиминде баш багуулар Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="2515629240566999685">Аймагыңыздагы сигналды текшерип көрүңүз</translation>
 <translation id="2518584823165598232">Бул карта жеткиликсиз. Картанын эмитентине кайрылыңыз.</translation>
 <translation id="2521385132275182522">Төмөнк оң жагын илмек менен бекитүү</translation>
@@ -1363,6 +1366,7 @@
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> уюмуңуз жөндөөлөр же саясаттар сыяктуу айрым маалыматты төмөндөгү вебсайттарга жөнөттү.</translation>
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3287510313208355388">Интернетке туташканда жүктөлүп алынсын</translation>
+<translation id="3288416906300127968">Gemini менен сүйлөшүүгө өтүү</translation>
 <translation id="3289578402369490638">Интернеттеги башка дүкөндөрдөн</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты жөнүндө кеңири маалымат</translation>
 <translation id="3295444047715739395">Сырсөздөрүңүздү Chrome'дун жөндөөлөрүндө көрүп, башкарыңыз</translation>
@@ -1383,6 +1387,7 @@
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3325568918769906282">азаюу тартибинде</translation>
 <translation id="3325662270238538525">Файлдарды соңку ачуу жана өзгөртүү аракеттери, анын ичинде файлдардын аталыштары, файлдын мазмунунун санариптик манжа издери, жүктөп алуу булагы жана метадайындар</translation>
+<translation id="3326857361043236066">Gemini'дын негизги карап чыгуу аракеттери</translation>
 <translation id="3329013043687509092">Каныктыруу</translation>
 <translation id="3333762389743153920">Виртуалдык карта үчүн жарамдуу эмес</translation>
 <translation id="3338095232262050444">Корголгон</translation>
@@ -2018,6 +2023,7 @@
 <translation id="4333561522337981382">Бардык экрандардагы терезелерди тескөө</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 RSA шифрлөөсү менен</translation>
 <translation id="4336913590841287350">Бул саясат азырынча iOS'то колдонуучулар үчүн саясат катары колдоого алынбайт.</translation>
+<translation id="4338516934178140574">Chrome'до көрүлгөн вебсайттарда Gemini сиздин ордуңузга сайттарды карап жатканда аткарган негизги аракеттерди көрө аласыз</translation>
 <translation id="4340575312453649552">Бул жарнама түзмөгүңүздүн ресурстарын ашыкча колдонуп жаткандыктан Chrome аны өчүрүп койду.</translation>
 <translation id="4340810192899866471">JSON'дон өткөрүп алуу</translation>
 <translation id="4340982228985273705">Бул компьютер ишкана тарабынан башкарылбаганы аныкталды, андыктан саясат Chrome Желе дүкөнүндө жайгашкан кеңейтүүлөрдү гана автоматтык түрдө орното алат. Chrome Желе дүкөнүн жаңыртуучу URL: "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2111,6 +2117,7 @@
 <translation id="4510703642214459906">Иш-чара өтүүчү жер</translation>
 <translation id="4515275063822566619">Карточкалар жана даректер Chrome’дон жана Google аккаунтуңуздан (<ph name="ACCOUNT_EMAIL" />) алынган. Аларды <ph name="BEGIN_LINK" />Параметрлерден<ph name="END_LINK" /> башкарсаңыз болот.</translation>
 <translation id="451601984112574365">Жашыл 3</translation>
+<translation id="4519245852815730903">Ар бир электрондук почта дарегине өзүнчө уруксат берүү суралат</translation>
 <translation id="4520048001084013693">Бул файлды жүктөп алуу аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Конверт Монарх</translation>
@@ -2381,6 +2388,7 @@
 <translation id="4969341057194253438">Жаздырууну өчүрүү</translation>
 <translation id="4973922308112707173">Жогорку жагын эки жолу тешүү</translation>
 <translation id="4976702386844183910">Акыркы жолу кирген: <ph name="DATE" /></translation>
+<translation id="4982928820514634045">Байланыш маалыматына өтүү</translation>
 <translation id="498323057460789381">Схеманы текшерүү катасы: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Микрофон колдонулсунбу?</translation>
 <translation id="4989542687859782284">Жеткиликсиз</translation>
@@ -2390,6 +2398,7 @@
 <translation id="4994095017621319069">1 өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="4995474875135717171">Өзгөрүлгөн күнү:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, сайттан издөө жана демейки издөө куралын башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
+<translation id="4996709766489151157">Байланыш маалыматы толтурулду</translation>
 <translation id="4998950033665438990">Картон</translation>
 <translation id="5000497292978544380">Google Издөөдөгү ЖИ режими</translation>
 <translation id="5001338033791319371">Толук экран режиминен чыгып, жүктөлүп алынган нерсени көрүү үчүн өйдөдөн сүйрөп, артка баскычын басыңыз</translation>
@@ -2409,6 +2418,7 @@
 <translation id="5019293549442035120">Сакталган даректериңизди Google кызматтарында колдоно аласыз. Бул дарек Google аккаунтуңузда (<ph name="USER_EMAIL" />) сакталат.</translation>
 <translation id="5019819206251569004">кыймыл жана жарык сенсорлору</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> саясаты туураланды. Кеңейтүүлөр бетинде <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> иштеп чыгуучу режиминин жеткиликтүүлүгүн башкарбайт.</translation>
+<translation id="502075697789439404">Файл жүктөлүп алынды</translation>
 <translation id="5020862932518041900">Эгер сунушту тандасаңыз же четке каксаңыз, Chrome ыңгайлашып, сизге керектүү нерселерди гана көрсөтөт.</translation>
 <translation id="5021500396464456616">Бул шилтемени жөнөткөн киши менен байланышыңыз</translation>
 <translation id="5021557570875267742">Бааларга Chrome менен көз салуу</translation>
@@ -2469,7 +2479,6 @@
 <translation id="5115232566827194440">Конок сеансын өзгөртүүнү башкаруу чектелди</translation>
 <translation id="5115563688576182185">(64 бит)</translation>
 <translation id="5116015291385561204">Купуя маалыматты автотолтуруу үчүн бул сиз экениңизди ырастаңыз</translation>
-<translation id="5121592697493894155">Google Издөө капталдагы тилкеде</translation>
 <translation id="5122786942953798871">Конверт (пахта кагазы)</translation>
 <translation id="5123063207673082822">Дем алыш</translation>
 <translation id="5124797626438336458">"Азыр сатып ал, кийин төлө" катасынын экраны жарымына чейин ачылды.</translation>
@@ -2956,6 +2965,7 @@
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Жазууга жардам бер функциясын колдонуу үчүн бул параметрди күйгүзүңүз</translation>
 <translation id="5932224571077948991">Сайт тажатма же адаштыруучу жарнамаларды көрсөтүп жатат</translation>
+<translation id="5933647156166686601">Gemini'да жасалган аракеттерди карап чыгуу</translation>
 <translation id="5937560539988385583">Барак которулду</translation>
 <translation id="5938153366081463283">Виртуалдык картаны кошуу</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3430,6 +3440,7 @@
 <translation id="6721164594124191969">Энбелгилер (жылтырак)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
+<translation id="672853333773293432">Аккаунт менен кирди</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Дайын-даректериңиз <ph name="BEGIN_LINK" />шайкештирүүчү өткөрүүчү сүйлөм<ph name="END_LINK" /> менен <ph name="TIME" /> шифрлеген. Шайкештирип баштоо үчүн, аны киргизиңиз.</translation>
 <translation id="6740851646645036700">Азырынча жазуу боюнча жардамдын чегине жеттиңиз. Кийинчерээк кайталап көрүңүз.</translation>
@@ -3494,6 +3505,7 @@
 <translation id="6852204201400771460">Колдонмо кайра жүктөлсүнбү?</translation>
 <translation id="6854691830678097752">Тез төлөө үчүн бул картанын CVC кодун <ph name="ACCOUNT_EMAIL" />аккаунтуңузга сактап коюңуз</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6858341433205161172"><ph name="DEVICE_NAME" /> (ушул серепчи)</translation>
 <translation id="6860888819347870819">Сүрөттөгү сүрөт режимине кирүү үчүн уруксат сурай алат</translation>
 <translation id="6864189428899665393">267 x 389 мм.</translation>
 <translation id="6865412394715372076">Бул картаны учурда ырастоо мүмкүн эмес</translation>
@@ -3545,6 +3557,7 @@
 <translation id="6936976777388162184">Бул түзмөктө уруксаттама камтылгандыктан, Киоск жана белгилөөчү түзмөк жаңыртуусу менен каттоого болбойт.</translation>
 <translation id="6942444979237658241">Пикирлер - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Сырсөзүңүздү <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> тарабынан башкарылбаган сайтка киргиздиңиз. Аккаунтуңузду коргоо үчүн сырсөзүңүздү башка колдонмолор менен сайттарда колдонбоңуз.</translation>
+<translation id="6945116087771548601">Жүктөлүп алынгандарга өтүү</translation>
 <translation id="6948051842255602737">Оюн бүттү, упайларыңыз: <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Chrome'до нерселерди сатып алганда, Pix'ти вариант катары караңыз</translation>
 <translation id="6948701128805548767">Алып кетүү ыкмаларын жана талаптарын көрүү үчүн дарегин тандаңыз</translation>
@@ -3613,6 +3626,7 @@
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменине кирүүгө аракет кылдыңыз, бирок сервер ишенимдүү болушу үчүн жарактуу мөөнөтү өтө узун уруксаттама берди.</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
+<translation id="7054563057916451424"><ph name="DESTINATION" />, жаңы өтмөктө ачылат</translation>
 <translation id="7054717457611655239">Мындан ары файлдарды <ph name="CLOUD_PROVIDER" /> кызматына сактаңыз.</translation>
 <translation id="7057567173736333354">Cүрөтүңүздү сүрөттөп бериңиз</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> бул вебсайт тастыктамасын <ph name="ISSUER" /> басып чыгарганын ырастады.</translation>
@@ -3841,6 +3855,7 @@
 <translation id="7425037327577270384">Жазууга жардам бер</translation>
 <translation id="7426745633088095666">Жалпы өтмөктөр</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7430649113830485349">Негизги аракеттерди карап чыгуу</translation>
 <translation id="7432774160230062882">Chromium төлөм маалыматыңызды толтуруусу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="7437289804838430631">Байланыш маалыматын кошуу</translation>
 <translation id="7441627299479586546">Туура эмес саясат темасы</translation>
@@ -3986,6 +4001,7 @@
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7659327900411729175">Конверт Каку 8</translation>
 <translation id="766014026101194726">{0,plural, =1{Бул файлды жүктөп берүү аракети администраторуңуздун саясаты менен бөгөттөлгөн}other{# файлды жүктөп берүү аракети администраторуңуздун саясаты менен бөгөттөлгөн}}</translation>
+<translation id="7660909719765799166">Аккаунтка кирүү бетине өтүү</translation>
 <translation id="7661440329832413796">Python'до коддоону үйрөнүүгө жардам бер</translation>
 <translation id="7662298039739062396">Жөндөө кеңейтүү тарабынан көзөмөлдөнөт</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> топтон чыкты</translation>
@@ -4001,6 +4017,7 @@
 <translation id="7675756033024037212">Сыдырууга жана чоңойтуп/кичирейтүүгө уруксат берилбейт</translation>
 <translation id="7676643023259824263">Алмашуу буфериндеги текстти издөө, <ph name="TEXT" /></translation>
 <translation id="7676840398262504532">Уюмуңуз көчүрүү аракеттерин көзөмөлдөйт</translation>
+<translation id="767806704757698045">Колдоого алынган сайттарда гана иштейт</translation>
 <translation id="7678730592635586336">Видеону кайра тартуу</translation>
 <translation id="7679287273775285018">Электрондук капчык менен төлөңүз</translation>
 <translation id="7679367271685653708">Chrome жөндөөлөрүндө көрүлгөн вебсайттарды көрүү жана башкаруу</translation>
@@ -4122,6 +4139,7 @@
 <translation id="7885670691503039914">Кандайдыр бир сайтта баасы төмөндөсө, электрондук почта билдирүүсүн аласыз. Бул бет <ph name="LAST_BOOKMARKS_FOLDER" /> кыстармалар папкасына сакталат.</translation>
 <translation id="7887683347370398519">CVC'иңизди текшерип, кайталап көрүңүз</translation>
 <translation id="7887885240995164102">Сүрөт ичиндеги сүрөт режимине кирүү</translation>
+<translation id="7888219259712865185">google.com сыяктуу электрондук почта провайдерлери электрондук почта дарегиңизди ырастай алат, андыктан келген каттар кутусун текшерип отурбайсыз</translation>
 <translation id="7888367499748383555">Комиссия жок, 0% түзгөн жылдык пайыздык чен (жарамдуулукка жараша)</translation>
 <translation id="7888575728750733395">Басып чыгаруу аралыгы</translation>
 <translation id="7890748547282909375">Скриншотту сактоо үчүн Microsoft OneDrive аккаунтуңузга кириңиз</translation>
@@ -4366,6 +4384,7 @@
 <translation id="8298399736867690281">Карта түзмөккө гана сакталган</translation>
 <translation id="8300302621078931927">Мамлекеттик ID картаңызды Google Капчыкка сактаңыз</translation>
 <translation id="8301894345671534559">Кодду киргизиңиз</translation>
+<translation id="830342764194666561">Сайттын параметрлери өзгөрдү</translation>
 <translation id="830498451218851433">Жарымынан бүктөө</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8310477433309274098">Комиссия жок, 0% түзгөн жылдык пайыздык чен</translation>
@@ -4500,6 +4519,7 @@
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8544217240017914508">Google Chrome төлөм ыкмаларын толтуруу параметрлерин өзгөртүүгө аракет кылууда.</translation>
 <translation id="8544303911974837265">Полиэстер</translation>
+<translation id="8545237556624168656">Функцияны колдонуу үчүн электрондук почта аккаунтуңузга киришиңиз керек</translation>
 <translation id="854548366864113872">Кымбат вариант</translation>
 <translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Жүктөп берүүнүн себебин көрсөтүңүз (милдеттүү)</translation>
@@ -4519,6 +4539,7 @@
 <translation id="8577192028579836704">Бардык варианттар адатта <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуалдык карта жеткиликсиз</translation>
 <translation id="8579000896558714521">Баскычтопту өзгөртүү</translation>
+<translation id="8579561564816585231">Сырсөздөрдү башкаргыч сыяктуу Google кызматы аркылуу кирди</translation>
 <translation id="8581064022803799721">Бул бет <ph name="LAST_BOOKMARKS_FOLDER" /> папкасына сакталды.</translation>
 <translation id="858637041960032120">Телефон номерин кошуу</translation>
 <translation id="8587100480629037893">Колдорго көз салууга тыюу салынды</translation>
@@ -4608,6 +4629,7 @@
 <translation id="8759274551635299824">Бул карточканын мөөнөтү бүткөн</translation>
 <translation id="87601671197631245">Бул сайт эскирген коопсуздук конфигурациясын колдонуп жатат. Маалыматыңыз (мисалы, сырсөздөр, билдирүүлөр же насыя карталары) ушул сайтка жөнөтүлгөндө ачык көрүнүп калышы мүмкүн.</translation>
 <translation id="8762871163452985706">Аннотацияга байланыштуу аракет кайтарылды</translation>
+<translation id="8762944800272172913">Gemini менен сүйлөшүү ачылган жок</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> түзмөгүнөн шилтеме жөнөтүлдү}other{<ph name="DEVICE_NAME" /> түзмөгүнөн # шилтеме жөнөтүлдү}}</translation>
 <translation id="8763927697961133303">USB түзмөгү</translation>
 <translation id="8763986294015493060">Учурда ачылып турган бардык Жашыруун терезелерди жабыңыз</translation>

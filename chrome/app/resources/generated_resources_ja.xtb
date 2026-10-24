@@ -7334,6 +7334,7 @@
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /> キー</translation>
 <translation id="6630117778953264026">セキュリティの強化</translation>
+<translation id="6630211688479622571">最新のものを表示</translation>
 <translation id="6630452975878488444">選択ショートカット</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> が、自身を自動的に認証できるよう、証明書への恒久的なアクセス許可を求めています。</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{グループから退出}other{グループから退出}}</translation>

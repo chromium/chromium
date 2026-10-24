@@ -1942,6 +1942,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="6946722113367118030">Se gândește</translation>
 <translation id="6947751977892029882">A apărut o eroare legată de această setare. Actualizează și repornește Chrome și iOS, apoi încearcă din nou. Dacă eroarea persistă, este posibil ca iPhone-ul să nu accepte această setare.</translation>
 <translation id="6950522403736391608">Ascuns</translation>
+<translation id="6957084631403333422">Încearcă o nouă pagină Filă nouă focalizată</translation>
 <translation id="695965663642079255">Salvează și gestionează informațiile de plată pentru a finaliza achizițiile mai rapid</translation>
 <translation id="6962809930976936328">Obține informații cu Gemini</translation>
 <translation id="6964300328304469089">Ai selectat: <ph name="NAME" />, <ph name="EMAIL" />. Alege un cont.</translation>
@@ -2179,6 +2180,7 @@ Poți reporni oricând.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elementul a fost salvat în Contul Google {email}}few{Elementele au fost salvate în Contul Google {email}}other{Elementele au fost salvate în Contul Google {email}}}</translation>
 <translation id="7729458878441927652">Pentru a vedea filele de pe alte dispozitive, sincronizează filele și istoricul.</translation>
 <translation id="7730020510075123961">Nu, îmbină datele</translation>
+<translation id="7730937523779541003">S-a aplicat pagina Filă nouă focalizată</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Numai pe acest dispozitiv.</translation>
 <translation id="7737550920399185748">Fotografiile de pe pagina de pornire din fototecă nu se vor sincroniza pe toate dispozitivele.</translation>
 <translation id="7738120385185846461">Semnalează o problemă…</translation>
@@ -2622,6 +2624,7 @@ Poți reporni oricând.</translation>
 <translation id="9032405509996909363">Confirmă ștergerea datelor de navigare</translation>
 <translation id="9038526468059454274">Rezumă cu</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
+<translation id="9042363670218758847">Treci la un aspect creat pentru căutări rapide</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
 <translation id="9044703854323320868">Mesaj Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Creează grupuri de file pentru a-ți organiza filele deschise și a rămâne productiv</translation>

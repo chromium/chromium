@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">دسترسی سایت‌ها به دستگاه و داده‌های واقعیت مجازی مسدود شود</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6452138246455930388">کاهش قیمت در زبانه باز، از <ph name="OLD_PRICE" /> به <ph name="NEW_PRICE" />، <ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">لغو اجازه دستگاه برای <ph name="NAME" /></translation>
 <translation id="6500423977866688905">وقتی پنجره باریک است، نمای تلفن همراه درخواست شود</translation>
 <translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="6530703012083415527">هرگاه روشن باشد، سایت‌ها می‌توانند از بالاپرها و هدایت کردن استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از بالاپرها و هدایت کردن استفاده کنند.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">داده‌های سایت‌ها در دستگاه</translation>
 <translation id="7201549776650881587">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط همه سایت‌های تحت <ph name="ORIGIN" /> یا برنامه آن در صفحه اصلی حذف خواهد شد</translation>
 <translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
+<translation id="7225256190577194089">لغو همه اجازه‌ها برای دستگاه <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">انتخاب تصاویر</translation>
 <translation id="7243246278722455312">برگ زیرین «سفارشی‌سازی صفحه زبانه جدید»</translation>
 <translation id="7243308994586599757">گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند</translation>

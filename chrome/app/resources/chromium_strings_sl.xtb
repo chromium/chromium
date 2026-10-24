@@ -373,6 +373,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4786083865378785874">Če je Gemini v Chromiumu odprt, stransko podokno ostane odprto pri ustvarjanju novih zavihkov</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4814736265800133385">Uporaba Chromiuma brez računa</translation>
+<translation id="4839733921943823254">Pripni bližnjico</translation>
 <translation id="4888717733111232871">Pravilo za dohodni promet za Chromium, ki omogoča promet mDNS.</translation>
 <translation id="4893347770495441059">Znova zaženite, če želite posodobiti &amp;Chromium</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
@@ -763,6 +764,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="856656450041460113">Iskanje po seznamu jezikov</translation>
 <translation id="8576826849825683917">Chromium upravlja več organizacij</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
+<translation id="8590782867495422699">Vnovično odpiranje načina umetne inteligence v Iskanju Google</translation>
 <translation id="8619360774459241877">Zagon Chromiuma …</translation>
 <translation id="8624541899164515475">Nastavitve, odpre se na novem zavihku.</translation>
 <translation id="8648201657708811153">Brskalnika Google Chrome for Testing ni mogoče nastaviti kot privzetega brskalnika.</translation>
@@ -813,6 +815,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="9056398481763999048">Z aplikacijo Chromium v telefonu uporabljajte Googlova najboljša orodja z umetno inteligenco</translation>
 <translation id="9057625473949801035">Če želite dostopati do gesel in drugega v napravi <ph name="DEVICE" />, se prijavite v Chromium</translation>
 <translation id="9062666675513499497">Prijavite se v Chromium, ko se prijavite v druge Googlove storitve</translation>
+<translation id="9074041031320636790">Uspelo je. Z načinom umetne inteligence v Iskanju Google lahko med brskanjem preprosto postavljate vprašanja</translation>
 <translation id="9078733879136747090">Chromium se je samodejno zaprl</translation>
 <translation id="9089354809943900324">Chromium je zastarel</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se bo znova zagnal čez eno uro}one{Chromium se bo znova zagnal čez # uro}two{Chromium se bo znova zagnal čez # uri}few{Chromium se bo znova zagnal čez # ure}other{Chromium se bo znova zagnal čez # ur}}</translation>

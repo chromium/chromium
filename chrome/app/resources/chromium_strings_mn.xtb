@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Хэрэв Chromium дахь Gemini нээлттэй бол шинэ таб үүсгэхэд хажуугийн самбар нээлттэй хэвээр байна</translation>
 <translation id="479167709087336770">Энэ нь Google хайлтад ашигладаг зөв бичгийн ижил алдаа шалгагчийг ашигладаг. Таны хөтчид бичсэн текстийг Google-д илгээдэг. Та энэ ажиллах төлөвийг хүссэн үедээ тохиргоонд өөрчилж болно</translation>
 <translation id="4814736265800133385">Chromium-г бүртгэлгүйгээр ашиглах</translation>
+<translation id="4839733921943823254">Товчлол бэхлэх</translation>
 <translation id="4888717733111232871">MDNS урсгалыг зөвшөөрөхийн тулд Chromium-д зориулсан хөндлөнгийн дүрэм.</translation>
 <translation id="4893347770495441059">&amp;Chromium-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
@@ -757,6 +758,7 @@
 <translation id="856656450041460113">Хэлний жагсаалтаас хайх</translation>
 <translation id="8576826849825683917">Олон байгууллага Chromium-г удирддаг</translation>
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
+<translation id="8590782867495422699">Google Хайлтын ХОУ-ы горимыг дахин нээх</translation>
 <translation id="8619360774459241877">Chromium-г эхлүүлж байна...</translation>
 <translation id="8624541899164515475">Тохиргоо, шинэ табд нээгдэнэ.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing-г өгөгдмөл хөтчөө болгох боломжгүй.</translation>
@@ -807,6 +809,7 @@
 <translation id="9056398481763999048">Утсан дээрээ Chromium аппаар Google-н шилдэг ХОУ-ы хэрэгслүүдийг ашиглаарай</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" />-с нууц үг болон бусад зүйлээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
 <translation id="9062666675513499497">Та Google-н бусад үйлчилгээнд нэвтрэх үедээ Chromium-д нэвтэрнэ үү</translation>
+<translation id="9074041031320636790">Амжилттай! Та одоо Google Хайлтын ХОУ-ы горимоор үзэх явцдаа асуулт хялбархан асуух боломжтой</translation>
 <translation id="9078733879136747090">Chromium-г автоматаар хаасан</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium-г 1 цагийн дотор дахин ажиллуулна}other{Chromium-г # цагийн дотор дахин ажиллуулна}}</translation>

@@ -1942,6 +1942,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6946722113367118030">सोचते हुए</translation>
 <translation id="6947751977892029882">इस सेटिंग में कोई गड़बड़ी हुई. Chrome और iOS को अपडेट करके रीस्टार्ट करें. इसके बाद, फिर से कोशिश करें. अगर यह गड़बड़ी बनी रहती है, तो हो सकता है कि आपके iPhone पर यह सेटिंग काम न करती हो.</translation>
 <translation id="6950522403736391608">छिपा हुआ</translation>
+<translation id="6957084631403333422">'नया टैब' पेज के लिए, फ़ोकस किया गया कोई लेआउट आज़माएं</translation>
 <translation id="695965663642079255">ज़्यादा तेज़ी से पेमेंट करने के लिए, पेमेंट के तरीके की जानकारी सेव और मैनेज करें</translation>
 <translation id="6962809930976936328">Gemini की मदद से अहम जानकारी पाएं</translation>
 <translation id="6964300328304469089">फ़िलहाल, <ph name="NAME" />, <ph name="EMAIL" /> को चुना गया है. खाता चुनें.</translation>
@@ -2179,6 +2180,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7724085059277147439">{count,plural, =1{आपके Google खाते {email} में सेव किया गया आइटम}one{आपके Google खाते {email} में सेव किया गया आइटम}other{आपके Google खाते {email} में सेव किए गए आइटम}}</translation>
 <translation id="7729458878441927652">अपने अन्य डिवाइसों के टैब देखने के लिए, टैब और इतिहास सिंक करें.</translation>
 <translation id="7730020510075123961">नहीं, डेटा मर्ज करें</translation>
+<translation id="7730937523779541003">'नया टैब' पेज के लिए फ़ोकस किया गया लेआउट लागू किया गया</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. सिर्फ़ इस डिवाइस पर.</translation>
 <translation id="7737550920399185748">आपकी फ़ोटो लाइब्रेरी में मौजूद होमपेज की फ़ोटो, आपके सभी डिवाइसों पर सिंक नहीं होंगी.</translation>
 <translation id="7738120385185846461">समस्या की शिकायत करें…</translation>
@@ -2622,6 +2624,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="9032405509996909363">ब्राउज़िंग डेटा मिटाने की पुष्टि करें</translation>
 <translation id="9038526468059454274">इसकी मदद से खास जानकारी पाएं</translation>
 <translation id="9039373489628511875">बैंडविड्थ</translation>
+<translation id="9042363670218758847">तेज़ी से खोजने के लिए बनाए गए लेआउट पर स्विच करें</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
 <translation id="9044703854323320868">Gmail मैसेज <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">अपने खुले हुए टैब व्यवस्थित करने और बेहतर तरीके काम करने के लिए टैब ग्रुप बनाएं</translation>

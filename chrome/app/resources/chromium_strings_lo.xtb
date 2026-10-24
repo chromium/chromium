@@ -373,6 +373,7 @@
 <translation id="4786083865378785874">ຫາກ Gemini ໃນ Chromium ເປີດຢູ່, ແຜງຄວບຄຸມດ້ານຂ້າງຈະເປີດຢູ່ເມື່ອສ້າງແຖບໃໝ່</translation>
 <translation id="479167709087336770">ນີ້ໃຊ້ຕົວກວດການສະກົດຄໍາດຽວກັນກັບທີ່ໃຊ້ໃນ Google ຊອກຫາ. ຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບຖືກສົ່ງໃຫ້ Google. ທ່ານສາມາດປ່ຽນລັກສະນະການນໍາໃຊ້ນີ້ໄດ້ສະເໝີໃນການຕັ້ງຄ່າ.</translation>
 <translation id="4814736265800133385">ໃຊ້ Chromium ໂດຍບໍ່ມີບັນຊີ</translation>
+<translation id="4839733921943823254">ປັກໝຸດທາງລັດ</translation>
 <translation id="4888717733111232871">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Chromium ເພື່ອອະນຸຍາດການຈາລະຈອນ mDNS.</translation>
 <translation id="4893347770495441059">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chromium</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
@@ -763,6 +764,7 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="856656450041460113">ຊອກຫາລາຍການພາສາ</translation>
 <translation id="8576826849825683917">ຫຼາຍອົງການຈັດການ Chromium</translation>
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
+<translation id="8590782867495422699">ເປີດໂໝດ AI ຂອງ Google ຊອກຫາຄືນໃໝ່</translation>
 <translation id="8619360774459241877">ກຳລັງເປີດໃຊ້ Chromium...</translation>
 <translation id="8624541899164515475">ການຕັ້ງຄ່າ, ເປີດໃນແຖບໃໝ່.</translation>
 <translation id="8648201657708811153">ບໍ່ສາມາດຕັ້ງ Google Chrome ສຳລັບການທົດສອບເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານໄດ້.</translation>
@@ -813,6 +815,7 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="9056398481763999048">ໃຊ້ເຄື່ອງມື AI ທີ່ດີທີ່ສຸດຂອງ Google ດ້ວຍແອັບ Chromium ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="9057625473949801035">ເພື່ອເຂົ້າເຖິງລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກ <ph name="DEVICE" />, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="9062666675513499497">ເຂົ້າສູ່ລະບົບ Chromium ເມື່ອທ່ານເຂົ້າສູ່ລະບົບບໍລິການອື່ນໆຂອງ Google</translation>
+<translation id="9074041031320636790">ສຳເລັດ! ຕອນນີ້ທ່ານສາມາດຖາມຄຳຖາມໄດ້ຢ່າງງ່າຍດາຍໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບດ້ວຍໂໝດ AI ຂອງ Google ຊອກຫາ</translation>
 <translation id="9078733879136747090">Chromium ຖືກປິດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="9089354809943900324">Chromium ຫຼ້າສະໄໝແລ້ວ</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ຈະເປີດຄືນໃໝ່ໃນໜຶ່ງຊົ່ວໂມງ}other{Chromium ຈະເປີດຄືນໃໝ່ໃນ # ຊົ່ວໂມງ}}</translation>

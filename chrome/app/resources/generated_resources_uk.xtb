@@ -7355,6 +7355,7 @@
 <translation id="6628328486509726751">Завантажено: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Надійніший захист</translation>
+<translation id="6630211688479622571">Показати останні</translation>
 <translation id="6630452975878488444">Сполучення клавіш для вибору</translation>
 <translation id="6630752851777525409">Розширенню <ph name="EXTENSION_NAME" /> потрібен постійний доступ до сертифіката, щоб проходити автентифікацію від вашого імені.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Вийти з групи}one{Вийти з груп}few{Вийти з груп}many{Вийти з груп}other{Вийти з груп}}</translation>

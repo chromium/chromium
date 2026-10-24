@@ -7329,6 +7329,7 @@
 <translation id="6628328486509726751">上傳時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="6630117778953264026">安全再升級</translation>
+<translation id="6630211688479622571">顯示最新項目</translation>
 <translation id="6630452975878488444">選項快速鍵</translation>
 <translation id="6630752851777525409">「<ph name="EXTENSION_NAME" />」要求永久存取可代您驗證其自身的憑證。</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{退出群組}other{退出群組}}</translation>

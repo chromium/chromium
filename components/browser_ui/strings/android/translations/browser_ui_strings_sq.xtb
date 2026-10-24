@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Blloko sajtet që të mos përdorin pajisjen e realitetit virtual dhe të dhënat e tua</translation>
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6452138246455930388">Ulje çmimi në skedën tënde të hapur, nga <ph name="OLD_PRICE" /> deri në <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Revoko lejen e pajisjes për <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Kur dritarja është e ngushtë, kërko pamjen për celular</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6530703012083415527">Kur cilësimi është aktiv, sajtet mund të përdorin dritaret kërcyese dhe ridrejtimet. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin dritaret kërcyese dhe ridrejtimet.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
 <translation id="7201549776650881587">Ky veprim do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga të gjitha sajtet nën <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë</translation>
 <translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
+<translation id="7225256190577194089">Revoko të gjitha lejet për <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Zgjidh imazhet</translation>
 <translation id="7243246278722455312">Fleta e poshtme "Personalizo faqen e skedës së re"</translation>
 <translation id="7243308994586599757">Opsionet janë të disponueshme pranë fundit të ekranit</translation>

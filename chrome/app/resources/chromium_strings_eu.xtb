@@ -372,6 +372,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4786083865378785874">Chromium-eko Gemini irekita badago, alboko panela irekita geratzen da fitxak sortzean</translation>
 <translation id="479167709087336770">Google Bilaketa zerbitzuan erabiltzen den ortografia-zuzentzaile bera erabiltzen da. Arakatzailean idazten duzun testua Google-ri bidaltzen zaio. Aukera horiek aldatzeko, joan ezarpenetara.</translation>
 <translation id="4814736265800133385">Erabili Chromium saioa hasi gabe</translation>
+<translation id="4839733921943823254">Ainguratu lasterbidea</translation>
 <translation id="4888717733111232871">Chromium-ek mDNS trafikoa baimentzeko sarrerako araua.</translation>
 <translation id="4893347770495441059">Exekuta ezazu berriro &amp;Chromium eguneratzeko</translation>
 <translation id="4918086044614829423">Onartu</translation>
@@ -762,6 +763,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="856656450041460113">Bilatu hizkuntzen zerrendan</translation>
 <translation id="8576826849825683917">Erakunde batek baino gehiagok kudeatzen dute Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
+<translation id="8590782867495422699">Ireki berriro Google Bilaketa zerbitzuaren AA modua</translation>
 <translation id="8619360774459241877">Chromium abiarazten…</translation>
 <translation id="8624541899164515475">Ezarpenak, beste fitxa batean irekitzen da.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ezin da ezarri arakatzaile lehenetsi gisa.</translation>
@@ -812,6 +814,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9056398481763999048">Erabili Google-ren AA bidezko tresna onenak telefonoan Chromium aplikazioa erabiliz</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> gailuko pasahitzak eta bestelako datuak eskuratzeko, hasi saioa Chromium-en</translation>
 <translation id="9062666675513499497">Hasi saioa Chromium-en Google-ren beste zerbitzuetan saioa hasten duzunean</translation>
+<translation id="9074041031320636790">Eginda! Orain, arakatu bitartean galderak egin ditzakezu erraz, Google Bilaketa zerbitzuaren AA moduarekin.</translation>
 <translation id="9078733879136747090">Chromium automatikoki itxi da</translation>
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="9093206154853821181">{0,plural, =1{Ordubete barru exekutatuko da Chromium berriro}other{# ordu barru exekutatuko da Chromium berriro}}</translation>

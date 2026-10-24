@@ -9547,7 +9547,7 @@ Si la inhabilitabas, las pruebas de campo no podían activar <ph name="ALR_FEATU
 
 Para obtener más información sobre esta función, visita https://github.com/explainers-by-googlers/reduce-accept-language.
 
-NOTA: Solo los procesos de renderizado recién iniciados reflejarán los cambios de esta política mientras se esté ejecutando el navegador.</translation>
+NOTA: Solo los procesos de renderización recién iniciados reflejarán los cambios de esta política mientras se esté ejecutando el navegador.</translation>
 <translation id="6665670272107384733">Establecer la frecuencia con la que el usuario debe ingresar la contraseña para usar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para ver la contraseña en la pantalla de inicio o de bloqueo</translation>
 <translation id="6668559639284945695">Esta política permite volver al comportamiento heredado del alcance de las cookies.
@@ -10842,7 +10842,7 @@ Especifica si los usuarios pueden permitir que <ph name="PRODUCT_NAME" /> use la
 
 0 = Tiene el mismo efecto que 1. Antes de la versión M153, el parámetro de configuración permitía que Google usara datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. 0 es el valor predeterminado, excepto en los siguientes casos.
 
-1 = Permite que se use la función, pero no permite que Google mejore los modelos con datos pertinentes (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+1 = Permite que se use la función, pero no permite que Google mejore los modelos con datos pertinentes (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales administrados mediante la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa administrados mediante <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 2 = No permite la función.
 

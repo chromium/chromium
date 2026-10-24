@@ -1942,6 +1942,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="6946722113367118030">Faccina che pensa</translation>
 <translation id="6947751977892029882">Si è verificato un problema con questa impostazione. Aggiorna e riavvia Chrome e iOS, quindi riprova. Se l'errore persiste, l'iPhone potrebbe non supportare questa impostazione.</translation>
 <translation id="6950522403736391608">Nascoste</translation>
+<translation id="6957084631403333422">Prova una pagina Nuova scheda senza distrazioni</translation>
 <translation id="695965663642079255">Salva e gestisci i dati di pagamento per fare il checkout più velocemente</translation>
 <translation id="6962809930976936328">Chiedi informazioni a Gemini</translation>
 <translation id="6964300328304469089">Selezione attuale: <ph name="NAME" />, <ph name="EMAIL" />. Scegli un account.</translation>
@@ -2179,6 +2180,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elemento salvato nel tuo Account Google, {email}}other{Elementi salvati nel tuo Account Google, {email}}}</translation>
 <translation id="7729458878441927652">Per vedere le schede degli altri tuoi dispositivi, sincronizza le schede e la cronologia.</translation>
 <translation id="7730020510075123961">No, unisci i dati</translation>
+<translation id="7730937523779541003">Pagina Nuova scheda senza distrazioni applicata</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo su questo dispositivo.</translation>
 <translation id="7737550920399185748">Le foto della home page della tua raccolta fotografica non verranno sincronizzate su tutti i tuoi dispositivi.</translation>
 <translation id="7738120385185846461">Segnala un problema</translation>
@@ -2622,6 +2624,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="9032405509996909363">Conferma eliminazione dei dati di navigazione</translation>
 <translation id="9038526468059454274">Riassumi con</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>
+<translation id="9042363670218758847">Passa a un layout creato per ricerche rapide</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9044703854323320868">Messaggio Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea gruppi di schede per organizzare le schede aperte e mantenere la produttività</translation>

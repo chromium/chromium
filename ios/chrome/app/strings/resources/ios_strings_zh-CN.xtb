@@ -1942,6 +1942,7 @@
 <translation id="6946722113367118030">做思考状</translation>
 <translation id="6947751977892029882">此设置出了点问题。请更新并重启 Chrome 和 iOS，然后重试。如果此错误持续出现，说明您的 iPhone 可能不支持该设置。</translation>
 <translation id="6950522403736391608">已隐藏</translation>
+<translation id="6957084631403333422">试试专注模式新标签页</translation>
 <translation id="695965663642079255">保存并管理支付信息，结账更快捷</translation>
 <translation id="6962809930976936328">利用 Gemini 获取数据洞见</translation>
 <translation id="6964300328304469089">目前选择的是：<ph name="NAME" />，<ph name="EMAIL" />。请选择一个账号。</translation>
@@ -2179,6 +2180,7 @@
 <translation id="7724085059277147439">{count,plural, =1{这项内容已保存到您的 Google 账号 {email}}other{这些内容已保存到您的 Google 账号 {email}}}</translation>
 <translation id="7729458878441927652">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录。</translation>
 <translation id="7730020510075123961">不，合并数据</translation>
+<translation id="7730937523779541003">已应用专注模式新标签页</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。仅在该设备上。</translation>
 <translation id="7737550920399185748">照片库中的首页照片不会在您的设备之间同步。</translation>
 <translation id="7738120385185846461">报告问题…</translation>
@@ -2622,6 +2624,7 @@
 <translation id="9032405509996909363">确认删除浏览数据</translation>
 <translation id="9038526468059454274">轻松总结，尽在</translation>
 <translation id="9039373489628511875">带宽</translation>
+<translation id="9042363670218758847">切换到专为快速搜索而设计的布局</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9044703854323320868">Gmail 邮件 <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">创建标签页分组，可以整理打开的标签页，畅享清爽高效的浏览体验</translation>

@@ -1555,6 +1555,23 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
       이 정책은 최상위 문서의 출처(일반적으로 주소 표시줄에도 표시되는 페이지 URL)가 패턴과 일치하는지에 따라 JavaScript를 차단합니다. 따라서 이 정책은 웹 공급망 공격을 완화하는 데 적합하지 않습니다. 예를 들어 'https://[*.]foo.com/' 패턴을 제공해도 https://example.com에서 호스팅되는 페이지가 https://www.foo.com/example.js에서 로드된 스크립트를 실행하지 못하게 막을 수는 없습니다. 또한 'https://example.com/' 패턴을 제공해도 최상위 문서가 아니라 다른 출처(예: https://www.bar.com)에서 호스팅되는 페이지에 하위 프레임으로 삽입된 경우 https://example.com 문서에서 스크립트를 실행하지 못하게 막을 수 없습니다.</translation>
 <translation id="1942015922182679826">복호화할 수 없는 비밀번호 삭제 사용 설정</translation>
 <translation id="1942626390957213764">데스크톱 공유 허브 사용 중지</translation>
+<translation id="1943243146727870858">나열된 ID 공급업체에서 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 사용한 싱글 사인온(SSO)을 사용 중지합니다.
+
+<ph name="POLICY_VALUE_ALL" /> 값을 추가하면 SSO에 대해 지원되는 모든 ID 공급업체가 사용 중지됩니다.
+
+<ph name="POLICY_VALUE_MICROSOFT" /> 값을 추가하면 Chrome에서 Microsoft® 클라우드 ID 공급업체에 대한 싱글 사인온(SSO) 지원이 중지됩니다.
+
+이 정책을 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 지원하는 모든 ID 공급업체가 사용 설정됩니다.
+
+<ph name="PRODUCT_NAME" />에서 사용 설정되어 있고 관리자가 기기에서 구성한 ID 공급업체의 경우, <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 지원하는 애플리케이션에서 해당 ID 공급업체를 사용하여 한 번 로그인한 사용자는 해당 ID 공급업체를 사용하여 웹 서비스에 자동으로 로그인할 수 있습니다. 각 인증 이벤트의 사용자 인증 정보 관련 정보가 사용자의 클라우드 ID 공급업체로 전송됩니다.
+
+참고:
+
+<ph name="PRODUCT_NAME" />에서는 시크릿 모드 또는 게스트 모드에서 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 사용한 싱글 사인온(SSO)을 지원하지 않습니다.
+
+<ph name="PRODUCT_NAME" />에서는 Microsoft, Okta, Ping과 같은 ID 공급업체에 대해 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 사용한 싱글 사인온(SSO)만 지원합니다.
+
+이 기능은 <ph name="MAC_OS_NAME" /> 10.15부터 사용할 수 있습니다.</translation>
 <translation id="1943628907052340534">사용자가 <ph name="MS_WIN_NAME" />에 로그인할 때 <ph name="PRODUCT_NAME" /> 열지 않음</translation>
 <translation id="194407941132272412">모든 웹사이트에 사이트 격리를 사용 중지하되 사용자에게 사용 설정 허용</translation>
 <translation id="1945994447126139909">이 기업 정책은 단기적인 적응을 위해 마련되었으며 <ph name="PRODUCT_NAME" /> 버전 88에서 삭제될 예정입니다.
@@ -5649,6 +5666,27 @@ WebSocket 요청 한도를 수정하려면 <ph name="MAX_CONNECTIONS_PER_PROXY_F
 적용된 한도는 <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />의 영향을 받습니다.</translation>
 <translation id="4528981768990874684"><ph name="IP_PROTECTION_NAME" /> 기능을 사용 중지합니다.</translation>
 <translation id="453031441196755904">지원 중단된 정책입니다.</translation>
+<translation id="4531088355818260318">이 정책을 사용하면 특정 URL 패턴과 일치하는 웹 요청에 맞춤 HTTP 헤더를 삽입하는 규칙 목록을 정의할 수 있습니다. 이 정책에 의해 설정된 헤더는 요청에 원래 포함되어 있던 헤더뿐만 아니라 사용자 또는 확장 프로그램이 시도한 수정 사항보다 우선 적용됩니다.
+
+이 정책의 일반적인 사용 사례는 맞춤 헤더(예: <ph name="EXAMPLE_HEADER_NAME" />)를 삽입하여 테넌트 액세스 제어를 적용하는 것입니다.
+
+이 정책은 규칙 목록을 허용합니다. 각 규칙에는 다음이 포함됩니다.
+
+* <ph name="PATTERNS_KEY" />: 일치시킬 URL 패턴 목록입니다. URL 패턴의 형식을 지정하는 방법을 확인하세요(https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: 삽입할 헤더를 나타내는 객체 목록입니다. 각 객체에는 다음이 포함됩니다.
+
+  * <ph name="HEADER_NAME_KEY" />: 삽입할 헤더의 이름입니다.
+
+  * <ph name="HEADER_VALUE_KEY" />: 삽입할 헤더의 값입니다.
+
+요청과 일치하는 규칙이 여러 개 있는 경우 일치하는 모든 규칙의 헤더가 적용됩니다. 이름이 같은 헤더가 여러 개 있는 경우 가장 구체적인 URL 패턴이 있는 헤더가 적용됩니다. 패턴이 동일하게 구체적인 경우에는 목록에서 마지막에 표시되는 패턴이 적용됩니다.
+
+헤더 이름은 RFC 2616(https://www.rfc-editor.org/rfc/rfc2616)을 준수해야 합니다. 헤더 값에는 NUL, CR 또는 LF 기호가 포함되어서는 안 됩니다. 개별 헤더는 8KB를 초과할 수 없습니다. 잘못된 헤더 및 URL 패턴은 무시됩니다.
+
+이 정책은 모든 규칙에서 총 500개 URL 패턴으로 제한됩니다. 각 규칙에는 최대 20개 헤더가 포함될 수 있습니다. 이러한 기준점을 초과하는 패턴과 헤더는 무시됩니다.
+
+참고: URL 패턴이 암호화되지 않은 스키마(http://, ws:// 또는 스키마가 생략된 경우)와 일치하는 경우 구성된 헤더가 암호화되지 않은 채널을 통해 일반 텍스트로 전송되어 네트워크 관찰자에게 노출될 수 있습니다. 민감한거나 식별 가능한 헤더 값을 보호하려면 URL 패턴을 암호화된 스키마(https:// 또는 wss://)로 제한하세요.</translation>
 <translation id="4531706050939927436">Google Play를 사용해 Google 관리 콘솔에서 Android 앱을 강제 설치할 수 있습니다. Android 앱은 이 정책을 사용하지 않습니다.</translation>
 <translation id="4534500438517478692">Android 제한 이름:</translation>
 <translation id="4541530620466526913">기기 로컬 계정</translation>
@@ -7226,6 +7264,7 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 
       정책이 False로 설정되거나 설정되지 않으면 정보가 보고되지 않습니다.
       True로 설정되면 기기의 애플리케이션 및 사용 정보가 보고됩니다.</translation>
+<translation id="5418723809273651607">Ping® 클라우드 ID 공급업체</translation>
 <translation id="5420245232720940848">Thunderbolt/USB4 주변기기에 대한 PCIe 터널링을 사용 중지하여 기기 기능 제한</translation>
 <translation id="5420673997623782432">모든 클라이언트에 대한 시스템 위치정보 액세스 차단</translation>
 <translation id="5420774177427557782">이 구성을 사용하는 VM을 설치 및 실행할 수 있는지(<ph name="INSTALL_ALLOWED" />), 실행할 수 있지만 설치할 수 없는지(<ph name="RUN_ALLOWED" />) 또는 실행할 수 없는지(<ph name="BLOCKED" />)를 제어합니다. VM을 설치하려면 installer_image_x86_64 키도 설정해야 합니다. 구성을 완전히 삭제하면 <ph name="BLOCKED" />로 암시적으로 설정되므로 VM이 정책 없이 실행되지 못하게 합니다.</translation>

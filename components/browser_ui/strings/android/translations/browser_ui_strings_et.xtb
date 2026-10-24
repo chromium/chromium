@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Blokeeri saitidel virtuaalreaalsuse seadme ja andmete kasutamine</translation>
 <translation id="6447842834002726250">Küpsised</translation>
 <translation id="6452138246455930388">Hinnalangus avatud vahelehel, hinnalt <ph name="OLD_PRICE" /> hinnale <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Seadme jaoks veebisaidile <ph name="NAME" /> juurdepääsemise loa tühistamine.</translation>
 <translation id="6500423977866688905">Kui aken on kitsas, taotlege mobiilivaadet</translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6530703012083415527">Kui see on sisse lülitatud, saavad saidid kasutada hüpikaknaid ja ümbersuunamisi. Kui see on välja lülitatud, ei saa saidid kasutada hüpikaknaid ega ümbersuunamisi.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Seadmes olevad saidiandmed</translation>
 <translation id="7201549776650881587">See toiming kustutab teie avakuval kõik saidigrupi <ph name="ORIGIN" /> alla kuuluvate saitide või selle rakenduse salvestatud andmed ja küpsised</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
+<translation id="7225256190577194089">Kõigi seadme <ph name="DEVICE_NAME" /> lubade tühistamine.</translation>
 <translation id="723171743924126238">Kujutiste valimine</translation>
 <translation id="7243246278722455312">Uue vahelehe kohandamise alumine leht</translation>
 <translation id="7243308994586599757">Valikud on saadaval ekraani allosas</translation>

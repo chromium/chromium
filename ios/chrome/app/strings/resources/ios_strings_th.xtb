@@ -1942,6 +1942,7 @@
 <translation id="6946722113367118030">ใช้ความคิด</translation>
 <translation id="6947751977892029882">เกิดข้อผิดพลาดกับการตั้งค่านี้ โปรดอัปเดตและรีสตาร์ท Chrome และ iOS แล้วลองอีกครั้ง หากข้อผิดพลาดนี้ยังคงเกิดขึ้น iPhone ของคุณอาจไม่รองรับการตั้งค่านี้</translation>
 <translation id="6950522403736391608">ซ่อนอยู่</translation>
+<translation id="6957084631403333422">ลองใช้หน้าแท็บใหม่แบบโฟกัส</translation>
 <translation id="695965663642079255">บันทึกและจัดการข้อมูลการชำระเงินเพื่อชำระเงินได้เร็วขึ้น</translation>
 <translation id="6962809930976936328">รับข้อมูลเชิงลึกด้วย Gemini</translation>
 <translation id="6964300328304469089">เลือก <ph name="NAME" />, <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
@@ -2179,6 +2180,7 @@
 <translation id="7724085059277147439">{count,plural, =1{บันทึกรายการไว้ในบัญชี Google {email} แล้ว}other{บันทึกรายการไว้ในบัญชี Google {email} แล้ว}}</translation>
 <translation id="7729458878441927652">หากต้องการดูแท็บจากอุปกรณ์อื่นๆ ให้ซิงค์แท็บและประวัติการเข้าชม</translation>
 <translation id="7730020510075123961">ไม่ ผสานรวมข้อมูล</translation>
+<translation id="7730937523779541003">ใช้หน้าแท็บใหม่แบบโฟกัสแล้ว</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" /> เฉพาะในอุปกรณ์นี้</translation>
 <translation id="7737550920399185748">รูปภาพหน้าแรกจากคลังภาพจะไม่ซิงค์ในอุปกรณ์ต่างๆ</translation>
 <translation id="7738120385185846461">รายงานปัญหา…</translation>
@@ -2622,6 +2624,7 @@
 <translation id="9032405509996909363">ยืนยันการลบข้อมูลการท่องเว็บ</translation>
 <translation id="9038526468059454274">สรุปด้วย</translation>
 <translation id="9039373489628511875">แบนด์วิดท์</translation>
+<translation id="9042363670218758847">เปลี่ยนไปใช้เลย์เอาต์ที่สร้างขึ้นเพื่อการค้นหาอย่างรวดเร็ว</translation>
 <translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
 <translation id="9044703854323320868">ข้อความ Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">สร้างกลุ่มแท็บเพื่อจัดระเบียบแท็บที่เปิดอยู่และทำงานได้อย่างมีประสิทธิภาพ</translation>

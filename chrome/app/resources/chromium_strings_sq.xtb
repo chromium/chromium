@@ -372,6 +372,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4786083865378785874">Nëse Gemini në Chromium është i hapur, paneli anësor qëndron i hapur kur krijohen skeda të reja</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4814736265800133385">Përdor Chromium pa pasur llogari</translation>
+<translation id="4839733921943823254">Gozhdo shkurtoren</translation>
 <translation id="4888717733111232871">Rregulli hyrës për Chromium për të lejuar trafikun mDNS.</translation>
 <translation id="4893347770495441059">Nise përsëri për të përditësuar &amp;Chromium</translation>
 <translation id="4918086044614829423">Prano</translation>
@@ -760,6 +761,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
 <translation id="8576826849825683917">Disa organizata menaxhojnë Chromium</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
+<translation id="8590782867495422699">Rihap "Modalitetin e IA-së" të "Kërko në Google"</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>
 <translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
@@ -810,6 +812,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="9056398481763999048">Përdor veglat më të mira të IA-së të Google me aplikacionin e Chromium në telefonin tënd</translation>
 <translation id="9057625473949801035">Për të marrë fjalëkalimet e tua etj. nga <ph name="DEVICE" />, identifikohu në Chromium</translation>
 <translation id="9062666675513499497">Identifikohu në Chromium kur identifikohesh në shërbimet e tjera të Google</translation>
+<translation id="9074041031320636790">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko në Google"</translation>
 <translation id="9078733879136747090">Chromium u mbyll automatikisht</translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium do të hapet përsëri për një orë}other{Chromium do të hapet përsëri për # orë}}</translation>

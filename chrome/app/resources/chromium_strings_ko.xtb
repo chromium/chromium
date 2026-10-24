@@ -17,7 +17,7 @@
 <translation id="112640046208448578">사물 또는 장소를 식별하고 텍스트를 복사하거나 번역합니다. 이미지 검색을 사용하면 페이지의 스크린샷이 서버로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
-<translation id="1145158441928281100">{COUNT,plural, =1{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="1153368717515616349">Chromium 메뉴를 클릭합니다</translation>
 <translation id="1157985233335035034">최근에 사용한 언어</translation>
 <translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
@@ -278,7 +278,7 @@
           **질문 추천:** 사용자가 스크린샷을 더 잘 파악하기 위해 물어볼 법하면서 생각할 거리를 주는 질문 3~5개를 글머리기호 목록 형식으로 생성해 줘. 질문에는 시각적 객체, 디자인 또는 배치에 관한 질문이 하나 이상 포함되어야 해.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">모든 기기에서 북마크 등을 사용하려면 Chromium에 로그인하세요</translation>
-<translation id="3864888736839865780">{COUNT,plural, =1{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
@@ -372,6 +372,7 @@
 <translation id="4786083865378785874">Chromium의 Gemini가 열려 있는 경우 새 탭을 만들 때 측면 패널이 열린 상태로 유지됩니다</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
 <translation id="4814736265800133385">계정 없이 Chromium 사용</translation>
+<translation id="4839733921943823254">바로가기 고정</translation>
 <translation id="4888717733111232871">Chromium이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="4893347770495441059">다시 실행하여 Chromium 업데이트</translation>
 <translation id="4918086044614829423">수락</translation>
@@ -762,6 +763,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
 <translation id="8576826849825683917">여러 조직에서 Chromium을 관리합니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
+<translation id="8590782867495422699">Google 검색 AI 모드 다시 열기</translation>
 <translation id="8619360774459241877">Chromium 실행 중...</translation>
 <translation id="8624541899164515475">설정, 새 탭에서 열립니다.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing을 기본 브라우저로 설정할 수 없습니다.</translation>
@@ -812,6 +814,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9056398481763999048">휴대전화에서 Chromium 앱을 사용하여 Google 최고의 AI 도구를 사용하세요</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" />에서 비밀번호 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="9062666675513499497">다른 Google 서비스에 로그인할 때 Chromium에 로그인</translation>
+<translation id="9074041031320636790">완료되었습니다. 이제 Google 검색 AI 모드를 사용해 탐색 중에도 쉽게 질문할 수 있습니다</translation>
 <translation id="9078733879136747090">Chromium이 자동으로 종료되었습니다</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="9093206154853821181">{0,plural, =1{1시간 후 Chromium이 다시 시작됩니다}other{#시간 후 Chromium이 다시 시작됩니다}}</translation>

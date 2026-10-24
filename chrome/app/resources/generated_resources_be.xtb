@@ -6689,6 +6689,7 @@
 <translation id="6124698108608891449">Гэтаму сайту патрэбны дадатковыя дазволы.</translation>
 <translation id="6125202119952209826">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Месяц</translation>
+<translation id="6125649408655762488">Перайсці да групы</translation>
 <translation id="6126601353087978360">Увядзіце свой водгук тут:</translation>
 <translation id="6127292407256937949">Гук уключаны. Выключыць гук.</translation>
 <translation id="6127598727646973981">Бяспечныя падключэнні</translation>
@@ -7343,6 +7344,7 @@
 <translation id="6628328486509726751">Запампавана: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Павышаная бяспека</translation>
+<translation id="6630211688479622571">Паказаць самыя апошнія</translation>
 <translation id="6630452975878488444">Спалучэнне клавіш для выбару</translation>
 <translation id="6630752851777525409">Пашырэнне <ph name="EXTENSION_NAME" /> хоча атрымаць пастаянны доступ да сертыфіката, каб аўтэнтыфікаваць сябе ад вашага імя.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Выйсці з групы}one{Выйсці з груп}few{Выйсці з груп}many{Выйсці з груп}other{Выйсці з груп}}</translation>

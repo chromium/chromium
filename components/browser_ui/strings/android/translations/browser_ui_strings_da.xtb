@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Bloker websites fra at benytte dine virtual reality-enheder og -data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Prisfald på din åbne fane fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Tilbagekald enhedstilladelse for <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Når vinduet er smalt, kan du anmode om mobilvenlig visning</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6530703012083415527">Når dette er slået til, kan websites anvende pop op-vinduer og omdirigeringer. Når dette er slået fra, kan websites ikke anvende pop op-vinduer og omdirigeringer.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Websitedata på enheden</translation>
 <translation id="7201549776650881587">Denne handling sletter alle data og cookies, som er gemt af alle websites i gruppen <ph name="ORIGIN" /> eller den tilhørende app på din startside</translation>
 <translation id="7219254577985949841">Vil du slette websitedata?</translation>
+<translation id="7225256190577194089">Tilbagekald alle tilladelser for enheden <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Vælg billeder</translation>
 <translation id="7243246278722455312">Feltet i bunden med tilpasning af siden Ny fane</translation>
 <translation id="7243308994586599757">Du finder indstillingerne nederst på skærmen</translation>

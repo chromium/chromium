@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="5059127710849015030">Непальська, транслітерація</translation>
 <translation id="5068919226082848014">Піца</translation>
+<translation id="5075336522277785691">Розширення <ph name="EXTENSION_NAME" /> налаштувало правила перевизначення проксі-сервера</translation>
 <translation id="5081517858322016911">Буде видалено файли загальним обсягом <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Переміщення елементів (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>

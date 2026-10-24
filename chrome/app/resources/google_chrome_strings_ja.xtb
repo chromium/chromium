@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">設定に移動。</translation>
 <translation id="2040220733769034247">スマートフォンで QR コードをスキャンして Chrome をダウンロードし、Google アカウントにログインします。</translation>
 <translation id="2044908892530830113">「Chrome で検索」を Mac のメニューバーに表示して、キーボード ショートカットをオンにする</translation>
+<translation id="2050189601866423230">Google 検索の AI モードを固定して、ブラウジング中に質問できます</translation>
 <translation id="2091012649849228750">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8 が実行されています。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 利用規約</translation>
 <translation id="2094919256425865063">今すぐ Chrome を終了しますか？</translation>
@@ -394,6 +395,7 @@
 <translation id="4793679854893018356">Chrome のユーザー保護の仕組みについて</translation>
 <translation id="4828579605166583682">Google Chrome が既存のパスワードを置き換えようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="4836321460899997044">Chrome プロファイル</translation>
+<translation id="4839733921943823254">ショートカットを固定</translation>
 <translation id="4842397268809523050">お使いのドメインでは同期が利用できないため、ChromeOS Flex はデータを同期できませんでした。</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" />さんがすでにログインしています。ブラウジング環境を分ける場合は、自分用のプロファイルで <ph name="USER_EMAIL_ADDRESS" /> として Chrome にログインしてください。</translation>
 <translation id="4855026984605187434">画面を共有するには、[システム設定] で Chrome に画面の録画を許可してください。</translation>
@@ -716,7 +718,6 @@
 <translation id="7777080907402804672">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="778331955594035129">このサイトを利用するには、Chrome で位置情報の使用を許可する必要があります</translation>
 <translation id="7787950393032327779">プロファイルは、別のコンピュータ（<ph name="HOST_NAME" />）の別の Google Chrome プロセス（<ph name="PROCESS_ID" />）で使用されているようです。Chrome はプロファイルが破損しないようにプロファイルをロックしています。他のプロセスがこのプロファイルを使用していないことが確実であれば、プロファイルのロックを解除して Chrome を再起動できます。</translation>
-<translation id="7800043020703832708">サイドパネルの Google 検索を閉じる</translation>
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7804364787702057554">Chrome のアカウント設定</translation>
 <translation id="7804947029129221742">検索エンジンが Chrome の外部から変更されました。ユーザーを保護するため、Chrome で元のデフォルトにリセットしました。<ph name="LEARN_MORE_LINK" /></translation>
@@ -760,6 +761,7 @@
 <translation id="8074398340364918139">Chrome の特定の機能や拡張機能を検索するには、アドレスバーに該当のショートカットを入力して、選択したキーボードキーを押します</translation>
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>
 <translation id="8086881907087796310">パソコンがハードウェアの最小要件を満たしていないため、インストールできませんでした。</translation>
+<translation id="8110438089258398864">Google 検索の AI モードを再度開いて、ブラウジング中に質問できます</translation>
 <translation id="8113883687556086139">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8115695070094288807">Chrome をカスタマイズしています...</translation>
 <translation id="8118331347066725040">Google レンズでの検索に関するフィードバックを送信する</translation>
@@ -816,6 +818,8 @@
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="856656450041460113">言語リストを検索</translation>
 <translation id="8575047640889685742"><ph name="BEGIN_LINK" />独自のパスフレーズ<ph name="END_LINK" />を使用して Google アカウントの Chrome データをすべて暗号化する。暗号化の対象に Google Pay のお支払い方法と住所は含まれません。また、Chrome の閲覧履歴は同期されません。</translation>
+<translation id="8590782867495422699">Google 検索の AI モードを再度開く</translation>
+<translation id="8598779894319572882">ツールバーの [Google 検索の AI モード] ボタンから Google 検索の AI モードを再度開いて、ブラウジング中に質問できます</translation>
 <translation id="8614913330719544658">Google Chrome が応答しません。今すぐ再起動しますか？</translation>
 <translation id="8623450603356630491">スマートフォンで Chrome にログイン</translation>
 <translation id="8624541899164515475">設定、新しいタブで開きます。</translation>
@@ -870,6 +874,7 @@
 <translation id="9014771989710951291">Chrome は複数の組織によって管理されています</translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary を閉じる</translation>
+<translation id="9074041031320636790">これで完了です。ブラウジング中に Google 検索の AI モードで簡単に質問できるようになりました</translation>
 <translation id="9090566250983691233">Chrome で一部のファイルがブロックされる理由</translation>
 <translation id="9106236359747881194">検索するテキストを選択</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>

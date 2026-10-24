@@ -1942,6 +1942,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="6946722113367118030">Pensativo</translation>
 <translation id="6947751977892029882">Algo correu mal com esta definição. Atualize e reinicie o Chrome e o iOS, e tente novamente. Se este erro continuar a ocorrer, o seu iPhone pode não ser compatível com esta definição.</translation>
 <translation id="6950522403736391608">Oculto</translation>
+<translation id="6957084631403333422">Experimente uma página Novo separador focada</translation>
 <translation id="695965663642079255">Guarde e faça a gestão das informações de pagamento para fazer pagamentos mais rapidamente</translation>
 <translation id="6962809930976936328">Ver estatísticas com o Gemini</translation>
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" />. Selecione uma conta.</translation>
@@ -2179,6 +2180,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item guardado na sua Conta Google, {email}}other{Itens guardados na sua Conta Google, {email}}}</translation>
 <translation id="7729458878441927652">Para ver os separadores dos seus outros dispositivos, sincronize os separadores e o histórico.</translation>
 <translation id="7730020510075123961">Não, unir dados</translation>
+<translation id="7730937523779541003">Página Novo separador focada aplicada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
 <translation id="7737550920399185748">As fotos da página inicial da sua fototeca não são sincronizadas nos seus dispositivos.</translation>
 <translation id="7738120385185846461">Comunicar um problema…</translation>
@@ -2622,6 +2624,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9032405509996909363">Confirmar eliminação de dados de navegação</translation>
 <translation id="9038526468059454274">Resuma com o</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
+<translation id="9042363670218758847">Mude para um esquema criado para pesquisas rápidas</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9044703854323320868">Mensagem do Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crie grupos de separadores para organizar os separadores abertos e manter a produtividade</translation>

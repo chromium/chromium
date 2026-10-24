@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">Asetukset.</translation>
 <translation id="2040220733769034247">Skannaa QR-koodi puhelimella, niin voit ladata Chromen ja kirjautua Google-tilillesi.</translation>
 <translation id="2044908892530830113">Näytä "Hae Chromella" Macin valikkopalkissa ja laita pikanäppäimet päälle</translation>
+<translation id="2050189601866423230">Voit kiinnittää Google Haun tekoälytilan, jotta voit esittää kysymyksiä selailun aikana</translation>
 <translation id="2091012649849228750">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.</translation>
 <translation id="2094648590148273905">ChromeOS Flexin ehdot</translation>
 <translation id="2094919256425865063">Suljetaanko Chrome silti?</translation>
@@ -397,6 +398,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4836321460899997044">Chrome-profiili</translation>
+<translation id="4839733921943823254">Kiinnitä pikanäppäin</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> on jo kirjautunut sisään.  Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Jos haluat jakaa näytön, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
@@ -719,7 +721,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7777080907402804672">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="778331955594035129">Chrome tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="7787950393032327779">Profiili näyttäisi olevan toisen Google Chrome -prosessin (<ph name="PROCESS_ID" />) käytössä toisella tietokoneella (<ph name="HOST_NAME" />). Chrome on lukinnut profiilin, jotta se ei vioitu. Jos olet varma, että mikään toinen prosessi ei käytä tätä profiilia, voit poistaa profiilin lukituksen ja käynnistää Chromen uudelleen.</translation>
-<translation id="7800043020703832708">Sulje Google Haku sivupaneelista</translation>
 <translation id="7801699035218095297">Google Chrome yrittää kopioida salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="7804364787702057554">Tilisi Chromessa</translation>
 <translation id="7804947029129221742">Hakukoneesi on vaihdettu Chromen ulkopuolelta. Chrome on nollannut sen alkuperäisiin oletusasetuksiin suojellakseen sinua. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +764,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="8074398340364918139">Etsi tiettyä Chromen ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
+<translation id="8110438089258398864">Voit avata Google Haun tekoälytilan uudelleen, jotta voit esittää kysymyksiä selailun aikana</translation>
 <translation id="8113883687556086139">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Tehdään Chromesta näköisesi…</translation>
 <translation id="8118331347066725040">Lähetä palautetta Lensillä hakemisesta</translation>
@@ -819,6 +821,8 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Hakukielilista</translation>
 <translation id="8575047640889685742">Salaa kaikki Google-tilisi Chrome-data <ph name="BEGIN_LINK" />omalla tunnuslauseella<ph name="END_LINK" />. Google Payn maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.</translation>
+<translation id="8590782867495422699">Avaa Google Haun tekoälytila uudelleen</translation>
+<translation id="8598779894319572882">Työkalupalkin "Google Haun tekoälytila" ‑painikkeella voit avata Google Haun tekoälytilan uudelleen ja esittää kysymyksiä selailun aikana</translation>
 <translation id="8614913330719544658">Google Chrome ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="8623450603356630491">Kirjaudu Chromeen puhelimella</translation>
 <translation id="8624541899164515475">Asetukset, avautuu uudelle välilehdelle.</translation>
@@ -873,6 +877,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="9014771989710951291">Useat organisaatiot ylläpitävät Chromea</translation>
 <translation id="9018218886431812662">Asennus valmis</translation>
 <translation id="9066987883552592250">Sulje Gemini in Chrome Canary</translation>
+<translation id="9074041031320636790">Valmista! Voit nyt helposti esittää kysymyksiä selailun aikana Google Haun tekoälytilassa</translation>
 <translation id="9090566250983691233">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja</translation>
 <translation id="9106236359747881194">Valitse haettavaa tekstiä</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>

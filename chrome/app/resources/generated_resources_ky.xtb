@@ -5335,7 +5335,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Даректер}=1{Даректер ({SELECTED_ITEMS})}other{Даректер ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR код түзүлгөн жок</translation>
 <translation id="5033137252639132982">Кыймыл сенсорлорун колдоно албайт</translation>
-<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> аккаунтка сиздин атыңыздан кирүү үчүн Сырсөздөрдү башкаргычты колдонот. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> маалыматыңызды кантип иштетерин билип алыңыз<ph name="END_LINK" /></translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" /> аккаунтка Сырсөздөрдү башкаргыч аркылуу сиздин атыңыздан кирет. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" /> маалыматыңызды кантип иштетерин билип алыңыз<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> камсыздоочусунан көбүрөөк маалымат алуу үчүн төмөндөгү "Толук маалымат" параметрин тандаңыз.</translation>
 <translation id="5037676449506322593">Баарын тандоо</translation>
 <translation id="5038621320029329200">Ишенимдүү тастыктамалар</translation>
@@ -7354,6 +7354,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> жүктөлүп берилди.</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Өркүндөтүлгөн коопсуздук</translation>
+<translation id="6630211688479622571">Эң акыркыларды көрсөтүү</translation>
 <translation id="6630452975878488444">Тандоо кыска жолу</translation>
 <translation id="6630752851777525409">Сиздин атыңыздан өз аныктыгын текшерүү үчүн <ph name="EXTENSION_NAME" /> тастыктамага кирүү мүмкүнчүлүгүн түбөлүккө алгысы келет.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Топтон чыгуу}other{Топтордон чыгуу}}</translation>
@@ -9746,7 +9747,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="844059392176531372">"<ph name="GROUP_NAME" />" өтмөктөр тобун бөлүшүү</translation>
 <translation id="844063558976952706">Ушул сайтта ар дайым</translation>
 <translation id="8441313165929432954">Байланыш түйүнүн иштетүү/өчүрүү</translation>
-<translation id="8442599250002885105">{COUNT,plural, =1{Жашыруун же Окчундатылган терезе ачык. Ал кайра ачылбайт.}other{Профилдерде # жашыруун жана окчундатылган терезе ачык. Алар кайра ачылбайт.}}</translation>
+<translation id="8442599250002885105">{COUNT,plural, =1{Жашыруун же Окчундатылган терезе ачылып турат. Ал кайра ачылбайт.}other{Профилдерде # жашыруун жана окчундатылган терезе ачылып турат. Алар кайра ачылбайт.}}</translation>
 <translation id="8443986842926457191">URL дареги 2048 символдон ашып кетти</translation>
 <translation id="8445281870900174108">Бул өтмөк камераңызды колдонуп жатат</translation>
 <translation id="8446884382197647889">Көбүрөөк билүү</translation>

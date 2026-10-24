@@ -373,6 +373,7 @@
 <translation id="4786083865378785874">Chromium-ലെ Gemini തുറന്നിരിക്കുകയാണെങ്കിൽ, പുതിയ ടാബുകൾ സൃഷ്ടിക്കുമ്പോൾ സൈഡ് പാനൽ തുറന്ന നിലയിൽ തുടരും</translation>
 <translation id="479167709087336770">Google തിരയലിൽ ഉപയോഗിക്കുന്ന അതേ സ്പെൽ ചെക്കർ ഇത് ഉപയോഗിക്കുന്നു. ബ്രൗസറിൽ നിങ്ങൾ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Google-ന് അയയ്ക്കുന്നു. ക്രമീകരണത്തിൽ എപ്പോഴും ഈ രീതി മാറ്റാനാകും.</translation>
 <translation id="4814736265800133385">അക്കൗണ്ട് ഇല്ലാതെ Chromium ഉപയോഗിക്കുക</translation>
+<translation id="4839733921943823254">കുറുക്കുവഴി പിൻ ചെയ്യുക</translation>
 <translation id="4888717733111232871">mDNS ട്രാഫിക്ക് അനുവദിക്കാൻ Chromium-നുള്ള ഇൻബൗണ്ട് നയം.</translation>
 <translation id="4893347770495441059">&amp;Chromium അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
@@ -762,6 +763,7 @@
 <translation id="856656450041460113">ഭാഷാ ലിസ്റ്റ് തിരയുക</translation>
 <translation id="8576826849825683917">ഒന്നിലധികം സ്ഥാപനങ്ങൾ Chromium മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="8586442755830160949">പകർപ്പവകാശം <ph name="YEAR" /> Chromium രചയിതാക്കൾ. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‌തം.</translation>
+<translation id="8590782867495422699">Google Search AI മോഡ് വീണ്ടും തുറക്കുക</translation>
 <translation id="8619360774459241877">Chromium സമാരംഭിക്കുന്നു...</translation>
 <translation id="8624541899164515475">ക്രമീകരണം, പുതിയ ടാബിൽ തുറക്കുന്നു.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാക്കാനാകില്ല.</translation>
@@ -812,6 +814,7 @@
 <translation id="9056398481763999048">നിങ്ങളുടെ ഫോണിലെ Chromium ആപ്പിലൂടെ Google-ന്റെ മികച്ച AI ടൂളുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ പാസ്‌വേഡുകളും മറ്റും ലഭിക്കാൻ, Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="9062666675513499497">നിങ്ങൾ മറ്റ് Google സേവനങ്ങളിലേക്ക് സൈൻ ഇൻ ചെയ്യുമ്പോൾ Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="9074041031320636790">വിജയകരം! Google Search AI മോഡ് ഉപയോഗിച്ച് ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് ഇപ്പോൾ എളുപ്പത്തിൽ ചോദ്യങ്ങൾ ചോദിക്കാം</translation>
 <translation id="9078733879136747090">Chromium സ്വയമേവ അടച്ചു</translation>
 <translation id="9089354809943900324">Chromium കാലഹരണപ്പെട്ടു</translation>
 <translation id="9093206154853821181">{0,plural, =1{ഒരു മണിക്കൂറിൽ Chromium വീണ്ടും സമാരംഭിക്കും}other{# മണിക്കൂറിൽ Chromium വീണ്ടും സമാരംഭിക്കും}}</translation>

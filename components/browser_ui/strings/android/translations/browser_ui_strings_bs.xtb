@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Blokira web lokacijama korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Pad cijene na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Opoziv odobrenja uređaja za <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zatražite prikaz na mobilnom uređaju</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6530703012083415527">Kada je postavka uključena, web lokacije mogu koristiti skočne prozore i preusmjeravanja. Kada je postavka isključena, web lokacije ne mogu koristiti skočne prozore i preusmjeravanja.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Podaci web lokacije na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će izbrisati sve podatke i kolačiće koje su pohranile sve web lokacije na domeni <ph name="ORIGIN" /> ili pripadajuća aplikacija na početnom ekranu</translation>
 <translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
+<translation id="7225256190577194089">Opoziv svih odobrenja za uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Odaberi slike</translation>
 <translation id="7243246278722455312">Donja tabela prilagođavanja stranice nove kartice</translation>
 <translation id="7243308994586599757">Opcije su dostupne pri dnu ekrana</translation>

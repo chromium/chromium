@@ -46,7 +46,6 @@
 <translation id="141901961143729572">Podziel się swoimi wrażeniami</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty.}=1{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. Okno incognito nie otworzy się ponownie.}few{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. # okna incognito nie otworzą się ponownie.}many{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. # okien incognito nie otworzy się ponownie.}other{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="1434626383986940139">Aplikacje Chrome w wersji poglądowej</translation>
-<translation id="1438812738230833934">Możesz ponownie otworzyć wyszukiwarkę Google w panelu bocznym, aby zadawać pytania podczas przeglądania</translation>
 <translation id="1439793550875056299">Przypnij Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Administrator wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. Okno przeglądania prywatnego nie otworzy się ponownie.}few{Administrator wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. # okna przeglądania prywatnego nie otworzą się ponownie.}many{Administrator wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. # okien przeglądania prywatnego nie otworzy się ponownie.}other{Administrator wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. # okna przeglądania prywatnego nie otworzy się ponownie.}}</translation>
 <translation id="146866447420868597">Chcesz zalogować się w Chrome?</translation>
@@ -115,6 +114,7 @@
 <translation id="2039417478970545937">Ustawienia.</translation>
 <translation id="2040220733769034247">Zeskanuj kod QR telefonem, aby pobrać Chrome i zalogować się na konto Google.</translation>
 <translation id="2044908892530830113">Pokaż wyszukiwarkę w Chrome na pasku menu Maca i włącz skrót klawiszowy</translation>
+<translation id="2050189601866423230">Możesz przypiąć Tryb AI w wyszukiwarce Google, aby zadawać pytania podczas przeglądania</translation>
 <translation id="2091012649849228750">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.</translation>
 <translation id="2094648590148273905">Warunki korzystania z ChromeOS Flex</translation>
 <translation id="2094919256425865063">Zamknąć Chrome mimo to?</translation>
@@ -374,7 +374,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
 <translation id="4501471624619070934">Ze względu na ograniczenie dostępu w tym kraju instalacja się nie udała.</translation>
-<translation id="4501839397124711198">Możesz przypiąć wyszukiwarkę Google w panelu bocznym, aby zadawać pytania podczas przeglądania</translation>
 <translation id="4571503333518166079">Otwórz ustawienia powiadomień Chrome</translation>
 <translation id="4580939929828762295">Zadbaj o bezpieczeństwo dzięki Menedżerowi haseł Google</translation>
 <translation id="459622048091363950">Gdy Chrome będzie mieć dostęp, strony będą mogły prosić Cię o dostęp.</translation>
@@ -721,7 +720,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7777080907402804672">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>
 <translation id="778331955594035129">Ta strona musi mieć w Chrome dostęp do lokalizacji</translation>
 <translation id="7787950393032327779">Wygląda na to, że profil jest używany przez inny proces Google Chrome (<ph name="PROCESS_ID" />) na innym komputerze (<ph name="HOST_NAME" />). Chrome zablokował profil, by zapobiec jego uszkodzeniu. Jeśli masz pewność, że żadne inne procesy nie używają tego profilu, możesz go odblokować i ponownie uruchomić Chrome.</translation>
-<translation id="7800043020703832708">Zamknij wyszukiwarkę Google w panelu bocznym</translation>
 <translation id="7801699035218095297">Google Chrome próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
 <translation id="7804364787702057554">Twoje konto w Chrome</translation>
 <translation id="7804947029129221742">Twoja wyszukiwarka została zmieniona poza Chrome. Aby Cię chronić, przeglądarka Chrome zresetowała to ustawienie do pierwotnej wartości domyślnej. <ph name="LEARN_MORE_LINK" /></translation>
@@ -738,7 +736,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7886087451482920026">Zaznacz tekst za pomocą Obiektywu Google</translation>
 <translation id="7890208801193284374">Jeśli dzielisz komputer ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chrome.</translation>
 <translation id="7896673875602241923">Ktoś zalogował się wcześniej w Chrome na tym komputerze jako <ph name="ACCOUNT_EMAIL_LAST" />. Utwórz nowego użytkownika Chrome, by Twoje informacje były przechowywane oddzielnie.</translation>
-<translation id="7904213866086517086">Otwórz ponownie wyszukiwarkę Google w panelu bocznym</translation>
 <translation id="7904985524660297937">Wypróbuj Gemini w Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS nie może zapisać danych Chrome na Twoim koncie Google z powodu błędu podczas logowania</translation>
 <translation id="7917876797003313048">Możesz zarządzać kontami Google, na które się logujesz. Kont Google możesz używać w przeglądarce Chrome, Sklepie Play, Gmailu i innych usługach. Jeśli chcesz dodać konto innej osoby, np. kogoś z rodziny, zamiast tego dodaj nową osobę do urządzenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -766,6 +763,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8074398340364918139">Aby wyszukać konkretną funkcję lub rozszerzenie Chrome, wpisz skrót do danego elementu na pasku adresu i naciśnij wybrany klawisz</translation>
 <translation id="8077579734294125741">Inne profile Chrome</translation>
 <translation id="8086881907087796310">Instalacja się nie udała, ponieważ komputer nie spełnia minimalnych wymagań sprzętowych.</translation>
+<translation id="8110438089258398864">Możesz ponownie otworzyć tryb AI w wyszukiwarce Google, aby zadawać pytania podczas przeglądania</translation>
 <translation id="8113883687556086139">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="8115695070094288807">Dostosowuję Chrome…</translation>
 <translation id="8118331347066725040">Prześlij opinię na temat wyszukiwania z użyciem Obiektywu</translation>
@@ -803,7 +801,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8394720698884623075">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. Masz otwarte okno incognito lub przeglądania prywatnego. Nie otworzy się po ponownym uruchomieniu przeglądarki.}few{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. W profilach są otwarte # okna incognito lub przeglądania prywatnego. Nie otworzą się po ponownym uruchomieniu przeglądarki.}many{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. W profilach jest otwartych # okien incognito lub przeglądania prywatnego. Nie otworzą się po ponownym uruchomieniu przeglądarki.}other{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. W profilach jest otwarte # okna incognito lub przeglądania prywatnego. Nie otworzy się po ponownym uruchomieniu przeglądarki.}}</translation>
 <translation id="8403038600646341038">Logo Chrome na ekranie komputera.</translation>
-<translation id="8406687098231754303">Za pomocą przycisku „Wyszukiwarka Google w panelu bocznym” na pasku narzędzi możesz ponownie otworzyć wyszukiwarkę Google w panelu bocznym, aby zadawać pytania podczas przeglądania</translation>
 <translation id="8418845734693287262">Chrome OS nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="842386925677997438">Narzędzia bezpieczeństwa w Chrome</translation>
 <translation id="8425765582779547329">Aby zapewnić sobie większe bezpieczeństwo online dzięki ustawieniom wybranym przez Twojego rodzica, zaloguj się w Chrome</translation>
@@ -821,9 +818,10 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="8533056045953418157">Ustaw Google Chrome jako domyślną przeglądarkę plików PDF</translation>
 <translation id="854593887324189900">Wyszukaj ten obraz za pomocą Obiektywu Google</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
-<translation id="8564408666201523086">Gotowe! Teraz możesz łatwo zadawać pytania podczas przeglądania dzięki wyszukiwarce Google w panelu bocznym</translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>
 <translation id="8575047640889685742">Używaj <ph name="BEGIN_LINK" />własnego hasła<ph name="END_LINK" /> do szyfrowania wszystkich danych Chrome na koncie Google Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.</translation>
+<translation id="8590782867495422699">Otwórz ponownie Tryb AI w wyszukiwarce Google</translation>
+<translation id="8598779894319572882">Za pomocą przycisku „Tryb AI w wyszukiwarce Google” na pasku narzędzi możesz ponownie otworzyć tryb AI w wyszukiwarce Google, aby zadawać pytania podczas przeglądania</translation>
 <translation id="8614913330719544658">Przeglądarka Google Chrome nie odpowiada. Uruchomić ją teraz ponownie?</translation>
 <translation id="8623450603356630491">Zaloguj się w Chrome na telefonie</translation>
 <translation id="8624541899164515475">Ustawienia, otwierają się w nowej karcie.</translation>
@@ -878,6 +876,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="9014771989710951291">Przeglądarką Chrome zarządza kilka organizacji</translation>
 <translation id="9018218886431812662">Instalacja ukończona</translation>
 <translation id="9066987883552592250">Zamknij Gemini w Chrome Canary</translation>
+<translation id="9074041031320636790">Gotowe! Teraz możesz łatwo zadawać pytania podczas przeglądania dzięki trybowi AI w wyszukiwarce Google</translation>
 <translation id="9090566250983691233">Dlaczego Chrome blokuje niektóre pliki</translation>
 <translation id="9106236359747881194">Zaznacz tekst, aby wyszukać</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>

@@ -1741,7 +1741,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6372558618707314581">Idite na bilo koju stranicu koja vam se sviđa</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="6374514103145916800">Pitajte</translation>
-<translation id="6381241974485088375">Ovdje prilagodite stranicu Nova kartica bilo kada</translation>
+<translation id="6381241974485088375">Ovdje prilagodite stranicu nove kartice bilo kada</translation>
 <translation id="6383719166112032471">Otvaranje lokacije…</translation>
 <translation id="6387994324662817823">Lozinke se pohranjuju u Google Upravitelju lozinki samo na ovom uređaju.</translation>
 <translation id="6393156038355142111">Predloži jaku lozinku</translation>
@@ -1942,6 +1942,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="6946722113367118030">Razmišljanje</translation>
 <translation id="6947751977892029882">Došlo je do greške s ovom postavkom. Ažurirajte i ponovo pokrenite Chrome i iOS, a zatim pokušajte ponovo. Ako se ova greška nastavi pojavljivati, iPhone možda ne podržava ovu postavku.</translation>
 <translation id="6950522403736391608">Sakriveno</translation>
+<translation id="6957084631403333422">Isprobajte fokusiranu stranicu Nova kartica</translation>
 <translation id="695965663642079255">Sačuvajte podatke o plaćanju i upravljajte njima da brže nastavite na plaćanje</translation>
 <translation id="6962809930976936328">Dobijajte uvide putem Geminija</translation>
 <translation id="6964300328304469089">Trenutno je odabrano: <ph name="NAME" />, <ph name="EMAIL" />. Odabir računa.</translation>
@@ -2179,6 +2180,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Stavka je sačuvana na Google račun {email}}one{Stavke su sačuvane na Google račun {email}}few{Stavke su sačuvane na Google račun {email}}other{Stavke su sačuvane na Google račun {email}}}</translation>
 <translation id="7729458878441927652">Da vidite kartice sa svojih drugih uređaja, sinhronizirajte svoje kartice i historiju.</translation>
 <translation id="7730020510075123961">Ne, spoji podatke</translation>
+<translation id="7730937523779541003">Primijenjena je fokusirana stranica Nova kartica</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7737550920399185748">Fotografije na početnoj stranici iz biblioteke s fotografijama se neće sinhronizirati na uređajima.</translation>
 <translation id="7738120385185846461">Prijava problema…</translation>
@@ -2622,6 +2624,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="9032405509996909363">Potvrda brisanja podataka pregledanja</translation>
 <translation id="9038526468059454274">Sažmite uz</translation>
 <translation id="9039373489628511875">Propusnost</translation>
+<translation id="9042363670218758847">Prebacite se na raspored napravljen za brza pretraživanja</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>
 <translation id="9044703854323320868"><ph name="INDEX" />. poruka na Gmailu</translation>
 <translation id="9055291197094969722">Kreirajte grupe kartica da organizirate otvorene kartice i budete produktivni</translation>

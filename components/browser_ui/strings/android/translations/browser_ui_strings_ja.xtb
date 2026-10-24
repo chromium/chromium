@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">サイトによるバーチャル リアリティ デバイスとデータの使用をブロックする</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">開いているタブの値下げ情報（<ph name="OLD_PRICE" /> から <ph name="NEW_PRICE" />、<ph name="PRODUCT_NAME" />、<ph name="DOMAIN_NAME" />）</translation>
+<translation id="6495608040096939405"><ph name="NAME" /> に許可したデバイスの権限を取り消す</translation>
 <translation id="6500423977866688905">ウィンドウが狭い場合はモバイルビューをリクエストする</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6530703012083415527">オンにすると、サイトはポップアップとリダイレクトを使用できます。オフにすると、サイトはポップアップとリダイレクトを使用できません。</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7201549776650881587">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトまたはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
+<translation id="7225256190577194089">デバイス <ph name="DEVICE_NAME" /> のすべての権限を取り消す</translation>
 <translation id="723171743924126238">画像を選択</translation>
 <translation id="7243246278722455312">[新しいタブページをカスタマイズ] のボトムシート</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>

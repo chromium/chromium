@@ -1942,6 +1942,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="6946722113367118030">Pentsatzen</translation>
 <translation id="6947751977892029882">Arazoren bat izan da ezarpen honekin. Eguneratu eta berrabiarazi Chrome eta iOS, eta saiatu berriro. Errorea behin eta berriro gertatzen bada, baliteke iPhone-ak ez onartzea ezarpen hau.</translation>
 <translation id="6950522403736391608">Ezkutatuta</translation>
+<translation id="6957084631403333422">Probatu fokuratutako fitxa berriaren orri bat</translation>
 <translation id="695965663642079255">Gorde eta kudeatu ordainketa-informazioa ordainketa-prozesua bizkortzeko</translation>
 <translation id="6962809930976936328">Lortu estatistikak Gemini-rekin</translation>
 <translation id="6964300328304469089">Orain <ph name="NAME" /> (<ph name="EMAIL" />) dago hautatuta. Aukeratu kontu bat.</translation>
@@ -2179,6 +2180,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Gorde da elementua Google-ko kontuan ({email})}other{Gorde dira elementuak Google-ko kontuan ({email})}}</translation>
 <translation id="7729458878441927652">Beste gailuetako fitxak ikusteko, sinkronizatu fitxak eta historia.</translation>
 <translation id="7730020510075123961">Ez, bateratu datuak</translation>
+<translation id="7730937523779541003">Aplikatu da fokuratutako fitxa berriaren orria</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Gailu honetan soilik.</translation>
 <translation id="7737550920399185748">Argazki-liburutegitik datozen orri nagusiko argazkiak ez dira sinkronizatuko gailu guztietan.</translation>
 <translation id="7738120385185846461">Eman arazo baten berri…</translation>
@@ -2622,6 +2624,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="9032405509996909363">Berretsi arakatze-datuak ezabatu nahi dituzula</translation>
 <translation id="9038526468059454274">Laburbildu honekin:</translation>
 <translation id="9039373489628511875">Banda-zabalera</translation>
+<translation id="9042363670218758847">Aldatu bilaketa bizkorrak egiteko diseinu batera</translation>
 <translation id="9042893549633094279">Pribatutasuna eta segurtasuna</translation>
 <translation id="9044703854323320868">Gmail-eko mezua: <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Sortu fitxa taldeak irekita dauzkazun fitxak antolatzeko eta produktibo izaten jarraitzeko</translation>

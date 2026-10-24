@@ -1942,6 +1942,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="6946722113367118030">Töprengés</translation>
 <translation id="6947751977892029882">Hiba történt a beállítás során. Frissítse és indítsa újra a Chrome-ot és az iOS-t, majd próbálkozzon újra. Ha a hiba továbbra is fennáll, előfordulhat, hogy az iPhone nem támogatja ezt a beállítást.</translation>
 <translation id="6950522403736391608">Rejtett</translation>
+<translation id="6957084631403333422">Próbálja ki a fókuszált Új lap oldalt</translation>
 <translation id="695965663642079255">A fizetési adatok mentésével és kezelésével gyorsabban fizethet</translation>
 <translation id="6962809930976936328">Statisztikákat kérhet a Geminitől</translation>
 <translation id="6964300328304469089">Jelenleg kiválasztva: <ph name="NAME" />, <ph name="EMAIL" />. Válasszon fiókot.</translation>
@@ -2179,6 +2180,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elem mentve az Ön Google-fiókjába ({email})}other{Elemek mentve az Ön Google-fiókjába ({email})}}</translation>
 <translation id="7729458878441927652">Ha látni szeretné a többi eszközén felkeresett lapokat, szinkronizálja lapjait és előzményeit.</translation>
 <translation id="7730020510075123961">Nem, egyesítése az adatokat</translation>
+<translation id="7730937523779541003">Összpontosított Új lap oldal alkalmazva</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Csak erre az eszközre.</translation>
 <translation id="7737550920399185748">A fotótárából származó kezdőlapfotók nem szinkronizálódnak az eszközei között.</translation>
 <translation id="7738120385185846461">Hibabejelentés…</translation>
@@ -2622,6 +2624,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="9032405509996909363">Böngészési adatok törlésének megerősítése</translation>
 <translation id="9038526468059454274">Összegezze a következővel:</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
+<translation id="9042363670218758847">Váltson a gyors keresésekhez kialakított elrendezésre!</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
 <translation id="9044703854323320868">Gmail-üzenet: <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Létrehozhat lapcsoportokat a megnyitott lapok rendszerezéséhez és a hatékonyság fenntartásához</translation>

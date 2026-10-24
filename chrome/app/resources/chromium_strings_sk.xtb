@@ -762,6 +762,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="856656450041460113">Vyhľadať v zozname jazykov</translation>
 <translation id="8576826849825683917">Chromium spravuje viac organizácií</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
+<translation id="8590782867495422699">Znova otvoriť režim umelej inteligencie vo Vyhľadávaní Google</translation>
 <translation id="8619360774459241877">Spúšťa sa Chromium…</translation>
 <translation id="8624541899164515475">Nastavenia (otvoria sa na novej karte)</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nemôžete nastaviť ako svoj predvolený prehliadač.</translation>
@@ -812,6 +813,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="9056398481763999048">Používajte najlepšie nástroje umelej inteligencie od Googlu s aplikáciou Chromium v telefóne</translation>
 <translation id="9057625473949801035">Ak chcete mať k dispozícii svoje heslá a ďalší obsah zo zariadenia <ph name="DEVICE" />, prihláste sa do prehliadača Chromium</translation>
 <translation id="9062666675513499497">Keď sa prihlásite do ďalších služieb Googlu, prihláste sa do prehliadača Chromium</translation>
+<translation id="9074041031320636790">Podarilo sa. Teraz môžete pri prehliadaní jednoducho klásť otázky v režime AI vo Vyhľadávaní Google</translation>
 <translation id="9078733879136747090">Prehliadač Chromium bol automaticky zavretý</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sa znova spustí do jednej hodiny}few{Chromium sa znova spustí do # hodín}many{Chromium sa znova spustí do # hodiny}other{Chromium sa znova spustí do # hodín}}</translation>

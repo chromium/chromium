@@ -1942,6 +1942,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6946722113367118030">በማሰብ ላይ</translation>
 <translation id="6947751977892029882">በዚህ ቅንብር ላይ የሆነ ስሕተት ተከስቷል። Chrome እና iOSን ያዘምኑ እና እንደገና ያስጀምሩ እና እንደገና ይሞክሩ። ይህ ስሕተት መከሰቱን ከቀጠለ የእርስዎ iPhone ይህን ቅንብር ላይደግፍ ይችላል።</translation>
 <translation id="6950522403736391608">ተደብቋል</translation>
+<translation id="6957084631403333422">ትኩረት የተደረገበት አዲስ የትር ገጽ ይሞክሩ</translation>
 <translation id="695965663642079255">ግዢን በበለጠ ፍጥነት ለማጠናቀቅ የክፍያ መረጃን ያስቀምጡ እና ያስተዳድሩ</translation>
 <translation id="6962809930976936328">በGemini ግንዛቤዎችን ያግኙ</translation>
 <translation id="6964300328304469089"><ph name="NAME" />፣ <ph name="EMAIL" /> አሁን ተመርጧል። መለያ ይምረጡ።</translation>
@@ -2179,6 +2180,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7724085059277147439">{count,plural, =1{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጠ ንጥል}one{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጠ ንጥል}other{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጡ ንጥሎች}}</translation>
 <translation id="7729458878441927652">ከሌሎች መሣሪያዎችዎ ላይ ትሮችን ለማየት ትሮችዎን እና ታሪክዎን ያስምሩ።</translation>
 <translation id="7730020510075123961">አይ፣ ውሂብን አዋህድ</translation>
+<translation id="7730937523779541003">ትኩረት የተደረገበት አዲስ የትር ገጽ ተተግብሯል</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />። በዚህ መሣሪያ ላይ ብቻ።</translation>
 <translation id="7737550920399185748">ከፎቶ ቤተ-መጽሐፍትዎ የመጡ የመነሻ ገጽ ፎቶዎች በመላ መሣሪያዎችዎ ላይ አይሠምሩም።</translation>
 <translation id="7738120385185846461">አንድ ችግር ሪፖርት አድርግ…</translation>
@@ -2622,6 +2624,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9032405509996909363">የአሰሳ ውሂብን ሰርዝን ያረጋግጡ</translation>
 <translation id="9038526468059454274">በሚከተለው ያጠቃልሉ</translation>
 <translation id="9039373489628511875">መተላለፊያ ይዘት</translation>
+<translation id="9042363670218758847">ለፈጣን ፍለጋዎች ወደተገነባ አቀማመጥ ይቀይሩ</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
 <translation id="9044703854323320868">የGmail መልዕክት <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">ክፍት ትሮችዎን ለማደራጀት የትር ቡድኖችን ይፍጠሩ እና ምርታማ ሆነው ይቆዩ</translation>

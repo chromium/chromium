@@ -370,6 +370,7 @@
 <translation id="4786083865378785874">Ja pakalpojums Gemini pārlūkā Chromium ir atvērts, jaunu ciļņu izveidošanas laikā sānu panelis paliek atvērts.</translation>
 <translation id="479167709087336770">Šeit tiek izmantota tāds pats pareizrakstības pārbaudītājs, kāds tiek izmantots Google meklēšanā. Pārlūkprogrammā ievadītais teksts tiek nosūtīts Google serveriem. Jebkurā brīdī varat mainīt šo darbību iestatījumos.</translation>
 <translation id="4814736265800133385">Izmantot Chromium, nepierakstoties kontā</translation>
+<translation id="4839733921943823254">Piespraust saīsni</translation>
 <translation id="4888717733111232871">Ienākošo savienojumu kārtula pārlūkam Chromium, lai atļautu mDNS datplūsmu.</translation>
 <translation id="4893347770495441059">Atkārtoti palaist, lai atjauninātu &amp;Chromium</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
@@ -758,6 +759,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="856656450041460113">Meklēt valodu sarakstā</translation>
 <translation id="8576826849825683917">Pārlūku Chromium pārvalda vairākas organizācijas</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
+<translation id="8590782867495422699">Atkārtoti atvērt Google meklēšanas MI režīmu</translation>
 <translation id="8619360774459241877">Notiek Chromium palaišana...</translation>
 <translation id="8624541899164515475">Iestatījumi; tiks atvērta jauna cilne.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nevar iestatīt kā noklusējuma pārlūku.</translation>
@@ -808,6 +810,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="9056398481763999048">Izmantojiet lietotni Chromium savā tālrunī, lai piekļūtu Google labākajiem MI rīkiem</translation>
 <translation id="9057625473949801035">Lai iegūtu paroles un citus datus no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chromium.</translation>
 <translation id="9062666675513499497">Automātiska pierakstīšanās pārlūkā Chromium, kad pierakstāties citos Google pakalpojumos</translation>
+<translation id="9074041031320636790">Gatavs! Tagad varat ērti uzdot jautājumus pārlūkošanas laikā, izmantojot Google meklēšanas MI režīmu.</translation>
 <translation id="9078733879136747090">Pārlūks Chromium tika automātiski aizvērts</translation>
 <translation id="9089354809943900324">Chromium versija ir novecojusi.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Pārlūks Chromium pēc stundas tiks restartēts}zero{Pārlūks Chromium pēc # stundām tiks restartēts}one{Pārlūks Chromium pēc # stundas tiks restartēts}other{Pārlūks Chromium pēc # stundām tiks restartēts}}</translation>

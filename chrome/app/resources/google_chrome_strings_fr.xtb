@@ -117,6 +117,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2039417478970545937">paramètres.</translation>
 <translation id="2040220733769034247">Scannez le QR code avec votre téléphone pour télécharger Chrome et vous connecter à votre compte Google.</translation>
 <translation id="2044908892530830113">Afficher la recherche avec Chrome dans la barre de menu Mac et activer le raccourci clavier</translation>
+<translation id="2050189601866423230">Vous pouvez épingler le Mode IA de la recherche Google pour poser des questions pendant que vous naviguez</translation>
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
 <translation id="2094648590148273905">Conditions d'utilisation de ChromeOS Flex</translation>
 <translation id="2094919256425865063">Quitter Chrome quand même ?</translation>
@@ -400,6 +401,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4793679854893018356">Découvrez comment Chrome vous protège</translation>
 <translation id="4828579605166583682">Google Chrome tente de remplacer les mots de passe existants. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
 <translation id="4836321460899997044">Profil Chrome</translation>
+<translation id="4839733921943823254">Épingler le raccourci</translation>
 <translation id="4842397268809523050">ChromeOS Flex n'a pas pu synchroniser vos données, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> est déjà connecté.  Pour séparer votre navigation, connectez-vous à Chrome avec votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pour partager votre écran, autorisez l'enregistrement d'écran pour Chrome dans les réglages système</translation>
@@ -726,7 +728,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver à tout moment cette option dans les paramètres.</translation>
 <translation id="778331955594035129">Chrome a besoin de l'autorisation d'accéder à la position pour ce site</translation>
 <translation id="7787950393032327779">Le profil semble être utilisé dans le cadre d'un autre processus Google Chrome (<ph name="PROCESS_ID" />) sur un autre ordinateur (<ph name="HOST_NAME" />). Le profil a été verrouillé de sorte qu'il ne soit pas endommagé. Si vous êtes sûr que le profil n'est utilisé dans le cadre d'aucun autre processus, vous pouvez le déverrouiller et relancer Google Chrome.</translation>
-<translation id="7800043020703832708">Fermer la recherche Google dans le panneau latéral</translation>
 <translation id="7801699035218095297">Google Chrome tente de copier les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="7804364787702057554">Votre compte dans Chrome</translation>
 <translation id="7804947029129221742">Votre moteur de recherche a été modifié en dehors de Chrome. Pour vous protéger, Chrome a rétabli sa valeur par défaut d'origine. <ph name="LEARN_MORE_LINK" /></translation>
@@ -770,6 +771,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8074398340364918139">Pour effectuer une recherche sur une fonctionnalité ou extension Chrome spécifique, tapez son raccourci dans la barre d'adresse, suivi de la touche de clavier de votre choix</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne dispose pas de la configuration matérielle minimale requise.</translation>
+<translation id="8110438089258398864">Vous pouvez rouvrir le Mode IA de la recherche Google pour poser des questions pendant que vous naviguez</translation>
 <translation id="8113883687556086139">Confirmez votre identité pour utiliser et enregistrer des données Chrome dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personnalisation de Chrome...</translation>
 <translation id="8118331347066725040">Envoyer des commentaires sur la recherche avec Lens</translation>
@@ -826,6 +828,8 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
 <translation id="8575047640889685742">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chrome de votre compte Google. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>
+<translation id="8590782867495422699">Rouvrir le Mode IA dans la recherche Google</translation>
+<translation id="8598779894319572882">Vous pouvez rouvrir le Mode IA de la recherche Google à partir du bouton "Mode IA de la recherche Google" de la barre d'outils pour poser des questions pendant que vous naviguez</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="8623450603356630491">Connectez-vous à Chrome sur votre téléphone</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
@@ -880,6 +884,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="9014771989710951291">Plusieurs organisations gèrent Chrome</translation>
 <translation id="9018218886431812662">Installation terminée</translation>
 <translation id="9066987883552592250">Fermer Gemini dans Chrome Canary</translation>
+<translation id="9074041031320636790">Et voilà ! Vous pouvez désormais facilement poser des questions pendant que vous naviguez grâce au Mode IA de la recherche Google.</translation>
 <translation id="9090566250983691233">Découvrez pourquoi Chrome bloque certains fichiers</translation>
 <translation id="9106236359747881194">Sélectionner le texte à rechercher</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>

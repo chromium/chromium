@@ -6706,6 +6706,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6124698108608891449">Kailangan ng site na ito ng higit pang pahintulot.</translation>
 <translation id="6125202119952209826">Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Buwan</translation>
+<translation id="6125649408655762488">Mag-focus sa Grupo</translation>
 <translation id="6126601353087978360">Pakilagay dito ang iyong feedback:</translation>
 <translation id="6127292407256937949">Naka-on ang volume. I-off ang volume.</translation>
 <translation id="6127598727646973981">Mga secure na koneksyon</translation>
@@ -7356,6 +7357,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6628328486509726751">Na-upload noong <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Mas pinaigting na seguridad</translation>
+<translation id="6630211688479622571">Ipakita ang pinakabago</translation>
 <translation id="6630452975878488444">Shortcut sa pagpipilian</translation>
 <translation id="6630752851777525409">Gusto ng <ph name="EXTENSION_NAME" /> ng permanenteng access sa isang certificate upang patunayan ang sarili nito sa iyong ngalan.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Umalis sa grupo}one{Umalis sa mga grupo}other{Umalis sa mga grupo}}</translation>

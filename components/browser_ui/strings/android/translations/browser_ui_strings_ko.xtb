@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">사이트에서 내 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6452138246455930388">열려 있는 탭의 가격 인하(<ph name="OLD_PRICE" />~<ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
+<translation id="6495608040096939405"><ph name="NAME" />의 기기 권한 취소</translation>
 <translation id="6500423977866688905">창이 좁은 경우 모바일 뷰 요청</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6530703012083415527">사용 설정하면 사이트에서 팝업 및 리디렉션을 사용할 수 있습니다. 사용 중지하면 사이트에서 팝업 및 리디렉션을 사용할 수 없습니다.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7201549776650881587">이 작업을 실행하면 <ph name="ORIGIN" />의 모든 하위 사이트 또는 홈 화면에 있는 앱에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
 <translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
+<translation id="7225256190577194089"><ph name="DEVICE_NAME" /> 기기의 모든 권한 취소</translation>
 <translation id="723171743924126238">이미지 선택</translation>
 <translation id="7243246278722455312">새 탭 페이지 맞춤설정 하단 시트</translation>
 <translation id="7243308994586599757">화면 하단에서 옵션 선택 가능</translation>

@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">บล็อกเว็บไซต์ไม่ให้ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6452138246455930388">ราคาต่ำลงในแท็บที่เปิดอยู่ จาก <ph name="OLD_PRICE" /> เป็น <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">เพิกถอนสิทธิ์เข้าถึงอุปกรณ์สำหรับ <ph name="NAME" /></translation>
 <translation id="6500423977866688905">เมื่อใช้หน้าต่างที่แคบ ให้ขอมุมมองบนมือถือ</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6530703012083415527">เมื่อเปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางได้ เมื่อปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางไม่ได้</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">ข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="7201549776650881587">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ทุกเว็บไซต์จาก <ph name="ORIGIN" /> หรือแอปในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
+<translation id="7225256190577194089">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์ <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">เลือกภาพ</translation>
 <translation id="7243246278722455312">Bottom Sheet สำหรับปรับแต่งหน้าแท็บใหม่</translation>
 <translation id="7243308994586599757">มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>

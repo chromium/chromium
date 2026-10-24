@@ -1558,6 +1558,23 @@ Bu politika ayarlanmadan bırakılırsa Tıkla ve Ara özelliği varsayılan ola
       Bu politikanın, JavaScript'i üst düzey belgenin kaynağının (genellikle adres çubuğunda da görüntülenen sayfa URL'si) kalıplardan herhangi biriyle eşleşip eşleşmediğine göre engellediğini unutmayın. Dolayısıyla bu politika web tedarik zinciri saldırılarını azaltmak için uygun değildir. Örneğin "https://[*.]foo.com/" kalıbının kullanılması, https://example.com/ adresinde barındırılan bir sayfanın https://www.foo.com/example.js adresinden yüklenen bir komut dosyasını çalıştırmasını engellemez. Ayrıca, "https://example.com/" kalıbının kullanılması, https://example.com adresindeki bir belgenin üst düzey belge olmamasına rağmen başka bir kaynakta (ör. https://www.bar.com) barındırılan bir sayfanın alt çerçevesi olarak yerleştirilmiş olması durumunda bu belgenin komut dosyası çalıştırmasını da engellemez.</translation>
 <translation id="1942015922182679826">Şifresi çözülemeyen şifreleri silmeyi etkinleştir</translation>
 <translation id="1942626390957213764">Masaüstü paylaşım merkezini devre dışı bırak</translation>
+<translation id="1943243146727870858">Listelenen kimlik sağlayıcılar için <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile tek oturum açma özelliğini devre dışı bırakın.
+
+<ph name="POLICY_VALUE_ALL" /> değeri eklendiğinde TOA için desteklenen tüm kimlik sağlayıcılar devre dışı bırakılır.
+
+<ph name="POLICY_VALUE_MICROSOFT" /> değeri eklendiğinde Chrome'da Microsoft® bulut kimliği sağlayıcısı için tek oturum açma desteği devre dışı bırakılır.
+
+Bu politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm kimlik sağlayıcılar etkinleştirilir.
+
+<ph name="PRODUCT_NAME" /> için etkinleştirilen ve yönetici tarafından cihazda yapılandırılan kimlik sağlayıcılar için, <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> özelliğini destekleyen herhangi bir uygulamada bu kimlik sağlayıcıyı kullanarak oturum açan kullanıcılar, web mülklerinde otomatik olarak bu kimlik sağlayıcıyı kullanarak oturum açabilirler. Kullanıcının kimlik doğrulamasına ilişkin bilgiler, her kimlik doğrulama işleminde kullanıcının bulut kimliği sağlayıcısına iletilir.
+
+Notlar:
+
+<ph name="PRODUCT_NAME" />, Gizli veya Misafir modlarında <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile Tek Oturum Açma özelliğini desteklemez.
+
+<ph name="PRODUCT_NAME" />, yalnızca aşağıdaki kimlik sağlayıcılar için <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile Tek Oturum Açma özelliğini destekler: Microsoft, Okta, Ping.
+
+Bu özellik, <ph name="MAC_OS_NAME" /> 10.15 sürümünden itibaren kullanılabilir.</translation>
 <translation id="1943628907052340534">Kullanıcı <ph name="MS_WIN_NAME" /> cihazında oturum açtığında <ph name="PRODUCT_NAME" /> uygulamasını açma</translation>
 <translation id="194407941132272412">Site izolasyonunu tüm web siteleri için devre dışı bırak, ancak kullanıcının bu özelliği etkinleştirmesine izin ver</translation>
 <translation id="1945994447126139909">Bu kurumsal politika, kısa süreli uyum süreci için geçerli olup <ph name="PRODUCT_NAME" /> 88 sürümünde kaldırılacaktır.
@@ -5690,6 +5707,27 @@ Varsayılan değerin (128) üzerinde bir değer ayarlamak tamamen sizin sorumlul
 Uygulanan sınırların <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> tarafından etkilendiğini lütfen unutmayın.</translation>
 <translation id="4528981768990874684"><ph name="IP_PROTECTION_NAME" /> özelliği devre dışı bırakın.</translation>
 <translation id="453031441196755904">Bu politika kullanımdan kaldırılmıştır.</translation>
+<translation id="4531088355818260318">Bu politika, spesifik URL kalıplarıyla eşleşen web isteklerine özel HTTP üstbilgisi yerleştirmek için bir kural listesi tanımlanmasını sağlar. Bu politika tarafından ayarlanan başlıklar, başlangıçta istekte bulunan başlıkların yanı sıra kullanıcılar veya uzantılar tarafından yapılan değişikliklere göre önceliklidir.
+
+Bu politikanın yaygın kullanım alanlarından biri, özel başlıklar (ör. <ph name="EXAMPLE_HEADER_NAME" />) yerleştirerek kiracı erişim denetimlerini zorunlu kılmaktır.
+
+Politika, bir kural listesini kabul eder. Her kural şunları içerir:
+
+* <ph name="PATTERNS_KEY" />: Eşleştirilecek URL kalıplarının listesi. URL kalıbının nasıl biçimlendirileceğine göz atın (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: Yerleştirilecek başlıkları temsil eden nesnelerin listesi. Her nesne şunları içerir:
+
+  * <ph name="HEADER_NAME_KEY" />: Yerleştirilecek başlığın adı.
+
+  * <ph name="HEADER_VALUE_KEY" />: Yerleştirilecek başlığın değeri.
+
+Bir istek birden fazla kuralla eşleşirse eşleşen tüm kurallardaki başlıklar uygulanır. Aynı ada sahip birden fazla başlık varsa en spesifik URL kalıbına sahip olan başlık uygulanır. Kalıplar eşit derecede spesifik ise listede en son görünen kalıp uygulanır.
+
+Başlık adları RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) ile uyumlu olmalıdır. Başlık değerleri NUL, CR veya LF sembolleri içermemelidir. Her bir başlığın boyutu 8 KB'ı aşmamalıdır. Geçersiz başlıklar ve URL kalıpları yoksayılır.
+
+Bu politika, tüm kurallarda toplam 500 URL kalıbıyla sınırlıdır. Her kural en fazla 20 başlık içerebilir. Bu eşiklerin üzerindeki kalıplar ve başlıklar yoksayılır.
+
+Not: Bir URL kalıbı, şifrelenmemiş şemalarla (http://, ws:// veya şema atlandığında) eşleşirse yapılandırılan başlıklar, şifrelenmemiş bir kanal üzerinden düz metin olarak iletilebilir ve ağ gözlemcilerine açık hale gelebilir. Hassas veya tanımlayıcı başlık değerlerini korumak için URL kalıplarını şifrelenmiş şemalarla (https:// veya wss://) kısıtlayın.</translation>
 <translation id="4531706050939927436">Android uygulamaları, Google Play kullanılarak Google Yönetici Konsolu'ndan zorunlu şekilde yüklenebilir. Söz konusu uygulamalar bu politikayı kullanmaz.</translation>
 <translation id="4534500438517478692">Android kısıtlama adı:</translation>
 <translation id="4541530620466526913">Cihaz-yerel hesaplar</translation>
@@ -7244,6 +7282,7 @@ arama tabanlı kısayollar varsayılan davranışı gerçekleştirir.</translati
 
       Bu politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       True (doğru) değerine ayarlanırsa cihazın uygulamaları ve kullanımı raporlanır.</translation>
+<translation id="5418723809273651607">Ping® bulut kimliği sağlayıcısı</translation>
 <translation id="5420245232720940848">Thunderbolt/USB4 çevre birimleri için PCle tünellemeyi etkinleştirir, cihaz işlevlerini sınırlandırır</translation>
 <translation id="5420673997623782432">Tüm istemcilerin sistem coğrafi konum erişimini engelle</translation>
 <translation id="5420774177427557782">Bu yapılandırmayı kullanan sanal makinelerin yüklenip çalıştırılması (<ph name="INSTALL_ALLOWED" />), çalıştırılıp yüklenememesi (<ph name="RUN_ALLOWED" />) veya çalıştırılmaması (<ph name="BLOCKED" />) işlemlerini kontrol eder. Sanal makine yüklemek için installer_image_x86_64 anahtarının da ayarlanması gerektiğini unutmayın. Bir yapılandırmanın tamamen kaldırılması, bu işlemi dolaylı yoldan <ph name="BLOCKED" /> olarak ayarlayarak sanal makinelerin politika olmadan çalışmasını engeller.</translation>

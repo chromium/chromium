@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">Налаштування.</translation>
 <translation id="2040220733769034247">Зіскануйте QR-код за допомогою телефона, щоб завантажити Chrome і ввійти в обліковий запис Google.</translation>
 <translation id="2044908892530830113">Показувати пошук у Chrome на панелі меню Mac і ввімкнути комбінацію клавіш</translation>
+<translation id="2050189601866423230">Ви можете закріпити режим ШІ в Пошуку Google, щоб ставити запитання під час вебперегляду</translation>
 <translation id="2091012649849228750">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.</translation>
 <translation id="2094648590148273905">Умови використання ОС Chrome Flex</translation>
 <translation id="2094919256425865063">Усе одно вийти з Chrome?</translation>
@@ -397,6 +398,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4793679854893018356">Дізнайтесь, як Chrome дбає про вашу безпеку</translation>
 <translation id="4828579605166583682">Google Chrome намагається замінити наявні паролі. Щоб дозволити це, введіть пароль Windows.</translation>
 <translation id="4836321460899997044">Профіль Chrome</translation>
+<translation id="4839733921943823254">Закріпити швидку команду</translation>
 <translation id="4842397268809523050">ОС Chrome Flex не змогла синхронізувати дані, оскільки ця функція недоступна для вашого домену.</translation>
 <translation id="4851866215237571846">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />.  Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chrome як <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Щоб показувати свій екран, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>
@@ -719,7 +721,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7777080907402804672">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="778331955594035129">Веб-переглядачу Chrome потрібен дозвіл на доступ до геоданих для цього сайту</translation>
 <translation id="7787950393032327779">Схоже, профіль використовується іншим процесом Google Chrome (<ph name="PROCESS_ID" />) на іншому комп’ютері (<ph name="HOST_NAME" />). Chrome заблокував цей профіль, щоб запобігти його спотворенню. Якщо ви впевнені, що жоден інший процес не використовує цей профіль, розблокуйте профіль і перезапустіть Chrome.</translation>
-<translation id="7800043020703832708">Закрити Пошук Google на бічній панелі</translation>
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7804364787702057554">Ваш обліковий запис у Chrome</translation>
 <translation id="7804947029129221742">Пошукову систему змінено за межами Chrome. Щоб захистити вас, вебпереглядач Chrome скинув її до початкового значення за умовчанням. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +764,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8074398340364918139">Щоб знайти певну функцію або розширення Chrome, введіть відповідну швидку команду в адресному рядку, а потім натисніть вибрану клавішу</translation>
 <translation id="8077579734294125741">Інші профілі Chrome</translation>
 <translation id="8086881907087796310">Не вдалося встановити, оскільки ваш комп’ютер не відповідає мінімальним вимогам до апаратного забезпечення.</translation>
+<translation id="8110438089258398864">Ви можете повторно відкрити режим ШІ в Пошуку Google, щоб ставити запитання під час перегляду вебсторінок</translation>
 <translation id="8113883687556086139">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, підтвердьте свою особу</translation>
 <translation id="8115695070094288807">Персоналізація Chrome…</translation>
 <translation id="8118331347066725040">Залиште відгук про пошук через Об’єктив</translation>
@@ -819,6 +821,8 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Пошук у списку мов</translation>
 <translation id="8575047640889685742">Використовувати <ph name="BEGIN_LINK" />власну парольну фразу<ph name="END_LINK" /> для шифрування всіх даних Chrome в обліковому записі Google. Способи оплати й адреси з Google Pay не шифруватимуться. Історія вебперегляду з Chrome не синхронізуватиметься.</translation>
+<translation id="8590782867495422699">Повторно відкрити режим ШІ в Пошуку Google</translation>
+<translation id="8598779894319572882">Натиснувши кнопку "Режим ШІ в Пошуку Google" на панелі інструментів, ви можете повторно відкрити режим ШІ в Пошуку Google, щоб ставити запитання під час перегляду вебсторінок</translation>
 <translation id="8614913330719544658">Google Chrome не відповідає. Перезапустити зараз?</translation>
 <translation id="8623450603356630491">Увійдіть у Chrome на телефоні</translation>
 <translation id="8624541899164515475">Налаштування (відкриється в новій вкладці).</translation>
@@ -873,6 +877,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="9014771989710951291">Вебпереглядачем Chrome керують кілька організацій</translation>
 <translation id="9018218886431812662">Встановлення завершено</translation>
 <translation id="9066987883552592250">Закрити Gemini у Chrome Canary</translation>
+<translation id="9074041031320636790">Готово! Тепер ви можете легко ставити запитання під час вебперегляду в режимі ШІ в Пошуку Google.</translation>
 <translation id="9090566250983691233">Чому Chrome блокує деякі файли</translation>
 <translation id="9106236359747881194">Виберіть текст, щоб шукати</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>

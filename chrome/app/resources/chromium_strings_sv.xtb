@@ -373,6 +373,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4786083865378785874">Om Gemini i Chromium är öppet förblir sidopanelen öppen när du skapar nya flikar</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4814736265800133385">Använd Chromium utan konto</translation>
+<translation id="4839733921943823254">Fäst genväg</translation>
 <translation id="4888717733111232871">Regel som tillåter inkommande mDNS-trafik för Chromium.</translation>
 <translation id="4893347770495441059">Starta om för att uppdatera &amp;Chromium</translation>
 <translation id="4918086044614829423">Acceptera</translation>
@@ -763,6 +764,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="856656450041460113">Sök efter språklista</translation>
 <translation id="8576826849825683917">Flera organisationer hanterar Chromium</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
+<translation id="8590782867495422699">Öppna AI-läget i Google Sök igen</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>
 <translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan inte användas som standardwebbläsare.</translation>
@@ -813,6 +815,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9056398481763999048">Använd Googles bästa AI-verktyg med Chromium-appen på telefonen</translation>
 <translation id="9057625473949801035">Logga in i Chromium om du vill få tillgång dina lösenord med mera från <ph name="DEVICE" /></translation>
 <translation id="9062666675513499497">Logga in i Chromium när du loggar in i andra tjänster från Google</translation>
+<translation id="9074041031320636790">Klart! Nu kan du enkelt ställa frågor medan du surfar med AI-läget i Google Sök</translation>
 <translation id="9078733879136747090">Chromium avslutades automatiskt</translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
 <translation id="9093206154853821181">{0,plural, =1{Om en timme startas Chromium om}other{Om # timmar startas Chromium om}}</translation>

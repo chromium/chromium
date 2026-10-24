@@ -1584,6 +1584,23 @@ Jika kebijakan ini tidak disetel, fitur Klik untuk Menelepon akan diaktifkan sec
       Perlu diperhatikan bahwa kebijakan ini memblokir JavaScript berdasarkan apakah origin dokumen tingkat atas (biasanya URL halaman yang juga ditampilkan di kolom URL) cocok dengan pola apa pun. Oleh karena itu, kebijakan ini tidak sesuai untuk memitigasi serangan supply-chain web. Misalnya, menyediakan pola "https://[*.]foo.com/" tidak akan mencegah halaman yang dihosting di, misalnya, https://example.com, untuk menjalankan skrip yang dimuat dari https://www.foo.com/example.js. Selain itu, menyediakan pola "https://example.com/" tidak akan mencegah dokumen dari https://example.com untuk menjalankan skrip jika dokumen tersebut bukan dokumen tingkat atas, tetapi disematkan sebagai sub-frame ke halaman yang dihosting di origin lain, misalnya, https://www.bar.com.</translation>
 <translation id="1942015922182679826">Aktifkan penghapusan sandi yang tidak dapat didekripsi</translation>
 <translation id="1942626390957213764">Nonaktifkan hub berbagi desktop</translation>
+<translation id="1943243146727870858">Nonaktifkan Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas yang tercantum.
+
+Dengan menambahkan nilai <ph name="POLICY_VALUE_ALL" />, semua penyedia identitas yang didukung untuk SSO akan dinonaktifkan.
+
+Dengan menambahkan nilai <ph name="POLICY_VALUE_MICROSOFT" />, dukungan untuk Single Sign-On bagi penyedia identitas cloud Microsoft® di Chrome akan dinonaktifkan.
+
+Jika kebijakan ini tidak disetel, semua penyedia identitas yang didukung oleh <ph name="PRODUCT_NAME" /> akan diaktifkan.
+
+Pengguna yang login ke akunnya di aplikasi apa pun yang mendukung <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, menggunakan penyedia identitas yang diaktifkan di <ph name="PRODUCT_NAME" /> dan dikonfigurasi di perangkat oleh administrator, dapat login ke properti web menggunakan penyedia identitas tersebut secara otomatis. Informasi yang berkaitan dengan informasi autentikasi pengguna akan dikirimkan ke penyedia identitas cloud pengguna untuk setiap peristiwa autentikasi.
+
+Catatan:
+
+<ph name="PRODUCT_NAME" /> tidak mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> dalam mode Samaran atau Tamu.
+
+<ph name="PRODUCT_NAME" /> hanya mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas berikut: Microsoft, Okta, Ping.
+
+Fitur ini tersedia mulai <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534">Jangan buka <ph name="PRODUCT_NAME" /> saat pengguna login ke <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Nonaktifkan isolasi situs untuk semua situs, tetapi izinkan pengguna mengaktifkannya</translation>
 <translation id="1945994447126139909">Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan dihapus di <ph name="PRODUCT_NAME" /> versi 88.
@@ -5771,6 +5788,27 @@ Jika menaikkan nilai di atas nilai default (128), Anda harus menanggung sendiri 
 Perlu diperhatikan bahwa batas yang diterapkan dipengaruhi oleh <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Nonaktifkan fitur <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Kebijakan ini tidak digunakan lagi.</translation>
+<translation id="4531088355818260318">Kebijakan ini memungkinkan penentuan daftar aturan untuk memasukkan header HTTP kustom ke dalam permintaan web yang cocok dengan pola URL tertentu. Header yang ditetapkan oleh kebijakan ini lebih diutamakan daripada header yang awalnya ada dalam permintaan, serta modifikasi yang dicoba dilakukan oleh pengguna atau ekstensi.
+
+Kasus penggunaan umum untuk kebijakan ini adalah untuk menerapkan kontrol akses tenant dengan memasukkan header kustom (mis., <ph name="EXAMPLE_HEADER_NAME" />).
+
+Kebijakan ini menerima daftar Aturan. Setiap Aturan berisi:
+
+* <ph name="PATTERNS_KEY" />: Daftar pola URL yang harus dicocokkan. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+* <ph name="HEADERS_KEY" />: Daftar objek yang mewakili header yang akan dimasukkan, yang masing-masing berisi:
+
+  * <ph name="HEADER_NAME_KEY" />: Nama header yang akan dimasukkan.
+
+  * <ph name="HEADER_VALUE_KEY" />: Nilai header yang akan dimasukkan.
+
+Jika beberapa aturan cocok dengan permintaan, header dari semua aturan yang cocok akan diterapkan. Jika ada beberapa header dengan nama yang sama, header dengan pola URL yang paling spesifik akan diterapkan. Jika pola sama-sama spesifik, pola yang muncul terakhir dalam daftar akan diterapkan.
+
+Nama header harus mematuhi RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Nilai header tidak boleh berisi simbol NUL, CR, atau LF. Ukuran setiap header tidak boleh melebihi 8 KB. Header dan pola URL yang tidak valid akan diabaikan.
+
+Kebijakan ini dibatasi hingga total 500 pola URL di semua aturan. Setiap aturan dapat berisi maksimal 20 header. Pola dan header di luar batas ini akan diabaikan.
+
+Catatan: Jika pola URL cocok dengan skema yang tidak dienkripsi (http://, ws://, atau saat skema dihilangkan), header yang dikonfigurasi mungkin dikirim dalam bentuk teks biasa melalui saluran yang tidak dienkripsi dan mungkin terekspos ke pengamat jaringan. Untuk melindungi nilai header yang sensitif atau bersifat mengidentifikasi, batasi pola URL hanya pada skema terenkripsi (https:// atau wss://).</translation>
 <translation id="4531706050939927436">Aplikasi Android dapat diinstal otomatis dari konsol Google Admin menggunakan Google Play. Aplikasi Android tidak menggunakan kebijakan ini.</translation>
 <translation id="4534500438517478692">Nama pembatasan Android:</translation>
 <translation id="4541530620466526913">Akun lokal perangkat</translation>
@@ -7374,6 +7412,7 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 
       Jika kebijakan ditetapkan ke salah, atau tidak ditetapkan, informasi tidak akan dilaporkan.
       Jika ditetapkan ke benar, aplikasi dan penggunaan perangkat akan dilaporkan.</translation>
+<translation id="5418723809273651607">Penyedia identitas cloud Ping®</translation>
 <translation id="5420245232720940848">Menonaktifkan tunneling PCIe untuk perangkat periferal Thunderbolt/USB4, yang membatasi kemampuan perangkat tersebut</translation>
 <translation id="5420673997623782432">Blokir akses geolokasi sistem ke semua klien</translation>
 <translation id="5420774177427557782">Mengontrol apakah VM yang menggunakan konfigurasi ini dapat diinstal dan dijalankan (<ph name="INSTALL_ALLOWED" />), dijalankan tetapi tidak diinstal (<ph name="RUN_ALLOWED" />), atau tidak dapat dijalankan (<ph name="BLOCKED" />). Perhatikan bahwa untuk menginstal VM, kunci installer_image_x86_64 juga harus disetel. Menghapus konfigurasi sepenuhnya secara implisit akan menyetelnya ke <ph name="BLOCKED" />, sehingga mencegah VM berjalan tanpa kebijakan.</translation>

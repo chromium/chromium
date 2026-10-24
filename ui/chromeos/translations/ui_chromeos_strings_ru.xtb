@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5059127710849015030">Непальский, транслитерация</translation>
 <translation id="5068919226082848014">Пицца</translation>
+<translation id="5075336522277785691">Расширение "<ph name="EXTENSION_NAME" />" задало правила переопределения прокси-сервера</translation>
 <translation id="5081517858322016911">Будут удалены файлы общим объемом <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Перемещение объектов (<ph name="NUMBER_OF_ITEMS" />) в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="509429900233858213">Произошла ошибка.</translation>

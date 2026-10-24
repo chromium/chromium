@@ -1942,6 +1942,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="6946722113367118030">Denken</translation>
 <translation id="6947751977892029882">Er is iets misgegaan met deze instelling. Update en herstart Chrome en iOS, en probeer het opnieuw. Als deze fout blijft optreden, ondersteunt je iPhone deze instelling misschien niet.</translation>
 <translation id="6950522403736391608">Verborgen</translation>
+<translation id="6957084631403333422">Nieuwe tabbladpagina met focus uitproberen</translation>
 <translation id="695965663642079255">Betalingsgegevens opslaan en beheren om sneller af te rekenen</translation>
 <translation id="6962809930976936328">Inzichten krijgen met Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> is op dit moment geselecteerd. Kies een account.</translation>
@@ -2179,6 +2180,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item opgeslagen in je Google-account, {email}}other{Items opgeslagen in je Google-account, {email}}}</translation>
 <translation id="7729458878441927652">Synchroniseer je tabbladen en geschiedenis om tabbladen van je andere apparaten te zien.</translation>
 <translation id="7730020510075123961">Nee, gegevens samenvoegen</translation>
+<translation id="7730937523779541003">Nieuwe tabbladpagina met focus toegepast</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Alleen op dit apparaat.</translation>
 <translation id="7737550920399185748">Foto's op de homepage uit je fotobibliotheek worden niet gesynchroniseerd op je apparaten.</translation>
 <translation id="7738120385185846461">Een probleem melden…</translation>
@@ -2622,6 +2624,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9032405509996909363">Browsegegevens verwijderen bevestigen</translation>
 <translation id="9038526468059454274">Vat het samen met</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
+<translation id="9042363670218758847">Wissel naar een indeling die is gemaakt voor snelle zoekopdrachten</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
 <translation id="9044703854323320868">Gmail-bericht <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Maak tabbladgroepen om je geopende tabbladen te ordenen en productief te blijven</translation>

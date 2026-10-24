@@ -1942,6 +1942,7 @@
 <translation id="6946722113367118030">考えている</translation>
 <translation id="6947751977892029882">この設定でエラーが発生しました。Chrome と iOS を更新して再起動してから、もう一度お試しください。このエラーが引き続き発生する場合は、お使いの iPhone がこの設定に対応していない可能性があります。</translation>
 <translation id="6950522403736391608">非表示</translation>
+<translation id="6957084631403333422">フォーカス モードの新しいタブページを試す</translation>
 <translation id="695965663642079255">お支払い情報を保存、管理して、購入手続きをスムーズに行います</translation>
 <translation id="6962809930976936328">Gemini で分析情報を取得</translation>
 <translation id="6964300328304469089"><ph name="NAME" />、<ph name="EMAIL" /> が現在選択されています。アカウントを選択してください。</translation>
@@ -2179,6 +2180,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7724085059277147439">{count,plural, =1{Google アカウント（{email}）にアイテムを保存しました}other{Google アカウント（{email}）にアイテムを保存しました}}</translation>
 <translation id="7729458878441927652">他のデバイスのタブを表示するには、タブと履歴を同期します。</translation>
 <translation id="7730020510075123961">いいえ、データを結合します</translation>
+<translation id="7730937523779541003">フォーカス モードの新しいタブページを適用しました</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />、このデバイスのみ。</translation>
 <translation id="7737550920399185748">フォト ライブラリのホームページの写真は、デバイス間で同期されません。</translation>
 <translation id="7738120385185846461">問題を報告する…</translation>
@@ -2622,6 +2624,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9032405509996909363">閲覧履歴データの削除を確定する</translation>
 <translation id="9038526468059454274">文章を要約するなら</translation>
 <translation id="9039373489628511875">帯域幅</translation>
+<translation id="9042363670218758847">すばやく検索できるように設計されたレイアウトに切り替えます</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9044703854323320868">Gmail のメール <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">タブグループを作成して、開いているタブを整理し、効率的に作業できます</translation>

@@ -1942,6 +1942,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6946722113367118030">Размишља</translation>
 <translation id="6947751977892029882">Дошло је до грешке са овим подешавањем. Ажурирајте и рестартујте Chrome и iOS, па пробајте поново. Ако се ова грешка и даље буде јављала, iPhone можда не подржава ово подешавање.</translation>
 <translation id="6950522403736391608">Скривено</translation>
+<translation id="6957084631403333422">Испробајте фокусирану страницу нове картице</translation>
 <translation id="695965663642079255">Сачувајте информације о плаћању и управљајте њима да бисте брже плаћали</translation>
 <translation id="6962809930976936328">Стекните увид помоћу Gemini-ја</translation>
 <translation id="6964300328304469089">Тренутно је изабрано <ph name="NAME" />, <ph name="EMAIL" />. Одаберите налог.</translation>
@@ -2179,6 +2180,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7724085059277147439">{count,plural, =1{Ставка је сачувана на Google налогу, {email}}one{Ставке су сачуване на Google налогу, {email}}few{Ставке су сачуване на Google налогу, {email}}other{Ставке су сачуване на Google налогу, {email}}}</translation>
 <translation id="7729458878441927652">Да бисте видели картице са других уређаја, синхронизујте картице и историју.</translation>
 <translation id="7730020510075123961">Не, обједини податке</translation>
+<translation id="7730937523779541003">Примењена је фокусирана страница нове картице</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на овом уређају.</translation>
 <translation id="7737550920399185748">Слике са почетне странице из збирке неће се синхронизовати на свим уређајима.</translation>
 <translation id="7738120385185846461">Пријави проблем…</translation>
@@ -2622,6 +2624,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9032405509996909363">Потврдите брисање података прегледања</translation>
 <translation id="9038526468059454274">Резимирајте помоћу</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>
+<translation id="9042363670218758847">Пређите на изглед направљен за брзе претраге</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="9044703854323320868">Gmail порука <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Правите групе картица да бисте организовали отворене картице и остали продуктивни</translation>

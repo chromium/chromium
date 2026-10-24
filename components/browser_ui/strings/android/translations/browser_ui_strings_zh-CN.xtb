@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">您打开的标签页中有降价，原价为 <ph name="OLD_PRICE" />，现价为 <ph name="NEW_PRICE" />”，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">撤销“<ph name="NAME" />”的设备权限</translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6530703012083415527">开启此设置后，网站可以使用弹出式窗口和重定向。关闭此设置后，网站无法使用弹出式窗口和重定向。</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7201549776650881587">此操作会删除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
+<translation id="7225256190577194089">撤销设备“<ph name="DEVICE_NAME" />”的所有权限</translation>
 <translation id="723171743924126238">选择图片</translation>
 <translation id="7243246278722455312">自定义新标签页页面底部动作条</translation>
 <translation id="7243308994586599757">选项在靠近屏幕底部的位置</translation>

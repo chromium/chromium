@@ -1560,6 +1560,23 @@ Se questa policy non viene impostata, la funzionalità Click-to-call sarà attiv
       Tieni presente che questa policy blocca JavaScript in base alla corrispondenza dell'origine del documento di primo livello (di solito l'URL della pagina visualizzato anche nella barra degli indirizzi) a uno dei due pattern. Pertanto, questa policy non è adatta per mitigare gli attacchi alla catena di fornitura web. Ad esempio, se fornisci il pattern "https://[*.]foo.com/", non impedirai a una pagina ospitata su https://example.com, ad esempio, di eseguire uno script caricato da https://www.foo.com/example.js. Inoltre, l'inserimento del pattern "https://example.com/" non impedisce a un documento di https://example.com di eseguire script se non è il documento di primo livello, ma è incorporato come frame secondario in una pagina ospitata su un'altra origine, come https://www.bar.com.</translation>
 <translation id="1942015922182679826">Attiva l'eliminazione delle password non decifrabili</translation>
 <translation id="1942626390957213764">Disattiva hub di condivisione desktop</translation>
+<translation id="1943243146727870858">Disattiva il Single Sign-On utilizzando <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i provider di identità elencati.
+
+Se aggiungi il valore <ph name="POLICY_VALUE_ALL" />, tutti i provider di identità supportati per l'autenticazione SSO vengono disabilitati.
+
+Se aggiungi il valore <ph name="POLICY_VALUE_MICROSOFT" />, il supporto per Single Sign-On per il provider di identità cloud Microsoft® in Chrome viene disattivato.
+
+Se non configuri questa policy, verranno attivati tutti i provider di identità supportati da <ph name="PRODUCT_NAME" />.
+
+Per i provider di identità che sono abilitati in <ph name="PRODUCT_NAME" /> e configurati sul dispositivo dall'amministratore, gli utenti che accedono una volta utilizzando quel provider di identità, su qualsiasi applicazione che supporta <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, possono accedere automaticamente alle proprietà web utilizzando quel provider di identità. Le informazioni relative ai dati di autenticazione dell'utente vengono trasmesse al provider di identità cloud dell'utente per ogni evento di autenticazione.
+
+Note:
+
+<ph name="PRODUCT_NAME" /> non supporta il Single Sign-On tramite <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nelle modalità Incognito o Ospite.
+
+<ph name="PRODUCT_NAME" /> supporta il Single Sign-On solo con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i seguenti provider di identità: Microsoft, Okta, Ping.
+
+Questa funzionalità è disponibile a partire da <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534">Non aprire <ph name="PRODUCT_NAME" /> quando l'utente accede a <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Disattiva l'isolamento dei siti per tutti i siti web, ma consenti agli utenti di attivarlo</translation>
 <translation id="1945994447126139909">Questa policy aziendale è finalizzata al periodo di transizione e verrà rimossa nella versione 88 di <ph name="PRODUCT_NAME" />.
@@ -5650,6 +5667,27 @@ Se imposti un valore superiore a questo limite, verrà utilizzato 256 (99 in <ph
 Tieni presente che i limiti applicati sono influenzati da <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Disattiva la funzionalità <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Questa norma è obsoleta.</translation>
+<translation id="4531088355818260318">Questa policy consente di definire un elenco di regole per inserire intestazioni HTTP personalizzate nelle richieste web che corrispondono a pattern URL specifici. Gli header configurati da questa policy hanno la precedenza su quelli originariamente inclusi nella richiesta, così come su eventuali modifiche tentate da utenti o estensioni.
+
+Un caso d'uso comune per questa policy consiste nell'applicare i controlli di accesso dei tenant inserendo header personalizzati (ad es. <ph name="EXAMPLE_HEADER_NAME" />).
+
+La policy accetta un elenco di regole. Ogni regola contiene:
+
+* <ph name="PATTERNS_KEY" />: un elenco di pattern URL da abbinare. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: un elenco di oggetti che rappresentano gli header da inserire, ognuno dei quali contiene:
+
+  * <ph name="HEADER_NAME_KEY" />: il nome dell'header da inserire.
+
+  * <ph name="HEADER_VALUE_KEY" />: il valore dell'header da inserire.
+
+Se una richiesta soddisfa più regole, verranno applicati gli header di tutte le regole interessate. Qualora siano presenti più header con lo stesso nome, verrà applicato quello associato al pattern URL più specifico. Se i pattern hanno la stessa specificità, verrà applicato quello che compare per ultimo nell'elenco.
+
+I nomi degli header devono rispettare lo standard RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). I valori degli header non devono contenere simboli NUL, CR o LF. La dimensione di ogni singolo header non deve superare gli 8 KB. Gli header e i pattern URL non validi verranno ignorati.
+
+Questa policy è limitata a un totale di 500 pattern URL in tutte le regole. Ogni regola può contenere un massimo di 20 header. I pattern e gli header che superano queste soglie verranno ignorati.
+
+Nota: se un pattern URL corrisponde a schemi non crittografati (http://, ws:// o quando lo schema viene omesso), gli header configurati potrebbero essere trasmessi in testo normale su un canale non protetto, rischiando di essere compromessi da osservatori della rete. Per proteggere i valori degli header sensibili o identificativi, limita i pattern URL agli schemi crittografati (https:// o wss://).</translation>
 <translation id="4531706050939927436">L'installazione di app Android può essere imposta dalla Console d'amministrazione Google tramite Google Play. Questa norma non viene utilizzata.</translation>
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
@@ -7197,6 +7235,7 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 
       Se la policy viene impostata su false o non viene impostata, le informazioni non vengono segnalate.
       Se viene impostata su true, le informazioni sulle applicazioni del dispositivo e sul relativo utilizzo vengono segnalate.</translation>
+<translation id="5418723809273651607">Provider di identità cloud Ping®</translation>
 <translation id="5420245232720940848">Viene disattivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, limitando così le capacità dei dispositivi</translation>
 <translation id="5420673997623782432">Blocca l'accesso alla geolocalizzazione del sistema per tutti i client</translation>
 <translation id="5420774177427557782">Consente di stabilire se le VM che utilizzano questa configurazione possono essere installate ed eseguite (<ph name="INSTALL_ALLOWED" />), eseguite ma non installate (<ph name="RUN_ALLOWED" />) o se non possono essere eseguite (<ph name="BLOCKED" />). Tieni presente che per installare una VM è necessario impostare anche la chiave installer_image_x86_64. Se una configurazione viene rimossa completamente, viene impostato in modo implicito il valore <ph name="BLOCKED" />, che impedisce l'esecuzione delle VM senza una policy.</translation>

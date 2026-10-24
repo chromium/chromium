@@ -52,6 +52,7 @@
 <translation id="1080116354587839789">Ajustar al ancho</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Desplazar y ampliar el contenido de tu pestaña compartida</translation>
+<translation id="1083351079082239441">Consulta las acciones clave que ha completado Gemini mientras navegaba por ti</translation>
 <translation id="108859316315249327">Reintentar</translation>
 <translation id="1089439967362294234">Cambiar contraseña</translation>
 <translation id="1090629319939036170">Menú de realidad virtual</translation>
@@ -541,6 +542,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1913037223029790376">Usa el CVC de esta tarjeta virtual</translation>
 <translation id="191374271204266022">Copiar como JSON</translation>
 <translation id="1914326953223720820">Servicio de descompresión</translation>
+<translation id="1915335901851260370">No se puede guardar el nombre del titular de la tarjeta en este momento</translation>
 <translation id="1919367280705858090">Solucionar un error específico</translation>
 <translation id="1919526244108283799">400x600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguna}=1{1 sitio}other{# sitios}}</translation>
@@ -916,6 +918,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="251033673027346551">Visita Google Wallet para gestionar las <ph name="BEGIN_LINK" />preferencias de datos y privacidad<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">No permitido (predeterminado)</translation>
 <translation id="2512413427717747692">Botón para establecer Chrome como navegador predeterminado, pulsa Intro para establecer Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
+<translation id="2513217232843681817">Puede que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como las visitas de navegación automática en tu <ph name="BEGIN_LINK_GAA" />Actividad en las Aplicaciones de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Comprobar la señal en tu zona</translation>
 <translation id="2518584823165598232">Esta tarjeta no está disponible. Ponte en contacto con el proveedor de tu tarjeta.</translation>
 <translation id="2521385132275182522">Grapado en la parte inferior derecha</translation>
@@ -1363,6 +1366,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, ha enviado algunos datos (como ajustes o políticas) a los siguientes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Descargar cuando haya conexión</translation>
+<translation id="3288416906300127968">Ir a la conversación con Gemini</translation>
 <translation id="3289578402369490638">De otras tiendas de la Web</translation>
 <translation id="3293642807462928945">Más información sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta y gestiona tus contraseñas desde la configuración de Chrome</translation>
@@ -1383,6 +1387,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3324687287337751929">4x6 pulgadas</translation>
 <translation id="3325568918769906282">en orden descendente</translation>
 <translation id="3325662270238538525">Acceso a archivos y modificaciones recientes, incluidos nombres de archivo, huellas digitales del contenido de los archivos, fuentes de descarga y metadatos</translation>
+<translation id="3326857361043236066">Acciones de navegación clave de Gemini</translation>
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3333762389743153920">No cumple los requisitos para una tarjeta virtual</translation>
 <translation id="3338095232262050444">Es seguro</translation>
@@ -2019,6 +2024,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4333561522337981382">Gestionar ventanas en todas tus pantallas</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 con cifrado RSA</translation>
 <translation id="4336913590841287350">Esta política aún no se admite como política de usuarios en iOS.</translation>
+<translation id="4338516934178140574">En el historial de Chrome, puedes ver las acciones clave que ha completado Gemini mientras navegaba por ti</translation>
 <translation id="4340575312453649552">Chrome ha retirado este anuncio porque consumía demasiados recursos de tu dispositivo.</translation>
 <translation id="4340810192899866471">Importar de JSON</translation>
 <translation id="4340982228985273705">No se ha detectado que este ordenador esté administrado por la empresa, por lo que la política solo puede instalar automáticamente extensiones alojadas en Chrome Webstore. La URL de actualización de Chrome Webstore es "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2112,6 +2118,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4510703642214459906">Lugar</translation>
 <translation id="4515275063822566619">Las tarjetas y las direcciones proceden de Chrome y tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />). Puedes gestionarlas en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="451601984112574365">Verde 3</translation>
+<translation id="4519245852815730903">Se te pedirá que permitas cada dirección de correo por separado</translation>
 <translation id="4520048001084013693">La política del administrador ha bloqueado la descarga de este archivo</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Sobre Monarch</translation>
@@ -2382,6 +2389,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4969341057194253438">Eliminar grabación</translation>
 <translation id="4973922308112707173">Perforado doble en la parte superior</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
+<translation id="4982928820514634045">Ir a la información de contacto</translation>
 <translation id="498323057460789381">Error de validación del esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">¿Usar micrófono?</translation>
 <translation id="4989542687859782284">No disponibles</translation>
@@ -2391,6 +2399,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4994095017621319069">1 grupo de pestañas ya no está disponible</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar las búsquedas en el sitio y tu buscador predeterminado</translation>
+<translation id="4996709766489151157">Información de contacto introducida</translation>
 <translation id="4998950033665438990">Una cara</translation>
 <translation id="5000497292978544380">Modo IA de la Búsqueda de Google</translation>
 <translation id="5001338033791319371">Para salir de la pantalla completa y ver la descarga, arrastra desde la parte superior y toca el botón para volver</translation>
@@ -2410,6 +2419,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5019293549442035120">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu cuenta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">sensores de luz y de movimiento</translation>
 <translation id="5019952743397118625">Se ha definido la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlará la disponibilidad del modo Desarrollador en la página de extensiones.</translation>
+<translation id="502075697789439404">Archivo descargado</translation>
 <translation id="5020862932518041900">Si seleccionas o ignoras una sugerencia, Chrome se adaptará para asegurarse de que solo veas lo que te interesa</translation>
 <translation id="5021500396464456616">Ponte en contacto con la persona que te ha enviado este enlace</translation>
 <translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
@@ -2470,7 +2480,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5115232566827194440">Anulación de sesión de invitado administrada restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5116015291385561204">Verificar que eres tú para autocompletar información sensible</translation>
-<translation id="5121592697493894155">Búsqueda de Google en el panel lateral</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5124797626438336458">La pantalla de error de pago aplazado está abierta a media altura.</translation>
@@ -2957,6 +2966,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Activa esta opción para usar "Ayúdame a escribir"</translation>
 <translation id="5932224571077948991">El sitio web muestra anuncios invasivos o engañosos</translation>
+<translation id="5933647156166686601">Revisar actividad en Gemini</translation>
 <translation id="5937560539988385583">Página traducida</translation>
 <translation id="5938153366081463283">Añadir tarjeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3431,6 +3441,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6721164594124191969">Etiquetas (brillante)</translation>
 <translation id="6726832600570791992">(emulación de 32 bits)</translation>
 <translation id="6727094998759448074">SRA4</translation>
+<translation id="672853333773293432">Sesión iniciada con la cuenta</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6738516213925468394">Tus datos están cifrados con tu <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> desde el <ph name="TIME" />. Introdúcela para iniciar la sincronización.</translation>
 <translation id="6740851646645036700">Has alcanzado tu límite de ayuda de escritura por ahora. Inténtalo de nuevo más tarde.</translation>
@@ -3495,6 +3506,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6852204201400771460">¿Quieres volver a cargar la aplicación?</translation>
 <translation id="6854691830678097752">Para tramitar las compras más rápido, guarda este CVC en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6858341433205161172"><ph name="DEVICE_NAME" /> (este navegador)</translation>
 <translation id="6860888819347870819">Puede solicitar activar la función de imagen en imagen</translation>
 <translation id="6864189428899665393">267x389 mm</translation>
 <translation id="6865412394715372076">No se puede verificar la tarjeta en este momento</translation>
@@ -3546,6 +3558,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6936976777388162184">Este dispositivo forma parte de un paquete y no se puede registrar con la Licencia de Kiosk y Signage</translation>
 <translation id="6942444979237658241">Comentarios (<ph name="GROUP_NAME" />)</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> no gestiona el sitio web en el que has introducido tu contraseña. Para proteger tu cuenta, no utilices la misma contraseña en otras aplicaciones o sitios.</translation>
+<translation id="6945116087771548601">Ir a Descargas</translation>
 <translation id="6948051842255602737">Fin de la partida, tu puntuación es <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Cuando hagas compras en Chrome, verás Pix como opción</translation>
 <translation id="6948701128805548767">Selecciona una dirección para ver los métodos de recogida y los requisitos</translation>
@@ -3614,6 +3627,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="7048095965575426564">Continuo europeo</translation>
 <translation id="7050187094878475250">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado cuyo periodo de validez es demasiado largo para que se considere de confianza.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
+<translation id="7054563057916451424"><ph name="DESTINATION" /> (se abre en otra pestaña)</translation>
 <translation id="7054717457611655239">A partir de ahora, guarda tus archivos en <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7057567173736333354">Describe la imagen</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificado que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
@@ -3843,6 +3857,7 @@ Más información:
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
 <translation id="7426745633088095666">Pestañas compartidas</translation>
 <translation id="7429429656042611765">Ejecutivo</translation>
+<translation id="7430649113830485349">Revisar acciones clave</translation>
 <translation id="7432774160230062882">Verifica tu identidad para que Chromium pueda rellenar tus datos para pagos.</translation>
 <translation id="7437289804838430631">Añade la información de contacto</translation>
 <translation id="7441627299479586546">Asunto de política incorrecto</translation>
@@ -3988,6 +4003,7 @@ Más información:
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Sobre Kaku 8</translation>
 <translation id="766014026101194726">{0,plural, =1{La política del administrador ha bloqueado la subida de este archivo}other{La política del administrador ha bloqueado la subida de # archivos}}</translation>
+<translation id="7660909719765799166">Ir al inicio de sesión de la cuenta</translation>
 <translation id="7661440329832413796">Ayúdame a aprender a programar en Python</translation>
 <translation id="7662298039739062396">Opción controlada por una extensión</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ha abandonado el grupo</translation>
@@ -4003,6 +4019,7 @@ Más información:
 <translation id="7675756033024037212">Desplazamiento y zoom no permitidos</translation>
 <translation id="7676643023259824263">Buscar texto <ph name="TEXT" /> del portapapeles</translation>
 <translation id="7676840398262504532">Tu organización monitoriza el copiado</translation>
+<translation id="767806704757698045">Solo funciona en sitios compatibles</translation>
 <translation id="7678730592635586336">Volver a grabar vídeo</translation>
 <translation id="7679287273775285018">Pagar con cartera electrónica</translation>
 <translation id="7679367271685653708">Consulta y gestiona tu historial de navegación desde la configuración de Chrome</translation>
@@ -4124,6 +4141,7 @@ Más información:
 <translation id="7885670691503039914">Recibirás alertas por correo electrónico si el precio baja en algún sitio. Esta página se guardará en la carpeta de marcadores <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7887683347370398519">Comprueba el código CVC y vuelve a intentarlo</translation>
 <translation id="7887885240995164102">Activar el modo imagen en imagen</translation>
+<translation id="7888219259712865185">Los proveedores de correo electrónico como google.com pueden confirmar tu dirección de correo para que no tengas que consultar tu bandeja de entrada</translation>
 <translation id="7888367499748383555">Sin comisiones, TAE del 0 % (sujeto a requisitos)</translation>
 <translation id="7888575728750733395">Imprimir intent de renderizado</translation>
 <translation id="7890748547282909375">Inicia sesión en Microsoft OneDrive para guardar la captura de pantalla</translation>
@@ -4368,6 +4386,7 @@ Más información:
 <translation id="8298399736867690281">Tarjeta guardada solo en el dispositivo</translation>
 <translation id="8300302621078931927">Guarda el documento de identidad de forma segura en Google Wallet</translation>
 <translation id="8301894345671534559">Introducir código</translation>
+<translation id="830342764194666561">Configuración del sitio cambiada</translation>
 <translation id="830498451218851433">Plegado al medio</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Sin comisiones, TAE del 0 %</translation>
@@ -4502,6 +4521,7 @@ Más información:
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8544217240017914508">Google Chrome está intentando modificar la configuración para completar los métodos de pago.</translation>
 <translation id="8544303911974837265">Poliéster</translation>
+<translation id="8545237556624168656">Para usar la función, debes haber iniciado sesión con tu cuenta de correo</translation>
 <translation id="854548366864113872">Opción de precio alto</translation>
 <translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Novedad<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Indica el motivo de la subida (obligatorio)</translation>
@@ -4521,6 +4541,7 @@ Más información:
 <translation id="8577192028579836704">Normalmente <ph name="TYPICAL_PRICE" /> para todas las opciones</translation>
 <translation id="8577348305244205642">Tarjeta virtual no disponible</translation>
 <translation id="8579000896558714521">Anulación del teclado</translation>
+<translation id="8579561564816585231">Has iniciado sesión con un servicio de Google, como el Gestor de contraseñas</translation>
 <translation id="8581064022803799721">Esta página se ha guardado en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Añade un teléfono</translation>
 <translation id="8587100480629037893">Seguimiento de manos no permitido</translation>
@@ -4610,6 +4631,7 @@ Más información:
 <translation id="8759274551635299824">La tarjeta ha caducado</translation>
 <translation id="87601671197631245">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas, los mensajes o las tarjetas de crédito) cuando se envíe a este sitio web.</translation>
 <translation id="8762871163452985706">Anotación deshecha</translation>
+<translation id="8762944800272172913">No se ha podido abrir la conversación con Gemini</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Enlace enviado desde <ph name="DEVICE_NAME" />}other{# enlaces enviados desde <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Cierra todas las ventanas de Incógnito que estén abiertas</translation>

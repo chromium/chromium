@@ -372,6 +372,7 @@
 <translation id="4786083865378785874">Калі сэрвіс Gemini ў Chromium адкрыты, падчас стварэння новых укладак бакавая панэль будзе заставацца адкрытай</translation>
 <translation id="479167709087336770">Гэта функцыя выкарыстоўвае тую ж праверку правапісу, што ў Google Пошуку. Уведзены ў браўзер тэкст адпраўляецца ў Google. Гэта можна змяніць у наладах.</translation>
 <translation id="4814736265800133385">Выкарыстоўваць Chromium без уліковага запісу</translation>
+<translation id="4839733921943823254">Замацаваць ярлык</translation>
 <translation id="4888717733111232871">Уваходнае правіла для Chromium, якое дазваляе трафік mDNS.</translation>
 <translation id="4893347770495441059">Перазапусціць, каб абнавіць &amp;Chromium</translation>
 <translation id="4918086044614829423">Прыняць</translation>
@@ -762,6 +763,7 @@
 <translation id="856656450041460113">Пошук у спісе моў</translation>
 <translation id="8576826849825683917">Некалькі арганізацый кіруюць браўзерам Chromium</translation>
 <translation id="8586442755830160949">Аўтарскія правы: стваральнікі Chromium, <ph name="YEAR" />. Усе правы абароненыя.</translation>
+<translation id="8590782867495422699">Паўторна адкрыць рэжым AI у Google Пошуку</translation>
 <translation id="8619360774459241877">Ідзе запуск Chromium...</translation>
 <translation id="8624541899164515475">Налады (адкрыюцца ў новай укладцы).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing нельга зрабіць стандартным браўзерам.</translation>
@@ -812,6 +814,7 @@
 <translation id="9056398481763999048">Выкарыстоўвайце лепшыя інструменты на аснове AI ад Google – у праграме Chromium на тэлефоне</translation>
 <translation id="9057625473949801035">Каб атрымаць доступ да сваіх пароляў і іншых даных з прылады "<ph name="DEVICE" />", увайдзіце ў Chromium</translation>
 <translation id="9062666675513499497">Уваходзіць у Chromium пры ўваходзе ў іншыя сэрвісы Google</translation>
+<translation id="9074041031320636790">Гатова! Цяпер вы можаце задаваць пытанні падчас прагляду вэб-старонак з дапамогай рэжыму AI ў Google Пошуку</translation>
 <translation id="9078733879136747090">Chromium аўтаматычна закрыты</translation>
 <translation id="9089354809943900324">Chromium састарэў</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium будзе перазапушчаны праз гадзіну}one{Chromium будзе перазапушчаны праз # гадзіну}few{Chromium будзе перазапушчаны праз # гадзіны}many{Chromium будзе перазапушчаны праз # гадзін}other{Chromium будзе перазапушчаны праз # гадзіны}}</translation>

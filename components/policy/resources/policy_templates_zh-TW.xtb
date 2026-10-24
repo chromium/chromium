@@ -1478,6 +1478,23 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
       請注意，這項政策會根據頂層文件來源 (通常是網址列中顯示的網頁網址) 是否符合任一指定模式來封鎖 JavaScript。因此，這項政策不適合用於緩解網路供應鏈攻擊。舉例來說，將模式設為「https://[*.]foo.com/」，並無法禁止由 https://example.com 代管的頁面執行從 https://www.foo.com/example.js 載入的指令碼。此外，如果 https://example.com 中的某個文件不是位於頂層，而是以子頁框形式內嵌到由其他來源 (例如 https://www.bar.com) 代管的頁面，則將模式設為「https://example.com/」無法禁止該文件執行指令碼。</translation>
 <translation id="1942015922182679826">刪除無法解密的密碼</translation>
 <translation id="1942626390957213764">停用桌面分享中心</translation>
+<translation id="1943243146727870858">為清單中的識別資訊提供者停用使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務。
+
+如果新增 <ph name="POLICY_VALUE_ALL" /> 這個值，所有支援的單一登入 (SSO) 識別資訊提供者都會遭到停用。
+
+如果新增 <ph name="POLICY_VALUE_MICROSOFT" /> 這個值，Chrome 將停止支援 Microsoft® 雲端識別資訊提供者的單一登入服務。
+
+如未設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 支援的所有識別資訊提供者。
+
+如果管理員在裝置上的 <ph name="PRODUCT_NAME" /> 啟用識別資訊提供者並完成設定，使用者只要在支援 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的應用程式中，透過該識別資訊提供者登入過一次，就能自動使用該識別資訊提供者登入網站資源。在每個驗證事件中，與使用者驗證資訊相關的資訊都會傳送給使用者的雲端識別資訊提供者。
+
+注意事項：
+
+<ph name="PRODUCT_NAME" /> 的無痕或訪客模式不支援使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務。
+
+<ph name="PRODUCT_NAME" /> 僅支援以下識別資訊提供者使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務：Microsoft、Okta、Ping。
+
+這項功能自 <ph name="MAC_OS_NAME" /> 10.15 起開放使用。</translation>
 <translation id="1943628907052340534">使用者登入 <ph name="MS_WIN_NAME" /> 時不開啟 <ph name="PRODUCT_NAME" /></translation>
 <translation id="194407941132272412">停用所有網站的網站隔離功能，但允許使用者啟用</translation>
 <translation id="1945994447126139909">這項企業政策只是暫時性措施，將在 <ph name="PRODUCT_NAME" /> 第 88 版中移除。
@@ -5436,6 +5453,27 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 請注意，強制執行的限制會受 <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> 影響。</translation>
 <translation id="4528981768990874684">停用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
 <translation id="453031441196755904">這項政策已遭到淘汰。</translation>
+<translation id="4531088355818260318">這項政策可讓你定義規則清單，將自訂 HTTP 標頭插入符合特定網址模式的網頁要求。經此政策設定的標頭，優先順序高於要求中原有的標頭，也高於使用者或擴充功能嘗試進行的修改。
+
+這項政策的常見用途是插入自訂標頭 (例如 <ph name="EXAMPLE_HEADER_NAME" />)，強制執行租戶存取控管機制。
+
+此政策接受規則清單，每項規則都包含：
+
+* <ph name="PATTERNS_KEY" />：要比對的網址模式清單。請參閱網址模式的格式設定說明 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)。
+
+* <ph name="HEADERS_KEY" />：要插入的標頭物件清單，每個物件包含：
+
+  * <ph name="HEADER_NAME_KEY" />：要插入的標頭名稱。
+
+  * <ph name="HEADER_VALUE_KEY" />：要插入的標頭值。
+
+如果多項規則符合要求，系統會套用所有相符規則中的標頭。如有多個同名標頭，系統會套用網址模式最明確的標頭。如果網址模式的明確程度相同，系統會套用清單中最後一個標頭。
+
+標頭名稱必須符合 RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) 規定。標頭值不得含有 NUL、CR 或 LF 符號。個別標頭的大小不得超過 8 KB。系統會忽略無效的標頭和網址模式。
+
+這項政策中所有規則的網址模式總數上限為 500 個，每項規則最多可有 20 個標頭。如果超過上述門檻，系統將忽略多出來的網址模式和標頭。
+
+注意：如果網址模式符合未加密的通訊協定 (http://、ws:// 或省略通訊協定時)，系統可能會透過未加密的管道，以純文字形式傳輸設定的標頭，而網路觀察者可能會看到這些標頭資訊。為保護機密或具辨識性的標頭值，請將網址模式限制為加密通訊協定 (https:// 或 wss://)。</translation>
 <translation id="4531706050939927436">你可以在 Google 管理控制台中使用 Google Play 強制安裝 Android 應用程式 (不會使用這項政策)。</translation>
 <translation id="4534500438517478692">Android 限制名稱：</translation>
 <translation id="4541530620466526913">裝置本機帳戶</translation>
@@ -6944,6 +6982,7 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統會回報裝置的應用程式和使用情況。</translation>
+<translation id="5418723809273651607">Ping® 雲端識別資訊提供者</translation>
 <translation id="5420245232720940848">為 Thunderbolt/USB4 周邊裝置停用 PCIe 通道，限制裝置功能</translation>
 <translation id="5420673997623782432">禁止所有用戶端存取系統地理位置</translation>
 <translation id="5420774177427557782">控制使用這項設定的 VM 是可安裝並執行 (<ph name="INSTALL_ALLOWED" />)、可執行但不允許安裝 (<ph name="RUN_ALLOWED" />)，或不允許執行 (<ph name="BLOCKED" />)。請注意，如要安裝 VM，必須同時設定 installer_image_x86_64 金鑰。如果完全移除設定，系統會以隱含方式將這個 VM 設為「<ph name="BLOCKED" />」，進而導致 VM 無法在沒有政策的情況下執行。</translation>

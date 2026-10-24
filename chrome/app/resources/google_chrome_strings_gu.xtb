@@ -118,6 +118,7 @@
 <translation id="2039417478970545937">સેટિંગ.</translation>
 <translation id="2040220733769034247">Chrome ડાઉનલોડ કરવા અને તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવા માટે તમારા ફોન વડે QR કોડને સ્કૅન કરો.</translation>
 <translation id="2044908892530830113">Mac મેનૂ બારમાં Chromeમાં શોધવાની સુવિધા બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
+<translation id="2050189601866423230">તમે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે, તમે Google Search AI મોડને પિન કરી શકો છો</translation>
 <translation id="2091012649849228750">Google Chromeની ભાવિ અપડેટ મેળવવા માટે, તમારે Windows 10 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર Windows 8નો ઉપયોગ કરે છે.</translation>
 <translation id="2094648590148273905">ChromeOS Flexની શરતો</translation>
 <translation id="2094919256425865063">છતાં પણ Chrome બંધ કરવું છે?</translation>
@@ -401,6 +402,7 @@
 <translation id="4793679854893018356">Chromeની તમને સલામત રાખવાની રીત વિશે જાણો</translation>
 <translation id="4828579605166583682">Google Chrome વર્તમાન પાસવર્ડ બદલવાનો પ્રયાસ કરી રહ્યું છે. આને મંજૂરી આપવા માટે Windowsનો પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="4836321460899997044">Chrome પ્રોફાઇલ</translation>
+<translation id="4839733921943823254">શૉર્ટકટ પિન કરો</translation>
 <translation id="4842397268809523050">ChromeOS Flex તમારા ડેટાને સિંક કરી શક્યું નથી, કારણ કે તમારા ડોમેન માટે સિંક કરવાની સુવિધા ઉપલબ્ધ નથી.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> દ્વારા પહેલેથી જ સાઇન ઇન કરવામાં આવ્યું છે.  તમારું બ્રાઉઝિંગ અલગ રાખવા માટે, તમારી પોતાની પ્રોફાઇલમાં Chromeમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="4855026984605187434">તમારી સ્ક્રીન શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો</translation>
@@ -727,7 +729,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7777080907402804672">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે. તમે આને કોઈપણ સમયે સેટિંગમાં જઈને બંધ કરી શકો છો.</translation>
 <translation id="778331955594035129">આ સાઇટ માટે Chromeને સ્થાનની પરવાનગીની જરૂર છે</translation>
 <translation id="7787950393032327779">બીજા કમ્પ્યુટર (<ph name="HOST_NAME" />) પર પ્રોફાઇલ બીજી Google Chrome પ્રક્રિયા (<ph name="PROCESS_ID" />) દ્વારા ઉપયોગમાં હોય એવું લાગે છે. Chrome એ પ્રોફાઇલને લૉક કરી છે જેથી તે દૂષિત ન થઈ જાય. જો તમને ખાતરી છે કે કોઈ અન્ય પ્રક્રિયાઓ આ પ્રોફાઇલનો ઉપયોગ કરી રહી નથી, તો તમે પ્રોફાઇલને અનલૉક કરી અને Chrome ને ફરીથી લોંચ કરી શકો છો.</translation>
-<translation id="7800043020703832708">બાજુની પૅનલમાં Google Search બંધ કરો</translation>
 <translation id="7801699035218095297">Google Chrome પાસવર્ડની કૉપિ કરવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="7804364787702057554">Chromeમાં તમારું એકાઉન્ટ</translation>
 <translation id="7804947029129221742">Chromeની બહારથી તમારું શોધ એન્જિન બદલવામાં આવ્યું હતું. તમારી સુરક્ષા માટે, Chrome તેને ફરી તેના ઑરિજિનલ ડિફૉલ્ટ સેટિંગ પર રીસેટ કરે છે. <ph name="LEARN_MORE_LINK" /></translation>
@@ -771,6 +772,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8074398340364918139">Chromeની કોઈ ચોક્કસ સુવિધા કે એક્સ્ટેન્શન શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી પસંદ કરેલા તમારા કીબોર્ડની કી ટાઇપ કરો</translation>
 <translation id="8077579734294125741">અન્ય Chrome પ્રોફાઇલ</translation>
 <translation id="8086881907087796310">તમારું કમ્પ્યૂટર, હાર્ડવેરની ઓછામાં ઓછી આવશ્યકતાઓ પૂર્ણ ન કરી શકવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
+<translation id="8110438089258398864">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search AI મોડ ફરીથી ખોલી શકો છો</translation>
 <translation id="8113883687556086139">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="8115695070094288807">Chromeને તમારું બનાવી રહ્યા છીએ...</translation>
 <translation id="8118331347066725040">'Lens વડે શોધો' માટે પ્રતિસાદ મોકલો</translation>
@@ -827,6 +829,8 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8555465886620020932">સેવામાં ભૂલ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ભાષાની સૂચિ શોધો</translation>
 <translation id="8575047640889685742">તમારા Google એકાઉન્ટમાંનો Chromeનો બધો ડેટા એન્ક્રિપ્ટ કરવા માટે તમારા <ph name="BEGIN_LINK" />પોતાના પાસફ્રેઝ<ph name="END_LINK" />નો ઉપયોગ કરો. Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંનો બ્રાઉઝિંગ ઇતિહાસ સિંક કરવામાં આવશે નહીં.</translation>
+<translation id="8590782867495422699">Google Searchનો AI મોડ ફરીથી ખોલો</translation>
+<translation id="8598779894319572882">ટૂલબાર પરના "Google Search AI મોડ" બટન પરથી, તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search AI મોડ ફરીથી ખોલી શકો છો</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="8623450603356630491">તમારા ફોન પર Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
@@ -881,6 +885,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="9014771989710951291">એકથી વધુ સંસ્થાઓ Chromeને મેનેજ કરે છે</translation>
 <translation id="9018218886431812662">ઇન્સ્ટૉલેશન પૂર્ણ</translation>
 <translation id="9066987883552592250">Chrome Canaryમાં Gemini બંધ કરો</translation>
+<translation id="9074041031320636790">સફળતા! હવે તમે Google Search AI મોડ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="9090566250983691233">Chrome શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="9106236359747881194">શોધવા માટે ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>

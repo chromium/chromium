@@ -760,10 +760,10 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8555465886620020932">سروس کی خرابی: <ph name="SERVICE_ERROR" />۔</translation>
 <translation id="8556055872671007529">‏‫Chromium کی کچھ خصوصیات اور ایکسٹینشنز شارٹ کٹس کے ساتھ آتی ہیں۔ آپ انہیں دوبارہ آن کرنے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="8556420416730706394">آپ آسان رسائی کے لیے تصاویر کا استعمال کر کے تلاش کو پن کر سکتے ہیں؛ سائیڈ پینل کے اوپری حصے میں پن کریں بٹن پر کلک کریں</translation>
-<translation id="8564408666201523086">‏کامیاب! اب آپ سائیڈ پینل میں Google تلاش کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="856656450041460113">زبان کی فہرست تلاش کریں</translation>
 <translation id="8576826849825683917">‏متعدد تنظیمیں Chromium کا نظم کرتی ہیں</translation>
 <translation id="8586442755830160949">‏کاپی رائٹ ‎<ph name="YEAR" /> The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
+<translation id="8590782867495422699">‏‫Google تلاش AI وضع کو دوبارہ کھولیں</translation>
 <translation id="8619360774459241877">‏Chromium شروع ہو رہا ہے…</translation>
 <translation id="8624541899164515475">ترتیبات، نئے ٹیب میں کھلتی ہیں۔</translation>
 <translation id="8648201657708811153">‏Google Chrome for Testing کو آپ کا ڈیفالٹ براؤزر نہیں بنایا جا سکتا۔</translation>
@@ -814,6 +814,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="9056398481763999048">‏اپنے فون پر Chromium ایپ کے ساتھ Google کے بہترین AI ٹولز کا استعمال کریں</translation>
 <translation id="9057625473949801035">‏‫<ph name="DEVICE" /> سے اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
 <translation id="9062666675513499497">‏دیگر Google سروسز میں سائن ان کرتے وقت Chromium میں سائن ان کریں</translation>
+<translation id="9074041031320636790">‏کامیاب! اب آپ Google تلاش AI وضع کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="9078733879136747090">‏Chromium خودکار طور پر بند ہو گیا</translation>
 <translation id="9089354809943900324">‏Chromium پرانا ہے</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏ایک گھنٹے میں Chromium دوبارہ لانچ ہوگا}other{‏# گھنٹے میں Chromium دوبارہ لانچ ہوگا}}</translation>

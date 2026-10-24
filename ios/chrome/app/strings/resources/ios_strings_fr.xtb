@@ -1942,6 +1942,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="6946722113367118030">Penser</translation>
 <translation id="6947751977892029882">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPhone ne soit pas compatible avec ce paramètre.</translation>
 <translation id="6950522403736391608">Masqué</translation>
+<translation id="6957084631403333422">Essayez une page "Nouvel onglet" simplifiée</translation>
 <translation id="695965663642079255">Enregistrez et gérez vos infos de paiement pour payer plus vite</translation>
 <translation id="6962809930976936328">Obtenez des informations avec Gemini</translation>
 <translation id="6964300328304469089">Actuellement sélectionné : <ph name="NAME" />, <ph name="EMAIL" />. Choisissez un compte.</translation>
@@ -2179,6 +2180,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Élément enregistré dans votre compte Google, {email}}one{Élément enregistré dans votre compte Google, {email}}other{Éléments enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="7729458878441927652">Pour voir les onglets de vos autres appareils, synchronisez vos onglets et l'historique.</translation>
 <translation id="7730020510075123961">Non, fusionner les données</translation>
+<translation id="7730937523779541003">Page "Nouvel onglet" simplifiée appliquée</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Uniquement sur cet appareil.</translation>
 <translation id="7737550920399185748">Les photos de la page d'accueil issues de votre bibliothèque ne seront pas synchronisées sur vos appareils.</translation>
 <translation id="7738120385185846461">Signaler un problème…</translation>
@@ -2622,6 +2624,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="9032405509996909363">Confirmer la suppression des données de navigation</translation>
 <translation id="9038526468059454274">Résumez avec</translation>
 <translation id="9039373489628511875">Bande passante</translation>
+<translation id="9042363670218758847">Optez pour une mise en page pensée pour des recherches rapides</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9044703854323320868">Message Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Créez des groupes d'onglets pour organiser vos onglets ouverts et rester productif</translation>

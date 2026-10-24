@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Zərf C5</translation>
 <translation id="2119505898009119320">Verildi: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Aşağı sağdan deşik açmaq</translation>
+<translation id="2121418473709291357">Chrome Brauzeri üzrə Bulud İdarəetməsi deaktiv olduğu üçün nəzərə alınmadı.</translation>
 <translation id="2122214041802369259">Qiymət yüksəkdir</translation>
 <translation id="2122719317867821810">Bu siyasət nəzərdə tutulduğu kimi işləyir, lakin ziddiyyətli bir dəyər başqa bir yerdə təyin olunub və bu siyasət tərəfindən əvəzlənib.</translation>
 <translation id="2124081665399116863">Google Pulqabıda nəqliyyat vasitəsini güncəlləyin</translation>
@@ -2478,7 +2479,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5115232566827194440">Məhdud idarə olunan qonaq sessiyasının əvəzlənməsi</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Həssas məlumatların avtomatik doldurulması üçün kimliyinizi doğrulayın</translation>
-<translation id="5121592697493894155">Yan paneldə Google Axtarış</translation>
 <translation id="5122786942953798871">Zərf (pambıq)</translation>
 <translation id="5123063207673082822">Həftəsonu</translation>
 <translation id="5124797626438336458">"İndi al, sonra ödə" xəta ekranı yarım hündürlükdə açılıb.</translation>
@@ -2915,6 +2915,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5843987376989109187">Bu dil dəstəklənmir.
     <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Sifarişinizi nəzərdən keçirdikdən sonra hesabınıza daxil olmalı və ya <ph name="BNPL_ISSUER_NAME" /> ilə yeni hesab yaratmalısınız. Bu hesab avtomatik olaraq Google Pulqabıda əlaqələndiriləcək.</translation>
+<translation id="5848916806551637625">Pix hesabı <ph name="ACCOUNT_EMAIL" /> ilə əlaqələndiriləcək. Pix kod aşkarlamasını söndürmək üçün <ph name="BEGIN_LINK1" />Chrome ayarlarına<ph name="END_LINK1" /> keçin.</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
 <translation id="5851868085455377790">Emitent</translation>
 <translation id="5852909432155870672">RA4</translation>

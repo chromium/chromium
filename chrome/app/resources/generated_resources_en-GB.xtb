@@ -7354,6 +7354,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6628328486509726751">Uploaded <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Stronger security</translation>
+<translation id="6630211688479622571">Show most recent</translation>
 <translation id="6630452975878488444">Selection shortcut</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wants permanent access to a certificate to authenticate itself on your behalf.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Leave group}other{Leave groups}}</translation>

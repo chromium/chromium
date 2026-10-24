@@ -1836,6 +1836,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2423506062824112361">Falha ao transferir o conteúdo devido a um motivo desconhecido.</translation>
 <translation id="2423578206845792524">Guard&amp;ar imagem como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Convidado}other{Convidado (#)}}</translation>
+<translation id="2424762488607770568">Predefinição (corresponder ao sistema)</translation>
 <translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo do rato</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 conta, palavra-passe guardada apenas neste dispositivo. Mais detalhes}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} contas, palavra-passe guardada apenas neste dispositivo. Mais detalhes}}</translation>
@@ -5648,6 +5649,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5280426389926346830">Quer criar um atalho?</translation>
 <translation id="5280966903879030278">Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou. Esta definição está desativada.</translation>
 <translation id="5281013262333731149">Abre em: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Cores da página</translation>
 <translation id="5284107433515104664">Durante a alteração da palavra-passe, o conteúdo da página e as informações relacionadas são enviados para a Google e podem ser revistos por humanos para melhorar esta funcionalidade. A sua palavra-passe é encriptada e nunca é visível para ninguém.</translation>
 <translation id="5284445933715251131">Continuar a transferir</translation>
 <translation id="5285635972691565180">Ecrã <ph name="DISPLAY_ID" /></translation>
@@ -6539,6 +6541,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5989497858237037960">À medida que navega em sites, o conteúdo das respetivas páginas é encriptado e guardado no seu dispositivo. Isto pode afetar o desempenho do Chrome</translation>
 <translation id="5990266201903445068">Apenas Wi-Fi</translation>
 <translation id="5990386583461751448">Tradução</translation>
+<translation id="5991039386730545918">O tema de cores da página selecionado só é usado enquanto o alto contraste do sistema estiver ativado</translation>
 <translation id="5992225669837656567">Todos os ratos foram desligados</translation>
 <translation id="5992652489368666106">Sem limite</translation>
 <translation id="5996490984199062729">O seu perfil não foi configurado</translation>
@@ -7343,6 +7346,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6628328486509726751">Carregado <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Maior segurança</translation>
+<translation id="6630211688479622571">Mostrar mais recentes</translation>
 <translation id="6630452975878488444">Atalho de selecção</translation>
 <translation id="6630752851777525409">A extensão <ph name="EXTENSION_NAME" /> quer um acesso permanente a um certificado para se autenticar automaticamente em seu nome.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Sair do grupo}other{Sair dos grupos}}</translation>
@@ -9322,6 +9326,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8118362518458010043">Desativada pelo Chrome. Esta extensão pode ser insegura.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# marcador}other{# marcadores}}</translation>
 <translation id="8118488170956489476">O seu <ph name="BEGIN_LINK" />navegador é gerido<ph name="END_LINK" /> pela sua entidade.</translation>
+<translation id="8118496140027032067">Substitua as cores das páginas Web por temas de alto contraste ou desative as cores forçadas</translation>
 <translation id="8118515372935001629">Taxa de atualização do ecrã</translation>
 <translation id="8118860139461251237">Gerir as transferências</translation>
 <translation id="8119438628456698432">A gerar ficheiros de registo…</translation>
@@ -9999,6 +10004,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8648408795949963811">Temperatura da cor da Luz noturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quer: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
 <translation id="8648889679430451455">Limpar dados de personalização</translation>
+<translation id="8649290269169747916">Usar cores predefinidas da página quando o alto contraste do sistema está desativado</translation>
 <translation id="8651585100578802546">Forçar o recarregamento desta página</translation>
 <translation id="8651806635673244884">Pode mover os separadores de volta para a parte superior clicando com o botão direito num separador e selecionando "Mostrar separadores na horizontal"</translation>
 <translation id="8652400352452647993">Erro de extensão do pacote</translation>

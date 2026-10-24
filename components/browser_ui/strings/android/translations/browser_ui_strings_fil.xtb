@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">I-block ang mga site sa paggamit sa iyong virtual reality device at data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">May pagbaba ng presyo sa iyong nakabukas na tab, <ph name="NEW_PRICE" /> na dating <ph name="OLD_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Bawiin ang pahintulot sa device para sa <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Kapag makitid ang window, i-request ang mobile view</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6530703012083415527">Kapag naka-on, makakagamit ng mga pop-up at pag-redirect ang mga site. Kapag naka-off, hindi makakagamit ng mga pop-up at pag-redirect ang mga site .</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">On-device na data ng site</translation>
 <translation id="7201549776650881587">Ide-delete ng pagkilos na ito ang lahat ng data at cookies na na-store ng lahat ng site sa ilalim ng <ph name="ORIGIN" /> o ng app nito sa iyong Home screen</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
+<translation id="7225256190577194089">Bawiin ang lahat ng pahintulot para sa device na <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Pumili ng mga larawan</translation>
 <translation id="7243246278722455312">Bottom sheet ng pag-customize ng page ng bagong tab mo</translation>
 <translation id="7243308994586599757">May mga opsyon malapit sa ibaba ng screen</translation>

@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Obre la pantalla de configuració <ph name="BEGIN_BOLD" />Apps per omissió<ph name="END_BOLD" /> a iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{S'ha rebut un enllaç}other{S'han rebut {count} enllaços}}</translation>
 <translation id="1941314575388338491">Feu doble toc per copiar-ho.</translation>
+<translation id="1942483019269000450">Per continuar la tasca, Gemini pot demanar a Google Wallet que empleni la informació de la teva targeta de crèdit</translation>
 <translation id="1943478190258551035">Menú → Configuració</translation>
 <translation id="1944477975050820119">Obtén suggeriments en temps real que et poden ajudar a trobar noves maneres de navegar amb la IA. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Inicieu la sessió amb un compte gestionat</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">element nou</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilitzen la mateixa contrasenya</translation>
 <translation id="205013082884273671">Cerca qualsevol cosa de la pantalla</translation>
+<translation id="2053311407685904414">Selecciona una adreça</translation>
 <translation id="2054044186557130763">Inicia la sessió com a <ph name="NAME" /> <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="2059166748188874810">Municipi</translation>
 <translation id="2060638295449304809">Aquesta adreça només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius teus, desa-la al teu Compte de Google (<ph name="USER_EMAIL" />).</translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Tradueix</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360196772093551345">Sol·licita el lloc web per a mòbils</translation>
+<translation id="2360272811987888433">Inici de sessió manual</translation>
 <translation id="2362083820973145409">Has iniciat la sessió com a <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Obre la configuració.</translation>
 <translation id="2367025302166767427">Hi ha hagut un problema en emplenar la teva informació</translation>
 <translation id="2371084566192454134">Pestanyes i grups de pestanyes</translation>
@@ -773,6 +776,7 @@
 <translation id="3404232721752787413">Desa a Google Fotos</translation>
 <translation id="3406506285180498376">Comparteix la pàgina…</translation>
 <translation id="340669334496430859">Darrera modificació</translation>
+<translation id="3407832712016477396">Gemini pot utilitzar el gestor de contrasenyes de Google per iniciar la sessió per tu</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 d'octubre de 2023</translation>
 <translation id="3419787211763835342">Ajuda a millorar l'emplenament automàtic millorat</translation>
@@ -1050,6 +1054,8 @@
 <translation id="4290920330097335010">No permetis mai</translation>
 <translation id="4293154608148215505">del teu telèfon</translation>
 <translation id="4294506173142861371">Vols iniciar la sessió com a <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Introdueix manualment</translation>
+<translation id="4297418774230471285">Selecciona la informació personal</translation>
 <translation id="4302061870579014542">Defineix la posició</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
 <translation id="4309403553630140242">Fes doble toc per obtenir més informació</translation>
@@ -1388,6 +1394,7 @@
 <translation id="5315029634103634221">Gemini és una IA i pot cometre errors. <ph name="BEGIN_LINK" />Més informació sobre les dades rellevants que s'envien a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">No hi ha res per importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Inicia la sessió a <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318298563956633672">Ja estàs fent el seguiment d'aquest producte.</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -1935,6 +1942,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="6946722113367118030">Pensant</translation>
 <translation id="6947751977892029882">Hi ha hagut un error amb aquesta opció de configuració. Actualitza i reinicia Chrome i iOS, i torna-ho a provar. Si aquest error continua produint-se, és possible que l'iPhone no admeti aquesta opció de configuració.</translation>
 <translation id="6950522403736391608">Amagades</translation>
+<translation id="6957084631403333422">Prova una pàgina Pestanya nova enfocada</translation>
 <translation id="695965663642079255">Desa i gestiona la informació de pagament per tramitar compres més ràpidament</translation>
 <translation id="6962809930976936328">Obtén informació detallada amb Gemini</translation>
 <translation id="6964300328304469089">Selecció actual: <ph name="NAME" />, <ph name="EMAIL" />. Tria un compte.</translation>
@@ -2172,6 +2180,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7724085059277147439">{count,plural, =1{L'element s'ha desat al teu Compte de Google, {email}}other{Els elements s'han desat al teu Compte de Google, {email}}}</translation>
 <translation id="7729458878441927652">Per veure les pestanyes dels altres dispositius, sincronitza les pestanyes i l'historial.</translation>
 <translation id="7730020510075123961">No, combina les dades</translation>
+<translation id="7730937523779541003">S'ha aplicat la pàgina Pestanya nova enfocada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Només en aquest dispositiu.</translation>
 <translation id="7737550920399185748">Les fotos de la pàgina d'inici de la biblioteca de fotos no se sincronitzaran en tots els teus dispositius.</translation>
 <translation id="7738120385185846461">Informa d'un problema…</translation>
@@ -2207,6 +2216,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7839994177130598711">Ara, els membres de la família poden fer servir el teu nom d'usuari i la teva contrasenya quan utilitzin el gestor de contrasenyes de Google per iniciar la sessió a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Cerca el text copiat</translation>
 <translation id="7841418003178675048">Tria quines targetes vols veure a la pàgina de pestanya nova.</translation>
+<translation id="7842369010458597654">S'està emplenant la informació de pagament</translation>
 <translation id="7845466610722898">Mostra la llista de lectura</translation>
 <translation id="7846161022626028328">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="784623644169604270">Sense activitat recent</translation>
@@ -2614,6 +2624,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="9032405509996909363">Confirma si vols suprimir les dades de navegació</translation>
 <translation id="9038526468059454274">Resumeix-ho amb</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>
+<translation id="9042363670218758847">Canvia a un disseny creat per fer cerques ràpides</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
 <translation id="9044703854323320868">Missatge de Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea grups de pestanyes per organitzar les pestanyes obertes i mantenir la productivitat</translation>

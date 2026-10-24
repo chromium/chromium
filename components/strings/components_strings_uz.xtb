@@ -660,6 +660,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Kimga berilgan: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Quyi oʻngdan teshik ochish</translation>
+<translation id="2121418473709291357">Inkor etildi, chunki Chrome brauzerining bulutli boshqaruvi faolsizlantirilgan.</translation>
 <translation id="2122214041802369259">Narx baland</translation>
 <translation id="2122719317867821810">Bu parametr xatosiz ishlayapti, lekin boshqa qaysidir parametr qiymati bilan ziddiyati bor.</translation>
 <translation id="2124081665399116863">Google Walletda avtomobilni yangilang</translation>
@@ -2477,7 +2478,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5115232566827194440">Mehmon seansini oʻzgartirish taqiqlangan</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
 <translation id="5116015291385561204">Maxfiy axborotni avtomatik kiritish uchun shaxsingizni tasdiqlang</translation>
-<translation id="5121592697493894155">Google Qidiruv yon panelda joylashgan</translation>
 <translation id="5122786942953798871">Konvert (paxta qogʻoz)</translation>
 <translation id="5123063207673082822">Dam olish kunlari</translation>
 <translation id="5124797626438336458">Hozir olib, keyin toʻlash xatoligi ekrani yarim hajmda ochildi.</translation>
@@ -2914,6 +2914,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5843987376989109187">Hozircha bu tilda ishlamaydi.
     <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Buyurtmani tekshirib, <ph name="BNPL_ISSUER_NAME" /> bilan hisobga kiring yoki yangi hisob yarating. Bu hisob Google Wallet ilovasida avtomatik ulanadi.</translation>
+<translation id="5848916806551637625">Pix hisobi <ph name="ACCOUNT_EMAIL" /> hisobiga ulanadi. Pix kodni aniqlash funksiyasini faolsizlantirish uchun <ph name="BEGIN_LINK1" />Chrome sozlamalarini<ph name="END_LINK1" /> oching.</translation>
 <translation id="5851548754964597211">Ichki oynalar ro‘yxati</translation>
 <translation id="5851868085455377790">Noshir</translation>
 <translation id="5852909432155870672">RA4</translation>

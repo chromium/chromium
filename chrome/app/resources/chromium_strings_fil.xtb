@@ -373,6 +373,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4786083865378785874">Kung nakabukas ang Gemini sa Chromium, mananatiling nakabukas ang panel sa gilid kapag gumagawa ng mga bagong tab</translation>
 <translation id="479167709087336770">Ginagamit nito ang parehong spellchecker na ginagamit sa paghahanap sa Google. Ipinapadala sa Google ang text na tina-type mo sa browser. Puwede mong baguhin ang gawing ito sa mga setting sa lahat ng oras.</translation>
 <translation id="4814736265800133385">Gamitin ang Chromium nang walang account</translation>
+<translation id="4839733921943823254">I-pin ang Shortcut</translation>
 <translation id="4888717733111232871">Inbound na panuntunan para sa Chromium upang payagan ang trapiko ng mDNS.</translation>
 <translation id="4893347770495441059">Ilunsad Ulit para Ma-update ang Chromium</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
@@ -763,6 +764,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="856656450041460113">Maghanap sa listahan ng wika</translation>
 <translation id="8576826849825683917">Maraming organisasyon ang namamahala sa Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
+<translation id="8590782867495422699">Buksan ulit ang Google Search AI Mode</translation>
 <translation id="8619360774459241877">Inilulunsad ang Chromium...</translation>
 <translation id="8624541899164515475">Mga setting, magbubukas sa bagong tab.</translation>
 <translation id="8648201657708811153">Hindi puwedeng gawing default na browser mo ang Google Chrome na Pang-test.</translation>
@@ -813,6 +815,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9056398481763999048">Gamitin ang pinakamahuhusay na AI tool ng Google gamit ang Chromium app sa iyong telepono</translation>
 <translation id="9057625473949801035">Para makuha ang iyong mga password at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chromium</translation>
 <translation id="9062666675513499497">Mag-sign in sa Chromium kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
+<translation id="9074041031320636790">Tagumpay! Madali ka na ngayong makakapagtanong habang nagba-browse ka gamit ang AI Mode ng Google Search</translation>
 <translation id="9078733879136747090">Awtomatikong isinara ang Chromium</translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9093206154853821181">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng isang oras}one{Muling ilulunsad ang Chromium sa loob ng # oras}other{Muling ilulunsad ang Chromium sa loob ng # na oras}}</translation>

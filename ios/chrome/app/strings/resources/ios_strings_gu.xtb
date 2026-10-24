@@ -1942,6 +1942,7 @@
 <translation id="6946722113367118030">વિચાર કરતો ચહેરો</translation>
 <translation id="6947751977892029882">આ સેટિંગમાં કંઈક ખોટું થયું. Chrome અને iOS અપડેટ કરીને ફરી શરૂ કરો અને ફરી પ્રયાસ કરો. જો આ ભૂલ આવવાનું ચાલુ રહે, તો તમારો iPhone કદાચ આ સેટિંગને સપોર્ટ કરતો નથી.</translation>
 <translation id="6950522403736391608">છુપાવેલા</translation>
+<translation id="6957084631403333422">ફોકસ કરેલું નવું ટૅબ પેજ અજમાવી જુઓ</translation>
 <translation id="695965663642079255">વધુ ઝડપથી ચેકઆઉટ કરવા માટે ચુકવણીની માહિતી સાચવો અને મેનેજ કરો</translation>
 <translation id="6962809930976936328">Gemini વડે જાણકારીઓ મેળવો</translation>
 <translation id="6964300328304469089">હાલમાં <ph name="NAME" />, <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
@@ -2179,6 +2180,7 @@
 <translation id="7724085059277147439">{count,plural, =1{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}one{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}other{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}}</translation>
 <translation id="7729458878441927652">તમારા અન્ય ડિવાઇસમાંના ટૅબ જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો.</translation>
 <translation id="7730020510075123961">ના, ડેટા મર્જ કરો</translation>
+<translation id="7730937523779541003">ફોકસ કરેલું નવું ટૅબ પેજ લાગુ કર્યું</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
 <translation id="7737550920399185748">તમારી ફોટો લાઇબ્રેરીમાંના હોમપેજ ફોટા તમારા બધા ડિવાઇસ પર સિંક થશે નહીં.</translation>
 <translation id="7738120385185846461">સમસ્યાની જાણ કરો…</translation>
@@ -2622,6 +2624,7 @@
 <translation id="9032405509996909363">બ્રાઉઝિંગ ડેટા ડિલીટ કરવાનું કન્ફર્મ કરો</translation>
 <translation id="9038526468059454274">આની સાથે સરવાળો કરો</translation>
 <translation id="9039373489628511875">બેન્ડવિડ્થ</translation>
+<translation id="9042363670218758847">ઝડપી શોધ માટે બનાવેલા લેઆઉટ પર સ્વિચ કરો</translation>
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
 <translation id="9044703854323320868">Gmail મેસેજ <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">તમારા ખુલ્લા ટૅબ ગોઠવવા અને કાર્યક્ષમ રહેવા માટે ટૅબના ગ્રૂપ બનાવો</translation>

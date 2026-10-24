@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Spletnim mestom prepreči spremljanje naprave in podatkov za navidezno resničnost</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6452138246455930388">Znižanje cene na odprtem zavihku s cene <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Umik dovoljenj za napravo za <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Če je okno omejeno, zahtevajte pogled za mobilno napravo</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6530703012083415527">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo pojavna okna in preusmeritve. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati pojavnih oken in preusmeritev.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
 <translation id="7201549776650881587">To dejanje bo izbrisalo vse podatke in piškotke, ki so jih shranila vsa spletna mesta v skupini <ph name="ORIGIN" /> ali z njo povezana aplikacija na začetnem zaslonu.</translation>
 <translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
+<translation id="7225256190577194089">Umik vseh dovoljenj za napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Izberite slike</translation>
 <translation id="7243246278722455312">Prilagajanje razdelka na dnu zaslona strani »Nov zavihek«</translation>
 <translation id="7243308994586599757">Možnosti so na voljo pri dnu zaslona</translation>

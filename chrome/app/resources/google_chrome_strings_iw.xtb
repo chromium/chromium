@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">הגדרות.</translation>
 <translation id="2040220733769034247">‏זה קוד ה-QR שצריך לסרוק בטלפון כדי להוריד את Chrome ולהיכנס לחשבון ב-Google.</translation>
 <translation id="2044908892530830113">‏הצגת החיפוש באמצעות Chrome בסרגל התפריטים של Mac והפעלת מקשי הקיצור</translation>
+<translation id="2050189601866423230">‏כדי לשאול שאלות במהלך הגלישה, אפשר להצמיד את מצב AI בחיפוש Google</translation>
 <translation id="2091012649849228750">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.</translation>
 <translation id="2094648590148273905">‏התנאים של ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏לסגור את Chrome בכל זאת?</translation>
@@ -719,7 +720,6 @@
 <translation id="7777080907402804672">‏אם אין לתמונה תיאור מועיל, Chrome ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google. אפשר להשבית את האפשרות הזו בכל זמן דרך ההגדרות.</translation>
 <translation id="778331955594035129">‏נדרשת הרשאת מיקום ב-Chrome עבור האתר הזה</translation>
 <translation id="7787950393032327779">‏נראה שהפרופיל נמצא בשימוש על ידי תהליך אחר של Google Chrome‏ (<ph name="PROCESS_ID" />) במחשב אחר (<ph name="HOST_NAME" />)‏. Chrome נעל את הפרופיל כדי שלא ייפגם. אם ברור לך שאף תהליך אחר אינו משתמש בפרופיל זה, באפשרותך לבטל את נעילת הפרופיל ולהפעיל את Chrome מחדש.</translation>
-<translation id="7800043020703832708">‏סגירת חיפוש Google בחלונית הצד</translation>
 <translation id="7801699035218095297">‏Google Chrome מנסה להעתיק את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="7804364787702057554">‏החשבון שלך ב-Chrome</translation>
 <translation id="7804947029129221742">‏בוצע שינוי מחוץ ל-Chrome במנוע החיפוש שמוגדר כברירת המחדל. כדי להגן עליך, Chrome איפס את ההגדרה לערך ברירת המחדל המקורי. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +763,7 @@
 <translation id="8074398340364918139">‏כדי לחפש תכונה או תוסף ספציפיים של Chrome, אפשר להקליד את השם המקוצר שלהם בסרגל הכתובות ולאחר מכן ללחוץ על מקש המקלדת שנבחר</translation>
 <translation id="8077579734294125741">‏פרופילים אחרים ב-Chrome</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
+<translation id="8110438089258398864">‏כדי לשאול שאלות תוך כדי גלישה, אפשר לפתוח מחדש את מצב AI בחיפוש Google</translation>
 <translation id="8113883687556086139">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, עליך לאמת את הזהות שלך</translation>
 <translation id="8115695070094288807">‏‫Chrome מבצע התאמה אישית…</translation>
 <translation id="8118331347066725040">‏שליחת משוב על חיפוש באמצעות Lens</translation>
@@ -819,6 +820,8 @@
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>
 <translation id="8575047640889685742">‏שימוש ב<ph name="BEGIN_LINK" />ביטוי סיסמה משלך<ph name="END_LINK" /> כדי להצפין את כל נתוני Chrome בחשבון Google. אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.</translation>
+<translation id="8590782867495422699">‏פתיחה מחדש של מצב AI בחיפוש Google</translation>
+<translation id="8598779894319572882">‏כדי לשאול שאלות תוך כדי גלישה, אפשר ללחוץ על הכפתור מצב AI בחיפוש Google שבסרגל הכלים ולפתוח את החלונית מחדש</translation>
 <translation id="8614913330719544658">‏Google Chrome אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="8623450603356630491">‏כניסה ל-Chrome בטלפון</translation>
 <translation id="8624541899164515475">הגדרות, ייפתחו בכרטיסייה חדשה.</translation>
@@ -873,6 +876,7 @@
 <translation id="9014771989710951291">‏מספר ארגונים מנהלים את Chrome</translation>
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
 <translation id="9066987883552592250">‏סגירת Gemini ב-Chrome Canary</translation>
+<translation id="9074041031320636790">‏הצלחנו! עכשיו אפשר לשאול שאלות בקלות במהלך הגלישה בחיפוש Google במצב AI</translation>
 <translation id="9090566250983691233">‏למה קבצים מסוימים נחסמים ב-Chrome</translation>
 <translation id="9106236359747881194">אפשר לבחור טקסט לחיפוש</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>

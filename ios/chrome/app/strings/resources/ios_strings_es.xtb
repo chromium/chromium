@@ -1105,7 +1105,7 @@
 <translation id="4455710003856931944">Desliza el borde para desplazarte hacia atrás o hacia delante.</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compra, traduce e identifica lo que ves con tu cámara o con fotos.</translation>
-<translation id="4465941170695753889">Mantén pulsado para crear un grupo de pestañas</translation>
+<translation id="4465941170695753889">Mantenla pulsada para crear un grupo de pestañas</translation>
 <translation id="4469324811108161144">Las notas pueden guardar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4470766488397113689">¿En qué quieres trabajar?</translation>
 <translation id="4471472356135655769">No se pueden exportar las contraseñas</translation>
@@ -1942,6 +1942,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="6946722113367118030">Pensando</translation>
 <translation id="6947751977892029882">No se ha podido aplicar este ajuste. Actualiza y reinicia Chrome y iOS, e inténtalo de nuevo. Si este error sigue produciéndose, es posible que tu iPhone no admita este ajuste.</translation>
 <translation id="6950522403736391608">Ocultas</translation>
+<translation id="6957084631403333422">Prueba una página Nueva pestaña enfocada</translation>
 <translation id="695965663642079255">Guarda y gestiona la información para pagos para formalizar las compras más rápido</translation>
 <translation id="6962809930976936328">Obtén información valiosa con Gemini</translation>
 <translation id="6964300328304469089">Se ha seleccionado <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
@@ -2179,6 +2180,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elemento guardado en tu cuenta de Google ({email})}other{Elementos guardados en tu cuenta de Google ({email})}}</translation>
 <translation id="7729458878441927652">Para ver las pestañas de tus otros dispositivos, sincroniza tus pestañas y tu historial.</translation>
 <translation id="7730020510075123961">No, combinar datos</translation>
+<translation id="7730937523779541003">Página Nueva pestaña enfocada aplicada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo en este dispositivo.</translation>
 <translation id="7737550920399185748">Las fotos de la página principal de tu biblioteca de fotos no se sincronizarán en tus dispositivos.</translation>
 <translation id="7738120385185846461">Notificar un problema…</translation>
@@ -2622,6 +2624,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9032405509996909363">Confirmar eliminación de datos de navegación</translation>
 <translation id="9038526468059454274">Resúmelo con</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
+<translation id="9042363670218758847">Cambia a un diseño pensado para búsquedas rápidas</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9044703854323320868">Mensaje de Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea grupos para organizar tus pestañas abiertas y mantener la productividad</translation>

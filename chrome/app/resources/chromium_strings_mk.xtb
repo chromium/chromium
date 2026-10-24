@@ -373,6 +373,7 @@
 <translation id="4786083865378785874">Ако е отворен Gemini во Chromium, страничната табла ќе остане отворена при создавањето нови картички</translation>
 <translation id="479167709087336770">Услугава ја користи истата проверка на правопис што се користи и во „Пребарување на Google“. Текстот што ќе го напишете во прелистувачот се испраќа до Google. Ваквото однесување може да го смените во поставки во секое време.</translation>
 <translation id="4814736265800133385">Користи Chromium без сметка</translation>
+<translation id="4839733921943823254">Закачи кратенка</translation>
 <translation id="4888717733111232871">Дојдовно правило за Chromium да дозволи mDNS сообраќај.</translation>
 <translation id="4893347770495441059">Рестартирајте за да се ажурира &amp;Chromium</translation>
 <translation id="4918086044614829423">Прифати</translation>
@@ -762,6 +763,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="856656450041460113">Пребарајте го списокот со јазици</translation>
 <translation id="8576826849825683917">Повеќе организации управуваат со Chromium</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
+<translation id="8590782867495422699">Отвори го повторно „AI-режимот“ на „Пребарување на Google“</translation>
 <translation id="8619360774459241877">Се стартува Chromium…</translation>
 <translation id="8624541899164515475">Поставки, се отвора во нова картичка.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не може да се направи да биде ваш стандарден прелистувач.</translation>
@@ -812,6 +814,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="9056398481763999048">Користете ги најдобрите AI-алатки на Google со апликацијата Chromium на телефонот</translation>
 <translation id="9057625473949801035">За да ги добиете лозинките и друго од <ph name="DEVICE" />, најавете се на Chromium</translation>
 <translation id="9062666675513499497">Најавете се на Chromium при најавување на други услуги на Google</translation>
+<translation id="9074041031320636790">Успешно! Отсега може лесно да поставувате прашања додека прелистувате со „AI-режимот“ на „Пребарување на Google“</translation>
 <translation id="9078733879136747090">Chromium се затвори автоматски</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ќе се рестартира по еден час}one{Chromium ќе се рестартира по # час}other{Chromium ќе се рестартира по # часа}}</translation>

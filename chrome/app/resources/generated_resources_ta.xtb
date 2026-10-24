@@ -7355,6 +7355,7 @@
 <translation id="6628328486509726751">பதிவேற்றப்பட்ட நேரம் <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">வலுவான பாதுகாப்பு</translation>
+<translation id="6630211688479622571">மிகச் சமீபத்தியவற்றைக் காட்டு</translation>
 <translation id="6630452975878488444">தேர்வு ஷார்ட்கட்</translation>
 <translation id="6630752851777525409">உங்கள் சார்பாகத் தன்னை அங்கீகரித்துக் கொள்ள ஒரு சான்றிதழுக்கான நிரந்தர அணுகலை <ph name="EXTENSION_NAME" /> கோருகிறது.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{குழுவிலிருந்து வெளியேறு}other{குழுக்களிலிருந்து வெளியேறு}}</translation>

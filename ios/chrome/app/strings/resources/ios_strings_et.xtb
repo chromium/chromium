@@ -1942,6 +1942,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="6946722113367118030">Mõtleb</translation>
 <translation id="6947751977892029882">Selle seadega läks midagi valesti. Värskendage ja taaskäivitage Chrome ja iOS ning proovige uuesti. Kui see viga kordub, ei pruugi teie iPhone seda seadet toetada.</translation>
 <translation id="6950522403736391608">Peidetud</translation>
+<translation id="6957084631403333422">Proovige lihtsustatud uut vahelehte</translation>
 <translation id="695965663642079255">Salvestage ja hallake makseteavet, et kiiremini maksta.</translation>
 <translation id="6962809930976936328">Hankige statistikat Gemini abil</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>
@@ -2179,6 +2180,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Üksus on salvestatud teie Google’i kontole {email}}other{Üksused on salvestatud teie Google’i kontole {email}}}</translation>
 <translation id="7729458878441927652">Teiste seadmete vahelehtede nägemiseks sünkroonige oma vahelehed ja ajalugu.</translation>
 <translation id="7730020510075123961">Ei, liida andmed</translation>
+<translation id="7730937523779541003">Rakendati lihtsustatud uus vaheleht.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ainult selles seadmes.</translation>
 <translation id="7737550920399185748">Teie fotokogust pärit avalehe fotosid ei sünkroonita teie seadmete vahel.</translation>
 <translation id="7738120385185846461">Probleemist teavitamine …</translation>
@@ -2622,6 +2624,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="9032405509996909363">Kinnita sirvimisandmete kustutamine</translation>
 <translation id="9038526468059454274">Kokkuvõtte tegemine teenusega</translation>
 <translation id="9039373489628511875">Ribalaius</translation>
+<translation id="9042363670218758847">Lülituge kiirete otsingute jaoks loodud paigutusele.</translation>
 <translation id="9042893549633094279">Privaatsus ja turvalisus</translation>
 <translation id="9044703854323320868">Gmaili sõnum <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Looge vahelehegruppe, et korrastada avatud vahelehti ja olla produktiivne</translation>

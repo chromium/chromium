@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5059127710849015030">เนปาล (การทับศัพท์)</translation>
 <translation id="5068919226082848014">พิซซ่า</translation>
+<translation id="5075336522277785691"><ph name="EXTENSION_NAME" /> ตั้งกฎการลบล้างพร็อกซี</translation>
 <translation id="5081517858322016911">ระบบจะลบไฟล์ที่รวมแล้วมีขนาด <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">มีข้อผิดพลาดเกิดขึ้น</translation>

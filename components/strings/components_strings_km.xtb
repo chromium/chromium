@@ -663,6 +663,7 @@
 <translation id="2118132148597630479">ស្រោមសំបុត្រ C5</translation>
 <translation id="2119505898009119320">បោះផ្សាយជូន៖ <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ចោះ​ខាងក្រោម​ផ្នែកខាងស្ដាំ</translation>
+<translation id="2121418473709291357">មិនត្រូវបានអើពើទេ ដោយសារ​ការគ្រប់គ្រង​ប្រព័ន្ធពពក​របស់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome ត្រូវបានបិទ។</translation>
 <translation id="2122214041802369259">តម្លៃខ្ពស់</translation>
 <translation id="2122719317867821810">គោលការណ៍នេះ​កំពុងដំណើរការ​ដូចការរំពឹងទុក ប៉ុន្តែ​តម្លៃជាន់គ្នា​ត្រូវបានកំណត់​នៅកន្លែងផ្សេង និងត្រូវបាន​លុបពីលើ​ដោយគោលការណ៍នេះ។</translation>
 <translation id="2124081665399116863">ធ្វើបច្ចុប្បន្នភាពព័ត៌មានយានជំនិះនៅក្នុង Google Wallet</translation>
@@ -2486,7 +2487,6 @@
 <translation id="5115232566827194440">ការលុបពីលើ​វគ្គភ្ញៀវ​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង ដែលត្រូវបាន​រឹតបន្តឹង</translation>
 <translation id="5115563688576182185">(64-ប៊ីត)</translation>
 <translation id="5116015291385561204">ផ្ទៀងផ្ទាត់​ថាជាអ្នក ដើម្បី​បំពេញ​ព័ត៌មានរសើប​ដោយ​ស្វ័យប្រវត្តិ</translation>
-<translation id="5121592697493894155">ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google នៅក្នុង​ផ្ទាំង​ចំហៀង</translation>
 <translation id="5122786942953798871">ស្រោមសំបុត្រ (កប្បាស)</translation>
 <translation id="5123063207673082822">ចុង​សប្ដាហ៍</translation>
 <translation id="5124797626438336458">បានបើក​អេក្រង់​បញ្ហា "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ពាក់កណ្ដាល​អេក្រង់។</translation>
@@ -2923,6 +2923,7 @@
 <translation id="5843987376989109187">មិនទាន់​អាចប្រើ​ភាសានេះ​បាននៅ​ឡើយទេ។
     <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">បន្ទាប់ពីអ្នក​ពិនិត្យមើល​ការបញ្ជាទិញ​របស់អ្នក​រួច អ្នកត្រូវតែ​ចូល ឬ​បង្កើត​គណនីជាមួយ <ph name="BNPL_ISSUER_NAME" />។ គណនីនេះ​នឹងត្រូវបាន​ភ្ជាប់​នៅក្នុង Google Wallet ដោយ​ស្វ័យប្រវត្តិ។</translation>
+<translation id="5848916806551637625">គណនី Pix នឹងត្រូវបានភ្ជាប់ជាមួយ <ph name="ACCOUNT_EMAIL" />។ ដើម្បីបិទ​ការចាប់ដឹង​កូដ Pix សូមចូល​ទៅកាន់ <ph name="BEGIN_LINK1" />"ការ​កំណត់ Chrome"<ph name="END_LINK1" />។</translation>
 <translation id="5851548754964597211">បញ្ជីផ្ទាំង</translation>
 <translation id="5851868085455377790">អ្នកចេញផ្សាយ</translation>
 <translation id="5852909432155870672">RA4</translation>

@@ -1512,6 +1512,23 @@ Als je dit beleid niet instelt, staat de functie 'Klik om te bellen' standaard a
       Dit beleid blokkeert JavaScript als de oorsprong van het document op het hoogste niveau (meestal de pagina-URL die ook in de adresbalk wordt getoond) overeenkomt met een van de patronen. Dit beleid is daarom niet geschikt om aanvallen op de webtoeleveringsketen te beperken. Als je bijvoorbeeld het patroon 'https://[*.]foo.com/' invoert, voorkom je niet dat een pagina die wordt gehost op https://voorbeeld.com een script uitvoert dat is geladen vanaf https://www.foo.com/voorbeeld.js. Als je het patroon 'https://voorbeeld.com/' invoert, voorkom je daarnaast niet dat een document van https://voorbeeld.com scripts uitvoert als het niet het document op het hoogste niveau is, maar is ingebed als subframe in een pagina die wordt gehost op een andere oorsprong, bijvoorbeeld https://www.bar.com.</translation>
 <translation id="1942015922182679826">Verwijdering van niet-ontsleutelbare wachtwoorden aanzetten</translation>
 <translation id="1942626390957213764">Hub voor delen van bureaublad uitzetten</translation>
+<translation id="1943243146727870858">Zet Single sign-on uit met <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> voor de vermelde identiteitsproviders.
+
+Als je de waarde <ph name="POLICY_VALUE_ALL" /> toevoegt, worden alle ondersteunde identiteitsproviders voor SSO uitgezet.
+
+Als je de waarde <ph name="POLICY_VALUE_MICROSOFT" /> toevoegt, wordt ondersteuning voor Single sign-on voor de Microsoft®-cloudidentiteitsprovider in Chrome uitgezet.
+
+Als je dit beleid niet instelt, worden alle identiteitsproviders die worden ondersteund door <ph name="PRODUCT_NAME" /> aangezet.
+
+Voor identiteitsproviders die zijn aangezet in <ph name="PRODUCT_NAME" /> en op het apparaat zijn ingesteld door de beheerder, kunnen gebruikers die inloggen op hun account met die identiteitsprovider in een app die <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ondersteunt, automatisch inloggen bij webproperty's met die identiteitsprovider. Informatie over de verificatiegegevens van de gebruiker wordt voor elke verificatiegebeurtenis overgedragen naar de cloudidentiteitsprovider van de gebruiker.
+
+Opmerkingen:
+
+<ph name="PRODUCT_NAME" /> ondersteunt Single sign-on met <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> niet in de incognito- of gastmodus.
+
+<ph name="PRODUCT_NAME" /> ondersteunt Single sign-on met <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> alleen voor de volgende identiteitsproviders: Microsoft, Okta, Ping.
+
+Deze functie is beschikbaar vanaf <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534"><ph name="PRODUCT_NAME" /> niet openen als de gebruiker inlogt bij <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Site-isolatie uitzetten voor alle websites, maar de gebruiker toestaan dit aan te zetten</translation>
 <translation id="1945994447126139909">Dit bedrijfsbeleid is voor tijdelijke aanpassing en wordt verwijderd in <ph name="PRODUCT_NAME" /> versie 88.
@@ -5552,6 +5569,27 @@ Als je deze waarde tot boven de standaardwaarde (128) verhoogt, doe je dat op ei
 De afgedwongen limieten worden beïnvloed door <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Zet de functie <ph name="IP_PROTECTION_NAME" /> uit.</translation>
 <translation id="453031441196755904">Dit beleid is beëindigd.</translation>
+<translation id="4531088355818260318">Met dit beleid kun je een lijst met regels definiëren om aangepaste HTTP-headers in te voegen in webverzoeken die overeenkomen met specifieke URL-patronen. Headers die zijn ingesteld door dit beleid, hebben voorrang op headers die oorspronkelijk aanwezig waren in het verzoek en op wijzigingen die gebruikers of extensies proberen aan te brengen.
+
+Een veelgebruikte use case voor dit beleid is om toegangsbeheer voor tenants af te dwingen door aangepaste headers te injecteren (bijvoorbeeld <ph name="EXAMPLE_HEADER_NAME" />).
+
+Het beleid accepteert een lijst met regels. Elke regel bevat het volgende:
+
+* <ph name="PATTERNS_KEY" />: Een lijst met URL-patronen die moeten overeenkomen. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: Een lijst met objecten die headers vertegenwoordigen die moeten worden geïnjecteerd. Elk object bevat het volgende:
+
+  * <ph name="HEADER_NAME_KEY" />: De naam van de header die moet worden geïnjecteerd.
+
+  * <ph name="HEADER_VALUE_KEY" />: De waarde van de header die moet worden geïnjecteerd.
+
+Als meerdere regels overeenkomen met een verzoek, worden de headers van alle overeenkomende regels toegepast. Als er meerdere headers met dezelfde naam zijn, wordt de header met het meest specifieke URL-patroon toegepast. Als patronen even specifiek zijn, wordt het patroon toegepast dat als laatste in de lijst staat.
+
+Headernamen moeten voldoen aan RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Headerwaarden mogen geen NUL-, CR- of LF-symbolen bevatten. Afzonderlijke headers mogen niet groter zijn dan 8 KB. Ongeldige headers en URL-patronen worden genegeerd.
+
+Dit beleid is beperkt tot in totaal 500 URL-patronen voor alle regels. Elke regel kan maximaal 20 headers bevatten. Patronen en headers die deze drempelwaarden overschrijden, worden genegeerd.
+
+Opmerking: Als een URL-patroon overeenkomt met niet-versleutelde schema's (http://, ws:// of als het schema is weggelaten), kunnen de ingestelde headers in platte tekst worden verstuurd via een niet-versleuteld kanaal en kunnen ze zichtbaar worden gemaakt voor netwerkwaarnemers. Beperk URL-patronen tot versleutelde schema's (https:// of wss://) om gevoelige of identificerende headerwaarden te beschermen.</translation>
 <translation id="4531706050939927436">De installatie van Android-apps kan via de Google Admin Console worden afgedwongen door gebruik te maken van Google Play. Deze apps gebruiken dit beleid niet.</translation>
 <translation id="4534500438517478692">Naam Android-beperking:</translation>
 <translation id="4541530620466526913">Lokale accounts op apparaat</translation>
@@ -7068,6 +7106,7 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de apps en het gebruik van het apparaat gerapporteerd.</translation>
+<translation id="5418723809273651607">Ping®-cloudidentiteitsprovider</translation>
 <translation id="5420245232720940848">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten uit, waardoor de apparaatmogelijkheden worden beperkt</translation>
 <translation id="5420673997623782432">Toegang tot geolocatie van systeem blokkeren voor alle clients</translation>
 <translation id="5420774177427557782">Bepaalt of VM's die deze configuratie gebruiken, kunnen worden geïnstalleerd en uitgevoerd (<ph name="INSTALL_ALLOWED" />), kunnen worden uitgevoerd maar niet geïnstalleerd (<ph name="RUN_ALLOWED" />) of niet kunnen worden uitgevoerd (<ph name="BLOCKED" />). Houd er rekening mee dat voor het installeren van een VM ook de sleutel installer_image_x86_64 moet worden ingesteld. Als je een configuratie verwijdert, wordt deze impliciet ingesteld op <ph name="BLOCKED" /> om te voorkomen dat VM's zonder beleid kunnen worden uitgevoerd.</translation>

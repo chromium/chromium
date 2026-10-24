@@ -7337,6 +7337,7 @@
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> लाई अपलोड गरियो</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">अझ बलियो सुरक्षा</translation>
+<translation id="6630211688479622571">हालसालैका देखाउनुहोस्</translation>
 <translation id="6630452975878488444">छनोट सर्टकट</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />ले तपाईँको तर्फबाटप्रमाणीकरणगर्न एउटा प्रमाणपत्रको स्थायी पहुँच गर्न चाहन्छ।</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{समूह छाड्नुहोस्}other{समूहहरू छाड्नुहोस्}}</translation>

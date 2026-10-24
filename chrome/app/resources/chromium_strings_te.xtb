@@ -755,10 +755,10 @@
 <translation id="8555465886620020932">సర్వీస్ ఎర్రర్: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">కొన్ని Chromium ఫీచర్‌లు, ఎక్స్‌టెన్షన్‌లు షార్ట్‌కట్‌లతో వస్తాయి. మీరు వాటిని తిరిగి ఆన్ చేయడాన్ని ఎంచుకోవచ్చు.</translation>
 <translation id="8556420416730706394">సులభంగా యాక్సెస్ చేయడం కోసం మీరు ఇమేజ్ సెర్చ్‌ను పిన్ చేయవచ్చు; సైడ్ ప్యానెల్‌లో ఎగువున ఉన్న 'పిన్ చేయండి' బటన్‌ను క్లిక్ చేయండి</translation>
-<translation id="8564408666201523086">విజయవంతమైంది! ఇకపై మీరు సైడ్ ప్యానెల్‌లో Google Searchతో బ్రౌజ్ చేస్తున్నప్పుడే సులభంగా ప్రశ్నలు అడగవచ్చు</translation>
 <translation id="856656450041460113">భాష లిస్ట్‌ను సెర్చ్ చేయండి</translation>
 <translation id="8576826849825683917">పలు సంస్థలు Chromiumను మేనేజ్ చేస్తాయి</translation>
 <translation id="8586442755830160949">కాపీరైట్ <ph name="YEAR" /> Chromium రచయితలు. అన్ని హ‌క్కులు రిజ‌ర్వ్ చేయ‌బ‌డ్డాయి.</translation>
+<translation id="8590782867495422699">Google Search AI మోడ్‌ను మళ్లీ తెరవండి</translation>
 <translation id="8619360774459241877">Chromiumని ప్రారంభిస్తోంది...</translation>
 <translation id="8624541899164515475">సెట్టింగ్‌లు, కొత్త ట్యాబ్‌లో తెరుచుకుంటాయి.</translation>
 <translation id="8648201657708811153">Chrome for Testingను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడం సాధ్యపడదు.</translation>
@@ -809,6 +809,7 @@
 <translation id="9056398481763999048">మీ ఫోన్‌లోని Chromium యాప్‌తో Googleకు చెందిన అత్యుత్తమ AI టూల్స్‌ను ఉపయోగించుకోండి</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> నుండి మీ పాస్‌వర్డ్‌లను, మరిన్నింటిని పొందడానికి, Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="9062666675513499497">మీరు ఇతర Google సర్వీస్‌లకు సైన్ ఇన్ చేసినప్పుడు Chromiumకి సైన్ ఇన్ చేయండి</translation>
+<translation id="9074041031320636790">విజయవంతమైంది! ఇకపై మీరు Google Search AI మోడ్‌తో బ్రౌజ్ చేస్తున్నప్పుడే సులభంగా ప్రశ్నలు అడగవచ్చు</translation>
 <translation id="9078733879136747090">Chromium ఆటోమేటిక్‌గా మూసివేయబడింది</translation>
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="9093206154853821181">{0,plural, =1{ఒక గంటలో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# గంటల్లో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>

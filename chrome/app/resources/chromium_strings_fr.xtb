@@ -371,6 +371,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4786083865378785874">Si Gemini dans Chromium est ouvert, le panneau latéral reste ouvert lorsque vous créez des onglets</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4814736265800133385">Utiliser Chromium sans compte</translation>
+<translation id="4839733921943823254">Épingler le raccourci</translation>
 <translation id="4888717733111232871">Règle de trafic entrant pour Chromium autorisant le trafic mDNS</translation>
 <translation id="4893347770495441059">Relancer et mettre à jour &amp;Chromium</translation>
 <translation id="4918086044614829423">Accepter</translation>
@@ -761,6 +762,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
 <translation id="8576826849825683917">Plusieurs organisations gèrent Chromium</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
+<translation id="8590782867495422699">Rouvrir le Mode IA dans la recherche Google</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8648201657708811153">Impossible de définir Google Chrome for Testing comme navigateur par défaut.</translation>
@@ -811,6 +813,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="9056398481763999048">Utilisez les meilleurs outils IA de Google avec l'appli Chromium sur votre téléphone</translation>
 <translation id="9057625473949801035">Pour accéder à vos mots de passe et plus encore depuis <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="9062666675513499497">Se connecter à Chromium lorsque vous vous connectez aux autres services Google</translation>
+<translation id="9074041031320636790">Et voilà ! Vous pouvez désormais facilement poser des questions pendant que vous naviguez grâce au Mode IA de la recherche Google.</translation>
 <translation id="9078733879136747090">Chromium a été fermé automatiquement</translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium va être relancé dans une heure}one{Chromium va être relancé dans # heure}other{Chromium va être relancé dans # heures}}</translation>

@@ -370,6 +370,7 @@
 <translation id="4786083865378785874">หาก Gemini ใน Chromium เปิดอยู่ แผงด้านข้างจะเปิดอยู่เมื่อสร้างแท็บใหม่</translation>
 <translation id="479167709087336770">การดำเนินการนี้จะใช้โปรแกรมตรวจตัวสะกดแบบเดียวกับใน Google Search ข้อความที่คุณพิมพ์ในเบราว์เซอร์จะส่งไปยัง Google คุณปรับเปลี่ยนลักษณะการทำงานนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="4814736265800133385">ใช้ Chromium โดยไม่มีบัญชี</translation>
+<translation id="4839733921943823254">ปักหมุดทางลัด</translation>
 <translation id="4888717733111232871">กฎขาเข้าสำหรับ Chromium เพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
 <translation id="4893347770495441059">เปิดอีกครั้งเพื่ออัปเดต Chromium</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
@@ -760,6 +761,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="856656450041460113">ค้นหารายการภาษา</translation>
 <translation id="8576826849825683917">องค์กรหลายแห่งจัดการ Chromium</translation>
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
+<translation id="8590782867495422699">เปิดโหมด AI ของ Google Search อีกครั้ง</translation>
 <translation id="8619360774459241877">กำลังเปิด Chromium...</translation>
 <translation id="8624541899164515475">การตั้งค่า เปิดในแท็บใหม่</translation>
 <translation id="8648201657708811153">ไม่สามารถตั้ง Google Chrome สำหรับการทดสอบเป็นเบราว์เซอร์เริ่มต้นได้</translation>
@@ -810,6 +812,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="9056398481763999048">ใช้เครื่องมือ AI ที่ดีที่สุดของ Google ด้วยแอป Chromium ในโทรศัพท์</translation>
 <translation id="9057625473949801035">ลงชื่อเข้าใช้ Chromium เพื่อเข้าถึงรหัสผ่านและข้อมูลอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="9062666675513499497">ลงชื่อเข้าใช้ Chromium เมื่อคุณลงชื่อเข้าใช้บริการอื่นๆ ของ Google</translation>
+<translation id="9074041031320636790">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วยโหมด AI ของ Google Search</translation>
 <translation id="9078733879136747090">มีการปิด Chromium โดยอัตโนมัติ</translation>
 <translation id="9089354809943900324">Chromium ล้าสมัย</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium จะเปิดขึ้นมาใหม่ใน 1 ชั่วโมง}other{Chromium จะเปิดขึ้นมาใหม่ใน # ชั่วโมง}}</translation>

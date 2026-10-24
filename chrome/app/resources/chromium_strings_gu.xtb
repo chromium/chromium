@@ -373,6 +373,7 @@
 <translation id="4786083865378785874">જો Chromiumમાં Gemini ખુલ્લું હોય, તો નવા ટૅબ બનાવતી વખતે બાજુની પૅનલ ખુલ્લી રહે છે</translation>
 <translation id="479167709087336770">આ પણ Google Searchમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
 <translation id="4814736265800133385">એકાઉન્ટ વગર Chromiumનો ઉપયોગ કરો</translation>
+<translation id="4839733921943823254">શૉર્ટકટ પિન કરો</translation>
 <translation id="4888717733111232871">mDNS ટ્રાફિકને મંજૂરી આપવા Chromium માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="4893347770495441059">&amp;Chromium અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
@@ -763,6 +764,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="856656450041460113">ભાષાની સૂચિ શોધો</translation>
 <translation id="8576826849825683917">એકથી વધુ સંસ્થાઓ Chromiumને મેનેજ કરે છે</translation>
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
+<translation id="8590782867495422699">Google Searchનો AI મોડ ફરીથી ખોલો</translation>
 <translation id="8619360774459241877">Chromium લૉન્ચ કરી રહ્યાં છીએ…</translation>
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
 <translation id="8648201657708811153">Chrome for Testingને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવી શકાતું નથી.</translation>
@@ -813,6 +815,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="9056398481763999048">તમારા ફોન પર Chromium ઍપ વડે Googleના શ્રેષ્ઠ AI ટૂલનો ઉપયોગ કરો</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" />માંથી તમારા પાસવર્ડ અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="9062666675513499497">જ્યારે તમે Googleની અન્ય સેવાઓમાં સાઇન ઇન કરશો, ત્યારે Chromiumમાં સાઇન ઇન કરો</translation>
+<translation id="9074041031320636790">સફળતા! હવે તમે Google Search AI મોડ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="9078733879136747090">Chromium ઑટોમૅટિક રીતે બંધ થઈ ગયું હતું</translation>
 <translation id="9089354809943900324">Chromium જૂનું થઈ ગયું છે</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium એક કલાકમાં ફરીથી લૉન્ચ થશે}one{Chromium # કલાકમાં ફરીથી લૉન્ચ થશે}other{Chromium # કલાકમાં ફરીથી લૉન્ચ થશે}}</translation>

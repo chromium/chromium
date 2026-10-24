@@ -1849,6 +1849,7 @@
 <translation id="2423506062824112361">किसी अज्ञात वजह से कॉन्टेंट डाउनलोड नहीं किया जा सका.</translation>
 <translation id="2423578206845792524">इमेज को इस रूप में सेव करें...</translation>
 <translation id="2424424966051154874">{0,plural, =1{मेहमान}one{मेहमान (#)}other{मेहमान (#)}}</translation>
+<translation id="2424762488607770568">डिफ़ॉल्ट (सिस्टम से मैच करें)</translation>
 <translation id="2426805022920575512">दूसरा खाता चुनें</translation>
 <translation id="2427507373259914951">बायां क्लिक</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> के 1 खाते का पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया. ज़्यादा जानकारी}one{<ph name="DOMAIN_LINK" /> के {NUM_PASSWORDS} खाते का पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया. ज़्यादा जानकारी}other{<ph name="DOMAIN_LINK" /> के {NUM_PASSWORDS} खातों का पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया. ज़्यादा जानकारी}}</translation>
@@ -5658,6 +5659,7 @@
 <translation id="5280426389926346830">शॉर्टकट बनाएं?</translation>
 <translation id="5280966903879030278">अपना ब्राउज़िंग इतिहास खोजने और विज़िट की गई साइटों को ढूंढने के लिए, आम बोलचाल वाली भाषा का इस्तेमाल करें. यह सेटिंग बंद है.</translation>
 <translation id="5281013262333731149">इस ब्राउज़र में खुलता है: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">पेज के रंग</translation>
 <translation id="5284107433515104664">पासवर्ड बदलने के दौरान, पेज का कॉन्टेंट और इससे जुड़ी जानकारी Google को भेजी जाती है. इस सुविधा को बेहतर बनाने के लिए, भेजी गई जानकारी की समीक्षा मैन्युअल तरीके से की जा सकती है. आपका पासवर्ड एन्क्रिप्ट (सुरक्षित) किया जाता है और यह किसी को भी नहीं दिखता है.</translation>
 <translation id="5284445933715251131">डाउनलोड करना जारी रखें</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> का डिसप्ले</translation>
@@ -6547,6 +6549,7 @@
 <translation id="5989497858237037960">साइटें ब्राउज़ करते समय, उनके पेज का कॉन्टेंट आपके डिवाइस पर एन्क्रिप्ट यानी सुरक्षित करके सेव किया जाता है. इससे Chrome की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
 <translation id="5990266201903445068">सिर्फ़ वाई-फ़ाई</translation>
 <translation id="5990386583461751448">अनुवाद किया गया</translation>
+<translation id="5991039386730545918">पेज के लिए आपकी चुनी गई रंग वाली थीम का इस्तेमाल सिर्फ़ तब किया जाता है, जब सिस्टम का हाई कंट्रास्ट मोड चालू हो</translation>
 <translation id="5992225669837656567">सभी माउस डिसकनेक्ट कर दिए गए हैं</translation>
 <translation id="5992652489368666106">कोई बॉर्डर नहीं</translation>
 <translation id="5996490984199062729">आपकी प्रोफ़ाइल सेट अप नहीं की गई है</translation>
@@ -7353,6 +7356,7 @@
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> पर अपलोड किया गया</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">बेहतर सुरक्षा</translation>
+<translation id="6630211688479622571">सबसे हाल के आइटम दिखाएं</translation>
 <translation id="6630452975878488444">चयन शॉर्टकट</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> को आपकी ओर से अपनी पुष्टि करने के लिए प्रमाणपत्र का स्थायी ऐक्सेस चाहिए.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{ग्रुप छोड़ें}one{ग्रुप छोड़ें}other{ग्रुप छोड़ें}}</translation>
@@ -9331,6 +9335,7 @@
 <translation id="8118362518458010043">Chrome ने बंद किया. यह एक्सटेंशन असुरक्षित हो सकता है.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# बुकमार्क}one{# बुकमार्क}other{# बुकमार्क}}</translation>
 <translation id="8118488170956489476">आपका संगठन आपके <ph name="BEGIN_LINK" />ब्राउज़र को मैनेज करता<ph name="END_LINK" /> है</translation>
+<translation id="8118496140027032067">हाई-कंट्रास्ट वाली थीम का इस्तेमाल करके, वेबपेज के रंग बदलें या ज़बरदस्ती लागू किए गए रंगों को बंद करें</translation>
 <translation id="8118515372935001629">डिसप्ले की रीफ़्रेश दर</translation>
 <translation id="8118860139461251237">अपने डाउनलोड प्रबंधित करें</translation>
 <translation id="8119438628456698432">लॉग फ़ाइलें जनरेट की जा रही हैं...</translation>
@@ -10008,6 +10013,7 @@
 <translation id="8648408795949963811">नाइट लाइट कलर टेंपरेचर</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> इनके लिए अनुमति चाहता है: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, वगैरह</translation>
 <translation id="8648889679430451455">निजी डेटा मिटाएं</translation>
+<translation id="8649290269169747916">सिस्टम का हाई कंट्रास्ट मोड बंद होने पर, पेज के डिफ़ॉल्ट रंगों का इस्तेमाल करें</translation>
 <translation id="8651585100578802546">इस पेज को ज़बरदस्ती फिर से लोड करें</translation>
 <translation id="8651806635673244884">किसी भी टैब पर राइट क्लिक करके और “टैब को हॉरिज़ॉन्टल तरीके से दिखाएं” को चुनकर, टैब को वापस सबसे ऊपर ले जाया जा सकता है</translation>
 <translation id="8652400352452647993">पैक एक्‍सटेंशन गड़बड़ी</translation>

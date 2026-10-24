@@ -1942,6 +1942,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="6946722113367118030">Kutafakari</translation>
 <translation id="6947751977892029882">Hitilafu fulani imetokea katika mipangilio hii. Sasisha, zima kisha uwashe Chrome na iOS, kisha ujaribu tena. Hitilafu hii ikiendelea kutokea, huenda iPhone yako isitumie mipangilio hii.</translation>
 <translation id="6950522403736391608">Zilizofichwa</translation>
+<translation id="6957084631403333422">Jaribu ukurasa mpya wa kichupo ulioangaziwa</translation>
 <translation id="695965663642079255">Hifadhi na udhibiti maelezo ya malipo ili ulipe kwa haraka zaidi</translation>
 <translation id="6962809930976936328">Pata maarifa ukitumia Gemini</translation>
 <translation id="6964300328304469089">Kwa sasa umechagua <ph name="NAME" />, <ph name="EMAIL" />. Chagua akaunti.</translation>
@@ -2179,6 +2180,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Kipengee kimehifadhiwa kwenye Akaunti yako ya Google, {email}}other{Vipengee vimehifadhiwa kwenye Akaunti yako ya Google, {email}}}</translation>
 <translation id="7729458878441927652">Ili uone vichupo kutoka kwenye vifaa vyako vingine, sawazisha vichupo vyako na historia.</translation>
 <translation id="7730020510075123961">Hapana, unganisha data</translation>
+<translation id="7730937523779541003">Umeweka ukurasa mpya wa kichupo ulioangaziwa</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Kwenye kifaa hiki pekee.</translation>
 <translation id="7737550920399185748">Picha za ukurasa wa kwanza kutoka kwenye maktaba yako ya picha hazitasawazishwa kwenye vifaa vyako.</translation>
 <translation id="7738120385185846461">Ripoti kuhusu Hitilafu...</translation>
@@ -2622,6 +2624,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="9032405509996909363">Thibitisha kufuta data ya kuvinjari</translation>
 <translation id="9038526468059454274">Andaa muhtasari ukitumia</translation>
 <translation id="9039373489628511875">Kipimo data</translation>
+<translation id="9042363670218758847">Badilisha utumie muundo uliobuniwa kwa utafutaji wa haraka</translation>
 <translation id="9042893549633094279">Faragha na usalama</translation>
 <translation id="9044703854323320868">Barua pepe ya Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Anzisha vikundi vya vichupo ili upange vichupo vyako vilivyofunguliwa na uendelee kufanya kazi</translation>

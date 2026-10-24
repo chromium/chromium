@@ -1942,6 +1942,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="6946722113367118030">Hugsar</translation>
 <translation id="6947751977892029882">Eitthvað fór úrskeiðis með þessa stillingu. Uppfærðu og endurræstu Chrome og iOS og reyndu síðan aftur. Ef þessi villa heldur áfram að koma upp styður iPhone-síminn þinn hugsanlega ekki þessa stillingu.</translation>
 <translation id="6950522403736391608">Falið</translation>
+<translation id="6957084631403333422">Prófaðu nýja fókuseraða flipasíðu</translation>
 <translation id="695965663642079255">Vistaðu og stjórnaðu greiðsluupplýsingum til að ganga hraðar frá greiðslu</translation>
 <translation id="6962809930976936328">Fáðu innsýn með Gemini</translation>
 <translation id="6964300328304469089">Núverandi val: <ph name="NAME" />, <ph name="EMAIL" /> Veldu reikning.</translation>
@@ -2179,6 +2180,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7724085059277147439">{count,plural, =1{Atriði vistað á Google-reikningnum þínum, {email}}one{Atriði vistuð á Google-reikningnum þínum, {email}}other{Atriði vistuð á Google-reikningnum þínum, {email}}}</translation>
 <translation id="7729458878441927652">Samstilltu flipana þína og ferilinn til að sjá flipa úr hinum tækjunum þínum.</translation>
 <translation id="7730020510075123961">Nei, sameina gögn</translation>
+<translation id="7730937523779541003">Ný fókuseruð flipasíða notuð</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Aðeins í þessu tæki.</translation>
 <translation id="7737550920399185748">Heimasíðumyndir í myndasafninu þínu verða ekki samstilltar í öllum tækjunum þínum.</translation>
 <translation id="7738120385185846461">Tilkynna vandamál…</translation>
@@ -2622,6 +2624,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9032405509996909363">Staðfesta eyðingu vefskoðunargagna</translation>
 <translation id="9038526468059454274">Taka saman með</translation>
 <translation id="9039373489628511875">Bandvídd</translation>
+<translation id="9042363670218758847">Skiptu yfir í útlit sem er hannað fyrir fljótlegar leitir</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="9044703854323320868">Gmail-skilaboð <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Búðu til flipahópa til að flokka opnu flipana þína og afkasta meiru</translation>

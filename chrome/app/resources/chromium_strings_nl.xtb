@@ -372,6 +372,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4786083865378785874">Als Gemini in Chromium open is, blijft het zijvenster open als je nieuwe tabbladen maakt</translation>
 <translation id="479167709087336770">Hiervoor wordt dezelfde spellingcontrole gebruikt als voor Google Zoeken. Tekst die je in de browser typt, wordt naar Google gestuurd. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="4814736265800133385">Chromium gebruiken zonder account</translation>
+<translation id="4839733921943823254">Snelkoppeling vastzetten</translation>
 <translation id="4888717733111232871">Inkomende regel zodat Chromium mDNS-verkeer toestaat.</translation>
 <translation id="4893347770495441059">Opnieuw starten om &amp;Chromium te updaten</translation>
 <translation id="4918086044614829423">Accepteren</translation>
@@ -762,6 +763,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="856656450041460113">Zoeken in lijst met talen</translation>
 <translation id="8576826849825683917">Meerdere organisaties beheren Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
+<translation id="8590782867495422699">AI-modus in Google Zoeken opnieuw openen</translation>
 <translation id="8619360774459241877">Chromium starten…</translation>
 <translation id="8624541899164515475">Instellingen, wordt geopend in een nieuw tabblad.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan niet worden ingesteld als je standaardbrowser.</translation>
@@ -812,6 +814,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="9056398481763999048">Gebruik de beste AI-tools van Google met de Chromium-app op je telefoon</translation>
 <translation id="9057625473949801035">Log in bij Chromium om onder andere je wachtwoorden van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="9062666675513499497">Inloggen bij Chromium als je inlogt bij andere Google-services</translation>
+<translation id="9074041031320636790">Je kunt nu makkelijk vragen stellen terwijl je browst met de AI-modus van Google Zoeken</translation>
 <translation id="9078733879136747090">Chromium is automatisch gesloten</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium wordt over een uur opnieuw gestart}other{Chromium wordt over # uur opnieuw gestart}}</translation>

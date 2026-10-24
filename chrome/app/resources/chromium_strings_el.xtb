@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Εάν το Gemini στο Chromium είναι ανοικτό, το πλαϊνό πλαίσιο παραμένει ανοικτό κατά τη δημιουργία νέων καρτελών</translation>
 <translation id="479167709087336770">Αυτό χρησιμοποιεί τον ίδιο ορθογραφικό έλεγχο που χρησιμοποιείται στην Αναζήτηση Google. Το κείμενο που πληκτρολογείτε στο πρόγραμμα περιήγησης αποστέλλεται στην Google. Μπορείτε ανά πάσα στιγμή να αλλάξετε αυτήν τη συμπεριφορά στις ρυθμίσεις.</translation>
 <translation id="4814736265800133385">Χρήση του Chromium χωρίς λογαριασμό</translation>
+<translation id="4839733921943823254">Καρφίτσωμα συντόμευσης</translation>
 <translation id="4888717733111232871">Εισερχόμενος κανόνας για το Chromium για να επιτρέπεται η κυκλοφορία του mDNS.</translation>
 <translation id="4893347770495441059">Επανεκκίνηση για ενημέρωση του &amp;Chromium</translation>
 <translation id="4918086044614829423">Αποδοχή</translation>
@@ -761,6 +762,7 @@
 <translation id="856656450041460113">Αναζήτηση λίστας γλωσσών</translation>
 <translation id="8576826849825683917">Πολλοί οργανισμοί διαχειρίζονται το Chromium</translation>
 <translation id="8586442755830160949">Πνευματικά δικαιώματα <ph name="YEAR" /> Οι συντάκτες του Chromium. Με επιφύλαξη παντός δικαιώματος.</translation>
+<translation id="8590782867495422699">Άνοιγμα Λειτουργίας AI της Αναζήτησης Google</translation>
 <translation id="8619360774459241877">Εκκίνηση του Chromium…</translation>
 <translation id="8624541899164515475">Ρυθμίσεις, ανοίγει σε νέα καρτέλα.</translation>
 <translation id="8648201657708811153">Το Google Chrome for Testing δεν μπορεί να οριστεί ως το προεπιλεγμένο πρόγραμμα περιήγησης.</translation>
@@ -811,6 +813,7 @@
 <translation id="9056398481763999048">Χρησιμοποιήστε τα καλύτερα εργαλεία AI της Google με την εφαρμογή Chromium στο τηλέφωνό σας</translation>
 <translation id="9057625473949801035">Για να έχετε πρόσβαση στους κωδικούς πρόσβασης και σε άλλα στοιχεία από τη συσκευή <ph name="DEVICE" />, συνδεθείτε στο Chromium</translation>
 <translation id="9062666675513499497">Σύνδεση στο Chromium όταν συνδέεστε σε άλλες υπηρεσίες Google</translation>
+<translation id="9074041031320636790">Επιτυχία! Μπορείτε πλέον να κάνετε εύκολα ερωτήσεις κατά την περιήγηση με τη Λειτουργία AI της Αναζήτησης Google</translation>
 <translation id="9078733879136747090">Το Chromium έκλεισε αυτόματα</translation>
 <translation id="9089354809943900324">Το Chromium δεν είναι ενημερωμένο</translation>
 <translation id="9093206154853821181">{0,plural, =1{Η επανεκκίνηση του Chromium θα γίνει σε μία ώρα}other{Η επανεκκίνηση του Chromium θα γίνει σε # ώρες}}</translation>

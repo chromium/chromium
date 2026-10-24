@@ -1456,6 +1456,23 @@ Click-to-Call 機能を有効にします。この機能により、ログイン
       このポリシーでは、トップレベルのドキュメントのオリジン（通常、アドレスバーにも表示されるページの URL）がいずれかのパターンに一致するかどうかに基づいて、JavaScript がブロックされます。そのため、このポリシーはウェブ サプライ チェーン攻撃の軽減には適していません。たとえば、パターン「https://[*.]foo.com/」を指定した場合、https://example.com でホストされているページで https://www.foo.com/example.js から読み込まれたスクリプトの実行を防ぐことはできません。また、パターン「https://example.com/」を指定した場合、https://example.com のドキュメントが最上位のドキュメントでなく、別のオリジン（https://www.bar.com）でホストされているページにサブフレームとして埋め込まれている場合、スクリプトの実行を防ぐことはできません。</translation>
 <translation id="1942015922182679826">復号できないパスワードの削除を有効にする</translation>
 <translation id="1942626390957213764">デスクトップ共有ハブを無効にする</translation>
+<translation id="1943243146727870858">リストの ID プロバイダに対して、<ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> を使用したシングル サインオン（SSO）を無効にします。
+
+値 <ph name="POLICY_VALUE_ALL" /> を追加すると、SSO でサポートされているすべての ID プロバイダが無効になります。
+
+値 <ph name="POLICY_VALUE_MICROSOFT" /> を追加すると、Chrome で Microsoft® クラウド ID プロバイダのシングル サインオンのサポートが無効になります。
+
+このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> でサポートされているすべての ID プロバイダが有効になります。
+
+<ph name="PRODUCT_NAME" /> で有効化され、管理者によってデバイスに設定された ID プロバイダを使用して、<ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> をサポートする任意のアプリケーションでログインしたユーザーは、その ID プロバイダを使用してウェブ プロパティに自動ログインできます。ユーザーの認証情報に関する情報は、認証イベントごとにユーザーのクラウド ID プロバイダに送信されます。
+
+注:
+
+<ph name="PRODUCT_NAME" /> は、シークレット モードまたはゲストモードでの <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> を使用したシングル サインオンをサポートしていません。
+
+<ph name="PRODUCT_NAME" /> は、Microsoft、Okta、Ping の <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> を使用したシングル サインオンのみサポートしています。
+
+この機能は <ph name="MAC_OS_NAME" /> 10.15 以降で利用できます。</translation>
 <translation id="1943628907052340534">ユーザーが <ph name="MS_WIN_NAME" /> にログインしたときに <ph name="PRODUCT_NAME" /> を開かない</translation>
 <translation id="194407941132272412">すべてのウェブサイトでサイト分離を無効にするが、ユーザーが有効化できるようにする</translation>
 <translation id="1945994447126139909">この企業向けのポリシーは一時的な適用を想定しており、<ph name="PRODUCT_NAME" /> バージョン 88 で削除される予定です。Chrome のデフォルトのリファラー ポリシーは、Chrome 85 安定版の公開に向けた段階的措置として、現在の「no-referrer-when-downgrade」からさらに安全な「strict-origin-when-cross-origin」に変更され、セキュリティが強化されます。
@@ -5416,6 +5433,27 @@ WebSQL は M112 で削除されました。</translation>
 適用される上限は <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> の影響を受けることにご注意ください。</translation>
 <translation id="4528981768990874684"><ph name="IP_PROTECTION_NAME" /> 機能を無効にする。</translation>
 <translation id="453031441196755904">このポリシーはサポートを終了しました。</translation>
+<translation id="4531088355818260318">このポリシーでは、特定の URL パターンに一致するウェブ リクエストにカスタム HTTP ヘッダーを挿入するルールのリストを定義できます。このポリシーで設定したヘッダーは、リクエストに最初に存在していたヘッダーや、ユーザーまたは拡張機能によって試行された変更より優先されます。
+
+このポリシーの一般的なユースケースは、カスタム ヘッダー（例: <ph name="EXAMPLE_HEADER_NAME" />）を挿入してテナントのアクセス制御を適用することです。
+
+このポリシーでは、ルールのリストを指定できます。各ルールの構成要素:
+
+* <ph name="PATTERNS_KEY" />: 対象とする URL パターンのリスト。URL パターンの指定方法（https://support.google.com/chrome/a?p=url_blocklist_filter_format）をご確認ください。
+
+* <ph name="HEADERS_KEY" />: 挿入するヘッダーのオブジェクトのリスト。各オブジェクトの構成要素は次のとおりです。
+
+  * <ph name="HEADER_NAME_KEY" />: 挿入するヘッダーの名前。
+
+  * <ph name="HEADER_VALUE_KEY" />: 挿入するヘッダーの値。
+
+リクエストに複数のルールが一致する場合、一致したすべてのルールのヘッダーが適用されます。同じ名前のヘッダーが複数ある場合は、URL パターンの指定が最も詳細なヘッダーが適用されます。パターンの詳細度が同じ場合は、リストで最後のほうに指定されたパターンが適用されます。
+
+ヘッダー名は RFC 2616（https://www.rfc-editor.org/rfc/rfc2616）に準拠している必要があります。ヘッダー値に NUL、CR、LF 記号を含めることはできません。個々のヘッダーのサイズは 8 KB 以下である必要があります。無効なヘッダーと URL パターンは無視されます。
+
+このポリシーで指定できる URL パターンは、すべてのルールを合わせて最大 500 件です。各ルールには最大 20 個のヘッダーを含めることができます。これらの上限を超えるパターンとヘッダーは無視されます。
+
+注: URL パターンが暗号化されていないスキーム（http://、ws://、またはスキームが省略されている場合）に一致する場合、設定されたヘッダーは暗号化されていないチャネルを介して書式なしテキストで送信され、ネットワークを監視している第三者に見られる可能性があります。機密性の高い、または識別可能なヘッダー値を保護するには、URL パターンを暗号化されたスキーム（https:// または wss://）に制限してください。</translation>
 <translation id="4531706050939927436">Android アプリを強制的にインストールするには、Google 管理コンソールで Google Play からのインストールを指定します。Android アプリでこのポリシーは使用されません。</translation>
 <translation id="4534500438517478692">Android の制限名:</translation>
 <translation id="4541530620466526913">デバイスのローカル アカウント</translation>
@@ -6865,6 +6903,7 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスのアプリケーションと使用に関する情報が報告されます。</translation>
+<translation id="5418723809273651607">Ping® クラウド ID プロバイダ</translation>
 <translation id="5420245232720940848">Thunderbolt / USB4 周辺機器の PCIe トンネリングを無効にする（周辺機器の機能は制限されます）</translation>
 <translation id="5420673997623782432">すべてのクライアントに対してシステムの位置情報へのアクセスをブロックする</translation>
 <translation id="5420774177427557782">この構成を使用する VM について、インストールと実行を許可する（<ph name="INSTALL_ALLOWED" />）、実行を許可してインストールを許可しない（<ph name="RUN_ALLOWED" />）、実行を許可しない（<ph name="BLOCKED" />）のいずれかを指定します。VM をインストールするには、installer_image_x86_64 キーも設定する必要があります。構成を完全に削除すると、暗黙的に <ph name="BLOCKED" /> に設定され、ポリシーの設定なしで VM を実行できなくなります。</translation>

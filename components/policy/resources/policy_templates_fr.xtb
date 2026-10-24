@@ -1508,6 +1508,23 @@ Si cette règle n'est pas configurée, la fonctionnalité Appel direct est activ
       Notez que cette règle bloque JavaScript selon que l'origine du document de premier niveau (généralement l'URL de la page qui s'affiche également dans la barre d'adresse) correspond ou non à l'un des formats. Par conséquent, cette règle n'est pas adaptée pour limiter les attaques de la chaîne d'approvisionnement Web. Par exemple, si vous indiquez le format "https://[*.]foo.com/", cela n'empêchera pas une page hébergée sur https://example.com d'exécuter un script chargé à partir de https://www.foo.com/example.js. De plus, si vous indiquez le format "https://example.com/", cela n'empêchera pas un document provenant de https://example.com d'exécuter des scripts, même s'il ne s'agit pas du document de premier niveau, mais d'un sous-cadre intégré dans une page hébergée sur une autre origine, par exemple https://www.bar.com.</translation>
 <translation id="1942015922182679826">Activer la suppression des mots de passe indéchiffrables</translation>
 <translation id="1942626390957213764">Désactiver le hub de partage du bureau</translation>
+<translation id="1943243146727870858">Désactivez l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> pour les fournisseurs d'identité listés.
+
+Si vous ajoutez la valeur <ph name="POLICY_VALUE_ALL" />, tous les fournisseurs d'identité pris en charge pour l'authentification unique sont désactivés.
+
+Si vous ajoutez la valeur <ph name="POLICY_VALUE_MICROSOFT" />, la prise en charge de l'authentification unique pour le fournisseur d'identité cloud Microsoft® dans Chrome sera désactivée.
+
+Si vous ne configurez pas cette règle, tous les fournisseurs d'identité pris en charge par <ph name="PRODUCT_NAME" /> seront activés.
+
+Pour les fournisseurs d'identité activés dans <ph name="PRODUCT_NAME" /> et configurés sur l'appareil par l'administrateur, les utilisateurs qui se connectent une fois via ce fournisseur d'identité, sur n'importe quelle appli compatible avec <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, peuvent être connectés automatiquement aux propriétés Web utilisant ce fournisseur d'identité. Les informations concernant l'authentification de l'utilisateur sont transmises au fournisseur d'identité cloud de l'utilisateur pour chaque événement d'authentification.
+
+Remarques :
+
+<ph name="PRODUCT_NAME" /> ne prend pas en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en mode navigation privée ou Invité.
+
+<ph name="PRODUCT_NAME" /> ne prend en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> que pour les fournisseurs d'identité suivants : Microsoft, Okta, Ping.
+
+Cette fonctionnalité est disponible à partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534">Ne pas ouvrir <ph name="PRODUCT_NAME" /> lorsque l'utilisateur se connecte à <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Désactiver l'isolation pour tous les sites Web, mais autoriser l'utilisateur à l'activer</translation>
 <translation id="1945994447126139909">Cette règle permet d'assurer la transition à court terme vers <ph name="PRODUCT_NAME" /> 88, après quoi elle sera supprimée.
@@ -5555,6 +5572,27 @@ Toute augmentation de la valeur par défaut (128) est effectuée à vos propres 
 Veuillez noter que les limites appliquées sont affectées par <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Désactiver la fonctionnalité <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Cette règle est obsolète.</translation>
+<translation id="4531088355818260318">Cette règle permet de définir une liste de règles pour l'injection d'en-têtes HTTP personnalisés dans les requêtes Web correspondant à des formats d'URL spécifiques. Les en-têtes définis par cette règle prévalent sur ceux qui étaient initialement présents dans la requête, ainsi que sur les modifications tentées par les utilisateurs ou les extensions.
+
+Un cas d'utilisation courant de cette règle consiste à appliquer des contrôles d'accès aux locataires en injectant des en-têtes personnalisés (par exemple, <ph name="EXAMPLE_HEADER_NAME" />).
+
+Cette règle accepte une liste de règles. Chaque règle contient :
+
+* <ph name="PATTERNS_KEY" /> : une liste de formats d'URL à mettre en correspondance. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" /> : liste d'objets représentant les en-têtes à injecter, chacun contenant :
+
+  * <ph name="HEADER_NAME_KEY" /> : nom de l'en-tête à injecter.
+
+  * <ph name="HEADER_VALUE_KEY" /> : valeur de l'en-tête à injecter.
+
+Si une requête est concernée par plusieurs règles, les en-têtes de toutes les règles correspondantes seront appliqués. Si plusieurs en-têtes portent le même nom, celui dont le format d'URL est le plus spécifique sera appliqué. Si aucun format n'est plus spécifique qu'un autre, celui qui apparaît en dernier dans la liste sera appliqué.
+
+Les noms d'en-tête doivent être conformes à la norme RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Les valeurs d'en-tête ne doivent pas contenir les symboles NUL, CR ni LF. La taille des en-têtes individuels ne doit pas dépasser 8 ko. Les en-têtes et les formats d'URL non valides seront ignorés.
+
+Cette règle est limitée à un total de 500 formats d'URL pour l'ensemble des règles. Chaque règle peut contenir au maximum 20 en-têtes. Les formats et les en-têtes au-delà de ces seuils seront ignorés.
+
+Remarque : Si un format d'URL correspond à des schémas non chiffrés (http://, ws:// ou lorsque le schéma est omis), les en-têtes configurés pourraient être transmis en texte brut sur un canal non chiffré et être exposés aux observateurs sur le réseau. Pour protéger les valeurs d'en-tête sensibles ou permettant une identification, limitez les formats d'URL aux schémas chiffrés (https:// ou wss://).</translation>
 <translation id="4531706050939927436">L'installation des applications Android peut être forcée depuis la Console d'administration Google via Google Play. Elles n'utilisent pas cette règle.</translation>
 <translation id="4534500438517478692">Nom de la restriction Android :</translation>
 <translation id="4541530620466526913">Comptes locaux de l'appareil</translation>
@@ -7096,6 +7134,7 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
 
       Si la règle est définie sur "False" ou n'est pas configurée, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant les applications et l'utilisation de l'appareil sont transmises.</translation>
+<translation id="5418723809273651607">Fournisseur d'identité cloud Ping®</translation>
 <translation id="5420245232720940848">Désactive la tunnellisation PCIe pour les périphériques Thunderbolt/USB4, ce qui limitera leur capacité</translation>
 <translation id="5420673997623782432">Bloquer l'accès à la géolocalisation du système pour tous les clients</translation>
 <translation id="5420774177427557782">Détermine si les VM utilisant cette configuration peuvent être installées et exécutées (<ph name="INSTALL_ALLOWED" />), exécutées mais pas installées (<ph name="RUN_ALLOWED" />) ou ne peuvent pas être exécutées (<ph name="BLOCKED" />). Notez que pour installer une VM, la clé installer_image_x86_64 doit également être définie. Si vous supprimez complètement une configuration, elle est implicitement définie sur <ph name="BLOCKED" />, ce qui empêche les VM de s'exécuter sans règle.</translation>

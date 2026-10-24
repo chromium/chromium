@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Kui Gemini on Chromiumis avatud, jääb külgpaneel uute vahelehtede loomisel avatuks</translation>
 <translation id="479167709087336770">See kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile. Seda käitumist saab seadetes alati muuta.</translation>
 <translation id="4814736265800133385">Kasuta Chromiumit ilma kontota</translation>
+<translation id="4839733921943823254">Kinnita otsetee</translation>
 <translation id="4888717733111232871">Sissetuleku reegel Chromiumile mDNS-liikluse lubamiseks.</translation>
 <translation id="4893347770495441059">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="4918086044614829423">Nõustu</translation>
@@ -761,6 +762,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="856656450041460113">Keeleloendi otsing</translation>
 <translation id="8576826849825683917">Chromiumi haldab mitu organisatsiooni</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
+<translation id="8590782867495422699">Google'i otsingu AI-režiimi uuesti avamine</translation>
 <translation id="8619360774459241877">Chromiumi käivitamine …</translation>
 <translation id="8624541899164515475">Seaded, avaneb uuel vahelehel.</translation>
 <translation id="8648201657708811153">Brauserit Google Chrome for Testing ei saa teie vaikebrauseriks määrata.</translation>
@@ -811,6 +813,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9056398481763999048">Kasutage oma telefonis Chromiumi rakendusega Google'i parimaid AI-tööriistu</translation>
 <translation id="9057625473949801035">Seadmes <ph name="DEVICE" /> paroolidele ja muule sisule juurdepääsemiseks logige sisse Chromiumi.</translation>
 <translation id="9062666675513499497">Chromiumi sisselogimine teistesse Google'i teenustesse sisselogimisel</translation>
+<translation id="9074041031320636790">Õnnestus! Nüüd saate Google'i otsingu AI-režiimi abil sirvimise ajal hõlpsasti küsimusi esitada</translation>
 <translation id="9078733879136747090">Chromium suleti automaatselt</translation>
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium käivitatakse uuesti tunni aja pärast}other{Chromium käivitatakse uuesti # tunni pärast}}</translation>

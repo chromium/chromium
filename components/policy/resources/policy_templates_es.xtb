@@ -1533,6 +1533,23 @@ Si no se define esta política, la función Clic de llamada se habilitará de fo
       Ten en cuenta que esta política bloquea JavaScript en función de si el origen del documento de nivel superior (normalmente, la URL de la página que también aparece en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques de la cadena de suministro web. Por ejemplo, si se proporciona el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en https://example.com ejecute un script cargada desde https://www.foo.com/example.js. Además, si se proporciona el patrón "https://example.com/", no se evitará que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se inserta como submarco en una página alojada en otro origen, como https://www.bar.com.</translation>
 <translation id="1942015922182679826">Habilitar la eliminación de contraseñas que no se pueden descifrar</translation>
 <translation id="1942626390957213764">Inhabilitar el centro para compartir escritorio</translation>
+<translation id="1943243146727870858">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidades que se indican.
+
+Si añades el valor <ph name="POLICY_VALUE_ALL" />, se inhabilitarán todos los proveedores de identidades admitidos para el inicio de sesión único.
+
+Si añades el valor <ph name="POLICY_VALUE_MICROSOFT" />, se inhabilitará la compatibilidad de Chrome con el inicio de sesión único para el proveedor de identidades en la nube de Microsoft®.
+
+Si no se define esta política, se habilitarán todos los proveedores de identidades admitidos por <ph name="PRODUCT_NAME" />.
+
+En el caso de los proveedores de identidades que se han habilitado en <ph name="PRODUCT_NAME" /> y que ha configurado el administrador en el dispositivo, los usuarios que inicien sesión una vez con su cuenta usando ese proveedor de identidades (en cualquier aplicación que admita <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />) podrán iniciar sesión automáticamente en propiedades web usando ese proveedor de identidades. La información relativa a la autenticación del usuario se transmite al proveedor de identidades en la nube del usuario en cada evento de autenticación.
+
+Notas:
+
+<ph name="PRODUCT_NAME" /> no admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en los modos Incógnito o Invitado.
+
+<ph name="PRODUCT_NAME" /> solo admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los siguientes proveedores de identidades: Microsoft, Okta, Ping.
+
+Esta función está disponible a partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534">No abrir <ph name="PRODUCT_NAME" /> cuando el usuario inicie sesión en <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Inhabilitar el aislamiento en todos los sitios web, pero permitir que el usuario lo habilite</translation>
 <translation id="1945994447126139909">Esta política de empresa sirve para una adaptación a corto plazo y se eliminará en la versión 88 de <ph name="PRODUCT_NAME" />.
@@ -5594,6 +5611,27 @@ Si defines un valor superior al predeterminado (128), lo haces bajo tu propia re
 Ten en cuenta que los límites implementados se ven afectados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Inhabilita la función <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Esta política está obsoleta.</translation>
+<translation id="4531088355818260318">Esta política permite definir una lista de reglas para inyectar encabezados HTTP personalizados en las solicitudes web que coincidan con patrones de URL específicos. Los encabezados definidos por esta política tienen prioridad sobre los que estaban presentes inicialmente en la solicitud, así como sobre las modificaciones que intenten hacer los usuarios o las extensiones.
+
+Un caso práctico habitual de esta política es aplicar obligatoriamente controles de acceso de cliente inyectando encabezados personalizados (por ejemplo, <ph name="EXAMPLE_HEADER_NAME" />).
+
+La política acepta una lista de reglas. Cada regla contiene:
+
+* <ph name="PATTERNS_KEY" />: una lista de patrones de URL con los que se debe coincidir. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: una lista de objetos que representan los encabezados que se van a inyectar. Cada uno de ellos contiene lo siguiente:
+
+  * <ph name="HEADER_NAME_KEY" />: el nombre del encabezado que se va a inyectar.
+
+  * <ph name="HEADER_VALUE_KEY" />: el valor del encabezado que se va a inyectar.
+
+Si varias reglas coinciden con una solicitud, se aplicarán los encabezados de todas las reglas que coincidan. Si hay varios encabezados con el mismo nombre, se aplicará el que tenga el patrón de URL más específico. Si los patrones son igual de específicos, se aplicará el que aparezca en último lugar en la lista.
+
+Los nombres de encabezado deben cumplir el protocolo RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Los valores de encabezado no deben contener símbolos NUL, CR ni LF. Los encabezados individuales no deben superar los 8 KB de tamaño. Los encabezados y patrones de URL no válidos se ignorarán.
+
+Esta política está limitada a un total de 500 patrones de URL en todas las reglas. Cada regla puede contener un máximo de 20 encabezados. Los patrones y encabezados que superen estos umbrales se ignorarán.
+
+Nota: Si un patrón de URL coincide con esquemas no cifrados (http://, ws:// o cuando se omite el esquema), los encabezados configurados pueden transmitirse en texto sin formato a través de un canal no cifrado y pueden quedar expuestos a observadores de la red. Para proteger los valores de encabezado sensibles o identificativos, restringe los patrones de URL a esquemas cifrados (https:// o wss://).</translation>
 <translation id="4531706050939927436">Las aplicaciones para Android se pueden instalar de manera forzada desde la consola de administración de Google usando Google Play. No utilizan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
@@ -7147,6 +7185,7 @@ Varias políticas indican orígenes que afectan a las solicitudes al dispositivo
 
       Si se asigna el valor "false" a esta política o no se establece ninguno, no se enviará esta información.
       Si se le asigna el valor "true", se enviará la información sobre las aplicaciones y el uso del dispositivo.</translation>
+<translation id="5418723809273651607">Proveedor de identidades en la nube de Ping®</translation>
 <translation id="5420245232720940848">Inhabilita la tunelización de PCIe desde dispositivos periféricos Thunderbolt/USB4, lo que limita las funciones de los dispositivos</translation>
 <translation id="5420673997623782432">Bloquear el acceso a la geolocalización del sistema a todos los clientes</translation>
 <translation id="5420774177427557782">Controla si las VMs que usan esta configuración pueden instalarse y ejecutarse (<ph name="INSTALL_ALLOWED" />); si pueden ejecutarse, pero no instalarse (<ph name="RUN_ALLOWED" />); o si no pueden ejecutarse (<ph name="BLOCKED" />). Ten en cuenta que, si quieres instalar una VM, también debes establecer la clave installer_image_x86_64. Si se elimina una configuración por completo, se asigna <ph name="BLOCKED" /> a esta propiedad de forma implícita, lo que impide que las VMs se ejecuten sin ninguna política.</translation>

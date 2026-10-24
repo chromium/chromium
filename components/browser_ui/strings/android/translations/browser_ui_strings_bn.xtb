@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6452138246455930388">আপনার খোলা ট্যাবে দাম কমার তথ্য, <ph name="OLD_PRICE" /> থেকে <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405"><ph name="NAME" />-এর জন্য ডিভাইসের অনুমতি তুলে নিন</translation>
 <translation id="6500423977866688905">উইন্ডো ছোট হলে, মোবাইল ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6530703012083415527">চালু থাকলে, সাইট পপ-আপ ও রিডাইরেক্ট ব্যবহার করতে পারে। বন্ধ থাকলে, সাইট পপ-আপ ও রিডাইরেক্ট ব্যবহার করতে পারে না।</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">অন-ডিভাইস সাইট ডেটা</translation>
 <translation id="7201549776650881587">এই অ্যাকশন আপনার হোম স্ক্রিনে <ph name="ORIGIN" />-এর অধীনে থাকা সমস্ত সাইট বা তার অ্যাপের মাধ্যমে সেভ করা সব ডেটা এবং কুকি মুছে দেবে</translation>
 <translation id="7219254577985949841">সাইট ডেটা মুছবেন?</translation>
+<translation id="7225256190577194089"><ph name="DEVICE_NAME" /> ডিভাইসের জন্য সব অনুমতি তুলে নিন</translation>
 <translation id="723171743924126238">ছবি বেছে নিন</translation>
 <translation id="7243246278722455312">আপনার 'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="7243308994586599757">স্ক্রীনের প্রায় নীচের দিকে বিকল্পগুলি উপলব্ধ</translation>

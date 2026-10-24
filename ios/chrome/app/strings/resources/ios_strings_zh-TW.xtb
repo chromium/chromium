@@ -1380,7 +1380,7 @@
 <translation id="5250371859659394278">來源不明</translation>
 <translation id="525510229763628836">已縮到最小</translation>
 <translation id="5260842098960755113">已關閉討論串</translation>
-<translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{一個必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
 <translation id="5275953427913009986">附加分頁「{title}」</translation>
@@ -1942,6 +1942,7 @@
 <translation id="6946722113367118030">思考</translation>
 <translation id="6947751977892029882">這項設定發生錯誤，請更新並重新啟動 Chrome 和 iOS，然後再試一次。如果這個錯誤持續發生，表示你的 iPhone 可能不支援這項設定。</translation>
 <translation id="6950522403736391608">隱藏</translation>
+<translation id="6957084631403333422">試用專注模式新分頁</translation>
 <translation id="695965663642079255">儲存及管理付款資訊，結帳更快速</translation>
 <translation id="6962809930976936328">使用 Gemini 取得洞察資訊</translation>
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
@@ -2179,6 +2180,7 @@
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
 <translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和歷史記錄。</translation>
 <translation id="7730020510075123961">否，合併資料</translation>
+<translation id="7730937523779541003">已套用專注模式新分頁</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。僅在這部裝置上。</translation>
 <translation id="7737550920399185748">相片庫中的首頁相片不會在裝置間同步。</translation>
 <translation id="7738120385185846461">回報問題…</translation>
@@ -2622,6 +2624,7 @@
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9038526468059454274">想摘要內容，就用</translation>
 <translation id="9039373489628511875">頻寬</translation>
+<translation id="9042363670218758847">切換至專為快速搜尋打造的版面配置</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
 <translation id="9044703854323320868">Gmail 郵件 <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">建立分頁群組來整理開啟的分頁，維持工作效率</translation>

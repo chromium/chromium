@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Blokkér nettsteder fra å bruke virtuell virkelighet-enheten din og -dataene dine</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6452138246455930388">Avslag på den åpne fanen din, fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Opphev enhetstillatelser for <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Når vinduet er smalt, kan du be om mobilvisning</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6530703012083415527">Når dette er på, kan nettsteder bruke forgrunnsvinduer og viderekoblinger. Når dette er av, kan ikke nettsteder bruke forgrunnsvinduer eller viderekoblinger.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Nettstedsdata på enheten</translation>
 <translation id="7201549776650881587">Denne handlingen sletter alle data og informasjonskapsler som er lagret av alle nettstedene under <ph name="ORIGIN" /> eller den tilhørende appen på startskjermen</translation>
 <translation id="7219254577985949841">Vil du slette nettstedsdata?</translation>
+<translation id="7225256190577194089">Opphev alle tillatelser for enheten <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Velg bilder</translation>
 <translation id="7243246278722455312">Felt nederst for tilpasning av Ny fane-siden</translation>
 <translation id="7243308994586599757">Du finner alternativer ved bunnen av skjermen</translation>

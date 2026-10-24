@@ -1942,6 +1942,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="6946722113367118030">Düşünme</translation>
 <translation id="6947751977892029882">Bu ayarla ilgili bir hata oluştu. Chrome ve iOS'i güncelleyip yeniden başlatın, ardından tekrar deneyin. Bu hata devam ederse iPhone'unuz bu ayarı desteklemiyor olabilir.</translation>
 <translation id="6950522403736391608">Gizli</translation>
+<translation id="6957084631403333422">Odaklanmış yeni sekme sayfasını deneyin</translation>
 <translation id="695965663642079255">Daha hızlı ödeme yapmak için ödeme bilgilerini kaydedip yönetin</translation>
 <translation id="6962809930976936328">Gemini ile analizleri görün</translation>
 <translation id="6964300328304469089">Şu anda <ph name="NAME" />, <ph name="EMAIL" /> seçili. Bir hesap seçin.</translation>
@@ -2179,6 +2180,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7724085059277147439">{count,plural, =1{Öğe, Google Hesabınıza ({email}) kaydedildi}other{Öğeler, Google Hesabınıza ({email}) kaydedildi}}</translation>
 <translation id="7729458878441927652">Diğer cihazlarınızdaki sekmeleri görmek için sekmelerinizi ve geçmişinizi senkronize edin.</translation>
 <translation id="7730020510075123961">Hayır, verileri birleştir</translation>
+<translation id="7730937523779541003">Odaklanmış yeni sekme sayfası uygulandı</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Yalnızca bu cihazda.</translation>
 <translation id="7737550920399185748">Fotoğraf kitaplığınızdaki ana sayfa fotoğrafları, cihazlarınız arasında senkronize edilmez.</translation>
 <translation id="7738120385185846461">Sorun Bildir…</translation>
@@ -2622,6 +2624,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9032405509996909363">Tarama verilerinin silinmesini onayla</translation>
 <translation id="9038526468059454274">Şununla özetleyin:</translation>
 <translation id="9039373489628511875">Bant genişliği</translation>
+<translation id="9042363670218758847">Hızlı aramalar için tasarlanmış bir düzene geçin</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
 <translation id="9044703854323320868"><ph name="INDEX" /> tarihli Gmail iletisi</translation>
 <translation id="9055291197094969722">Açık sekmelerinizi düzenlemek ve üretkenliğinizi her zaman korumak için sekme grupları oluşturun</translation>

@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">den Einstellungen.</translation>
 <translation id="2040220733769034247">Scanne den QR-Code mit deinem Smartphone, um Chrome herunterzuladen und dich in deinem Google-Konto anzumelden.</translation>
 <translation id="2044908892530830113">Suche mit Chrome unter macOS in der Menüleiste anzeigen und die Tastenkombination aktivieren</translation>
+<translation id="2050189601866423230">Du kannst den KI-Modus der Google Suche anpinnen, um während des Surfens Fragen zu stellen</translation>
 <translation id="2091012649849228750">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome trotzdem beenden?</translation>
@@ -718,7 +719,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chrome neu starten.</translation>
-<translation id="7800043020703832708">Google Suche in der Seitenleiste schließen</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +762,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8074398340364918139">Wenn du nach einer bestimmten Chrome-Funktion oder -Erweiterung suchen möchtest, gib das Kürzel in die Adressleiste ein und drücke die von dir ausgewählte Taste</translation>
 <translation id="8077579734294125741">Andere Chrome-Profile</translation>
 <translation id="8086881907087796310">Die Installation ist fehlgeschlagen, da dein Computer die Mindestanforderungen an die Hardware nicht erfüllt.</translation>
+<translation id="8110438089258398864">Du kannst den KI-Modus der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="8113883687556086139">Bestätige deine Identität, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="8115695070094288807">Chrome personalisieren…</translation>
 <translation id="8118331347066725040">Feedback zur Suche mit Lens geben</translation>
@@ -818,6 +819,8 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
 <translation id="8575047640889685742">Verwende deine <ph name="BEGIN_LINK" />eigene Passphrase<ph name="END_LINK" /> für die Verschlüsselung aller Chrome-Daten in deinem Google-Konto. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
+<translation id="8590782867495422699">KI-Modus der Google Suche wieder öffnen</translation>
+<translation id="8598779894319572882">Über den Button „KI-Modus der Google Suche“ in der Symbolleiste kannst du den KI-Modus der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="8623450603356630491">Auf deinem Smartphone in Chrome anmelden</translation>
 <translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
@@ -872,6 +875,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="9014771989710951291">Chrome wird von mehreren Organisationen verwaltet</translation>
 <translation id="9018218886431812662">Installation abgeschlossen</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary schließen</translation>
+<translation id="9074041031320636790">Fertig! Mit dem KI-Modus der Google Suche kannst du jetzt ganz einfach Fragen stellen, während du surfst</translation>
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>
 <translation id="9106236359747881194">Einen Text für die Suche auswählen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>

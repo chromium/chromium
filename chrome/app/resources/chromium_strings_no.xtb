@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Hvis Gemini i Chromium er åpent, forblir sidepanelet åpent når du åpner nye faner</translation>
 <translation id="479167709087336770">Denne funksjonen bruker den samme stavekontrollen som Google Søk. Tekst du skriver inn i nettleseren, sendes til Google. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="4814736265800133385">Bruk Chromium uten noen konto</translation>
+<translation id="4839733921943823254">Fest snarveien</translation>
 <translation id="4888717733111232871">Regel om innkommende trafikk for Chromium for å tillate mDNS-trafikk.</translation>
 <translation id="4893347770495441059">Start på nytt for å oppdatere &amp;Chromium</translation>
 <translation id="4918086044614829423">Godta</translation>
@@ -761,6 +762,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>
 <translation id="8576826849825683917">Flere organisasjoner administrerer Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
+<translation id="8590782867495422699">Åpne AI-modus for Google Søk igjen</translation>
 <translation id="8619360774459241877">Starter Chromium ...</translation>
 <translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8648201657708811153">Google Chrome for testing kan ikke brukes som standardnettleser.</translation>
@@ -811,6 +813,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9056398481763999048">Bruk Googles beste AI-verktøy med Chromium-appen på telefonen</translation>
 <translation id="9057625473949801035">Logg på Chromium for å få passordene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="9062666675513499497">Logg på Chromium når du logger på andre Google-tjenester</translation>
+<translation id="9074041031320636790">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med AI-modus for Google Søk</translation>
 <translation id="9078733879136747090">Chromium ble lukket automatisk</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>

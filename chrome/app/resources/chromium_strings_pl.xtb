@@ -756,10 +756,10 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Niektóre funkcje i rozszerzenia Chromium mają skróty. Możesz je ponownie włączyć.</translation>
 <translation id="8556420416730706394">Możesz przypiąć wyszukiwanie obrazów, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
-<translation id="8564408666201523086">Gotowe! Teraz możesz łatwo zadawać pytania podczas przeglądania dzięki wyszukiwarce Google w panelu bocznym</translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>
 <translation id="8576826849825683917">Przeglądarką Chromium zarządza kilka organizacji</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
+<translation id="8590782867495422699">Otwórz ponownie Tryb AI w wyszukiwarce Google</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>
 <translation id="8624541899164515475">Ustawienia, otwierają się w nowej karcie.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nie można ustawić jako przeglądarki domyślnej.</translation>
@@ -810,6 +810,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9056398481763999048">Korzystaj z najlepszych narzędzi AI od Google w aplikacji Chromium na telefonie</translation>
 <translation id="9057625473949801035">Aby mieć dostęp do haseł oraz innych danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chromium</translation>
 <translation id="9062666675513499497">Loguj się w Chromium, gdy logujesz się w innych usługach Google</translation>
+<translation id="9074041031320636790">Gotowe! Teraz możesz łatwo zadawać pytania podczas przeglądania dzięki trybowi AI w wyszukiwarce Google</translation>
 <translation id="9078733879136747090">Aplikacja Chromium została automatycznie zamknięta</translation>
 <translation id="9089354809943900324">Chromium jest nieaktualny</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium uruchomi się ponownie za godzinę}few{Chromium uruchomi się ponownie za # godziny}many{Chromium uruchomi się ponownie za # godzin}other{Chromium uruchomi się ponownie za # godziny}}</translation>

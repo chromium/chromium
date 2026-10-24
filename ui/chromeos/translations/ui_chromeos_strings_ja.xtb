@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5059127710849015030">ネパール語（文字変換）</translation>
 <translation id="5068919226082848014">ピザ</translation>
+<translation id="5075336522277785691"><ph name="EXTENSION_NAME" /> によりプロキシのオーバーライド ルールが設定されています</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> 分のファイルが削除されます</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを <ph name="FOLDER_NAME" /> に移動しています</translation>
 <translation id="509429900233858213">エラーが発生しました。</translation>

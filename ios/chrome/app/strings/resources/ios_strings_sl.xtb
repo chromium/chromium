@@ -1942,6 +1942,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6946722113367118030">Razmišljanje</translation>
 <translation id="6947751977892029882">Pri tej nastavitvi je prišlo do napake. Posodobite in znova zaženite Chrome in iOS ter poskusite znova. Če se ta napaka ponavlja, vaš iPhone morda ne podpira te nastavitve.</translation>
 <translation id="6950522403736391608">Skrito</translation>
+<translation id="6957084631403333422">Preizkusite osredotočeno stran Nov zavihek</translation>
 <translation id="695965663642079255">Shranite in upravljajte podatke za plačilo za hitrejši zaključek nakupa</translation>
 <translation id="6962809930976936328">Pridobite vpoglede z Geminijem</translation>
 <translation id="6964300328304469089">Trenutno izbrano: <ph name="NAME" />, <ph name="EMAIL" />. Izberite račun.</translation>
@@ -2179,6 +2180,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Element je shranjen v računu Google, {email}}one{Elementi so shranjeni v računu Google, {email}}two{Elementi so shranjeni v računu Google, {email}}few{Elementi so shranjeni v računu Google, {email}}other{Elementi so shranjeni v računu Google, {email}}}</translation>
 <translation id="7729458878441927652">Če si želite ogledati zavihke iz drugih naprav, sinhronizirajte zavihke in zgodovino.</translation>
 <translation id="7730020510075123961">Ne, združi podatke</translation>
+<translation id="7730937523779541003">Uporabljena je osredotočena stran Nov zavihek</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo v tej napravi.</translation>
 <translation id="7737550920399185748">Fotografije na domači strani iz knjižnice fotografij se ne bodo sinhronizirale v vseh napravah.</translation>
 <translation id="7738120385185846461">Prijava težave …</translation>
@@ -2622,6 +2624,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="9032405509996909363">Potrditev brisanja podatkov brskanja</translation>
 <translation id="9038526468059454274">Povzemite z:</translation>
 <translation id="9039373489628511875">Pasovna širina</translation>
+<translation id="9042363670218758847">Preklopite na postavitev, ustvarjeno za hitra iskanja</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>
 <translation id="9044703854323320868">Sporočilo v Gmailu <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Ustvarite skupine zavihkov in organizirajte odprte zavihke za večjo storilnost</translation>

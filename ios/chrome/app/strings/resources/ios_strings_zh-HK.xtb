@@ -1940,6 +1940,7 @@
 <translation id="6946722113367118030">思考</translation>
 <translation id="6947751977892029882">此設定發生問題。請更新並重新啟動 Chrome 和 iOS，然後再試一次。如果持續出現此錯誤，可能是你的 iPhone 不支援此設定。</translation>
 <translation id="6950522403736391608">隱藏</translation>
+<translation id="6957084631403333422">試用專注模式新分頁</translation>
 <translation id="695965663642079255">儲存及管理付款資料，加快結帳速度</translation>
 <translation id="6962809930976936328">向 Gemini 索取分析</translation>
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
@@ -2177,6 +2178,7 @@
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
 <translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和記錄。</translation>
 <translation id="7730020510075123961">否，請合併資料</translation>
+<translation id="7730937523779541003">已套用專注模式新分頁</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。只係喺呢部裝置上面。</translation>
 <translation id="7737550920399185748">相片庫中的首頁相片不會在裝置之間同步。</translation>
 <translation id="7738120385185846461">報告問題…</translation>
@@ -2620,6 +2622,7 @@
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9038526468059454274">想總結內容，就用</translation>
 <translation id="9039373489628511875">頻寬</translation>
+<translation id="9042363670218758847">切換至專為快速搜尋而設的版面配置</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9044703854323320868">Gmail 訊息 <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">建立分頁群組可整理已開啟的分頁，從而提升效率</translation>

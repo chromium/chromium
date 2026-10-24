@@ -1942,6 +1942,7 @@
 <translation id="6946722113367118030">සිතමින්</translation>
 <translation id="6947751977892029882">මෙම සැකසීම සමග යමක් වැරදී ඇත. Chrome සහ iOS යාවත්කාලීන කර නැවත ආරම්භ කර, නැවත උත්සාහ කරන්න. මෙම දෝෂය දිගටම පවතින්නේ නම්, සමහරවිට ඔබේ iPhone මෙම සැකසීමට සහාය නොදක්වනවා විය හැකිය.</translation>
 <translation id="6950522403736391608">සඟවා ඇත</translation>
+<translation id="6957084631403333422">අවධානය යොමු කළ නව පටිති පිටුවක් උත්සාහ කරන්න</translation>
 <translation id="695965663642079255">වේගයෙන් ගෙවා පිටවීම සඳහා ගෙවීම් තොරතුරු සුරකින්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="6962809930976936328">Gemini සමග ඇතුළාන්ත ලබා ගන්න</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> දැනට තෝරන ලදි. ගිණුමක් තෝරන්න.</translation>
@@ -2179,6 +2180,7 @@
 <translation id="7724085059277147439">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} අයිතමය සුරැකිණි}one{ඔබේ Google ගිණුමේ, {email} අයිතම සුරැකිණි}other{ඔබේ Google ගිණුමේ, {email} අයිතම සුරැකිණි}}</translation>
 <translation id="7729458878441927652">ඔබේ අනෙකුත් උපාංගවලින් පටිති බැලීම සඳහා, ඔබේ පටිති සහ ඉතිහාසය සමමුහුර්ත කරන්න.</translation>
 <translation id="7730020510075123961">නැහැ, දත්ත ඒකාබද්ධ කරන්න</translation>
+<translation id="7730937523779541003">අවධානය යොමු කළ නව පටිති පිටුව යොදන ලදී</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. මෙම උපාංගය මත පමණි.</translation>
 <translation id="7737550920399185748">ඔබේ ඡායාරූප පුස්තකාලයේ මුල් පිටු ඡායාරූප ඔබේ උපාංග හරහා සමමුහුර්ත නොවනු ඇත.</translation>
 <translation id="7738120385185846461">ගැටලුවක් වාර්තා කරන්න…</translation>
@@ -2622,6 +2624,7 @@
 <translation id="9032405509996909363">බ්‍රවුස් කිරීමේ දත්ත මැකීම තහවුරු කරන්න</translation>
 <translation id="9038526468059454274">මේ සමග එය එකතු කරන්න</translation>
 <translation id="9039373489628511875">කලාප පළල</translation>
+<translation id="9042363670218758847">ඉක්මන් සෙවීම් සඳහා ගොඩනගා ඇති පිරිසැලසුමකට මාරු වන්න</translation>
 <translation id="9042893549633094279">රහස්‍යතාව සහ ආරක්ෂාව</translation>
 <translation id="9044703854323320868">Gmail පණිවිඩය <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">ඔබේ විවෘත පටිති සංවිධානය කර ඵලදායීව සිටීමට පටිති සමූහ තනන්න</translation>

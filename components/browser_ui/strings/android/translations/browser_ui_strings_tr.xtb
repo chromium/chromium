@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazımı ve verilerimi kullanmasını engelle</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6452138246455930388"><ph name="DOMAIN_NAME" /> adresinin açık olduğu sekmenizde <ph name="PRODUCT_NAME" /> ürününün <ph name="OLD_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
+<translation id="6495608040096939405"><ph name="NAME" /> için cihaz iznini iptal et</translation>
 <translation id="6500423977866688905">Pencere küçükse mobil görünümü iste</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="6530703012083415527">Bu düğme açıkken siteler, pop-up'ları ve yönlendirmeleri kullanabilir. Düğme kapalıyken siteler, pop-up'ları ve yönlendirmeleri kullanamaz.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Cihaz üzerindeki site verileri</translation>
 <translation id="7201549776650881587">Bu işlem, <ph name="ORIGIN" /> altındaki tüm siteler veya ana ekranınızdaki uygulaması tarafından depolanan verilerin ve çerezlerin tamamını temizler</translation>
 <translation id="7219254577985949841">Site verileri silinsin mi?</translation>
+<translation id="7225256190577194089"><ph name="DEVICE_NAME" /> cihazının tüm izinlerini iptal et</translation>
 <translation id="723171743924126238">Resim seç</translation>
 <translation id="7243246278722455312">Yeni sekme sayfanızı özelleştirin alt sayfası</translation>
 <translation id="7243308994586599757">Sayfanın altına yakın bir yerde kullanılabilen seçenekler</translation>

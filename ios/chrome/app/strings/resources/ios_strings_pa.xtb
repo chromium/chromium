@@ -1942,6 +1942,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6946722113367118030">ਸੋਚਣਾ</translation>
 <translation id="6947751977892029882">ਇਸ ਸੈਟਿੰਗ ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। Chrome ਅਤੇ iOS ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਕੇ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਜੇ ਇਹ ਗੜਬੜ ਹੁੰਦੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ iPhone ਇਸ ਸੈਟਿੰਗ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰੇ।</translation>
 <translation id="6950522403736391608">ਲੁਕੀ ਹੋਈ</translation>
+<translation id="6957084631403333422">ਫੋਕਸ ਕੀਤਾ ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਅਜ਼ਮਾਓ</translation>
 <translation id="695965663642079255">ਤੇਜ਼ੀ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰਨ ਲਈ ਭੁਗਤਾਨ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6962809930976936328">Gemini ਨਾਲ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6964300328304469089">ਫ਼ਿਲਹਾਲ <ph name="NAME" />, <ph name="EMAIL" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ। ਕੋਈ ਖਾਤਾ ਚੁਣੋ।</translation>
@@ -2179,6 +2180,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7724085059277147439">{count,plural, =1{ਤੁਹਾਡੇ Google ਖਾਤੇ {email} ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਆਈਟਮ}one{ਤੁਹਾਡੇ Google ਖਾਤੇ {email} ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਆਈਟਮ}other{ਤੁਹਾਡੇ Google ਖਾਤੇ {email} ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਆਈਟਮਾਂ}}</translation>
 <translation id="7729458878441927652">ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ।</translation>
 <translation id="7730020510075123961">ਨਹੀਂ, ਡਾਟਾ ਮਿਲਾਓ</translation>
+<translation id="7730937523779541003">ਫੋਕਸ ਕੀਤਾ ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਲਾਗੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ।</translation>
 <translation id="7737550920399185748">ਤੁਹਾਡੀ ਫ਼ੋਟੋ ਲਾਇਬ੍ਰੇਰੀ ਤੋਂ ਹੋਮਪੇਜ ਫ਼ੋਟੋਆਂ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਵਿੱਚ ਸਿੰਕ ਨਹੀਂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="7738120385185846461">ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ…</translation>
@@ -2622,6 +2624,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="9032405509996909363">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਉਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="9038526468059454274">ਇਸ ਨਾਲ ਸਾਰਾਂਸ਼ ਦਿਓ</translation>
 <translation id="9039373489628511875">ਬੈਂਡਵਿਡਥ</translation>
+<translation id="9042363670218758847">ਤਤਕਾਲ ਖੋਜਾਂ ਲਈ ਬਣਾਏ ਗਏ ਖਾਕੇ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
 <translation id="9044703854323320868">Gmail ਸੁਨੇਹਾ <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">ਆਪਣੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਲਈ ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ ਅਤੇ ਉਤਪਾਦਕ ਰਹੋ</translation>

@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Dacă Gemini în Chromium este deschis, panoul lateral rămâne deschis când creezi file noi</translation>
 <translation id="479167709087336770">Folosește același verificator ortografic folosit în Căutarea Google. Textul pe care îl introduci în browser este trimis la Google. Poți schimba acest comportament în setări.</translation>
 <translation id="4814736265800133385">Folosește Chromium fără un cont</translation>
+<translation id="4839733921943823254">Fixează comanda rapidă</translation>
 <translation id="4888717733111232871">Regula de intrare pentru Chromium pentru a permite traficul mDNS.</translation>
 <translation id="4893347770495441059">Relansează pentru a actualiza &amp;Chromium</translation>
 <translation id="4918086044614829423">Acceptă</translation>
@@ -761,6 +762,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="856656450041460113">Caută lista de limbi</translation>
 <translation id="8576826849825683917">Mai multe organizații gestionează Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
+<translation id="8590782867495422699">Redeschide Modul AI în Căutarea Google</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>
 <translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nu poate fi setat ca browser prestabilit.</translation>
@@ -811,6 +813,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="9056398481763999048">Folosește cele mai bune instrumente AI de la Google cu aplicația Chromium pe telefon</translation>
 <translation id="9057625473949801035">Pentru a accesa parolele și alte date de pe <ph name="DEVICE" />, conectează-te la Chromium</translation>
 <translation id="9062666675513499497">Conectează-te la Chromium când te conectezi la alte servicii Google</translation>
+<translation id="9074041031320636790">Succes! Acum poți să pui cu ușurință întrebări în timp ce navighezi cu Modul AI în Căutarea Google</translation>
 <translation id="9078733879136747090">Chromium s-a închis automat</translation>
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se va relansa într-o oră}few{Chromium se va relansa în # ore}other{Chromium se va relansa în # de ore}}</translation>

@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">Nepravilno geslo</translation>
 <translation id="5059127710849015030">transkripcija nepalščine</translation>
 <translation id="5068919226082848014">Pica</translation>
+<translation id="5075336522277785691">Razširitev <ph name="EXTENSION_NAME" /> je nastavila pravila za preglasitev strežnika proxy</translation>
 <translation id="5081517858322016911">Izbrisanih bo za <ph name="TOTAL_FILE_SIZE" /> datotek</translation>
 <translation id="508423945471810158">Premikanje toliko elementov v mapo <ph name="FOLDER_NAME" />: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="509429900233858213">Napaka.</translation>

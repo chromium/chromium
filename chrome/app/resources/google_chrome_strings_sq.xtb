@@ -118,6 +118,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2039417478970545937">Cilësimet.</translation>
 <translation id="2040220733769034247">Skano kodin QR me telefonin tënd për të shkarkuar Chrome dhe identifikohu në "Llogarinë tënde të Google".</translation>
 <translation id="2044908892530830113">Shfaq kërkimin me Chrome në shiritin e menysë së Mac dhe aktivizo shkurtoren e tastierës</translation>
+<translation id="2050189601866423230">Mund ta gozhdosh "Modalitetin e IA-së" të "Kërko në Google" për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="2091012649849228750">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
 <translation id="2094648590148273905">Kushtet e Chrome OS Flex</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
@@ -400,6 +401,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4828579605166583682">Google Chrome po përpiqet të zëvendësojë fjalëkalimet ekzistuese. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="4836321460899997044">Profili i Chrome</translation>
+<translation id="4839733921943823254">Gozhdo shkurtoren</translation>
 <translation id="4842397268809523050">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> është i identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit"</translation>
@@ -726,7 +728,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7777080907402804672">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="778331955594035129">Chrome ka nevojë për lejen e vendndodhjes për të këtë sajt</translation>
 <translation id="7787950393032327779">Me sa duket profili është në përdorim nga një proces tjetër i Google Chrome (<ph name="PROCESS_ID" />) në një kompjuter tjetër (<ph name="HOST_NAME" />). Chrome e ka kyçur profilin që të mos dëmtohet. Nëse je i sigurt se asnjë proces tjetër nuk po e përdor këtë profil, mund ta shkyçësh profilin dhe ta nisësh sërish Chrome.</translation>
-<translation id="7800043020703832708">Mbyll "Kërko në Google" në panelin anësor</translation>
 <translation id="7801699035218095297">Google Chrome po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="7804364787702057554">Llogaria jote në Chrome</translation>
 <translation id="7804947029129221742">Motori i kërkimit u ndryshua nga jashtë Chrome. Për të të mbrojtur, Chrome e rivendosi atë në parazgjedhjen e tij origjinale. <ph name="LEARN_MORE_LINK" /></translation>
@@ -768,6 +769,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8074398340364918139">Për të kërkuar një veçori ose shtesë specifike të Chrome, shkruaj shkurtoren e saj në shiritin e adresave, të ndjekur nga tasti i zgjedhur i tastierës</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>
 <translation id="8086881907087796310">Instalimi dështoi sepse kompjuteri yt nuk i përmbush kërkesat minimale për harduerin.</translation>
+<translation id="8110438089258398864">Mund ta rihapësh "Modalitetin e IA-së të 'Kërko në Google'" për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="8113883687556086139">Verifiko që je ti për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Chrome po personalizohet...</translation>
 <translation id="8118331347066725040">Dërgo komente për kërkimin me "Lenten"</translation>
@@ -824,6 +826,8 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
 <translation id="8575047640889685742">Përdor <ph name="BEGIN_LINK" />frazën tënde të kalimit<ph name="END_LINK" /> për të enkriptuar të gjitha të dhënat e Chrome në "Llogarinë tënde të Google". Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.</translation>
+<translation id="8590782867495422699">Rihap "Modalitetin e IA-së" të "Kërko në Google"</translation>
+<translation id="8598779894319572882">Nga butoni "Modaliteti i IA-së i 'Kërko në Google'" në shiritin e veglave, mund të rihapësh "Modalitetin e IA-së të 'Kërko në Google'" për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="8623450603356630491">Identifikohu në Chrome në telefonin tënd</translation>
 <translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
@@ -878,6 +882,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="9014771989710951291">Disa organizata menaxhojnë Chrome</translation>
 <translation id="9018218886431812662">Instalimi përfundoi</translation>
 <translation id="9066987883552592250">Mbyll Gemini në Chrome Canary</translation>
+<translation id="9074041031320636790">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko në Google"</translation>
 <translation id="9090566250983691233">Mëso se pse Chrome i bllokon disa skedarë</translation>
 <translation id="9106236359747881194">Zgjidh tekstin për të kërkuar</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>

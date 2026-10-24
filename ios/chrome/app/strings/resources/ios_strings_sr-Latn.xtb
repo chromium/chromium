@@ -1942,6 +1942,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="6946722113367118030">Razmišlja</translation>
 <translation id="6947751977892029882">Došlo je do greške sa ovim podešavanjem. Ažurirajte i restartujte Chrome i iOS, pa probajte ponovo. Ako se ova greška i dalje bude javljala, iPhone možda ne podržava ovo podešavanje.</translation>
 <translation id="6950522403736391608">Skriveno</translation>
+<translation id="6957084631403333422">Isprobajte fokusiranu stranicu nove kartice</translation>
 <translation id="695965663642079255">Sačuvajte informacije o plaćanju i upravljajte njima da biste brže plaćali</translation>
 <translation id="6962809930976936328">Steknite uvid pomoću Gemini-ja</translation>
 <translation id="6964300328304469089">Trenutno je izabrano <ph name="NAME" />, <ph name="EMAIL" />. Odaberite nalog.</translation>
@@ -2179,6 +2180,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Stavka je sačuvana na Google nalogu, {email}}one{Stavke su sačuvane na Google nalogu, {email}}few{Stavke su sačuvane na Google nalogu, {email}}other{Stavke su sačuvane na Google nalogu, {email}}}</translation>
 <translation id="7729458878441927652">Da biste videli kartice sa drugih uređaja, sinhronizujte kartice i istoriju.</translation>
 <translation id="7730020510075123961">Ne, objedini podatke</translation>
+<translation id="7730937523779541003">Primenjena je fokusirana stranica nove kartice</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7737550920399185748">Slike sa početne stranice iz zbirke neće se sinhronizovati na svim uređajima.</translation>
 <translation id="7738120385185846461">Prijavi problem…</translation>
@@ -2622,6 +2624,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="9032405509996909363">Potvrdite brisanje podataka pregledanja</translation>
 <translation id="9038526468059454274">Rezimirajte pomoću</translation>
 <translation id="9039373489628511875">Propusni opseg</translation>
+<translation id="9042363670218758847">Pređite na izgled napravljen za brze pretrage</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9044703854323320868">Gmail poruka <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Pravite grupe kartica da biste organizovali otvorene kartice i ostali produktivni</translation>

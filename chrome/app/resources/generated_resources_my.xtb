@@ -7352,6 +7352,7 @@
 <translation id="6628328486509726751">တင်ပြီး <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">ပိုမိုခိုင်မာသည့် လုံခြုံရေး</translation>
+<translation id="6630211688479622571">လတ်တလောကို ပြပါ</translation>
 <translation id="6630452975878488444">ဖြတ်လမ်း ရွေးချယ်မည်</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> သည် သင့်ကိုယ်စား ၎င်းကိုယ်တိုင် စစ်မှန်ကြောင်း သက်သေပြရန်အတွက် သက်သေခံလက်မှတ်တစ်ခုသို့ အမြဲဝင်သုံးခွင့် ရလိုသည်။</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{အုပ်စုမှထွက်ရန်}other{အုပ်စုများမှ ထွက်ရန်}}</translation>

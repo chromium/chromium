@@ -7341,6 +7341,7 @@
 <translation id="6628328486509726751">ატვირთულია <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">უფრო ძლიერი უსაფრთხოება</translation>
+<translation id="6630211688479622571">ყველაზე ბოლოების ჩვენება</translation>
 <translation id="6630452975878488444">მონიშვნის მალსახმობი</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />-ს სერტიფიკატზე მუდმივი წვდომის უფლების მიღება სურს, რათა საკუთარი თავის ავტორიზაცია თქვენი სახელით განახორციელოს.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{ჯგუფიდან გასვლა}other{ჯგუფებიდან გასვლა}}</translation>

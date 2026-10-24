@@ -118,6 +118,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2039417478970545937">Settings.</translation>
 <translation id="2040220733769034247">Scan the QR code with your phone to download Chrome and sign in to your Google Account.</translation>
 <translation id="2044908892530830113">Show search with Chrome in Mac menu bar and turn on keyboard shortcut</translation>
+<translation id="2050189601866423230">You can pin Google Search AI Mode to ask questions as you browse</translation>
 <translation id="2091012649849228750">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
@@ -401,6 +402,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
 <translation id="4828579605166583682">Google Chrome is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="4836321460899997044">Chrome profile</translation>
+<translation id="4839733921943823254">Pin shortcut</translation>
 <translation id="4842397268809523050">Chrome OS Flex could not sync your data because sync is not available for your domain.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> is already signed in.  To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">To share your screen, allow screen recording for Chrome in System Settings</translation>
@@ -727,7 +729,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="778331955594035129">Chrome needs location permission for this site</translation>
 <translation id="7787950393032327779">The profile appears to be in use by another Google Chrome process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chrome has locked the profile so that it doesn't get corrupted. If you are sure no other processes are using this profile, you can unlock the profile and relaunch Chrome.</translation>
-<translation id="7800043020703832708">Close Google Search in side panel</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7804364787702057554">Your account in Chrome</translation>
 <translation id="7804947029129221742">Your search engine was changed from outside of Chrome. To protect you, Chrome reset it to its original default. <ph name="LEARN_MORE_LINK" /></translation>
@@ -771,6 +772,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8074398340364918139">To search a specific Chrome feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>
+<translation id="8110438089258398864">You can reopen Google Search AI Mode to ask questions while you browse</translation>
 <translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Making Chrome yours…</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
@@ -827,6 +829,8 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Search language list</translation>
 <translation id="8575047640889685742">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.</translation>
+<translation id="8590782867495422699">Reopen Google Search AI Mode</translation>
+<translation id="8598779894319572882">From the 'Google Search AI Mode' button on the toolbar, you can reopen Google Search AI Mode to ask questions while you browse</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="8623450603356630491">Sign in to Chrome on your phone</translation>
 <translation id="8624541899164515475">Settings, opens in new tab.</translation>
@@ -881,6 +885,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="9014771989710951291">Multiple organisations manage Chrome</translation>
 <translation id="9018218886431812662">Installation complete</translation>
 <translation id="9066987883552592250">Close Gemini in Chrome Canary</translation>
+<translation id="9074041031320636790">Success! You can now easily ask questions as you browse with Google Search AI Mode</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>
 <translation id="9106236359747881194">Select text to search</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>

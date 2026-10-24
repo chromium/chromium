@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Chromiumமில் Gemini திறந்திருந்தால், புதிய பக்கங்களை உருவாக்கும்போது பக்கவாட்டு பேனல் திறந்தே இருக்கும்</translation>
 <translation id="479167709087336770">இது Google தேடலில் பயன்படுத்தப்படும் அதே பிழைதிருத்தியைப் பயன்படுத்துகிறது. உலாவியில் நீங்கள் உள்ளிடும் உரை Googleளுக்கு அனுப்பப்படும். இதை அமைப்புகளில் எப்போது வேண்டுமானாலும் மாற்றலாம்.</translation>
 <translation id="4814736265800133385">கணக்கு இல்லாமல் Chromiumமைப் பயன்படுத்து</translation>
+<translation id="4839733921943823254">ஷார்ட்கட்டைப் பின் செய்</translation>
 <translation id="4888717733111232871">mDNS ட்ராஃபிக்கை அனுமதிப்பதற்கான, Chromium க்கான உள்வரும் விதி.</translation>
 <translation id="4893347770495441059">&amp;Chromiumமைப் புதுப்பிக்க மீண்டும் தொடங்கு</translation>
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
@@ -761,6 +762,7 @@
 <translation id="856656450041460113">மொழிப் பட்டியலைத் தேடும்</translation>
 <translation id="8576826849825683917">Chromiumமைப் பல நிறுவனங்கள் நிர்வகிக்கின்றன</translation>
 <translation id="8586442755830160949">பதிப்புரிமை <ph name="YEAR" /> Chromium உருவாக்குநர்கள். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.</translation>
+<translation id="8590782867495422699">Google Search AI மோடை மீண்டும் திறக்கும்</translation>
 <translation id="8619360774459241877">Chromiumமைத் தொடங்குகிறது...</translation>
 <translation id="8624541899164515475">அமைப்புகள், புதிய பக்கத்தில் திறக்கும்.</translation>
 <translation id="8648201657708811153">Google Chrome for Testingகை உங்கள் இயல்பு உலாவியாக அமைக்க முடியாது.</translation>
@@ -811,6 +813,7 @@
 <translation id="9056398481763999048">மொபைலில் உள்ள Chromium ஆப்ஸ் மூலம் Googleளின் சிறந்த AI கருவிகளைப் பயன்படுத்துங்கள்</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> சாதனத்தில் உள்ள உங்கள் கடவுச்சொற்களையும் மேலும் பலவற்றையும் பெற Chromiumமில் உள்நுழையுங்கள்</translation>
 <translation id="9062666675513499497">பிற Google சேவைகளில் உள்நுழையும்போது Chromiumமிலும் உள்நுழை</translation>
+<translation id="9074041031320636790">முடிந்தது! Google Search AI மோடில் பிரவுஸ் செய்யும்போதே கேள்விகளை இப்போது எளிதாகக் கேட்கலாம்</translation>
 <translation id="9078733879136747090">Chromium தானாக மூடப்பட்டது</translation>
 <translation id="9089354809943900324">Chromium காலாவதியானது</translation>
 <translation id="9093206154853821181">{0,plural, =1{ஒரு மணிநேரத்திற்குள் Chromium மீண்டும் தொடங்கும்}other{# மணிநேரத்திற்குள் Chromium மீண்டும் தொடங்கும்}}</translation>

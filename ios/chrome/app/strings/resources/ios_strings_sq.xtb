@@ -1942,6 +1942,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="6946722113367118030">Duke menduar</translation>
 <translation id="6947751977892029882">Ndodhi një gabim me këtë cilësim. Përditëso dhe rinis Chrome dhe iOS dhe provo përsëri. Nëse ky gabim vazhdon të ndodhë, pajisja jote iPhone mund të mos e mbështesë këtë cilësim.</translation>
 <translation id="6950522403736391608">Fshehur</translation>
+<translation id="6957084631403333422">Provo një faqe të fokusuar të skedës së re</translation>
 <translation id="695965663642079255">Ruaj dhe menaxho informacionet për pagesën për të përfunduar blerjen më shpejt</translation>
 <translation id="6962809930976936328">Merr statistika me Gemini</translation>
 <translation id="6964300328304469089">Aktualisht është zgjedhur <ph name="NAME" />, <ph name="EMAIL" />. Zgjidh një llogari.</translation>
@@ -2179,6 +2180,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Artikulli i ruajtur në "Llogarinë tënde të Google", {email}}other{Artikujt e ruajtur në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="7729458878441927652">Për të parë skedat nga pajisjet e tua të tjera, sinkronizo skedat dhe historikun.</translation>
 <translation id="7730020510075123961">Jo, shkriji të dhënat</translation>
+<translation id="7730937523779541003">U zbatua faqja e fokusuar e skedës së re</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vetëm në këtë pajisje.</translation>
 <translation id="7737550920399185748">Fotografitë e faqes kryesore nga biblioteka jote e fotografive nuk do të sinkronizohen nëpër pajisjet e tua.</translation>
 <translation id="7738120385185846461">Raporto një problem…</translation>
@@ -2622,6 +2624,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="9032405509996909363">Konfirmo fshirjen e të dhënave të shfletimit</translation>
 <translation id="9038526468059454274">Përmblidhe me</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>
+<translation id="9042363670218758847">Kalo te një strukturë e krijuar për kërkime të shpejta</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9044703854323320868">Mesazhi në Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Krijo grupe skedash për të organizuar skedat e hapura dhe për të qenë produktiv</translation>

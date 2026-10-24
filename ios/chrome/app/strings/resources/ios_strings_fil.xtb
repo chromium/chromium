@@ -1942,6 +1942,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="6946722113367118030">Nag-iisip</translation>
 <translation id="6947751977892029882">Nagkaproblema sa setting na ito. I-update at i-restart ang Chrome at iOS, at subukan ulit. Kung patuloy na nangyayari ang error na ito, posibleng hindi sinusuportahan ng iyong iPhone ang setting na ito.</translation>
 <translation id="6950522403736391608">Naka-hide</translation>
+<translation id="6957084631403333422">Sumubok ng naka-focus na page ng bagong tab</translation>
 <translation id="695965663642079255">I-save at pamahalaan ang impormasyon sa pagbabayad para mas mabilis na makapag-check out</translation>
 <translation id="6962809930976936328">Makakuha ng mga insight gamit ang Gemini</translation>
 <translation id="6964300328304469089">Kasalukuyang pinili ang <ph name="NAME" />, <ph name="EMAIL" />. Pumili ng account.</translation>
@@ -2179,6 +2180,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Na-save na ang item sa iyong Google Account, {email}}one{Na-save na ang mga item sa iyong Google Account, {email}}other{Na-save na ang mga item sa iyong Google Account, {email}}}</translation>
 <translation id="7729458878441927652">Para makita ang mga tab mula sa iba mong device, i-sync ang iyong mga tab at history.</translation>
 <translation id="7730020510075123961">Hindi, i-merge ang data</translation>
+<translation id="7730937523779541003">Na-apply ang naka-focus na page ng bagong tab</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Sa device lang na ito.</translation>
 <translation id="7737550920399185748">Hindi masi-sync sa iyong mga device ang mga larawan sa homepage mula sa iyong library ng larawan.</translation>
 <translation id="7738120385185846461">Mag-ulat ng Isyu…</translation>
@@ -2623,6 +2625,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="9032405509996909363">Kumpirmahin ang pag-delete ng data mula sa pag-browse</translation>
 <translation id="9038526468059454274">Ibuod ito gamit ang</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
+<translation id="9042363670218758847">Lumipat sa layout na binuo para sa mabibilis na paghahanap</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
 <translation id="9044703854323320868">Mensahe sa Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Gumawa ng mga grupo ng tab para isaayos ang iyong mga nakabukas na tab at manatiling produktibo</translation>

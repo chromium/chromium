@@ -1839,6 +1839,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2423506062824112361">Naməlum səbəbdən kontent endirilmədi.</translation>
 <translation id="2423578206845792524">Şəklin saxlanma formatı:</translation>
 <translation id="2424424966051154874">{0,plural, =1{Qonaq}other{Qonaq (#)}}</translation>
+<translation id="2424762488607770568">Defolt (sistemə uyğunlaşdırın)</translation>
 <translation id="2426805022920575512">Başqa hesab seçin</translation>
 <translation id="2427507373259914951">Sol düymə</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 hesab, parol yalnız bu cihazda yadda saxlanıldı. Daha ətraflı}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} hesab, parol yalnız bu cihazda yadda saxlanıldı. Daha ətraflı}}</translation>
@@ -5648,6 +5649,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5280426389926346830">Qısayol yaradılsın?</translation>
 <translation id="5280966903879030278">Brauzer tarixçəsində axtarmaq və daxil olduğunuz saytları tapmaq üçün gündəlik danışıqdan istifadə edin. Bu ayar deaktivdir.</translation>
 <translation id="5281013262333731149">Burada açılır: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Səhifə rəngləri</translation>
 <translation id="5284107433515104664">Parolun dəyişdirilməsi zamanı səhifə kontenti və əlaqəli məlumatlar Google-a göndərilir və bu funksiyanı təkmilləşdirmək üçün insanlar tərəfindən nəzərdən keçirilə bilər. Parolunuz şifrlənib və heç kəs tərəfindən görünmür.</translation>
 <translation id="5284445933715251131">Endirməyə Davam edin</translation>
 <translation id="5285635972691565180">Displey <ph name="DISPLAY_ID" /></translation>
@@ -6538,6 +6540,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5989497858237037960">Siz saytları axtararkən onların səhifə kontenti şifrələnir və cihazda yadda saxlanılır. Bu, Chrome-un performansına təsir edə bilər</translation>
 <translation id="5990266201903445068">Yalnız Wi-Fi</translation>
 <translation id="5990386583461751448">Tərcümə edildi</translation>
+<translation id="5991039386730545918">Seçdiyiniz səhifə rəngi teması yalnız sistemin yüksək kontrastı aktiv olduqda istifadə olunur</translation>
 <translation id="5992225669837656567">Mauslar ayrılıb</translation>
 <translation id="5992652489368666106">Sərhəd yoxdur</translation>
 <translation id="5996490984199062729">Profiliniz ayarlanmayıb</translation>
@@ -9322,6 +9325,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8118362518458010043">Chrome tərəfindən deaktiv edilib. Artırma təhlükəli ola bilər.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# əlfəcin}other{# əlfəcin}}</translation>
 <translation id="8118488170956489476">Təşkilat <ph name="BEGIN_LINK" />brauzeri idarə edir<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Veb-səhifə rənglərini yüksək kontrastlı temalarla əvəz edin və ya məcburi rəngləri deaktiv edin</translation>
 <translation id="8118515372935001629">Displeyin yenilənmə sürəti</translation>
 <translation id="8118860139461251237">Endirmələrinizi idarə edin</translation>
 <translation id="8119438628456698432">Loq faylları yaradılır...</translation>
@@ -9999,6 +10003,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8648408795949963811">Gecə İşığı rəng temperaturu</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> bunu etmək istəyir: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> və daha çoxu</translation>
 <translation id="8648889679430451455">Fərdiləşdirmə datasını silin</translation>
+<translation id="8649290269169747916">Sistemdə yüksək kontrast deaktiv olduqda defolt səhifə rənglərindən istifadə edin</translation>
 <translation id="8651585100578802546">Bu səhifəni yenidən yükləməyə məcbur edin</translation>
 <translation id="8651806635673244884">İstənilən taba sağ düymə ilə toxunub "Tabları üfüqi göstərin" seçimini etməklə tabları yenidən yuxarı köçürə bilərsiniz</translation>
 <translation id="8652400352452647993">Paket Artırma Xətası</translation>

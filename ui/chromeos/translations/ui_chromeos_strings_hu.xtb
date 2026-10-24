@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="5059127710849015030">nepáli, betű szerinti átírás</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5075336522277785691">A(z) <ph name="EXTENSION_NAME" /> proxy-felülbírálási szabályokat állított be</translation>
 <translation id="5081517858322016911">A törlésre kerülő fájlok mérete összesen <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezése ide: <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Hiba történt.</translation>

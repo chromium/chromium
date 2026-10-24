@@ -1942,6 +1942,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6946722113367118030">생각 중</translation>
 <translation id="6947751977892029882">이 설정에서 문제가 발생했습니다. Chrome 및 iOS를 업데이트하고 다시 시작하세요. 그런 다음, 다시 시도해 보세요. 이 오류가 계속 발생하면 iPhone에서 이 설정을 지원하지 않을 수 있습니다.</translation>
 <translation id="6950522403736391608">숨김</translation>
+<translation id="6957084631403333422">집중 모드 새 탭 페이지를 사용해 보세요</translation>
 <translation id="695965663642079255">결제 정보를 저장하고 관리하여 더 빠르게 결제하세요.</translation>
 <translation id="6962809930976936328">Gemini로 유용한 정보 확인하기</translation>
 <translation id="6964300328304469089">현재 <ph name="NAME" />님(<ph name="EMAIL" />)이 선택되었습니다. 계정을 선택하세요.</translation>
@@ -2179,6 +2180,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7724085059277147439">{count,plural, =1{항목이 Google 계정({email})에 저장됨}other{항목이 Google 계정({email})에 저장됨}}</translation>
 <translation id="7729458878441927652">다른 기기의 탭을 보려면 탭과 방문 기록을 동기화하세요</translation>
 <translation id="7730020510075123961">아니요, 데이터를 병합합니다</translation>
+<translation id="7730937523779541003">집중 모드 새 탭 페이지가 적용되었습니다.</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. 이 기기에서만 표시.</translation>
 <translation id="7737550920399185748">사진 라이브러리의 홈페이지 사진은 기기 간에 동기화되지 않습니다.</translation>
 <translation id="7738120385185846461">문제 신고…</translation>
@@ -2622,6 +2624,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9032405509996909363">인터넷 사용 기록 삭제 확인</translation>
 <translation id="9038526468059454274">다음 도구로 요약하기:</translation>
 <translation id="9039373489628511875">대역폭</translation>
+<translation id="9042363670218758847">빠른 검색을 위해 만들어진 레이아웃으로 전환하세요</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
 <translation id="9044703854323320868">Gmail 메일 <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">열려 있는 탭을 정리하고 생산성을 유지하려면 탭 그룹을 만드세요.</translation>

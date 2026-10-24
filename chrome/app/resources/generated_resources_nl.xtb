@@ -7333,6 +7333,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6628328486509726751">Geüploade <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Betere beveiliging</translation>
+<translation id="6630211688479622571">Meest recente tonen</translation>
 <translation id="6630452975878488444">Sneltoets voor selectie</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wil permanente toegang tot een certificaat om zichzelf names jou te verifiëren.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Groep verlaten}other{Groepen verlaten}}</translation>

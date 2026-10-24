@@ -1942,6 +1942,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="6946722113367118030">Přemýšlení</translation>
 <translation id="6947751977892029882">S tímto nastavením se něco pokazilo. Aktualizujte a restartujte Chrome a iOS a zkuste to znovu. Pokud k této chybě dochází opakovaně, váš iPhone toto nastavení pravděpodobně nepodporuje.</translation>
 <translation id="6950522403736391608">Skryté</translation>
+<translation id="6957084631403333422">Vyzkoušejte stránku Nová karta s jedním zaměřením</translation>
 <translation id="695965663642079255">Uložte si a spravujte platební údaje, ať můžete platit rychleji</translation>
 <translation id="6962809930976936328">Získat informace pomocí Gemini</translation>
 <translation id="6964300328304469089">Momentálně vybráno: <ph name="NAME" />, <ph name="EMAIL" />. Vyberte účet.</translation>
@@ -2179,6 +2180,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Položka byla uložena do vašeho účtu Google ({email})}few{Položky byly uloženy do vašeho účtu Google ({email})}many{Položky byly uloženy do vašeho účtu Google ({email})}other{Položky byly uloženy do vašeho účtu Google ({email})}}</translation>
 <translation id="7729458878441927652">Pokud chcete zobrazit karty ze svých ostatních zařízení, synchronizujte karty a historii.</translation>
 <translation id="7730020510075123961">Ne, sloučit data</translation>
+<translation id="7730937523779541003">Byla použita stránka Nová karta pro soustředění</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Pouze na tomto zařízení</translation>
 <translation id="7737550920399185748">Fotky z knihovny fotek na domovské stránce se nebudou synchronizovat mezi zařízeními.</translation>
 <translation id="7738120385185846461">Nahlásit problém…</translation>
@@ -2622,6 +2624,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="9032405509996909363">Potvrdit vymazání údajů o prohlížení</translation>
 <translation id="9038526468059454274">Nechte si obsah shrnout od</translation>
 <translation id="9039373489628511875">Šířka pásma</translation>
+<translation id="9042363670218758847">Přepněte na rozvržení vytvořené pro rychlé vyhledávání</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9044703854323320868">Zpráva v Gmailu <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Uspořádejte si otevřené karty vytvořením skupin karet, abyste zůstali produktivní</translation>

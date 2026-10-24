@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">Indstillinger.</translation>
 <translation id="2040220733769034247">Scan QR-koden med din telefon for at downloade Chrome og logge ind på din Google-konto.</translation>
 <translation id="2044908892530830113">Vis søgning med Chrome på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
+<translation id="2050189601866423230">Du kan fastgøre AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="2091012649849228750">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du slutte Chrome alligevel?</translation>
@@ -397,6 +398,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="4793679854893018356">Se, hvordan Chrome beskytter dig</translation>
 <translation id="4828579605166583682">Google Chrome forsøger at erstatte eksisterende adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="4836321460899997044">Chrome-profil</translation>
+<translation id="4839733921943823254">Fastgør genvej</translation>
 <translation id="4842397268809523050">ChromeOS Flex kunne ikke synkronisere dine data, da synkronisering ikke er tilgængelig på dit domæne.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> er allerede logget ind.  Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Tillad skærmoptagelse for Chrome under Systemindstillinger for at dele din skærm.</translation>
@@ -719,7 +721,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7777080907402804672">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>
 <translation id="778331955594035129">Chrome skal have lokationstilladelse for at bruge dette website</translation>
 <translation id="7787950393032327779">Profilen ser ud til at være i brug i en anden Google Chrome-proces (<ph name="PROCESS_ID" />) på en anden computer (<ph name="HOST_NAME" />). Chrome har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du låse profilen op og genstarte Chrome.</translation>
-<translation id="7800043020703832708">Luk Google Søgning i sidepanelet</translation>
 <translation id="7801699035218095297">Google Chrome forsøger at kopiere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="7804364787702057554">Din konto i Chrome</translation>
 <translation id="7804947029129221742">Din søgemaskine blev ændret uden for Chrome. Chrome har nulstillet den til den oprindelige standard for at beskytte dig. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +764,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8074398340364918139">Hvis du vil søge efter en bestemt Chrome-funktion eller -udvidelse, skal du angive genvejen til den i adresselinjen efterfulgt af din valgte tastaturtast</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
+<translation id="8110438089258398864">Du kan genåbne AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Tilpasser Chrome…</translation>
 <translation id="8118331347066725040">Send feedback om søgning via Lens</translation>
@@ -819,6 +821,8 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Søg i sproglisten</translation>
 <translation id="8575047640889685742">Brug din <ph name="BEGIN_LINK" />egen adgangssætning<ph name="END_LINK" /> til at kryptere alle Chrome-data på din Google-konto. Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.</translation>
+<translation id="8590782867495422699">Åbn AI-tilstand i Google Søgning igen</translation>
+<translation id="8598779894319572882">Via knappen "AI-tilstand i Google Søgning" på værktøjslinjen kan du genåbne AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du genstarte nu?</translation>
 <translation id="8623450603356630491">Log ind i Chrome på din telefon</translation>
 <translation id="8624541899164515475">Indstillinger (åbnes på en ny fane).</translation>
@@ -873,6 +877,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="9014771989710951291">Flere organisationer administrerer Chrome</translation>
 <translation id="9018218886431812662">Installationen er fuldført</translation>
 <translation id="9066987883552592250">Luk Gemini i Chrome Canary</translation>
+<translation id="9074041031320636790">Perfekt! Nu kan du nemt stille spørgsmål, mens du browser, med AI-tilstand i Google Søgning</translation>
 <translation id="9090566250983691233">Se, hvorfor Chrome blokerer visse filer</translation>
 <translation id="9106236359747881194">Markér den tekst, du vil søge efter</translation>
 <translation id="911206726377975832">Slet også dine browserdata</translation>

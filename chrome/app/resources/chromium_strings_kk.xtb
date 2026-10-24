@@ -372,6 +372,7 @@
 <translation id="4786083865378785874">Chromium-дегі Gemini ашық болса, жаңа қойындылар жасаған кезде, бүйірлік панель ашық қалады.</translation>
 <translation id="479167709087336770">Google Search қызметіндегі емле тексеру құралы пайдаланылады. Браузерде терілген мәтін Google-ға жіберіледі. Мұны параметрлерде өзгертуіңізге болады.</translation>
 <translation id="4814736265800133385">Chromium-ді аккаунтсыз қолдану</translation>
+<translation id="4839733921943823254">Таңбашаны бекіту</translation>
 <translation id="4888717733111232871">mDNS трафигіне рұқсат беретін Chromium кіріс ережесі.</translation>
 <translation id="4893347770495441059">&amp;Chromium-ді жаңарту үшін қайта іске қосу</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
@@ -762,6 +763,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="856656450041460113">Тілдер тізімін іздеу</translation>
 <translation id="8576826849825683917">Chromium-ді бірнеше ұйым басқарады</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Барлық құқықтар қорғалған.</translation>
+<translation id="8590782867495422699">Google Search ЖИ режимін қайта ашу</translation>
 <translation id="8619360774459241877">Chromium іске қосылуда…</translation>
 <translation id="8624541899164515475">Параметрлер, жаңа қойындыда ашылады.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing браузерін әдепкі браузер қылу мүмкін емес.</translation>
@@ -812,6 +814,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="9056398481763999048">Телефондағы Chromium-мен Google-дың үздік жасанды интеллект құралдарын пайдаланыңыз</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> құрылғысынан құпия сөздер мен басқа ақпаратты алу үшін Chromium-ге кіріңіз.</translation>
 <translation id="9062666675513499497">Басқа Google қызметтеріне кірген кезде, Chromium-ге де кіресіз</translation>
+<translation id="9074041031320636790">Дайын! Енді Google Search AI режимімен шолған кезде, оңай сұрақ қоя аласыз.</translation>
 <translation id="9078733879136747090">Chromium автоматты түрде жабылған</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium браузері бір сағаттан кейін қайта іске қосылады}other{Chromium браузері # сағаттан кейін қайта іске қосылады}}</translation>

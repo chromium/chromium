@@ -114,6 +114,7 @@
 <translation id="2039417478970545937">Setări.</translation>
 <translation id="2040220733769034247">Scanează codul QR cu telefonul pentru a descărca Chrome și a te conecta la Contul Google.</translation>
 <translation id="2044908892530830113">Afișează căutarea cu Chrome în bara de meniu Mac și activează comanda rapidă de la tastatură</translation>
+<translation id="2050189601866423230">Poți să fixezi Modul AI din Căutarea Google pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="2091012649849228750">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.</translation>
 <translation id="2094648590148273905">Condițiile pentru sistemul de operare Chrome Flex</translation>
 <translation id="2094919256425865063">Ieși din Chrome oricum?</translation>
@@ -397,6 +398,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="4836321460899997044">Profil Chrome</translation>
+<translation id="4839733921943823254">Fixează comanda rapidă</translation>
 <translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
@@ -719,7 +721,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7777080907402804672">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
 <translation id="778331955594035129">Chrome necesită permisiuni pentru locație pentru acest site</translation>
 <translation id="7787950393032327779">Profilul pare să fie utilizat de alt proces Google Chrome (<ph name="PROCESS_ID" />), pe alt computer (<ph name="HOST_NAME" />). Chrome a blocat profilul pentru a nu se deteriora. Dacă aveți certitudinea că profilul nu este utilizat de alte procese, puteți să îl deblocați și să relansați Chrome.</translation>
-<translation id="7800043020703832708">Închide Căutarea Google în panoul lateral</translation>
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7804364787702057554">Contul tău în Chrome</translation>
 <translation id="7804947029129221742">Motorul de căutare a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat la opțiunea prestabilită inițială. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +764,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8074398340364918139">Pentru a căuta o anumită funcție sau extensie Chrome, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="8086881907087796310">Nu s-a instalat deoarece computerul nu îndeplinește cerințele minime de hardware.</translation>
+<translation id="8110438089258398864">Poți să redeschizi Modul AI în Căutarea Google pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="8113883687556086139">Confirmă-ți identitatea pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Se personalizează Chrome...</translation>
 <translation id="8118331347066725040">Trimite feedback pentru căutare cu Lens</translation>
@@ -819,6 +821,8 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Caută lista de limbi</translation>
 <translation id="8575047640889685742">Folosește <ph name="BEGIN_LINK" />propria expresie de acces<ph name="END_LINK" /> pentru a cripta toate datele Chrome din Contul Google. Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.</translation>
+<translation id="8590782867495422699">Redeschide Modul AI în Căutarea Google</translation>
+<translation id="8598779894319572882">Folosind butonul Modul AI în Căutarea Google din bara de instrumente, poți să redeschizi Modul AI în Căutarea Google pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="8623450603356630491">Conectează-te la Chrome pe telefon</translation>
 <translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
@@ -873,6 +877,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="9014771989710951291">Mai multe organizații gestionează Chrome</translation>
 <translation id="9018218886431812662">Instalare finalizată</translation>
 <translation id="9066987883552592250">Închide Gemini în Chrome Canary</translation>
+<translation id="9074041031320636790">Succes! Acum poți să pui cu ușurință întrebări în timp ce navighezi cu Modul AI în Căutarea Google</translation>
 <translation id="9090566250983691233">Află de ce Chrome blochează unele fișiere</translation>
 <translation id="9106236359747881194">Selectează text pentru a căuta</translation>
 <translation id="911206726377975832">Ștergi și datele de navigare?</translation>

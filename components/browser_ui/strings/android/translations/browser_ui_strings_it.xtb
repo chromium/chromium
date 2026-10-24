@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Impedisci ai siti di usare i dati e dispositivi della realtà virtuale</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Calo di prezzo nella scheda aperta, da <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Revoca l'autorizzazione al dispositivo per <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Richiedi la visualizzazione mobile se la finestra è stretta</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6530703012083415527">Quando l'opzione è attiva, i siti possono utilizzare popup e reindirizzamenti. Quando l'opzione è disattivata, i siti non possono utilizzare popup e reindirizzamenti.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7201549776650881587">Questa azione eliminerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
+<translation id="7225256190577194089">Revoca tutte le autorizzazioni per il dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Seleziona immagini</translation>
 <translation id="7243246278722455312">Riquadro inferiore di Personalizza la pagina Nuova scheda</translation>
 <translation id="7243308994586599757">Opzioni disponibili nella parte inferiore dello schermo</translation>

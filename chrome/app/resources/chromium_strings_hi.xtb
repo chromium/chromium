@@ -370,6 +370,7 @@
 <translation id="4786083865378785874">अगर 'Chromium में Gemini' खुला है, तो नए टैब खोलने पर साइड पैनल खुला रहेगा</translation>
 <translation id="479167709087336770">इसमें स्पेलिंग जाँचने वाली उसी सुविधा का इस्तेमाल होता है जिसका इस्तेमाल 'Google सर्च' में किया जाता है. आप ब्राउज़र में जो भी लेख लिखते हैं उसे Google को भेजा जाता है. आप 'सेटिंग' में जाकर इसे कभी भी बदल सकते हैं.</translation>
 <translation id="4814736265800133385">बिना किसी खाते के, Chromium का इस्तेमाल करें</translation>
+<translation id="4839733921943823254">शॉर्टकट को पिन करें</translation>
 <translation id="4888717733111232871">mDNS ट्रैफ़िक की अनुमति देने के लिए क्रोमियम के लिए इनबाउंड नियम.</translation>
 <translation id="4893347770495441059">&amp;Chromium को अपडेट करने के लिए फिर से लॉन्च करें</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
@@ -760,6 +761,7 @@
 <translation id="856656450041460113">भाषाओं की सूची में खोजें</translation>
 <translation id="8576826849825683917">Chromium को कई संगठन मैनेज करते हैं</translation>
 <translation id="8586442755830160949">कॉपीराइट <ph name="YEAR" /> The Chromium Authors. सर्वाधिकार सुरक्षित.</translation>
+<translation id="8590782867495422699">Google Search के एआई मोड को फिर से खोलें</translation>
 <translation id="8619360774459241877">क्रोमियम लॉन्च हो रहा है...</translation>
 <translation id="8624541899164515475">सेटिंग पेज नए टैब में खुलता है.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing को आपका डिफ़ॉल्ट ब्राउज़र नहीं बनाया जा सकता.</translation>
@@ -810,6 +812,7 @@
 <translation id="9056398481763999048">अपने फ़ोन पर Chromium ऐप्लिकेशन डाउनलोड करके, Google के बेहतरीन एआई टूल इस्तेमाल करें</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> में मौजूद अपने पासवर्ड वगैरह ऐक्सेस करने के लिए, Chromium में साइन इन करें</translation>
 <translation id="9062666675513499497">Google की अन्य सेवाओं में साइन इन करते समय, Chromium में साइन इन करें</translation>
+<translation id="9074041031320636790">सेटअप हो गया! Google Search के एआई मोड की मदद से, ब्राउज़ करते समय आसानी से सवाल पूछे जा सकते हैं</translation>
 <translation id="9078733879136747090">Chromium अपने-आप बंद हो गया था</translation>
 <translation id="9089354809943900324">क्रोमियम पुराना हो गया है</translation>
 <translation id="9093206154853821181">{0,plural, =1{क्रोमियम एक घंटे के अंदर फिर से लॉन्च होगा}one{क्रोमियम # घंटे के अंदर फिर से लॉन्च होगा}other{क्रोमियम # घंटे के अंदर फिर से लॉन्च होगा}}</translation>

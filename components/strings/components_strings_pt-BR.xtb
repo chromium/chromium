@@ -661,6 +661,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Emitido para: <ph name="ORGANIZATION" /> (<ph name="JURISDICTION" />)</translation>
 <translation id="2119867082804433120">Perfuração na parte inferior direita</translation>
+<translation id="2121418473709291357">Ignorado porque o Gerenciamento de nuvem do navegador Chrome está desativado.</translation>
 <translation id="2122214041802369259">Preço alto</translation>
 <translation id="2122719317867821810">A política está funcionando da maneira esperada, mas um valor conflitante foi definido em outro lugar e foi substituído por esta política.</translation>
 <translation id="2124081665399116863">Atualize o veículo na Carteira do Google</translation>
@@ -690,6 +691,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2155260325161282517">5 x 7 pol.</translation>
 <translation id="2156467141257470387">Os endereços salvos podem ser usados em vários produtos do Google. Isso não altera seu endereço de trabalho atual. Ele será salvo na sua Conta do Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificações de monitoramento de preço</translation>
+<translation id="2158964559178498011">O Preenchimento Automático funciona em mais lugares: pressione Ctrl duas vezes para encontrar e preencher informações</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162435186600002085">Logotipo principal do cabeçalho</translation>
 <translation id="2162535140284745414">Receba sugestões em tempo real que ajudam você a encontrar novas maneiras de navegar com a IA.</translation>
@@ -2200,6 +2202,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Traduzir página?</translation>
 <translation id="468314109939257734">Ver o número do seu cartão virtual</translation>
+<translation id="4684818564800397688">O Preenchimento Automático funciona em mais lugares: pressione ⌘ duas vezes para encontrar e preencher informações</translation>
 <translation id="4686942373615810936">Criado agora</translation>
 <translation id="4690205240253392065">Escolha um provedor para pagar depois</translation>
 <translation id="469028408546145398">Botão "Fechar janelas anônimas". Ative para fechar todas as janelas anônimas abertas</translation>
@@ -2480,7 +2483,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5115232566827194440">Substituição da sessão de visitante gerenciada restrita</translation>
 <translation id="5115563688576182185">64 bits</translation>
 <translation id="5116015291385561204">Confirme sua identidade para preencher automaticamente informações sensíveis</translation>
-<translation id="5121592697493894155">Pesquisa Google no painel lateral</translation>
 <translation id="5122786942953798871">Envelope (algodão)</translation>
 <translation id="5123063207673082822">Final de semana</translation>
 <translation id="5124797626438336458">Tela de erro da opção Compre Agora, Pague Depois aberta na metade do tamanho.</translation>
@@ -2917,6 +2919,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5843987376989109187">Ainda não há suporte a este idioma.
     <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Depois de analisar o pedido, faça login ou crie uma conta do <ph name="BNPL_ISSUER_NAME" />. A conta será vinculada automaticamente à Carteira do Google.</translation>
+<translation id="5848916806551637625">A conta Pix será vinculada a <ph name="ACCOUNT_EMAIL" />. Para desativar a detecção de código Pix, acesse as <ph name="BEGIN_LINK1" />configurações do Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista de guias</translation>
 <translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>

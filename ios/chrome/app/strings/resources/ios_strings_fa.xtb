@@ -1942,6 +1942,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6946722113367118030">درحال فکر کردن</translation>
 <translation id="6947751977892029882">‏مشکلی در این تنظیم پیش آمد. ‫Chrome و iOS را به‌روزرسانی و بازراه‌اندازی کنید و دوباره امتحان کنید. اگر این خطا همچنان رخ می‌دهد، ممکن است iPhone شما از این تنظیم پشتیبانی نکند.</translation>
 <translation id="6950522403736391608">پنهان</translation>
+<translation id="6957084631403333422">صفحه زبانه جدید متمرکز را امتحان کنید</translation>
 <translation id="695965663642079255">برای تسویه‌حساب سریع‌تر، اطلاعات پرداخت را ذخیره و مدیریت کنید</translation>
 <translation id="6962809930976936328">‏دریافت بینش با Gemini</translation>
 <translation id="6964300328304469089">درحال‌حاضر <ph name="EMAIL" />، <ph name="NAME" /> انتخاب شده است. حسابی انتخاب کنید.</translation>
@@ -2179,6 +2180,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7724085059277147439">{count,plural, =1{‏مورد در «حساب Google» شما ({email}) ذخیره شد}one{‏موارد در «حساب Google» شما ({email}) ذخیره شد}other{‏موارد در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="7729458878441927652">برای دیدن زبانه‌های دستگاه‌های دیگرتان، زبانه‌ها و سابقه را همگام‌سازی کنید.</translation>
 <translation id="7730020510075123961">نه، داده‌ها ادغام شود</translation>
+<translation id="7730937523779541003">صفحه زبانه جدید متمرکز اعمال شد</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. فقط در این دستگاه.</translation>
 <translation id="7737550920399185748">عکس‌های صفحه اصلی از کتابخانه عکس شما در دستگاه‌هایتان همگام‌سازی نخواهد شد.</translation>
 <translation id="7738120385185846461">گزارش مشکل…</translation>
@@ -2622,6 +2624,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9032405509996909363">تأیید کردن حذف داده‌های مرور</translation>
 <translation id="9038526468059454274">خلاصه کردن با</translation>
 <translation id="9039373489628511875">پهنای باند</translation>
+<translation id="9042363670218758847">به چیدمانی بروید که برای جستجوهای سریع ساخته شده است</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9044703854323320868">‏پیام Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">با ساختن گروه زبانه‌ها می‌توانید زبانه‌های باز را سازمان‌دهی کنید و بهره‌وری خود را حفظ کنید</translation>

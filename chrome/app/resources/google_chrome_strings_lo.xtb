@@ -118,6 +118,7 @@
 <translation id="2039417478970545937">ການຕັ້ງຄ່າ.</translation>
 <translation id="2040220733769034247">ສະແກນລະຫັດ QR ດ້ວຍໂທລະສັບຂອງທ່ານເພື່ອດາວໂຫຼດ Chrome ແລະ ເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="2044908892530830113">ສະແດງການຊອກຫາດ້ວຍ Chrome ໃນແຖບເມນູຂອງ Mac ແລະ ເປີດຄີລັດ</translation>
+<translation id="2050189601866423230">ທ່ານສາມາດປັກໝຸດໂໝດ AI ຂອງ Google ຊອກຫາເພື່ອຖາມຄຳຖາມໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບໄດ້</translation>
 <translation id="2091012649849228750">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ Windows 10 ຫຼື ໃໝ່ກວ່າ. ຄອມພິວເຕີນີ້ກຳລັງນຳໃຊ້ Windows 8.</translation>
 <translation id="2094648590148273905">ຂໍ້ກຳນົດ ChromeOS Flex</translation>
 <translation id="2094919256425865063">ຢືນຢັນການອອກຈາກ Chrome ບໍ?</translation>
@@ -401,6 +402,7 @@
 <translation id="4793679854893018356">ສຶກສາວິທີການທີ່ Chrome ຮັກສາຄວາມປອດໄພໃຫ້ທ່ານ</translation>
 <translation id="4828579605166583682">Google Chrome ກຳລັງພະຍາຍາມປ່ຽນແທນລະຫັດຜ່ານທີ່ມີຢູ່. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານໃສ່ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="4836321460899997044">ໂປຣໄຟລ໌ Chrome</translation>
+<translation id="4839733921943823254">ປັກໝຸດທາງລັດ</translation>
 <translation id="4842397268809523050">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກບໍ່ສາມາດໃຊ້ການຊິ້ງຂໍ້ມູນສຳລັບໂດເມນຂອງທ່ານ.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບຢູ່ແລ້ວ.  ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ໃນໂປຣໄຟລ໌ຂອງທ່ານເອງໃນຖານະ <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chrome ໃນການຕັ້ງຄ່າລະບົບ</translation>
@@ -727,7 +729,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7777080907402804672">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chrome ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google. ທ່ານສາມາດປິດສິ່ງນີ້ໃນການຕັ້ງຄ່າໄດ້ທຸກເວລາ.</translation>
 <translation id="778331955594035129">Chrome ຕ້ອງການການອະນຸຍາດສະຖານທີ່ສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7787950393032327779">ປະກົດວ່າໂປຣໄຟລ໌ຖືກຂະບວນການອື່ນຂອງ Google Chrome (<ph name="PROCESS_ID" />) ໃຊ້ງານຢູ່ໃນຄອມພິວເຕີອື່ນ (<ph name="HOST_NAME" />). Chrome ໄດ້ລັອກໂປຣໄຟລ໌ແລ້ວ ດັ່ງນັ້ນມັນບໍ່ຖືກ​ເຮັດ​​ໃຫ້ເສຍຫາຍ. ຖ້າທ່ານແນ່ໃຈວ່າ ບໍມີຂະບວນການອື່ນກໍາລັງໃຊ້ໂປຣໄຟລ໌ນີ້ຢູ່, ທ່ານສາມາດປົດລັອກໂປຣໄຟລ໌ ແລະເປີດໃຊ້ Chrome ຄືນໃໝ່ໄດ້.</translation>
-<translation id="7800043020703832708">ປິດ Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="7801699035218095297">Google Chrome ກໍາລັງພະຍາຍາມສຳເນົາລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
 <translation id="7804364787702057554">ບັນຊີຂອງທ່ານໃນ Chrome</translation>
 <translation id="7804947029129221742">ມີການປ່ຽນໂປຣແກຣມຊອກຫາຂອງທ່ານຈາກພາຍນອກ Chrome. ເພື່ອປົກປ້ອງທ່ານ, Chrome ໄດ້ຣີເຊັດໂປຣແກຣມດັ່ງກ່າວເປັນຄ່າເລີ່ມຕົ້ນເກົ່າ. <ph name="LEARN_MORE_LINK" /></translation>
@@ -771,6 +772,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8074398340364918139">ເພື່ອຊອກຫາຄຸນສົມບັດ ຫຼື ສ່ວນຂະຫຍາຍທີ່ສະເພາະຂອງ Chrome, ໃຫ້ພິມທາງລັດຂອງຄຸນສົມບັດ ຫຼື ສ່ວນຂະຫຍາຍໃສ່ໃນແຖບທີ່ຢູ່, ຕາມດ້ວຍປຸ່ມແປ້ນພິມທີ່ທ່ານເລືອກໄວ້</translation>
 <translation id="8077579734294125741">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
 <translation id="8086881907087796310">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກຄອມພິວເຕີຂອງທ່ານບໍ່ເປັນໄປຕາມຂໍ້ກຳນົດຂັ້ນຕ່ຳສຳລັບຮາດແວ.</translation>
+<translation id="8110438089258398864">ທ່ານສາມາດເປີດໂໝດ AI ຂອງ Google ຊອກຫາຄືນໃໝ່ເພື່ອຖາມຄຳຖາມໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບໄດ້</translation>
 <translation id="8113883687556086139">ຢັ້ງຢືນວ່າມັນແມ່ນທ່ານທີ່ຈະໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">ກຳລັງປັບແຕ່ງ Chrome ໃນແບບຂອງທ່ານ...</translation>
 <translation id="8118331347066725040">ສົ່ງຄຳຕິຊົມສຳລັບການຊອກຫາດ້ວຍ Lens</translation>
@@ -827,6 +829,8 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8555465886620020932">ບໍລິການຜິດພາດ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ຊອກຫາລາຍການພາສາ</translation>
 <translation id="8575047640889685742">ໃຊ້ <ph name="BEGIN_LINK" />ລະຫັດຜ່ານຂອງທ່ານເອງ<ph name="END_LINK" /> ໃນການເຂົ້າລະຫັດຂໍ້ມູນ Chrome ທັງໝົດໃນບັນຊີ Google ຂອງທ່ານ. ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay ຈະບໍ່ໄດ້ຖືກເຂົ້າລະຫັດໄວ້. ປະຫວັດການທ່ອງເວັບຈາກ Chrome ຈະບໍ່ຊິ້ງ.</translation>
+<translation id="8590782867495422699">ເປີດໂໝດ AI ຂອງ Google ຊອກຫາຄືນໃໝ່</translation>
+<translation id="8598779894319572882">ຈາກປຸ່ມ "ໂໝດ AI ຂອງ Google ຊອກຫາ" ຢູ່ແຖບເຄື່ອງມື, ທ່ານສາມາດເປີດໂໝດ AI ຂອງ Google ຊອກຫາຄືນໃໝ່ເພື່ອຖາມຄຳຖາມໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບໄດ້</translation>
 <translation id="8614913330719544658">Google Chrome ບໍ່ຕອບຮັບ. ເລີ່ມເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="8623450603356630491">ເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="8624541899164515475">ການຕັ້ງຄ່າ, ເປີດໃນແຖບໃໝ່.</translation>
@@ -881,6 +885,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="9014771989710951291">ຫຼາຍອົງການຈັດການ Chrome</translation>
 <translation id="9018218886431812662">ສຳເລັດການຕິດຕັ້ງແລ້ວ</translation>
 <translation id="9066987883552592250">ປິດ Gemini ໃນ Chrome Canary</translation>
+<translation id="9074041031320636790">ສຳເລັດ! ຕອນນີ້ທ່ານສາມາດຖາມຄຳຖາມໄດ້ຢ່າງງ່າຍດາຍໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບດ້ວຍໂໝດ AI ຂອງ Google ຊອກຫາ</translation>
 <translation id="9090566250983691233">ສຶກສາວ່າເປັນຫຍັງ Chrome ຈຶ່ງບລັອກໄຟລ໌ບາງລາຍການ</translation>
 <translation id="9106236359747881194">ເລືອກຂໍ້ຄວາມທີ່ຈະຊອກຫາ</translation>
 <translation id="911206726377975832">ລຶບຂໍ້ມູນການທ່ອງເນັດຂອງທ່ານນໍາບໍ?</translation>

@@ -7346,6 +7346,7 @@
 <translation id="6628328486509726751">Время загрузки: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Более надежная защита</translation>
+<translation id="6630211688479622571">Показать самые недавние</translation>
 <translation id="6630452975878488444">Ярлык выбора</translation>
 <translation id="6630752851777525409">Расширение "<ph name="EXTENSION_NAME" />" запрашивает постоянный доступ к сертификату для прохождения аутентификации от вашего имени.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Выйти из группы}one{Выйти из групп}few{Выйти из групп}many{Выйти из групп}other{Выйти из групп}}</translation>

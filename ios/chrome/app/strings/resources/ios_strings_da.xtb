@@ -1942,6 +1942,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="6946722113367118030">Tænker</translation>
 <translation id="6947751977892029882">Noget gik galt med denne indstilling. Opdater og genstart Chrome og iOS, og prøv igen. Hvis denne fejl fortsætter, understøtter din iPhone muligvis ikke denne indstilling.</translation>
 <translation id="6950522403736391608">Skjult</translation>
+<translation id="6957084631403333422">Prøv en fokuseret side med en ny fane</translation>
 <translation id="695965663642079255">Gem og administrer betalingsoplysninger for at betale hurtigere</translation>
 <translation id="6962809930976936328">Få indsigt med Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
@@ -2179,6 +2180,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elementet er gemt på din Google-konto, {email}}one{Elementet er gemt på din Google-konto, {email}}other{Elementerne er gemt på din Google-konto, {email}}}</translation>
 <translation id="7729458878441927652">Hvis du vil se faner fra dine andre enheder, skal du synkronisere dine faner og din historik.</translation>
 <translation id="7730020510075123961">Nej. Flet data</translation>
+<translation id="7730937523779541003">Fokuseret side med en ny fane er anvendt</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Kun på denne enhed.</translation>
 <translation id="7737550920399185748">Billeder på startsiden fra din billedsamling synkroniseres ikke på dine enheder.</translation>
 <translation id="7738120385185846461">Rapportér et problem…</translation>
@@ -2622,6 +2624,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="9032405509996909363">Bekræft sletning af browserdata</translation>
 <translation id="9038526468059454274">Opsummer med</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
+<translation id="9042363670218758847">Skift til et layout, der er designet til hurtige søgninger</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
 <translation id="9044703854323320868">Gmail-meddelelse <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Opret fanegrupper for at organisere dine åbne faner og få mere fra hånden</translation>

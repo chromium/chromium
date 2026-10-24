@@ -116,6 +116,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2039417478970545937">Nastavenia</translation>
 <translation id="2040220733769034247">Naskenujte QR kód telefónom, stiahnite si Chrome a prihláste sa do svojho účtu Google.</translation>
 <translation id="2044908892530830113">Zobrazovať vyhľadávanie pomocou Chromu na paneli s ponukami Macu a zapnúť klávesovú skratku</translation>
+<translation id="2050189601866423230">Režim AI vo Vyhľadávaní Google si môžete pripnúť, aby ste mohli pri prehliadaní klásť otázky</translation>
 <translation id="2091012649849228750">Ak chcete v budúcnosti dostávať aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.</translation>
 <translation id="2094648590148273905">Zmluvné podmienky systému Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chcete Chrome napriek tomu ukončiť?</translation>
@@ -724,7 +725,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7777080907402804672">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>
 <translation id="778331955594035129">Chrome vyžaduje pre tento web povolený prístup k polohe</translation>
 <translation id="7787950393032327779">Zdá sa, že profil používa ďalší proces prehliadača Google Chrome (<ph name="PROCESS_ID" />) na inom počítači (<ph name="HOST_NAME" />). Prehliadač Chrome daný profil uzamkol, aby sa nepoškodil. Ak s istotou viete, že tento profil nepoužívajú žiadne iné procesy, môžete ho odomknúť a prehliadač Chrome znova spustiť.</translation>
-<translation id="7800043020703832708">Zavrieť Vyhľadávanie Google na bočnom paneli</translation>
 <translation id="7801699035218095297">Google Chrome sa pokúša kopírovať heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="7804364787702057554">Váš účet v Chrome</translation>
 <translation id="7804947029129221742">Váš vyhľadávač bol zmenený z prostredia mimo Chromu. Chrome ho resetoval na pôvodné predvolené nastavenie, aby vás ochránil. <ph name="LEARN_MORE_LINK" /></translation>
@@ -768,6 +768,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8074398340364918139">Ak chcete vyhľadať konkrétnu funkciu alebo rozšírenie Chromu, zadajte jeho skratku do panela s adresou a potom stlačte vybraný kláves klávesnice</translation>
 <translation id="8077579734294125741">Ďalšie profily Chromu</translation>
 <translation id="8086881907087796310">Nepodarilo sa nainštalovať, pretože váš počítač nespĺňa minimálne požiadavky na hardvér.</translation>
+<translation id="8110438089258398864">Režim AI vo Vyhľadávaní Google môžete znova otvoriť a klásť otázky počas prehliadania</translation>
 <translation id="8113883687556086139">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, overte svoju totožnosť</translation>
 <translation id="8115695070094288807">Chrome sa prispôsobuje…</translation>
 <translation id="8118331347066725040">Odošlite spätnú väzbu k vyhľadávaniu pomocou funkcie Lens</translation>
@@ -824,6 +825,8 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Vyhľadať v zozname jazykov</translation>
 <translation id="8575047640889685742">Šifrujte všetky údaje Chromu vo svojom účte Google pomocou <ph name="BEGIN_LINK" />vlastnej prístupovej frázy<ph name="END_LINK" />. Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.</translation>
+<translation id="8590782867495422699">Znova otvoriť režim umelej inteligencie vo Vyhľadávaní Google</translation>
+<translation id="8598779894319572882">Tlačidlom Režim AI vo Vyhľadávaní Google na paneli s nástrojmi môžete znova otvoriť režim AI vo Vyhľadávaní Google a klásť otázky počas prehliadania</translation>
 <translation id="8614913330719544658">Google Chrome nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="8623450603356630491">Prihláste sa do Chromu v telefóne</translation>
 <translation id="8624541899164515475">Nastavenia (otvoria sa na novej karte)</translation>
@@ -878,6 +881,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="9014771989710951291">Chrome spravuje viac organizácií</translation>
 <translation id="9018218886431812662">Inštalácia bola dokončená</translation>
 <translation id="9066987883552592250">Zavrieť Gemini v Chrome Canary</translation>
+<translation id="9074041031320636790">Podarilo sa. Teraz môžete pri prehliadaní jednoducho klásť otázky v režime AI vo Vyhľadávaní Google</translation>
 <translation id="9090566250983691233">Prečo Chrome blokuje niektoré súbory</translation>
 <translation id="9106236359747881194">Vyberte text na vyhľadanie</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>

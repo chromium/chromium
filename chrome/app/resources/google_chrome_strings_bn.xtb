@@ -116,6 +116,7 @@
 <translation id="2039417478970545937">সেটিংস।</translation>
 <translation id="2040220733769034247">ফোনে QR কোড স্ক্যান করে Chrome ডাউনলোড করুন ও আপনার Google অ্যাকাউন্টে সাইন-ইন করুন।</translation>
 <translation id="2044908892530830113">Mac মেনু বারে Chrome-এর মাধ্যমে সার্চ করুন ফিচার দেখান এবং কীবোর্ড শর্টকাট চালু করুন</translation>
+<translation id="2050189601866423230">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search AI মোড পিন করে রাখতে পারেন</translation>
 <translation id="2091012649849228750">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="2094648590148273905">ChromeOS Flex-এর শর্তাবলী</translation>
 <translation id="2094919256425865063">তা স্বত্তেও Chrome বন্ধ করবেন?</translation>
@@ -399,6 +400,7 @@
 <translation id="4793679854893018356">Chrome কীভাবে আপনাকে নিরাপদে রাখে তা জানুন</translation>
 <translation id="4828579605166583682">Google Chrome, বর্তমানে থাকা পাসওয়ার্ড পরিবর্তনের চেষ্টা করছে। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="4836321460899997044">Chrome প্রোফাইল</translation>
+<translation id="4839733921943823254">শর্টকাট পিন করুন</translation>
 <translation id="4842397268809523050">আপনার ডোমেনে সিঙ্ক করার সুবিধা উপলভ্য না থাকার জন্য ChromeOS Flex আপনার ডেটা সিঙ্ক পারেনি।</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন।  আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="4855026984605187434">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
@@ -723,7 +725,6 @@
 <translation id="7777080907402804672">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়। সেটিংসে গিয়ে আপনি যেকোনও সময়ে এটি বন্ধ করতে পারেন।</translation>
 <translation id="778331955594035129">এই সাইটের জন্য Chrome-এর লোকেশন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="7787950393032327779">অন্য একটি কম্পিউটারে (<ph name="HOST_NAME" />) প্রোফাইলটি অন্য Google Chrome প্রক্রিয়া (<ph name="PROCESS_ID" />) দ্বারা ব্যবহৃত হচ্ছে বলে মনে হচ্ছে৷ Chrome প্রোফাইলটিকে লক করেছে যাতে এটি বিকৃত না হয়ে যায়৷ যদি আপনি নিশ্চিত হন যে আর কোনো প্রক্রিয়া এই প্রোফাইলটিকে ব্যবহার করছে না, তবে আপনি প্রোফাইলটিকে আনলক করতে পারেন এবং Chrome কে পুনরায় লঞ্চ করতে পারেন৷</translation>
-<translation id="7800043020703832708">সাইড প্যানেলে Google Search বন্ধ করুন</translation>
 <translation id="7801699035218095297">Google Chrome পাসওয়ার্ড কপি করার চেষ্টা করছে। এর অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="7804364787702057554">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="7804947029129221742">Chrome-এর বাইরে থেকে আপনার সার্চ ইঞ্জিন পরিবর্তন করা হয়েছে। আপনাকে সুরক্ষিত রাখতে, Chrome এটি আসল ডিফল্টে রিসেট করেছে। <ph name="LEARN_MORE_LINK" /></translation>
@@ -766,6 +767,7 @@
 <translation id="8074398340364918139">কোনও নির্দিষ্ট Chrome ফিচার বা এক্সটেনশন সার্চ করতে, অ্যাড্রেস বারে এর শর্টকাট টাইপ করুন, তারপর আপনার বেছে নেওয়া কীবোর্ড 'কী' প্রেস করুন</translation>
 <translation id="8077579734294125741">অন্যান্য Chrome প্রোফাইল</translation>
 <translation id="8086881907087796310">ইনস্টলেশন করা যায়নি কারণ আপনার কম্পিউটার হার্ডওয়্যারের নূন্যতম প্রয়োজনীয় শর্ত পূরণ করে না।</translation>
+<translation id="8110438089258398864">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search AI মোড আবার খুলতে পারবেন</translation>
 <translation id="8113883687556086139">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার ও সেভ করার জন্য আপনার পরিচয় যাচাই করুন</translation>
 <translation id="8115695070094288807">আপনার জন্য Chrome সেট-আপ করা হচ্ছে...</translation>
 <translation id="8118331347066725040">Lens ব্যবহার করে সার্চ করা সংক্রান্ত মতামত পাঠান</translation>
@@ -822,6 +824,8 @@
 <translation id="8555465886620020932">পরিষেবায় সমস্যা হয়েছে: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ভাষার তালিকা সার্চ করুন</translation>
 <translation id="8575047640889685742">আপনার Google অ্যাকাউন্টের সব Chrome ডেটা এনক্রিপ্ট করতে <ph name="BEGIN_LINK" />নিজের পাসফ্রেজ<ph name="END_LINK" /> ব্যবহার করুন। Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome থেকে ব্রাউজিং ইতিহাস সিঙ্ক হবে না।</translation>
+<translation id="8590782867495422699">Google Search AI মোড আবার খুলুন</translation>
+<translation id="8598779894319572882">টুলবারে থাকা "Google Search AI মোড" বোতাম থেকে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search AI মোড আবার খুলতে পারবেন</translation>
 <translation id="8614913330719544658">Google Chrome প্রতিক্রিয়া করছে না৷ এখনই পুনঃলঞ্চ করবেন?</translation>
 <translation id="8623450603356630491">আপনার ফোনে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="8624541899164515475">সেটিংস, নতুন ট্যাবে খোলে।</translation>
@@ -876,6 +880,7 @@
 <translation id="9014771989710951291">একাধিক সংস্থা Chrome ম্যানেজ করে</translation>
 <translation id="9018218886431812662">ইনস্টল হয়ে গেছে</translation>
 <translation id="9066987883552592250">Chrome Canary-তে Gemini বন্ধ করুন</translation>
+<translation id="9074041031320636790">হয়ে গেছে! Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় আপনি এখন সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="9090566250983691233">Chrome কিছু ফাইল কেন ব্লক করে সেই সম্পর্কে জানুন</translation>
 <translation id="9106236359747881194">সার্চ করার জন্য টেক্সট বেছে নিন</translation>
 <translation id="911206726377975832">আপনার ব্রাউজিং ডেটাও মুছে দেবেন?</translation>

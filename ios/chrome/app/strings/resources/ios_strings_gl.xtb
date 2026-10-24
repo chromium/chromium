@@ -1942,6 +1942,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="6946722113367118030">Pensar</translation>
 <translation id="6947751977892029882">Produciuse un erro con esta opción de configuración. Actualiza e reinicia Chrome e iOS, e téntao de novo. Se o erro persiste, é posible que o teu iPhone non sexa compatible con esta opción de configuración.</translation>
 <translation id="6950522403736391608">Ocultos</translation>
+<translation id="6957084631403333422">Proba un deseño enfocado da páxina Nova pestana</translation>
 <translation id="695965663642079255">Garda e xestiona a información de pago para tramitar as compras máis rápido</translation>
 <translation id="6962809930976936328">Obtén información útil con Gemini</translation>
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" /> Escolle unha conta.</translation>
@@ -2179,6 +2180,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7724085059277147439">{count,plural, =1{O elemento gardouse na túa Conta de Google, {email}}other{Os elementos gardáronse na túa Conta de Google, {email}}}</translation>
 <translation id="7729458878441927652">Para ver as pestanas doutros dispositivos, sincroniza as pestanas e o historial.</translation>
 <translation id="7730020510075123961">Non, combinar datos</translation>
+<translation id="7730937523779541003">Aplicouse o deseño enfocado da páxina Nova pestana</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
 <translation id="7737550920399185748">As fotos da páxina de inicio da túa mediateca de fotos non se sincronizarán en todos os teus dispositivos.</translation>
 <translation id="7738120385185846461">Informar dun problema…</translation>
@@ -2622,6 +2624,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="9032405509996909363">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="9038526468059454274">Resume con</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
+<translation id="9042363670218758847">Cambia a un deseño pensado para facer buscas rápidas</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9044703854323320868">Mensaxe de Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea grupos de pestanas para organizar as que estean abertas e seguir mantendo a produtividade</translation>

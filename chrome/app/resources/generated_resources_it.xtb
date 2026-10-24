@@ -7336,6 +7336,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6628328486509726751">Data/ora caricamento: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Sicurezza maggiore</translation>
+<translation id="6630211688479622571">Mostra più recenti</translation>
 <translation id="6630452975878488444">Scorciatoia di selezione</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> desidera un accesso permanente a un certificato per eseguire l'autenticazione a tuo nome.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Lascia il gruppo}other{Lascia i gruppi}}</translation>

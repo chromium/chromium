@@ -118,6 +118,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2039417478970545937">Stillingar.</translation>
 <translation id="2040220733769034247">Skannaðu QR-kóðann með símanum þínum til að sækja Chrome og skrá þig inn á Google-reikninginn þinn.</translation>
 <translation id="2044908892530830113">Sýna leit með Chrome á Mac-valmyndarstiku og kveikja á flýtilykli</translation>
+<translation id="2050189601866423230">Þú getur fest gervigreindarstillingu Google-leitar til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="2091012649849228750">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.</translation>
 <translation id="2094648590148273905">Skilmálar ChromeOS Flex</translation>
 <translation id="2094919256425865063">Viltu samt loka Chrome?</translation>
@@ -401,6 +402,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4793679854893018356">Kynntu þér hvernig Chrome gætir að öryggi þínu</translation>
 <translation id="4828579605166583682">Google Chrome er að reyna að skipta út núverandi aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="4836321460899997044">Chrome-prófíll</translation>
+<translation id="4839733921943823254">Festa flýtileið</translation>
 <translation id="4842397268809523050">ChromeOS Flex gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> er þegar innskráð(ur).  Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila skjánum þínum</translation>
@@ -727,7 +729,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7777080907402804672">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
 <translation id="778331955594035129">Chrome verður að fá staðsetningarheimild fyrir þetta vefsvæði</translation>
 <translation id="7787950393032327779">Annað Google Chrome-ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chrome hefur læst prófílnum svo hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chrome.</translation>
-<translation id="7800043020703832708">Loka Google-leit í hliðarglugga</translation>
 <translation id="7801699035218095297">Google Chrome er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="7804364787702057554">Reikningurinn þinn í Chrome</translation>
 <translation id="7804947029129221742">Leitarvélinni þinni var breytt utan Chrome. Chrome endurstillti hana á upphafleg sjálfgefin gildi til að vernda þig. <ph name="LEARN_MORE_LINK" /></translation>
@@ -770,6 +771,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8074398340364918139">Til að leita að tilteknum eiginleika eða viðbót Chrome skaltu slá inn flýtileiðina í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="8086881907087796310">Uppsetning mistókst vegna þess að tölvan þín uppfyllir ekki lágmarksskilyrði um vélbúnað.</translation>
+<translation id="8110438089258398864">Þú getur opnað gervigreindarstillingu Google-leitar aftur til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="8113883687556086139">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Verið er að sérsníða Chrome...</translation>
 <translation id="8118331347066725040">Senda ábendingu vegna leitar með Linsu</translation>
@@ -826,6 +828,8 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Leita í lista tungumála</translation>
 <translation id="8575047640889685742">Notaðu <ph name="BEGIN_LINK" />eigið aðgangsorð<ph name="END_LINK" /> til að dulkóða öll Chrome-gögn á Google-reikningnum þínum. Upplýsingar um greiðslumáta og heimilisföng úr Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.</translation>
+<translation id="8590782867495422699">Opna aftur gervigreindarstillingu Google-leitar</translation>
+<translation id="8598779894319572882">Með því að ýta á hnappinn „Gervigreindarstilling Google-leitar“ á tækjastikunni getur þú opnað gervigreindarstillingu Google-leitar aftur til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="8614913330719544658">Google Chrome svarar ekki. Endurræsa núna?</translation>
 <translation id="8623450603356630491">Skráðu þig inn á Chrome í símanum þínum</translation>
 <translation id="8624541899164515475">Stillingar, opnast í nýjum flipa.</translation>
@@ -880,6 +884,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="9014771989710951291">Mörg fyrirtæki hafa umsjón með Chrome</translation>
 <translation id="9018218886431812662">Uppsetningu lokið</translation>
 <translation id="9066987883552592250">Loka Gemini í Chrome Canary</translation>
+<translation id="9074041031320636790">Þetta tókst! Nú geturðu spurt spurninga á auðveldan hátt á meðan þú vafrar með gervigreindarstillingu Google-leitar</translation>
 <translation id="9090566250983691233">Kynntu þér hvers vegna Chrome lokar á sumar skrár</translation>
 <translation id="9106236359747881194">Veldu texta til að leita</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>

@@ -759,10 +759,10 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sesetengah ciri dan sambungan Chromium disertakan dengan pintasan. Anda boleh memilih untuk menghidupkan semula tetapan tersebut.</translation>
 <translation id="8556420416730706394">Anda boleh menyematkan Carian Imej untuk akses mudah; klik butang Semat pada bahagian atas panel sisi</translation>
-<translation id="8564408666201523086">Berjaya! Kini anda boleh mengemukakan pertanyaan dengan mudah semasa anda menyemak imbas dengan Google Search dalam panel sisi</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
 <translation id="8576826849825683917">Berbilang organisasi mengurus Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
+<translation id="8590782867495422699">Buka semula AI Mode Google Search</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>
 <translation id="8624541899164515475">Tetapan, dibuka dalam tab baharu.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing tidak boleh dijadikan penyemak imbas lalai anda.</translation>
@@ -813,6 +813,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="9056398481763999048">Gunakan alatan AI terbaik Google dengan apl Chromium pada telefon anda</translation>
 <translation id="9057625473949801035">Untuk mendapatkan kata laluan anda dan pelbagai lagi daripada <ph name="DEVICE" />, log masuk ke Chromium</translation>
 <translation id="9062666675513499497">Log masuk ke Chromium apabila anda log masuk ke perkhidmatan Google yang lain</translation>
+<translation id="9074041031320636790">Berjaya! Kini anda boleh mengemukakan pertanyaan dengan mudah semasa anda menyemak imbas dengan AI Mode Google Search</translation>
 <translation id="9078733879136747090">Chromium telah ditutup secara automatik</translation>
 <translation id="9089354809943900324">Chromium sudah usang</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium akan dilancarkan semula dalam masa sejam}other{Chromium akan dilancarkan semula dalam masa # jam}}</translation>

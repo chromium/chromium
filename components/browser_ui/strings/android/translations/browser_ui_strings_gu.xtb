@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">સાઇટને તમારું વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6452138246455930388">તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો, <ph name="OLD_PRICE" />માંથી <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405"><ph name="NAME" /> માટે ડિવાઇસની પરવાનગી રદબાતલ કરો</translation>
 <translation id="6500423977866688905">વિન્ડો નાની હોય ત્યારે, મોબાઇલ વ્યૂની વિનંતી કરો</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6530703012083415527">ચાલુ હોય ત્યારે, સાઇટ પૉપ-અપ અને રીડાયરેક્ટનો ઉપયોગ કરી શકે છે. બંધ હોય ત્યારે, સાઇટ પૉપ-અપ અને રીડાયરેક્ટનો ઉપયોગ કરી શકતી નથી.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7201549776650881587">આ ક્રિયાના પરિણામે <ph name="ORIGIN" /> હેઠળની બધી સાઇટ અથવા તેની ઍપ દ્વારા તમારી હોમ સ્ક્રીન પર સ્ટોર કરવામાં આવેલો બધો ડેટા અને કુકી ડિલીટ થઈ જશે</translation>
 <translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
+<translation id="7225256190577194089">ડિવાઇસ <ph name="DEVICE_NAME" /> માટેની બધી પરવાનગીઓ રદબાતલ કરો</translation>
 <translation id="723171743924126238">છબીઓ પસંદ કરો</translation>
 <translation id="7243246278722455312">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ</translation>
 <translation id="7243308994586599757">સ્ક્રીનના તળિયા નજીક વિકલ્પો ઉપલબ્ધ છે</translation>

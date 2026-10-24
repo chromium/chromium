@@ -371,6 +371,7 @@
 <translation id="4786083865378785874">Chromium-এ Gemini খোলা থাকলে, নতুন ট্যাব তৈরি করার সময় সাইড প্যানেল খোলা থাকে</translation>
 <translation id="479167709087336770">এটি Google সার্চ-এ যে বানান পরীক্ষা করার টুল ব্যবহার করা হয় সেটিই ব্যবহার করে। আপনি ব্রাউজারে যে টেক্সট লেখেন, সেটি Google-এ পাঠানো হয়। সেটিংস থেকে আপনি এটি পরিবর্তন করতে পারেন।</translation>
 <translation id="4814736265800133385">কোনও অ্যাকাউন্ট ছাড়াই Chromium ব্যবহার করুন</translation>
+<translation id="4839733921943823254">শর্টকাট পিন করুন</translation>
 <translation id="4888717733111232871">mDNS ট্রাফিকের অনুমতি দিতে Chromium এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="4893347770495441059">&amp;Chromium আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
@@ -758,6 +759,7 @@ Chromium আপনার সেটিংস পুনরুদ্ধার ক�
 <translation id="856656450041460113">ভাষার তালিকা সার্চ করুন</translation>
 <translation id="8576826849825683917">একাধিক সংস্থা Chromium ম্যানেজ করে</translation>
 <translation id="8586442755830160949">কপিরাইট <ph name="YEAR" /> Chromium রচয়িতা৷ সর্বস্বত্ত্ব সংরক্ষিত৷</translation>
+<translation id="8590782867495422699">Google Search AI মোড আবার খুলুন</translation>
 <translation id="8619360774459241877">Chromium লঞ্চ করা হচ্ছে...</translation>
 <translation id="8624541899164515475">সেটিংস, নতুন ট্যাবে খোলে।</translation>
 <translation id="8648201657708811153">Google Chrome for Testing-কে আপনার ডিফল্ট ব্রাউজার করে পারবেন না।</translation>
@@ -808,6 +810,7 @@ Chromium আপনার সেটিংস পুনরুদ্ধার ক�
 <translation id="9056398481763999048">ফোনে Chromium অ্যাপের মাধ্যমে Google-এর সেরা সব AI টুল ব্যবহার করুন</translation>
 <translation id="9057625473949801035"><ph name="DEVICE" /> থেকে আপনার পাসওয়ার্ড ও আরও অনেক কিছু পেতে, Chromium-এ সাইন-ইন করুন</translation>
 <translation id="9062666675513499497">অন্যান্য Google পরিষেবায় সাইন-ইন করার সময় Chromium-এ সাইন-ইন করুন</translation>
+<translation id="9074041031320636790">হয়ে গেছে! Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় আপনি এখন সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="9078733879136747090">Chromium অটোমেটিক বন্ধ হয়ে গেছে</translation>
 <translation id="9089354809943900324">Chromium পুরানো হয়ে গেছে</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ১ ঘণ্টার মধ্যে আবার লঞ্চ হবে}one{Chromium # ঘণ্টার মধ্যে আবার লঞ্চ হবে}other{Chromium # ঘণ্টার মধ্যে আবার লঞ্চ হবে}}</translation>

@@ -7346,6 +7346,7 @@
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">ಸದೃಢ ಭದ್ರತೆ</translation>
+<translation id="6630211688479622571">ತೀರಾ ಇತ್ತೀಚಿನದನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6630452975878488444">ಶಾರ್ಟ್‌ಕಟ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> ನಿಮ್ಮ ಪರವಾಗಿ ಸ್ವತಃ ಪ್ರಮಾಣೀಕರಿಸಲು ಪ್ರಮಾಣಪತ್ರಕ್ಕೆ ಶಾಶ್ವತ ಆ್ಯಕ್ಸೆಸ್ ಬಯಸುತ್ತದೆ.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{ಗುಂಪನ್ನು ತೊರೆಯಿರಿ}one{ಗುಂಪುಗಳನ್ನು ತೊರೆಯಿರಿ}other{ಗುಂಪುಗಳನ್ನು ತೊರೆಯಿರಿ}}</translation>
