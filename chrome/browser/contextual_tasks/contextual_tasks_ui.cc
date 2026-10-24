@@ -1870,6 +1870,30 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
 
   // Capture the old task ID associated with this WebUI.
   std::optional<base::Uuid> old_task_id = task_info_delegate_->GetTaskId();
+  // When a thread change in the side panel is scoped to the tab, the other
+  // tabs of `old_task_id` keep its thread in a new panel. Save the old thread
+  // URL as the task's initial URL so that the new panel loads it.
+  const std::optional<std::string> old_thread_id =
+      task_info_delegate_->GetThreadId();
+  const GURL old_thread_url = last_thread_url_;
+  auto maybe_save_old_thread_url_for_other_tabs = [&]() {
+    if (!contextual_tasks::ShouldScopeSidePanelStateToTab() ||
+        task_info_delegate_->IsShownInTab() || !old_task_id ||
+        !old_task_id->is_valid() || !old_thread_id) {
+      return;
+    }
+    std::string old_url_thread_id;
+    if (!net::GetValueForKeyInQuery(old_thread_url, "mtid",
+                                    &old_url_thread_id) ||
+        old_url_thread_id != *old_thread_id) {
+      return;
+    }
+    // Don't reopen thread history in the new panel if it was open to pick the
+    // new thread.
+    ui_service_->SetInitialUrlForTask(
+        *old_task_id, net::AppendOrReplaceQueryParameter(old_thread_url, "atvm",
+                                                         std::nullopt));
+  };
   if (is_zero_state &&
       (!base::FeatureList::IsEnabled(
            contextual_tasks::kEnableNotifyZeroStateRenderedCapability) ||
@@ -1893,6 +1917,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     }
     task_info_delegate_->SetTaskId(new_task_id);
     task_info_delegate_->SetThreadId(std::nullopt);
+    last_thread_url_ = GURL();
     // Replace state if last committed URL was empty (i.e. the page is
     // reloaded) or if zero state has not changed, otherwise push new state.
     task_info_delegate_->PushTaskDetailsToPage(
@@ -1905,6 +1930,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     // update.
     if (old_task_id != new_task_id) {
       task_info_delegate_->PrepareForTaskChange();
+      maybe_save_old_thread_url_for_other_tabs();
       ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                  task_info_delegate_->GetWebUIWebContents(),
                                  old_task_id, new_task_id,
@@ -2011,6 +2037,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   }
 
   task_info_delegate_->SetThreadId(url_thread_id);
+  last_thread_url_ = url;
   auto new_task_id = task_info_delegate_->GetTaskId();
   // Replace state if old task id and new task id is the same, otherwise push
   // new state. This is to make sure navigation stack works when switching
@@ -2042,6 +2069,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
         << "Task changed: "
         << task_info_delegate_->GetTaskId().value().AsLowercaseString();
     task_info_delegate_->PrepareForTaskChange();
+    maybe_save_old_thread_url_for_other_tabs();
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
                                old_task_id, task_info_delegate_->GetTaskId(),

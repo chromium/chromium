@@ -2738,6 +2738,100 @@ TEST_F(ContextualTasksUiTest,
   observer.reset();
 }
 
+// With side panel tab state, other tabs of the old task keep the old thread in
+// a new panel, so selecting a thread from history saves the URL that showed the
+// old thread for that panel, without reopening thread history.
+TEST_F(ContextualTasksUiTest, ThreadSwitch_TabState_SavesOldThreadUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kContextManagementInComposebox,
+                                 kContextualTasksSidePanelTabState},
+                                {});
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid old_task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  base::Uuid new_task_id =
+      base::Uuid::ParseCaseInsensitive("22222222-2222-2222-2222-222222222222");
+  const std::string old_title = "current thread";
+  const std::string old_thread_id = "current_thread_id";
+  const std::string history_thread_id = "history_thread_id";
+  SetupMockDelegate(&delegate, old_task_id, old_thread_id, old_title);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  // The old thread is shown with thread history open.
+  GURL old_thread_url =
+      net::AppendQueryParameter(GURL(kAiPageUrl), "q", old_title);
+  old_thread_url =
+      net::AppendQueryParameter(old_thread_url, "mtid", old_thread_id);
+  std::unique_ptr<content::MockNavigationHandle> old_thread_nav_handle =
+      CreateMockNavigationHandle(
+          net::AppendQueryParameter(old_thread_url, "atvm", "1"));
+  old_thread_nav_handle->set_is_same_document(true);
+  observer->DidFinishNavigation(old_thread_nav_handle.get());
+
+  // The user selects another thread from history.
+  GURL history_thread_url =
+      net::AppendQueryParameter(GURL(kAiPageUrl), "q", "Historical Thread");
+  history_thread_url =
+      net::AppendQueryParameter(history_thread_url, "mtid", history_thread_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(history_thread_url))
+      .WillByDefault(Return(ContextualTask(new_task_id)));
+  GURL saved_url;
+  EXPECT_CALL(*service_for_nav_, SetInitialUrlForTask(old_task_id, _))
+      .WillOnce(testing::SaveArg<1>(&saved_url));
+  std::unique_ptr<content::MockNavigationHandle> history_nav_handle =
+      CreateMockNavigationHandle(history_thread_url);
+  history_nav_handle->set_is_same_document(true);
+  ON_CALL(*history_nav_handle, HasUserGesture()).WillByDefault(Return(true));
+  observer->DidFinishNavigation(history_nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), new_task_id);
+  EXPECT_EQ(old_thread_url, saved_url);
+
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, ThreadSwitch_TabStateDisabled_DoesNotSaveUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kContextManagementInComposebox},
+                                {kContextualTasksSidePanelTabState});
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid old_task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  base::Uuid new_task_id =
+      base::Uuid::ParseCaseInsensitive("22222222-2222-2222-2222-222222222222");
+  const std::string old_thread_id = "current_thread_id";
+  SetupMockDelegate(&delegate, old_task_id, old_thread_id, "current thread");
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL old_thread_url =
+      net::AppendQueryParameter(GURL(kAiPageUrl), "mtid", old_thread_id);
+  std::unique_ptr<content::MockNavigationHandle> old_thread_nav_handle =
+      CreateMockNavigationHandle(old_thread_url);
+  old_thread_nav_handle->set_is_same_document(true);
+  observer->DidFinishNavigation(old_thread_nav_handle.get());
+
+  GURL history_thread_url =
+      net::AppendQueryParameter(GURL(kAiPageUrl), "mtid", "history_thread_id");
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(history_thread_url))
+      .WillByDefault(Return(ContextualTask(new_task_id)));
+  EXPECT_CALL(*service_for_nav_, SetInitialUrlForTask(_, _)).Times(0);
+  std::unique_ptr<content::MockNavigationHandle> history_nav_handle =
+      CreateMockNavigationHandle(history_thread_url);
+  history_nav_handle->set_is_same_document(true);
+  ON_CALL(*history_nav_handle, HasUserGesture()).WillByDefault(Return(true));
+  observer->DidFinishNavigation(history_nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), new_task_id);
+
+  observer.reset();
+}
+
 // Ensure that when switching between different threads (different query/title),
 // a new task is created even if kContextManagementInComposebox is enabled,
 // so context does not leak between threads.

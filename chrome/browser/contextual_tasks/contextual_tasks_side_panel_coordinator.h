@@ -340,6 +340,13 @@ class ContextualTasksSidePanelCoordinator
   // associated with `task_id` and still shows the panel.
   bool IsPanelOpenOnOtherTabOfTask(const base::Uuid& task_id);
 
+  // Returns whether any tab in this window is associated with `task_id`.
+  bool IsTaskAssociatedWithTabInWindow(const base::Uuid& task_id) const;
+
+  // Returns whether a tab in this window that is associated with `task_id`
+  // shows the panel, i.e. didn't close it.
+  bool IsPanelOpenOnTabOfTask(const base::Uuid& task_id) const;
+
   // Associates `tab` with the task saved when it was closed, if it was reopened
   // from recently closed tabs with the panel open. The panel is recreated when
   // the tab becomes active.
@@ -466,8 +473,12 @@ class ContextualTasksSidePanelCoordinator
   std::set<tabs::TabHandle> tabs_with_closed_panel_;
 
   // Tasks whose panel WebContents is recreated when one of their tabs becomes
-  // active, because a tab was reopened after being closed with the panel open.
-  // Only used when `ShouldRestoreSidePanelOnTabRestore()` is true.
+  // active, because a tab was reopened after being closed with the panel open,
+  // or because the task's WebContents moved to a new task after the thread was
+  // changed on another tab. After a thread change, it's recreated right away if
+  // one of the tabs shows the panel. Only used when
+  // `ShouldRestoreSidePanelOnTabRestore()` or
+  // `ShouldScopeSidePanelStateToTab()` is true.
   std::map<base::Uuid, ContextualTasksPanelController::EntrySource>
       tasks_pending_panel_rebuild_;
 

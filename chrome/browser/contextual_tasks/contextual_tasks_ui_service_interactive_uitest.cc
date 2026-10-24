@@ -53,8 +53,11 @@ class ContextualTasksUiServiceInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   ContextualTasksUiServiceInteractiveUiTest() {
+    // Side panel tab state is tested by
+    // `ContextualTasksUiServiceSidePanelTabStateInteractiveUiTest`.
     scoped_feature_list_.InitWithFeatures(
-        {kContextualTasks, kContextualTasksForceEntryPointEligibility}, {});
+        {kContextualTasks, kContextualTasksForceEntryPointEligibility},
+        {kContextualTasksSidePanelTabState});
   }
 
  protected:
@@ -781,6 +784,47 @@ IN_PROC_BROWSER_TEST_F(
       contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());
   EXPECT_EQ(
       task2.GetTaskId(),
+      contextual_tasks_service->GetContextualTaskForTab(tab2_id)->GetTaskId());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceSidePanelTabStateInteractiveUiTest,
+    OnTaskChanged_ScopedToTab_OnlySwitchesActiveTab) {
+  // Add two new tabs.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, true);
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1, true);
+
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  // Create two tasks and associate the two new tabs with the first task.
+  ContextualTask task1 = contextual_tasks_service->CreateTask();
+  ContextualTask task2 = contextual_tasks_service->CreateTask();
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  SessionID tab1_id =
+      sessions::SessionTabHelper::IdForTab(tab_list->GetTab(1)->GetContents());
+  SessionID tab2_id =
+      sessions::SessionTabHelper::IdForTab(tab_list->GetTab(2)->GetContents());
+  contextual_tasks_service->AssociateTabWithTask(task1.GetTaskId(), tab1_id);
+  contextual_tasks_service->AssociateTabWithTask(task1.GetTaskId(), tab2_id);
+
+  // Activate the first tab and change its thread.
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  auto dummy_web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->GetProfile()));
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
+                         task2.GetTaskId(), /*is_shown_in_tab=*/false);
+
+  // Only the active tab moves to the new task. The other tab keeps its thread.
+  EXPECT_EQ(
+      task2.GetTaskId(),
+      contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());
+  EXPECT_EQ(
+      task1.GetTaskId(),
       contextual_tasks_service->GetContextualTaskForTab(tab2_id)->GetTaskId());
 }
 

@@ -6114,6 +6114,63 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
   RunNewThreadButtonTest();
 }
 
+// This tests the following CUJ in the legacy UI:
+//  (1) The side panel is open with the same thread on tab0 and tab2.
+//  (2) User switches tab0's panel to another thread from thread history.
+//  (3) tab0 shows the other thread, and tab2 keeps showing the existing thread.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
+                       ThreadHistorySwitch_OnlyChangesThreadOnActiveTab) {
+  if (IsRearchitectureEnabled()) {
+    GTEST_SKIP() << "In the rearchitecture, thread history switches happen "
+                    "inside the AI page without notifying the browser.";
+  }
+  // Add a thread from thread history that isn't open in any tab.
+  ContextualTasksService* service = GetContextualTasksService();
+  const base::Uuid history_task_id = service->CreateTask().GetTaskId();
+  service->UpdateThreadForTask(history_task_id, ThreadType::kAiMode, "thread2",
+                               std::nullopt, "Title 2");
+  const GURL kHistoryThreadUrl(
+      "https://www.google.com/search?udm=50&q=Title+2&mtid=thread2");
+  const DeepQuery kThreadFrame = {"contextual-tasks-app", "#threadFrame"};
+  content::WebContents* panel_contents = nullptr;
+  RunTestSequence(
+      OpenPanelWithSharedThread(),
+      Do([&panel_contents, this]() { panel_contents = GetPanelContents(); }),
+      InstrumentSidePanelToolbar(),
+
+      // Switch tab0's panel to the thread from thread history.
+      ExecuteJsAt(
+          kTabStateSidePanelToolbarId, kThreadFrame,
+          content::JsReplace("el => { el.src = $1; }", kHistoryThreadUrl)),
+      PollUntil([&history_task_id,
+                 this]() { return GetTaskIdForTab(0) == history_task_id; },
+                "Wait for tab0 to switch threads."),
+      Do([&panel_contents, this]() {
+        EXPECT_EQ(panel_contents, GetPanelContents());
+        std::vector<content::WebContents*> panels =
+            GetPanelController()->GetPanelWebContentsList();
+        ASSERT_EQ(2u, panels.size());
+        content::WebContents* rebuilt_contents =
+            panels[0] == panel_contents ? panels[1] : panels[0];
+
+        // tab2 stays on the existing thread, in the panel WebContents
+        // recreated when the thread switched.
+        EXPECT_EQ(shared_task_id_, GetTaskIdForTab(2));
+        ActivateTab(2);
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_EQ(rebuilt_contents, GetPanelContents());
+      }),
+      PollUntil([this]() { return ShowsThread(GetPanelContents()); },
+                "Wait for tab2's panel to show the existing thread."),
+      Do([&panel_contents, &history_task_id, this]() {
+        // tab0 still shows the thread from thread history.
+        ActivateTab(0);
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_EQ(panel_contents, GetPanelContents());
+        EXPECT_EQ(history_task_id, GetTaskIdForTab(0));
+      }));
+}
+
 // This tests the following CUJ:
 //  (1) The side panel is open with a thread on tab0, the only tab on the
 //      thread.

@@ -131,6 +131,9 @@ class ContextualTasksUI
 
     // Last committed URL used to check if URL changes.
     GURL last_committed_url_;
+
+    // Last committed URL that showed the current thread.
+    GURL last_thread_url_;
   };
 
   explicit ContextualTasksUI(content::WebUI* web_ui);

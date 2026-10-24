@@ -53,6 +53,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               GetInitialUrlForTask,
               (const base::Uuid&),
               (override));
+  MOCK_METHOD(void,
+              SetInitialUrlForTask,
+              (const base::Uuid&, const GURL&),
+              (override));
   MOCK_METHOD(std::optional<GURL>,
               GetCreationUrlForTask,
               (const base::Uuid&),

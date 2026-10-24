@@ -25,7 +25,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -1272,10 +1271,12 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
   }
 
   std::unique_ptr<WebContentsCacheItem> cache_item;
+  std::optional<base::Uuid> old_task_id;
   // Find the web_contents from cache.
   for (auto it = task_id_to_web_contents_cache_.begin();
        it != task_id_to_web_contents_cache_.end(); ++it) {
     if (it->second->web_contents.get() == target_web_contents) {
+      old_task_id = it->first;
       cache_item = std::move(it->second);
       task_id_to_web_contents_cache_.erase(it);
       break;
@@ -1283,6 +1284,11 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
   }
 
   if (cache_item) {
+    // The new task takes over the WebContents, so it doesn't need a rebuild.
+    tasks_pending_panel_rebuild_.erase(new_task_id);
+    const EntrySource old_entry_source = cache_item->entry_source;
+    const bool was_open = cache_item->is_open;
+
     // If found, update the found WebContents with new_task_id.
     // This will potentially kick out the existing WebContents with new_task_id
     // since only 1 WebContents per task is kept in the cache.
@@ -1291,6 +1297,20 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
       MaybeDetachWebContents(it->second->web_contents.get());
     }
     task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
+
+    // When the thread change is scoped to the tab, tabs that are still
+    // associated with the old task keep its thread. Recreate its WebContents
+    // right away if one of those tabs shows the panel, so that the thread is
+    // ready when the tab becomes active. Otherwise, recreate it when the panel
+    // is reopened on one of them.
+    if (ShouldScopeSidePanelStateToTab() && old_task_id &&
+        *old_task_id != new_task_id && was_open &&
+        IsTaskAssociatedWithTabInWindow(*old_task_id)) {
+      tasks_pending_panel_rebuild_[*old_task_id] = old_entry_source;
+      if (IsPanelOpenOnTabOfTask(*old_task_id)) {
+        RebuildCachedWebContentsForTask(*old_task_id);
+      }
+    }
   }
 
   // Since the task has just changed, ensure that
@@ -1975,6 +1995,30 @@ bool ContextualTasksSidePanelCoordinator::IsPanelOpenOnOtherTabOfTask(
       });
 }
 
+bool ContextualTasksSidePanelCoordinator::IsTaskAssociatedWithTabInWindow(
+    const base::Uuid& task_id) const {
+  std::set<SessionID> tab_ids =
+      GetAllTabIdsInTabList(TabListInterface::From(browser_window_));
+  return std::ranges::any_of(
+      contextual_tasks_service_->GetTabsAssociatedWithTask(task_id),
+      [&](SessionID tab_id) { return tab_ids.contains(tab_id); });
+}
+
+bool ContextualTasksSidePanelCoordinator::IsPanelOpenOnTabOfTask(
+    const base::Uuid& task_id) const {
+  const std::vector<SessionID> task_tab_ids =
+      contextual_tasks_service_->GetTabsAssociatedWithTask(task_id);
+  return std::ranges::any_of(
+      TabListInterface::From(browser_window_)->GetAllTabs(),
+      [&](tabs::TabInterface* tab) {
+        return tab->GetContents() &&
+               !tabs_with_closed_panel_.contains(tab->GetHandle()) &&
+               std::ranges::contains(
+                   task_tab_ids,
+                   sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+      });
+}
+
 void ContextualTasksSidePanelCoordinator::MaybeRestorePanelForTab(
     tabs::TabInterface* tab) {
   ContextualTasksUiService* ui_service = GetUiService();
@@ -2055,6 +2099,11 @@ void ContextualTasksSidePanelCoordinator::RebuildCachedWebContentsForTask(
 
   std::unique_ptr<content::WebContents> wc = CreateWebContents(browser_window_);
   content::WebContents* web_contents = wc.get();
+  // Size the WebContents to match the active panel, in case it loads in the
+  // background before it's attached to the side panel view.
+  if (content::WebContents* active_web_contents = GetActiveWebContents()) {
+    web_contents->Resize(active_web_contents->GetContainerBounds());
+  }
   auto cache_item =
       std::make_unique<WebContentsCacheItem>(std::move(wc), /*is_open=*/true);
   cache_item->entry_source = entry_source;
