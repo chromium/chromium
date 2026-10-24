@@ -2116,24 +2116,100 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
           You can pin Google Search AI Mode to ask questions as you browse
         </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_SIDE_PANEL" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
+          You can pin Google Search side panel to ask questions as you browse
+        </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_IN_SIDE_PANEL" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
+          You can pin Google Search in side panel to ask questions as you browse
+        </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_IN_CHROME" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
+          You can pin Google Search in Chrome to ask questions as you browse
+        </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PANEL" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
+          You can pin Google Search panel to ask questions as you browse
+        </message>
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT" desc="The text on the button to pin the Contextual Tasks shortcut in the pinnable IPH.">
           Pin Shortcut
         </message>
         <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search AI Mode.">
           You can reopen Google Search AI Mode to ask questions while you browse
         </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SIDE_PANEL" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search side panel.">
+          You can reopen Google Search side panel to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_IN_SIDE_PANEL" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in side panel.">
+          You can reopen Google Search in side panel to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_IN_CHROME" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in Chrome.">
+          You can reopen Google Search in Chrome to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_PANEL" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search panel.">
+          You can reopen Google Search panel to ask questions while you browse
+        </message>
         <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER"
           desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search AI Mode."
           is_accessibility_with_no_ui="true">
           From the "Google Search AI Mode" button on the toolbar, you can reopen Google Search AI Mode to ask questions while you browse
         </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER_SIDE_PANEL"
+          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search side panel."
+          is_accessibility_with_no_ui="true">
+          From the "Google Search side panel" button on the toolbar, you can reopen Google Search side panel to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER_IN_SIDE_PANEL"
+          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in side panel."
+          is_accessibility_with_no_ui="true">
+          From the "Google Search in side panel" button on the toolbar, you can reopen Google Search in side panel to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER_IN_CHROME"
+          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in Chrome."
+          is_accessibility_with_no_ui="true">
+          From the "Google Search in Chrome" button on the toolbar, you can reopen Google Search in Chrome to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER_PANEL"
+          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search panel."
+          is_accessibility_with_no_ui="true">
+          From the "Google Search panel" button on the toolbar, you can reopen Google Search panel to ask questions while you browse
+        </message>
         <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH" desc="The body text of the one-time toast IPH informing users who previously pinned the Google Search in side panel shortcut that its toolbar icon has been updated.">
           New icon, same shortcut: Click to ask questions as you browse with Google Search AI Mode.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SIDE_PANEL" desc="The body text of the one-time toast IPH informing users who previously pinned the Google Search side panel shortcut that its toolbar icon has been updated.">
+          New icon, same shortcut: Click to ask questions as you browse with Google Search side panel.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_IN_SIDE_PANEL" desc="The body text of the one-time toast IPH informing users who previously pinned the Google Search in side panel shortcut that its toolbar icon has been updated.">
+          New icon, same shortcut: Click to ask questions as you browse with Google Search in side panel.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_IN_CHROME" desc="The body text of the one-time toast IPH informing users who previously pinned the Google Search in Chrome shortcut that its toolbar icon has been updated.">
+          New icon, same shortcut: Click to ask questions as you browse with Google Search in Chrome.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_PANEL" desc="The body text of the one-time toast IPH informing users who previously pinned the Google Search panel shortcut that its toolbar icon has been updated.">
+          New icon, same shortcut: Click to ask questions as you browse with Google Search panel.
         </message>
         <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER"
           desc="The screen reader text of the one-time toast IPH informing users who previously pinned the Google Search in side panel shortcut that its toolbar icon has been updated."
           is_accessibility_with_no_ui="true">
           The "Google Search AI Mode" button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search AI Mode.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER_SIDE_PANEL"
+          desc="The screen reader text of the one-time toast IPH informing users who previously pinned the Google Search side panel shortcut that its toolbar icon has been updated."
+          is_accessibility_with_no_ui="true">
+          The "Google Search side panel" button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search side panel.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER_IN_SIDE_PANEL"
+          desc="The screen reader text of the one-time toast IPH informing users who previously pinned the Google Search in side panel shortcut that its toolbar icon has been updated."
+          is_accessibility_with_no_ui="true">
+          The "Google Search in side panel" button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search in side panel.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER_IN_CHROME"
+          desc="The screen reader text of the one-time toast IPH informing users who previously pinned the Google Search in Chrome shortcut that its toolbar icon has been updated."
+          is_accessibility_with_no_ui="true">
+          The "Google Search in Chrome" button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search in Chrome.
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER_PANEL"
+          desc="The screen reader text of the one-time toast IPH informing users who previously pinned the Google Search panel shortcut that its toolbar icon has been updated."
+          is_accessibility_with_no_ui="true">
+          The "Google Search panel" button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search panel.
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP1" desc="The body text of the first step of the Contextual Tasks tutorial. THREE_DOTS_ICON is the vertical three-dot overflow menu icon that we are instructing users to click on.">
           Open the more <ph name="THREE_DOTS_ICON">⋮</ph> menu
@@ -2143,6 +2219,18 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3" desc="The body text of the third step of the Contextual Tasks tutorial.">
           Success! You can now easily ask questions as you browse with Google Search AI Mode
+        </message>
+        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3_SIDE_PANEL" desc="The body text of the third step of the Contextual Tasks tutorial.">
+          Success! You can now easily ask questions as you browse with Google Search side panel
+        </message>
+        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3_IN_SIDE_PANEL" desc="The body text of the third step of the Contextual Tasks tutorial.">
+          Success! You can now easily ask questions as you browse with Google Search in side panel
+        </message>
+        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3_IN_CHROME" desc="The body text of the third step of the Contextual Tasks tutorial.">
+          Success! You can now easily ask questions as you browse with Google Search in Chrome
+        </message>
+        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3_PANEL" desc="The body text of the third step of the Contextual Tasks tutorial.">
+          Success! You can now easily ask questions as you browse with Google Search panel
         </message>
 
         <!-- Overlay WebUI Strings -->
@@ -3746,17 +3834,71 @@ If this page isn’t working as expected, try allowing optimization.
       </if>
 
        <!-- Contextual Tasks -->
+      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_AI_MODE" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
+        Google Search AI Mode
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_SIDE_PANEL" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
+        Google Search side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_IN_SIDE_PANEL" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
+        Google Search in side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_IN_CHROME" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
+        Google Search in Chrome
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_PINNING_LABEL_PANEL" desc="The label shown in the Customize Chrome settings menu and toolbar to pin Contextual Tasks to the toolbar.">
+        Google Search panel
+      </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
         Close Google Search AI Mode
       </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP_SIDE_PANEL" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
+        Close Google Search side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP_IN_SIDE_PANEL" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
+        Close Google Search in side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP_IN_CHROME" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
+        Close Google Search in Chrome
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP_PANEL" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
+        Close Google Search panel
+      </message>
       <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP" desc="The tooltip text used for contextual task toolbar button">
         Reopen Google Search AI Mode
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP_SIDE_PANEL" desc="The tooltip text used for contextual task toolbar button">
+        Reopen Google Search side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP_IN_SIDE_PANEL" desc="The tooltip text used for contextual task toolbar button">
+        Reopen Google Search in side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP_IN_CHROME" desc="The tooltip text used for contextual task toolbar button">
+        Reopen Google Search in Chrome
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP_PANEL" desc="The tooltip text used for contextual task toolbar button">
+        Reopen Google Search panel
       </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">
         Hide side panel
       </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
         Close side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_AI_MODE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
+        Close Google Search AI Mode
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_SIDE_PANEL" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
+        Close Google Search side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_IN_SIDE_PANEL" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
+        Close Google Search in side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_IN_CHROME" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
+        Close Google Search in Chrome
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE_PANEL" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing the side panel.">
+        Close Google Search panel
       </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH" desc="The label of the context menu item for dismissing the active Google Search and removing the contextual tasks ephemeral toolbar button when the side panel is closed.">
         Dismiss active Google Search

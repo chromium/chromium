@@ -7,6 +7,18 @@
   <message name="IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL" desc="The label shown in the Customize Chrome settings menu to pin Contextual Tasks to the toolbar.">
     Google Search AI Mode
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL_SIDE_PANEL" desc="The label shown in the Customize Chrome settings menu to pin Contextual Tasks to the toolbar.">
+    Google Search side panel
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL_IN_SIDE_PANEL" desc="The label shown in the Customize Chrome settings menu to pin Contextual Tasks to the toolbar.">
+    Google Search in side panel
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL_IN_CHROME" desc="The label shown in the Customize Chrome settings menu to pin Contextual Tasks to the toolbar.">
+    Google Search in Chrome
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL_PANEL" desc="The label shown in the Customize Chrome settings menu to pin Contextual Tasks to the toolbar.">
+    Google Search panel
+  </message>
   <message name ="IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP" desc="The tooltip text used for contextual task entry points.">
     Browse with AI
   </message>
