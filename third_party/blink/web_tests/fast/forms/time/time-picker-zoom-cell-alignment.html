@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- crbug.com/575891826: under page zoom the layout spacing of time cells is
+     not exactly TimeColumn.CELL_HEIGHT, which left a visible gap where a
+     looping column wraps around (between "00" and "01"). -->
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<input type="time" id="time" value="08:30">
+<script>
+function assertColumnCellsContiguous(column) {
+  const label = column.getAttribute('aria-label');
+  const cells = column.cellsInLayoutOrder;
+  for (let i = 1; i < cells.length; i++) {
+    const gap = cells[i].getBoundingClientRect().top -
+        cells[i - 1].getBoundingClientRect().bottom;
+    assert_approx_equals(
+        gap, 0, 0.5,
+        `${label}: gap between "${cells[i - 1].value}" and "${cells[i].value}"`);
+  }
+}
+
+promise_test(async () => {
+  testRunner.setPageZoomFactor(0.9);
+  await openPicker(document.getElementById('time'));
+  const picker = internals.pagePopupWindow.global.picker;
+  for (const column of picker.timeColumns.children) {
+    // The AM/PM column has only two fixed cells and never loops.
+    if (column.cellsInLayoutOrder)
+      assertColumnCellsContiguous(column);
+  }
+}, 'Time column cells stay contiguous across the wrap point under page zoom.');
+</script>

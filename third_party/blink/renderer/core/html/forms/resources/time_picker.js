@@ -700,6 +700,7 @@ class TimeColumn extends HTMLUListElement {
     let upcomingSnapToCellEdge = null;
     let suppressScrollChange = false;
     this.addEventListener('scroll', (event) => {
+      this.measureCellLayout_();
       const isGoingDown = (this.scrollTop > lastScrollPosition);
       lastScrollPosition = this.scrollTop;
 
@@ -713,7 +714,7 @@ class TimeColumn extends HTMLUListElement {
       while (this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1]
                      .offsetTop -
                  this.scrollTop - this.clientHeight <
-             TimeColumn.CELL_HEIGHT) {
+             this.cellHeight) {
         this.rotateCells_(
             /*topToBottom*/ true);
       }
@@ -721,7 +722,7 @@ class TimeColumn extends HTMLUListElement {
       // Rotate cells up until there is one cell beyond the top
       // of the visible scroller area.
       while (this.scrollTop - this.cellsInLayoutOrder[0].offsetTop <
-             TimeColumn.CELL_HEIGHT * 2) {
+             this.cellHeight * 2) {
         this.rotateCells_(
             /*topToBottom*/ false);
       }
@@ -748,16 +749,42 @@ class TimeColumn extends HTMLUListElement {
     const offsetFromCellEdge =
         (this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1].offsetTop -
          this.scrollTop) %
-        TimeColumn.CELL_HEIGHT;
+        this.cellHeight;
     if (isGoingDown) {
       return offsetFromCellEdge;
     } else {
       if (offsetFromCellEdge != 0) {
-        return -(TimeColumn.CELL_HEIGHT - offsetFromCellEdge);
+        return -(this.cellHeight - offsetFromCellEdge);
       }
     }
     return 0;
   };
+
+  /**
+   * Cells are created with positions that assume each cell's layout height is
+   * exactly CELL_HEIGHT.  Under page zoom the real spacing differs slightly
+   * because zoomed lengths are rounded during layout, which would leave a
+   * visible seam where the column wraps around.  Measure the real positions
+   * once, before any cell has been repositioned.
+   */
+  measureCellLayout_ = () => {
+    if (this.cellHeight_ !== undefined) {
+      return;
+    }
+    const firstCellTop = this.cellsInLayoutOrder[0].getBoundingClientRect().top;
+    for (const cell of this.cellsInLayoutOrder) {
+      cell.initialOffsetTop = cell.getBoundingClientRect().top - firstCellTop;
+    }
+    const lastCell =
+        this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1];
+    this.cellHeight_ =
+        lastCell.initialOffsetTop / (this.cellsInLayoutOrder.length - 1);
+  };
+
+  get cellHeight() {
+    return this.cellHeight_ !== undefined ? this.cellHeight_ :
+                                            TimeColumn.CELL_HEIGHT;
+  }
 
   // Ideally we would have truly infinite scrolling in both directions.
   // However, the platform does not allow scrolling into negative scroll
@@ -779,7 +806,7 @@ class TimeColumn extends HTMLUListElement {
   // helpers to convert to an "absolute" position that is easier to reason
   // about when manipulating the layout position of the TimeCells.
   static getCellAbsolutePosition = (cell) => {
-    const cellOffset = parseInt(cell.style.top.substring(
+    const cellOffset = parseFloat(cell.style.top.substring(
         0, cell.style.top.length - 2));  // Chop off the 'px'
     return (cellOffset + cell.initialOffsetTop);
   };
@@ -795,6 +822,7 @@ class TimeColumn extends HTMLUListElement {
     if (!this.isLooping_) {
       return;
     }
+    this.measureCellLayout_();
     if (topToBottom) {
       const topCell = this.cellsInLayoutOrder.shift();
       const bottomCell =
@@ -802,14 +830,14 @@ class TimeColumn extends HTMLUListElement {
       const bottomCellAbsoluteOffset =
           TimeColumn.getCellAbsolutePosition(bottomCell);
       TimeColumn.setCellAbsolutePosition(
-          topCell, bottomCellAbsoluteOffset + TimeColumn.CELL_HEIGHT);
+          topCell, bottomCellAbsoluteOffset + this.cellHeight);
       this.cellsInLayoutOrder.push(topCell);
     } else {
       const topCell = this.cellsInLayoutOrder[0];
       const bottomCell = this.cellsInLayoutOrder.pop();
       const absoluteTopCellOffset = TimeColumn.getCellAbsolutePosition(topCell);
       TimeColumn.setCellAbsolutePosition(
-          bottomCell, absoluteTopCellOffset - TimeColumn.CELL_HEIGHT);
+          bottomCell, absoluteTopCellOffset - this.cellHeight);
       this.cellsInLayoutOrder.unshift(bottomCell);
     }
   };
