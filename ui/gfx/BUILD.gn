@@ -191,6 +191,7 @@ component("gfx") {
     "//device/vr/buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
+    "//third_party/abseil-cpp:absl",
     "//third_party/zlib",
     "//ui/base:features",
     "//ui/base:ozone_buildflags",
