@@ -79,7 +79,6 @@ namespace blink {
 class ClipPathOperation;
 class ComputedGridTrackList;
 class CSSToLengthConversionData;
-class Font;
 class FontBuilder;
 class LinkParameterList;
 class OffsetPathOperation;
@@ -152,8 +151,6 @@ class StyleBuilderConverter {
   static FilterOperations ConvertFilterOperations(StyleResolverState&,
                                                   const CSSValue&,
                                                   CSSPropertyID);
-  static FilterOperations ConvertOffscreenFilterOperations(const CSSValue&,
-                                                           const Font*);
   // The template parameter ZeroValue indicates which CSSValueID should be
   // converted to zero.
   template <typename T, CSSValueID ZeroValue = CSSValueID::kNone>
@@ -239,7 +236,6 @@ class StyleBuilderConverter {
   static int ClampLineWidth(double);
   static int ConvertBorderWidth(const StyleResolverState&, const CSSValue&);
   static int ConvertOutlineOffset(const StyleResolverState&, const CSSValue&);
-  static uint16_t ConvertColumnRuleWidth(StyleResolverState&, const CSSValue&);
   static Superellipse ConvertCornerShape(const StyleResolverState&,
                                          const CSSValue&);
   static LayoutUnit ConvertLayoutUnit(const StyleResolverState&,
@@ -270,8 +266,6 @@ class StyleBuilderConverter {
                             const CSSValue&);  // clamps to [0,1]
   static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
                                                  const CSSValue&);
-  static ScopedCSSName* ConvertNormalOrCustomIdent(StyleResolverState&,
-                                                   const CSSValue&);
   static ScopedCSSName* ConvertCustomIdent(StyleResolverState&,
                                            const CSSValue&);
   static AtomicString ConvertNoneOrCustomIdentUnscoped(StyleResolverState&,
@@ -436,12 +430,6 @@ class StyleBuilderConverter {
   static StyleViewTransitionGroup ConvertViewTransitionGroup(
       StyleResolverState&,
       const CSSValue&);
-
-  // Overscroll gesture related properties.
-  static ScopedCSSNameList* ConvertOverscrollArea(StyleResolverState&,
-                                                  const CSSValue&);
-  static ScopedCSSName* ConvertOverscrollPosition(StyleResolverState&,
-                                                  const CSSValue&);
 
   // Take a list value for a specified color-scheme, extract flags for known
   // color-schemes and the 'only' modifier, and push the list items into a

@@ -414,12 +414,6 @@ FilterOperations StyleBuilderConverter::ConvertFilterOperations(
                                                          property_id);
 }
 
-FilterOperations StyleBuilderConverter::ConvertOffscreenFilterOperations(
-    const CSSValue& value,
-    const Font* font) {
-  return FilterOperationResolver::CreateOffscreenFilterOperations(value, font);
-}
-
 StyleFlexWrapData StyleBuilderConverter::ConvertFlexWrapData(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -2290,17 +2284,6 @@ ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
   return ConvertCustomIdent(state, value);
 }
 
-ScopedCSSName* StyleBuilderConverter::ConvertNormalOrCustomIdent(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNormal);
-    return nullptr;
-  }
-  return ConvertCustomIdent(state, value);
-}
-
 ScopedCSSName* StyleBuilderConverter::ConvertCustomIdent(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -2888,33 +2871,6 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertViewTransitionClass(
     StyleResolverState& state,
     const CSSValue& value) {
   return ConvertNoneOrCustomIdentList(state, value);
-}
-
-ScopedCSSNameList* StyleBuilderConverter::ConvertOverscrollArea(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return nullptr;
-  }
-  DCHECK(value.IsBaseValueList());
-  HeapVector<Member<const ScopedCSSName>> names;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(ConvertCustomIdent(state, *item));
-  }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
-}
-
-ScopedCSSName* StyleBuilderConverter::ConvertOverscrollPosition(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return nullptr;
-  }
-  return ConvertCustomIdent(state, value);
 }
 
 namespace {
