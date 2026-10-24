@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -562,6 +563,54 @@ TEST_F(InternalPopupMenuTest, DetachedInputPopupClosedOnAdoptNode) {
   color2->showPicker(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(color2->IsPickerVisible());
   EXPECT_TRUE(web_view->GetPagePopup());
+}
+
+// list_picker.js focuses the listbox <select> inside the popup before the
+// popup has a size. That must not scroll the popup document, or a popup
+// narrower than requested hides the start of options.
+// See crbug.com/576333008.
+TEST_F(InternalPopupMenuTest, NarrowedPopupIsNotScrolled) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  if (web_view->GetChromeClient().UseExternalPopupMenus()) {
+    // <select> doesn't use a WebPagePopupImpl on this platform.
+    return;
+  }
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<!DOCTYPE html><select id=select><option>" + std::string(2000, 'x') +
+          "</option><option>2</option></select>",
+      base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  select->ShowPopup();
+  WebPagePopupImpl* popup = web_view->GetPagePopup();
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+
+  // Narrow the popup below its content width, like the browser's clamp.
+  constexpr gfx::Size kNarrowedSize(300, 100);
+  static_cast<WebWidget*>(popup)->Resize(kNarrowedSize);
+  LocalFrameView* popup_view = popup->GetDocument().Unwrap<Document>()->View();
+  popup_view->UpdateAllLifecyclePhasesForTest();
+
+  PaintLayerScrollableArea* viewport = popup_view->LayoutViewport();
+  ASSERT_GT(viewport->ContentsSize().width(), kNarrowedSize.width());
+  EXPECT_EQ(0.f, viewport->GetScrollOffset().x());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
