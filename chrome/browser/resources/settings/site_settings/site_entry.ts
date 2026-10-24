@@ -9,16 +9,14 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
+import './cr_lazy_render.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -31,6 +29,8 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
+import type {CrLazyRenderElement} from './cr_lazy_render.js';
+import {FocusRowMixin} from './focus_row_mixin.js';
 import {getTemplate} from './site_entry.html.js';
 import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';

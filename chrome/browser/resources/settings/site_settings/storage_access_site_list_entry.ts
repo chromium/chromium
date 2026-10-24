@@ -16,12 +16,12 @@ import './storage_access_static_site_list_entry.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
+import {FocusRowMixin} from './focus_row_mixin.js';
 import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {getTemplate} from './storage_access_site_list_entry.html.js';

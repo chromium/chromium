@@ -137,6 +137,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, WalletablePassDetectionToggle) {
   RunTest("settings/walletable_pass_detection_toggle_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, WebUiListenerMixin) {
+  RunTest("settings/web_ui_listener_mixin_test.js", "mocha.run()");
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSection) {
   RunTest("settings/ax_annotations_section_test.js", "mocha.run()");
@@ -177,6 +181,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ControlledButton) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ControlledRadioButton) {
   RunTest("settings/controlled_radio_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, CrLazyRender) {
+  RunTest("settings/cr_lazy_render_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, CrPolicyPrefIndicator) {
@@ -288,6 +296,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, HomeUrlInput) {
   RunTest("settings/home_url_input_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, ListPropertyUpdateMixin) {
+  RunTest("settings/list_property_update_mixin_test.js", "mocha.run()");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

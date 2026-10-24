@@ -67,10 +67,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrToolbar) {
   RunTest("cr_elements/cr_toolbar_focus_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrFocusRowMixin) {
-  RunTest("cr_elements/cr_focus_row_mixin_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, FocusRowMixinLit) {
   RunTest("cr_elements/focus_row_mixin_lit_test.js", "mocha.run()");
 }

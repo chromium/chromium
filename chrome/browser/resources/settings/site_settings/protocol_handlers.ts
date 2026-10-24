@@ -22,7 +22,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

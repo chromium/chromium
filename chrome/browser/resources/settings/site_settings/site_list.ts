@@ -19,10 +19,9 @@ import './add_site_dialog.js';
 import './edit_exception_dialog.js';
 import './site_list_entry.js';
 
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -33,6 +32,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {ListPropertyUpdateMixin} from './list_property_update_mixin.js';
 import {getTemplate} from './site_list.html.js';
 import type {RawSiteException, SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';

@@ -8,7 +8,6 @@
  * under Site Settings.
  */
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -23,14 +22,15 @@ import '../icons.html.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+import './action_link.css.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
 import './site_details_permission.js';
 
 import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -135,7 +135,6 @@ export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-export {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -306,12 +305,15 @@ export {CategorySettingExceptionsElement} from './site_settings/category_setting
 export {ChooserExceptionListElement} from './site_settings/chooser_exception_list.js';
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';
 export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, CookiesExceptionType, JavascriptOptimizerSetting, SettingsState, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SortMethod} from './site_settings/constants.js';
+export {CrLazyRenderElement} from './site_settings/cr_lazy_render.js';
 export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception_dialog.js';
 export {FileSystemSiteDetailsElement} from './site_settings/file_system_site_details.js';
 export {FileSystemSiteEntryElement} from './site_settings/file_system_site_entry.js';
 export {FileSystemSiteEntryItemElement} from './site_settings/file_system_site_entry_item.js';
 export {FileSystemSiteListElement} from './site_settings/file_system_site_list.js';
+export {FocusRowMixin} from './site_settings/focus_row_mixin.js';
 export {GeolocationPageElement} from './site_settings/geolocation_page.js';
+export {ListPropertyUpdateMixin} from './site_settings/list_property_update_mixin.js';
 export {MediaPickerElement} from './site_settings/media_picker.js';
 export {NotificationsPageElement} from './site_settings/notifications_page.js';
 export {PdfDocumentsPageElement} from './site_settings/pdf_documents_page.js';

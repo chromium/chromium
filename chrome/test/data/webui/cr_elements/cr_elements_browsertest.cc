@@ -124,16 +124,8 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyList) {
   RunTest("cr_elements/cr_lazy_list_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyRender) {
-  RunTest("cr_elements/cr_lazy_render_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLinkRow) {
   RunTest("cr_elements/cr_link_row_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, ListPropertyUpdateMixin) {
-  RunTest("cr_elements/list_property_update_mixin_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRadioButton) {
@@ -182,10 +174,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrProgress) {
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrToolbar) {
   RunTest("cr_elements/cr_toolbar_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, WebUiListenerMixin) {
-  RunTest("cr_elements/web_ui_listener_mixin_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, WebUiListenerMixinLit) {

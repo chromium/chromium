@@ -15,7 +15,6 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,6 +25,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ChooserType, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {FocusRowMixin} from './focus_row_mixin.js';
 import {getTemplate} from './site_list_entry.html.js';
 import type {SiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';

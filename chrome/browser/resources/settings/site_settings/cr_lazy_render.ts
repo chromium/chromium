@@ -16,9 +16,9 @@
  *   this.$.menu.get().show();
  */
 
-import {assert} from '//resources/js/assert.js';
-import type {TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {html, PolymerElement, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import type {TemplateInstanceBase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class CrLazyRenderElement<T extends HTMLElement> extends PolymerElement {
   static get is() {

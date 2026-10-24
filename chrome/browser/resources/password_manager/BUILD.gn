@@ -114,6 +114,7 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "cr_actionable_row_style.css",
     "cr_input_style.css",
     "cr_nav_menu_item_style.css",
     "cr_page_host_style.css",

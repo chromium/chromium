@@ -25,6 +25,8 @@ export {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy
 export type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 export type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
+export {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
+export type {WebUiListenerMixinInterface} from '/shared/settings/web_ui_listener_mixin.js';
 export {browserProxyFactory as customizeColorSchemeModeBrowserProxyFactory, ColorSchemeMode, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeClientRemote, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 export type {BrowserProxy as CustomizeColorSchemeModeBrowserProxy} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

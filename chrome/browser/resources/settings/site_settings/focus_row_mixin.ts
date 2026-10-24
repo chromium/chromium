@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type { PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {afterNextRender, dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from '//resources/js/assert.js';
-import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {FocusRow, VirtualFocusRow} from '//resources/js/focus_row.js';
-
-import {FocusRowMixinDelegate} from './focus_row_mixin_delegate.js';
+import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {FocusRow, VirtualFocusRow} from 'chrome://resources/js/focus_row.js';
+import {FocusRowMixinDelegate} from 'chrome://resources/cr_elements/focus_row_mixin_delegate.js';
 // clang-format on
 
 /**
@@ -222,7 +221,7 @@ export const FocusRowMixin = dedupingMixin(
 
         private createObserver_(): MutationObserver {
           return new MutationObserver(mutations => {
-            const mutation = mutations[0]!;
+            const mutation = mutations[0];
             if (mutation.attributeName === 'style' && mutation.oldValue) {
               const newStyle =
                   window.getComputedStyle(mutation.target as Element);
@@ -232,9 +231,9 @@ export const FocusRowMixin = dedupingMixin(
                   mutation.oldValue.match(/^visibility:(.*)(?=;)/);
               // Return early if display and visibility have not changed.
               if (oldDisplayValue &&
-                  newStyle.display === oldDisplayValue[1]!.trim() &&
+                  newStyle.display === oldDisplayValue[1].trim() &&
                   oldVisibilityValue &&
-                  newStyle.visibility === oldVisibilityValue[1]!.trim()) {
+                  newStyle.visibility === oldVisibilityValue[1].trim()) {
                 return;
               }
             }

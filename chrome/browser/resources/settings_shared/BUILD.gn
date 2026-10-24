@@ -19,7 +19,10 @@ build_webui("build") {
     "controls/extension_controlled_indicator.ts",
   ]
 
-  css_files = [ "controls/extension_controlled_indicator.css" ]
+  css_files = [
+    "controls/extension_controlled_indicator.css",
+    "md_select.css",
+  ]
 
   ts_files = [
     "a11y_page/ax_annotations_browser_proxy.ts",
@@ -41,6 +44,7 @@ build_webui("build") {
     "prefs2/pref_service_observer_mixin_lit.ts",
     "privacy_page/privacy_page_browser_proxy.ts",
     "security_page/security_page_browser_proxy.ts",
+    "web_ui_listener_mixin.ts",
   ]
 
   ts_composite = true

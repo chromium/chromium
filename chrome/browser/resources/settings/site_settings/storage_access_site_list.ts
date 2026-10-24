@@ -13,12 +13,12 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './storage_access_site_list_entry.js';
 import '../settings_shared.css.js';
 
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ContentSetting} from './constants.js';
 import {ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
+import {ListPropertyUpdateMixin} from './list_property_update_mixin.js';
 import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {getTemplate} from './storage_access_site_list.html.js';

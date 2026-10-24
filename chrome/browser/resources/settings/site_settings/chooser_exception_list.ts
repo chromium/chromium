@@ -16,11 +16,10 @@ import '../settings_shared.css.js';
 import '../i18n_setup.js';
 import './chooser_exception_list_entry.js';
 
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
@@ -28,6 +27,7 @@ import {TooltipMixin} from '../tooltip_mixin.js';
 import {getTemplate} from './chooser_exception_list.html.js';
 import type {ContentSettingsTypes} from './constants.js';
 import {ChooserType} from './constants.js';
+import {ListPropertyUpdateMixin} from './list_property_update_mixin.js';
 import type {ChooserException, RawChooserException, SiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 

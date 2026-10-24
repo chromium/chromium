@@ -4,13 +4,11 @@
 
 // clang-format off
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html as litHtml} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {PolymerElement, html as polymerHtml} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -169,24 +167,6 @@ suite('CrElementsViewManagerTest', function() {
 });
 
 suite('CrLazyRenderInCrViewManagerTest', function() {
-  class TestApp extends PolymerElement {
-    static get is() {
-      return 'test-app';
-    }
-
-    static get template() {
-      return polymerHtml`
-        <cr-view-manager id="viewManager">
-          <div slot="view" id="viewOne">view one</div>
-          <cr-lazy-render id="lazy">
-            <template>
-              <div slot="view" id="lazyView"></div>
-            </template>
-          </cr-lazy-render>
-        </cr-view-manager>`;
-    }
-  }
-
   class TestAppLitElement extends CrLitElement {
     static get is() {
       return 'test-app-lit';
@@ -204,36 +184,15 @@ suite('CrLazyRenderInCrViewManagerTest', function() {
     }
   }
 
-  customElements.define(TestApp.is, TestApp);
   customElements.define(TestAppLitElement.is, TestAppLitElement);
 
-  function setupTest(isLit: boolean) {
+  test('switch to cr-lazy-render-lit view', async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const testApp = isLit ? document.createElement('test-app-lit') :
-                            document.createElement('test-app');
+    const testApp = document.createElement('test-app-lit');
     document.body.appendChild(testApp);
 
     viewManager = testApp.shadowRoot!.querySelector('#viewManager')!;
     assertTrue(!!viewManager);
-  }
-
-  test('switch to cr-lazy-render view', async function() {
-    setupTest(/*isLit=*/ false);
-
-    assertViewVisible('viewOne', false);
-    assertViewVisible('lazyView', false);
-
-    await viewManager.switchView('viewOne');
-    assertViewVisible('viewOne', true);
-    assertViewVisible('lazyView', false);
-
-    await viewManager.switchView('lazy');
-    assertViewVisible('viewOne', false);
-    assertViewVisible('lazyView', true);
-  });
-
-  test('switch to cr-lazy-render-lit view', async function() {
-    setupTest(/*isLit=*/ true);
 
     assertViewVisible('viewOne', false);
     assertViewVisible('lazyView', false);

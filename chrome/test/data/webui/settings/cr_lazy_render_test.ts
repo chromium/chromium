@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://settings/lazy_load.js';
 
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderElement} from 'chrome://settings/lazy_load.js';
+import {getTrustedHTML} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on

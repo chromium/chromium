@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 import './file_system_site_entry.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';

@@ -10,10 +10,10 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
 
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

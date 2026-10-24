@@ -6,10 +6,10 @@
  * @fileoverview
  * `pref-toggle-button` is a toggle that controls a supplied preference.
  */
-import '//resources/cr_elements/cr_actionable_row_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
+import '../cr_actionable_row_style.css.js';
 
 import {PrefKeyObserverMixin} from '/shared/settings/prefs2/pref_key_observer_mixin.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';

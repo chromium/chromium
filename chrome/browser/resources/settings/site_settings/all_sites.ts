@@ -11,22 +11,21 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import '/shared/settings/md_select.css.js';
 import '../settings_shared.css.js';
 import '../settings_page/settings_subpage.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
+import './cr_lazy_render.js';
 import './site_entry.js';
 
+import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -42,6 +41,7 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './all_sites.html.js';
 import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';
+import type {CrLazyRenderElement} from './cr_lazy_render.js';
 import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 

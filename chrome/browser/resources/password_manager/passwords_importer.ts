@@ -45,7 +45,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
+import '/shared/settings/md_select.css.js';
 import './cr_spinner_style.css.js';
 import './site_favicon.js';
 import './dialogs/password_preview_item.js';

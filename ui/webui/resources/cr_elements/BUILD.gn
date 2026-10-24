@@ -171,13 +171,10 @@ build_webui("build") {
     ts_files += [
       "find_shortcut_manager.ts",
       "find_shortcut_mixin_lit.ts",
-      "focus_row_mixin.ts",
       "focus_row_mixin_delegate.ts",
       "focus_row_mixin_lit.ts",
       "i18n_mixin.ts",
-      "list_property_update_mixin.ts",
       "policy/cr_policy_types.ts",
-      "web_ui_listener_mixin.ts",
 
       # Web components files that either
       #  - don't have a corresponding .html file or
@@ -186,7 +183,6 @@ build_webui("build") {
       "cr_feedback_buttons/cr_feedback_buttons.ts",
       "cr_grid/cr_grid.html.ts",
       "cr_grid/cr_grid.ts",
-      "cr_lazy_render/cr_lazy_render.ts",
       "cr_loading_gradient/cr_loading_gradient.html.ts",
       "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.html.ts",
@@ -200,8 +196,6 @@ build_webui("build") {
     ]
 
     css_files += [
-      "action_link.css",
-      "cr_actionable_row_style.css",
       "cr_feedback_buttons/cr_feedback_buttons.css",
       "cr_grid/cr_grid.css",
       "cr_hidden_style.css",
@@ -211,11 +205,9 @@ build_webui("build") {
       "cr_radio_button/cr_card_radio_button.css",
       "cr_shared_style.css",
       "cr_toolbar/cr_toolbar_selection_overlay.css",
-      "md_select.css",
       "mwb_element_shared_style_lit.css",
       "mwb_shared_style_lit.css",
       "policy/cr_policy_indicator.css",
-      "search_highlight_style.css",
       "search_highlight_style_lit.css",
     ]
   }
