@@ -561,10 +561,10 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
     preferences_list.Append(enabled ? "Enabled" : "Disabled");
   }
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingNoProtectionTemporary) &&
-      GetSafeBrowsingState(*prefs) == SafeBrowsingState::NO_SAFE_BROWSING &&
+  if (GetSafeBrowsingState(*prefs) == SafeBrowsingState::NO_SAFE_BROWSING &&
       prefs->FindPreference(
-          prefs::kSafeBrowsingNoProtectionDisabledTimestamp)) {
+          prefs::kSafeBrowsingNoProtectionDisabledTimestamp) &&
+      base::FeatureList::IsEnabled(kSafeBrowsingNoProtectionTemporary)) {
     base::Time disabled_time =
         prefs->GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp);
     if (!disabled_time.is_null()) {
