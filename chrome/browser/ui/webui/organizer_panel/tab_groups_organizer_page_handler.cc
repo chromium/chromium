@@ -60,16 +60,6 @@ std::string GetLastActiveElapsedText(const base::Time& last_active_time) {
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT, elapsed));
 }
 
-base::Time GetLastUsedTime(const tab_groups::SavedTabGroup& group) {
-  if (!group.last_user_interaction_time().is_null()) {
-    return group.last_user_interaction_time();
-  }
-  if (!group.update_time().is_null()) {
-    return group.update_time();
-  }
-  return group.creation_time();
-}
-
 base::Time GetLastUsedTime(TabStripModel* tab_strip_model,
                            const TabGroup* tab_group) {
   base::Time last_used_time;
@@ -84,13 +74,42 @@ base::Time GetLastUsedTime(TabStripModel* tab_strip_model,
   return last_used_time;
 }
 
-base::Time GetLastUsedTime(const TabGroup* tab_group) {
+base::Time GetLastUsedTime(const tab_groups::TabGroupId& group_id) {
   BrowserWindowInterface* browser =
-      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(tab_group->id());
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   if (!browser || !browser->GetTabStripModel()) {
     return base::Time();
   }
-  return GetLastUsedTime(browser->GetTabStripModel(), tab_group);
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+  if (!tab_strip_model->SupportsTabGroups() ||
+      !tab_strip_model->group_model()->ContainsTabGroup(group_id)) {
+    return base::Time();
+  }
+  return GetLastUsedTime(tab_strip_model,
+                         tab_strip_model->group_model()->GetTabGroup(group_id));
+}
+
+base::Time GetLastUsedTime(const TabGroup* tab_group) {
+  return GetLastUsedTime(tab_group->id());
+}
+
+base::Time GetLastUsedTime(const tab_groups::SavedTabGroup& group) {
+  base::Time last_used_time = group.last_user_interaction_time();
+
+  for (const tab_groups::SavedTabGroupTab& tab : group.saved_tabs()) {
+    last_used_time = std::max({
+        last_used_time,
+        tab.update_time(),
+        tab.navigation_time(),
+    });
+  }
+
+  if (group.local_group_id().has_value()) {
+    last_used_time =
+        std::max(last_used_time, GetLastUsedTime(*group.local_group_id()));
+  }
+
+  return last_used_time.is_null() ? group.creation_time() : last_used_time;
 }
 
 organizer_panel::mojom::TabGroupPtr CreateMojoTabGroup(

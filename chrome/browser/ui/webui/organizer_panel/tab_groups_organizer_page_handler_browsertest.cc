@@ -176,8 +176,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   // Group 1: Created 10 minutes ago, but interacted with most recently (1 min
   // ago).
   base::Uuid id1 = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroupTab tab1(GURL("https://www.google.com"), u"Google",
-                                    id1, /*position=*/0);
+  tab_groups::SavedTabGroupTab tab1(
+      GURL("https://www.google.com"), u"Google", id1, /*position=*/0,
+      /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*creation_time=*/now - base::Minutes(10),
+      /*update_time=*/now - base::Minutes(10));
   tab_groups::SavedTabGroup group1(
       u"Group 1", tab_groups::TabGroupColorId::kBlue, {tab1},
       /*position=*/std::nullopt, id1,
@@ -189,34 +194,45 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       /*update_time=*/now - base::Minutes(10));
   group1.SetLastUserInteractionTime(now - base::Minutes(1));
 
-  // Group 2: Created 5 minutes ago, no explicit user interaction time set
-  // (falls back to update_time of 5 mins ago).
+  // Group 2: Created 10 minutes ago, local interaction was 9 minutes ago, but
+  // a tab was updated on another device 5 minutes ago.
   base::Uuid id2 = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroupTab tab2(GURL("https://www.youtube.com"), u"YouTube",
-                                    id2, /*position=*/0);
+  tab_groups::SavedTabGroupTab tab2(
+      GURL("https://www.youtube.com"), u"YouTube", id2, /*position=*/0,
+      /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*creation_time=*/now - base::Minutes(10),
+      /*update_time=*/now - base::Minutes(5));
   tab_groups::SavedTabGroup group2(
       u"Group 2", tab_groups::TabGroupColorId::kRed, {tab2},
       /*position=*/std::nullopt, id2, /*local_group_id=*/std::nullopt,
       /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
       /*created_before_syncing_tab_groups=*/false,
-      /*creation_time=*/now - base::Minutes(5),
-      /*update_time=*/now - base::Minutes(5));
+      /*creation_time=*/now - base::Minutes(10),
+      /*update_time=*/now - base::Minutes(10));
+  group2.SetLastUserInteractionTime(now - base::Minutes(9));
 
-  // Group 3: Created 2 minutes ago, interacted with 8 minutes ago (least
-  // recently used).
+  // Group 3: Dormant group created 8 minutes ago with no local interaction time
+  // (even if group.update_time was overwritten to `now` on startup, it uses the
+  // tab's update_time of 8 minutes ago).
   base::Uuid id3 = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroupTab tab3(GURL("https://www.chromium.org"),
-                                    u"Chromium", id3, /*position=*/0);
+  tab_groups::SavedTabGroupTab tab3(
+      GURL("https://www.chromium.org"), u"Chromium", id3, /*position=*/0,
+      /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*creation_time=*/now - base::Minutes(8),
+      /*update_time=*/now - base::Minutes(8));
   tab_groups::SavedTabGroup group3(
       u"Group 3", tab_groups::TabGroupColorId::kGreen, {tab3},
       /*position=*/std::nullopt, id3, /*local_group_id=*/std::nullopt,
       /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
       /*created_before_syncing_tab_groups=*/false,
-      /*creation_time=*/now - base::Minutes(2),
-      /*update_time=*/now - base::Minutes(2));
-  group3.SetLastUserInteractionTime(now - base::Minutes(8));
+      /*creation_time=*/now - base::Minutes(8),
+      /*update_time=*/now);
 
   service->AddGroup(group1);
   service->AddGroup(group2);
@@ -477,8 +493,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   // Add a saved tab group interacted with 5 minutes ago.
   base::Uuid saved_id = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroupTab saved_tab(GURL("https://www.google.com"),
-                                         u"Google", saved_id, /*position=*/0);
+  tab_groups::SavedTabGroupTab saved_tab(
+      GURL("https://www.google.com"), u"Google", saved_id, /*position=*/0,
+      /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*creation_time=*/now - base::Minutes(5),
+      /*update_time=*/now - base::Minutes(5));
   tab_groups::SavedTabGroup saved_group(
       u"Saved Group", tab_groups::TabGroupColorId::kBlue, {saved_tab},
       /*position=*/std::nullopt, saved_id, /*local_group_id=*/std::nullopt,
