@@ -1296,8 +1296,7 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThresholdMultipleThreads) {
   ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
 }
 
-// Disabled due to flakiness: crbug.com/1287811
-TEST_P(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
+TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThresholdPurge) {
   auto* tcache = root()->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_for_testing().alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
