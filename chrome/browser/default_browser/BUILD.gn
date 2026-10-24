@@ -73,6 +73,19 @@ source_set("default_browser") {
   check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
+if (is_win) {
+  source_set("startup_metrics") {
+    public = [ "default_browser_startup_metrics.h" ]
+    sources = [ "default_browser_startup_metrics.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser:shell_integration",
+    ]
+    deps = [ "//chrome/installer/util:with_no_strings" ]
+    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -101,7 +114,10 @@ source_set("unit_tests") {
   ]
 
   if (is_win) {
-    sources += [ "default_browser_notification_observer_unittest.cc" ]
+    sources += [
+      "default_browser_notification_observer_unittest.cc",
+      "default_browser_startup_metrics_unittest.cc",
+    ]
   }
 
   deps = [
@@ -116,6 +132,15 @@ source_set("unit_tests") {
     "//ui/base/unowned_user_data",
     "//url",
   ]
+
+  if (is_win) {
+    deps += [
+      ":startup_metrics",
+      "//chrome/install_static:install_static_util",
+      "//chrome/install_static/test:test_support",
+      "//chrome/installer/util:with_no_strings",
+    ]
+  }
 }
 
 source_set("browser_tests") {

@@ -512,6 +512,10 @@ source_set("impl") {
     deps += [ "//chrome/browser/updates:update_metrics" ]
   }
 
+  if (is_win) {
+    deps += [ "//chrome/browser/default_browser:startup_metrics" ]
+  }
+
   if (is_win || is_android || is_linux) {
     sources += [ "chrome_metrics_service_crash_reporter.cc" ]
   }

@@ -108,6 +108,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h:InfoBarUserInteraction) -->
 
+<!-- LINT.IfChange(DefaultBrowserStartupStateTransition) -->
+
+<enum name="DefaultBrowserStartupStateTransition">
+  <summary>
+    Default browser state at startup compared with the state implied by the
+    installer beacons.
+  </summary>
+  <int value="0" label="No previous state (no beacons)"/>
+  <int value="1" label="Remained default"/>
+  <int value="2" label="Remained not default"/>
+  <int value="3" label="Lost default (was default, now not default)"/>
+  <int value="4" label="Became default"/>
+  <int value="5" label="Current state unknown (check failed)"/>
+  <int value="6" label="Other install mode is default"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_startup_metrics.h:DefaultBrowserStartupStateTransition) -->
+
 <enum name="DefaultBrowserState">
   <int value="0" label="Not Default"/>
   <int value="1" label="Default"/>
