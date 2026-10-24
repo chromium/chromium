@@ -267,7 +267,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
   virtual void LangAttributeChanged() {}
-  virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual int LayerCount() const { return 0; }
   virtual void DisableAccelerationForCanvas2D() { NOTREACHED(); }
 

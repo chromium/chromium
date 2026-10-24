@@ -67,10 +67,6 @@ MouseEventInit* GetMouseEventInitForWheel(const WebMouseWheelEvent& event,
   UIEventWithKeyState::SetFromWebInputEventModifiers(
       initializer, static_cast<WebInputEvent::Modifiers>(event.GetModifiers()));
 
-  // TODO(zino): Should support canvas hit region because the
-  // wheel event is a kind of mouse event. Please see
-  // http://crbug.com/594075
-
   return initializer;
 }
 
