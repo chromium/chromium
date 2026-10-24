@@ -539,8 +539,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
   FilterEffectBuilder filter_effect_builder(
       gfx::RectF(canvas_viewport), canvas_viewport,
       1.0f,  // Deliberately ignore zoom on the canvas element.
-      Color::kBlack, mojom::blink::ColorScheme::kLight, &fill_flags_for_filter,
-      &stroke_flags_for_filter);
+      Color::kBlack, mojom::blink::ColorScheme::kLight,
+      /*is_in_canvas_subtree=*/false,  // OffscreenCanvas has no DOM subtree.
+      &fill_flags_for_filter, &stroke_flags_for_filter);
 
   FilterEffect* last_effect = filter_effect_builder.BuildFilterEffect(
       operations, !context->OriginClean());
@@ -611,7 +612,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   FilterEffectBuilder filter_effect_builder(
       gfx::RectF(canvas_viewport), canvas_viewport,
       1.0f,  // Deliberately ignore zoom on the canvas element.
-      Color::kBlack, mojom::blink::ColorScheme::kLight, &fill_flags_for_filter,
+      Color::kBlack, mojom::blink::ColorScheme::kLight,
+      // 2D context filters rely on origin tainting, not subtree scoping.
+      /*is_in_canvas_subtree=*/false, &fill_flags_for_filter,
       &stroke_flags_for_filter);
 
   FilterEffect* last_effect = filter_effect_builder.BuildFilterEffect(

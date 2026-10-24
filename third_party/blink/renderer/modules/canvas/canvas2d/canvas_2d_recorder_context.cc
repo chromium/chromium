@@ -472,7 +472,9 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
       FilterEffectBuilder filter_effect_builder(
           gfx::RectF(canvas_viewport), canvas_viewport,
           1.0f,  // Deliberately ignore zoom on the canvas element.
-          Color::kBlack, mojom::blink::ColorScheme::kLight);
+          Color::kBlack, mojom::blink::ColorScheme::kLight,
+          // 2D context filters rely on origin tainting, not subtree scoping.
+          /*is_in_canvas_subtree=*/false);
 
       FilterEffect* filter_effect = filter_effect_builder.BuildFilterEffect(
           std::move(filter_operations), !OriginClean());

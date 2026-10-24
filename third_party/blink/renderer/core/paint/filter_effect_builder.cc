@@ -130,6 +130,7 @@ FilterEffectBuilder::FilterEffectBuilder(const gfx::RectF& reference_box,
                                          float zoom,
                                          Color current_color,
                                          mojom::blink::ColorScheme color_scheme,
+                                         bool is_in_canvas_subtree,
                                          const cc::PaintFlags* fill_flags,
                                          const cc::PaintFlags* stroke_flags)
     : reference_box_(reference_box),
@@ -138,6 +139,7 @@ FilterEffectBuilder::FilterEffectBuilder(const gfx::RectF& reference_box,
       shorthand_scale_(1),
       current_color_(current_color),
       color_scheme_(color_scheme),
+      is_in_canvas_subtree_(is_in_canvas_subtree),
       fill_flags_(fill_flags),
       stroke_flags_(stroke_flags) {}
 
@@ -530,6 +532,9 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
       DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
   if (!filter_element)
     return nullptr;
+  if (is_in_canvas_subtree_ && !filter_element->IsInCanvasSubtree()) {
+    return nullptr;
+  }
   if (auto* resource_container = resource->ResourceContainerNoCycleCheck(
           SVGResource::Usage::kContent)) {
     resource_container->ClearInvalidationMask();

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_animated_property.h"
@@ -314,6 +315,14 @@ void SVGElement::ChildrenChanged(const ChildrenChange& change) {
 
   // Invalidate all instances associated with us.
   InvalidateInstances();
+}
+
+void SVGElement::DidChangeIsInCanvasSubtree(
+    CanvasSubtreePropagation propagation_behavior) {
+  Element::DidChangeIsInCanvasSubtree(propagation_behavior);
+  if (SVGElementResourceClient* client = GetSVGResourceClient()) {
+    client->InvalidateFilterData();
+  }
 }
 
 CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(

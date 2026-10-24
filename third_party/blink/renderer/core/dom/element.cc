@@ -4606,9 +4606,9 @@ void Element::DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) {
     layout_object->SetNeedsPaintPropertyUpdate();
     layout_object->SetSubtreeShouldDoFullPaintInvalidation();
     if (layout_object->HasLayer()) {
-      To<LayoutBoxModelObject>(layout_object)
-          ->Layer()
-          ->SetFilterOnEffectNodeDirty();
+      PaintLayer* layer = To<LayoutBoxModelObject>(layout_object)->Layer();
+      layer->SetFilterOnEffectNodeDirty();
+      layer->SetBackdropFilterOnEffectNodeDirty();
     }
   }
 }

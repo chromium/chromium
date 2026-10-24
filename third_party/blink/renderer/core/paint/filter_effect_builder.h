@@ -51,6 +51,7 @@ class CORE_EXPORT FilterEffectBuilder final {
                       float zoom,
                       Color current_color,
                       mojom::blink::ColorScheme color_scheme,
+                      bool is_in_canvas_subtree,
                       const cc::PaintFlags* fill_flags = nullptr,
                       const cc::PaintFlags* stroke_flags = nullptr);
 
@@ -77,6 +78,7 @@ class CORE_EXPORT FilterEffectBuilder final {
   float shorthand_scale_;  // Scale factor for shorthand filter functions.
   const Color current_color_;
   const mojom::blink::ColorScheme color_scheme_;
+  const bool is_in_canvas_subtree_;
   const cc::PaintFlags* fill_flags_;
   const cc::PaintFlags* stroke_flags_;
 };

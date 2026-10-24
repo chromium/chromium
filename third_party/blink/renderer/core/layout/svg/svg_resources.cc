@@ -380,7 +380,7 @@ void SVGElementResourceClient::UpdateFilterData(
   FilterEffectBuilder builder(
       reference_box, SVGViewportResolver(object).ResolveViewport(), 1,
       style.VisitedDependentColor(GetCSSPropertyColor()),
-      style.UsedColorScheme());
+      style.UsedColorScheme(), object.IsInCanvasSubtree());
   builder.SetShorthandScale(1 / style.EffectiveZoom());
   const FilterOperations& filter = style.Filter();
   // If the filter is a single 'url(...)' reference we can optimize some
@@ -394,9 +394,10 @@ void SVGElementResourceClient::UpdateFilterData(
           builder, To<ReferenceFilterOperation>(*filter.at(0)));
     }
     operations.Clear();
+    FilterOperation* op = filter.Operations()[0].Get();
+    To<ReferenceFilterOperation>(*op).SetFilter(
+        filter_data_ ? filter_data_->GetFilter() : nullptr);
     if (filter_data_) {
-      FilterOperation* op = filter.Operations()[0].Get();
-      To<ReferenceFilterOperation>(*op).SetFilter(filter_data_->GetFilter());
       // If the referenced filter exists but does not contain any primitives,
       // then the rendering of the element should be disabled.
       if (filter_data_->HasEffects()) {

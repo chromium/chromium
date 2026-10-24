@@ -74,6 +74,7 @@ class CORE_EXPORT SVGFilterElement final : public SVGElement,
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
+  void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 

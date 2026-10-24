@@ -2595,7 +2595,8 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
   operations =
       FilterEffectBuilder(reference_box, FilterViewport(), zoom,
                           style.VisitedDependentColor(GetCSSPropertyColor()),
-                          style.UsedColorScheme())
+                          style.UsedColorScheme(),
+                          GetLayoutObject().IsInCanvasSubtree())
           .BuildFilterOperations(filter);
   filter_on_effect_node_dirty_ = false;
 }
@@ -2639,7 +2640,8 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
   operations =
       FilterEffectBuilder(reference_box, FilterViewport(), zoom,
                           style.VisitedDependentColor(GetCSSPropertyColor()),
-                          style.UsedColorScheme(), nullptr, nullptr)
+                          style.UsedColorScheme(),
+                          GetLayoutObject().IsInCanvasSubtree())
           .BuildFilterOperations(filter_operations, /*contains_backdrop=*/true);
   // Note that |operations| may be empty here, if the |filter_operations| list
   // contains only invalid filters (e.g. invalid reference filters). See

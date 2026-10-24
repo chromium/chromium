@@ -879,8 +879,12 @@ void AddKeyframeToCurve(cc::KeyframedFilterAnimationCurve& curve,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function,
                         bool is_backdrop_filter) {
+  // Composited animations are not supported for html-in-canvas, and
+  // drawElementImage() uses main-thread paint records rather than compositor
+  // animation curves, so `is_in_canvas_subtree` can be false here.
   FilterEffectBuilder builder(gfx::RectF(), std::nullopt, 1, Color::kBlack,
-                              mojom::blink::ColorScheme::kLight);
+                              mojom::blink::ColorScheme::kLight,
+                              /*is_in_canvas_subtree=*/false);
   CompositorFilterOperations operations = builder.BuildFilterOperations(
       To<CompositorKeyframeFilterOperations>(value)->Operations(),
       is_backdrop_filter);

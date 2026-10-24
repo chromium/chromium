@@ -123,6 +123,12 @@ void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {
   InvalidateFilterChain();
 }
 
+void SVGFilterElement::DidChangeIsInCanvasSubtree(
+    CanvasSubtreePropagation propagation_behavior) {
+  SVGElement::DidChangeIsInCanvasSubtree(propagation_behavior);
+  InvalidateFilterChain();
+}
+
 LayoutObject* SVGFilterElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGResourceFilter>(this);
 }
