@@ -35,6 +35,8 @@
 
 #define CONFIG_8BPC 1
 
+#define CONFIG_ASM_DEBUG 0
+
 // #define CONFIG_LOG 1 -- Logging is controlled by Chromium
 
 #define ENDIANNESS_BIG 0
