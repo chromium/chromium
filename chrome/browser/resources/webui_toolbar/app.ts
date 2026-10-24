@@ -36,8 +36,8 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from './browser_proxy.js';
-import type {BrowserProxy, ToolbarStateListenerHandle} from './browser_proxy.js';
+import {BrowserProxyImpl, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
+import type {BrowserProxy, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
 import type {ExtensionsElement} from './extensions.js';
 import {createDefaultLocationBarState} from './location_bar.js';
 import type {LocationBarElement} from './location_bar.js';
@@ -70,99 +70,6 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
 ];
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
-
-/**
- * Keys corresponding to initial toolbar state values provided by the browser.
- */
-enum ToolbarStateKey {
-  IS_NAVIGATION_LOADING = 'isNavigationLoading',
-  RELOAD_CAN_SHOW_MENU = 'reloadCanShowMenu',
-  BACK_BUTTON_ENABLED = 'backButtonEnabled',
-  FORWARD_BUTTON_ENABLED = 'forwardButtonEnabled',
-  HOME_BUTTON_SHOULD_BE_SHOWN = 'homeButtonShouldBeShown',
-  BATTERY_SAVER_BUTTON_VISIBLE = 'batterySaverButtonVisible',
-  LAYOUT_CONSTANTS_VERSION = 'layoutConstantsVersion',
-  TOUCH_UI = 'touchUi',
-  INITIAL_WEBUI_SURFACE_SYNC_ENABLED = 'initialWebUISurfaceSyncEnabled',
-  IS_FALLBACK_PREWARMING = 'isFallbackPrewarming',
-}
-
-/**
- * Schema mapping `ToolbarStateKey` entries to their respective value types in
- * the initial state dictionary.
- */
-interface ToolbarFlatStateSchema {
-  [ToolbarStateKey.IS_NAVIGATION_LOADING]: boolean;
-  [ToolbarStateKey.RELOAD_CAN_SHOW_MENU]: boolean;
-  [ToolbarStateKey.BACK_BUTTON_ENABLED]: boolean;
-  [ToolbarStateKey.FORWARD_BUTTON_ENABLED]: boolean;
-  [ToolbarStateKey.HOME_BUTTON_SHOULD_BE_SHOWN]: boolean;
-  [ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE]: boolean;
-  [ToolbarStateKey.LAYOUT_CONSTANTS_VERSION]: number;
-  [ToolbarStateKey.TOUCH_UI]: boolean;
-  [ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED]: boolean;
-  [ToolbarStateKey.IS_FALLBACK_PREWARMING]: boolean;
-}
-
-let parsedInitialState: Record<string, unknown>|null = null;
-
-/**
- * Parses and returns the initial toolbar state dictionary from
- * `chrome.getVariableValue('initialState')`. Caches the parsed result after
- * the first call, returning an empty object if unparsable or absent.
- */
-function getInitialState(): Record<string, unknown> {
-  if (!parsedInitialState) {
-    const jsonString = chrome.getVariableValue('initialState');
-    if (jsonString) {
-      try {
-        parsedInitialState = JSON.parse(jsonString);
-      } catch {
-        parsedInitialState = {};
-      }
-    } else {
-      parsedInitialState = {};
-    }
-  }
-  return parsedInitialState!;
-}
-
-/**
- * Determines whether the specified `key` is present in the initial toolbar
- * state dictionary.
- */
-function hasInitialStateKey(key: ToolbarStateKey): boolean {
-  return key in getInitialState();
-}
-
-/**
- * Resets the cached initial toolbar state to `null` for testing purposes.
- */
-export function resetInitialStateForTesting(): void {
-  parsedInitialState = null;
-}
-
-/**
- * Reads a boolean property for the given `key` from the initial state
- * dictionary. Returns `false` if the property is missing or not a boolean.
- */
-function getTypedBoolean<K extends keyof ToolbarFlatStateSchema>(key: K):
-    boolean {
-  const state = getInitialState();
-  const val = state[key];
-  return typeof val === 'boolean' ? val : false;
-}
-
-/**
- * Reads a numeric property for the given `key` from the initial state
- * dictionary. Returns `0` if the property is missing or not a number.
- */
-function getTypedInteger<K extends keyof ToolbarFlatStateSchema>(key: K):
-    number {
-  const state = getInitialState();
-  const val = state[key];
-  return typeof val === 'number' ? val : 0;
-}
 
 export class ToolbarAppElement extends AppElementBase {
   static get is() {
@@ -202,8 +109,6 @@ export class ToolbarAppElement extends AppElementBase {
       isPerformanceInterventionButtonEnabled_: {type: Boolean},
       isMediaButtonEnabled_: {type: Boolean},
       isInitialized_: {type: Boolean},
-      isInitializedSyncForTesting_: {type: Boolean},
-      initialSyncBootSuccess_: {type: Boolean},
       webUIToolbarFullyEnabled_: {type: Boolean},
     };
   }
@@ -234,20 +139,17 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enablePerformanceInterventionButton');
   protected accessor isMediaButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableMediaButton');
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private initialState_: InitialStateReader =
+      this.browserProxy_.getInitialState();
   /**
    * Tracks whether the element has received its first toolbar state
    * update from the browser and completed its initial visual render.
    */
   protected accessor isInitialized_: boolean =
-      !getTypedBoolean(ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED) ||
-      hasInitialStateKey(ToolbarStateKey.IS_NAVIGATION_LOADING);
-  // Test-only flag to verify that the toolbar was initialized synchronously.
-  protected accessor isInitializedSyncForTesting_: boolean =
-      hasInitialStateKey(ToolbarStateKey.IS_NAVIGATION_LOADING);
-  protected accessor initialSyncBootSuccess_: boolean =
-      hasInitialStateKey(ToolbarStateKey.IS_NAVIGATION_LOADING) &&
-      hasInitialStateKey(ToolbarStateKey.BACK_BUTTON_ENABLED) &&
-      hasInitialStateKey(ToolbarStateKey.FORWARD_BUTTON_ENABLED);
+      !this.initialState_.getBoolean(
+          ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED) ||
+      this.initialState_.hasKey(ToolbarStateKey.IS_NAVIGATION_LOADING);
   private omniboxResizingPrioritizationEnabled_: boolean =
       loadTimeData.getBoolean('omniboxResizingPrioritizationEnabled');
   private toolbarAppMenuLabelResizingEnabled_: boolean =
@@ -262,9 +164,9 @@ export class ToolbarAppElement extends AppElementBase {
       // on some platforms.
       doubleClickInterval: {microseconds: BigInt(500 * 1000)},
 
-      canShowMenu: getTypedBoolean(ToolbarStateKey.RELOAD_CAN_SHOW_MENU),
+      canShowMenu: this.initialState_.getBoolean(ToolbarStateKey.RELOAD_CAN_SHOW_MENU),
       isNavigationLoading:
-          getTypedBoolean(ToolbarStateKey.IS_NAVIGATION_LOADING),
+          this.initialState_.getBoolean(ToolbarStateKey.IS_NAVIGATION_LOADING),
       isContextMenuVisible: false,
       stateToken: 0,
     },
@@ -277,12 +179,12 @@ export class ToolbarAppElement extends AppElementBase {
     },
     backForwardControlState: {
       backButtonState: {
-        enabled: getTypedBoolean(ToolbarStateKey.BACK_BUTTON_ENABLED),
+        enabled: this.initialState_.getBoolean(ToolbarStateKey.BACK_BUTTON_ENABLED),
         shouldBeShown: true,
         isContextMenuVisible: false,
       },
       forwardButtonState: {
-        enabled: getTypedBoolean(ToolbarStateKey.FORWARD_BUTTON_ENABLED),
+        enabled: this.initialState_.getBoolean(ToolbarStateKey.FORWARD_BUTTON_ENABLED),
         shouldBeShown: true,
         isContextMenuVisible: false,
       },
@@ -290,7 +192,7 @@ export class ToolbarAppElement extends AppElementBase {
     },
     homeControlState: {
       shouldBeShown:
-          getTypedBoolean(ToolbarStateKey.HOME_BUTTON_SHOULD_BE_SHOWN),
+          this.initialState_.getBoolean(ToolbarStateKey.HOME_BUTTON_SHOULD_BE_SHOWN),
       isContextMenuVisible: false,
     },
     performanceInterventionControlState: {
@@ -308,7 +210,7 @@ export class ToolbarAppElement extends AppElementBase {
 
     batterySaverControlState: {
       shouldBeShown:
-          getTypedBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
+          this.initialState_.getBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
       preventOverflow: false,
     },
     locationBarState: createDefaultLocationBarState(),
@@ -341,14 +243,12 @@ export class ToolbarAppElement extends AppElementBase {
       nudgeLabel: null,
     },
     layoutConstantsVersion:
-        getTypedInteger(ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),
-    touchUi: getTypedBoolean(ToolbarStateKey.TOUCH_UI),
+        this.initialState_.getInteger(ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),
+    touchUi: this.initialState_.getBoolean(ToolbarStateKey.TOUCH_UI),
     pinnedToolbarActionsState: [],
     extensionsState: [],
     controlsAppearInactive: false,
   };
-
-  private browserProxy_: BrowserProxy;
   private toolbarStateListenerHandle_: ToolbarStateListenerHandle =
       INVALID_TOOLBAR_STATE_LISTENER_HANDLE;
   private iconTable_: IconTable;
@@ -392,22 +292,27 @@ export class ToolbarAppElement extends AppElementBase {
 
   constructor() {
     super();
+    const initialSyncBootSuccess =
+        this.initialState_.hasKey(ToolbarStateKey.IS_NAVIGATION_LOADING) &&
+        this.initialState_.hasKey(ToolbarStateKey.BACK_BUTTON_ENABLED) &&
+        this.initialState_.hasKey(ToolbarStateKey.FORWARD_BUTTON_ENABLED);
     this.initialBootSnapshot_ = Object.freeze({
-      backButtonEnabled: getTypedBoolean(ToolbarStateKey.BACK_BUTTON_ENABLED),
+      backButtonEnabled:
+          this.initialState_.getBoolean(ToolbarStateKey.BACK_BUTTON_ENABLED),
       forwardButtonEnabled:
-          getTypedBoolean(ToolbarStateKey.FORWARD_BUTTON_ENABLED),
+          this.initialState_.getBoolean(ToolbarStateKey.FORWARD_BUTTON_ENABLED),
       isNavigationLoading:
-          getTypedBoolean(ToolbarStateKey.IS_NAVIGATION_LOADING),
-      initializedSync: this.initialSyncBootSuccess_,
+          this.initialState_.getBoolean(ToolbarStateKey.IS_NAVIGATION_LOADING),
+      initializedSync: initialSyncBootSuccess,
     });
 
-    const initialWebUISurfaceSyncEnabled =
-        getTypedBoolean(ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED);
+    const initialWebUISurfaceSyncEnabled = this.initialState_.getBoolean(
+        ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED);
     const isFallbackPrewarming =
-        getTypedBoolean(ToolbarStateKey.IS_FALLBACK_PREWARMING);
+        this.initialState_.getBoolean(ToolbarStateKey.IS_FALLBACK_PREWARMING);
     if (initialWebUISurfaceSyncEnabled && !isFallbackPrewarming) {
       assert(
-          this.initialSyncBootSuccess_,
+          initialSyncBootSuccess,
           'Sync startup expected but critical keys are missing!');
     }
 
@@ -417,7 +322,6 @@ export class ToolbarAppElement extends AppElementBase {
       // custom context menu are responsible for triggering their own menus.
       e.preventDefault();
     });
-    this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.iconTable_ = IconTable.getInstance();
     ColorChangeUpdater.forDocument().start();
     MetricsReporterImpl.getInstance().mark(MARK_JS_RESOURCES_LOADED);
@@ -605,9 +509,11 @@ export class ToolbarAppElement extends AppElementBase {
     this.browserProxy_.removeToolbarStateListener(
         this.toolbarStateListenerHandle_);
 
+    this.initialState_ = this.browserProxy_.getInitialState();
     this.isInitialized_ =
-        !getTypedBoolean(ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED) ||
-        hasInitialStateKey(ToolbarStateKey.IS_NAVIGATION_LOADING);
+        !this.initialState_.getBoolean(
+            ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED) ||
+        this.initialState_.hasKey(ToolbarStateKey.IS_NAVIGATION_LOADING);
     this.hasReceivedToolbarState_ = false;
     this.initializeSessionId_++;
 
@@ -1030,6 +936,7 @@ export class ToolbarAppElement extends AppElementBase {
       }
     }
   }
+
 }
 
 declare global {

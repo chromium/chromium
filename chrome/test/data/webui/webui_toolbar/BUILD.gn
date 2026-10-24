@@ -42,8 +42,6 @@ build_webui_tests("build") {
     "toolbar_chip_button_test.ts",
   ]
 
-  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-
   ts_deps = [
     "//chrome/browser/resources/webui_toolbar:build_ts",
     "//chrome/test/data/webui/cr_components/searchbox:build_ts",

@@ -21,12 +21,12 @@ export {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHan
 export type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
 export {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, ContentSettingImageType, ContextMenuType, DownloadProgressRingStatus, FocusRequestTarget, LhsChipIdentifier, OmniboxTextColor, PageActionAnimationStyle, PageActionId, PageActionTrigger, PermissionAction, PermissionChipTheme, PermissionPromptStyle, PinnedToolbarAction, SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 export type {GlicButtonState, LocationBarState, OmniboxAction, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-export {resetInitialStateForTesting, ToolbarAppElement} from './app.js';
+export {ToolbarAppElement} from './app.js';
 export {AppMenuButtonElement} from './app_menu_button.js';
 export type {BackForwardButtonElement} from './back_forward_button.js';
 export {BatterySaverButtonElement} from './battery_saver_button.js';
-export {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from './browser_proxy.js';
-export type {BrowserProxy, FocusRequestHandle, FocusRequestListener, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener, ToolbarStateListener, ToolbarStateListenerHandle} from './browser_proxy.js';
+export {BrowserProxyImpl, InitialStateReader, INVALID_FOCUS_REQUEST_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from './browser_proxy.js';
+export type {BrowserProxy, FocusRequestHandle, FocusRequestListener, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener, ToolbarFlatStateSchema, ToolbarStateListener, ToolbarStateListenerHandle} from './browser_proxy.js';
 export {ContentSettingIconElement} from './content_setting_icon.js';
 export type {ExtensionsElement} from './extensions.js';
 export {GlicButtonElement} from './glic_button.js';
