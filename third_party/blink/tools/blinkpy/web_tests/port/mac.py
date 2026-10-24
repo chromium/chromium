@@ -125,7 +125,7 @@ class MacPort(base.Port):
         )
 
     def path_to_apache_config_file(self):
-        config_file_basename = 'apache2-httpd-%s-php7.conf' % (
+        config_file_basename = 'apache2-httpd-%s-php.conf' % (
             self._apache_version(),
         )
         return self._filesystem.join(

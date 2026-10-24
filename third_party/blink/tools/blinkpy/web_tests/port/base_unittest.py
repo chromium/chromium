@@ -2825,18 +2825,18 @@ class PortTest(LoggingTestCase):
         port = self.make_port()
         port._apache_version = lambda: '2.4'
         self._assert_config_file_for_platform(
-            port, 'linux', 'apache2-httpd-2.4-php7.conf'
+            port, 'linux', 'apache2-httpd-2.4-php.conf'
         )
-        self._assert_config_file_for_linux(port, 'apache2-httpd-2.4-php7.conf')
+        self._assert_config_file_for_linux(port, 'apache2-httpd-2.4-php.conf')
 
         self._assert_config_file_for_platform(
-            port, 'mac', 'apache2-httpd-2.4-php7.conf'
+            port, 'mac', 'apache2-httpd-2.4-php.conf'
         )
         self._assert_config_file_for_platform(
-            port, 'win32', 'apache2-httpd-2.4-php7.conf'
+            port, 'win32', 'apache2-httpd-2.4-php.conf'
         )
         self._assert_config_file_for_platform(
-            port, 'barf', 'apache2-httpd-2.4-php7.conf'
+            port, 'barf', 'apache2-httpd-2.4-php.conf'
         )
 
     def test_skips_test_in_smoke_tests(self):

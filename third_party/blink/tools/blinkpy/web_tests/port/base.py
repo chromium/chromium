@@ -2951,7 +2951,7 @@ class Port(object):
         # Keep the logic to use apache version even though we only have
         # configuration file for 2.4 now, in case we will have newer version in
         # future.
-        return 'apache2-httpd-' + self._apache_version() + '-php7.conf'
+        return 'apache2-httpd-' + self._apache_version() + '-php.conf'
 
     def path_to_driver(self, target=None):
         """Returns the full path to the test driver."""

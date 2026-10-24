@@ -69,7 +69,7 @@ class IOSPortTest(port_testcase.PortTestCase):
         port._apache_version = lambda: '2.4'
         self.assertEqual(
             port.path_to_apache_config_file(),
-            '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf',
+            '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php.conf',
         )
 
     def test_used_expectations_files(self):
