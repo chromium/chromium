@@ -126,7 +126,6 @@ class HTMLToken {
     String Value() const { return value_.AsString(); }
 
     void AppendToValue(UChar c) { value_.AddChar(c); }
-    void ClearValue() { value_.clear(); }
 
    private:
     // TODO(chromium:1204030): Do a more rigorous study and select a

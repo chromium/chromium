@@ -96,12 +96,6 @@ class ParserRootInsertionPoint
   Member<Node> ref_node;
 };
 
-// TODO(https://crbug.com/1049898): These are only exposed to make it possible
-// to delete an expired histogram. The test should be rewritten to test at a
-// different level, so it won't have to make assertions about internal state.
-void CORE_EXPORT ResetDiscardedTokenCountForTesting();
-size_t CORE_EXPORT GetDiscardedTokenCountForTesting();
-
 class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                                        private HTMLParserScriptRunnerHost {
  public:
@@ -165,8 +159,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // The execution context, i.e., the document, no longer blocks script
   // execution.
   void ExecuteScriptsWaitingForPrerenderActivation() override;
-
-  void SetPatchScope(ContainerNode* scope);
 
   // https://html.spec.whatwg.org/C/#abort-a-fragment-parser
   // Stops and detaches a fragment parser that is fed by an HTMLStream. If the

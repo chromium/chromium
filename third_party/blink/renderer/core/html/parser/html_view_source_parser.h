@@ -56,7 +56,6 @@ class CORE_EXPORT HTMLViewSourceParser final
   }
 
   void PumpTokenizer();
-  void UpdateTokenizerState();
 
   void StartTracker(SegmentedString&, HTMLTokenizer*, HTMLToken*);
   void EndTracker(SegmentedString&, HTMLTokenizer*);

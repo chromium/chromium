@@ -229,17 +229,6 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     }
   }
 
-  bool IsTableBodyContextElement() const {
-    switch (GetHTMLTag()) {
-      case html_names::HTMLTag::kTbody:
-      case html_names::HTMLTag::kTfoot:
-      case html_names::HTMLTag::kThead:
-        return namespace_uri_ == html_names::xhtmlNamespaceURI;
-      default:
-        return false;
-    }
-  }
-
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#special
   bool IsSpecialNode() const {
     if (IsDocumentFragmentNode())

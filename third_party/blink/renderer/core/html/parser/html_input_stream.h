@@ -71,8 +71,6 @@ class HTMLInputStream {
     last_->Close();
   }
 
-  void CloseWithoutMarkingEndOfFile() { last_->Close(); }
-
   bool HaveSeenEndOfFile() const { return last_->IsClosed(); }
 
   SegmentedString& Current() { return first_; }

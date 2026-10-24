@@ -516,11 +516,6 @@ Element* HTMLElementStack::HtmlElement() const {
   return To<Element>(root_node_.Get());
 }
 
-Element* HTMLElementStack::HeadElement() const {
-  DCHECK(head_element_);
-  return head_element_.Get();
-}
-
 Element* HTMLElementStack::BodyElement() const {
   DCHECK(body_element_);
   return body_element_.Get();

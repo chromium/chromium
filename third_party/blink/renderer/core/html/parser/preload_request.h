@@ -148,14 +148,6 @@ class CORE_EXPORT PreloadRequest {
   }
 
 
-  // Set whether the preload request is eligible for the Browsing Topics API.
-  //
-  // See https://github.com/patcg-individual-drafts/topics/blob/main/README.md
-  // for the latest version of the Topics API explainer.
-  void SetBrowsingTopicsEligible(bool flag) {
-    browsing_topics_eligible_ = flag;
-  }
-
   bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
 
   bool IsPotentiallyLCPInfluencer() const {
@@ -208,11 +200,9 @@ class CORE_EXPORT PreloadRequest {
       RenderBlockingBehavior::kUnset;
   bool from_insertion_scanner_ = false;
   const ResourceFetcher::IsImageSet is_image_set_;
-  bool is_lazy_load_image_enabled_ = false;
   base::TimeTicks creation_time_ = base::TimeTicks::Now();
   bool is_potentially_lcp_element_ = false;
   bool is_potentially_lcp_influencer_ = false;
-  bool browsing_topics_eligible_ = false;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;
