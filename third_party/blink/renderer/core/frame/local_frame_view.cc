@@ -784,12 +784,15 @@ void LocalFrameView::PerformLayout() {
 
     if (first_layout_with_body_ && body) {
       first_layout_with_body_ = false;
-      mojom::blink::ScrollbarMode h_mode;
-      mojom::blink::ScrollbarMode v_mode;
-      GetLayoutView()->CalculateScrollbarModes(h_mode, v_mode);
-      if (v_mode == mojom::blink::ScrollbarMode::kAuto) {
-        if (auto* scrollable_area = GetLayoutView()->GetScrollableArea())
-          scrollable_area->ForceVerticalScrollbarForFirstLayout();
+      if (!RuntimeEnabledFeatures::SkipInitialForcedScrollbarEnabled()) {
+        mojom::blink::ScrollbarMode h_mode;
+        mojom::blink::ScrollbarMode v_mode;
+        GetLayoutView()->CalculateScrollbarModes(h_mode, v_mode);
+        if (v_mode == mojom::blink::ScrollbarMode::kAuto) {
+          if (auto* scrollable_area = GetLayoutView()->GetScrollableArea()) {
+            scrollable_area->ForceVerticalScrollbarForFirstLayout();
+          }
+        }
       }
     }
   }
