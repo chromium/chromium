@@ -90,5 +90,6 @@ cr-icon[invisible] {
 
 .dropdown-item {
   gap: 8px;
+  user-select: none;
 }
 
