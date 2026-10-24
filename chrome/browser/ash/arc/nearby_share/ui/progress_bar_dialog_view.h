@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_UI_PROGRESS_BAR_DIALOG_VIEW_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_UI_PROGRESS_BAR_DIALOG_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace aura {
@@ -20,13 +23,16 @@ class ProgressBar;
 namespace arc {
 
 class ProgressBarDialogView : public views::BoxLayoutView {
+  METADATA_HEADER(ProgressBarDialogView, views::BoxLayoutView)
+
  public:
   explicit ProgressBarDialogView(bool is_multiple_files);
   ProgressBarDialogView(const ProgressBarDialogView&) = delete;
   ProgressBarDialogView& operator=(const ProgressBarDialogView&) = delete;
   ~ProgressBarDialogView() override;
 
-  static void Show(aura::Window* parent, ProgressBarDialogView* view);
+  static void Show(aura::Window* parent,
+                   std::unique_ptr<ProgressBarDialogView> view);
 
   void UpdateProgressBarValue(double value);
   double GetProgressBarValue() const;

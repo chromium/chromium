@@ -4,25 +4,31 @@
 
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/view_class_properties.h"
 
 namespace arc {
 
 NearbyShareOverlayView::~NearbyShareOverlayView() = default;
 
 void NearbyShareOverlayView::Show(aura::Window* base_window,
-                                  views::View* child_view) {
+                                  std::unique_ptr<views::View> child_view) {
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(base_window);
   CHECK(shell_surface_base, base::NotFatalUntil::M160);
 
   CloseOverlayOn(base_window);
 
-  auto dialog = base::WrapUnique(new NearbyShareOverlayView(child_view));
+  auto dialog =
+      base::WrapUnique(new NearbyShareOverlayView(std::move(child_view)));
 
   exo::ShellSurfaceBase::OverlayParams params(std::move(dialog));
   params.translucent = true;
@@ -44,8 +50,9 @@ void NearbyShareOverlayView::AddedToWidget() {
   view_ax.SetIsIgnored(true);
 }
 
-NearbyShareOverlayView::NearbyShareOverlayView(views::View* child_view)
-    : has_child_view_(child_view) {
+NearbyShareOverlayView::NearbyShareOverlayView(
+    std::unique_ptr<views::View> child_view)
+    : has_child_view_(child_view != nullptr) {
   if (has_child_view_) {
     SetInteriorMargin(gfx::Insets::VH(0, 32));
     SetMainAxisAlignment(views::LayoutAlignment::kCenter);
@@ -55,7 +62,7 @@ NearbyShareOverlayView::NearbyShareOverlayView(views::View* child_view)
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
 
-    AddChildViewRaw(child_view);
+    AddChildView(std::move(child_view));
   }
 }
 

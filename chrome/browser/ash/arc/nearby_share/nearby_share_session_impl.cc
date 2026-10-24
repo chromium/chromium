@@ -48,6 +48,7 @@
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
+#include "ui/views/view_utils.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -349,9 +350,10 @@ void NearbyShareSessionImpl::OnFileStreamingStarted() {
   // UI step as the file streaming time should be < 1 second.
   if (file_handler_->GetTotalSizeOfFiles() > kShowProgressBarMinSizeInBytes) {
     const bool is_multiple_files = file_handler_->GetNumberOfFiles() > 1;
-    progress_bar_view_ =
+    auto progress_bar_view =
         std::make_unique<ProgressBarDialogView>(is_multiple_files);
-    ProgressBarDialogView::Show(arc_window_, progress_bar_view_.get());
+    progress_bar_view_tracker_.SetView(progress_bar_view.get());
+    ProgressBarDialogView::Show(arc_window_, std::move(progress_bar_view));
 
     // Keep updating the progress bar if the interval timer elapsed to update
     // the user on the file streaming progress.
@@ -375,7 +377,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   }
 
   // Close any overlay and respective child views that may still be shown.
-  progress_bar_view_.reset();
+  progress_bar_view_tracker_.SetView(nullptr);
   NearbyShareOverlayView::CloseOverlayOn(arc_window_);
 
   // Only applicable if sharing files.
@@ -443,8 +445,9 @@ void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << __func__;
-  if (progress_bar_view_) {
-    progress_bar_view_->UpdateInterpolatedProgressBarValue();
+  if (auto* progress_bar = views::AsViewClass<ProgressBarDialogView>(
+          progress_bar_view_tracker_.view())) {
+    progress_bar->UpdateInterpolatedProgressBarValue();
   }
 }
 
@@ -452,10 +455,11 @@ void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   DVLOG(1) << "OnProgressBarUpdate with value: " << value;
-  if (progress_bar_view_) {
+  if (auto* progress_bar = views::AsViewClass<ProgressBarDialogView>(
+          progress_bar_view_tracker_.view())) {
     // Only show value if there is forward progress.
-    if (value > progress_bar_view_->GetProgressBarValue()) {
-      progress_bar_view_->UpdateProgressBarValue(value);
+    if (value > progress_bar->GetProgressBarValue()) {
+      progress_bar->UpdateProgressBarValue(value);
     }
   }
 }
@@ -511,7 +515,7 @@ void NearbyShareSessionImpl::FinishSession() {
   if (progress_bar_update_timer_.IsRunning()) {
     progress_bar_update_timer_.Stop();
   }
-  progress_bar_view_.reset();
+  progress_bar_view_tracker_.SetView(nullptr);
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     NearbyShareOverlayView::CloseOverlayOn(arc_window);

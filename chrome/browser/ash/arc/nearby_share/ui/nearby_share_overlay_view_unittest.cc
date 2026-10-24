@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_tracker.h"
 
 namespace arc {
 
@@ -18,7 +19,7 @@ class NearbyShareOverlayViewTest : public views::ViewsTestBase {
  public:
   std::unique_ptr<NearbyShareOverlayView> CreateTestOverlayView(
       std::unique_ptr<views::View> dialog_view) {
-    return base::WrapUnique(new NearbyShareOverlayView(dialog_view.get()));
+    return base::WrapUnique(new NearbyShareOverlayView(std::move(dialog_view)));
   }
 };
 
@@ -43,6 +44,19 @@ TEST_F(NearbyShareOverlayViewTest, ShowAndClose) {
     widget->Close();
     EXPECT_TRUE(widget->IsClosed());
   }
+}
+
+TEST_F(NearbyShareOverlayViewTest, ChildViewOwnedByOverlay) {
+  views::ViewTracker tracker;
+  auto child_view = std::make_unique<views::View>();
+  tracker.SetView(child_view.get());
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetContentsView(CreateTestOverlayView(std::move(child_view)));
+  ASSERT_TRUE(tracker.view());
+
+  widget.reset();
+  EXPECT_FALSE(tracker.view());
 }
 
 }  // namespace arc

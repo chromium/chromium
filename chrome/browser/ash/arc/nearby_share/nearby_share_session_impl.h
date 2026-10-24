@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/window.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;
@@ -44,8 +45,6 @@ struct ScopedObservationTraits<exo::WMHelper,
 }  // namespace base
 
 namespace arc {
-
-class ProgressBarDialogView;
 
 // Implementation of NearbyShareSession interface.
 class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
@@ -162,7 +161,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   std::unique_ptr<ShareInfoFileHandler> file_handler_;
 
   std::unique_ptr<webshare::PrepareDirectoryTask> prepare_directory_task_;
-  std::unique_ptr<ProgressBarDialogView> progress_bar_view_;
+  views::ViewTracker progress_bar_view_tracker_;
 
   // Timer used to wait for the ARC window to be asynchronously initialized and
   // visible.

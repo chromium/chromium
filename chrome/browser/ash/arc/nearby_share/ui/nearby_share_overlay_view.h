@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_UI_NEARBY_SHARE_OVERLAY_VIEW_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_UI_NEARBY_SHARE_OVERLAY_VIEW_H_
 
+#include <memory>
+
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace aura {
@@ -30,7 +32,8 @@ class NearbyShareOverlayView : public views::FlexLayoutView {
   // ensure there is sufficient horizontal margins when fitting inside
   // of |base_window|. Otherwise, |child_view|'s width is fixed at its
   // preferred width.
-  static void Show(aura::Window* base_window, views::View* child_view);
+  static void Show(aura::Window* base_window,
+                   std::unique_ptr<views::View> child_view);
 
   // Closes any overlay view on |base_window|.
   static void CloseOverlayOn(aura::Window* base_window);
@@ -41,7 +44,7 @@ class NearbyShareOverlayView : public views::FlexLayoutView {
  private:
   friend class NearbyShareOverlayViewTest;
 
-  explicit NearbyShareOverlayView(views::View* child_view);
+  explicit NearbyShareOverlayView(std::unique_ptr<views::View> child_view);
 
   const bool has_child_view_;
 };

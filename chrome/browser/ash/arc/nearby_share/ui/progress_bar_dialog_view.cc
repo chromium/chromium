@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
@@ -13,6 +14,7 @@
 #include "chromeos/ash/experiences/arc/compat_mode/style/arc_color_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -59,7 +61,6 @@ ProgressBarDialogView::ProgressBarDialogView(bool is_multiple_files)
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
-  AddChildViewRaw(message_label_.get());
 
   progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
   progress_bar_->SetPreferredHeight(kProgressBarHeight);
@@ -98,8 +99,8 @@ void ProgressBarDialogView::AddedToWidget() {
 }
 
 void ProgressBarDialogView::Show(aura::Window* parent,
-                                 ProgressBarDialogView* view) {
-  NearbyShareOverlayView::Show(parent, view);
+                                 std::unique_ptr<ProgressBarDialogView> view) {
+  NearbyShareOverlayView::Show(parent, std::move(view));
 }
 
 void ProgressBarDialogView::UpdateProgressBarValue(double value) {
@@ -130,5 +131,8 @@ void ProgressBarDialogView::UpdateInterpolatedProgressBarValue() {
     progress_bar_->SetValue(next_value);
   }
 }
+
+BEGIN_METADATA(ProgressBarDialogView)
+END_METADATA
 
 }  // namespace arc
