@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
@@ -66,14 +65,7 @@ void CanvasImageProvider::SetAnimatedImageFrameIndexes(
 cc::ImageProvider::ScopedResult CanvasImageProvider::GetRasterContent(
     const cc::DrawImage& draw_image) {
   cc::PaintImage paint_image = draw_image.paint_image();
-  if (paint_image.IsDeferredPaintRecord()) {
-    CHECK(!paint_image.IsPaintWorklet());
-    scoped_refptr<CanvasDeferredPaintRecord> canvas_deferred_paint_record(
-        static_cast<CanvasDeferredPaintRecord*>(
-            paint_image.deferred_paint_record().get()));
-    return cc::ImageProvider::ScopedResult(
-        canvas_deferred_paint_record->GetPaintRecord());
-  }
+  CHECK(!paint_image.IsDeferredPaintRecord());
 
   // Bind texture backing to RasterContextProvider if necessary
   if (paint_image.IsTextureBacked()) {
