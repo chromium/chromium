@@ -12,9 +12,9 @@ import zipfile
 # repository needed in chromium.
 
 # Source URL for the current version of the coremltools repository as a zip file.
-coremltools_src_url = "https://github.com/apple/coremltools/archive/refs/tags/8.2.zip"
+coremltools_src_url = "https://github.com/apple/coremltools/archive/refs/tags/9.0.zip"
 # The directory within the zip archive that we want to extract.
-extract_sub_dir = os.path.join("coremltools-8.2", "mlmodel" , "format");
+extract_sub_dir = os.path.join("coremltools-9.0", "mlmodel" , "format");
 # The destination within the current working directory where we want the files
 # to be extracted to.
 destination_sub_dir = os.path.join("mlmodel", "format");
@@ -68,7 +68,11 @@ import("//third_party/protobuf/proto_library.gni")
 # coremltools is used to support WebNN on macOS.
 
 proto_library("modelformat_proto") {{
-  visibility = [ "//services/webnn/*" ]
+  visibility = [
+    "//services/webnn/*",
+    "//third_party/litert:*",
+    "//third_party/tflite:*",
+  ]
   sources = {proto_files}
   cc_generator_options = "lite"
 }}

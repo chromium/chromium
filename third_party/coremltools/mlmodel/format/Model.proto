@@ -332,6 +332,9 @@ message SerializedModel {
  *
  * 9 : iOS 18, macOS 15, tvOS 18, watchOS 11 (Core ML 8)
  * - multiple functions
+ *
+ * 10 : iOS 26, macOS 26, tvOS 26, watchOS 26, visionOS 26 (Core ML 9)
+ * - Int8 MultiArray types for ML Programs
  */
 message Model {
   int32 specificationVersion = 1;
