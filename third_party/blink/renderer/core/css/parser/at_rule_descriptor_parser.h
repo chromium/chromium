@@ -32,8 +32,6 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
                                            StringView,
                                            const CSSParserContext&);
-  static CSSValue* ParseFontFaceDeclaration(CSSParserTokenStream&,
-                                            const CSSParserContext&);
   static CSSValue* ParseAtPropertyDescriptor(AtRuleDescriptorID,
                                              CSSParserTokenStream&,
                                              const CSSParserContext&);

@@ -498,7 +498,6 @@ bool ConsumeTimelineTriggerShorthand(
 
 CSSValue* GetImpliedRangeEnd(const CSSValue* start_range);
 
-void AddBackgroundValue(CSSValue*& list, const CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenStream&);
 CSSValue* ConsumeBackgroundBlendMode(CSSParserTokenStream&);
 CSSValue* ConsumeBackgroundBox(CSSParserTokenStream&);
@@ -667,7 +666,6 @@ CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream&,
 CSSValue* ConsumeFontVariationSettings(CSSParserTokenStream&,
                                        const CSSParserContext&,
                                        CSSParserLocalContext&);
-CSSValue* ConsumeFontLanguageOverrideString(CSSParserTokenStream&);
 CSSValue* ConsumeFontLanguageOverride(CSSParserTokenStream&,
                                       const CSSParserContext&);
 CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream&);

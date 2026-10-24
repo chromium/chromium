@@ -785,8 +785,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return has_nested_intermediate_result_;
   }
 
-  String CSSTextAsClamp() const;
-
   const CSSMathType& Type() const { return type_; }
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()

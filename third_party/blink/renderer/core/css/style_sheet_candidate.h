@@ -49,7 +49,6 @@ class StyleSheetCandidate {
   bool IsEnabledViaScript() const;
   bool IsEnabledAndLoading() const;
   bool CanBeActivated(const String& current_preferrable_name) const;
-  bool IsCSSStyle() const;
 
   StyleSheet* Sheet() const;
   AtomicString Title() const;

@@ -701,8 +701,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                                       const RuleSet& old_rule_set,
                                       RuleData& new_rule_data);
 
-  void SortKeyframesRulesIfNeeded();
-
   void CompactRules();
   static void CreateSubstringMatchers(
       RuleMap& attr_map,

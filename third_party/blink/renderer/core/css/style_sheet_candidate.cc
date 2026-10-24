@@ -48,10 +48,6 @@ bool StyleSheetCandidate::IsXSL() const {
          To<ProcessingInstruction>(GetNode()).IsXSL();
 }
 
-bool StyleSheetCandidate::IsCSSStyle() const {
-  return type_ == kHTMLStyle || type_ == kSVGStyle;
-}
-
 bool StyleSheetCandidate::IsEnabledViaScript() const {
   auto* html_link_element = DynamicTo<HTMLLinkElement>(GetNode());
   return html_link_element && html_link_element->IsEnabledViaScript();

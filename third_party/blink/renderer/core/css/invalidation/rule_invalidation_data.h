@@ -178,9 +178,6 @@ class CORE_EXPORT RuleInvalidationData {
            NeedsHasInvalidationForPseudoStateChange();
   }
 
-  bool HasSelectorForId(const AtomicString& id_value) const {
-    return id_invalidation_sets.Contains(id_value);
-  }
   bool HasIdsInSelectors() const { return id_invalidation_sets.size() > 0; }
   bool InvalidatesParts() const { return invalidates_parts; }
   // Returns true if we have :nth-child(... of S) selectors where S contains a

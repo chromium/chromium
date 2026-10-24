@@ -2835,13 +2835,6 @@ void StyleEngine::UpdateViewTransitionOptIn() {
       cross_document_enabled, types, preview_types);
 }
 
-bool StyleEngine::HasRulesForId(const AtomicString& id) const {
-  DCHECK(global_rule_set_);
-  return global_rule_set_->GetRuleFeatureSet()
-      .GetRuleInvalidationData()
-      .HasSelectorForId(id);
-}
-
 void StyleEngine::InitialStyleChanged() {
   InvalidateInitialStyle();
   // Cached styles may depend on the old settings, e.g. minimum font size.

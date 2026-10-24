@@ -106,7 +106,6 @@ class CORE_EXPORT CSSTokenizer {
   StringView ConsumeName();
   UChar32 ConsumeEscape();
 
-  bool NextTwoCharsAreValidEscape();
   bool NextCharsAreNumber(UChar);
   bool NextCharsAreNumber();
   bool NextCharsAreIdentifier(UChar);

@@ -155,8 +155,6 @@ class CORE_EXPORT SelectorFilter {
 
  private:
   void PushAncestors(const Node& node);
-  void PushParentStackFrame(Element& parent);
-  void PopParentStackFrame();
 
   HeapVector<Member<Element>> parent_stack_;
   Vector<uint16_t> set_bits_;

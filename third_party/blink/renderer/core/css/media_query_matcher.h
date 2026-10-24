@@ -52,7 +52,6 @@ class CORE_EXPORT MediaQueryMatcher final
   void DocumentDetached();
 
   void AddMediaQueryList(MediaQueryList*);
-  void RemoveMediaQueryList(MediaQueryList*);
 
   void AddViewportListener(MediaQueryListListener*);
   void RemoveViewportListener(MediaQueryListListener*);

@@ -433,12 +433,6 @@ class CORE_EXPORT SelectorChecker {
                                       MatchResult&) const;
   MatchStatus MatchForRelation(const SelectorCheckingContext&,
                                MatchResult&) const;
-  MatchStatus MatchForPseudoContent(const SelectorCheckingContext&,
-                                    const Element&,
-                                    MatchResult&) const;
-  MatchStatus MatchForPseudoShadow(const SelectorCheckingContext&,
-                                   const ContainerNode*,
-                                   MatchResult&) const;
   bool CheckPseudoClass(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoAutofill(CSSSelector::PseudoType, Element&) const;
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;

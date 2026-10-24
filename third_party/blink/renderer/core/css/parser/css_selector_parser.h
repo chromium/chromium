@@ -164,8 +164,6 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenStream&,
                                                         ResultFlags&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
-  CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenStream&,
-                                                        ResultFlags&);
   CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenStream&,
                                                ResultFlags&);
   void AddPlaceholderSelectorIfNeeded(CSSParserTokenStream& stream);

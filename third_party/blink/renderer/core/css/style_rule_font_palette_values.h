@@ -38,8 +38,6 @@ class CORE_EXPORT StyleRuleFontPaletteValues : public StyleRuleBase {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<const CSSValue>& GetDescriptorReference(AtRuleDescriptorID);
-
   AtomicString name_;
   Member<CSSPropertyValueSet> properties_;
 };

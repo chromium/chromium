@@ -532,7 +532,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void PlatformColorsChanged();
 
-  bool HasRulesForId(const AtomicString& id) const;
   void ClassChangedForElement(const SpaceSplitString& changed_classes,
                               Element&);
   void ClassChangedForElement(const SpaceSplitString& old_classes,
@@ -877,7 +876,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                        MediaValueChange);
   void MediaQueryAffectingValueChanged(HeapHashSet<Member<TextTrack>>&,
                                        MediaValueChange);
-  void EnsureUAStyleForTransitionPseudos();
 
   const RuleFeatureSet& GetRuleFeatureSet() const {
     DCHECK(global_rule_set_);

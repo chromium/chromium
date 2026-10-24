@@ -69,7 +69,6 @@ class CORE_EXPORT ScopedStyleResolver final
       const AtomicString& animation_name);
 
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_.Get(); }
-  static void CounterStyleRulesChanged(TreeScope& scope);
 
   StyleRulePositionTry* PositionTryForName(const AtomicString& try_name);
 

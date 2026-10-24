@@ -177,7 +177,6 @@ class CORE_EXPORT CSSParserToken {
 
   void Serialize(StringBuilder&) const;
 
-  CSSParserToken CopyWithUpdatedString(const StringView&) const;
   CSSParserToken CopyWithoutValue() const {
     CSSParserToken token = *this;
     token.value_is_inline_ = false;

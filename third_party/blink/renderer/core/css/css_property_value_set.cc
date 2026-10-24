@@ -805,13 +805,6 @@ bool MutableCSSPropertyValueSet::RemovePropertiesAffectedByAll() {
   return false;
 }
 
-CSSPropertyValue* MutableCSSPropertyValueSet::FindCSSPropertyWithName(
-    const CSSPropertyName& name) {
-  return const_cast<CSSPropertyValue*>(
-      name.IsCustomProperty() ? FindPropertyPointer(name.ToAtomicString())
-                              : FindPropertyPointer(name.Id()));
-}
-
 bool CSSPropertyValueSet::PropertyMatches(
     CSSPropertyID property_id,
     const CSSValue& property_value) const {

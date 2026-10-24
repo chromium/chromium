@@ -64,7 +64,6 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   ~CSSComputedStyleDeclaration() override;
 
   String GetPropertyValue(CSSPropertyID) const;
-  bool GetPropertyPriority(CSSPropertyID) const;
 
   MutableCSSPropertyValueSet* CopyProperties() const;
 

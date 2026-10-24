@@ -128,11 +128,6 @@ class CORE_EXPORT StylePropertySerializer {
                           const String& value,
                           bool is_important,
                           bool is_not_first_decl) const;
-  bool IsPropertyShorthandAvailable(const StylePropertyShorthand&) const;
-  bool ShorthandHasOnlyInitialOrInheritedValue(
-      const StylePropertyShorthand&) const;
-  void AppendBackgroundPropertyAsText(StringBuilder& result,
-                                      unsigned& num_decls) const;
 
   // This function does checks common to all shorthands, and returns:
   // - The serialization if the shorthand serializes as a css-wide keyword.

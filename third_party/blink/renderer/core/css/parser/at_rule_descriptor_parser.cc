@@ -442,20 +442,6 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
   return ParseFontFaceDescriptor(id, stream, context);
 }
 
-CSSValue* AtRuleDescriptorParser::ParseFontFaceDeclaration(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
-  DCHECK_EQ(stream.Peek().GetType(), kIdentToken);
-  const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
-  AtRuleDescriptorID id = token.ParseAsAtRuleDescriptorID();
-
-  if (stream.Consume().GetType() != kColonToken) {
-    return nullptr;  // Parse error
-  }
-
-  return ParseFontFaceDescriptor(id, stream, context);
-}
-
 CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,

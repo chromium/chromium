@@ -690,11 +690,6 @@ UChar32 CSSTokenizer::ConsumeEscape() {
   return blink::ConsumeEscape(input_);
 }
 
-bool CSSTokenizer::NextTwoCharsAreValidEscape() {
-  return TwoCharsAreValidEscape(input_.PeekWithoutReplacement(0),
-                                input_.PeekWithoutReplacement(1));
-}
-
 // http://www.w3.org/TR/css3-syntax/#starts-with-a-number
 bool CSSTokenizer::NextCharsAreNumber(UChar first) {
   UChar second = input_.PeekWithoutReplacement(0);

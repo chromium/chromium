@@ -14,11 +14,4 @@ void SelectorFilterParentScope::PushAncestors(Element& element) {
   }
 }
 
-void SelectorFilterParentScope::PopAncestors(Element& element) {
-  if (Element* ancestor = FlatTreeTraversal::ParentElement(element)) {
-    resolver_->GetSelectorFilter().PopParent(*ancestor);
-    PopAncestors(*ancestor);
-  }
-}
-
 }  // namespace blink

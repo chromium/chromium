@@ -32,10 +32,8 @@ class CORE_EXPORT SelectorFilterParentScope {
       mark_ = resolver_->GetSelectorFilter().SetMark();
       if (scope_type == ScopeType::kRoot) {
         PushAncestors(*parent);
-        resolver_->GetSelectorFilter().PushParent(*parent);
-      } else {
-        resolver_->GetSelectorFilter().PushParent(*parent);
       }
+      resolver_->GetSelectorFilter().PushParent(*parent);
     }
   }
 
@@ -46,9 +44,7 @@ class CORE_EXPORT SelectorFilterParentScope {
   }
 
  private:
-  void PushParentIfNeeded();
   void PushAncestors(Element&);
-  void PopAncestors(Element&);
 
   SelectorFilter::Mark mark_;
   StyleResolver* resolver_ = nullptr;

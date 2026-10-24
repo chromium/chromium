@@ -482,7 +482,6 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   bool RemoveShorthandProperty(const AtomicString& custom_property_name) {
     return false;
   }
-  CSSPropertyValue* FindCSSPropertyWithName(const CSSPropertyName&);
 
   void InvalidateHashIfComputed() {
     if (hash_ != HashTraits<unsigned>::EmptyValue()) {

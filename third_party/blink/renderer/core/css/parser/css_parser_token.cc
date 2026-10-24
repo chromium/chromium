@@ -135,13 +135,6 @@ bool CSSParserToken::HasStringBacking() const {
          token_type == kStringToken;
 }
 
-CSSParserToken CSSParserToken::CopyWithUpdatedString(
-    const StringView& string) const {
-  CSSParserToken copy(*this);
-  copy.InitValueFromStringView(string);
-  return copy;
-}
-
 bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
   if (ValueDataCharRaw() == other.ValueDataCharRaw() &&
       value_is_8bit_ == other.value_is_8bit_) {
