@@ -5,8 +5,10 @@
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -49,19 +51,20 @@ std::vector<mojom::ContentSecurityPolicyPtr> Parse(
 }
 
 mojom::CSPSourceListPtr ParseToSourceList(mojom::CSPDirectiveName directive,
-                                          const std::string& value) {
+                                          std::string_view value) {
   return std::move(
-      Parse({ToString(directive) + " " + value})[0]->directives[directive]);
+      Parse({base::StrCat({ToStringView(directive), " ", value})})[0]
+          ->directives[directive]);
 }
 
 std::vector<mojom::CSPSourceListPtr> ParseToVectorOfSourceLists(
     mojom::CSPDirectiveName directive,
     const std::vector<std::string>& values) {
   std::vector<std::string> csp_values(values.size());
-  std::ranges::transform(values, csp_values.begin(),
-                         [directive](const std::string& s) {
-                           return ToString(directive) + " " + s;
-                         });
+  std::ranges::transform(
+      values, csp_values.begin(), [directive](const std::string& s) {
+        return base::StrCat({ToStringView(directive), " ", s});
+      });
   std::vector<mojom::ContentSecurityPolicyPtr> policies = Parse(csp_values);
   std::vector<mojom::CSPSourceListPtr> sources(policies.size());
   std::ranges::transform(
@@ -401,7 +404,8 @@ TEST(CSPSourceList, SubsumeWithSelf) {
 
     GURL parsed_test_origin(test.origin);
     auto origin_b = mojom::CSPSource::New(
-        parsed_test_origin.GetScheme(), parsed_test_origin.GetHost(),
+        std::string(parsed_test_origin.scheme()),
+        std::string(parsed_test_origin.host()),
         parsed_test_origin.EffectiveIntPort(), "", false, false);
     EXPECT_EQ(test.expected,
               CSPSourceListSubsumes(

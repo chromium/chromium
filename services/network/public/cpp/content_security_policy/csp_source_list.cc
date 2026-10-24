@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
@@ -37,9 +38,9 @@ bool AllowFromSources(const GURL& url,
 }
 
 // Removes from |a| elements not contained in |b|.
-void IntersectNonces(base::flat_set<std::string>& a,
-                     const base::flat_set<std::string>& b) {
-  base::EraseIf(a, [&b](const std::string& s) { return !b.contains(s); });
+void IntersectNonces(base::flat_set<std::string_view>& a,
+                     const base::flat_set<std::string_view>& b) {
+  base::EraseIf(a, [&b](std::string_view s) { return !b.contains(s); });
 }
 
 // Removes from |a| elements not contained in |b|.
@@ -74,10 +75,11 @@ bool AllowAllInline(CSPDirectiveName directive,
 void AddSourceSchemesToSet(base::flat_set<std::string>& set,
                            const mojom::CSPSource* source) {
   set.emplace(source->scheme);
-  if (source->scheme == url::kHttpScheme)
+  if (source->scheme == url::kHttpScheme) {
     set.emplace(url::kHttpsScheme);
-  else if (source->scheme == url::kWsScheme)
+  } else if (source->scheme == url::kWsScheme) {
     set.emplace(url::kWssScheme);
+  }
 }
 
 base::flat_set<std::string> IntersectSchemesOnly(
@@ -93,10 +95,10 @@ base::flat_set<std::string> IntersectSchemesOnly(
   base::flat_set<std::string> intersection;
   for (const auto& source_b : list_b) {
     if (CSPSourceIsSchemeOnly(*source_b)) {
-      if (schemes_a.contains(source_b->scheme))
+      if (schemes_a.contains(source_b->scheme)) {
         AddSourceSchemesToSet(intersection, source_b.get());
-      else if (source_b->scheme == url::kHttpScheme &&
-               schemes_a.contains(url::kHttpsScheme)) {
+      } else if (source_b->scheme == url::kHttpScheme &&
+                 schemes_a.contains(url::kHttpsScheme)) {
         intersection.emplace(url::kHttpsScheme);
       } else if (source_b->scheme == url::kWsScheme &&
                  schemes_a.contains(url::kWssScheme)) {
@@ -115,8 +117,9 @@ std::vector<mojom::CSPSourcePtr> ExpandSchemeStarAndSelf(
   for (const mojom::CSPSourcePtr& item : source_list.sources) {
     mojom::CSPSourcePtr new_item = item->Clone();
     if (new_item->scheme.empty()) {
-      if (self && !self->scheme.empty())
+      if (self && !self->scheme.empty()) {
         new_item->scheme = self->scheme;
+      }
     }
     result.push_back(std::move(new_item));
   }
@@ -151,20 +154,21 @@ std::vector<mojom::CSPSourcePtr> IntersectSources(
   std::vector<mojom::CSPSourcePtr> normalized;
 
   // Add all normalized scheme source expressions.
-  for (const auto& it : schemes) {
+  for (std::string_view it : schemes) {
     // We do not add secure versions if insecure schemes are present.
-    if ((it != url::kHttpsScheme || !schemes.count(url::kHttpScheme)) &&
-        (it != url::kWssScheme || !schemes.count(url::kWsScheme))) {
+    if ((it != url::kHttpsScheme || !schemes.contains(url::kHttpScheme)) &&
+        (it != url::kWssScheme || !schemes.contains(url::kWsScheme))) {
       normalized.emplace_back(mojom::CSPSource::New(
-          it, "", url::PORT_UNSPECIFIED, "", false, false));
+          std::string(it), "", url::PORT_UNSPECIFIED, "", false, false));
     }
   }
 
   std::vector<mojom::CSPSourcePtr> sources_a =
       ExpandSchemeStarAndSelf(source_list_a, self);
   for (auto& source_a : sources_a) {
-    if (schemes.count(source_a->scheme))
+    if (schemes.contains(source_a->scheme)) {
       continue;
+    }
 
     for (auto& source_b : source_list_b) {
       // No need to add a host source expression if it is subsumed by the
@@ -264,7 +268,8 @@ bool CSPSourceListSubsumes(
   bool allow_unsafe_hashes_b = (*it)->allow_unsafe_hashes;
   bool is_hash_or_nonce_present_b =
       !(*it)->nonces.empty() || !(*it)->hashes.empty();
-  base::flat_set<std::string> nonces_b((*it)->nonces);
+  base::flat_set<std::string_view> nonces_b((*it)->nonces.begin(),
+                                            (*it)->nonces.end());
   base::flat_set<network::IntegrityMetadata> hashes_b(
       mojo::Clone((*it)->hashes));
 
@@ -282,7 +287,8 @@ bool CSPSourceListSubsumes(
     is_hash_or_nonce_present_b =
         is_hash_or_nonce_present_b &&
         (!(*it)->nonces.empty() || !(*it)->hashes.empty());
-    base::flat_set<std::string> item_nonces((*it)->nonces);
+    base::flat_set<std::string_view> item_nonces((*it)->nonces.begin(),
+                                                 (*it)->nonces.end());
     IntersectNonces(nonces_b, item_nonces);
     base::flat_set<network::IntegrityMetadata> item_hashes(
         mojo::Clone((*it)->hashes));

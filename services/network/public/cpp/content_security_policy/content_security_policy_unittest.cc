@@ -5,10 +5,12 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
 #include <algorithm>
+#include <string_view>
+#include <utility>
 
 #include "base/memory/raw_ref.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
@@ -66,11 +68,12 @@ std::vector<mojom::ContentSecurityPolicyPtr> ParseCSP(
   return policies;
 }
 
-static void TestFrameAncestorsCSPParser(const std::string& header,
+static void TestFrameAncestorsCSPParser(std::string_view header,
                                         const ExpectedResult* expected_result) {
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-  headers->SetHeader("Content-Security-Policy", "frame-ancestors " + header);
+  headers->SetHeader("Content-Security-Policy",
+                     base::StrCat({"frame-ancestors ", header}));
   std::vector<mojom::ContentSecurityPolicyPtr> policies;
   AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                       &policies);
@@ -111,8 +114,8 @@ class CSPContextTest : public CSPContext {
     return violations_;
   }
 
-  void AddSchemeToBypassCSP(const std::string& scheme) {
-    scheme_to_bypass_.push_back(scheme);
+  void AddSchemeToBypassCSP(std::string scheme) {
+    scheme_to_bypass_.push_back(std::move(scheme));
   }
 
   bool SchemeShouldBypassCSP(std::string_view scheme) override {
@@ -164,7 +167,8 @@ network::mojom::SourceLocationPtr SourceLocation() {
   return network::mojom::SourceLocation::New();
 }
 
-mojom::ContentSecurityPolicyPtr ParseOneCspReportOnly(std::string expression) {
+mojom::ContentSecurityPolicyPtr ParseOneCspReportOnly(
+    std::string_view expression) {
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
   headers->SetHeader("Content-Security-Policy-Report-Only", expression);
@@ -803,8 +807,8 @@ TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
   };
 
   for (const auto& testCase : cases) {
-    std::vector<mojom::ContentSecurityPolicyPtr> policies = ParseCSP(
-        base::StringPrintf("require-trusted-types-for %s", testCase.input));
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP(base::StrCat({"require-trusted-types-for ", testCase.input}));
     EXPECT_EQ(
         policies[0]
             ->raw_directives[mojom::CSPDirectiveName::RequireTrustedTypesFor],
@@ -1288,9 +1292,8 @@ TEST(ContentSecurityPolicy,
 
   EXPECT_TRUE(expected_csp.Equals(
       policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
-  EXPECT_EQ(
-      policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
-      std::string(base::TrimString(directive_value, " ", base::TRIM_ALL)));
+  EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
+            base::TrimString(directive_value, " ", base::TRIM_ALL));
 
   // Both feature flags are disabled, so the url-hash is just an unknown
   // that will be silently ignored.
@@ -1708,12 +1711,13 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
   };
 
   for (auto& test : cases) {
-    SCOPED_TRACE(ToString(test.directive_name) + " " + test.directive_value);
+    SCOPED_TRACE(base::StrCat(
+        {ToStringView(test.directive_name), " ", test.directive_value}));
     scoped_refptr<net::HttpResponseHeaders> headers(
         new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-    headers->SetHeader(
-        "Content-Security-Policy",
-        ToString(test.directive_name) + "  " + test.directive_value);
+    headers->SetHeader("Content-Security-Policy",
+                       base::StrCat({ToStringView(test.directive_name), "  ",
+                                     test.directive_value}));
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
@@ -1722,8 +1726,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
                     .Equals(policies[0]->directives[test.directive_name]));
 
     EXPECT_EQ(policies[0]->raw_directives[test.directive_name],
-              std::string(
-                  base::TrimString(test.directive_value, " ", base::TRIM_ALL)));
+              base::TrimString(test.directive_value, " ", base::TRIM_ALL));
 
     if (test.expected_error.empty()) {
       EXPECT_TRUE(policies[0]->parsing_errors.empty());
@@ -2723,10 +2726,9 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
     EXPECT_EQ(test.expected_result, actual);
     if (test.expected_self_origin) {
       GURL expected_self_origin(test.expected_self_origin);
-      EXPECT_EQ(expected_self_origin.GetScheme(),
+      EXPECT_EQ(expected_self_origin.scheme(),
                 required_csp->self_origin->scheme);
-      EXPECT_EQ(expected_self_origin.GetHost(),
-                required_csp->self_origin->host);
+      EXPECT_EQ(expected_self_origin.host(), required_csp->self_origin->host);
       EXPECT_EQ(expected_self_origin.EffectiveIntPort(),
                 required_csp->self_origin->port);
     }

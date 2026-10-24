@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <set>
-#include <string_view>
-
-#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
+
+#include <string_view>
+#include <utility>
+
+#include "base/containers/flat_set.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -23,12 +25,12 @@ class CSPContextTest : public CSPContext {
     return violations_;
   }
 
-  void AddSchemeToBypassCSP(const std::string& scheme) {
-    scheme_to_bypass_.insert(scheme);
+  void AddSchemeToBypassCSP(std::string scheme) {
+    scheme_to_bypass_.insert(std::move(scheme));
   }
 
   bool SchemeShouldBypassCSP(std::string_view scheme) override {
-    return scheme_to_bypass_.count(std::string(scheme));
+    return scheme_to_bypass_.contains(scheme);
   }
 
   void ClearViolations() { violations_.clear(); }
@@ -41,8 +43,9 @@ class CSPContextTest : public CSPContext {
       CSPDirectiveName directive,
       GURL* blocked_url,
       network::mojom::SourceLocation* source_location) const override {
-    if (!sanitize_data_for_use_in_csp_violation_)
+    if (!sanitize_data_for_use_in_csp_violation_) {
       return;
+    }
     *blocked_url = blocked_url->DeprecatedGetOriginAsURL();
     source_location->url =
         GURL(source_location->url).DeprecatedGetOriginAsURL().spec();
@@ -56,7 +59,7 @@ class CSPContextTest : public CSPContext {
     violations_.push_back(std::move(violation));
   }
   std::vector<network::mojom::CSPViolationPtr> violations_;
-  std::set<std::string> scheme_to_bypass_;
+  base::flat_set<std::string> scheme_to_bypass_;
   bool sanitize_data_for_use_in_csp_violation_ = false;
 };
 

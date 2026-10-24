@@ -156,6 +156,9 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
 COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 std::string ToString(mojom::CSPDirectiveName name);
 
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+std::string_view ToStringView(mojom::CSPDirectiveName name);
+
 // Return true if |request_origin| is allowed by Allow-CSP-From header. Note
 // that |allow_csp_from| can be a null pointer.
 COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)

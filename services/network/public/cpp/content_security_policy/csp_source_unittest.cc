@@ -4,6 +4,9 @@
 
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,10 +20,11 @@ namespace {
 // 'self'. It doesn't match any URL.
 static const network::mojom::CSPSource no_self;
 
-network::mojom::CSPSourcePtr CSPSource(const std::string& raw) {
+network::mojom::CSPSourcePtr CSPSource(std::string_view raw) {
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-  headers->SetHeader("Content-Security-Policy", "script-src " + raw);
+  headers->SetHeader("Content-Security-Policy",
+                     base::StrCat({"script-src ", raw}));
   std::vector<mojom::ContentSecurityPolicyPtr> policies;
   AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                       &policies);

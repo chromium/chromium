@@ -6,8 +6,10 @@
 
 #include <sstream>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -30,7 +32,7 @@ bool DecodePath(std::string_view path, std::string* output) {
   return base::UTF16ToUTF8(view.data(), view.length(), output);
 }
 
-int DefaultPortForScheme(const std::string& scheme) {
+int DefaultPortForScheme(std::string_view scheme) {
   return url::DefaultPortForScheme(scheme);
 }
 
@@ -44,10 +46,11 @@ enum class PortMatchingResult {
 };
 enum class SchemeMatchingResult { NotMatching, MatchingUpgrade, MatchingExact };
 
-SchemeMatchingResult MatchScheme(const std::string& scheme_a,
-                                 const std::string& scheme_b) {
-  if (scheme_a == scheme_b)
+SchemeMatchingResult MatchScheme(std::string_view scheme_a,
+                                 std::string_view scheme_b) {
+  if (scheme_a == scheme_b) {
     return SchemeMatchingResult::MatchingExact;
+  }
   if ((scheme_a == url::kHttpScheme && scheme_b == url::kHttpsScheme) ||
       (scheme_a == url::kWsScheme && scheme_b == url::kWssScheme)) {
     return SchemeMatchingResult::MatchingUpgrade;
@@ -60,25 +63,32 @@ SchemeMatchingResult SourceAllowScheme(const mojom::CSPSource& source,
                                        const mojom::CSPSource& self_source) {
   // The source doesn't specify a scheme and the current origin is unique. In
   // this case, the url doesn't match regardless of its scheme.
-  if (source.scheme.empty() && self_source.scheme.empty())
+  if (source.scheme.empty() && self_source.scheme.empty()) {
     return SchemeMatchingResult::NotMatching;
+  }
 
   // |allowed_scheme| is guaranteed to be non-empty.
-  const std::string& allowed_scheme =
+  std::string_view allowed_scheme =
       source.scheme.empty() ? self_source.scheme : source.scheme;
 
-  return MatchScheme(allowed_scheme, url.GetScheme());
+  return MatchScheme(allowed_scheme, url.scheme());
 }
 
-bool SourceAllowHost(const mojom::CSPSource& source, const std::string& host) {
+bool SourceAllowHost(const mojom::CSPSource& source, std::string_view host) {
   if (source.is_host_wildcard) {
-    if (source.host.empty())
+    if (source.host.empty()) {
       return true;
+    }
     // TODO(arthursonzogni): Chrome used to, incorrectly, match *.x.y to x.y.
     // The renderer version of this function counts how many times it happens.
     // It might be useful to do it outside of blink too.
     // See third_party/blink/renderer/core/frame/csp/csp_source.cc
-    return base::EndsWith(host, '.' + source.host);
+    if (!host.ends_with(source.host)) {
+      return false;
+    }
+    std::string_view prefix =
+        host.substr(0, host.length() - source.host.length());
+    return prefix.ends_with('.');
   } else {
     return host == source.host;
   }
@@ -95,50 +105,58 @@ bool SourceAllowHost(const mojom::CSPSource& source, const GURL& url) {
   // For now, we check `url.IsStandard()` to maintain consistent behavior
   // regardless of the url::StandardCompliantNonSpecialSchemeURLParsing feature
   // state.
-  return SourceAllowHost(source, url.IsStandard() ? url.GetHost() : "");
+  return SourceAllowHost(source,
+                         url.IsStandard() ? url.host() : std::string_view());
 }
 
 PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
                                    int port,
-                                   const std::string& scheme) {
-  if (source.is_port_wildcard)
+                                   std::string_view scheme) {
+  if (source.is_port_wildcard) {
     return PortMatchingResult::MatchingWildcard;
+  }
 
   if (source.port == port) {
-    if (source.port == url::PORT_UNSPECIFIED)
+    if (source.port == url::PORT_UNSPECIFIED) {
       return PortMatchingResult::MatchingWildcard;
+    }
     return PortMatchingResult::MatchingExact;
   }
 
   if (source.port == url::PORT_UNSPECIFIED) {
-    if (DefaultPortForScheme(scheme) == port)
+    if (DefaultPortForScheme(scheme) == port) {
       return PortMatchingResult::MatchingWildcard;
+    }
   }
 
   if (port == url::PORT_UNSPECIFIED) {
-    if (source.port == DefaultPortForScheme(scheme))
+    if (source.port == DefaultPortForScheme(scheme)) {
       return PortMatchingResult::MatchingWildcard;
+    }
   }
 
   int source_port = source.port;
-  if (source_port == url::PORT_UNSPECIFIED)
+  if (source_port == url::PORT_UNSPECIFIED) {
     source_port = DefaultPortForScheme(source.scheme);
+  }
 
-  if (port == url::PORT_UNSPECIFIED)
+  if (port == url::PORT_UNSPECIFIED) {
     port = DefaultPortForScheme(scheme);
+  }
 
-  if (source_port == 80 && port == 443)
+  if (source_port == 80 && port == 443) {
     return PortMatchingResult::MatchingUpgrade;
+  }
 
   return PortMatchingResult::NotMatching;
 }
 
 PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
                                    const GURL& url) {
-  return SourceAllowPort(source, url.EffectiveIntPort(), url.GetScheme());
+  return SourceAllowPort(source, url.EffectiveIntPort(), url.scheme());
 }
 
-bool SourceAllowPath(const mojom::CSPSource& source, const std::string& path) {
+bool SourceAllowPath(const mojom::CSPSource& source, std::string_view path) {
   std::string path_decoded;
   if (!DecodePath(path, &path_decoded)) {
     // TODO(arthursonzogni): try to figure out if that could happen and how to
@@ -146,8 +164,9 @@ bool SourceAllowPath(const mojom::CSPSource& source, const std::string& path) {
     return false;
   }
 
-  if (source.path.empty() || (source.path == "/" && path_decoded.empty()))
+  if (source.path.empty() || (source.path == "/" && path_decoded.empty())) {
     return true;
+  }
 
   // If the path represents a directory.
   if (base::EndsWith(source.path, "/", base::CompareCase::SENSITIVE)) {
@@ -162,10 +181,11 @@ bool SourceAllowPath(const mojom::CSPSource& source, const std::string& path) {
 bool SourceAllowPath(const mojom::CSPSource& source,
                      const GURL& url,
                      bool has_followed_redirect) {
-  if (has_followed_redirect)
+  if (has_followed_redirect) {
     return true;
+  }
 
-  return SourceAllowPath(source, url.GetPath());
+  return SourceAllowPath(source, url.path());
 }
 
 bool requiresUpgrade(PortMatchingResult result) {
@@ -202,15 +222,17 @@ bool CheckCSPSource(const mojom::CSPSource& source,
   // Opaque fenced frames only allow https urls.
   // TODO(crbug.com/40195488): Update the DCHECK and the return condition below
   // if opaque fenced frames can map to non-https potentially trustworthy urls.
-  if (is_opaque_fenced_frame)
-    DCHECK_EQ(url.GetScheme(), url::kHttpsScheme);
+  if (is_opaque_fenced_frame) {
+    DCHECK_EQ(url.scheme(), url::kHttpsScheme);
+  }
 
   if (CSPSourceIsSchemeOnly(source)) {
     // Opaque fenced frames only match 'https:' scheme source. Returns true for
     // 'https:' scheme source assuming that the url has been validated on the
     // fenced frame side.
-    if (is_opaque_fenced_frame)
+    if (is_opaque_fenced_frame) {
       return source.scheme == url::kHttpsScheme;
+    }
 
     return SourceAllowScheme(source, url, self_source) !=
            SchemeMatchingResult::NotMatching;
@@ -258,11 +280,11 @@ mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSource& source_a,
 
   if (CSPSourceIsSchemeOnly(source_a)) {
     auto new_result = source_b.Clone();
-    new_result->scheme = result->scheme;
+    new_result->scheme = std::move(result->scheme);
     return new_result;
   } else if (CSPSourceIsSchemeOnly(source_b)) {
     auto new_result = source_a.Clone();
-    new_result->scheme = result->scheme;
+    new_result->scheme = std::move(result->scheme);
     return new_result;
   }
 
@@ -270,6 +292,7 @@ mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSource& source_a,
       (source_a.is_host_wildcard ? "*." : "") + source_a.host;
   const std::string host_b =
       (source_b.is_host_wildcard ? "*." : "") + source_b.host;
+
   if (SourceAllowHost(source_a, host_b)) {
     result->host = source_b.host;
     result->is_host_wildcard = source_b.is_host_wildcard;
@@ -299,12 +322,13 @@ mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSource& source_a,
     return nullptr;
   }
 
-  if (SourceAllowPath(source_a, source_b.path))
+  if (SourceAllowPath(source_a, source_b.path)) {
     result->path = source_b.path;
-  else if (SourceAllowPath(source_b, source_a.path))
+  } else if (SourceAllowPath(source_b, source_a.path)) {
     result->path = source_a.path;
-  else
+  } else {
     return nullptr;
+  }
 
   return result;
 }
@@ -322,25 +346,29 @@ bool CSPSourceSubsumes(const mojom::CSPSource& source_a,
     return false;
   }
 
-  if (CSPSourceIsSchemeOnly(source_a))
+  if (CSPSourceIsSchemeOnly(source_a)) {
     return true;
-  if (CSPSourceIsSchemeOnly(source_b))
+  }
+  if (CSPSourceIsSchemeOnly(source_b)) {
     return false;
+  }
 
   if (!SourceAllowHost(
           source_a, (source_b.is_host_wildcard ? "*." : "") + source_b.host)) {
     return false;
   }
-
-  if (source_b.is_port_wildcard && !source_a.is_port_wildcard)
+  if (source_b.is_port_wildcard && !source_a.is_port_wildcard) {
     return false;
+  }
   PortMatchingResult port_matching =
       SourceAllowPort(source_a, source_b.port, source_b.scheme);
-  if (port_matching == PortMatchingResult::NotMatching)
+  if (port_matching == PortMatchingResult::NotMatching) {
     return false;
+  }
 
-  if (!SourceAllowPath(source_a, source_b.path))
+  if (!SourceAllowPath(source_a, source_b.path)) {
     return false;
+  }
 
   return true;
 }
@@ -348,7 +376,7 @@ bool CSPSourceSubsumes(const mojom::CSPSource& source_a,
 std::string ToString(const mojom::CSPSource& source) {
   // scheme
   if (CSPSourceIsSchemeOnly(source))
-    return source.scheme + ":";
+    return base::StrCat({source.scheme, ":"});
 
   std::stringstream text;
   if (!source.scheme.empty())
