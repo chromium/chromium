@@ -94,6 +94,8 @@ export function getHtml(this: OmniboxComposeboxElement) {
                 .mode="${this.getAimButtonMode()}"
                 .showExitIcon="${this.showAimButtonExitIcon_}"
                 .disabled="${this.isAimButtonDisabled()}"
+                .energyEffectAnimationEnabled="${
+                    this.energyEffectAnimationEnabled_}"
                 .label="${this.i18n('searchboxComposeButtonText')}"
                 .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
                 .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"

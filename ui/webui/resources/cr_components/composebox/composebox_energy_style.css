@@ -1,0 +1,31 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+/* Energy Effect Animations */
+:host {
+  --button-scale-x: 1.16;
+  --expressive-fast-curve: cubic-bezier(0.42, 1.67, 0.21, 0.9);
+  --icon-scale-x: 0.95;
+  --icon-scale-y: 0.95;
+  --on-press-duration: 200ms;
+  --on-release-duration: 400ms;
+}
+
+.energy-glow::after {
+  background: var(--color-composebox-submit-button-energy, #779cff);
+  border-radius: inherit;
+  filter: blur(7px);
+  inset: 5px;
+  opacity: 0;
+  position: absolute;
+  transform: translateY(-14px);
+  transition: opacity var(--on-release-duration) var(--expressive-fast-curve),
+      transform var(--on-release-duration) var(--expressive-fast-curve);
+  z-index: 0;
+}

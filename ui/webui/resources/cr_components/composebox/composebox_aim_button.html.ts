@@ -12,7 +12,9 @@ export function getHtml(this: ComposeboxAimButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-button id="button"
+    class="${this.getButtonClass_()}"
     ?disabled="${this.disabled}"
+    ?noink="${this.showEnergyEffect_()}"
     title="${this.getTitle_()}"
     aria-label="${this.getTitle_()}"
     @click="${this.onClick_}">
@@ -28,6 +30,10 @@ export function getHtml(this: ComposeboxAimButtonElement) {
       aria-hidden="true">
   </div>
 </cr-button>
+${this.showEnergyEffect_() ? html`
+  <!-- After #button so the pressed state reaches it via a sibling selector. -->
+  <div id="energy" class="energy-glow"></div>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

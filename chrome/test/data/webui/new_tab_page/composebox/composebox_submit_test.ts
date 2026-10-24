@@ -69,10 +69,15 @@ suite('ComposeboxSubmitTest', () => {
   test('dims energy layer when disabled and energy effect is on', async () => {
     // The energy layer holds the background color only when the energy
     // effect is enabled, so the dimming rule is gated on the same attribute.
-    document.body.toggleAttribute('energy-effect-animation-enabled_', true);
     const energy =
         submitButton.shadowRoot.querySelector<HTMLElement>('#submitEnergy');
     assertTrue(!!energy);
+    assertEquals('none', window.getComputedStyle(energy, '::after').content);
+
+    document.body.toggleAttribute('energy-effect-animation-enabled_', true);
+    assertEquals('""', window.getComputedStyle(energy, '::after').content);
+    assertEquals(
+        'blur(7px)', window.getComputedStyle(energy, '::after').filter);
     assertEquals('1', window.getComputedStyle(energy).opacity);
 
     submitButton.disabled = true;

@@ -5,21 +5,26 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=./aim_button_shared_vars.css.js
+ * #import=./composebox_energy_style.css.js
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
- * #include=cr-icons-lit
+ * #include=cr-icons-lit composebox-energy-style
  * #css_wrapper_metadata_end */
 
 :host {
   --aim-motion-duration: var(--aim-motion-duration-long);
+  --button-scale-x: 1.08;
   --cr-composebox-aim-button-icon-gap: 2px;
   --cr-composebox-aim-button-icon-inset: 8px;
   --cr-composebox-aim-button-icon-size: 20px;
   /* 18px matches the Realbox icon. */
   --cr-composebox-aim-button-leading-glyph-size: 18px;
+  display: inline-flex;
   flex-shrink: 0;
   font-size: 13px;
+  isolation: isolate;
+  position: relative;
 }
 
 :host([mode='send']) {
@@ -110,4 +115,76 @@
 
 :host-context([dir='rtl']) #trailingIcon.arrow-icon {
   transform: scaleX(-1);
+}
+
+/* Energy effect, SEND only: #energy paints the pill and the press glow, so a
+ * press stretches the background and squishes the arrow but not the label. */
+#button.energy-effect {
+  --cr-hover-background-color: transparent;
+  background-color: transparent;
+}
+
+#energy {
+  background-color: var(--color-composebox-submit-button-background);
+  border-radius: 100px;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transition: inset-inline var(--on-release-duration)
+      var(--expressive-fast-curve);
+  z-index: -1;
+}
+
+/* Hover tint rides on the stretching layer, like the submit overlay. */
+#energy::before {
+  content: '';
+  inset: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+#button:hover ~ #energy::before {
+  background-color: var(--cr-composebox-submit-button-hover-color,
+      var(--color-composebox-submit-button-hover));
+}
+
+#energy::after {
+  content: '';
+}
+
+/* Keeps the icon transitions and adds the arrow's press squish. */
+#button.energy-effect #trailingIcon.arrow-icon {
+  --arrow-scale-duration: var(--on-release-duration);
+  scale: 1 1;
+  transition-duration: var(--aim-motion-duration), var(--aim-motion-duration),
+      var(--aim-motion-duration), var(--arrow-scale-duration);
+  transition-property: width, margin-inline, opacity, scale;
+  transition-timing-function: var(--aim-motion-easing),
+      var(--aim-motion-easing), var(--aim-motion-easing),
+      var(--expressive-fast-curve);
+  will-change: scale;
+}
+
+/* Pressed: widen the pill via layout (a composited scale left stale pixels
+ * behind on release), show the glow and squish the arrow. */
+#button:active:hover ~ #energy,
+#button:active:focus-visible ~ #energy {
+  /* Same footprint as scale: var(--button-scale-x) 1 about the center. */
+  inset-inline: calc((1 - var(--button-scale-x)) / 2 * 100%);
+  transition-duration: var(--on-press-duration);
+}
+
+#button:active:hover ~ #energy::after,
+#button:active:focus-visible ~ #energy::after {
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: var(--on-press-duration);
+}
+
+/* Arrow X is multiplied by the pill stretch, like the submit icon. */
+#button.energy-effect:active:hover #trailingIcon.arrow-icon,
+#button.energy-effect:active:focus-visible #trailingIcon.arrow-icon {
+  --arrow-scale-duration: var(--on-press-duration);
+  scale: calc(var(--button-scale-x) * var(--icon-scale-x)) var(--icon-scale-y);
 }

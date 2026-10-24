@@ -299,6 +299,37 @@ suite('ComposeboxAimButtonTest', () => {
     button.click();
     assertEquals(1, events.length);
   });
+
+  test('EnergyEffectOnlyInSendWhenEnabled', async () => {
+    const button = element.$.button;
+
+    function assertEnergy(expected: boolean) {
+      assertEquals(expected, !!$$(element, '#energy'));
+      assertEquals(expected, button.noink);
+      assertEquals(expected, button.classList.contains('energy-effect'));
+    }
+
+    // Flag off: no energy effect in either mode.
+    await setState(element, AimButtonMode.EXIT, false);
+    assertEnergy(false);
+    await setState(element, AimButtonMode.SEND, false);
+    assertEnergy(false);
+
+    // Flag on: SEND only, with #energy right after #button for the sibling
+    // selectors; EXIT keeps the plain button.
+    element.energyEffectAnimationEnabled = true;
+    await element.updateComplete;
+    assertEnergy(true);
+    const energy = $$(element, '#energy');
+    assertTrue(!!energy);
+    assertEquals(energy, button.nextElementSibling);
+    assertEquals(
+        'blur(7px)', window.getComputedStyle(energy, '::after').filter);
+    await setState(element, AimButtonMode.EXIT, false);
+    assertEnergy(false);
+    await setState(element, AimButtonMode.EXIT, true);
+    assertEnergy(false);
+  });
 });
 
 suite('ComposeboxAimButtonFocusTest', () => {

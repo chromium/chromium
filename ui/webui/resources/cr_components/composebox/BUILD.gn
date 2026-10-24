@@ -76,6 +76,7 @@ build_webui("build") {
     "composebox_favicon_group.css",
     "composebox_submit.css",
     "composebox_dropdown.css",
+    "composebox_energy_style.css",
     "composebox_input.css",
     "composebox_lens_search.css",
     "composebox_match.css",

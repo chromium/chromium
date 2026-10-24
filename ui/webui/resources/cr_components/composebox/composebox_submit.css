@@ -5,9 +5,10 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=./composebox_energy_style.css.js
  * #import=./composebox_shared_style.css.js
  * #scheme=relative
- * #include=cr-icons-lit composebox-shared-style
+ * #include=cr-icons-lit composebox-energy-style composebox-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
@@ -91,16 +92,6 @@
   background-color: transparent;
 }
 
-/* Energy Effect Animations */
-:host-context([energy-effect-animation-enabled_]) {
-  --button-scale-x: 1.16;
-  --expressive-fast-curve: cubic-bezier(0.42, 1.67, 0.21, 0.9);
-  --icon-scale-x: 0.95;
-  --icon-scale-y: 0.95;
-  --on-press-duration: 200ms;
-  --on-release-duration: 400ms;
-}
-
 /* Submit Button Click Scale Animation */
 :host-context([energy-effect-animation-enabled_]) #submitContainer {
   --cr-icon-button-transition: var(--on-release-duration)
@@ -179,18 +170,7 @@
 }
 
 :host-context([energy-effect-animation-enabled_]) #submitEnergy::after {
-  background: var(--color-composebox-submit-button-energy, #779cff);
-  border-radius: inherit;
   content: '';
-  filter: blur(7px);
-  inset: 5px;
-  opacity: 0;
-  position: absolute;
-  transform: translate(0, -14px);
-  transition:
-    transform var(--on-release-duration) var(--expressive-fast-curve),
-    opacity var(--on-release-duration) var(--expressive-fast-curve);
-  z-index: 0;
 }
 
 :host-context([energy-effect-animation-enabled_])

@@ -53,6 +53,7 @@ export class ComposeboxAimButtonElement extends CrLitElement {
       label: {type: String},
       exitTitle: {type: String},
       sendTitle: {type: String},
+      energyEffectAnimationEnabled: {type: Boolean},
     };
   }
 
@@ -62,6 +63,7 @@ export class ComposeboxAimButtonElement extends CrLitElement {
   accessor label: string = '';
   accessor exitTitle: string = '';
   accessor sendTitle: string = '';
+  accessor energyEffectAnimationEnabled: boolean = false;
 
   private keyboardActivationEvent_: KeyboardEvent|null = null;
 
@@ -89,6 +91,16 @@ export class ComposeboxAimButtonElement extends CrLitElement {
   protected getLeadingIconClass_(): string {
     const shown = this.mode === AimButtonMode.EXIT && !this.showExitIcon;
     return shown ? '' : 'collapsed';
+  }
+
+  // The energy effect only runs in SEND; EXIT keeps the plain button.
+  protected showEnergyEffect_(): boolean {
+    return this.energyEffectAnimationEnabled &&
+        this.mode === AimButtonMode.SEND;
+  }
+
+  protected getButtonClass_(): string {
+    return this.showEnergyEffect_() ? 'energy-effect' : '';
   }
 
   // Send state shows the arrow icon; exit state with X (exit icon) shows the

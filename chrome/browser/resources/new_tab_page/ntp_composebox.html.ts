@@ -102,6 +102,8 @@ export function getHtml(this: NtpComposeboxElement) {
                 .mode="${this.getAimButtonMode()}"
                 .showExitIcon="${this.showAimButtonExitIcon_}"
                 .disabled="${this.isAimButtonDisabled()}"
+                .energyEffectAnimationEnabled="${
+                    this.energyEffectAnimationEnabled}"
                 .label="${this.i18n('searchboxComposeButtonText')}"
                 .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
                 .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"
