@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
@@ -56,7 +56,7 @@ void OobeBaseTest::SetUp() {
   RegisterAdditionalRequestHandlers();
   CHECK(temp_dir_.CreateUniqueTempDir());
   token_path_override_ = std::make_unique<base::ScopedPathOverride>(
-      chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN,
+      ash::FILE_DEVICE_REFRESH_TOKEN,
       temp_dir_.GetPath().Append("device_refresh_token"),
       /*is_absolute=*/true,
       /*create=*/false);

@@ -41,6 +41,9 @@ const base::FilePath::CharType kTPMFirmwareUpdateLocation[] =
 const base::FilePath::CharType kTPMFirmwareUpdateSRKVulnerableROCA[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_srk_vulnerable_roca");
 
+const base::FilePath::CharType kDeviceRefreshTokenFileName[] =
+    FILE_PATH_LITERAL("device_refresh_token");
+
 const base::FilePath::CharType kDeviceLocalAccountExtensionDir[] =
     FILE_PATH_LITERAL("/var/cache/device_local_account_extensions");
 
@@ -105,6 +108,14 @@ bool PathProvider(int key, base::FilePath* result) {
     case FILE_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA:
       *result = base::FilePath(kTPMFirmwareUpdateSRKVulnerableROCA);
       break;
+    case FILE_DEVICE_REFRESH_TOKEN: {
+      base::FilePath cur;
+      if (!base::PathService::Get(DIR_USER_DATA, &cur)) {
+        return false;
+      }
+      *result = cur.Append(kDeviceRefreshTokenFileName);
+      break;
+    }
     case DIR_RESOURCES: {
       base::FilePath cur;
       if (!base::PathService::Get(base::DIR_ASSETS, &cur)) {

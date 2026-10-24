@@ -123,11 +123,6 @@ enum {
   DIR_TEST_DATA,      // Directory where unit test data resides.
   DIR_TEST_TOOLS,     // Directory where unit test tools reside.
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // File containing the device refresh_token.
-  FILE_CHROME_OS_DEVICE_REFRESH_TOKEN,
-#endif
-
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization
                                              // Guide are stored.

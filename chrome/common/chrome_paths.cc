@@ -70,9 +70,6 @@ const base::FilePath::CharType kComponentUpdatedWidevineCdmHint[] =
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-const base::FilePath::CharType kDeviceRefreshTokenFilePath[] =
-    FILE_PATH_LITERAL("/home/chronos/device_refresh_token");
-
 bool GetChromeOsCrdDataDirInternal(base::FilePath* result,
                                    bool* should_be_created) {
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
@@ -501,12 +498,6 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(kGCMStoreDirname);
       break;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-    case chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN:
-      cur = base::FilePath(kDeviceRefreshTokenFilePath);
-      break;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
     case chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {

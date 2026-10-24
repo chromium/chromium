@@ -7,15 +7,15 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/device_identity/chromeos/token_encryptor.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -28,7 +28,7 @@ namespace {
 std::string LoadRefreshTokenV3() {
   std::string refresh_token;
   base::FilePath path;
-  base::PathService::Get(chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, &path);
+  base::PathService::Get(ash::FILE_DEVICE_REFRESH_TOKEN, &path);
   if (!base::PathExists(path) ||
       !base::ReadFileToString(path, &refresh_token)) {
     refresh_token.clear();
@@ -153,8 +153,7 @@ void DeviceOAuth2TokenStoreChromeOS::StoreRefreshTokenV3() {
           base::BindOnce(
               [](const std::string& refresh_token) {
                 base::FilePath path;
-                base::PathService::Get(
-                    chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, &path);
+                base::PathService::Get(ash::FILE_DEVICE_REFRESH_TOKEN, &path);
                 return base::ImportantFileWriter::WriteFileAtomically(
                     path, refresh_token);
               },
