@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "content/browser/notifications/notification_database_conversions.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -134,9 +135,11 @@ class PlatformNotificationContextTest : public ::testing::Test {
 
   // Overrides the task runner in |context| with the current message loop
   // proxy, to reduce the number of threads involved in the tests.
-  void OverrideTaskRunnerForTesting(PlatformNotificationContextImpl* context) {
-    context->SetTaskRunnerForTesting(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+  void OverrideTaskRunnerForTesting(
+      PlatformNotificationContextImpl* context,
+      scoped_refptr<base::SequencedTaskRunner> task_runner =
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {
+    context->SetTaskRunnerForTesting(std::move(task_runner));
   }
 
   // Gets the currently displayed notifications from |service| synchronously.
@@ -534,6 +537,92 @@ TEST_F(PlatformNotificationContextTest, DeleteClosesNotification) {
   // Deleting the notification data should have closed the notification.
   ASSERT_TRUE(success());
   EXPECT_EQ(0u, GetDisplayedNotificationsSync(service).size());
+}
+
+TEST_F(PlatformNotificationContextTest,
+       DeleteNotificationDataClosesAfterDatabaseTask) {
+  PlatformNotificationService* service =
+      browser_context()->GetPlatformNotificationService();
+
+  auto db_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  auto context = base::MakeRefCounted<PlatformNotificationContextImpl>(
+      base::FilePath(), browser_context(), nullptr);
+  OverrideTaskRunnerForTesting(context.get(), db_task_runner);
+  context->Initialize();
+  db_task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+
+  GURL origin("https://example.com");
+  NotificationDatabaseData notification_database_data;
+  notification_database_data.origin = origin;
+  notification_database_data.service_worker_registration_id =
+      kFakeServiceWorkerRegistrationId;
+  notification_database_data.notification_data.tag = "chat-tag";
+
+  // Write an initial tagged notification and flush both task runners so the
+  // notification is displayed and its deterministic tagged ID is known.
+  context->WriteNotificationData(
+      next_persistent_notification_id(), kFakeServiceWorkerRegistrationId,
+      origin, notification_database_data,
+      base::BindOnce(&PlatformNotificationContextTest::DidWriteNotificationData,
+                     base::Unretained(this)));
+  db_task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(success());
+  const std::string tagged_id = notification_id();
+  ASSERT_EQ(1u, GetDisplayedNotificationsSync(service).size());
+
+  // Queue a replacement WriteNotificationData followed by
+  // DeleteNotificationData on the UI thread before the database task runner
+  // executes.
+  context->WriteNotificationData(
+      next_persistent_notification_id(), kFakeServiceWorkerRegistrationId,
+      origin, notification_database_data,
+      base::BindOnce(&PlatformNotificationContextTest::DidWriteNotificationData,
+                     base::Unretained(this)));
+  context->DeleteNotificationData(
+      tagged_id, origin, /*close_notification=*/true,
+      base::BindOnce(
+          &PlatformNotificationContextTest::DidDeleteNotificationData,
+          base::Unretained(this)));
+
+  // Flushing the UI thread before the database task runner executes must not
+  // prematurely close the currently displayed notification.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, GetDisplayedNotificationsSync(service).size());
+
+  // Once the serialized database tasks run and their UI callbacks complete,
+  // DisplayNotification runs before CloseNotifications, leaving 0 displayed
+  // notifications.
+  db_task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(success());
+  EXPECT_EQ(0u, GetDisplayedNotificationsSync(service).size());
+
+  // Now verify the reverse sequence (DeleteNotificationData followed by
+  // WriteNotificationData for the same tag): CloseNotifications must run on
+  // the UI thread before DisplayNotification so the newly written notification
+  // remains displayed.
+  context->DeleteNotificationData(
+      tagged_id, origin, /*close_notification=*/true,
+      base::BindOnce(
+          &PlatformNotificationContextTest::DidDeleteNotificationData,
+          base::Unretained(this)));
+  context->WriteNotificationData(
+      next_persistent_notification_id(), kFakeServiceWorkerRegistrationId,
+      origin, notification_database_data,
+      base::BindOnce(&PlatformNotificationContextTest::DidWriteNotificationData,
+                     base::Unretained(this)));
+  db_task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(success());
+  EXPECT_EQ(1u, GetDisplayedNotificationsSync(service).size());
+
+  // Release `context` and flush `db_task_runner` so `DeleteSoon` frees
+  // `database_` before `db_task_runner` goes out of scope.
+  context->Shutdown();
+  context.reset();
+  db_task_runner->RunUntilIdle();
 }
 
 TEST_F(PlatformNotificationContextTest,

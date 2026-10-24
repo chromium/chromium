@@ -276,6 +276,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   // UI thread when the operation has completed.
   void DoDeleteNotificationData(const std::string& notification_id,
                                 const GURL& origin,
+                                bool close_notification,
                                 DeleteResultCallback callback,
                                 bool should_log_close,
                                 bool initialized);

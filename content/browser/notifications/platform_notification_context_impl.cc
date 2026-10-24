@@ -1150,25 +1150,17 @@ void PlatformNotificationContextImpl::DeleteNotificationData(
     return;
   }
 
-  // Close notification as we're about to delete its data.
-  if (close_notification) {
-    std::set<std::string> notification_ids = {notification_id};
-    GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&PlatformNotificationContextImpl::CloseNotifications,
-                           this, notification_ids));
-  }
-
   bool should_log_close = service_proxy_->ShouldLogClose(origin);
-  InitializeDatabase(base::BindOnce(
-      &PlatformNotificationContextImpl::DoDeleteNotificationData, this,
-      notification_id, origin, std::move(callback), should_log_close));
+  InitializeDatabase(
+      base::BindOnce(&PlatformNotificationContextImpl::DoDeleteNotificationData,
+                     this, notification_id, origin, close_notification,
+                     std::move(callback), should_log_close));
 }
 
 void PlatformNotificationContextImpl::DoDeleteNotificationData(
     const std::string& notification_id,
     const GURL& origin,
+    bool close_notification,
     DeleteResultCallback callback,
     bool should_log_close,
     bool initialized) {
@@ -1205,6 +1197,15 @@ void PlatformNotificationContextImpl::DoDeleteNotificationData(
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED) {
     DestroyDatabase();
     success = true;
+  }
+
+  if (close_notification) {
+    std::set<std::string> notification_ids = {notification_id};
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PlatformNotificationContextImpl::CloseNotifications,
+                       base::WrapRefCounted(this),
+                       std::move(notification_ids)));
   }
 
   GetUIThreadTaskRunner({})->PostTask(
