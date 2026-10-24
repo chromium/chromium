@@ -216,6 +216,7 @@ BASE_DECLARE_FEATURE(kEnableXAxisActivityTransition);
 BASE_DECLARE_FEATURE(kEnforceIncognitoIsolation);
 BASE_DECLARE_FEATURE(kExcludeChromeInIncognitoShareSheet);
 BASE_DECLARE_FEATURE(kFaviconDisableHostFallback);
+BASE_DECLARE_FEATURE(kFixToolbarHairlineRegression);
 BASE_DECLARE_FEATURE(kFlyoutInBookmarksBar);
 BASE_DECLARE_FEATURE(kForceTranslucentNotificationTrampoline);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);

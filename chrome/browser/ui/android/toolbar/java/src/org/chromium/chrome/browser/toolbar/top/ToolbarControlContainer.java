@@ -422,11 +422,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // TODO(crbug.com/557679152): Revisit once TopControlsStacker / BrowserControlsManager
         // guarantees a resting-position offset update for non-animated transitions on native pages
         // (NTP).
-        mutateToolbarLayoutParams().topMargin =
+        int toolbarViewTopMargin =
                 ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled() ? 0 : tabStripHeight;
+        mutateToolbarLayoutParams().topMargin = toolbarViewTopMargin;
 
         int toolbarAndTabStripHeight = tabStripHeight + getToolbarHeight();
-        mutateHairlineLayoutParams().topMargin = toolbarAndTabStripHeight;
+        mutateHairlineLayoutParams().topMargin =
+                ChromeFeatureList.sFixToolbarHairlineRegression.isEnabled()
+                        ? toolbarViewTopMargin + mToolbarLayoutHeight
+                        : toolbarAndTabStripHeight;
         if (!applyScrimOverlay) {
             setMinimumHeight(toolbarAndTabStripHeight + getToolbarHairlineHeight());
         }

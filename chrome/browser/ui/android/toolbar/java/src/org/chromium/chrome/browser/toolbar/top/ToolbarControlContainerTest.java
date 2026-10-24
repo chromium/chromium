@@ -1880,11 +1880,15 @@ public class ToolbarControlContainerTest {
     public void
             testOnHeightChanged_WithToolbarSnapshotRefactorEnabled_SetsToolbarViewTopMarginToZero() {
         initControlContainer(R.layout.toolbar_tablet);
+        int toolbarLayoutHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 80, /* topPadding= */ 20, /* applyScrimOverlay= */ false);
 
         verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
+        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
         assertEquals(0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(toolbarLayoutHeight, mHairlineLayoutParamsCaptor.getValue().topMargin);
     }
 
     @Test
@@ -1892,11 +1896,34 @@ public class ToolbarControlContainerTest {
     public void
             testOnHeightChanged_WithToolbarSnapshotRefactorDisabled_SetsToolbarViewTopMarginToTabStripHeight() {
         initControlContainer(R.layout.toolbar_tablet);
+        int toolbarLayoutHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 80, /* topPadding= */ 20, /* applyScrimOverlay= */ false);
 
         verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
+        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
         assertEquals(80, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(80 + toolbarLayoutHeight, mHairlineLayoutParamsCaptor.getValue().topMargin);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void
+            testOnHeightChanged_VerticalTabsWithCaptionControlsTopOffset_ExcludesTopOffsetFromHairlineTopMargin() {
+        checkOnHeightChangedWithVerticalTabsCaptionControlsTopOffset(
+                /* expectTopOffsetExcluded= */ true);
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR,
+        ChromeFeatureList.FIX_TOOLBAR_HAIRLINE_REGRESSION
+    })
+    public void
+            testOnHeightChanged_VerticalTabsWithCaptionControlsTopOffset_WithFixDisabled_IncludesTopOffsetInHairlineTopMargin() {
+        checkOnHeightChangedWithVerticalTabsCaptionControlsTopOffset(
+                /* expectTopOffsetExcluded= */ false);
     }
 
     private void checkSetToolbarContainerTopMarginForAutoHiddenVerticalTab() {
@@ -1968,6 +1995,41 @@ public class ToolbarControlContainerTest {
                 "Hairline top margin is incorrect.",
                 expectedHairlineTopMargin,
                 newHairlineParams.topMargin);
+    }
+
+    private void checkOnHeightChangedWithVerticalTabsCaptionControlsTopOffset(
+            boolean expectTopOffsetExcluded) {
+        initControlContainer(R.layout.toolbar_tablet);
+        Resources res = mActivity.getResources();
+        int toolbarLayoutHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+
+        int topOffset = 24;
+        var appHeaderState =
+                new AppHeaderState(
+                        /* appWindowRect= */ new Rect(0, 0, 100, 100),
+                        /* widestUnoccludedRect= */ new Rect(10, topOffset, 80, 64),
+                        /* isInDesktopWindow= */ true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onAppHeaderStateChanged(appHeaderState);
+
+        mControlContainer.onHeightChanged(
+                /* tabStripHeight= */ 0, /* topPadding= */ 0, /* applyScrimOverlay= */ false);
+
+        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
+        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
+        assertEquals(0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(
+                expectTopOffsetExcluded ? toolbarLayoutHeight : toolbarLayoutHeight + topOffset,
+                mHairlineLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(
+                toolbarLayoutHeight + topOffset + hairlineHeight,
+                mControlContainer.getMinimumHeight());
     }
 
     /** Stubs the toolbar's reported position within its container. */
