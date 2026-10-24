@@ -1457,6 +1457,34 @@ class AXPosition {
     return ancestor_position;
   }
 
+  // Returns this position's text offset in `ancestor_anchor`, or nullopt if
+  // the position cannot be represented on that ancestor.
+  std::optional<int> GetTextOffsetInAncestor(
+      const AXNode* ancestor_anchor,
+      ax::mojom::MoveDirection move_direction) const {
+    AXPositionInstance ancestor_position =
+        AsTextPosition()->CreateAncestorPosition(ancestor_anchor,
+                                                 move_direction);
+    if (ancestor_position->IsNullPosition()) {
+      return std::nullopt;
+    }
+    return ancestor_position->text_offset();
+  }
+
+  // Returns the static-text parent if this position is anchored to a nonempty,
+  // unignored inline text box, or nullptr otherwise.
+  const AXNode* GetNonemptyInlineTextBoxParent() const {
+    const AXNode* anchor = GetAnchor();
+    if (!anchor || anchor->GetRole() != ax::mojom::Role::kInlineTextBox ||
+        anchor->IsIgnored() || MaxTextOffset() <= 0) {
+      return nullptr;
+    }
+    const AXNode* parent = anchor->GetParent();
+    return parent && parent->GetRole() == ax::mojom::Role::kStaticText
+               ? parent
+               : nullptr;
+  }
+
   // If the position is not valid, we return a new valid position that is
   // closest to the original position if possible, or a null position otherwise.
   AXPositionInstance AsValidPosition() const {
@@ -4200,6 +4228,32 @@ class AXPosition {
   AXPositionInstance CreatePreviousAnchorPosition() const {
     return CreatePreviousAnchorPosition(
         base::BindRepeating(&DefaultAbortMovePredicate));
+  }
+
+  // Returns true if the positions resolve to ordered, disjoint, unignored text
+  // leaves with content after this position and before `other`. This proves
+  // that they are not equivalent without translating offsets to a common
+  // ancestor. A false result does not imply equivalence; boundary positions,
+  // ignored content and overlapping anchors still require full comparison.
+  bool IsBeforeInDisjointTextAnchors(const AXPosition& other) const {
+    const AXPositionInstance start_leaf = AsLeafTextPosition();
+    const AXPositionInstance end_leaf = other.AsLeafTextPosition();
+    if (start_leaf->IsNullPosition() || end_leaf->IsNullPosition() ||
+        start_leaf->IsIgnored() || end_leaf->IsIgnored() ||
+        start_leaf->AtEndOfAnchor() || end_leaf->AtStartOfAnchor()) {
+      return false;
+    }
+
+    const AXNode* start_anchor = start_leaf->GetAnchor();
+    const AXNode* end_anchor = end_leaf->GetAnchor();
+    const AXNode* parent = start_anchor->GetParent();
+    if (parent && parent == end_anchor->GetParent()) {
+      return start_anchor->GetIndexInParent() < end_anchor->GetIndexInParent();
+    }
+    const std::optional<int> anchor_order =
+        start_anchor->CompareTo(*end_anchor);
+    return anchor_order && *anchor_order < 0 &&
+           !end_anchor->IsDescendantOfCrossingTreeBoundary(start_anchor);
   }
 
   // Returns an optional integer indicating the logical order of this position

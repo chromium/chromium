@@ -254,6 +254,11 @@ class AX_EXPORT AXNode final {
   // include any text field roles.
   bool IsText() const;
 
+  // Returns the text node that holds this node's text-level attributes, or
+  // nullptr for non-text nodes. Inline text boxes use their text parent.
+  // Ignored nodes are not skipped.
+  const AXNode* GetTextAnchor() const;
+
   // Returns true if the node has any line break related roles or is the child
   // of a node with line break related roles.
   bool IsLineBreak() const;

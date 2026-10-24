@@ -782,6 +782,12 @@ bool AXNode::IsText() const {
   return ui::IsText(GetRole());
 }
 
+const AXNode* AXNode::GetTextAnchor() const {
+  const AXNode* text_anchor =
+      GetRole() == ax::mojom::Role::kInlineTextBox ? GetParent() : this;
+  return text_anchor && text_anchor->IsText() ? text_anchor : nullptr;
+}
+
 bool AXNode::IsLineBreak() const {
   // The last condition captures inline text nodes whose only content is an '\n'
   // character.

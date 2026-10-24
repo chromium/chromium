@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/string_search.h"
@@ -59,6 +60,40 @@
     return UIA_E_NOTSUPPORTED;
 
 namespace ui {
+
+namespace {
+
+// Selects the attribute source, querying atomic-field annotations on internal
+// text rather than repeatedly collecting them from the entire field.
+AXPlatformNodeWin* ResolveTextAttributeNode(TEXTATTRIBUTEID attribute_id,
+                                            const AXNode* anchor,
+                                            AXPlatformNodeWin* anchor_node) {
+  AXPlatformNodeDelegate* delegate = anchor_node->GetDelegate();
+  // Only get attributes for nodes in the tree. Exclude descendants of leaves
+  // and ignored objects.
+  AXPlatformNodeWin* platform_node =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNode::FromNativeViewAccessible(
+          delegate->GetLowestPlatformAncestor()));
+  CHECK(platform_node);
+
+  // Match GetMarkerTypeFromRange's web-only descendant-marker path. Atomic web
+  // fields are platform leaves with marker-bearing internal text. Query that
+  // text directly instead of rescanning the field for each inline text box.
+  // ViewsAX also uses AXNodes, but that alone does not imply the same marker
+  // layout; keep non-web fields on their existing annotation path.
+  if (attribute_id == UIA_AnnotationTypesAttributeId &&
+      platform_node->IsAtomicTextField() && platform_node->IsWebContent()) {
+    const AXNode* text_anchor = anchor->GetTextAnchor();
+    if (text_anchor && !text_anchor->IsIgnored()) {
+      platform_node = static_cast<AXPlatformNodeWin*>(
+          delegate->GetFromNodeID(text_anchor->id()));
+      CHECK(platform_node);
+    }
+  }
+  return platform_node;
+}
+
+}  // namespace
 
 class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
  public:
@@ -647,13 +682,13 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
 
   // The range is inclusive, so advance our endpoint to the next position
   const auto end_leaf_text_position = normalized_end->AsLeafTextPosition();
-  auto end = end_leaf_text_position->CreateNextAnchorPosition();
+  auto past_end = end_leaf_text_position->CreateNextAnchorPosition();
   bool has_attribute_value = false;
 
   // Iterate over anchor positions
   for (auto it = normalized_start->AsLeafTextPosition();
-       it->anchor_id() != end->anchor_id() || it->tree_id() != end->tree_id();
-       it = it->CreateNextAnchorPosition()) {
+       it->anchor_id() != past_end->anchor_id() ||
+       it->tree_id() != past_end->tree_id();) {
     DCHECK(it);
     // If the iterator creates a null position, then it has likely overrun the
     // range, return failure. This is unexpected but may happen if the range
@@ -670,76 +705,103 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
         delegate->GetFromNodeID(it->anchor_id()));
     DCHECK(anchor_node);
 
-    // Only get attributes for nodes in the tree. Exclude descendants of leaves
-    // and ignored objects.
-    AXPlatformNodeWin* platform_node = static_cast<AXPlatformNodeWin*>(
-        AXPlatformNode::FromNativeViewAccessible(
-            anchor_node->GetDelegate()->GetLowestPlatformAncestor()));
-    DCHECK(platform_node);
-
-    base::win::VariantVector current_value;
-    const bool at_end_leaf_text_anchor =
-        it->anchor_id() == end_leaf_text_position->anchor_id() &&
-        it->tree_id() == end_leaf_text_position->tree_id();
+    AXPlatformNodeWin* platform_node =
+        ResolveTextAttributeNode(attribute_id, it->GetAnchor(), anchor_node);
 
     // When the iterator is on a leaf node (e.g., an inline text box) but
     // GetLowestPlatformAncestor() resolves to a parent node (e.g., static
     // text), the text offsets from the iterator are local to the leaf. They
     // must be translated to the parent's coordinate space so that marker
     // lookups (e.g., spelling annotations) use correct offsets.
-    const bool needs_offset_adjustment = platform_node != anchor_node;
+    // Only AnnotationTypes on text or atomic text fields consumes offsets.
+    // Translating them for other targets or node-wide attributes needlessly
+    // walks preceding siblings and wrapped lines.
+    const bool needs_offset_adjustment =
+        attribute_id == UIA_AnnotationTypesAttributeId &&
+        platform_node != anchor_node &&
+        (platform_node->IsText() || platform_node->IsAtomicTextField());
 
+    // Translate to the actual query target, which can be an exposed ancestor
+    // of an ignored node rather than the iterator's text anchor.
     const AXNode* platform_anchor = needs_offset_adjustment
                                         ? platform_node->GetDelegate()->node()
                                         : nullptr;
-    DCHECK(!needs_offset_adjustment || platform_anchor);
+    CHECK(!needs_offset_adjustment || platform_anchor);
 
     std::optional<int> start_offset;
-    std::optional<int> end_offset;
     if (!needs_offset_adjustment) {
       if (it->IsTextPosition()) {
         start_offset = it->text_offset();
       }
-      if (at_end_leaf_text_anchor && end_leaf_text_position->IsTextPosition()) {
+    } else if (platform_anchor) {
+      start_offset = it->GetTextOffsetInAncestor(
+          platform_anchor, ax::mojom::MoveDirection::kForward);
+    }
+
+    // Translate once per run of consecutive inline children. Within the run,
+    // start_offset is the current child's selected start in parent coordinates.
+    // Keep querying each child separately: combining intervals can change mixed
+    // annotation results.
+    const bool can_advance_annotation_offsets =
+        start_offset && platform_anchor &&
+        it->GetNonemptyInlineTextBoxParent() == platform_anchor;
+    while (true) {
+      const bool at_end_leaf_text_anchor =
+          it->anchor_id() == end_leaf_text_position->anchor_id() &&
+          it->tree_id() == end_leaf_text_position->tree_id();
+      std::optional<int> end_offset;
+      if (can_advance_annotation_offsets) {
+        const int leaf_end_offset = at_end_leaf_text_anchor
+                                        ? end_leaf_text_position->text_offset()
+                                        : it->MaxTextOffset();
+        // Iteration advances to tree positions, whose text_offset() is invalid.
+        const int leaf_start_offset = it->AsTextPosition()->text_offset();
+        if (leaf_start_offset > leaf_end_offset) {
+          return E_FAIL;
+        }
+        const auto translated_end =
+            base::CheckAdd(*start_offset, leaf_end_offset - leaf_start_offset);
+        if (!translated_end.IsValid()) {
+          return E_FAIL;
+        }
+        end_offset = translated_end.ValueOrDie();
+      } else if (platform_anchor) {
+        auto current_end_position = at_end_leaf_text_anchor
+                                        ? end_leaf_text_position->Clone()
+                                        : it->CreatePositionAtEndOfAnchor();
+        end_offset = current_end_position->GetTextOffsetInAncestor(
+            platform_anchor, ax::mojom::MoveDirection::kBackward);
+      } else if (!needs_offset_adjustment && at_end_leaf_text_anchor &&
+                 end_leaf_text_position->IsTextPosition()) {
         end_offset = end_leaf_text_position->text_offset();
       }
-    } else if (platform_anchor) {
-      auto translate_offset =
-          [platform_anchor](
-              const AXNodePosition::AXPositionInstance& position,
-              ax::mojom::MoveDirection direction) -> std::optional<int> {
-        auto text_position = position->AsTextPosition();
-        if (text_position->IsNullPosition()) {
-          return std::nullopt;
-        }
-        auto ancestor_position =
-            text_position->CreateAncestorPosition(platform_anchor, direction);
-        if (ancestor_position->IsNullPosition() ||
-            ancestor_position->GetAnchor() != platform_anchor) {
-          return std::nullopt;
-        }
-        return ancestor_position->text_offset();
-      };
-      start_offset = translate_offset(it, ax::mojom::MoveDirection::kForward);
-      auto current_end_position = at_end_leaf_text_anchor
-                                      ? end_leaf_text_position->Clone()
-                                      : it->CreatePositionAtEndOfAnchor();
-      end_offset = translate_offset(current_end_position,
-                                    ax::mojom::MoveDirection::kBackward);
-    }
+      base::win::VariantVector current_value;
+      HRESULT hr = platform_node->GetTextAttributeValue(
+          attribute_id, start_offset, end_offset, &current_value);
+      if (FAILED(hr)) {
+        return E_FAIL;
+      }
 
-    HRESULT hr = platform_node->GetTextAttributeValue(
-        attribute_id, start_offset, end_offset, &current_value);
-    if (FAILED(hr)) {
-      return E_FAIL;
-    }
+      if (!has_attribute_value) {
+        attribute_value = std::move(current_value);
+        has_attribute_value = true;
+      } else if (attribute_value != current_value) {
+        V_VT(value) = VT_UNKNOWN;
+        return ::UiaGetReservedMixedAttributeValue(&V_UNKNOWN(value));
+      }
 
-    if (!has_attribute_value) {
-      attribute_value = std::move(current_value);
-      has_attribute_value = true;
-    } else if (attribute_value != current_value) {
-      V_VT(value) = VT_UNKNOWN;
-      return ::UiaGetReservedMixedAttributeValue(&V_UNKNOWN(value));
+      const AXNode* next_sibling = can_advance_annotation_offsets
+                                       ? it->GetAnchor()->GetNextSibling()
+                                       : nullptr;
+      // Leave `it` at the first unconsumed preorder position when the run ends.
+      // The outer loop must still query intervening parent nodes.
+      it = it->CreateNextAnchorPosition();
+      if (at_end_leaf_text_anchor || !next_sibling ||
+          it->GetAnchor() != next_sibling ||
+          it->GetNonemptyInlineTextBoxParent() != platform_anchor) {
+        break;
+      }
+      start_offset = end_offset;
     }
   }
 
@@ -1585,10 +1647,10 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
 
   // For a degenerate range, the |end_| will always be the same as the
   // normalized start, so there's no need to compute the normalized end.
-  // However, a degenerate range might go undetected if there's an ignored node
-  // (or many) between the two endpoints. For this reason, we need to
-  // compare the |end_| with both the |start_| and the |normalized_start|.
-  bool is_degenerate = *start == *end || *normalized_start == *end;
+  // Ignored content can hide a degenerate range, so compare the end with both
+  // the original and normalized start unless disjoint leaves rule it out.
+  const bool is_degenerate = !start->IsBeforeInDisjointTextAnchors(*end) &&
+                             (*start == *end || *normalized_start == *end);
   AXPositionInstance normalized_end =
       is_degenerate ? normalized_start->Clone()
                     : end->AsLeafTextPositionAfterCharacter();

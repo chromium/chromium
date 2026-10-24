@@ -3419,6 +3419,135 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   EXPECT_EQ(kLine1AndBreakLength, test_position->text_offset());
 }
 
+TEST_F(AXPositionTest, GetTextOffsetInAncestor) {
+  const auto position =
+      CreateTextPosition(inline_box2_, 2, ax::mojom::TextAffinity::kDownstream);
+  for (const auto direction : {ax::mojom::MoveDirection::kForward,
+                               ax::mojom::MoveDirection::kBackward}) {
+    EXPECT_EQ(2, position->GetTextOffsetInAncestor(GetNode(inline_box2_.id),
+                                                   direction));
+    EXPECT_EQ(2, position->GetTextOffsetInAncestor(GetNode(static_text2_.id),
+                                                   direction));
+    EXPECT_EQ(
+        kLine1AndBreakLength + 2,
+        position->GetTextOffsetInAncestor(GetNode(text_field_.id), direction));
+    EXPECT_EQ(std::nullopt, position->GetTextOffsetInAncestor(
+                                GetNode(static_text1_.id), direction));
+    EXPECT_EQ(std::nullopt,
+              position->GetTextOffsetInAncestor(nullptr, direction));
+    EXPECT_EQ(std::nullopt,
+              AXNodePosition::CreateNullPosition()->GetTextOffsetInAncestor(
+                  GetNode(text_field_.id), direction));
+    EXPECT_EQ(
+        0, CreateTreePosition(inline_box2_, AXNodePosition::BEFORE_TEXT)
+               ->GetTextOffsetInAncestor(GetNode(static_text2_.id), direction));
+  }
+}
+
+TEST_F(AXPositionTest, GetNonemptyInlineTextBoxParent) {
+  const auto position =
+      CreateTextPosition(inline_box1_, 1, ax::mojom::TextAffinity::kDownstream);
+  EXPECT_EQ(GetNode(static_text1_.id),
+            position->GetNonemptyInlineTextBoxParent());
+  EXPECT_EQ(GetNode(static_text1_.id),
+            CreateTreePosition(inline_box1_, AXNodePosition::BEFORE_TEXT)
+                ->GetNonemptyInlineTextBoxParent());
+  EXPECT_EQ(nullptr, CreateTextPosition(static_text1_, 1,
+                                        ax::mojom::TextAffinity::kDownstream)
+                         ->GetNonemptyInlineTextBoxParent());
+  EXPECT_EQ(
+      nullptr,
+      AXNodePosition::CreateNullPosition()->GetNonemptyInlineTextBoxParent());
+
+  inline_box1_.SetName("");
+  AXTreeUpdate update;
+  update.nodes = {inline_box1_};
+  ASSERT_TRUE(ax_tree()->Unserialize(update)) << ax_tree()->error();
+  EXPECT_EQ(nullptr, position->GetNonemptyInlineTextBoxParent());
+
+  inline_box1_.SetName("Line 1");
+  inline_box1_.AddState(ax::mojom::State::kIgnored);
+  update.nodes = {inline_box1_};
+  ASSERT_TRUE(ax_tree()->Unserialize(update)) << ax_tree()->error();
+  EXPECT_EQ(nullptr, position->GetNonemptyInlineTextBoxParent());
+
+  inline_box1_.RemoveState(ax::mojom::State::kIgnored);
+  static_text1_.role = ax::mojom::Role::kGenericContainer;
+  update.nodes = {static_text1_, inline_box1_};
+  ASSERT_TRUE(ax_tree()->Unserialize(update)) << ax_tree()->error();
+  EXPECT_EQ(nullptr, position->GetNonemptyInlineTextBoxParent());
+}
+
+TEST_F(AXPositionTest, IsBeforeInDisjointTextAnchors) {
+  const auto start = CreateTextPosition(static_text1_, 1,
+                                        ax::mojom::TextAffinity::kDownstream);
+  const auto end = CreateTextPosition(static_text2_, 2,
+                                      ax::mojom::TextAffinity::kDownstream);
+  EXPECT_TRUE(start->IsBeforeInDisjointTextAnchors(*end));
+  EXPECT_FALSE(end->IsBeforeInDisjointTextAnchors(*start));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(*start));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(*CreateTextPosition(
+      static_text1_, 3, ax::mojom::TextAffinity::kDownstream)));
+  EXPECT_FALSE(
+      start->CreatePositionAtEndOfAnchor()->IsBeforeInDisjointTextAnchors(
+          *end));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(
+      *end->CreatePositionAtStartOfAnchor()));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(
+      *AXNodePosition::CreateNullPosition()));
+  EXPECT_FALSE(
+      AXNodePosition::CreateNullPosition()->IsBeforeInDisjointTextAnchors(
+          *end));
+
+  static_text2_.AddState(ax::mojom::State::kIgnored);
+  inline_box2_.AddState(ax::mojom::State::kIgnored);
+  AXTreeUpdate update;
+  update.nodes = {static_text2_, inline_box2_};
+  ASSERT_TRUE(ax_tree()->Unserialize(update)) << ax_tree()->error();
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(*end));
+}
+
+TEST_F(AXPositionTest, IsBeforeInDisjointSiblingTextAnchors) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  AXNodeData static_text;
+  static_text.id = 2;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetName("firstsecond");
+  static_text.child_ids = {3, 4};
+
+  AXNodeData first_inline_box;
+  first_inline_box.id = 3;
+  first_inline_box.role = ax::mojom::Role::kInlineTextBox;
+  first_inline_box.SetName("first");
+
+  AXNodeData second_inline_box;
+  second_inline_box.id = 4;
+  second_inline_box.role = ax::mojom::Role::kInlineTextBox;
+  second_inline_box.SetName("second");
+
+  SetTree(
+      CreateAXTree({root, static_text, first_inline_box, second_inline_box}));
+  const auto start = CreateTextPosition(first_inline_box, 1,
+                                        ax::mojom::TextAffinity::kDownstream);
+  const auto end = CreateTextPosition(second_inline_box, 2,
+                                      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_EQ(start->GetAnchor()->GetParent(), end->GetAnchor()->GetParent());
+  EXPECT_TRUE(start->IsBeforeInDisjointTextAnchors(*end));
+  EXPECT_FALSE(end->IsBeforeInDisjointTextAnchors(*start));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(*start));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(*CreateTextPosition(
+      first_inline_box, 3, ax::mojom::TextAffinity::kDownstream)));
+  EXPECT_FALSE(
+      start->CreatePositionAtEndOfAnchor()->IsBeforeInDisjointTextAnchors(
+          *end));
+  EXPECT_FALSE(start->IsBeforeInDisjointTextAnchors(
+      *end->CreatePositionAtStartOfAnchor()));
+}
+
 TEST_F(AXPositionTest, AsTreePositionWithNullPosition) {
   TestPositionType null_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position);

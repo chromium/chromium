@@ -4,8 +4,11 @@
 
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/strings/strcat.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -21,6 +24,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -916,6 +920,112 @@ static bool HasMarkerDescendant(ui::BrowserAccessibility& node) {
   return false;
 }
 
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetAttributeValueInNestedContainers) {
+  constexpr size_t kNestingDepth = 4;
+  constexpr size_t kParagraphCount = 8;
+  for (const char* last_element : {"<p>end</p>", "<img alt='end'>",
+                                   "<button aria-label='end'></button>"}) {
+    SCOPED_TRACE(last_element);
+    std::string html = "<img alt='start'>";
+    for (size_t i = 0; i < kNestingDepth; ++i) {
+      html += "<div>";
+    }
+    for (size_t i = 0; i < kParagraphCount; ++i) {
+      html += "<p>paragraph</p>";
+    }
+    html += last_element;
+    for (size_t i = 0; i < kNestingDepth; ++i) {
+      html += "</div>";
+    }
+
+    ComPtr<ITextRangeProvider> range;
+    GetDocumentRangeForMarkup(html, &range);
+    ASSERT_NE(nullptr, range.Get());
+    ComPtr<ITextRangeProvider> original_range;
+    ASSERT_HRESULT_SUCCEEDED(range->Clone(&original_range));
+
+    base::win::ScopedVariant value;
+    ASSERT_HRESULT_SUCCEEDED(
+        range->GetAttributeValue(UIA_IsReadOnlyAttributeId, value.Receive()));
+    ASSERT_EQ(VT_BOOL, value.type());
+    EXPECT_EQ(VARIANT_TRUE, V_BOOL(value.ptr()));
+
+    BOOL equal = FALSE;
+    ASSERT_HRESULT_SUCCEEDED(range->Compare(original_range.Get(), &equal));
+    EXPECT_TRUE(equal);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
+    GetAttributeValueAcrossFrameWithWrappedText) {
+  std::string text;
+  for (size_t i = 0; i < 8; ++i) {
+    text += "wrappedword ";
+  }
+  text += "frame end";
+
+  for (bool editable : {false, true}) {
+    SCOPED_TRACE(editable);
+    LoadInitialAccessibilityTreeFromHtml(base::StrCat(
+        {"<p>before frame</p><iframe srcdoc=\"<div contenteditable='",
+         editable ? "true" : "false",
+         "' style='width: 165px; font: 14px monospace'>", text,
+         "</div>\"></iframe><p>after frame</p>"}));
+    WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                  text);
+
+    ui::BrowserAccessibility* frame_text =
+        FindNode(ax::mojom::Role::kStaticText, text);
+    ASSERT_NE(nullptr, frame_text);
+    ASSERT_NE(GetManager(), frame_text->manager());
+    ASSERT_GT(frame_text->InternalChildCount(), 1u);
+
+    ComPtr<ITextRangeProvider> frame_range;
+    GetTextRangeProviderFromTextNode(*frame_text, &frame_range);
+    ASSERT_NE(nullptr, frame_range.Get());
+    base::win::ScopedVariant value;
+    ASSERT_HRESULT_SUCCEEDED(frame_range->GetAttributeValue(
+        UIA_IsReadOnlyAttributeId, value.Receive()));
+    ASSERT_EQ(VT_BOOL, value.type());
+    EXPECT_EQ(editable ? VARIANT_FALSE : VARIANT_TRUE, V_BOOL(value.ptr()));
+
+    ComPtr<ITextRangeProvider> document_range;
+    GetTextRangeProviderFromTextNode(
+        *GetManager()->GetBrowserAccessibilityRoot(), &document_range);
+    ASSERT_NE(nullptr, document_range.Get());
+    ComPtr<ITextRangeProvider> original_range;
+    ASSERT_HRESULT_SUCCEEDED(document_range->Clone(&original_range));
+
+    value.Reset();
+    ASSERT_HRESULT_SUCCEEDED(document_range->GetAttributeValue(
+        UIA_IsReadOnlyAttributeId, value.Receive()));
+    if (editable) {
+      ASSERT_EQ(VT_UNKNOWN, value.type());
+      ComPtr<IUnknown> mixed;
+      ASSERT_HRESULT_SUCCEEDED(UiaGetReservedMixedAttributeValue(&mixed));
+      EXPECT_EQ(mixed.Get(), V_UNKNOWN(value.ptr()));
+    } else {
+      ASSERT_EQ(VT_BOOL, value.type());
+      EXPECT_EQ(VARIANT_TRUE, V_BOOL(value.ptr()));
+    }
+
+    // A uniform attribute must traverse the frame even when IsReadOnly can
+    // return early on the editable frame's mixed value.
+    value.Reset();
+    ASSERT_HRESULT_SUCCEEDED(document_range->GetAttributeValue(
+        UIA_IsItalicAttributeId, value.Receive()));
+    ASSERT_EQ(VT_BOOL, value.type());
+    EXPECT_EQ(VARIANT_FALSE, V_BOOL(value.ptr()));
+
+    BOOL equal = FALSE;
+    ASSERT_HRESULT_SUCCEEDED(
+        document_range->Compare(original_range.Get(), &equal));
+    EXPECT_TRUE(equal);
+  }
+}
+
 // A spelling marker inside an atomic text field (e.g. <input>) must be exposed
 // via the UIA AnnotationTypes attribute. The field's marker-bearing static-text
 // descendants are hidden from the platform tree because the field is exposed as
@@ -977,117 +1087,108 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
     GetAttributeValueSpellingAnnotationInTextarea) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <textarea id="textarea" aria-label="textarea_text">mikjake</textarea>
-        </body>
-      </html>
-  )HTML");
+  const struct {
+    const char* name;
+    const char* text;
+    bool soft_wrap;
+  } cases[] = {
+      {"single line", "misstake", false},
+      {"soft wrapped", "wrappedword wrappedword wrappedword misstake", true},
+      {"hard newline", "correct\nmisstake", false},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.name);
+    const std::string text = test.text;
+    LoadInitialAccessibilityTreeFromHtml(
+        base::StrCat({"<textarea id='editor' aria-label='textarea_text' "
+                      "style='width: 165px; font: 14px monospace'>",
+                      text, "</textarea>"}));
 
-  ui::BrowserAccessibility* text_area_node =
-      FindNode(ax::mojom::Role::kTextField, "textarea_text");
-  ASSERT_NE(nullptr, text_area_node);
-  EXPECT_TRUE(text_area_node->IsLeaf());
-  EXPECT_EQ(0u, text_area_node->PlatformChildCount());
+    ui::BrowserAccessibility* text_field =
+        FindNode(ax::mojom::Role::kTextField, "textarea_text");
+    ASSERT_NE(nullptr, text_field);
+    ASSERT_TRUE(text_field->IsLeaf());
+    ASSERT_EQ(0u, text_field->PlatformChildCount());
+    if (test.soft_wrap) {
+      const ui::AXNode* wrapped_text =
+          text_field->node()
+              ->GetDeepestFirstUnignoredDescendant()
+              ->GetTextAnchor();
+      ASSERT_NE(nullptr, wrapped_text);
+      EXPECT_EQ(text, wrapped_text->GetStringAttribute(
+                          ax::mojom::StringAttribute::kName));
+      ASSERT_GT(wrapped_text->GetUnignoredChildCount(), 1u);
+    }
+    ComPtr<ITextRangeProvider> range;
+    GetTextRangeProviderFromTextNode(*text_field, &range);
+    ASSERT_NE(nullptr, range.Get());
+    ComPtr<ITextRangeProvider> original_range;
+    ASSERT_HRESULT_SUCCEEDED(range->Clone(&original_range));
 
-  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"JS(
-      const textarea = document.getElementById('textarea');
-      textarea.focus();
-      const innerEditor = internals.innerEditorElement(textarea);
-      const text = innerEditor.firstChild;
-      const misspelling = 'mikjake';
-      const start = text.textContent.indexOf(misspelling);
-      const range = document.createRange();
-      range.setStart(text, start);
-      range.setEnd(text, start + misspelling.length);
-      internals.setMarker(document, range, 'spelling');
-  )JS"));
+    base::win::ScopedVariant value;
+    ASSERT_HRESULT_SUCCEEDED(
+        range->GetAttributeValue(UIA_IsReadOnlyAttributeId, value.Receive()));
+    ASSERT_EQ(VT_BOOL, value.type());
+    EXPECT_EQ(VARIANT_FALSE, V_BOOL(value.ptr()));
 
-  while (!HasMarkerDescendant(*text_area_node)) {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents());
-    ASSERT_TRUE(waiter.WaitForNotification());
-  }
-
-  ComPtr<ITextRangeProvider> document_range;
-  GetTextRangeProviderFromTextNode(*text_area_node, &document_range);
-  ASSERT_NE(nullptr, document_range.Get());
-
-  base::win::ScopedBstr misspelling(L"mikjake");
-  ComPtr<ITextRangeProvider> misspelled_range;
-  ASSERT_HRESULT_SUCCEEDED(document_range->FindText(misspelling.Get(), false,
-                                                    false, &misspelled_range));
-  ASSERT_NE(nullptr, misspelled_range.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(misspelled_range, L"mikjake");
-
-  base::win::ScopedVariant value;
-  EXPECT_HRESULT_SUCCEEDED(misspelled_range->GetAttributeValue(
-      UIA_AnnotationTypesAttributeId, value.Receive()));
-  ASSERT_EQ(value.type(), VT_ARRAY | VT_I4);
-  ExpectSingleIntSafeArray(V_ARRAY(value.ptr()), AnnotationType_SpellingError);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
-    GetAttributeValueSpellingAnnotationInMultilineTextarea) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <textarea id="textarea"
-                    aria-label="textarea_text">correct&#10;mikjake</textarea>
-        </body>
-      </html>
-  )HTML");
-
-  ui::BrowserAccessibility* text_area_node =
-      FindNode(ax::mojom::Role::kTextField, "textarea_text");
-  ASSERT_NE(nullptr, text_area_node);
-  EXPECT_TRUE(text_area_node->IsLeaf());
-  EXPECT_EQ(0u, text_area_node->PlatformChildCount());
-
-  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"JS(
-      const textarea = document.getElementById('textarea');
-      textarea.focus();
-      const innerEditor = internals.innerEditorElement(textarea);
-      const misspelling = 'mikjake';
-      const walker =
-          document.createTreeWalker(innerEditor, NodeFilter.SHOW_TEXT);
-      let text;
-      while ((text = walker.nextNode())) {
-        if (text.textContent.includes(misspelling)) {
-          break;
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), R"JS(
+        const textarea = document.getElementById('editor');
+        textarea.focus();
+        const walker = document.createTreeWalker(
+            internals.innerEditorElement(textarea), NodeFilter.SHOW_TEXT);
+        let text;
+        while ((text = walker.nextNode())) {
+          const start = text.textContent.indexOf('misstake');
+          if (start !== -1) {
+            const marker = document.createRange();
+            marker.setStart(text, start);
+            marker.setEnd(text, start + 'misstake'.length);
+            internals.setMarker(document, marker, 'spelling');
+            break;
+          }
         }
-      }
-      const start = text.textContent.indexOf(misspelling);
-      const range = document.createRange();
-      range.setStart(text, start);
-      range.setEnd(text, start + misspelling.length);
-      internals.setMarker(document, range, 'spelling');
-  )JS"));
+        if (!text) {
+          throw new Error('Missing marker text');
+        }
+    )JS"));
 
-  while (!HasMarkerDescendant(*text_area_node)) {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents());
-    ASSERT_TRUE(waiter.WaitForNotification());
+    while (!HasMarkerDescendant(*text_field)) {
+      AccessibilityNotificationWaiter waiter(shell()->web_contents());
+      ASSERT_TRUE(waiter.WaitForNotification());
+    }
+
+    value.Reset();
+    ASSERT_HRESULT_SUCCEEDED(range->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, value.Receive()));
+    if (text == "misstake") {
+      ASSERT_EQ(VT_ARRAY | VT_I4, value.type());
+      ExpectSingleIntSafeArray(V_ARRAY(value.ptr()),
+                               AnnotationType_SpellingError);
+    } else {
+      ASSERT_EQ(VT_UNKNOWN, value.type());
+      ComPtr<IUnknown> mixed;
+      ASSERT_HRESULT_SUCCEEDED(UiaGetReservedMixedAttributeValue(&mixed));
+      EXPECT_EQ(mixed.Get(), V_UNKNOWN(value.ptr()));
+    }
+
+    base::win::ScopedBstr misspelling(L"misstake");
+    ComPtr<ITextRangeProvider> marked_range;
+    ASSERT_HRESULT_SUCCEEDED(
+        range->FindText(misspelling.Get(), false, false, &marked_range));
+    ASSERT_NE(nullptr, marked_range.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(marked_range, L"misstake");
+
+    value.Reset();
+    ASSERT_HRESULT_SUCCEEDED(marked_range->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, value.Receive()));
+    ASSERT_EQ(VT_ARRAY | VT_I4, value.type());
+    ExpectSingleIntSafeArray(V_ARRAY(value.ptr()),
+                             AnnotationType_SpellingError);
+
+    BOOL equal = FALSE;
+    ASSERT_HRESULT_SUCCEEDED(range->Compare(original_range.Get(), &equal));
+    EXPECT_TRUE(equal);
   }
-
-  ComPtr<ITextRangeProvider> document_range;
-  GetTextRangeProviderFromTextNode(*text_area_node, &document_range);
-  ASSERT_NE(nullptr, document_range.Get());
-
-  base::win::ScopedBstr misspelling(L"mikjake");
-  ComPtr<ITextRangeProvider> misspelled_range;
-  ASSERT_HRESULT_SUCCEEDED(document_range->FindText(misspelling.Get(), false,
-                                                    false, &misspelled_range));
-  ASSERT_NE(nullptr, misspelled_range.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(misspelled_range, L"mikjake");
-
-  base::win::ScopedVariant value;
-  EXPECT_HRESULT_SUCCEEDED(misspelled_range->GetAttributeValue(
-      UIA_AnnotationTypesAttributeId, value.Receive()));
-  ASSERT_EQ(value.type(), VT_ARRAY | VT_I4);
-  ExpectSingleIntSafeArray(V_ARRAY(value.ptr()), AnnotationType_SpellingError);
 }
 
 // With a non-atomic text field, the read-only attribute should be determined
