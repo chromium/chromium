@@ -138,3 +138,9 @@ ${this.pdfSaveToDriveEnabled_ ? html`<viewer-save-to-drive-bubble
     @save-to-drive-bubble-action="${this.onSaveToDriveBubbleAction_}">
 </viewer-save-to-drive-bubble>` : ''}
 </if>
+
+<if expr="enable_pdf_ink2">
+${this.showSignatureDialog_ ? html`<viewer-signature-dialog
+    @close="${this.onSignatureDialogClose_}">
+</viewer-signature-dialog>` : ''}
+</if>

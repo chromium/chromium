@@ -117,6 +117,8 @@ build_webui("build") {
       "elements/viewer_side_panel.ts",
       "elements/viewer_signature_bottom_toolbar.html.ts",
       "elements/viewer_signature_bottom_toolbar.ts",
+      "elements/viewer_signature_dialog.html.ts",
+      "elements/viewer_signature_dialog.ts",
       "elements/viewer_signature_side_panel.html.ts",
       "elements/viewer_signature_side_panel.ts",
       "elements/viewer_text_bottom_toolbar.html.ts",

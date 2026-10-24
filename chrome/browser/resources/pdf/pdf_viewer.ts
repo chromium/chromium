@@ -14,6 +14,7 @@ import './elements/ink_text_annotations.js';
 import './elements/viewer_bottom_toolbar.js';
 import './elements/viewer_side_panel.js';
 import './elements/viewer_signature_bottom_toolbar.js';
+import './elements/viewer_signature_dialog.js';
 import './elements/viewer_signature_side_panel.js';
 import './elements/viewer_text_bottom_toolbar.js';
 import './elements/viewer_text_side_panel.js';
@@ -307,6 +308,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       showPasswordDialog_: {type: Boolean},
       showPropertiesDialog_: {type: Boolean},
+      // <if expr="enable_pdf_ink2">
+      showSignatureDialog_: {type: Boolean},
+      // </if>
       sidenavCollapsed_: {type: Boolean},
 
       // <if expr="enable_pdf_ink2">
@@ -397,6 +401,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
   protected accessor showPasswordDialog_: boolean = false;
   protected accessor showPropertiesDialog_: boolean = false;
+  // <if expr="enable_pdf_ink2">
+  protected accessor showSignatureDialog_: boolean = false;
+  // </if>
   protected accessor sidenavCollapsed_: boolean;
 
   // <if expr="enable_pdf_ink2">
@@ -758,6 +765,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       await Ink2Manager.getInstance().initializeTextAnnotations();
     }
     this.annotationMode_ = newAnnotationMode;
+    this.showSignatureDialog_ = newAnnotationMode === AnnotationMode.SIGNATURE;
   }
   // </if> enable_pdf_ink2
 
@@ -858,6 +866,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     assert(this.showPropertiesDialog_);
     this.showPropertiesDialog_ = false;
   }
+
+  // <if expr="enable_pdf_ink2">
+  protected onSignatureDialogClose_() {
+    assert(this.showSignatureDialog_);
+    this.showSignatureDialog_ = false;
+  }
+  // </if>
 
   /**
    * @return Whether two up view was enabled when the user last toggled it,

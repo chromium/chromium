@@ -822,6 +822,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2SignaturesTest,
   RunMochaTest("ink2_signature_bottom_toolbar_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2SignaturesTest, Ink2SignaturesDialog) {
+  RunMochaTest("ink2_signature_dialog_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2SignaturesTest,
                        Ink2SignaturesSidePanel) {
   // The window must be at least 960px to show the side panel.
