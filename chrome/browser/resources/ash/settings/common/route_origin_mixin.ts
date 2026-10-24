@@ -17,7 +17,8 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router, routes} from '../router.js';
+import {Route} from '../os_settings_routes.js';
+import {Router, routes} from '../router.js';
 
 import {RouteObserverMixin} from './route_observer_mixin.js';
 import type {RouteObserverMixinInterface} from './route_observer_mixin.js';

@@ -35,9 +35,9 @@ import type {SettingsSliderElement} from '../controls/settings_slider.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {KeyboardAmbientLightSensorObserverReceiver, KeyboardBrightnessObserverReceiver, LidStateObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import type {PersonalizationHubBrowserProxy} from '../personalization_page/personalization_hub_browser_proxy.js';
 import {PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';

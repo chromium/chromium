@@ -30,7 +30,9 @@ import type {SearchResultsObserverInterface} from '../mojom-webui/search.mojom-w
 import {ParentResultBehavior, SearchResultsObserverReceiver} from '../mojom-webui/search.mojom-webui.js';
 import {Router, routes} from '../router.js';
 import type {SearchResult} from '../search/combined_search_handler.js';
-import {combinedSearch, getPersonalizationSearchHandler, getSettingsSearchHandler} from '../search/combined_search_handler.js';
+import {combinedSearch} from '../search/combined_search_handler.js';
+import {getPersonalizationSearchHandler} from '../search/personalization_search_handler.js';
+import {getSettingsSearchHandler} from '../search/settings_search_handler.js';
 
 import type {OsSearchResultRowElement} from './os_search_result_row.js';
 import {getTemplate} from './os_settings_search_box.html.js';

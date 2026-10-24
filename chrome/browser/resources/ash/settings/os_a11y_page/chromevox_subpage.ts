@@ -27,14 +27,12 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './chromevox_subpage.html.js';
 import {ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
-
-export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 const SYSTEM_VOICE = 'chromeos_system_voice';
 const CHROMEVOX_EXTENSION_ID = 'mndnfokpggljbaajbnioimlmbfngpief';

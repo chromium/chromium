@@ -50,7 +50,7 @@ import type {MultiDevicePageContentData} from '../multidevice_page/multidevice_c
 import {MultiDeviceSettingsMode} from '../multidevice_page/multidevice_constants.js';
 import type {OsPageAvailability} from '../os_page_availability.js';
 import {AccountManagerBrowserProxyImpl} from '../os_people_page/account_manager_browser_proxy.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 
 import {getTemplate} from './os_settings_menu.html.js';
 

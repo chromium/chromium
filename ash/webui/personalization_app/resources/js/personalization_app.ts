@@ -43,13 +43,6 @@ import './user/user_subpage_element.js';
 import './utils.js';
 import './wallpaper/index.js';
 
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-
-import {emptyState} from './personalization_state.js';
-import {PersonalizationStore} from './personalization_store.js';
-import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
-
 /**
  * With optimize_webui, the generated JS files are bundled into single file
  * `chrome://personalization/js/personalization_app.js`. These exports are
@@ -166,14 +159,3 @@ export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js'
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 export {setTransitionsEnabled, maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
-
-PersonalizationStore.getInstance().init(emptyState());
-SeaPenStoreAdapter.initSeaPenStore();
-
-const link = document.querySelector<HTMLLinkElement>('link[rel=\'icon\']');
-if (link) {
-  // |link| may be null in tests.
-  link.href = '/hub_icon_192.png';
-}
-document.title = loadTimeData.getString('personalizationTitle');
-ColorChangeUpdater.forDocument().start();

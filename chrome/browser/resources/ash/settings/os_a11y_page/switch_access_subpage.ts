@@ -27,8 +27,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import {AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';

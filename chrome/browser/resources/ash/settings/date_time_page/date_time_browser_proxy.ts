@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PageRemote} from '../mojom-webui/date_time_handler.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '../mojom-webui/date_time_handler.mojom-webui.js';
 
 // Communicates with the DateTimeHandler in the browser process.
-class DateTimeBrowserProxy {
+export class DateTimeBrowserProxy {
   // Invoke methods from the browser process.
   handler: PageHandlerRemote = new PageHandlerRemote();
 
@@ -29,10 +29,3 @@ class DateTimeBrowserProxy {
 }
 
 let instance: DateTimeBrowserProxy|null = null;
-
-export {
-  DateTimeBrowserProxy,
-  PageRemote as DateTimePageRemote,
-  PageHandlerRemote as DateTimePageHandlerRemote,
-  PageCallbackRouter as DateTimePageCallbackRouter,
-};

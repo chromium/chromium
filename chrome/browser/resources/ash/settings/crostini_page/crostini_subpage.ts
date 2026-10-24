@@ -27,9 +27,9 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Router, routes} from '../router.js';
-import type {Route} from '../router.js';
 
 import {CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import type {CrostiniBrowserProxy, CrostiniDiskInfo} from './crostini_browser_proxy.js';

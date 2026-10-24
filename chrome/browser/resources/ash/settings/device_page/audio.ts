@@ -32,8 +32,8 @@ import {AudioDeviceType, AudioEffectState, AudioEffectType, AudioSystemPropertie
 import type {VoiceIsolationUIAppearance} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {AudioAndCaptionsPageBrowserProxyImpl} from '../os_a11y_page/audio_and_captions_page_browser_proxy.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import {getTemplate} from './audio.html.js';

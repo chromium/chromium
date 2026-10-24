@@ -24,8 +24,8 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './os_a11y_page.html.js';

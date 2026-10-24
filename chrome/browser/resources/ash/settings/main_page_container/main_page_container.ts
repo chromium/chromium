@@ -46,7 +46,7 @@ import type {AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.j
 import {AndroidAppsBrowserProxyImpl} from '../os_apps_page/android_apps_browser_proxy.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import type {OsPageAvailability} from '../os_page_availability.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 
 import {getTemplate} from './main_page_container.html.js';
 import {MainPageMixin} from './main_page_mixin.js';

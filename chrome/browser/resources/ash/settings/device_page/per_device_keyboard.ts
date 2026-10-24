@@ -28,7 +28,7 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import type {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';

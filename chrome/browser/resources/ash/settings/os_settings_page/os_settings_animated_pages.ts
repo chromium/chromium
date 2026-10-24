@@ -23,7 +23,7 @@ import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from 'chrome:/
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './os_settings_animated_pages.html.js';

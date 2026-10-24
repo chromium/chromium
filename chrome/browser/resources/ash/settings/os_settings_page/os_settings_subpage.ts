@@ -33,7 +33,7 @@ import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.j
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import type {Constructor} from '../common/types.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './os_settings_subpage.html.js';

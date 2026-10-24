@@ -25,8 +25,8 @@ import type {DropdownOptionList} from '../controls/v2/settings_dropdown_v2.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {LanguagesBrowserProxy} from '../os_languages_page/languages_browser_proxy.js';
 import {LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './select_to_speak_subpage.html.js';

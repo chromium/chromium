@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {assertExhaustive} from '../assert_extras.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {routes} from '../router.js';
 
 import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinPageSize, ZhuyinSelectKeys} from './input_method_prefs_consts.js';

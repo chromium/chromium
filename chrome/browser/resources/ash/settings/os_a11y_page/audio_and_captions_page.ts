@@ -29,8 +29,8 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import {getTemplate} from './audio_and_captions_page.html.js';

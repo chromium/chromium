@@ -18,8 +18,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isCrostiniSupported, isExternalStorageEnabled, isSkyVaultEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';

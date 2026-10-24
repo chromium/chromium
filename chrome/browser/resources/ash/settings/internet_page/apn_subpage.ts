@@ -25,7 +25,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './apn_subpage.html.js';

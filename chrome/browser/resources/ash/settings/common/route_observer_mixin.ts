@@ -6,8 +6,8 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {Route} from '../os_settings_routes.js';
 import {Router} from '../router.js';
-import type {Route} from '../router.js';
 
 import type {Constructor} from './types.js';
 

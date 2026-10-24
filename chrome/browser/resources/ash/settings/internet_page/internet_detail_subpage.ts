@@ -66,9 +66,9 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {OsSyncBrowserProxy, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
 import {OsSyncBrowserProxyImpl} from '../os_people_page/os_sync_browser_proxy.js';
 import type {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import type {Route} from '../os_settings_routes.js';
 import type {PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './internet_detail_subpage.html.js';

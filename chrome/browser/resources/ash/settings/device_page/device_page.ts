@@ -29,7 +29,7 @@ import {GraphicsTabletSettingsObserverReceiver, KeyboardSettingsObserverReceiver
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {ACCESSIBILITY_COMMON_IME_ID} from '../os_languages_page/languages.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './device_page.html.js';

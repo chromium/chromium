@@ -22,7 +22,7 @@ import {recordSettingChange} from '../../metrics_recorder.js';
 import type {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../../router.js';
+import type {Route} from '../../os_settings_routes.js';
 import {Router, routes} from '../../router.js';
 import {isAppInstalled} from '../os_apps_page.js';
 

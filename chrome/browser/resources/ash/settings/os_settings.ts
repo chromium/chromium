@@ -10,8 +10,6 @@
 import '/strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
 
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-
 /**
  * With the optimize_webui() build step, the generated JS files are bundled
  * into a single JS file. The exports below are necessary so they can be
@@ -100,7 +98,7 @@ export {SettingsRowElement} from './controls/v2/settings_row.js';
 export {SettingsSliderRowElement} from './controls/v2/settings_slider_row.js';
 export {SettingsSliderV2Element} from './controls/v2/settings_slider_v2.js';
 export {SettingsToggleV2Element} from './controls/v2/settings_toggle_v2.js';
-export {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote, DateTimePageRemote} from './date_time_page/date_time_browser_proxy.js';
+export {DateTimeBrowserProxy} from './date_time_page/date_time_browser_proxy.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';
 export type {BatteryStatus, DevicePageBrowserProxy, NoteAppInfo, PowerSource} from './device_page/device_page_browser_proxy.js';
@@ -137,9 +135,13 @@ export * as appNotificationHandlerMojom from './mojom-webui/app_notification_han
 export * as appParentalControlsHandlerMojom from './mojom-webui/app_parental_controls_handler.mojom-webui.js';
 export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
+export {PageCallbackRouter as DateTimePageCallbackRouter, PageHandlerRemote as DateTimePageHandlerRemote, PageRemote as DateTimePageRemote} from './mojom-webui/date_time_handler.mojom-webui.js';
 export * as displaySettingsProviderMojom from './mojom-webui/display_settings_provider.mojom-webui.js';
+export {PageCallbackRouter as GoogleDrivePageCallbackRouter, PageHandlerRemote as GoogleDrivePageHandlerRemote, PageRemote as GoogleDrivePageRemote} from './mojom-webui/google_drive_handler.mojom-webui.js';
 export * as graduationHandlerMojom from './mojom-webui/graduation_handler.mojom-webui.js';
+export {PageCallbackRouter as OneDrivePageCallbackRouter, PageHandlerRemote as OneDrivePageHandlerRemote, PageRemote as OneDrivePageRemote} from './mojom-webui/one_drive_handler.mojom-webui.js';
 export * as personalizationSearchMojom from './mojom-webui/personalization_search.mojom-webui.js';
+export {Stage} from './mojom-webui/pinning_manager_types.mojom-webui.js';
 export * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 export * as searchMojom from './mojom-webui/search.mojom-webui.js';
 export * as searchResultIconMojom from './mojom-webui/search_result_icon.mojom-webui.js';
@@ -192,8 +194,8 @@ export {SettingsBluetoothPairingDialogElement} from './os_bluetooth_page/os_blue
 export {SettingsBluetoothSummaryElement} from './os_bluetooth_page/os_bluetooth_summary.js';
 export type {FastPairSavedDevice} from './os_bluetooth_page/settings_fast_pair_constants.js';
 export {FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';
-export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, Stage} from './os_files_page/google_drive_browser_proxy.js';
-export {OneDriveBrowserProxy, OneDrivePageCallbackRouter, OneDrivePageHandlerRemote, OneDrivePageRemote} from './os_files_page/one_drive_browser_proxy.js';
+export {GoogleDriveBrowserProxy} from './os_files_page/google_drive_browser_proxy.js';
+export {OneDriveBrowserProxy} from './os_files_page/one_drive_browser_proxy.js';
 export type {OsPageAvailability} from './os_page_availability.js';
 export {createPageAvailability as createPageAvailabilityForTesting} from './os_page_availability.js';
 export {AccountManagerSettingsCardElement} from './os_people_page/account_manager_settings_card.js';
@@ -225,7 +227,7 @@ export {OsSettingsSubpageElement} from './os_settings_page/os_settings_subpage.j
 export {SettingsCardElement} from './os_settings_page/settings_card.js';
 export {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 export type {OsSettingsRoutes} from './os_settings_routes.js';
-export {createRoutes as createRoutesForTesting} from './os_settings_routes.js';
+export {createRoutes as createRoutesForTesting, Route} from './os_settings_routes.js';
 export {OsSearchResultRowElement} from './os_settings_search_box/os_search_result_row.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export type {OsSettingsSearchBoxBrowserProxy} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
@@ -240,7 +242,7 @@ export {PersonalizationHubBrowserProxyImpl} from './personalization_page/persona
 export {SettingsPersonalizationPageElement} from './personalization_page/personalization_page.js';
 export {SettingsPrefsElement} from './prefs/prefs.js';
 export {CrSettingsPrefs} from './prefs/prefs_types.js';
-export {createRouter as createRouterForTesting, Route, Router, routes} from './router.js';
+export {createRouter as createRouterForTesting, Router, routes} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
 export {SettingsSchedulerSliderElement} from './settings_scheduler_slider/settings_scheduler_slider.js';
@@ -248,8 +250,3 @@ export {MultitaskingSettingsCardElement} from './system_preferences_page/multita
 export {StartupSettingsCardElement} from './system_preferences_page/startup_settings_card.js';
 export {StorageAndPowerSettingsCardElement} from './system_preferences_page/storage_and_power_settings_card.js';
 export {SettingsSystemPreferencesPageElement} from './system_preferences_page/system_preferences_page.js';
-
-window.addEventListener('load', () => {
-  // Listen for changes to Jelly dynamic colors.
-  ColorChangeUpdater.forDocument().start();
-});

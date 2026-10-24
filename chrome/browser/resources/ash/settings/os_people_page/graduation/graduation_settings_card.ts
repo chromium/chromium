@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../../common/route_observer_mixin.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../../router.js';
+import type {Route} from '../../os_settings_routes.js';
 import {routes} from '../../router.js';
 
 import {getTemplate} from './graduation_settings_card.html.js';

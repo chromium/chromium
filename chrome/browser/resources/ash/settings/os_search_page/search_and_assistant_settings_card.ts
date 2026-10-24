@@ -27,7 +27,7 @@ import {isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoost
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './search_and_assistant_settings_card.html.js';

@@ -45,8 +45,8 @@ import type {AcceleratorFetcherInterface} from '../mojom-webui/accelerator_fetch
 import {AcceleratorFetcher, AcceleratorFetcherObserverReceiver} from '../mojom-webui/accelerator_fetcher.mojom-webui.js';
 import type {StandardAcceleratorProperties} from '../mojom-webui/accelerator_info.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {hasOptionsPageInSettings} from './input_method_util.js';

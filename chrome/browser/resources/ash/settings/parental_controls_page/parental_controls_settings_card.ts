@@ -21,7 +21,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {routes} from '../router.js';
 
 import type {ParentalControlsBrowserProxy} from './parental_controls_browser_proxy.js';

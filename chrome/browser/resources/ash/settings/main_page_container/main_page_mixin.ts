@@ -19,7 +19,7 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import type {Section} from '../mojom-webui/routes.mojom-webui.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import type {PageDisplayerElement} from './page_displayer.js';

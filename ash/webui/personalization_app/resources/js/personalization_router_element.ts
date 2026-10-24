@@ -14,6 +14,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {isManagedSeaPenEnabled, isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import type {SeaPenQueryParams} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 import {maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -22,6 +23,9 @@ import {TopicSource} from '../personalization_app.mojom-webui.js';
 
 import {isAmbientModeAllowed} from './load_time_booleans.js';
 import {getTemplate} from './personalization_router_element.html.js';
+import {emptyState} from './personalization_state.js';
+import {PersonalizationStore} from './personalization_store.js';
+import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 
 export enum Paths {
@@ -281,3 +285,14 @@ declare global {
 
 customElements.define(
     PersonalizationRouterElement.is, PersonalizationRouterElement);
+
+PersonalizationStore.getInstance().init(emptyState());
+SeaPenStoreAdapter.initSeaPenStore();
+
+const link = document.querySelector<HTMLLinkElement>('link[rel=\'icon\']');
+if (link) {
+  // |link| may be null in tests.
+  link.href = '/hub_icon_192.png';
+}
+document.title = loadTimeData.getString('personalizationTitle');
+ColorChangeUpdater.forDocument().start();

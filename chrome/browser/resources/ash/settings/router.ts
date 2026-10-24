@@ -7,10 +7,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
 import type {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
-import type {OsSettingsRoutes} from './os_settings_routes.js';
-import {createRoutes, PATH_REDIRECTS, Route} from './os_settings_routes.js';
-
-export {Route};
+import type {OsSettingsRoutes, Route} from './os_settings_routes.js';
+import {createRoutes, PATH_REDIRECTS} from './os_settings_routes.js';
 
 /**
  * Regular expression that captures the leading slash, the content and the

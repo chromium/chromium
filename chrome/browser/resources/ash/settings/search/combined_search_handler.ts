@@ -42,8 +42,3 @@ export async function combinedSearch(
         maxNumResults),
   };
 }
-
-export {
-  getPersonalizationSearchHandler,
-  getSettingsSearchHandler,
-};

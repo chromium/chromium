@@ -27,8 +27,8 @@ import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import type {AboutPageBrowserProxy, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';

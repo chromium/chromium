@@ -34,8 +34,8 @@ import type {MousePolicies} from '../mojom-webui/input_device_settings.mojom-web
 import {MouseSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {DisableTouchpadMode} from '../os_a11y_page/disable_touchpad_constants.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';

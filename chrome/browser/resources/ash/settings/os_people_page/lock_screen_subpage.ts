@@ -43,8 +43,8 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import type {FingerprintBrowserProxy} from './fingerprint_browser_proxy.js';

@@ -23,7 +23,7 @@ import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';

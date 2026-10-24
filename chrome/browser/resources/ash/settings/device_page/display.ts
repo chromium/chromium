@@ -43,8 +43,8 @@ import type {SettingsSliderElement} from '../controls/settings_slider.js';
 import type {DisplaySettingsProviderInterface, DisplaySettingsValue} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';

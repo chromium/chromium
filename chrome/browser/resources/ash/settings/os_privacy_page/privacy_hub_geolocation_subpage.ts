@@ -32,8 +32,8 @@ import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.j
 import type {App, AppPermissionsHandlerInterface} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getAppPermissionProvider} from './mojo_interface_provider.js';

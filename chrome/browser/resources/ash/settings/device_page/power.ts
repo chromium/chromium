@@ -31,8 +31,8 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import type {SettingsToggleV2Element} from '../controls/v2/settings_toggle_v2.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import type {BatteryStatus, DevicePageBrowserProxy, PowerManagementSettings, PowerSource} from './device_page_browser_proxy.js';

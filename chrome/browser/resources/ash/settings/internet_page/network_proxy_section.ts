@@ -37,9 +37,9 @@ import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.j
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {Route} from '../os_settings_routes.js';
 import type {PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import {getTemplate} from './network_proxy_section.html.js';

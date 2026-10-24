@@ -24,14 +24,15 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {MediaDevicesProxy} from '../common/media_devices_proxy.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Route} from '../os_settings_routes.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import type {PrivacyHubBrowserProxy} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
 import {getTemplate} from './privacy_hub_subpage.html.js';
+
 
 
 /**

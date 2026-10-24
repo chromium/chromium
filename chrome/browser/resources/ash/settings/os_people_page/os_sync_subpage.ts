@@ -37,7 +37,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
-import type {Route} from '../router.js';
+import type {Route} from '../os_settings_routes.js';
 import {Router, routes} from '../router.js';
 
 import type {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
