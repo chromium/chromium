@@ -12,7 +12,6 @@
 #include <ranges>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -23,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -509,12 +509,19 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // remove this exclusion.
   base::ScopedSafetyChecksExclusion scoped_unsafe;
 
+  base::WeakPtr<AXTreeManager> alive = GetWeakPtr();
+
 #if BUILDFLAG(IS_WIN)
   CHECK(!in_on_accessibility_events_)
       << "Should not re-enter OnAccessiblityEvents()";
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_WIN) || DCHECK_IS_ON()
-  base::AutoReset<bool> auto_reset(&in_on_accessibility_events_, true);
+  in_on_accessibility_events_ = true;
+  absl::Cleanup reset_in_on_accessibility_events = [this, &alive] {
+    if (alive) {
+      in_on_accessibility_events_ = false;
+    }
+  };
 #endif  // BUILDFLAG(IS_WIN) || DCHECK_IS_ON()
 
   // Update the cached device scale factor.
@@ -540,6 +547,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       CHECK(delegate_) << ax_tree()->error();
       return false;
     }
+    if (!alive) {
+      return true;
+    }
 
     // It's a bug if we got an update containing more nodes than
     // the size of the resulting tree. If Unserialize succeeded that
@@ -555,6 +565,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   DCHECK(ax_tree()->root());
 
   EnsureParentConnectionIfNotRootManager();
+  if (!alive) {
+    return true;
+  }
 
   if (!CanFireEvents()) {
     // TODO(accessibility) Change AXEventGenerator() to avoid doing any work
@@ -614,6 +627,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     defer_load_complete_event_ = false;
     FireSourceEvent(ax::mojom::Event::kLoadComplete,
                     GetBrowserAccessibilityRoot(), -1);
+    if (!alive) {
+      return true;
+    }
   }
 
   // Fire any events related to changes to the tree that come from ancestors of
@@ -645,6 +661,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (focus && focus != event_target && focus->IsDescendantOf(event_target)) {
       FireGeneratedEvent(targeted_event.event_params->event,
                          event_target->node());
+      if (!alive) {
+        return true;
+      }
     } else {
       deferred_events.push_back(targeted_event);
     }
@@ -664,6 +683,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   }
   if (focus_manager) {
     focus_manager->FireFocusEventsIfNeeded();
+    if (!alive) {
+      return true;
+    }
   }
 
   // Now fire all of the rest of the generated events we previously deferred.
@@ -686,6 +708,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
     FireGeneratedEvent(targeted_event.event_params->event,
                        event_target->node());
+    if (!alive) {
+      return true;
+    }
   }
   event_generator().ClearEvents();
 
@@ -739,6 +764,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     }
 
     FireSourceEvent(event.event_type, retargeted, event.action_request_id);
+    if (!alive) {
+      return true;
+    }
   }
 
   if (received_load_complete_event) {
@@ -746,12 +774,18 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     // the platform independent events have already fired.
     // Some screen readers need a focus event in order to work properly.
     FireFocusEventsIfNeeded();
+    if (!alive) {
+      return true;
+    }
   }
 
   // Allow derived classes to do event post-processing. This must run after
   // all generated and source events so that finalized UIA events (e.g.
   // Text_TextChanged, TestComplete) are raised in the correct order.
   FinalizeAccessibilityEvents();
+  if (!alive) {
+    return true;
+  }
 
   if (!is_post_load_) {
     for (const AXEvent& event : details.events) {
@@ -2089,14 +2123,14 @@ BrowserAccessibility* BrowserAccessibilityManager::ApproximateHitTest(
 }
 
 void BrowserAccessibilityManager::DetachFromParentManager() {
+  if (!std::exchange(connected_to_parent_tree_node_, false)) {
+    return;
+  }
   // Notify the parent to invalidate its hypertext cache before disconnecting,
   // otherwise stale hyperlink IDs can cause type confusion after reassignment.
-  if (connected_to_parent_tree_node_) {
-    if (AXNode* parent = GetParentNodeFromParentTree()) {
-      UpdateAttributesOnParent(parent);
-    }
+  if (AXNode* parent = GetParentNodeFromParentTree()) {
+    UpdateAttributesOnParent(parent);
   }
-  connected_to_parent_tree_node_ = false;
 }
 
 void BrowserAccessibilityManager::BuildAXTreeHitTestCache() {

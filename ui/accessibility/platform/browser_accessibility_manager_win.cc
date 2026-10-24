@@ -1114,28 +1114,33 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   absl::flat_hash_set<AXPlatformNode*> objs_to_update;
   CollectChangedNodesAndParentsForAtomicUpdate(tree, changes, &objs_to_update);
 
+  std::vector<Microsoft::WRL::ComPtr<BrowserAccessibilityComWin>>
+      com_objs_to_update;
+  com_objs_to_update.reserve(objs_to_update.size());
+  for (auto* node : objs_to_update) {
+    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
+      com_objs_to_update.emplace_back(com_win);
+    }
+  }
+
   // Allocate space to hold intermediate state for all nodes.
   auto update_states =
       base::HeapArray<BrowserAccessibilityComWin::UpdateState>::WithSize(
-          objs_to_update.size());
+          com_objs_to_update.size());
 
   // The first step moves win_attributes_ to old_win_attributes_ and then
   // recomputes all of win_attributes_ other than IAccessibleText.
   auto state_scan = update_states.begin();
-  for (auto* node : objs_to_update) {
-    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
-      com_win->UpdateStep1ComputeWinAttributes(&*state_scan);
-    }
+  for (const auto& com_win : com_objs_to_update) {
+    com_win->UpdateStep1ComputeWinAttributes(&*state_scan);
     ++state_scan;
   }
 
   // The next step updates the hypertext of each node, which is a
   // concatenation of all of its child text nodes, so it can't run until
   // the text of all of the nodes was computed in the previous step.
-  for (auto* node : objs_to_update) {
-    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
-      com_win->UpdateStep2ComputeHypertext();
-    }
+  for (const auto& com_win : com_objs_to_update) {
+    com_win->UpdateStep2ComputeHypertext();
   }
 
   // The third step fires events on nodes based on what's changed - like
@@ -1146,10 +1151,8 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   // client may walk the tree when it receives any of these events.
   // At the end, it deletes old_win_attributes_ since they're not needed
   // anymore.
-  for (auto* node : objs_to_update) {
-    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
-      com_win->UpdateStep3FireEvents();
-    }
+  for (const auto& com_win : com_objs_to_update) {
+    com_win->UpdateStep3FireEvents();
   }
 }
 

@@ -44,13 +44,14 @@ void BrowserAccessibilityWin::UpdatePlatformNode() {
 }
 
 void BrowserAccessibilityWin::UpdatePlatformAttributes() {
-  if (!GetCOM()) {
+  Microsoft::WRL::ComPtr<BrowserAccessibilityComWin> com_win = GetCOM();
+  if (!com_win || com_win->update_state_) {
     return;
   }
   BrowserAccessibilityComWin::UpdateState update_state;
-  GetCOM()->UpdateStep1ComputeWinAttributes(&update_state);
-  GetCOM()->UpdateStep2ComputeHypertext();
-  GetCOM()->UpdateStep3FireEvents();
+  com_win->UpdateStep1ComputeWinAttributes(&update_state);
+  com_win->UpdateStep2ComputeHypertext();
+  com_win->UpdateStep3FireEvents();
 }
 
 std::wstring BrowserAccessibilityWin::ComputeListItemNameFromContent() const {

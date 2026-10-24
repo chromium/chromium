@@ -237,6 +237,8 @@ AXNode* AXTreeManager::GetLastFocusedNode() {
 }
 
 AXTreeManager::~AXTreeManager() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   AXNode* parent = nullptr;
   if (connected_to_parent_tree_node_) {
     parent = GetParentNodeFromParentTree();
@@ -411,9 +413,19 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
   }
   connected_to_parent_tree_node_ = true;
 
+  const AXTreeID parent_tree_id = parent->tree()->GetAXTreeID();
+  const AXNodeID parent_node_id = parent->id();
   parent->tree()->NotifyChildTreeConnectionChanged(parent, ax_tree_.get());
   UpdateAttributesOnParent(parent);
-  AXTreeManager* parent_manager = parent->GetManager();
+
+  AXTreeManager* parent_manager = FromID(parent_tree_id);
+  if (!parent_manager) {
+    return;
+  }
+  parent = parent_manager->GetNode(parent_node_id);
+  if (!parent) {
+    return;
+  }
   parent = parent_manager->RetargetForEvents(
       parent, RetargetEventType::RetargetEventTypeGenerated);
   DCHECK(parent) << "RetargetForEvents shouldn't return a "
@@ -425,8 +437,13 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
 void AXTreeManager::EnsureParentConnectionIfNotRootManager() {
   AXNode* parent = GetParentNodeFromParentTree();
   if (parent) {
-    if (!connected_to_parent_tree_node_)
+    if (!connected_to_parent_tree_node_) {
+      base::WeakPtr<AXTreeManager> alive = GetWeakPtr();
       ParentConnectionChanged(parent);
+      if (!alive) {
+        return;
+      }
+    }
     SANITIZER_CHECK(!IsRoot());
     return;
   }
@@ -444,6 +461,10 @@ void AXTreeManager::EnsureParentConnectionIfNotRootManager() {
     // the parent node is destroyed first (this case).
     DCHECK(IsRoot() || !CanFireEvents());
   }
+}
+
+base::WeakPtr<AXTreeManager> AXTreeManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ui

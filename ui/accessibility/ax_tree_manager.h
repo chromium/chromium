@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_MANAGER_H_
 #define UI_ACCESSIBILITY_AX_TREE_MANAGER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_export.h"
@@ -186,6 +187,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // attributes accordingly when the parent connection changes.
   virtual void UpdateAttributesOnParent(AXNode* parent) {}
 
+  base::WeakPtr<AXTreeManager> GetWeakPtr();
+
  private:
   // True if this platform can access platform nodes.
   const bool is_platform_tree_manager_ = false;
@@ -222,6 +225,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // destructors for non-static member fields are called in the reverse order of
   // declaration, do not move this member above other members.
   base::ScopedObservation<AXTree, AXTreeObserver> tree_observation_{this};
+
+  base::WeakPtrFactory<AXTreeManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

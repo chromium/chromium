@@ -9462,8 +9462,14 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
   }
 
   CHECK(delegate_->GetAccessibilityMode().has_mode(ui::AXMode::kNativeAPIs));
+  // `OnAccessibilityEvents()` can synchronously dispatch platform notifications
+  // that may re-enter and destroy `this` or `browser_accessibility_manager_`.
+  base::WeakPtr<RenderFrameHostImpl> weak_this = GetWeakPtr();
   bool accessibility_error =
       !browser_accessibility_manager_->OnAccessibilityEvents(details);
+  if (!weak_this || !browser_accessibility_manager_) {
+    return;
+  }
   if (accessibility_error) {
     // OnAccessibilityEvents returns false in IPC error conditions.
     UnrecoverableAccessibilityError();
@@ -12040,7 +12046,11 @@ void RenderFrameHostImpl::HandleAXEvents(
   delegate_->ProcessAccessibilityUpdatesAndEvents(updates_and_events);
 
   // This call steals the contents of the data to avoid copying.
+  base::WeakPtr<RenderFrameHostImpl> weak_this = GetWeakPtr();
   SendAccessibilityEventsToManager(updates_and_events);
+  if (!weak_this) {
+    return;
+  }
 
   // For testing only.
   if (!accessibility_testing_callback_.is_null()) {
@@ -14124,7 +14134,11 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
   detail.updates[0].has_tree_data = true;
   detail.updates[0].tree_data = GetAXTreeData();
 
+  base::WeakPtr<RenderFrameHostImpl> weak_this = GetWeakPtr();
   SendAccessibilityEventsToManager(detail);
+  if (!weak_this) {
+    return;
+  }
   delegate_->ProcessAccessibilityUpdatesAndEvents(detail);
 }
 
