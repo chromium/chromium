@@ -341,6 +341,18 @@ class InputHandlerProxyEventQueueTest
                                        delta_y_or_scale, x, y);
   }
 
+  void HandleGestureScrollUpdate(
+      float delta_y,
+      WebGestureEvent::InertialPhaseState inertial_phase) {
+    auto gesture = CreateGestureScrollPinch(
+        WebInputEvent::Type::kGestureScrollUpdate,
+        WebGestureDevice::kTouchscreen,
+        input_handler_proxy_->tick_clock_->NowTicks(), delta_y);
+    static_cast<WebGestureEvent*>(gesture.get())
+        ->data.scroll_update.inertial_phase = inertial_phase;
+    InjectInputEvent(std::move(gesture));
+  }
+
   void HandleGestureEventWithSourceDevice(WebInputEvent::Type type,
                                           WebGestureDevice source_device,
                                           float delta_y_or_scale = 0,
@@ -382,6 +394,10 @@ class InputHandlerProxyEventQueueTest
 
   base::circular_deque<std::unique_ptr<EventWithCallback>>& event_queue() {
     return input_handler_proxy_->compositor_event_queue_->queue_;
+  }
+
+  size_t backlog_count() const {
+    return input_handler_proxy_->compositor_event_queue_->backlog_count_;
   }
 
   void SetInputHandlerProxyTickClockForTesting(
@@ -427,6 +443,9 @@ class InputHandlerProxyEventQueueTest
   TestInputHandlerProxy* GetInputHandlerProxy() {
     return input_handler_proxy_.get();
   }
+
+  void RunFrameAlignedSynchronousBacklogTest(
+      WebGestureEvent::InertialPhaseState inertial_phase);
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -4178,6 +4197,88 @@ TEST_P(InputHandlerProxyEventQueueTest, FutureEventDispatch) {
   DeliverInputForBeginFrame(tick_clock.NowTicks());
   EXPECT_EQ(0ul, event_queue().size());
   Mock::VerifyAndClearExpectations(&mock_input_handler_);
+}
+
+void InputHandlerProxyEventQueueTest::RunFrameAlignedSynchronousBacklogTest(
+    WebGestureEvent::InertialPhaseState inertial_phase) {
+  const bool update_scroll_predictor =
+      IsUpdateScrollPredictorInputMappingEnabled();
+  const bool is_momentum =
+      inertial_phase == WebGestureEvent::InertialPhaseState::kMomentum;
+
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+  constexpr base::TimeDelta kInterval = base::Milliseconds(16);
+
+  testing::NiceMock<MockSynchronousInputHandler> synchronous_handler;
+  EXPECT_CALL(mock_input_handler_, RequestUpdateForSynchronousInputHandler());
+  input_handler_proxy_->SetSynchronousInputHandler(&synchronous_handler);
+  mock_input_handler_.set_needs_frame_alignment(true);
+
+  // 1. Start a scroll and deliver the initial BeginFrame.
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor));
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  // 2. Frame 1: update arrives after sample_time (deferred into backlog).
+  tick_clock.Advance(kInterval);
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .Times(update_scroll_predictor ? 0 : 1);
+  HandleGestureScrollUpdate(-10, inertial_phase);
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  EXPECT_EQ(update_scroll_predictor ? 1ul : 0ul, event_queue().size());
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  // 3. Frame 2: a new update arrives without wiping the backlog; the 1st
+  // update dispatches on BeginFrame (and disables resampling for kMomentum).
+  tick_clock.Advance(kInterval);
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
+  HandleGestureScrollUpdate(-10, inertial_phase);
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  EXPECT_EQ(update_scroll_predictor ? 1ul : 0ul, event_queue().size());
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  // 4. Frame 3: verify the queue drains on BeginFrame. For kMomentum,
+  // resampling is off so a 3rd update dispatches on this frame without
+  // backlog deferral; for kNonMomentum, this frame drains the 2nd update.
+  tick_clock.Advance(kInterval);
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .Times((update_scroll_predictor || is_momentum) ? 1 : 0);
+  if (is_momentum) {
+    HandleGestureScrollUpdate(-10, inertial_phase);
+  }
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  EXPECT_EQ(0ul, event_queue().size());
+  EXPECT_EQ(0ul, backlog_count());
+  Mock::VerifyAndClearExpectations(&mock_input_handler_);
+
+  input_handler_proxy_->SetSynchronousInputHandler(nullptr);
+  SetInputHandlerProxyTickClockForTesting(
+      base::DefaultTickClock::GetInstance());
+}
+
+TEST_P(InputHandlerProxyEventQueueTest,
+       FrameAlignedSynchronousScrollDispatchesFromBacklog) {
+  RunFrameAlignedSynchronousBacklogTest(
+      WebGestureEvent::InertialPhaseState::kNonMomentum);
+}
+
+TEST_P(InputHandlerProxyEventQueueTest,
+       FrameAlignedSynchronousFlingDispatchesFromBacklog) {
+  RunFrameAlignedSynchronousBacklogTest(
+      WebGestureEvent::InertialPhaseState::kMomentum);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

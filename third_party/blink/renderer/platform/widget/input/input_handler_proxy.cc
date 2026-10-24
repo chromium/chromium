@@ -704,6 +704,12 @@ void InputHandlerProxy::DispatchQueuedInputEvents(bool frame_aligned) {
   //  Coalesce all events in the queue before dispatching.
   auto sample_time = base::TimeTicks::Max();
 
+  // Skip coalescing when no events can be dispatched, as coalescing resets
+  // the backlog and updates held event timestamps.
+  if (!HasQueuedEventsReadyForDispatch(frame_aligned, sample_time)) {
+    return;
+  }
+
   compositor_event_queue_->CoalesceEvents(sample_time);
   while (HasQueuedEventsReadyForDispatch(frame_aligned, sample_time)) {
     DispatchSingleInputEvent(compositor_event_queue_->Pop());
