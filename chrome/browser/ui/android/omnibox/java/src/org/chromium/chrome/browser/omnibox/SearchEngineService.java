@@ -232,8 +232,14 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         if (config == null || GURL.isEmptyOrInvalid(config.faviconUrl)) return;
 
         GURL faviconUrl = config.faviconUrl;
+        // Request the displayed size, so that the best frame of a multi-resolution favicon is
+        // decoded and a large favicon is downscaled. A non-square favicon may be center-cropped.
         ImageFetcher.Params params =
-                ImageFetcher.Params.create(faviconUrl, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
+                ImageFetcher.Params.create(
+                        faviconUrl,
+                        ImageFetcher.OMNIBOX_UMA_CLIENT_NAME,
+                        mSearchEngineLogoTargetSizePixels,
+                        mSearchEngineLogoTargetSizePixels);
         mImageFetcher.fetchImage(
                 params,
                 bitmap -> {
