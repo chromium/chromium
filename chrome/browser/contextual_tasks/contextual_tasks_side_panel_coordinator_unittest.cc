@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
@@ -110,7 +112,14 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
             nullptr,
             aim_eligibility_service,
             /*eligibility_manager=*/nullptr,
-            /*cookie_synchronizer=*/nullptr) {}
+            /*cookie_synchronizer=*/nullptr) {
+    // Restore only AI pages in the side panel by default. Checking other pages,
+    // like search results, needs an `AimEligibilityService`.
+    ON_CALL(*this, IsRestorableSidePanelUrl(_))
+        .WillByDefault([this](const GURL& url) {
+          return ContextualTasksUiService::IsAiUrl(url);
+        });
+  }
   ~MockContextualTasksUiService() override = default;
 
   bool IsAiUrl(const GURL& url) override {
@@ -153,6 +162,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                    initiator_frame_token,
                const blink::mojom::WindowFeatures& window_features),
               (override));
+  MOCK_METHOD(bool, IsRestorableSidePanelUrl, (const GURL& url), (override));
 };
 
 class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
@@ -439,6 +449,10 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     return coordinator_->extensions_container_.get();
   }
 #endif
+
+  void SetPanelClosedOnTab(tabs::TabInterface* tab) {
+    coordinator_->tabs_with_closed_panel_.insert(tab->GetHandle());
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -1127,6 +1141,73 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
 
   EXPECT_FALSE(coordinator_->MoveActiveTabToNewThreadIfShared());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       GetTabRestoreData_PanelOpen_SavesTask) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+
+  std::map<std::string, std::string> data =
+      coordinator_->GetTabRestoreData(tab_list_->GetActiveTab());
+  EXPECT_EQ(task.GetTaskId().AsLowercaseString(),
+            data[ContextualTasksTabRestoreData::kTaskIdKey]);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       GetTabRestoreData_Rearchitecture_SavesThreadUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kContextualTasksSidePanelTabState,
+                                 kContextualTasksSidePanelRearchitecture},
+                                {});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  const GURL thread_url("https://g.ai/search?udm=50&mtid=thread1");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      GetWebContentsForTaskForTesting(task.GetTaskId()), thread_url);
+
+  // The rearchitecture panel shows the thread's AI page directly.
+  std::map<std::string, std::string> data =
+      coordinator_->GetTabRestoreData(tab_list_->GetActiveTab());
+  EXPECT_EQ(task.GetTaskId().AsLowercaseString(),
+            data[ContextualTasksTabRestoreData::kTaskIdKey]);
+  EXPECT_EQ(thread_url.spec(),
+            data[ContextualTasksTabRestoreData::kThreadUrlKey]);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       GetTabRestoreData_PanelClosedOnTab_SavesNothing) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  SetPanelClosedOnTab(tab_list_->GetActiveTab());
+
+  EXPECT_TRUE(
+      coordinator_->GetTabRestoreData(tab_list_->GetActiveTab()).empty());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       GetTabRestoreData_TabStateDisabled_SavesNothing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kContextualTasksSidePanelTabState);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+
+  EXPECT_TRUE(
+      coordinator_->GetTabRestoreData(tab_list_->GetActiveTab()).empty());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

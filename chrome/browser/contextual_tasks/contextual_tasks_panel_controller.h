@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -94,6 +95,11 @@ class ContextualTasksPanelController {
   // Moves only the active tab to a new task with a zero-state panel if other
   // tabs share its task. Returns whether the active tab was moved.
   virtual bool MoveActiveTabToNewThreadIfShared() = 0;
+
+  // Returns the side panel state to save with `tab` when it's closed, so that
+  // reopening it from recently closed tabs restores its open panel.
+  virtual std::map<std::string, std::string> GetTabRestoreData(
+      tabs::TabInterface* tab) const = 0;
 
   // Shares `tab_handles` when starting a new thread from the tab context menu.
   // If the side panel is already open on the active tab, attaches `tab_handles`

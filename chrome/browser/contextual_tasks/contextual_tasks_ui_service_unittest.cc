@@ -3262,6 +3262,31 @@ TEST_F(ContextualTasksUiServiceTest, IsAllowedSidePanelUrl) {
       GURL("file:///path/to/test.pdf")));
 }
 
+TEST_F(ContextualTasksUiServiceTest, IsRestorableSidePanelUrl) {
+  EXPECT_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillRepeatedly(testing::Return(false));
+
+  // AI URLs and valid search results pages, like a Lens search, can be loaded
+  // again.
+  EXPECT_TRUE(
+      service_for_nav_->IsRestorableSidePanelUrl(GURL("https://g.ai/")));
+  EXPECT_TRUE(service_for_nav_->IsRestorableSidePanelUrl(
+      GURL("https://www.google.com/search?q=query")));
+  EXPECT_TRUE(service_for_nav_->IsRestorableSidePanelUrl(
+      GURL("https://www.google.com/search?lns_mode=un")));
+
+  // Pages that the side panel only shows temporarily can't.
+  EXPECT_FALSE(service_for_nav_->IsRestorableSidePanelUrl(
+      GURL("https://login.corp.google.com/signin")));
+  EXPECT_FALSE(service_for_nav_->IsRestorableSidePanelUrl(GURL(
+      "https://www.google.com/sorry/index?continue=https://www.google.com/")));
+
+  // Pages that the side panel doesn't allow can't either.
+  EXPECT_FALSE(service_for_nav_->IsRestorableSidePanelUrl(
+      GURL("https://www.example.com")));
+  EXPECT_FALSE(service_for_nav_->IsRestorableSidePanelUrl(GURL("about:blank")));
+}
+
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_PostRearchitecture_NotInSidePanel) {
   base::test::ScopedFeatureList scoped_feature_list(

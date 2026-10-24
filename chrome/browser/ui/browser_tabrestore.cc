@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
 #include "chrome/browser/glic/glic_tab_restore_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -83,6 +84,8 @@ std::unique_ptr<WebContents> CreateRestoredTab(
                                extension_app_id);
 
   glic::RestoreGlicStateFromExtraData(web_contents.get(), extra_data);
+  contextual_tasks::ContextualTasksTabRestoreData::RestoreFromExtraData(
+      web_contents.get(), extra_data);
   send_tab_to_self::SendTabToSelfActivationTracker::RestoreFromExtraData(
       web_contents.get(), extra_data);
 

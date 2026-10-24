@@ -176,6 +176,14 @@ extern const base::FeatureParam<bool> kScopeSidePanelStateToTab;
 // thread should only apply to the tab where the user took the action.
 bool ShouldScopeSidePanelStateToTab();
 
+// Controls whether reopening a recently closed tab restores the contextual
+// tasks side panel and its thread if the panel was open on the tab.
+extern const base::FeatureParam<bool> kRestoreSidePanelOnTabRestore;
+
+// Returns whether reopening a recently closed tab should restore the
+// contextual tasks side panel and its thread if the panel was open on the tab.
+bool ShouldRestoreSidePanelOnTabRestore();
+
 // Enables emitting attached tab context tokens in OnSuggestInputsChanged for
 // tab-based query suggestions.
 BASE_DECLARE_FEATURE(kContextualTasksTabBasedSuggestions);

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_MOCK_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_MOCK_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/uuid.h"
@@ -41,6 +43,10 @@ class MockContextualTasksPanelController
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));
   MOCK_METHOD(bool, MoveActiveTabToNewThreadIfShared, (), (override));
+  MOCK_METHOD((std::map<std::string, std::string>),
+              GetTabRestoreData,
+              (tabs::TabInterface*),
+              (const, override));
   MOCK_METHOD(void,
               ShareTabsWithActiveOrNewThread,
               (const std::vector<tabs::TabHandle>&),

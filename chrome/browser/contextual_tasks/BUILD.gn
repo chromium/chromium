@@ -412,6 +412,19 @@ source_set("user_data") {
   }
 }
 
+source_set("tab_restore") {
+  sources = [
+    "contextual_tasks_tab_restore_data.cc",
+    "contextual_tasks_tab_restore_data.h",
+  ]
+  deps = [
+    "//base",
+    "//components/contextual_tasks/public:feature_list",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
 source_set("ui_impl") {
   sources = [
     "contextual_search_session_finder.cc",
@@ -439,6 +452,7 @@ source_set("ui_impl") {
   ]
   deps = [
     ":impl",
+    ":tab_restore",
     ":ui",
     ":user_data",
     "//base",
@@ -800,6 +814,7 @@ source_set("unit_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
+    ":tab_restore",
     ":test_support",
     ":ui",
     ":ui_impl",

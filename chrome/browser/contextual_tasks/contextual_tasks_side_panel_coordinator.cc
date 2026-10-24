@@ -5,9 +5,11 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -101,6 +104,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -806,6 +810,48 @@ bool ContextualTasksSidePanelCoordinator::MoveActiveTabToNewThreadIfShared() {
   UpdateContextualTaskUI();
   NotifyActiveTaskContextProvider();
   return true;
+}
+
+std::map<std::string, std::string>
+ContextualTasksSidePanelCoordinator::GetTabRestoreData(
+    tabs::TabInterface* tab) const {
+  std::map<std::string, std::string> data;
+  if (!ShouldRestoreSidePanelOnTabRestore() || !contextual_tasks_service_ ||
+      !tab || !tab->GetContents() ||
+      tabs_with_closed_panel_.contains(tab->GetHandle())) {
+    return data;
+  }
+  std::optional<ContextualTask> task =
+      contextual_tasks_service_->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+  if (!task) {
+    return data;
+  }
+  const base::Uuid& task_id = task->GetTaskId();
+  auto it = task_id_to_web_contents_cache_.find(task_id);
+  if (it == task_id_to_web_contents_cache_.end() || !it->second->is_open) {
+    return data;
+  }
+  data[ContextualTasksTabRestoreData::kTaskIdKey] = task_id.AsLowercaseString();
+
+  // Save the URL of the page that the panel shows, like an AI thread or a Lens
+  // search, to load it again in the reopened tab's panel. The legacy panel
+  // embeds the page.
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!ui_service) {
+    return data;
+  }
+  GURL thread_url;
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    thread_url = it->second->web_contents->GetLastCommittedURL();
+  } else if (ContextualTasksUIInterface* web_ui_interface =
+                 GetWebUiInterface(it->second->web_contents.get())) {
+    thread_url = web_ui_interface->GetInnerFrameUrl();
+  }
+  if (ui_service->IsRestorableSidePanelUrl(thread_url)) {
+    data[ContextualTasksTabRestoreData::kThreadUrlKey] = thread_url.spec();
+  }
+  return data;
 }
 
 void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(

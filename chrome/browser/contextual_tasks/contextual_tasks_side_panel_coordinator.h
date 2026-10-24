@@ -7,6 +7,7 @@
 
 #include <map>
 #include <set>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -165,6 +166,8 @@ class ContextualTasksSidePanelCoordinator
   void Close() override;
   void OpenInZeroState() override;
   bool MoveActiveTabToNewThreadIfShared() override;
+  std::map<std::string, std::string> GetTabRestoreData(
+      tabs::TabInterface* tab) const override;
   void ShareTabsWithActiveOrNewThread(
       const std::vector<tabs::TabHandle>& tab_handles) override;
   void ShareTabsWithExistingThread(

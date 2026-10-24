@@ -389,6 +389,16 @@ bool ShouldScopeSidePanelStateToTab() {
          kScopeSidePanelStateToTab.Get();
 }
 
+const base::FeatureParam<bool> kRestoreSidePanelOnTabRestore(
+    &kContextualTasksSidePanelTabState,
+    "restore_side_panel_on_tab_restore",
+    true);
+
+bool ShouldRestoreSidePanelOnTabRestore() {
+  return base::FeatureList::IsEnabled(kContextualTasksSidePanelTabState) &&
+         kRestoreSidePanelOnTabRestore.Get();
+}
+
 BASE_FEATURE(kContextualTasksTabBasedSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

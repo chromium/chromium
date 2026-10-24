@@ -3879,6 +3879,10 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
           !value.empty());
 }
 
+bool ContextualTasksUiService::IsRestorableSidePanelUrl(const GURL& url) {
+  return IsAiUrl(url) || IsValidSearchResultsPage(url);
+}
+
 bool ContextualTasksUiService::IsGoogleCaptchaUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !IsAllowedHost(url)) {
     return false;

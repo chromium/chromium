@@ -354,6 +354,12 @@ class ContextualTasksUiService : public KeyedService {
   // correct params and isn't a shopping query.
   bool IsValidSearchResultsPage(const GURL& url);
 
+  // Returns whether a recreated side panel can load the provided URL again,
+  // e.g. for a reopened tab: a Google AI URL, or a valid Google Search results
+  // page like a Lens search. Excludes pages that the side panel only shows
+  // temporarily, like Google CAPTCHA and sign-in pages.
+  virtual bool IsRestorableSidePanelUrl(const GURL& url);
+
   // Returns whether the provided URL is a Google CAPTCHA ("sorry") page.
   virtual bool IsGoogleCaptchaUrl(const GURL& url);
 
