@@ -71,6 +71,7 @@ if (enable_printing) {
       sources += [ "print_watermark_unittest.cc" ]
 
       data = [
+        "//components/test/data/enterprise/a4_page.pdf",
         "//components/test/data/enterprise/watermark_pdf_overlay.png",
         "//components/test/data/enterprise/watermark_pdf_overlay_mac.png",
         "//components/test/data/enterprise/watermark_pdf_overlay_win.png",
