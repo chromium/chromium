@@ -116,7 +116,6 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
 
   int DefaultTabIndex() const override;
 
-  static Element* RetrieveCommandForTargetElement(const HTMLElement& invoker);
   static AtomicString GetCommand(const AtomicString& action,
                                  ExecutionContext* execution_context);
   bool IsFormAssociatedSubmitButton() const;

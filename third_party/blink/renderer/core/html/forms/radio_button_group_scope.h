@@ -46,7 +46,6 @@ class RadioButtonGroupScope {
   HTMLInputElement* LastFocusedButtonForGroup(
       const AtomicString& group_name) const;
   bool IsInRequiredGroup(HTMLInputElement*) const;
-  unsigned GroupSizeFor(const HTMLInputElement*) const;
 
  private:
   RadioButtonGroup* FindGroupByName(const AtomicString&) const;

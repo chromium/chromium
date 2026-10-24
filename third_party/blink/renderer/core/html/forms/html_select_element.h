@@ -221,7 +221,6 @@ class CORE_EXPORT HTMLSelectElement final
 
   // For use in the implementation of HTMLOptionElement.
   void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
-  void ElementInserted(Node& node);
   void OptionInserted(HTMLOptionElement&,
                       Node* nearest_ancestor_select_child,
                       bool option_is_selected);

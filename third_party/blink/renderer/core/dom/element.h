@@ -1752,7 +1752,6 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual bool IsValidElement() { return false; }
   virtual bool IsInRange() const { return false; }
   virtual bool IsOutOfRange() const { return false; }
-  virtual bool IsClearButtonElement() const { return false; }
   virtual bool IsScriptElement() const { return false; }
   virtual bool IsVTTCueBackgroundBox() const { return false; }
   virtual bool IsVTTCueBox() const { return false; }

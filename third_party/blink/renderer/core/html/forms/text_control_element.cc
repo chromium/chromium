@@ -165,7 +165,6 @@ bool TextControlElement::DispatchFocusEvent(
     InputDeviceCapabilities* source_capabilities) {
   if (SupportsPlaceholder())
     UpdatePlaceholderVisibility();
-  HandleFocusEvent(old_focused_element, type);
   return HTMLFormControlElementWithState::DispatchFocusEvent(
       old_focused_element, type, source_capabilities);
 }

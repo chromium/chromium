@@ -100,11 +100,9 @@ class DateTimeEditElement final : public HTMLDivElement,
   void DefaultEventHandler(Event&) override;
   void DisabledStateChanged();
   Element* FieldsWrapperElement() const;
-  void FocusIfNoFocus();
   // If oldFocusedNode is one of sub-fields, focus on it. Otherwise focus on
   // the first sub-field.
   void FocusByOwner(Element* old_focused_element = nullptr);
-  bool HasFocusedField();
   void ReadOnlyStateChanged();
   void RemoveEditControlOwner() { edit_control_owner_ = nullptr; }
   void ResetFields();
@@ -115,8 +113,6 @@ class DateTimeEditElement final : public HTMLDivElement,
   void SetOnlyYearMonthDay(const DateComponents&);
   void SetOnlyTime(const DateComponents&);
   void SetDateTimeLocal(const DateComponents&);
-  void StepDown();
-  void StepUp();
   String Value() const;
   DateTimeFieldsState ValueAsDateTimeFieldsState() const;
   bool HasField(DateTimeField) const;

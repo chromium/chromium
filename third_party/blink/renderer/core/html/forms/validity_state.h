@@ -44,8 +44,6 @@ class ValidityState final : public ScriptWrappable {
 
   String ValidationMessage() const;
 
-  void SetCustomErrorMessage(const String&);
-
   bool valueMissing() const;
   bool typeMismatch() const;
   bool patternMismatch() const;

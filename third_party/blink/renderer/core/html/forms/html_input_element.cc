@@ -1919,10 +1919,6 @@ void HTMLInputElement::OnSearch() {
   input_type_->DispatchSearchEvent();
 }
 
-void HTMLInputElement::UpdateClearButtonVisibility() {
-  input_type_view_->UpdateClearButtonVisibility();
-}
-
 bool HTMLInputElement::IsInnerEditorValueEmpty() const {
   return input_type_view_->IsInnerEditorValueEmpty();
 }
@@ -2340,13 +2336,6 @@ RadioButtonGroupScope* HTMLInputElement::GetRadioButtonGroupScope() const {
   if (isConnected())
     return &GetTreeScope().GetRadioButtonGroupScope();
   return nullptr;
-}
-
-unsigned HTMLInputElement::SizeOfRadioGroup() const {
-  RadioButtonGroupScope* scope = GetRadioButtonGroupScope();
-  if (!scope)
-    return 0;
-  return scope->GroupSizeFor(this);
 }
 
 inline void HTMLInputElement::AddToRadioButtonGroup() {

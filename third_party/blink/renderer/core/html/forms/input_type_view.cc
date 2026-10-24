@@ -231,8 +231,6 @@ bool InputTypeView::ShouldDrawCapsLockIndicator() const {
   return false;
 }
 
-void InputTypeView::UpdateClearButtonVisibility() {}
-
 HTMLElement* InputTypeView::UpdatePlaceholderText(bool) {
   return nullptr;
 }

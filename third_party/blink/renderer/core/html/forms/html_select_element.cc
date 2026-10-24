@@ -966,17 +966,6 @@ bool HTMLSelectElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
   return true;
 }
 
-void HTMLSelectElement::ElementInserted(Node& node) {
-  if (auto* option = DynamicTo<HTMLOptionElement>(&node)) {
-    OptionInserted(*option, option, option->Selected());
-  } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(&node)) {
-    for (auto& child_option :
-         Traversal<HTMLOptionElement>::ChildrenOf(*optgroup)) {
-      OptionInserted(child_option, optgroup, child_option.Selected());
-    }
-  }
-}
-
 void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
                                        Node* nearest_ancestor_select_child,
                                        bool option_is_selected) {

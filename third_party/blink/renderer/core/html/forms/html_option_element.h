@@ -136,10 +136,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
-  // This method returns true if the provided element is the label_container_ of
-  // an HTMLOptionElement.
-  static bool IsLabelContainerElement(const Element& element);
-
   void UpdateMutationObserver(bool in_style_recalc);
   bool HasMutationObserver() const { return text_observer_; }
 
@@ -209,8 +205,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // focus should not change and this event should not be handled.
   std::optional<Direction> GetFocusDirectionFromKeyboardEvent(
       const AtomicString& key);
-
-  void RecalcOwnerSelectElement() const;
 
   bool NeedsMutationObserver();
 

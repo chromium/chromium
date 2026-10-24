@@ -154,7 +154,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void ListAttributeTargetChanged();
   virtual void CapsLockStateMayHaveChanged();
   virtual bool ShouldDrawCapsLockIndicator() const;
-  virtual void UpdateClearButtonVisibility();
 
   // Updates the text in the placeholder, returning the Element representing the
   // placeholder. Returns null if there is no placeholder.

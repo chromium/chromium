@@ -1752,13 +1752,6 @@ void HTMLFormElement::InvalidateListedElementsForAutofill() {
   listed_elements_for_autofill_are_dirty_ = true;
 }
 
-void HTMLFormElement::InvalidateListedElements() {
-  listed_elements_are_dirty_ = true;
-  listed_elements_.clear();
-  listed_elements_for_autofill_are_dirty_ = true;
-  listed_elements_for_autofill_.clear();
-}
-
 void HTMLFormElement::UseCountPropertyAccess(
     v8::Local<v8::Name>& v8_property_name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {

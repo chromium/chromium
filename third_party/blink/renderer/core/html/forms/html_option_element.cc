@@ -941,13 +941,6 @@ void HTMLOptionElement::FinishParsingChildren() {
   }
 }
 
-// static
-bool HTMLOptionElement::IsLabelContainerElement(const Element& element) {
-  return IsA<HTMLOptionElement>(element.OwnerShadowHost()) &&
-         element.ShadowPseudoId() ==
-             shadow_element_names::kOptionLabelContainer;
-}
-
 bool HTMLOptionElement::SupportsActiveOptionPseudo() {
   return GetLayoutObject() && !IsDisabledFormControl();
 }

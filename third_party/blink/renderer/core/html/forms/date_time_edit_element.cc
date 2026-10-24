@@ -605,12 +605,6 @@ wtf_size_t DateTimeEditElement::FieldIndexOf(
   return kInvalidFieldIndex;
 }
 
-void DateTimeEditElement::FocusIfNoFocus() {
-  if (FocusedFieldIndex() != kInvalidFieldIndex)
-    return;
-  FocusOnNextFocusableField(0);
-}
-
 void DateTimeEditElement::FocusByOwner(Element* old_focused_element) {
   if (old_focused_element && old_focused_element->IsDateTimeFieldElement()) {
     DateTimeFieldElement* old_focused_field =
@@ -878,10 +872,6 @@ bool DateTimeEditElement::IsFirstFieldAMPM() const {
   return first_field && first_field->Type() == DateTimeField::kAMPM;
 }
 
-bool DateTimeEditElement::HasFocusedField() {
-  return FocusedFieldIndex() != kInvalidFieldIndex;
-}
-
 void PopulateOnlyYearMonthDay(const DateComponents& date,
                               DateTimeFieldsState& date_time_fields_state) {
   date_time_fields_state.SetYear(date.FullYear());
@@ -940,16 +930,6 @@ void DateTimeEditElement::SetDateTimeLocal(const DateComponents& date) {
   PopulateDateTimeLocal(date, date_time_fields_state);
   SetValueAsDateTimeFieldsState(date_time_fields_state);
   edit_control_owner_->EditControlValueChanged();
-}
-
-void DateTimeEditElement::StepDown() {
-  if (DateTimeFieldElement* const field = FocusedField())
-    field->StepDown();
-}
-
-void DateTimeEditElement::StepUp() {
-  if (DateTimeFieldElement* const field = FocusedField())
-    field->StepUp();
 }
 
 void DateTimeEditElement::UpdateUIState() {

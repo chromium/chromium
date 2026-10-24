@@ -281,8 +281,6 @@ class CORE_EXPORT HTMLInputElement
 
   void OnSearch();
 
-  void UpdateClearButtonVisibility();
-
   bool WillRespondToMouseClickEvents() override;
 
   // Returns the DataList element associated via the list attribute, if any.
@@ -374,8 +372,6 @@ class CORE_EXPORT HTMLInputElement
 
   bool IsPlaceholderVisible() const override { return is_placeholder_visible_; }
   void SetPlaceholderVisibility(bool) override;
-
-  unsigned SizeOfRadioGroup() const;
 
   bool SupportsPlaceholder() const final;
   String GetPlaceholderValue() const final;
@@ -543,8 +539,6 @@ class CORE_EXPORT HTMLInputElement
   void AddToRadioButtonGroup();
   void RemoveFromRadioButtonGroup();
   void AdjustStyle(ComputedStyleBuilder&) override;
-
-  void MaybeReportPiiMetrics();
 
   void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
 

@@ -45,7 +45,6 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
   void RequiredAttributeChanged(HTMLInputElement*);
   void Remove(HTMLInputElement*);
   bool Contains(HTMLInputElement*) const;
-  unsigned size() const;
 
   void Trace(Visitor*) const;
 
@@ -200,10 +199,6 @@ bool RadioButtonGroup::Contains(HTMLInputElement* button) const {
   return members_.Contains(button);
 }
 
-unsigned RadioButtonGroup::size() const {
-  return members_.size();
-}
-
 void RadioButtonGroup::Trace(Visitor* visitor) const {
   visitor->Trace(members_);
   visitor->Trace(checked_button_);
@@ -279,12 +274,6 @@ bool RadioButtonGroupScope::IsInRequiredGroup(HTMLInputElement* element) const {
     return false;
   RadioButtonGroup* group = FindGroupByName(element->GetName());
   return group && group->IsRequired() && group->Contains(element);
-}
-
-unsigned RadioButtonGroupScope::GroupSizeFor(
-    const HTMLInputElement* element) const {
-  RadioButtonGroup* group = FindGroupByName(element->GetName());
-  return group ? group->size() : 0;
 }
 
 void RadioButtonGroupScope::RemoveButton(HTMLInputElement* element) {

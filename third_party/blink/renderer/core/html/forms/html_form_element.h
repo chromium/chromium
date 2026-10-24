@@ -178,7 +178,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                                const TextEncoding& encoding);
 
   void InvalidateListedElementsForAutofill();
-  void InvalidateListedElements();
   void UseCountPropertyAccess(v8::Local<v8::Name>&,
                               const v8::PropertyCallbackInfo<v8::Value>&);
 
