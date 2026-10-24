@@ -91,6 +91,16 @@ void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
   Base64EncodeAppendModpB64(input, output);
 }
 
+void Base64EncodeAppendModpB64ForTesting(span<const uint8_t> input,
+                                         std::string* output) {
+  Base64EncodeAppendModpB64(input, output);
+}
+
+void Base64EncodeAppendSimdutfForTesting(span<const uint8_t> input,
+                                         std::string* output) {
+  Base64EncodeAppendSimdutf(input, output);
+}
+
 std::string Base64Encode(std::string_view input) {
   return Base64Encode(as_byte_span(input));
 }

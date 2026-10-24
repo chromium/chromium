@@ -3351,6 +3351,7 @@ executable("containers_memory_benchmark") {
 
 test("base_perftests") {
   sources = [
+    "base64_perftest.cc",
     "byte_conversions_perftest.cc",
     "hash/hash_perftest.cc",
     "i18n/language_tag_perftest.cc",
