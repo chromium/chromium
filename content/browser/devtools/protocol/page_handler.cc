@@ -253,10 +253,11 @@ void GotManifest(std::optional<std::string> manifest_id,
                  ::blink::mojom::ManifestPtr input_manifest,
                  blink::mojom::ManifestDebugInfoPtr debug_info) {
   if (manifest_id &&
-      manifest_id.value() != input_manifest->id.possibly_invalid_spec()) {
+      (!input_manifest ||
+       manifest_id.value() != input_manifest->id.possibly_invalid_spec())) {
     std::move(callback)->sendFailure(protocol::Response::InvalidParams(
         std::string("Page manifest id ") +
-        input_manifest->id.possibly_invalid_spec() +
+        (input_manifest ? input_manifest->id.possibly_invalid_spec() : "none") +
         " does not match the input " + manifest_id.value()));
     return;
   }
@@ -276,6 +277,14 @@ void GotManifest(std::optional<std::string> manifest_id,
         failed = true;
       }
     }
+  }
+
+  if (!input_manifest) {
+    std::move(callback)->sendSuccess(
+        manifest_url.possibly_invalid_spec(), std::move(errors),
+        failed ? std::optional<std::string>() : debug_info->raw_manifest,
+        /*parsed=*/nullptr, Page::WebAppManifest::Create().Build());
+    return;
   }
 
   auto convert_icon = [](const blink::Manifest::ImageResource& input_icon)

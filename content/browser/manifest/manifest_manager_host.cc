@@ -471,7 +471,21 @@ void ManifestManagerHost::OnRequestManifestResponse(
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  manifest = ValidateAndMaybeOverrideManifest(result, std::move(manifest));
+  if (!manifest) {
+    if (result == blink::mojom::ManifestRequestResult::kSuccess) {
+      mojo::ReportBadMessage(
+          "RequestManifest reported success but didn't return a manifest");
+      result = blink::mojom::ManifestRequestResult::kUnexpectedFailure;
+    }
+    // TODO(https://crbug.com/485890278): Temporarily allocate an empty
+    // manifest so legacy Page::GetManifest callers continue receiving a
+    // non-null empty ManifestPtr until Milestone 7 of
+    // components/webapps/_agents/plans/2026-09-18-manifest-validating-type-plan.md
+    // migrates Page::GetManifest to std::optional<blink::Manifest>.
+    manifest = blink::mojom::Manifest::New();
+  } else {
+    manifest = ValidateAndMaybeOverrideManifest(result, std::move(manifest));
+  }
   auto callback = std::move(*callbacks_.Lookup(request_id));
   callbacks_.Remove(request_id);
 

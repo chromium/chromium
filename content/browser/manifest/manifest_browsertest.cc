@@ -2030,6 +2030,97 @@ IN_PROC_BROWSER_TEST_F(
   test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_RequestManifestNullManifestOnSuccess) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  MockManifestManager mock_manifest_manager;
+  service_manager::InterfaceProvider::TestApi test_api(
+      rfh->GetRemoteInterfaces());
+  test_api.SetBinderForName(
+      blink::mojom::ManifestManager::Name_,
+      base::BindRepeating(&MockManifestManager::Bind,
+                          base::Unretained(&mock_manifest_manager)));
+
+  EXPECT_CALL(mock_manifest_manager, RequestManifest)
+      .WillOnce([](MockManifestManager::RequestManifestCallback cb) {
+        std::move(cb).Run(blink::mojom::ManifestRequestResult::kSuccess,
+                          GURL("http://example.com/manifest.json"),
+                          /*manifest=*/nullptr);
+      });
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                         blink::mojom::ManifestPtr>
+      manifest_future;
+  shell()->web_contents()->GetPrimaryPage().GetManifest(
+      manifest_future.GetCallback());
+
+  EXPECT_THAT(
+      bad_message_observer.WaitForBadMessage(),
+      ::testing::Eq(
+          "RequestManifest reported success but didn't return a manifest"));
+  auto [result, url, manifest] = manifest_future.Take();
+  EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kUnexpectedFailure);
+  ASSERT_TRUE(manifest);
+  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+
+  test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       RequestManifest_NullManifestOnError) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  MockManifestManager mock_manifest_manager;
+  service_manager::InterfaceProvider::TestApi test_api(
+      rfh->GetRemoteInterfaces());
+  test_api.SetBinderForName(
+      blink::mojom::ManifestManager::Name_,
+      base::BindRepeating(&MockManifestManager::Bind,
+                          base::Unretained(&mock_manifest_manager)));
+
+  EXPECT_CALL(mock_manifest_manager, RequestManifest)
+      .WillOnce([](MockManifestManager::RequestManifestCallback cb) {
+        std::move(cb).Run(
+            blink::mojom::ManifestRequestResult::kNoManifestAllowed, GURL(),
+            /*manifest=*/nullptr);
+      });
+
+  base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                         blink::mojom::ManifestPtr>
+      manifest_future;
+  shell()->web_contents()->GetPrimaryPage().GetManifest(
+      manifest_future.GetCallback());
+
+  auto [result, url, manifest] = manifest_future.Take();
+  EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kNoManifestAllowed);
+  ASSERT_TRUE(manifest);
+  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+
+  test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       GetManifest_OpaqueOriginReturnsNoManifestAllowed) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("data:text/html,<html></html>")));
+  base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                         blink::mojom::ManifestPtr>
+      manifest_future;
+  shell()->web_contents()->GetPrimaryPage().GetManifest(
+      manifest_future.GetCallback());
+  auto [result, url, manifest] = manifest_future.Take();
+  EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kNoManifestAllowed);
+  ASSERT_TRUE(manifest);
+  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+}
+
 IN_PROC_BROWSER_TEST_F(
     ManifestBrowserTest,
     BadMessage_ParseManifestFromString_FileHandlersActionCrossOrigin) {

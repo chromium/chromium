@@ -22,11 +22,11 @@ struct RequestManifestError {
 interface ManifestManager {
   // Requests the manifest URL and the Manifest of the frame's document. `url`
   // will be empty if the document specifies no manifest. `manifest` can be
-  // empty if `result` is `kUnexpectedFailure`. Note that `manifest` may be the
-  // 'default' manifest if none was specified by the document or if the one
-  // specified by the document failed to load or parse.
+  // null if `result` is `kUnexpectedFailure` or `kNoManifestAllowed`. Note that
+  // `manifest` may be the 'default' manifest if none was specified by the document
+  // or if the one specified by the document failed to load or parse.
   RequestManifest()
-      => (ManifestRequestResult result, url.mojom.Url url, Manifest manifest);
+      => (ManifestRequestResult result, url.mojom.Url url, Manifest? manifest);
 
   // Fetches the manifest from the frame's document. If the document has no
   // manifest, a default manifest is returned (where the manifest's
@@ -40,7 +40,7 @@ interface ManifestManager {
   // This method is temporary until all clients are migrated from
   // content/renderer into blink.
   RequestManifestDebugInfo() => (url.mojom.Url url,
-                                 Manifest parsed_manifest,
+                                 Manifest? parsed_manifest,
                                  ManifestDebugInfo debug_info);
 
   // Parses the given |manifest_content| JSON string. |manifest_url| is the URL

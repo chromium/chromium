@@ -56,11 +56,16 @@ class ManifestManagerTest : public PageTestBase {
   void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
     ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
   ManifestManager* GetManifestManager() {
     return ManifestManager::From(*GetFrame().DomWindow());
+  }
+
+  void ContextDestroyed(ManifestManager* manager) {
+    manager->ContextDestroyed();
   }
 
   std::string base_url_;
@@ -189,6 +194,75 @@ TEST_F(ManifestManagerTest,
 
   url_test_helpers::ServeAsynchronousRequests();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(ManifestManagerTest, RequestManifest_NoManifestAllowed) {
+  // CanFetchManifest() returns false when the document is at about:blank.
+  bool callback_called = false;
+  GetManifestManager()->RequestManifest(base::BindOnce(
+      [](bool* callback_called, mojom::blink::ManifestRequestResult result,
+         const KURL& url, mojom::blink::ManifestPtr manifest) {
+        *callback_called = true;
+        EXPECT_EQ(result,
+                  mojom::blink::ManifestRequestResult::kNoManifestAllowed);
+        EXPECT_TRUE(manifest.is_null());
+      },
+      &callback_called));
+  EXPECT_TRUE(callback_called);
+
+  bool debug_callback_called = false;
+  GetManifestManager()->RequestManifestDebugInfo(base::BindOnce(
+      [](bool* callback_called, const KURL& url,
+         mojom::blink::ManifestPtr manifest,
+         mojom::blink::ManifestDebugInfoPtr debug_info) {
+        *callback_called = true;
+        EXPECT_TRUE(manifest.is_null());
+        EXPECT_TRUE(debug_info);
+      },
+      &debug_callback_called));
+  EXPECT_TRUE(debug_callback_called);
+}
+
+TEST_F(ManifestManagerTest, RequestManifest_UnexpectedFailure) {
+  RegisterMockedURL(base_url_, "link-manifest-fetch.json");
+  NavigateTo(KURL(base_url_.c_str()));
+
+  auto* link_manifest = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  link_manifest->setAttribute(blink::html_names::kRelAttr,
+                              AtomicString("manifest"));
+  link_manifest->setAttribute(
+      html_names::kHrefAttr,
+      AtomicString((base_url_ + "link-manifest-fetch.json").c_str()));
+  GetDocument().head()->AppendChild(link_manifest);
+
+  bool callback_called = false;
+  GetManifestManager()->RequestManifest(base::BindOnce(
+      [](bool* callback_called, mojom::blink::ManifestRequestResult result,
+         const KURL& url, mojom::blink::ManifestPtr manifest) {
+        *callback_called = true;
+        EXPECT_EQ(result,
+                  mojom::blink::ManifestRequestResult::kUnexpectedFailure);
+        EXPECT_TRUE(manifest.is_null());
+      },
+      &callback_called));
+
+  bool debug_callback_called = false;
+  GetManifestManager()->RequestManifestDebugInfo(base::BindOnce(
+      [](bool* callback_called, const KURL& url,
+         mojom::blink::ManifestPtr manifest,
+         mojom::blink::ManifestDebugInfoPtr debug_info) {
+        *callback_called = true;
+        EXPECT_TRUE(manifest.is_null());
+        EXPECT_TRUE(debug_info);
+      },
+      &debug_callback_called));
+
+  EXPECT_FALSE(callback_called);
+  EXPECT_FALSE(debug_callback_called);
+  ContextDestroyed(GetManifestManager());
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(debug_callback_called);
 }
 
 }  // namespace blink

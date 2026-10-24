@@ -86,6 +86,10 @@ void InstalledAppController::OnGetManifestForRelatedApps(
     // Resolving a promise is a no-op with a detached frame.
     return;
   }
+  if (!manifest) {
+    resolver->Resolve(HeapVector<Member<RelatedApplication>>());
+    return;
+  }
   Vector<mojom::blink::RelatedApplicationPtr> mojo_related_apps;
   for (const auto& related_application : manifest->related_applications) {
     auto application = mojom::blink::RelatedApplication::New();
