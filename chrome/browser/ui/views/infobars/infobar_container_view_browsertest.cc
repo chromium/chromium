@@ -38,8 +38,9 @@ namespace {
 class PriorityInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   PriorityInfoBarDelegate(infobars::InfoBarDelegate::InfobarPriority priority,
-                          const std::u16string& message)
-      : priority_(priority), message_(message) {}
+                          const std::u16string& message,
+                          bool closeable = true)
+      : priority_(priority), message_(message), closeable_(closeable) {}
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
     return infobars::InfoBarDelegate::TEST_INFOBAR;
@@ -51,6 +52,8 @@ class PriorityInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   std::u16string GetMessageText() const override { return message_; }
 
+  bool IsCloseable() const override { return closeable_; }
+
   // Ensure each infobar is treated as unique.
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override {
     return false;
@@ -59,6 +62,7 @@ class PriorityInfoBarDelegate : public ConfirmInfoBarDelegate {
  private:
   const infobars::InfoBarDelegate::InfobarPriority priority_;
   const std::u16string message_;
+  const bool closeable_;
 };
 
 }  // namespace
@@ -84,11 +88,18 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
 
   infobars::InfoBar* AddInfoBar(
       infobars::InfoBarDelegate::InfobarPriority priority,
-      const std::string& message) {
+      const std::string& message,
+      bool closeable = true) {
     auto delegate = std::make_unique<PriorityInfoBarDelegate>(
-        priority, base::UTF8ToUTF16(message));
+        priority, base::UTF8ToUTF16(message), closeable);
     return GetInfoBarManager()->AddInfoBar(
         ConfirmInfoBar::Create(std::move(delegate)));
+  }
+
+  infobars::InfoBar* AddNonCloseableInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority priority,
+      const std::string& message) {
+    return AddInfoBar(priority, message, /*closeable=*/false);
   }
 
   // Returns the message text of all currently visible infobar views.
@@ -178,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
-                       QueuedCountPillSuppressedOnCriticalBars) {
+                       QueuedCountPillSuppressedOnCriticalInfoBars) {
   infobars::InfoBar* critical_1 =
       AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity,
                  "Critical 1");
@@ -204,6 +215,35 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
   infobars::InfoBar* promoted = GetInfoBarManager()->infobars()[0];
   EXPECT_TRUE(IsPillVisibleOn(promoted));
   EXPECT_EQ(u"+1", PillTextOn(promoted));
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
+                       QueuedCountPillSuppressedOnNonClosableInfoBars) {
+  infobars::InfoBar* default_1 = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
+  AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault,
+             "Default 2 (Queued)");
+  ASSERT_TRUE(IsPillVisibleOn(default_1));
+
+  infobars::InfoBar* non_closable_1 = AddNonCloseableInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Non closable 1");
+  infobars::InfoBar* non_closable_2 = AddNonCloseableInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Non closable 2");
+
+  // Non-closeable bars bypass the queue and sit at the bottom: no pill
+  // anywhere, even though an infobar is queued.
+  EXPECT_FALSE(IsPillVisibleOn(default_1));
+  EXPECT_FALSE(IsPillVisibleOn(non_closable_1));
+  EXPECT_FALSE(IsPillVisibleOn(non_closable_2));
+
+  // After the non-closeable bars are removed, the visible default still has
+  // one queued behind it and re-hosts the pill.
+  GetInfoBarManager()->RemoveInfoBar(non_closable_1);
+  GetInfoBarManager()->RemoveInfoBar(non_closable_2);
+  ASSERT_EQ(1u, GetVisibleInfoBarMessages().size());
+  ASSERT_EQ("Default 1", GetVisibleInfoBarMessages()[0]);
+  ASSERT_TRUE(IsPillVisibleOn(default_1));
+  EXPECT_EQ(u"+1", PillTextOn(default_1));
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,

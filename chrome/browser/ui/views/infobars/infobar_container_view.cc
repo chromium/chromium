@@ -80,6 +80,16 @@ void ContentShadow::OnThemeChanged() {
 BEGIN_METADATA(ContentShadow)
 END_METADATA
 
+bool CanHostQueuedCountPill(const infobars::InfoBar* infobar) {
+  if (!infobar->delegate()) {
+    return true;
+  }
+  // No pending indicator for critical security or non-closeable infobars.
+  return infobar->delegate()->GetPriority() !=
+             infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity &&
+         infobar->delegate()->IsCloseable();
+}
+
 }  // namespace
 
 constexpr int kSeparatorHeightDip = 1;
@@ -266,19 +276,15 @@ void InfoBarContainerView::UpdateQueuedCountPill(infobars::InfoBar* removing) {
   const size_t count = PendingInfoBarCount();
   InfoBarView* host = nullptr;
   if (count > 0) {
-    for (infobars::InfoBar* bar : base::Reversed(infobars())) {
-      if (bar == removing || !bar->owner()) {
+    for (infobars::InfoBar* infobar : base::Reversed(infobars())) {
+      if (infobar == removing || !infobar->owner()) {
         continue;
       }
-      const auto priority =
-          bar->delegate()
-              ? bar->delegate()->GetPriority()
-              : infobars::InfoBarDelegate::InfobarPriority::kDefault;
-      // No pending indicator for critical security infobars.
-      if (priority !=
-          infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity) {
-        host = static_cast<InfoBarView*>(bar);
+
+      if (CanHostQueuedCountPill(infobar)) {
+        host = static_cast<InfoBarView*>(infobar);
       }
+
       break;
     }
   }
