@@ -184,8 +184,9 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
                               /*enable_chrome_send=*/true,
                               /*enable_chrome_histograms=*/true) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    Profile* profile = GetProfile();
+  Profile* profile = GetProfile();
+  if (contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile)) {
     if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
       pinned_toolbar_actions_model_observation_.Observe(model);
     }
@@ -411,8 +412,9 @@ void ContextualTasksUIBase::CreatePageHandler(
   toolbar_page_.Bind(std::move(page));
   toolbar_page_handler_receiver_.Bind(std::move(page_handler));
 #if !BUILDFLAG(IS_ANDROID)
-  if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    Profile* profile = GetProfile();
+  Profile* profile = GetProfile();
+  if (contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile)) {
     if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
       if (!pinned_toolbar_actions_model_observation_.IsObserving()) {
         pinned_toolbar_actions_model_observation_.Observe(model);
@@ -435,11 +437,12 @@ void ContextualTasksUIBase::CreatePageHandler(
 }
 
 void ContextualTasksUIBase::PinSidePanel() {
-  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    return;
-  }
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
+  if (!contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile)) {
+    return;
+  }
   if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
     model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
   }
@@ -447,11 +450,12 @@ void ContextualTasksUIBase::PinSidePanel() {
 }
 
 void ContextualTasksUIBase::UnpinSidePanel() {
-  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    return;
-  }
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
+  if (!contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile)) {
+    return;
+  }
   if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
     model->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
   }
@@ -522,9 +526,11 @@ void ContextualTasksUIBase::ShowThreadHistory() {
 #if !BUILDFLAG(IS_ANDROID)
 void ContextualTasksUIBase::OnActionsChanged() {
   if (auto* toolbar_page = GetToolbarPageRemote()) {
+    Profile* profile = GetProfile();
     bool effective_pin_state =
-        contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
-        contextual_tasks::GetEffectivePinState(GetProfile());
+        contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+            profile) &&
+        contextual_tasks::GetEffectivePinState(profile);
     toolbar_page->OnSidePanelPinStateChanged(effective_pin_state);
   }
 }

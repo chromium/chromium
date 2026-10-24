@@ -2931,6 +2931,10 @@ TEST_F(ContextualTasksUiTest, PinSidePanel) {
                                 kEnableContextualTasksPinButtonInToolbar},
       /*disabled_features=*/{});
 
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
   auto* model = PinnedToolbarActionsModel::Get(profile_);
   ASSERT_TRUE(model);
 
@@ -2964,6 +2968,39 @@ TEST_F(ContextualTasksUiTest, PinSidePanel) {
   EXPECT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
 
   legacy_ui->UnpinSidePanel();
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest, PinSidePanel_NotPinningEligible) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksSidePanelRearchitecture,
+                            contextual_tasks::
+                                kEnableContextualTasksPinButtonInToolbar},
+      /*disabled_features=*/{});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(false);
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_);
+  ASSERT_TRUE(model);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* ui = controller->GetAs<ContextualTasksUIPostRearchitecture>();
+  ASSERT_NE(ui, nullptr);
+
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
+  ui->PinSidePanel();
   EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
 
   actions::ActionIdMap::ResetMapsForTesting();
@@ -3013,6 +3050,10 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged) {
                             contextual_tasks::
                                 kEnableContextualTasksPinButtonInToolbar},
       /*disabled_features=*/{});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
 
   auto* model = PinnedToolbarActionsModel::Get(profile_);
   ASSERT_TRUE(model);
@@ -3085,6 +3126,10 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_ModelDirectUpdate) {
                                 kEnableContextualTasksPinButtonInToolbar},
       /*disabled_features=*/{});
 
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
   auto* model = PinnedToolbarActionsModel::Get(profile_);
   ASSERT_TRUE(model);
 
@@ -3155,6 +3200,10 @@ TEST_F(ContextualTasksUiTest,
                             contextual_tasks::
                                 kEnableContextualTasksPinButtonInToolbar},
       /*disabled_features=*/{});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
 
   auto* model = PinnedToolbarActionsModel::Get(profile_);
   ASSERT_TRUE(model);

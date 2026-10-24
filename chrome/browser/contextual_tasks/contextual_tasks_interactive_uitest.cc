@@ -1188,6 +1188,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
 //  (7) The unsubmitted draft query is still in the composebox.
 IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
                        SwitchTabsPreservesComposeboxDraft) {
+  SkipIfIncognito("Toolbar pinning is not supported in Incognito");
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedSidePanelId);
 
@@ -1289,6 +1291,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
 //      zero-state task for the moved tab.
 IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
                        MoveTabToNewWindowAndReopenPanel) {
+  SkipIfIncognito("Toolbar pinning is not supported in Incognito");
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMovedTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewWindowSidePanelId);
@@ -1298,8 +1302,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
   const DeepQuery kComposebox = {"contextual-tasks-app", "#composebox",
                                  "#composebox"};
 
-  // Pinning is profile-wide (incognito reads the original profile's pins), so
-  // the pinned button also shows in the window that the tab moves to.
+  // Pinning is profile-wide, so the pinned button also shows in the window
+  // that the tab moves to.
   PinnedToolbarActionsModel::Get(browser()->GetProfile())
       ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
 
