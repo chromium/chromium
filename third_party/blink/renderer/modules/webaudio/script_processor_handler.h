@@ -93,6 +93,8 @@ class ScriptProcessorHandler final : public AudioHandler {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
+  base::WeakPtr<ScriptProcessorHandler> weak_this_;
+
   base::WeakPtrFactory<ScriptProcessorHandler> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ScriptProcessorNodeTest, BufferLifetime);

@@ -68,6 +68,7 @@ RealtimeAudioDestinationHandler::RealtimeAudioDestinationHandler(
   channel_count_ = kDefaultNumberOfInputChannels;
   SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
+  weak_this_ = weak_ptr_factory_.GetWeakPtr();
 }
 
 RealtimeAudioDestinationHandler::~RealtimeAudioDestinationHandler() {
@@ -342,8 +343,7 @@ void RealtimeAudioDestinationHandler::SetDetectSilenceIfNecessary(
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(&RealtimeAudioDestinationHandler::SetDetectSilence,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            needs_silence_detection));
+                            weak_this_, needs_silence_detection));
     is_detecting_silence_ = needs_silence_detection;
   }
 }

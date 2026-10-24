@@ -161,6 +161,8 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
   // the platform destination is started.
   bool update_echo_cancellation_on_next_start_ = false;
 
+  base::WeakPtr<RealtimeAudioDestinationHandler> weak_this_;
+
   base::WeakPtrFactory<RealtimeAudioDestinationHandler> weak_ptr_factory_{this};
 };
 
