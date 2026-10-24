@@ -311,7 +311,6 @@ struct ArcSystemStatCollector::SystemReadersContext {
 
     // Reading i915_gem_objects on Intel platform with kernel 5.4 is slow and is
     // prohibited. Also it changes reporting format.
-    // TODO(b/170397975): Update if i915_gem_objects reading time is improved.
     const bool is_newer_kernel =
         base::StartsWith(base::SysInfo::KernelVersion(), "5.");
     const bool is_intel_cpu = base::CPU().vendor_name() == "GenuineIntel";
