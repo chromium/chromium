@@ -213,6 +213,9 @@ class ContextualTasksUiService : public KeyedService {
   // entry is removed from the cache.
   virtual std::optional<GURL> GetInitialUrlForTask(const base::Uuid& uuid);
 
+  // Sets the URL that the UI for a task loads initially.
+  virtual void SetInitialUrlForTask(const base::Uuid& task_id, const GURL& url);
+
   // Returns the URL that a task should be created for. This function does
   // not clear the entry from the cache.
   virtual std::optional<GURL> GetCreationUrlForTask(const base::Uuid& task_id);

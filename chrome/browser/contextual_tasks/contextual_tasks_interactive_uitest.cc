@@ -1085,6 +1085,9 @@ class ContextualTasksPinnedToolbarInteractiveUiTest
     auto disabled = GetDefaultDisabledFeatures();
     enabled.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
     enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
+    // `RestoreClosedTabAndReopenPanel` expects a reopened tab to come back
+    // without its side panel.
+    disabled.push_back(kContextualTasksSidePanelTabState);
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 };
@@ -5797,8 +5800,9 @@ std::string RearchitectureParamName(const testing::TestParamInfo<bool>& info) {
 }  // namespace
 
 // Tests that closing the side panel or changing its thread only applies to the
-// tab where the user took the action. The test param controls whether the
-// Contextual Tasks rearchitecture is enabled.
+// tab where the user took the action, and that reopening a closed tab restores
+// its open panel. The test param controls whether the Contextual Tasks
+// rearchitecture is enabled.
 class ContextualTasksSidePanelTabStateInteractiveUiTest
     : public ContextualTasksInteractiveUiTestBase,
       public testing::WithParamInterface<bool> {
@@ -5882,10 +5886,9 @@ class ContextualTasksSidePanelTabStateInteractiveUiTest
                              ->GetThreadId() == kTabStateThreadId;
   }
 
-  // Adds tab1 and tab2, opens the panel on tab0 with a thread, and associates
-  // tab2 with the same task, as if it was opened from the panel. tab1 isn't
-  // associated with a task.
-  MultiStep OpenPanelWithSharedThread() {
+  // Adds tab1 and tab2, and opens the panel on tab0 with a thread. tab1 and
+  // tab2 aren't associated with a task.
+  MultiStep OpenPanelWithThread() {
     return Steps(Do([this]() {
                    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
                    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
@@ -5902,9 +5905,34 @@ class ContextualTasksSidePanelTabStateInteractiveUiTest
                    std::optional<base::Uuid> task_id = GetTaskIdForTab(0);
                    ASSERT_TRUE(task_id.has_value());
                    shared_task_id_ = *task_id;
+                 }));
+  }
+
+  // Adds tab1 and tab2, opens the panel on tab0 with a thread, and associates
+  // tab2 with the same task, as if it was opened from the panel. tab1 isn't
+  // associated with a task.
+  MultiStep OpenPanelWithSharedThread() {
+    return Steps(OpenPanelWithThread(), Do([this]() {
                    GetContextualTasksService()->AssociateTabWithTask(
                        shared_task_id_, GetTabId(2));
                  }));
+  }
+
+  // Closes tab0 so that it can be reopened from recently closed tabs, and then
+  // reopens it, as Ctrl+Shift+T does.
+  MultiStep CloseAndRestoreTab0() {
+    return Steps(Do([this]() {
+                   browser()->tab_strip_model()->CloseWebContentsAt(
+                       0, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+                   ASSERT_EQ(2, browser()->tab_strip_model()->count());
+                   chrome::RestoreTab(browser());
+                 }),
+                 PollUntil(
+                     [this]() {
+                       return browser()->tab_strip_model()->count() == 3 &&
+                              browser()->tab_strip_model()->active_index() == 0;
+                     },
+                     "Wait for tab0 to be reopened."));
   }
 
   // Instruments the WebView that hosts the side panel toolbar as
@@ -6086,6 +6114,60 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
   RunNewThreadButtonTest();
 }
 
+// This tests the following CUJ:
+//  (1) The side panel is open with a thread on tab0, the only tab on the
+//      thread.
+//  (2) User closes tab0, and then reopens it with Ctrl+Shift+T.
+//  (3) The reopened tab shows the panel with the thread.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
+                       RestoreClosedTab_RestoresPanelWithThread) {
+  RunTestSequence(
+      OpenPanelWithThread(), CloseAndRestoreTab0(),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      PollUntil([this]() { return ShowsThread(GetPanelContents()); },
+                "Wait for the thread to load in the reopened tab's panel."),
+      Do([this]() {
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_TRUE(GetTaskIdForTab(0).has_value());
+      }));
+}
+
+// This tests the following CUJ:
+//  (1) The side panel is open with the same thread on tab0 and tab2.
+//  (2) User closes tab0, and then reopens it with Ctrl+Shift+T.
+//  (3) The reopened tab shares the panel with tab2 again.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
+                       RestoreClosedTab_SharedThread_RejoinsPanel) {
+  content::WebContents* panel_contents = nullptr;
+  RunTestSequence(OpenPanelWithSharedThread(), Do([&panel_contents, this]() {
+                    panel_contents = GetPanelContents();
+                  }),
+                  CloseAndRestoreTab0(),
+                  WaitForShow(kContextualTasksSidePanelWebViewElementId),
+                  Do([&panel_contents, this]() {
+                    EXPECT_EQ(shared_task_id_, GetTaskIdForTab(0));
+                    EXPECT_TRUE(IsPanelOpen());
+                    EXPECT_EQ(panel_contents, GetPanelContents());
+                  }));
+}
+
+// This tests the following CUJ:
+//  (1) The side panel is open with a thread on tab0.
+//  (2) User closes the panel, closes tab0, and then reopens it with
+//      Ctrl+Shift+T.
+//  (3) The reopened tab doesn't show the panel.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
+                       RestoreClosedTab_PanelClosed_DoesNotRestorePanel) {
+  RunTestSequence(OpenPanelWithThread(), Do([this]() {
+                    GetPanelController()->Close();
+                    EXPECT_FALSE(IsPanelOpen());
+                  }),
+                  CloseAndRestoreTab0(), Do([this]() {
+                    EXPECT_FALSE(IsPanelOpen());
+                    EXPECT_FALSE(GetTaskIdForTab(0).has_value());
+                  }));
+}
+
 class ContextualTasksSidePanelTabStateNoEntryPointInteractiveUiTest
     : public ContextualTasksSidePanelTabStateInteractiveUiTest {
  public:
@@ -6168,7 +6250,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // With side panel tab state disabled, closing the panel or changing its thread
-// applies to all tabs that share the thread.
+// applies to all tabs that share the thread, and reopening a closed tab doesn't
+// restore its panel.
 class ContextualTasksSidePanelTabStateDisabledInteractiveUiTest
     : public ContextualTasksSidePanelTabStateInteractiveUiTest {
  public:
@@ -6211,6 +6294,15 @@ IN_PROC_BROWSER_TEST_P(
                     EXPECT_TRUE(IsPanelOpen());
                     EXPECT_EQ(panel_contents, GetPanelContents());
                     EXPECT_FALSE(ShowsThread(GetPanelContents()));
+                  }));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelTabStateDisabledInteractiveUiTest,
+    RestoreClosedTab_DoesNotRestorePanel) {
+  RunTestSequence(OpenPanelWithThread(), CloseAndRestoreTab0(), Do([this]() {
+                    EXPECT_FALSE(IsPanelOpen());
+                    EXPECT_FALSE(GetTaskIdForTab(0).has_value());
                   }));
 }
 

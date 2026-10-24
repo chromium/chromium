@@ -23,6 +23,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/scoped_observation.h"
@@ -128,6 +129,11 @@ class ContextualTasksSidePanelCoordinator
 
     // Observer for the embedded WebContents in the side panel.
     std::unique_ptr<SidePanelWebContentsObserver> web_contents_observer;
+
+    // For a panel recreated for a reopened tab, the URL of the page that it was
+    // recreated to show. Saved with the tab if it's closed again before the
+    // panel loads the page.
+    GURL restored_url;
   };
 
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
@@ -334,6 +340,27 @@ class ContextualTasksSidePanelCoordinator
   // associated with `task_id` and still shows the panel.
   bool IsPanelOpenOnOtherTabOfTask(const base::Uuid& task_id);
 
+  // Associates `tab` with the task saved when it was closed, if it was reopened
+  // from recently closed tabs with the panel open. The panel is recreated when
+  // the tab becomes active.
+  void MaybeRestorePanelForTab(tabs::TabInterface* tab);
+
+  // Recreates the cached WebContents for the task of `active_tab` if the task
+  // is in `tasks_pending_panel_rebuild_`.
+  void MaybeRebuildPanelForActiveTab(tabs::TabInterface* active_tab);
+
+  // Recreates the cached WebContents for `task_id` and loads the task's thread.
+  // Takes `task_id` by value, since it erases the task's entry from
+  // `tasks_pending_panel_rebuild_`.
+  void RebuildCachedWebContentsForTask(base::Uuid task_id);
+
+  // Loads `url` into the rebuilt `web_contents` if it is still cached for
+  // `task_id`.
+  void OnThreadUrlForRebuiltWebContents(
+      const base::Uuid& task_id,
+      base::WeakPtr<content::WebContents> web_contents,
+      GURL url);
+
   // Update open state of the panel.
   void UpdateOpenState(bool is_open);
 
@@ -437,6 +464,12 @@ class ContextualTasksSidePanelCoordinator
   // task, so that the panel stays open on other tabs of the same task. Only
   // used when `ShouldScopeSidePanelStateToTab()` is true.
   std::set<tabs::TabHandle> tabs_with_closed_panel_;
+
+  // Tasks whose panel WebContents is recreated when one of their tabs becomes
+  // active, because a tab was reopened after being closed with the panel open.
+  // Only used when `ShouldRestoreSidePanelOnTabRestore()` is true.
+  std::map<base::Uuid, ContextualTasksPanelController::EntrySource>
+      tasks_pending_panel_rebuild_;
 
   base::ObserverList<ContextualTasksPanelController::Observer> observers_;
 

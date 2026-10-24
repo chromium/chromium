@@ -3330,6 +3330,11 @@ std::optional<GURL> ContextualTasksUiService::GetCreationUrlForTask(
   return std::nullopt;
 }
 
+void ContextualTasksUiService::SetInitialUrlForTask(const base::Uuid& task_id,
+                                                    const GURL& url) {
+  task_states_[task_id].creation_url = url;
+}
+
 void ContextualTasksUiService::AddPendingUrlCallback(
     const base::Uuid& task_id,
     base::OnceCallback<void(const GURL&)> callback) {
