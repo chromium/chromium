@@ -68,7 +68,7 @@ GURL GetModelExecutionServiceStreamURL(ModelBasedCapabilityKey feature) {
 }
 
 void RecordConnectionStatusHistogram(ModelBasedCapabilityKey feature,
-                                     StreamingConnectionStatus status) {
+                                     StreamingConnectionStatusUma status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.Streaming.ConnectionStatus.",
@@ -77,7 +77,7 @@ void RecordConnectionStatusHistogram(ModelBasedCapabilityKey feature,
 }
 
 void RecordDisconnectReasonHistogram(ModelBasedCapabilityKey feature,
-                                     StreamingDisconnectReason reason) {
+                                     StreamingDisconnectReasonUma reason) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.Streaming.DisconnectReason.",
@@ -151,10 +151,10 @@ RemoteModelExecutionSessionImpl::~RemoteModelExecutionSessionImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (connection_state_ == ConnectionState::kConnecting) {
     RecordConnectionStatusHistogram(
-        feature_, StreamingConnectionStatus::kCancelledByDestruction);
+        feature_, StreamingConnectionStatusUma::kCancelledByDestruction);
   } else if (connection_state_ == ConnectionState::kConnected) {
     RecordDisconnectReasonHistogram(
-        feature_, StreamingDisconnectReason::kSessionDestroyed);
+        feature_, StreamingDisconnectReasonUma::kSessionDestroyed);
   }
   STREAMING_SESSION_LOGGER(optimization_guide_logger_, feature_) << "Destroyed";
   idle_timer_.Stop();
@@ -256,7 +256,7 @@ void RemoteModelExecutionSessionImpl::OnAccessTokenReceived(
     HandleDisconnection(
         OptimizationGuideModelExecutionError::FromModelExecutionError(
             ModelExecutionError::kPermissionDenied),
-        StreamingConnectionStatus::kAccessTokenFailure);
+        StreamingConnectionStatusUma::kAccessTokenFailure);
     return;
   }
 
@@ -284,7 +284,7 @@ void RemoteModelExecutionSessionImpl::OnConnected() {
   CHECK_EQ(connection_state_, ConnectionState::kConnecting);
   connection_state_ = ConnectionState::kConnected;
   RecordConnectionStatusHistogram(feature_,
-                                  StreamingConnectionStatus::kConnected);
+                                  StreamingConnectionStatusUma::kConnected);
   STREAMING_SESSION_LOGGER(optimization_guide_logger_, feature_)
       << "Connected (flushing "
       << base::NumberToString(pending_requests_.size()) << " pending requests)";
@@ -382,7 +382,7 @@ void RemoteModelExecutionSessionImpl::OnConnectionError(
                 static_cast<net::HttpStatusCode>(response_code))
           : OptimizationGuideModelExecutionError::FromModelExecutionError(
                 ModelExecutionError::kGenericFailure),
-      StreamingConnectionStatus::kHandshakeFailed);
+      StreamingConnectionStatusUma::kHandshakeFailed);
 }
 
 void RemoteModelExecutionSessionImpl::OnDropChannel(
@@ -404,8 +404,8 @@ void RemoteModelExecutionSessionImpl::OnDropChannel(
           : std::make_optional(
                 OptimizationGuideModelExecutionError::FromModelExecutionError(
                     ModelExecutionError::kGenericFailure)),
-      was_clean ? StreamingDisconnectReason::kServerDropClean
-                : StreamingDisconnectReason::kServerDropUnclean);
+      was_clean ? StreamingDisconnectReasonUma::kServerDropClean
+                : StreamingDisconnectReasonUma::kServerDropUnclean);
 }
 
 void RemoteModelExecutionSessionImpl::OnError(const std::string& message) {
@@ -416,10 +416,10 @@ void RemoteModelExecutionSessionImpl::OnError(const std::string& message) {
       OptimizationGuideModelExecutionError::FromModelExecutionError(
           ModelExecutionError::kGenericFailure);
   if (connection_state_ == ConnectionState::kConnecting) {
-    HandleDisconnection(error,
-                        StreamingConnectionStatus::kClientErrorDuringConnect);
+    HandleDisconnection(
+        error, StreamingConnectionStatusUma::kClientErrorDuringConnect);
   } else {
-    HandleDisconnection(error, StreamingDisconnectReason::kClientError);
+    HandleDisconnection(error, StreamingDisconnectReasonUma::kClientError);
   }
 }
 
@@ -431,10 +431,11 @@ void RemoteModelExecutionSessionImpl::OnClose() {
           ModelExecutionError::kGenericFailure);
   if (connection_state_ == ConnectionState::kConnecting) {
     HandleDisconnection(
-        error, StreamingConnectionStatus::kMojoPipeDisconnectedDuringConnect);
+        error,
+        StreamingConnectionStatusUma::kMojoPipeDisconnectedDuringConnect);
   } else {
     HandleDisconnection(error,
-                        StreamingDisconnectReason::kMojoPipeDisconnected);
+                        StreamingDisconnectReasonUma::kMojoPipeDisconnected);
   }
 }
 
@@ -474,18 +475,18 @@ void RemoteModelExecutionSessionImpl::NotifyObservers() {
 
 void RemoteModelExecutionSessionImpl::HandleDisconnection(
     std::optional<OptimizationGuideModelExecutionError> error,
-    std::variant<StreamingConnectionStatus, StreamingDisconnectReason>
+    std::variant<StreamingConnectionStatusUma, StreamingDisconnectReasonUma>
         disconnect_metric) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (connection_state_ == ConnectionState::kDisconnected) {
     return;
   }
-  if (std::holds_alternative<StreamingConnectionStatus>(disconnect_metric)) {
+  if (std::holds_alternative<StreamingConnectionStatusUma>(disconnect_metric)) {
     RecordConnectionStatusHistogram(
-        feature_, std::get<StreamingConnectionStatus>(disconnect_metric));
+        feature_, std::get<StreamingConnectionStatusUma>(disconnect_metric));
   } else {
     RecordDisconnectReasonHistogram(
-        feature_, std::get<StreamingDisconnectReason>(disconnect_metric));
+        feature_, std::get<StreamingDisconnectReasonUma>(disconnect_metric));
   }
   STREAMING_SESSION_LOGGER(optimization_guide_logger_, feature_)
       << "Disconnected (dropped "
@@ -521,7 +522,7 @@ void RemoteModelExecutionSessionImpl::OnIdleTimeout() {
       << "IdleTimeout: Closing connection";
   client_->Close();
   HandleDisconnection(/*error=*/std::nullopt,
-                      StreamingDisconnectReason::kIdleTimeout);
+                      StreamingDisconnectReasonUma::kIdleTimeout);
 }
 
 void RemoteModelExecutionSessionImpl::DispatchResponse(

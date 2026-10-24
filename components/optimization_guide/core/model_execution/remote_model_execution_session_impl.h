@@ -36,7 +36,7 @@ namespace optimization_guide {
 // UMA logging. Entries should not be renumbered and numeric values should never
 // be reused.
 // LINT.IfChange(StreamingConnectionStatus)
-enum class StreamingConnectionStatus {
+enum class StreamingConnectionStatusUma {
   kConnected = 0,
   kAccessTokenFailure = 1,
   kHandshakeFailed = 2,
@@ -51,7 +51,7 @@ enum class StreamingConnectionStatus {
 // for UMA logging. Entries should not be renumbered and numeric values should
 // never be reused.
 // LINT.IfChange(StreamingDisconnectReason)
-enum class StreamingDisconnectReason {
+enum class StreamingDisconnectReasonUma {
   kSessionDestroyed = 0,
   kIdleTimeout = 1,
   kServerDropClean = 2,
@@ -117,7 +117,7 @@ class RemoteModelExecutionSessionImpl
   void NotifyObservers();
   void HandleDisconnection(
       std::optional<OptimizationGuideModelExecutionError> error,
-      std::variant<StreamingConnectionStatus, StreamingDisconnectReason>
+      std::variant<StreamingConnectionStatusUma, StreamingDisconnectReasonUma>
           disconnect_metric);
   void ResetIdleTimer();
   void OnIdleTimeout();
