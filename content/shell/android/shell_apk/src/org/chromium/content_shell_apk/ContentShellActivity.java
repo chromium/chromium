@@ -201,7 +201,13 @@ public class ContentShellActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (mShellManager != null) mShellManager.destroy();
+        if (mShellManager != null) {
+            // Close the native shell so that its WebContents is destroyed with the Activity
+            // instead of outliving it until the process is killed.
+            Shell activeShell = mShellManager.getActiveShell();
+            if (activeShell != null) activeShell.close();
+            mShellManager.destroy();
+        }
         mWindowAndroid.destroy();
         super.onDestroy();
     }

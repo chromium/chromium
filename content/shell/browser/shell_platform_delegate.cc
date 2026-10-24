@@ -20,7 +20,11 @@ void ShellPlatformDelegate::DidCreateOrAttachWebContents(
     WebContents* web_contents) {}
 
 void ShellPlatformDelegate::DidCloseLastWindow() {
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android the browser process outlives its Activity, which closes its
+  // shell when destroyed, so closing the last shell must not shut down.
   Shell::Shutdown();
+#endif
 }
 
 std::unique_ptr<JavaScriptDialogManager>
