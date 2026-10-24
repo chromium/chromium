@@ -389,6 +389,55 @@ suite('TextfieldModelTest', function() {
     assertEquals(14, model.getCursorPosition());
   });
 
+  test('UndoRedo_ReplaceAllText', () => {
+    // A baseline without history (e.g. the page's URL), then typed text.
+    model.setInitialText('ab');
+    model.insertChar('c');
+    model.insertChar('d');
+    assertEquals('abcd', model.text);
+
+    // Replacing all of the text (e.g. with a previewed match) is an edit of its
+    // own, not merged into the typing.
+    model.replaceAllText('abcd efg');
+    assertEquals('abcd efg', model.text);
+    assertEquals(8, model.getCursorPosition());
+    assertEquals(2, model.length);
+
+    // Nor is the next edit merged into it.
+    model.selectRange({start: 0, end: 5});
+    assertTrue(model.cut());
+    assertEquals('efg', model.text);
+    assertEquals(3, model.length);
+
+    // Undo steps back through the cut, the replacement and the typing, to the
+    // baseline.
+    assertTrue(!!model.undo());
+    assertEquals('abcd efg', model.text);
+    assertEquals(0, model.selection.start);
+    assertEquals(5, model.selection.end);
+    assertTrue(!!model.undo());
+    assertEquals('abcd', model.text);
+    assertEquals(4, model.getCursorPosition());
+    assertTrue(!!model.undo());
+    assertEquals('ab', model.text);
+    assertFalse(model.canUndo());
+
+    // Redo steps forward again.
+    assertTrue(!!model.redo());
+    assertEquals('abcd', model.text);
+    assertTrue(!!model.redo());
+    assertEquals('abcd efg', model.text);
+    assertEquals(8, model.getCursorPosition());
+    assertTrue(!!model.redo());
+    assertEquals('efg', model.text);
+    assertFalse(model.canRedo());
+
+    // Replacing the text with the same text records nothing.
+    model.replaceAllText('efg', 0);
+    assertEquals(3, model.length);
+    assertEquals(0, model.getCursorPosition());
+  });
+
   test('UndoRedo_CutCopyPasteTest', () => {
     model.setText('ABCDE', 5);
     assertFalse(!!model.redo());  // There is nothing to redo.

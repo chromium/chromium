@@ -1156,6 +1156,7 @@ export class OmniboxPopupSearchboxElement extends
     const newValue = input.value.substring(0, start) + sanitizedText +
         input.value.substring(end);
 
+    this.syncTextfieldModelWithInput_(input.value);
     this.textfieldModel_.selectRange(oldSelection);
     this.textfieldModel_.paste(sanitizedText);
     this.lastInputText_ = newValue;
@@ -1204,6 +1205,7 @@ export class OmniboxPopupSearchboxElement extends
         this.currentSequenceNum_, isCut, oldValue, {start, end});
 
     if (isCut) {
+      this.syncTextfieldModelWithInput_(oldValue);
       this.textfieldModel_.selectRange({start, end});
       this.textfieldModel_.cut();
       this.lastInputText_ = this.textfieldModel_.text;
@@ -1226,6 +1228,23 @@ export class OmniboxPopupSearchboxElement extends
         this.clearAutocompleteMatches();
       }
     }
+  }
+
+  /**
+   * Adopts `text`, the text `#input` shows, as the text of `textfieldModel_` if
+   * the model holds different text, so that an edit applied to the model (e.g.
+   * a cut or paste) acts on the text the user sees. `#input` can show text that
+   * was never recorded in the model, e.g. a match previewed via arrow-key
+   * navigation or inline autocompletion. The switch is recorded as an edit of
+   * its own, so undo first reverts the cut or paste, then goes back to the
+   * model's previous text (e.g. what the user typed), then through the earlier
+   * edits.
+   */
+  private syncTextfieldModelWithInput_(text: string) {
+    if (this.textfieldModel_.text === text) {
+      return;
+    }
+    this.textfieldModel_.replaceAllText(text);
   }
 
   protected onInputCopy_(e: ClipboardEvent) {

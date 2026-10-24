@@ -422,6 +422,21 @@ export class TextfieldModel {
     this.selection_ = {start: cursorPosition, end: cursorPosition};
   }
 
+  // Replaces all of the text with `text` and moves the cursor to
+  // `cursorPosition`, as an edit that isn't merged into the previous one: so
+  // undoing it restores exactly the previous text, and the edits before it stay
+  // undoable. By contrast, `setText()` force-merges the change into the
+  // previous edit (like inline autocompletion in Views).
+  replaceAllText(text: string, cursorPosition: number = text.length): void {
+    if (this.text_ !== text) {
+      this.addOrMergeEdit(new ReplaceEdit(
+          MergeType.DO_NOT_MERGE, [this.text_], [0], {...this.selection_},
+          /*deleteBackward=*/ false, cursorPosition, text, 0));
+      this.text_ = text;
+    }
+    this.selection_ = {start: cursorPosition, end: cursorPosition};
+  }
+
   // Select a specific range of text.
   // The selection starts with the range's start position and ends with the
   // range's end position; therefore the cursor position becomes the end

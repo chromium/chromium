@@ -1701,6 +1701,178 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(6, input.selectionEnd);
   });
 
+  // Focuses the empty input (as on the NTP), shows zero-prefix suggestions and
+  // arrows down to preview the first one, `fillIntoEdit`, in the input.
+  async function previewFirstZeroSuggestMatch(fillIntoEdit: string) {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: searchbox.activeQueryId,
+          input: '',
+          matches: [
+            createSearchMatchForTesting({fillIntoEdit}),
+            createSearchMatchForTesting({fillIntoEdit: 'news'}),
+          ],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'ArrowDown',
+    }));
+    await microtasksFinished();
+    assertEquals(fillIntoEdit, searchbox.$.input.inputElement.value);
+  }
+
+  test('CutPartOfPreviewedMatch', async () => {
+    await previewFirstZeroSuggestMatch('weather today');
+    handler.reset();
+
+    // Select "today" and cut it.
+    const input = searchbox.$.input.inputElement;
+    input.setSelectionRange(8, 13);
+    const cutEvent = new ClipboardEvent('cut', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    searchbox.$.input.dispatchEvent(cutEvent);
+    await microtasksFinished();
+
+    assertTrue(cutEvent.defaultPrevented);
+    assertEquals(1, handler.getCallCount('onCutOrCopy'));
+    const [, isCut, fullText, selection] = handler.getArgs('onCutOrCopy')[0];
+    assertTrue(isCut);
+    assertEquals('weather today', fullText);
+    assertEquals(8, selection.start);
+    assertEquals(13, selection.end);
+
+    // Only the selected text is cut, rather than the whole input.
+    assertEquals('weather ', input.value);
+    assertEquals(8, input.selectionStart);
+    assertEquals(8, input.selectionEnd);
+
+    // Undo restores the cut text and re-selects it.
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('weather today', input.value);
+    assertEquals(8, input.selectionStart);
+    assertEquals(13, input.selectionEnd);
+  });
+
+  test('PasteOverPartOfPreviewedMatch', async () => {
+    await previewFirstZeroSuggestMatch('weather today');
+
+    // Select "today" and paste over it.
+    const input = searchbox.$.input.inputElement;
+    input.setSelectionRange(8, 13);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'tomorrow');
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    searchbox.$.input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    assertTrue(pasteEvent.defaultPrevented);
+    assertEquals('weather tomorrow', input.value);
+    assertEquals(16, input.selectionStart);
+    assertEquals(16, input.selectionEnd);
+
+    // Undo restores the replaced text and re-selects it.
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('weather today', input.value);
+    assertEquals(8, input.selectionStart);
+    assertEquals(13, input.selectionEnd);
+  });
+
+  test('UndoAfterCutOfPreviewedMatchStepsBackThroughTyping', async () => {
+    const input = searchbox.$.input.inputElement;
+    input.focus();
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      isFocused: true,
+    }));
+    await microtasksFinished();
+
+    // Type "hello", one character at a time.
+    for (let i = 1; i <= 'hello'.length; i++) {
+      input.value = 'hello'.substring(0, i);
+      input.setSelectionRange(i, i);
+      input.dispatchEvent(
+          new InputEvent('input', {bubbles: true, composed: true}));
+      await microtasksFinished();
+    }
+
+    // Arrow down to preview the non-default match "hello world".
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: searchbox.activeQueryId,
+          input: 'hello',
+          matches: [
+            createSearchMatchForTesting(
+                {allowedToBeDefaultMatch: true, fillIntoEdit: 'hello'}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world'}),
+          ],
+        }));
+    await microtasksFinished();
+    searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'ArrowDown',
+    }));
+    await microtasksFinished();
+    assertEquals('hello world', input.value);
+
+    // Select "hello " and cut it.
+    input.setSelectionRange(0, 6);
+    searchbox.$.input.dispatchEvent(new ClipboardEvent(
+        'cut', {bubbles: true, cancelable: true, composed: true}));
+    await microtasksFinished();
+    assertEquals('world', input.value);
+
+    // Each undo steps back one edit: the cut, then the previewed match, then
+    // the typing, back to the initial empty text.
+    const undo = async () => {
+      input.dispatchEvent(new InputEvent('beforeinput', {
+        inputType: 'historyUndo',
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+    };
+    await undo();
+    assertEquals('hello world', input.value);
+    assertEquals(0, input.selectionStart);
+    assertEquals(6, input.selectionEnd);
+    await undo();
+    assertEquals('hello', input.value);
+    await undo();
+    assertEquals('', input.value);
+    await undo();
+    assertEquals('', input.value);
+  });
+
   test('WordDeletionUndoRedo', async () => {
     searchbox.$.input.focus();
     const inputEl = searchbox.$.input.inputElement;
