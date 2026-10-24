@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -124,7 +125,8 @@ FreStage GetCurrentFreStage(Profile* profile, PrefService* local_state) {
 
   // Stage 1: Intro Modal (max 2 impressions or until dismissed)
   if (!prefs->GetBoolean(kFreIntroDismissed) &&
-      prefs->GetInteger(kFreIntroImpressionCount) < kMaxFreIntroImpressions) {
+      prefs->GetInteger(kFreIntroImpressionCount) <
+          omnibox::kOmniboxEverywhereFreMaxIntroImpressionsParam.Get()) {
     return FreStage::kIntroModal;
   }
 
@@ -133,8 +135,10 @@ FreStage GetCurrentFreStage(Profile* profile, PrefService* local_state) {
   // the impression threshold is reached (on the next open).
   if (!prefs->GetBoolean(kFreShortcutSetupDismissed)) {
     const bool has_hotkey = HasOmniboxEverywhereHotkey(resolved_local_state);
-    if (!has_hotkey || prefs->GetInteger(kFreShortcutSetupImpressionCount) <
-                           kMaxFreShortcutSetupImpressions) {
+    if (!has_hotkey ||
+        prefs->GetInteger(kFreShortcutSetupImpressionCount) <
+            omnibox::kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam
+                .Get()) {
       return FreStage::kShortcutSetupChin;
     }
   }
@@ -142,7 +146,8 @@ FreStage GetCurrentFreStage(Profile* profile, PrefService* local_state) {
   // Stage 3: Shortcut Reminder Chin (max 3 impressions or until dismissed)
   if (!prefs->GetBoolean(kFreShortcutReminderDismissed) &&
       prefs->GetInteger(kFreShortcutReminderImpressionCount) <
-          kMaxFreShortcutReminderImpressions) {
+          omnibox::kOmniboxEverywhereFreMaxShortcutReminderImpressionsParam
+              .Get()) {
     if (HasOmniboxEverywhereHotkey(resolved_local_state)) {
       return FreStage::kShortcutReminderChin;
     }
@@ -163,7 +168,7 @@ void IncrementFreImpression(Profile* profile, PrefService* local_state) {
       prefs->SetInteger(kFreIntroImpressionCount,
                         prefs->GetInteger(kFreIntroImpressionCount) + 1);
       if (prefs->GetInteger(kFreIntroImpressionCount) >=
-              kMaxFreIntroImpressions &&
+              omnibox::kOmniboxEverywhereFreMaxIntroImpressionsParam.Get() &&
           HasOmniboxEverywhereHotkey(resolved_local_state)) {
         prefs->SetBoolean(kFreShortcutSetupDismissed, true);
       }

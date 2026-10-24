@@ -428,7 +428,7 @@ TEST_F(OmniboxEverywhereHandlerTest, FrePromoStateGatedByImpressionCount) {
       });
   profile()->GetPrefs()->SetInteger(
       omnibox_everywhere::prefs::kFreIntroImpressionCount,
-      omnibox_everywhere::prefs::kMaxFreIntroImpressions);
+      omnibox::kOmniboxEverywhereFreMaxIntroImpressionsParam.Get());
   mock_page.FlushForTesting();
 }
 
