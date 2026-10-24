@@ -2300,8 +2300,9 @@ GraphBuilderCoreml::AddOperationForConv2d(
       input_operand.descriptor.shape();
   const uint32_t batch = input_dimensions[0];
   const uint32_t input_channels = input_dimensions[1];
-  const uint32_t output_channels =
-      GetOperandInfo(operation.output_operand_id).dimensions[1];
+  const std::vector<uint32_t>& output_dimensions =
+      GetOperandInfo(operation.output_operand_id).dimensions;
+  const uint32_t output_channels = output_dimensions[1];
   if (operation.kind == mojom::Conv2d::Kind::kDirect &&
       (dilations[0] > 1 || dilations[1] > 1) && batch > 1 &&
       operation.groups > 1 &&
@@ -2309,6 +2310,22 @@ GraphBuilderCoreml::AddOperationForConv2d(
                                 operation.groups)) {
     return NewNotSupportedError(
         "Unsupported dilated grouped conv2d with batch > 1.");
+  }
+
+  // For float32 depthwise conv2d with strides == {2, 2} and fewer than 32
+  // output elements per batch, libBNNS dispatches a stride-(2, 2) AMX
+  // micro-kernel whose 16-float backward-aligned tail store underflows before
+  // the start of the output buffer (crbug.com/575820393).
+  const uint64_t output_elements_per_batch =
+      uint64_t{output_channels} * output_dimensions[2] * output_dimensions[3];
+  if (operation.kind == mojom::Conv2d::Kind::kDirect &&
+      input_operand.descriptor.data_type() == OperandDataType::kFloat32 &&
+      webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                               operation.groups) &&
+      operation.strides->height == 2 && operation.strides->width == 2 &&
+      output_elements_per_batch < 32) {
+    return NewNotSupportedError(
+        "Unsupported strided float32 depthwise conv2d.");
   }
 
   CoreML::Specification::MILSpec::Operation* op = &block.emplace_back();
