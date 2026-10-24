@@ -5161,16 +5161,8 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
-// TODO(crbug.com/457765080): De-flake and re-enable on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal \
-  DISABLED_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal
-#else
-#define MAYBE_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal \
-  QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal
-#endif
 TEST_F(ComposeboxQueryControllerTest,
-       MAYBE_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal) {
+       QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal) {
   // Arrange: Create the controller with cluster info TTL enabled.
   CreateController(
       /*send_lns_surface=*/true,
