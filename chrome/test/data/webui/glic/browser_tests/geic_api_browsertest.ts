@@ -7,7 +7,7 @@
 import type {GeicBrowserHost} from '/glic/glic_api/glic_api.js';
 import {AuthTabPurpose, CloseAuthTabResult, CloseSignInTabResult, OpenAuthTabResult, OpenSignInTabResult} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, observeSequence, testMain} from './browser_test_base.js';
 
 class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -19,6 +19,20 @@ class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
     const geic = this.host.getGeicClient();
     assertDefined(geic);
     return geic;
+  }
+
+  async testGeicSetOnboardingCompleted() {
+    assertDefined(this.host.isOnboardingCompleted);
+    assertDefined(this.host.setOnboardingCompleted);
+    const completedSequence =
+        observeSequence<boolean>(this.host.isOnboardingCompleted());
+    assertFalse(await completedSequence.next());
+
+    // Let the browser check that the GEiC FRE isn't completed yet.
+    await this.advanceToNextStep();
+
+    this.host.setOnboardingCompleted();
+    assertTrue(await completedSequence.next());
   }
 
   async testGeicSignInTab() {

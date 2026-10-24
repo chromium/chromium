@@ -79,17 +79,6 @@ source_set("geic_fre") {
   ]
 }
 
-# Per-profile GEiC setup, called from GlicKeyedService. Like geic_enabling,
-# including geic_init.h is restricted to allowlists in chrome/browser/glic/DEPS.
-source_set("geic_init") {
-  sources = [
-    "geic_init.cc",
-    "geic_init.h",
-  ]
-
-  deps = [ ":geic_fre" ]
-}
-
 source_set("gemini_enterprise") {
   sources = [
     "geic_managed_tab.cc",
@@ -128,7 +117,6 @@ source_set("unit_tests") {
   deps = [
     ":geic_enabling",
     ":geic_fre",
-    ":geic_init",
     ":geic_pref_names",
     ":gemini_enterprise",
     "//base",
@@ -159,16 +147,21 @@ source_set("browser_tests") {
 
   deps = [
     ":geic_enabling",
+    ":geic_fre",
+    ":geic_pref_names",
     ":gemini_enterprise",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/prefs",
     "//components/tabs:public",
     "//content/public/browser",
     "//content/test:test_support",

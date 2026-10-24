@@ -40,8 +40,10 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -126,6 +128,17 @@ void SetAnyEntryPointEnabledForTesting(Profile* profile, bool is_enabled) {
 }
 
 namespace {
+
+// The store for the FRE `profile`'s provider uses.
+const GlicFreStore& GetFreStore(Profile* profile) {
+  return GetGlicProviderSpec(profile).GetFreStore();
+}
+
+// Whether `profile`'s entry point can be anchored, given whether it has
+// `consented`: only onboarded profiles of providers that support anchoring are.
+bool IsAnchorable(Profile* profile, bool consented) {
+  return consented && GetGlicProviderSpec(profile).SupportsAnchoredEntryPoint();
+}
 
 constexpr int kExperimentalTriggeringVersion = 1;
 
@@ -423,8 +436,9 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
   if (!global_criteria_met) {
     result.anchor_entrypoint_override_active =
         result.feature_flag_enabled &&
-        GlicEnabling::IsAnchoredButIneligible(global_criteria_met,
-                                              result.fre_is_consented);
+        GlicEnabling::IsAnchoredButIneligible(
+            global_criteria_met,
+            IsAnchorable(profile, result.fre_is_consented));
     if (!result.anchor_entrypoint_override_active) {
       result.feature_enabled = false;
       return result;
@@ -496,7 +510,8 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
       // onboarded, but is missing an overridable requirement.
       bool overridable_requirements_met =
           result.primary_account_is_capable && result.allowed_by_country_filter;
-      if (!overridable_requirements_met && result.fre_is_consented &&
+      if (!overridable_requirements_met &&
+          IsAnchorable(profile, result.fre_is_consented) &&
           base::FeatureList::IsEnabled(
               features::kGlicAnchorEntryPointForOnboardedUsers)) {
         result.anchor_entrypoint_override_active = true;
@@ -924,7 +939,9 @@ bool GlicEnabling::IsProfileEligible(Profile* profile) {
   // A profile is eligible if global criteria are met OR if the user previously
   // onboarded and the anchor override is active (to keep the entry point
   // visible for error states).
-  return global_criteria || IsAnchoredButIneligible(global_criteria, consented);
+  return global_criteria ||
+         IsAnchoredButIneligible(global_criteria,
+                                 IsAnchorable(profile, consented));
 }
 
 // static
@@ -1340,7 +1357,9 @@ GlicEnabling::GlicEnabling(
       optimization_guide::prefs::kGeminiSettings,
       base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
                           base::Unretained(this)));
-  pref_registrar_.Add(prefs::kGlicCompletedFre,
+  // Only the active provider's FRE pref is observed, so that changes to the
+  // other provider's FRE don't notify consent observers.
+  pref_registrar_.Add(GetFreStore(profile_).GetStatusPrefName(),
                       base::BindRepeating(&GlicEnabling::UpdateConsentStatus,
                                           base::Unretained(this)));
   pref_registrar_.Add(
@@ -1406,13 +1425,7 @@ bool GlicEnabling::HasConsented() const {
 
 // static
 prefs::FreStatus GlicEnabling::GetCompletedFre(Profile* profile) {
-  if (base::FeatureList::IsEnabled(
-          features::kGlicExperimentalTriggeringOptInBypass) ||
-      IsRetailDemoModeDesktop()) {
-    return prefs::FreStatus::kCompleted;
-  }
-  return static_cast<prefs::FreStatus>(
-      profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre));
+  return GetFreStore(profile).GetStatus(profile);
 }
 
 prefs::FreStatus GlicEnabling::GetCompletedFre() const {
@@ -1420,8 +1433,7 @@ prefs::FreStatus GlicEnabling::GetCompletedFre() const {
 }
 
 void GlicEnabling::SetCompletedFre(prefs::FreStatus status) {
-  profile_->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
-                                   std::to_underlying(status));
+  GetFreStore(profile_).SetStatus(profile_, status);
 }
 
 bool GlicEnabling::GetUserEnabledActuationOnWeb() const {
@@ -1714,7 +1726,7 @@ void GlicEnabling::OnPrimaryAccountChanged(
 #if BUILDFLAG(IS_ANDROID)
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    SetCompletedFre(prefs::FreStatus::kNotStarted);
+    GetFreStore(profile_).OnPrimaryAccountCleared(profile_);
     profile_->GetPrefs()->ClearPref(prefs::kGlicUserEnabledActuationOnWeb);
     profile_->GetPrefs()->ClearPref(prefs::kGlicGeolocationEnabled);
   }

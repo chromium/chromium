@@ -28,6 +28,7 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -226,6 +227,26 @@
 namespace settings {
 
 using optimization_guide::UserVisibleFeatureKey;
+
+namespace {
+
+// Returns true if the Gemini Enterprise settings section should be shown. With
+// `features::kGeicFre`, the section stays hidden until the GEiC FRE is
+// completed.
+// TODO(crbug.com/571928442): Remove when AI settings page visibility is
+// derived in one place. `ShouldShowSettingsPage()` already requires FRE consent
+// from the active provider's store, so this helper can go away then.
+bool ShouldShowGeicSettings(glic::GlicKeyedService* glic_service) {
+  return glic_service &&
+         glic_service->provider_spec().GetSettingsSection() ==
+             glic::GlicSettingsSection::kGeminiEnterprise &&
+         (!glic_service->provider_spec()
+               .GetFreStore()
+               .HidesSettingsUntilCompleted() ||
+          glic_service->enabling().HasConsented());
+}
+
+}  // namespace
 
 // static
 void SettingsUI::RegisterProfilePrefs(
@@ -568,9 +589,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // AI
   auto* glic_service = glic::GlicKeyedService::Get(profile);
-  const bool show_geic_section =
-      glic_service && glic_service->provider_spec().GetSettingsSection() ==
-                          glic::GlicSettingsSection::kGeminiEnterprise;
+  const bool show_geic_section = ShouldShowGeicSettings(glic_service);
   bool show_glic_section = false;
   bool glic_disallowed_by_admin = false;
 
@@ -962,11 +981,16 @@ void SettingsUI::UpdateShowGlicState() {
       enablement.ShouldShowSettingsPage() &&
       (!glic_service || glic_service->provider_spec().GetSettingsSection() ==
                             glic::GlicSettingsSection::kGemini);
+  // Like `show_glic`, only takes effect on the next page load (e.g. a
+  // refresh, which reuses this controller), since `loadTimeData` is read once
+  // at startup.
+  const bool show_geic = ShouldShowGeicSettings(glic_service);
 
   base::DictValue update;
   update.Set("showGlicSettings", show_glic);
+  update.Set("showGeicSettings", show_geic);
   update.Set("glicDisallowedByAdmin", enablement.DisallowedByAdmin());
-  if (show_glic) {
+  if (show_glic || show_geic) {
     update.Set("showAiPage", true);
   }
 

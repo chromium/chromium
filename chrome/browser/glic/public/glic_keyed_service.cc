@@ -33,7 +33,6 @@
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_transport_handler.h"
-#include "chrome/browser/glic/gemini_enterprise/geic_init.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -54,6 +53,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -233,19 +233,8 @@ GlicKeyedService::GlicKeyedService(
     share_image_handler_ = std::make_unique<GlicShareImageHandler>(*this);
   }
 
-  // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
-  // is shown for testing convenience.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
-    enabling_->SetCompletedFre(prefs::FreStatus::kNotStarted);
-    // or if automation is enabled, skip FRE
-  } else if (command_line->HasSwitch(::switches::kGlicAutomation) ||
-             command_line->HasSwitch(::switches::kGlicAlwaysSkipFre)) {
-    enabling_->SetCompletedFre(prefs::FreStatus::kCompleted);
-  }
-  // Per-profile GEiC setup. Done here, not in `GlicGeminiEnterpriseManager`
-  // (which is per panel), so that it runs exactly once per profile.
-  geic::InitializeForProfile(profile_);
+  // Developer switches for the profile's FRE, e.g. `--glic-always-open-fre`.
+  provider_spec().GetFreStore().ApplyDevSwitches(profile_);
 
   // Sets up prefs storing manually configured glic guest URLs. Intended for
   // manual testing only.

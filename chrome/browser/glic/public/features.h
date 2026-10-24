@@ -194,8 +194,8 @@ extern const base::FeatureParam<bool> kGeicEnabledParam;
 extern const base::FeatureParam<std::string> kGeicGuestURL;
 // Enables the Gemini Enterprise in Chrome (GEiC) first-run experience (FRE).
 // When enabled for a GEiC profile, Chrome stores FRE completion per GE instance
-// in `geic.completed_fre`.
-// TODO(b/576047045): Gate GEiC features on FRE completion.
+// in `geic.completed_fre`, exposes it to the GE web app, and gates GEiC
+// features on its completion. Without it, GEiC profiles are always consented.
 BASE_DECLARE_FEATURE(kGeicFre);
 
 BASE_DECLARE_FEATURE(kGlicMarketingAutoOpen);

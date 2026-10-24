@@ -564,10 +564,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // otherwise.
   bool HasConsented() const;
 
-  // Returns the FRE status.
+  // Returns the status of the FRE the profile's provider uses (see
+  // `GlicProviderSpec::GetFreStore()`).
   static prefs::FreStatus GetCompletedFre(Profile* profile);
   prefs::FreStatus GetCompletedFre() const;
-  // Sets the FRE status.
+  // Sets the status of the FRE the profile's provider uses (see
+  // `GlicProviderSpec::GetFreStore()`). Statuses that FRE doesn't support are
+  // ignored, e.g. the GEiC FRE can only be completed.
   void SetCompletedFre(prefs::FreStatus status);
 
   // Whether the Web Actuation Toggle (Auto Browse) should be shown in Settings.

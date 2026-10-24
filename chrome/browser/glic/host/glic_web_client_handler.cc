@@ -25,7 +25,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -60,6 +59,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -83,11 +83,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "components/feature_engagement/public/event_constants.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -866,6 +863,10 @@ class GlicWebClientHandler
     std::move(callback).Run(std::move(client_id));
   }
 
+  // TODO(b/576030201): Decide whether GEiC tab context sharing (focused/tab
+  // context, pinning, image bytes) should be gated on GEiC FRE completion.
+  // Today GEiC uses the same checks as consumer Glic, which don't depend on FRE
+  // consent.
   void GetContextFromFocusedTab(
       glic::mojom::TabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
@@ -1635,19 +1636,7 @@ class GlicWebClientHandler
 
   void SetOnboardingCompleted() override {
     LogApiRequest(GlicHostApiRequestId::kSetOnboardingCompleted);
-    glic_service_->metrics()->OnTrustFirstOnboardingAccept();
-    glic_service_->enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-    GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
-
-    BrowserWindowInterface* browser =
-        ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
-    if (auto* interface = BrowserUserEducationInterface::From(browser)) {
-      interface->NotifyAdditionalConditionEvent(
-          feature_engagement::events::kGlicOnboardingCompleted);
-    }
-#endif  // !BUILDFLAG(IS_ANDROID)
+    glic_service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
   }
 
   // GlicInstanceCoordinator::StateObserver implementation.

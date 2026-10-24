@@ -21,6 +21,8 @@ struct GeicProviderInitOptions {
   GURL guest_url;
 };
 
+class GlicFreStore;
+
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
 // Holds data only. Values don't change for a given profile.
@@ -59,6 +61,16 @@ class GlicProviderSpec {
   // Returns the localized guest URL to load for `profile`, or an empty GURL
   // if none is configured.
   virtual GURL GetGuestUrl(Profile* profile) const = 0;
+  // Whether the entry point stays visible, in an error state, for onboarded
+  // profiles that fail a Glic requirement
+  // (`features::kGlicAnchorEntryPointForOnboardedUsers`).
+  virtual bool SupportsAnchoredEntryPoint() const = 0;
+  // The store for the FRE this provider uses for consent.
+  // TODO(b/576047045): Bind the FRE store to its profile so its methods no
+  // longer need a `Profile*`. Each profile's spec is owned by
+  // `GlicProviderLatch`, but `CreateGlicProviderSpec()` doesn't take the
+  // profile, and unlatched profiles share a fallback spec.
+  virtual const GlicFreStore& GetFreStore() const = 0;
 };
 
 }  // namespace glic

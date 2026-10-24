@@ -53,6 +53,16 @@ for Gemini Enterprise features.
 - **Mojo IPC Plumbing**: Implements and binds `mojom::GeminiEnterpriseHandler`,
   which is wired to the Glic WebClient through `GlicInstanceImpl` and
   `GlicWebClientHandler`.
+- **First-Run Experience (FRE)**, behind `features::kGeicFre` (`geic_fre.h`).
+  Without the flag, GEiC profiles are always consented.
+  - Completion is stored per GE instance in the `geic.completed_fre` pref,
+    separately from the consumer `glic.completed_fre`. The GE web app reads and
+    completes it through the existing Glic onboarding API; Chrome decides
+    which FRE that API reflects based on the profile.
+  - With the flag, `GlicEnabling::HasConsentedForProfile()` reads the GEiC FRE
+    status for GEiC profiles, so consent-gated Glic features wait for the GEiC
+    FRE.
+  - Developer switches: `--geic-always-skip-fre` and `--geic-reset-fre`.
 
 ## Owners
 

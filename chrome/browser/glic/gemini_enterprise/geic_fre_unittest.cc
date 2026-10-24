@@ -14,10 +14,10 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/glic/gemini_enterprise/geic_init.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -45,7 +45,9 @@ class GeicFreTest : public testing::Test {
         {{features::kGeic,
           {{"enabled", "true"}, {"geic-guest-url", kGuestUrl}}},
          {features::kGeicFre, {}}},
-        {});
+        // Not needed for the GEiC FRE. Keeps profiles from being Glic-eligible,
+        // which would create a `GlicKeyedService` this fixture doesn't support.
+        {features::kGlic});
     profile_ = std::make_unique<TestingProfile>();
   }
 
@@ -173,8 +175,9 @@ TEST_F(GeicFreTest, OtherInstanceStatusDoesNotApply) {
 }
 
 TEST_F(GeicFreTest, LatchesGuestUrl) {
-  // Reading the status latches the GEiC config, so a later policy URL doesn't
-  // change which GE instance the FRE status is stored for.
+  // The guest URL is latched with the profile's Glic provider when the profile
+  // is created, so a later policy URL doesn't change which GE instance the FRE
+  // status is stored for.
   EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kNotStarted);
   prefs()->SetString(glic::prefs::kGlicGeminiEnterpriseUrl,
                      "https://business.gemini.google/home/cid/other");
@@ -215,34 +218,6 @@ TEST_F(GeicFreTest, AutomationSwitchDoesNotApply) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ::switches::kGlicAutomation);
   EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kNotStarted);
-}
-
-TEST_F(GeicFreTest, ResetSwitchClearsStatus) {
-  CompleteFre(profile_.get());
-  ASSERT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kCompleted);
-
-  // Without the switch, nothing changes.
-  InitializeForProfile(profile_.get());
-  EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kCompleted);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kGeicResetFre);
-  InitializeForProfile(profile_.get());
-  EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kNotStarted);
-  EXPECT_TRUE(prefs()->GetDict(prefs::kGeicCompletedFre).empty());
-}
-
-TEST_F(GeicFreTest, ResetAndSkipSwitchesLeaveFreCompleted) {
-  CompleteFre(profile_.get());
-  ASSERT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kCompleted);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kGeicResetFre);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kGeicAlwaysSkipFre);
-
-  InitializeForProfile(profile_.get());
-  EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kCompleted);
 }
 
 }  // namespace

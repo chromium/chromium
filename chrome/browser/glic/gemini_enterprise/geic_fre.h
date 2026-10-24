@@ -35,11 +35,6 @@ std::optional<prefs::GeicFreStatus> GetFreStatus(Profile* profile);
 // `GetFreStatus()` is std::nullopt.
 void CompleteFre(Profile* profile);
 
-// Clears all GEiC FRE status if `--geic-reset-fre` is present. Only called from
-// `geic::InitializeForProfile()` (see geic_init.h), which runs once per profile
-// at startup, before the status is read.
-void MaybeApplyResetFreSwitch(Profile* profile);
-
 }  // namespace geic
 
 #endif  // CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_FRE_H_

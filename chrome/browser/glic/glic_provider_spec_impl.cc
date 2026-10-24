@@ -12,8 +12,10 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/glic/glic_fre_store_impl.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
@@ -102,6 +104,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     }
     return GetLocalizedGuestURL(MaybeAppendAuthUser(url, profile));
   }
+  bool SupportsAnchoredEntryPoint() const override { return true; }
+  const GlicFreStore& GetFreStore() const override { return *fre_store_; }
+
+ private:
+  const std::unique_ptr<GlicFreStore> fre_store_ = CreateGeminiFreStore();
 };
 
 class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
@@ -129,9 +136,15 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     }
     return GetLocalizedGuestURL(guest_url_);
   }
+  // The anchored error state shows consumer copy and help links.
+  // TODO(b/576834093): Support anchoring with GEiC error states.
+  bool SupportsAnchoredEntryPoint() const override { return false; }
+  const GlicFreStore& GetFreStore() const override { return *fre_store_; }
 
  private:
   const GURL guest_url_;
+  const std::unique_ptr<GlicFreStore> fre_store_ =
+      CreateGeminiEnterpriseFreStore();
 };
 
 }  // namespace
