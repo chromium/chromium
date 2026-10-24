@@ -584,10 +584,16 @@ void GtkUi::SetShutdownCb(base::OnceClosure shutdown_cb) {
 }
 
 void GtkUi::SetDarkTheme(bool dark) {
+  // `g_object_set()` unconditionally resets GTK CSS values and emits
+  // `notify::gtk-application-prefer-dark-theme` even when the property already
+  // equals `dark`, causing an expensive full theme rebuild.
+  if (PreferDarkTheme() == dark) {
+    return;
+  }
   auto* settings = gtk_settings_get_default();
   g_object_set(settings, "gtk-application-prefer-dark-theme", dark, nullptr);
-  // OnThemeChanged() will be called via the
-  // notify::gtk-application-prefer-dark-theme handler to update the colors.
+  // `OnThemeChanged()` will be called via the
+  // `notify::gtk-application-prefer-dark-theme` handler to update the colors.
 }
 
 void GtkUi::SetColorScheme(std::optional<bool> prefer_dark) {
