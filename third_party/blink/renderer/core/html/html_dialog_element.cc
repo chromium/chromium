@@ -205,20 +205,23 @@ void HTMLDialogElement::close(const String& return_value,
 
   // We should call focus() last since it will fire a focus event which could
   // modify this element.
-  if (previously_focused_element_ && !open_attribute_being_removed) {
-    Element* previously_focused_element = previously_focused_element_;
-    previously_focused_element_ = nullptr;
-
-    bool descendant_or_self_is_focused =
-        GetDocument().FocusedElement() &&
-        FlatTreeTraversal::Contains(*this, *GetDocument().FocusedElement());
-    if (previously_focused_element &&
-        (was_modal || descendant_or_self_is_focused)) {
-      FocusOptions* focus_options = FocusOptions::Create();
-      focus_options->setPreventScroll(true);
-      previously_focused_element->Focus(FocusParams(
-          SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
-          nullptr, focus_options));
+  if (!open_attribute_being_removed) {
+    Element* focused_element = GetDocument().FocusedElement();
+    const bool descendant_or_self_is_focused =
+        focused_element && FlatTreeTraversal::Contains(*this, *focused_element);
+    if (Element* previously_focused_element = previously_focused_element_) {
+      previously_focused_element_ = nullptr;
+      if (was_modal || descendant_or_self_is_focused) {
+        FocusOptions* focus_options = FocusOptions::Create();
+        focus_options->setPreventScroll(true);
+        previously_focused_element->Focus(FocusParams(
+            SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
+            nullptr, focus_options));
+      }
+    } else if (descendant_or_self_is_focused) {
+      // Without an element to restore focus to, focus must not stay inside the
+      // closed dialog, where it is no longer focusable.
+      GetDocument().ClearFocusedElement();
     }
   }
 }

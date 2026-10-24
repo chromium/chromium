@@ -630,8 +630,6 @@ suite('<apn-detail-dialog>', () => {
     assertEquals(apnWithId.ipType, apn.ipType);
     assertEquals(apnWithId.apnTypes.length, apn.apnTypes.length);
     assertEquals(apnWithId.apnTypes[0], apn.apnTypes[0]);
-    assertEquals(
-        apnDetailDialog.shadowRoot!.querySelector('#apnInput'),
-        apnDetailDialog.shadowRoot!.activeElement);
+    assertNull(apnDetailDialog.shadowRoot!.activeElement);
   });
 });

@@ -303,6 +303,10 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
   EXPECT_FALSE(target->IsInTopLayer());
   target->showModal(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(target->IsInTopLayer());
+  // close() moves focus out of the dialog when it contains it, which flushes
+  // style and processes the scheduled top layer removal. Blur first so the
+  // scheduling itself is observable.
+  GetDocument().ClearFocusedElement();
   target->close();
   EXPECT_TRUE(target->IsInTopLayer());
   UpdateAllLifecyclePhasesForTest();
