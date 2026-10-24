@@ -286,8 +286,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Metrics) {
   RunTestsInJsModule("metrics_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPasswordDialog) {
-  RunTestsInJsModule("viewer_password_dialog_test.js", "encrypted.pdf");
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSMochaTest, ViewerPasswordDialog) {
+  RunMochaTest("viewer_password_dialog_test.js", "encrypted.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerSearchify) {
@@ -382,9 +382,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerFilePicker) {
   RunTestsInJsModule("viewer_file_picker_test.js", "test.pdf");
 }
 
-// PDFExtensionJSTest with forced Pacific Time Zone.
-class PDFExtensionPacificTimeZoneJSTest : public PDFExtensionJSTest {
-  // This will apply to the new processes spawned within RunTestsInJsModule(),
+// PDFExtensionJSMochaTest with forced Pacific Time Zone.
+class PDFExtensionPacificTimeZoneJSMochaTest : public PDFExtensionJSMochaTest {
+  // This will apply to the new processes spawned within RunMochaTest(),
   // thus consistently running the test in a well known time zone.
   // ScopedTimeZone needs to be created before the test setup. ScopedTimeZone
   // overrides TimeZoneMonitor binder in DeviceService so the test setup creates
@@ -392,11 +392,11 @@ class PDFExtensionPacificTimeZoneJSTest : public PDFExtensionJSTest {
   content::ScopedTimeZone scoped_time_zone_{"America/Los_Angeles"};
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionPacificTimeZoneJSTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionPacificTimeZoneJSMochaTest,
                        ViewerPropertiesDialog) {
   // The properties dialog formats some values based on locale.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
-  RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
+  RunMochaTest("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
 class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
@@ -939,7 +939,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPacificTimeZoneJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionWebUICodeCacheJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);

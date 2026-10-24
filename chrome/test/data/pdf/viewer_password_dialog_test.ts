@@ -2,80 +2,68 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ViewerPasswordDialogElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 
 function getPasswordDialog() {
-  return viewer.shadowRoot.querySelector('viewer-password-dialog')!;
+  return viewer.shadowRoot.querySelector('viewer-password-dialog');
 }
 
-function getPasswordInput() {
-  return getPasswordDialog().$.password;
-}
-
-function getSubmitButton() {
-  return getPasswordDialog().$.submit;
-}
-
-function submitPassword() {
-  const button = getSubmitButton();
-  button.click();
+function submitPassword(dialog: ViewerPasswordDialogElement) {
+  dialog.$.submit.click();
 
   // The submit button and input field should both be disabled.
-  chrome.test.assertTrue(button.disabled);
-  chrome.test.assertTrue(getPasswordInput().disabled);
+  assertTrue(dialog.$.submit.disabled);
+  assertTrue(dialog.$.password.disabled);
 }
 
-async function tryIncorrectPassword(password: string) {
-  const input = getPasswordInput();
-  input.value = password;
+async function tryIncorrectPassword(
+    dialog: ViewerPasswordDialogElement, password: string) {
+  dialog.$.password.value = password;
 
   const whenPasswordDenied =
-      eventToPromise('password-denied-for-testing', getPasswordDialog());
-  submitPassword();
+      eventToPromise('password-denied-for-testing', dialog);
+  submitPassword(dialog);
   await whenPasswordDenied;
 
   // The input field should be marked invalid and re-enabled.
-  chrome.test.assertTrue(input.invalid);
-  chrome.test.assertFalse(input.disabled);
+  assertTrue(dialog.$.password.invalid);
+  assertFalse(dialog.$.password.disabled);
 
   // The submit button should be re-enabled.
-  chrome.test.assertFalse(getSubmitButton().disabled);
+  assertFalse(dialog.$.submit.disabled);
 }
 
-async function tryCorrectPassword(password: string) {
-  const input = getPasswordInput();
-  input.value = password;
+async function tryCorrectPassword(
+    dialog: ViewerPasswordDialogElement, password: string) {
+  dialog.$.password.value = password;
 
   // The dialog should close in response to a correct password.
-  const whenDialogClosed = eventToPromise('close', getPasswordDialog());
-  submitPassword();
+  const whenDialogClosed = eventToPromise('close', dialog);
+  submitPassword(dialog);
   await whenDialogClosed;
-  chrome.test.assertFalse(!!getPasswordDialog());
+  assertNull(getPasswordDialog());
 }
 
-const tests = [
-  async function testPasswordDialog() {
-    const passwordDialog = getPasswordDialog();
-    chrome.test.assertTrue(!!passwordDialog);
+suite('ViewerPasswordDialog', function() {
+  test('PasswordDialog', async function() {
+    const dialog = getPasswordDialog();
+    assertTrue(!!dialog);
 
     // The input field should be marked valid and enabled.
-    const input = getPasswordInput();
-    chrome.test.assertTrue(!!input);
-    chrome.test.assertFalse(input.invalid);
-    chrome.test.assertFalse(input.disabled);
+    assertFalse(dialog.$.password.invalid);
+    assertFalse(dialog.$.password.disabled);
 
     // The submit button should be enabled.
-    chrome.test.assertFalse(getSubmitButton().disabled);
+    assertFalse(dialog.$.submit.disabled);
 
-    await tryIncorrectPassword('incorrect');
-    await tryCorrectPassword('ownerpass');
+    await tryIncorrectPassword(dialog, 'incorrect');
+    await tryCorrectPassword(dialog, 'ownerpass');
 
     const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar')!;
-    chrome.test.assertFalse(toolbar.annotationAvailable);
-    chrome.test.succeed();
-  },
-];
-
-chrome.test.runTests(tests);
+    assertFalse(toolbar.annotationAvailable);
+  });
+});
