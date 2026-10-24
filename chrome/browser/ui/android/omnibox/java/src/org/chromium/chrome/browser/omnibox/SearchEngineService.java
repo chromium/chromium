@@ -226,10 +226,18 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         if (Objects.equals(mAiModeButtonUiConfigSupplier.get(), config)) return;
 
         mAiModeButtonUiConfigSupplier.set(config);
-        mAiModeButtonIconSupplier.set(
-                new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
+        if (config == null) return;
 
-        if (config == null || GURL.isEmptyOrInvalid(config.faviconUrl)) return;
+        if (isDefaultSearchEngineGoogle()) {
+            mAiModeButtonIconSupplier.set(
+                    new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
+            return;
+        }
+
+        // Third party engines show the loupe until their own icon is fetched.
+        mAiModeButtonIconSupplier.set(
+                new StatusIconResource(R.drawable.ic_search_24dp, Resources.ID_NULL));
+        if (GURL.isEmptyOrInvalid(config.faviconUrl)) return;
 
         GURL faviconUrl = config.faviconUrl;
         // Request the displayed size, so that the best frame of a multi-resolution favicon is
@@ -243,7 +251,11 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         mImageFetcher.fetchImage(
                 params,
                 bitmap -> {
-                    if (bitmap == null) return;
+                    if (bitmap == null
+                            || !Objects.equals(config, mAiModeButtonUiConfigSupplier.get())) {
+                        return;
+                    }
+
                     mAiModeButtonIconSupplier.set(
                             new StatusIconResource(
                                     faviconUrl.getSpec(), bitmap, Resources.ID_NULL));
@@ -263,7 +275,13 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         return mAiModeButtonUiConfigSupplier;
     }
 
-    /** Supplies the icon for the AI Mode entry point button. */
+    /**
+     * Supplies the icon for the AI Mode entry point button.
+     *
+     * <p>Google uses the spark icon. A third party search engine uses the loupe until its favicon
+     * is fetched, and keeps the loupe if the fetch fails. The icon isn't updated without a
+     * configuration. Placeholders are resource-based; a fetched favicon is bitmap-based.
+     */
     public NonNullObservableSupplier<StatusIconResource> getAiModeButtonIconSupplier() {
         return mAiModeButtonIconSupplier;
     }

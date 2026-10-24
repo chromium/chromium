@@ -26,6 +26,8 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.DrawableRes;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -629,6 +631,7 @@ public class SearchEngineServiceUnitTest {
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
         assertNull(searchEngineService.getAiModeButtonUiConfigSupplier().get());
 
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         var config = createTestAiModeButtonUiConfig(GURL.emptyGURL());
         searchEngineService.onAiModeButtonUiConfigChanged(config);
         assertSame(config, searchEngineService.getAiModeButtonUiConfigSupplier().get());
@@ -647,9 +650,10 @@ public class SearchEngineServiceUnitTest {
         var faviconUrl = new GURL(LOGO_URL);
         var config = createTestAiModeButtonUiConfig(faviconUrl);
 
+        // A third party engine shows the loupe until its icon is fetched.
         searchEngineService.onAiModeButtonUiConfigChanged(config);
         assertEquals(
-                new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
+                new StatusIconResource(R.drawable.ic_search_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
         int iconSizePx =
@@ -675,7 +679,7 @@ public class SearchEngineServiceUnitTest {
     }
 
     @Test
-    public void onAiModeButtonUiConfigChanged_resetsToLoupeWhenReplacedAndIgnoresNullBitmap() {
+    public void onAiModeButtonUiConfigChanged_keepsLoupeOnNullBitmapAndResetsWhenReplaced() {
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
         searchEngineService.onAiModeButtonUiConfigChanged(
                 createTestAiModeButtonUiConfig(new GURL(LOGO_URL)));
@@ -684,20 +688,34 @@ public class SearchEngineServiceUnitTest {
         // Null bitmap from ImageFetcher must leave the fallback loupe icon intact.
         mImageFetcherCallbackCaptor.getValue().onResult(null);
         assertEquals(
-                new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
+                new StatusIconResource(R.drawable.ic_search_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
-        // Valid bitmap updates the supplier, and replacing the config resets back to the loupe.
+        // Valid bitmap updates the supplier, and replacing the config with Google's resets it
+        // back to the spark icon.
         mImageFetcherCallbackCaptor.getValue().onResult(mBitmap);
         assertEquals(
                 new StatusIconResource(LOGO_URL, mBitmap, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         searchEngineService.onAiModeButtonUiConfigChanged(
                 createTestAiModeButtonUiConfig(GURL.emptyGURL()));
         assertEquals(
                 new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
+    }
+
+    @Test
+    public void onAiModeButtonUiConfigChanged_ignoresIconOfReplacedConfig_ThirdParty() {
+        testIgnoresIconOfReplacedConfigImpl(
+                /* isReplacementGoogle= */ false, R.drawable.ic_search_24dp);
+    }
+
+    @Test
+    public void onAiModeButtonUiConfigChanged_ignoresIconOfReplacedConfig_Google() {
+        testIgnoresIconOfReplacedConfigImpl(
+                /* isReplacementGoogle= */ true, R.drawable.ic_search_spark_24dp);
     }
 
     @Test
@@ -707,5 +725,33 @@ public class SearchEngineServiceUnitTest {
 
         verify(mSearchEngineServiceNatives).destroy(1L);
         verify(mImageFetcher).destroy();
+    }
+
+    /**
+     * Verifies that a late icon of a replaced third party config doesn't replace the icon of the
+     * new config.
+     *
+     * @param isReplacementGoogle Whether the new config is Google's.
+     * @param expectedIconRes The icon expected for the new config.
+     */
+    private void testIgnoresIconOfReplacedConfigImpl(
+            boolean isReplacementGoogle, @DrawableRes int expectedIconRes) {
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
+        searchEngineService.onAiModeButtonUiConfigChanged(
+                createTestAiModeButtonUiConfig(new GURL(LOGO_URL)));
+        verify(mImageFetcher).fetchImage(any(), mImageFetcherCallbackCaptor.capture());
+        Callback<Bitmap> replacedConfigCallback = mImageFetcherCallbackCaptor.getValue();
+
+        doReturn(isReplacementGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        searchEngineService.onAiModeButtonUiConfigChanged(
+                createTestAiModeButtonUiConfig(
+                        isReplacementGoogle
+                                ? GURL.emptyGURL()
+                                : new GURL("https://www.other.com/")));
+        replacedConfigCallback.onResult(mBitmap);
+
+        assertEquals(
+                new StatusIconResource(expectedIconRes, 0),
+                searchEngineService.getAiModeButtonIconSupplier().get());
     }
 }
