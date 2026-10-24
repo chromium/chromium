@@ -279,7 +279,7 @@ D3D11VideoDecoderBackend::CreateVideoDecoderWrapper(
   return video_decoder_wrapper;
 }
 
-std::unique_ptr<Texture2DWrapper>
+std::unique_ptr<D3DTextureWrapper>
 D3D11VideoDecoderBackend::CreateOutputTextureWrapper(
     TextureSelector* texture_selector,
     const gfx::ColorSpace& color_space,
@@ -310,7 +310,7 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
     size_t array_slice,
     size_t picture_index,
     bool use_single_video_decoder_texture,
-    std::unique_ptr<Texture2DWrapper> texture_wrapper,
+    std::unique_ptr<D3DTextureWrapper> texture_wrapper,
     D3DDecoderConfigurator* decoder_configurator,
     TextureSelector* texture_selector,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,

@@ -28,11 +28,11 @@
 
 namespace media {
 
-Texture2DWrapper::Texture2DWrapper() = default;
+D3DTextureWrapper::D3DTextureWrapper() = default;
 
-Texture2DWrapper::~Texture2DWrapper() = default;
+D3DTextureWrapper::~D3DTextureWrapper() = default;
 
-DefaultTexture2DWrapper::DefaultTexture2DWrapper(
+DefaultD3DTextureWrapper::DefaultD3DTextureWrapper(
     const gfx::Size& size,
     const gfx::ColorSpace& output_color_space,
     viz::SharedImageFormat output_si_format,
@@ -44,9 +44,9 @@ DefaultTexture2DWrapper::DefaultTexture2DWrapper(
       video_device_(std::move(device)),
       workarounds_(std::move(workarounds)) {}
 
-DefaultTexture2DWrapper::~DefaultTexture2DWrapper() = default;
+DefaultD3DTextureWrapper::~DefaultD3DTextureWrapper() = default;
 
-D3DStatus DefaultTexture2DWrapper::BeginSharedImageAccess() {
+D3DStatus DefaultD3DTextureWrapper::BeginSharedImageAccess() {
   if (shared_image_access_) {
     return D3DStatus::Codes::kOk;
   }
@@ -64,7 +64,7 @@ D3DStatus DefaultTexture2DWrapper::BeginSharedImageAccess() {
   return D3DStatus::Codes::kOk;
 }
 
-D3DStatus DefaultTexture2DWrapper::ProcessTexture(
+D3DStatus DefaultD3DTextureWrapper::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest,
     scoped_refptr<gfx::D3DSharedFence> decode_fence) {
   // If we've received an error, then return it to our caller.  This is probably
@@ -84,17 +84,17 @@ D3DStatus DefaultTexture2DWrapper::ProcessTexture(
   return D3DStatus::Codes::kOk;
 }
 
-const gfx::Size& DefaultTexture2DWrapper::GetSize() const {
+const gfx::Size& DefaultD3DTextureWrapper::GetSize() const {
   return size_;
 }
 
-D3DStatus DefaultTexture2DWrapper::Init(
+D3DStatus DefaultD3DTextureWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11Texture2D texture,
     size_t array_slice,
     scoped_refptr<media::D3DPictureBuffer> picture_buffer,
-    Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
+    D3DTextureWrapper::PictureBufferGPUResourceInitDoneCB
         picture_buffer_gpu_resource_init_done_cb) {
   if (SharedImageFormatToDXGIFormat(output_si_format_) == DXGI_FORMAT_UNKNOWN) {
     return D3DStatus::Codes::kUnsupportedTextureFormatForBind;
@@ -109,10 +109,10 @@ D3DStatus DefaultTexture2DWrapper::Init(
   // would create the texture with KEYED_MUTEX and NTHANDLE, then send along
   // a handle that we get from |texture| as an IDXGIResource1.
   auto on_error_cb = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      &DefaultTexture2DWrapper::OnError, weak_factory_.GetWeakPtr()));
+      &DefaultD3DTextureWrapper::OnError, weak_factory_.GetWeakPtr()));
 
   auto gpu_resource_init_cb = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&DefaultTexture2DWrapper::OnGPUResourceInitDone,
+      base::BindOnce(&DefaultD3DTextureWrapper::OnGPUResourceInitDone,
                      weak_factory_.GetWeakPtr()));
   gpu_resources_ = base::SequenceBound<GpuResources>(
       std::move(gpu_task_runner), std::move(on_error_cb),
@@ -122,13 +122,13 @@ D3DStatus DefaultTexture2DWrapper::Init(
   return D3DStatus::Codes::kOk;
 }
 
-void DefaultTexture2DWrapper::OnError(D3DStatus status) {
+void DefaultD3DTextureWrapper::OnError(D3DStatus status) {
   if (!received_error_) {
     received_error_ = status;
   }
 }
 
-void DefaultTexture2DWrapper::OnGPUResourceInitDone(
+void DefaultD3DTextureWrapper::OnGPUResourceInitDone(
     scoped_refptr<media::D3DPictureBuffer> picture_buffer,
     std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
@@ -141,7 +141,7 @@ void DefaultTexture2DWrapper::OnGPUResourceInitDone(
       .Run(std::move(picture_buffer));
 }
 
-DefaultTexture2DWrapper::GpuResources::GpuResources(
+DefaultD3DTextureWrapper::GpuResources::GpuResources(
     OnErrorCB on_error_cb,
     GetCommandBufferHelperCB get_helper_cb,
     const gfx::Size& size,
@@ -256,6 +256,6 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
            std::move(shared_image));
 }
 
-DefaultTexture2DWrapper::GpuResources::~GpuResources() = default;
+DefaultD3DTextureWrapper::GpuResources::~GpuResources() = default;
 
 }  // namespace media

@@ -72,7 +72,7 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MOCK_METHOD(size_t, GetNumReferenceFrames, (), (const, override));
 };
 
-class FakeTexture2DWrapper final : public Texture2DWrapper {
+class FakeTexture2DWrapper final : public D3DTextureWrapper {
  public:
   FakeTexture2DWrapper() = default;
   ~FakeTexture2DWrapper() override = default;

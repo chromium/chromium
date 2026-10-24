@@ -32,7 +32,7 @@ namespace media {
 
 class D3D11PictureBufferImpl;
 class D3D12PictureBufferImpl;
-class Texture2DWrapper;
+class D3DTextureWrapper;
 using PictureBufferGPUResourceInitDoneCB =
     base::OnceCallback<void(scoped_refptr<media::D3DPictureBuffer>)>;
 
@@ -100,7 +100,7 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   uint32_t array_slice() const { return array_slice_; }
   const gfx::Size& size() const { return size_; }
 
-  Texture2DWrapper* texture_wrapper() const { return texture_wrapper_.get(); }
+  D3DTextureWrapper* texture_wrapper() const { return texture_wrapper_.get(); }
 
   // Shouldn't be here, but simpler for now.
   base::TimeDelta timestamp_;
@@ -111,7 +111,7 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   // unique id used to identify this picture to the decoder.
   D3DPictureBuffer(scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
                    size_t array_slice,
-                   std::unique_ptr<Texture2DWrapper> texture_wrapper,
+                   std::unique_ptr<D3DTextureWrapper> texture_wrapper,
                    const gfx::Size& size,
                    size_t picture_index);
   virtual ~D3DPictureBuffer();
@@ -127,7 +127,7 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   uint32_t array_slice_;
   const gfx::Size size_;
 
-  std::unique_ptr<Texture2DWrapper> texture_wrapper_;
+  std::unique_ptr<D3DTextureWrapper> texture_wrapper_;
 
   bool in_picture_use_ = false;
   int in_client_use_ = 0;
@@ -146,7 +146,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBufferImpl : public D3DPictureBuffer {
       scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
       ComD3D11Texture2D texture,
       size_t array_slice,
-      std::unique_ptr<Texture2DWrapper> texture_wrapper,
+      std::unique_ptr<D3DTextureWrapper> texture_wrapper,
       const gfx::Size& size,
       size_t picture_index);
 
@@ -186,7 +186,7 @@ class MEDIA_GPU_EXPORT D3D12PictureBufferImpl : public D3DPictureBuffer {
       scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
       ComD3D12Resource resource,
       uint32_t array_slice,
-      std::unique_ptr<Texture2DWrapper> texture_wrapper,
+      std::unique_ptr<D3DTextureWrapper> texture_wrapper,
       const gfx::Size& size,
       size_t picture_index);
 

@@ -22,7 +22,7 @@ namespace media {
 D3DPictureBuffer::D3DPictureBuffer(
     scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
     size_t array_slice,
-    std::unique_ptr<Texture2DWrapper> texture_wrapper,
+    std::unique_ptr<D3DTextureWrapper> texture_wrapper,
     const gfx::Size& size,
     size_t picture_index)
     : RefCountedDeleteOnSequence<D3DPictureBuffer>(
@@ -68,7 +68,7 @@ D3D11PictureBufferImpl::D3D11PictureBufferImpl(
     scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
     ComD3D11Texture2D texture,
     size_t array_slice,
-    std::unique_ptr<Texture2DWrapper> texture_wrapper,
+    std::unique_ptr<D3DTextureWrapper> texture_wrapper,
     const gfx::Size& size,
     size_t picture_index)
     : D3DPictureBuffer(std::move(delete_task_runner),
@@ -174,7 +174,7 @@ D3D12PictureBufferImpl::D3D12PictureBufferImpl(
     scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
     ComD3D12Resource resource,
     uint32_t array_slice,
-    std::unique_ptr<Texture2DWrapper> texture_wrapper,
+    std::unique_ptr<D3DTextureWrapper> texture_wrapper,
     const gfx::Size& size,
     size_t picture_index)
     : D3DPictureBuffer(std::move(delete_task_runner),

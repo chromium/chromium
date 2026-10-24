@@ -207,12 +207,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   }
 }
 
-std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
+std::unique_ptr<D3DTextureWrapper> TextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
     gfx::ColorSpace color_space,
     gfx::Size size) {
   // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
-  return std::make_unique<DefaultTexture2DWrapper>(
+  return std::make_unique<DefaultD3DTextureWrapper>(
       size, color_space, OutputSharedImageFormat(), device, workarounds_);
 }
 
@@ -243,7 +243,7 @@ CopyTextureSelector::CopyTextureSelector(
 
 CopyTextureSelector::~CopyTextureSelector() = default;
 
-std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
+std::unique_ptr<D3DTextureWrapper> CopyTextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
     gfx::ColorSpace input_color_space,
     gfx::Size size) {
@@ -276,9 +276,9 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
 
   return std::make_unique<CopyingTexture2DWrapper>(
       size, input_color_space, output_color_space,
-      std::make_unique<DefaultTexture2DWrapper>(size, output_color_space,
-                                                OutputSharedImageFormat(),
-                                                device, workarounds_),
+      std::make_unique<DefaultD3DTextureWrapper>(size, output_color_space,
+                                                 OutputSharedImageFormat(),
+                                                 device, workarounds_),
       video_processor_proxy_, out_texture, workarounds_);
 }
 

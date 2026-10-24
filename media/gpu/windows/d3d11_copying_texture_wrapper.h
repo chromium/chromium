@@ -23,14 +23,14 @@ namespace media {
 
 // Uses D3D11VideoProcessor to convert between an input texture2D and an output
 // texture2D.  Each instance owns its own destination texture.
-class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
+class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public D3DTextureWrapper {
  public:
   // |output_wrapper| must wrap a Texture2D which is a single-entry Texture,
   // while |input_texture| may have multiple entries.
   CopyingTexture2DWrapper(const gfx::Size& size,
                           const gfx::ColorSpace& input_color_space,
                           const gfx::ColorSpace& output_color_space,
-                          std::unique_ptr<Texture2DWrapper> output_wrapper,
+                          std::unique_ptr<D3DTextureWrapper> output_wrapper,
                           scoped_refptr<VideoProcessorProxy> processor,
                           ComD3D11Texture2D output_texture,
                           gpu::GpuDriverBugWorkarounds workarounds);
@@ -58,7 +58,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   const gfx::ColorSpace output_color_space_;
   const gpu::GpuDriverBugWorkarounds workarounds_;
   scoped_refptr<VideoProcessorProxy> video_processor_;
-  std::unique_ptr<Texture2DWrapper> output_texture_wrapper_;
+  std::unique_ptr<D3DTextureWrapper> output_texture_wrapper_;
   ComD3D11Texture2D output_texture_;
   ComD3D11Texture2D texture_;
   size_t array_slice_ = 0;

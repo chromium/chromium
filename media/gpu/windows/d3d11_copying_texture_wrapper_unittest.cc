@@ -84,7 +84,7 @@ class MockVideoProcessorProxy : public VideoProcessorProxy {
   ~MockVideoProcessorProxy() override = default;
 };
 
-class MockTexture2DWrapper : public Texture2DWrapper {
+class MockTexture2DWrapper : public D3DTextureWrapper {
  public:
   MockTexture2DWrapper() {}
 

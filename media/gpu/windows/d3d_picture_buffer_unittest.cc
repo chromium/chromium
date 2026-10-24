@@ -23,7 +23,7 @@ class D3DPictureBufferTest : public ::testing::Test {
   D3DPictureBufferTest() {
     // Made-up size for the images.
     const gfx::Size size_{100, 200};
-    auto wrapper = std::make_unique<DefaultTexture2DWrapper>(
+    auto wrapper = std::make_unique<DefaultD3DTextureWrapper>(
         size_, gfx::ColorSpace::CreateREC709(), viz::MultiPlaneFormat::kNV12,
         /*device=*/nullptr, gpu::GpuDriverBugWorkarounds());
     auto texture = MakeComPtr<NiceMock<D3D11Texture2DMock>>();

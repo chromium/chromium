@@ -54,7 +54,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
                             VideoChromaSampling chroma_sampling,
                             int max_decode_requests,
                             MediaLog* media_log) override;
-  std::unique_ptr<Texture2DWrapper> CreateOutputTextureWrapper(
+  std::unique_ptr<D3DTextureWrapper> CreateOutputTextureWrapper(
       TextureSelector* texture_selector,
       const gfx::ColorSpace& color_space,
       const gfx::Size& size) override;
@@ -65,7 +65,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
       size_t array_slice,
       size_t picture_index,
       bool use_single_video_decoder_texture,
-      std::unique_ptr<Texture2DWrapper> texture_wrapper,
+      std::unique_ptr<D3DTextureWrapper> texture_wrapper,
       D3DDecoderConfigurator* decoder_configurator,
       TextureSelector* texture_selector,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,

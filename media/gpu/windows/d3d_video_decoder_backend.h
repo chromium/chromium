@@ -38,7 +38,7 @@ class D3DDecoderConfigurator;
 class D3DPictureBuffer;
 class D3DVideoDecoderWrapper;
 class MediaLog;
-class Texture2DWrapper;
+class D3DTextureWrapper;
 class TextureSelector;
 class VideoDecoderConfig;
 
@@ -87,7 +87,7 @@ class D3DVideoDecoderBackend {
                             int max_decode_requests,
                             MediaLog* media_log) = 0;
 
-  virtual std::unique_ptr<Texture2DWrapper> CreateOutputTextureWrapper(
+  virtual std::unique_ptr<D3DTextureWrapper> CreateOutputTextureWrapper(
       TextureSelector* texture_selector,
       const gfx::ColorSpace& color_space,
       const gfx::Size& size) = 0;
@@ -99,7 +99,7 @@ class D3DVideoDecoderBackend {
       size_t array_slice,
       size_t picture_index,
       bool use_single_video_decoder_texture,
-      std::unique_ptr<Texture2DWrapper> texture_wrapper,
+      std::unique_ptr<D3DTextureWrapper> texture_wrapper,
       D3DDecoderConfigurator* decoder_configurator,
       TextureSelector* texture_selector,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,

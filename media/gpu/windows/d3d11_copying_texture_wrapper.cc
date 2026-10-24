@@ -61,7 +61,7 @@ CopyingTexture2DWrapper::CopyingTexture2DWrapper(
     const gfx::Size& size,
     const gfx::ColorSpace& input_color_space,
     const gfx::ColorSpace& output_color_space,
-    std::unique_ptr<Texture2DWrapper> output_wrapper,
+    std::unique_ptr<D3DTextureWrapper> output_wrapper,
     scoped_refptr<VideoProcessorProxy> processor,
     ComD3D11Texture2D output_texture,
     gpu::GpuDriverBugWorkarounds workarounds)

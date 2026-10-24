@@ -40,13 +40,13 @@ using GetCommandBufferHelperCB =
 // for example.  Each wrapper owns the resources for a single texture, so it's
 // up to you not to re-use a wrapper for a second image before a previously
 // processed image is no longer needed.
-class MEDIA_GPU_EXPORT Texture2DWrapper {
+class MEDIA_GPU_EXPORT D3DTextureWrapper {
  public:
   using PictureBufferGPUResourceInitDoneCB =
       base::OnceCallback<void(scoped_refptr<media::D3DPictureBuffer>)>;
 
-  Texture2DWrapper();
-  virtual ~Texture2DWrapper();
+  D3DTextureWrapper();
+  virtual ~D3DTextureWrapper();
 
   // Initialize the wrapper.
   virtual D3DStatus Init(
@@ -78,10 +78,10 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
 };
 
 // The default texture wrapper that uses GPUResources to talk to hardware
-// on behalf of a Texture2D.  Each DefaultTexture2DWrapper owns GL textures
+// on behalf of a Texture2D.  Each DefaultD3DTextureWrapper owns GL textures
 // that it uses to bind the provided input texture.  Thus, one needs one wrapper
 // instance for each concurrently outstanding texture.
-class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
+class MEDIA_GPU_EXPORT DefaultD3DTextureWrapper : public D3DTextureWrapper {
  public:
   // Error callback for GpuResource to notify us of errors.
   using OnErrorCB = base::OnceCallback<void(D3DStatus)>;
@@ -95,19 +95,19 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   // While the specific texture instance can change on every call to
   // ProcessTexture, the dxgi format must be the same for all of them.
-  DefaultTexture2DWrapper(const gfx::Size& size,
-                          const gfx::ColorSpace& output_color_space,
-                          viz::SharedImageFormat output_si_format,
-                          ComD3D11Device device,
-                          gpu::GpuDriverBugWorkarounds workarounds);
-  ~DefaultTexture2DWrapper() override;
+  DefaultD3DTextureWrapper(const gfx::Size& size,
+                           const gfx::ColorSpace& output_color_space,
+                           viz::SharedImageFormat output_si_format,
+                           ComD3D11Device device,
+                           gpu::GpuDriverBugWorkarounds workarounds);
+  ~DefaultD3DTextureWrapper() override;
 
   D3DStatus Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
                  GetCommandBufferHelperCB get_helper_cb,
                  ComD3D11Texture2D in_texture,
                  size_t array_slice,
                  scoped_refptr<media::D3DPictureBuffer> picture_buffer,
-                 Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
+                 D3DTextureWrapper::PictureBufferGPUResourceInitDoneCB
                      picture_buffer_gpu_resource_init_done_cb) override;
 
   D3DStatus BeginSharedImageAccess() override;
@@ -172,10 +172,10 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   ComD3D11Device video_device_;
   const gpu::GpuDriverBugWorkarounds workarounds_;
 
-  Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
+  D3DTextureWrapper::PictureBufferGPUResourceInitDoneCB
       picture_buffer_gpu_resource_init_done_cb_;
 
-  base::WeakPtrFactory<DefaultTexture2DWrapper> weak_factory_{this};
+  base::WeakPtrFactory<DefaultD3DTextureWrapper> weak_factory_{this};
 };
 
 }  // namespace media
