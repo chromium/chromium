@@ -46,7 +46,6 @@ class LensOverlayControllerAndroid : public content::WebContentsObserver {
   // overlay UI. Returns true if the capture process was successfully started,
   // or false otherwise (e.g., if the renderer is unavailable).
   bool ShowUI(JNIEnv* env, int32_t invocation_source, bool use_webui);
-  void Destroy(JNIEnv* env);
 
  private:
   void CaptureWindowSnapshot(bool use_webui);

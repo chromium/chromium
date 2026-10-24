@@ -35,11 +35,12 @@ namespace {
 constexpr base::TimeDelta kCaptureTimeout = base::Seconds(2);
 }  // namespace
 
-int64_t JNI_LensOverlayCoordinator_Init(JNIEnv* env,
-                                        const JavaRef<jobject>& obj,
-                                        content::WebContents* web_contents) {
-  return reinterpret_cast<intptr_t>(
-      new lens::LensOverlayControllerAndroid(env, obj, web_contents));
+jni_zero::JniUniquePtr<lens::LensOverlayControllerAndroid>
+JNI_LensOverlayCoordinator_Init(JNIEnv* env,
+                                const JavaRef<jobject>& obj,
+                                content::WebContents* web_contents) {
+  return jni_zero::MakeUnique<lens::LensOverlayControllerAndroid>(env, obj,
+                                                                  web_contents);
 }
 
 namespace lens {
@@ -195,10 +196,6 @@ void LensOverlayControllerAndroid::OnThumbnailCreated(
     const std::string& thumbnail_bytes,
     const SkBitmap& bitmap) {}
 #endif
-
-void LensOverlayControllerAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 }  // namespace lens
 
