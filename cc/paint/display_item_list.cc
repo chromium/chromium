@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/safety_checks.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -214,6 +215,12 @@ void DisplayItemList::Finalize() {
   current_range_start_ = kFinalized;
 #endif
 
+  // Safe to exclude from safety checks: `Finalize()` only frees internal POD
+  // rect/offset recording scratch vectors, `RTree::Build()` `Branch`
+  // temporaries, and excess `PaintOpBuffer` backing memory, with no script
+  // execution or escaping untrusted pointers. Avoids high-frequency quarantine
+  // zapping and page-fault churn on transient paint recording buffers.
+  base::ScopedSafetyChecksExclusion excluded;
   rtree_.Build(
       visual_rects_.size(),
       [this](size_t index) { return visual_rects_[index]; },
