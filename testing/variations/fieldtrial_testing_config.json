@@ -4881,7 +4881,7 @@
             ]
         }
     ],
-    "ContextManagementInComposebox": [
+    "ContextManagementAndSmartTabSharing": [
         {
             "platforms": [
                 "chromeos",
@@ -4891,14 +4891,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_SingleTab_STSMultiTurn_Prestable_M157",
                     "params": {
-                        "KeepMenuOpenOnTabSelectForRealboxComposebox": "true",
+                        "ContextualTasksContextSmartTabSharing": "true",
+                        "ContextualTasksContextToggleOffAfterSubmit": "false",
+                        "enable_single_tab_menu_item": "true",
                         "enable_tab_deselection": "true"
                     },
                     "enable_features": [
                         "ContextManagementInComposebox",
-                        "ContextManagementInOmnibox"
+                        "ContextManagementInOmnibox",
+                        "ContextualTasksContext",
+                        "ContextualTasksContextLogging",
+                        "ContextualTasksContextMqlsLogging"
                     ]
                 }
             ]
@@ -16370,30 +16375,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GlicSelectionPrompt"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SmartTabSharing_Desktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ContextualTasksContextSmartTabSharing": "true",
-                        "ContextualTasksEnablePreviousTabFallback": "true"
-                    },
-                    "enable_features": [
-                        "ContextualTasksContext",
-                        "ContextualTasksContextLogging",
-                        "ContextualTasksContextMqlsLogging"
                     ]
                 }
             ]
