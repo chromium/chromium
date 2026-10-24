@@ -972,14 +972,11 @@ void LensOverlayController::IssueLensRequest(
   // type INJECTED_IMAGE; subsequent queries will have a different selection
   // type.
   lens::mojom::CenterRotatedBoxPtr server_region = region.Clone();
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   if (lens::features::
           IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
       invocation_source_ ==
           lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
-      selection_type == lens::INJECTED_IMAGE &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(profile)) {
+      selection_type == lens::INJECTED_IMAGE) {
     server_region->box = gfx::RectF(0.5f, 0.5f, 1.0f, 1.0f);
     server_region->coordinate_type =
         lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
@@ -1362,6 +1359,12 @@ bool LensOverlayController::IsContextualSearchbox() {
 }
 
 bool LensOverlayController::IsSelectedRegionOnlyMode() {
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source_ ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage) {
+    return true;
+  }
   return GetLensQueryFlowRouter() &&
          GetLensQueryFlowRouter()->context_upload_mode() ==
              lens::LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly;
@@ -1401,6 +1404,12 @@ bool LensOverlayController::ShouldHideNonBlockingPrivacyNotice() const {
            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
        invocation_source_ == lens::LensOverlayInvocationSource::kAppMenu ||
        invocation_source_ == lens::LensOverlayInvocationSource::kToolbar)) {
+    return true;
+  }
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source_ ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage) {
     return true;
   }
   return invocation_source_ ==
@@ -2482,19 +2491,15 @@ void LensOverlayController::StartQueryFlow() {
     initialization_data_->page_title_ = "";
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  // On the initial query of the non-blocking image context menu search flow,
-  // set `initial_image` to `pending_region_bitmap_`. In other flows,
-  // `pending_region_bitmap_` will not be used and `initial_image` will be set
-  // to the initial screenshot.
+  // In the non-blocking image context menu search flow, set `initial_image` to
+  // `pending_region_bitmap_`. In other flows, `pending_region_bitmap_` will not
+  // be used and `initial_image` will be set to the initial screenshot.
   const bool send_pending_region_as_initial_image =
       lens::features::
           IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
       invocation_source_ ==
           lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
-      !pending_region_bitmap_.empty() &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(profile);
+      !pending_region_bitmap_.empty();
   SkBitmap initial_image = send_pending_region_as_initial_image
                                ? pending_region_bitmap_
                                : initialization_data_->initial_screenshot_;

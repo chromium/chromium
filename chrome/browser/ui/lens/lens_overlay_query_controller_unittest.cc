@@ -5172,7 +5172,7 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       SendInteraction_TriggersDeferredUploads) {
+       SendInteraction_DoesNotTriggerDeferredUploads) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       {{lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch, {}},
@@ -5228,8 +5228,6 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.num_full_image_requests_sent(), 1);
   ASSERT_EQ(query_controller.num_page_content_update_requests_sent(), 0);
 
-  full_image_response_future.Clear();
-
   auto region = lens::mojom::CenterRotatedBox::New();
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
@@ -5238,15 +5236,10 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.SendRegionSearch(kTestTime, std::move(region),
                                     lens::REGION_SEARCH, {}, std::nullopt);
 
-  ASSERT_TRUE(full_image_response_future.Wait());
   ASSERT_TRUE(url_response_future.Wait());
 
-  ASSERT_EQ(query_controller.num_full_image_requests_sent(), 2);
-  auto sent_object_request = query_controller.sent_full_image_objects_request();
-  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 1000);
-  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 1000);
-
-  ASSERT_EQ(query_controller.num_page_content_update_requests_sent(), 1);
+  ASSERT_EQ(query_controller.num_full_image_requests_sent(), 1);
+  ASSERT_EQ(query_controller.num_page_content_update_requests_sent(), 0);
 
   query_controller.EndQuery();
 }
