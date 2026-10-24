@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/repeating_test_future.h"
@@ -43,9 +44,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/added_inputs.pb.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
@@ -255,12 +253,6 @@ class ComposeboxQueryControllerTest
 
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
-
-    icu::TimeZone::adoptDefault(
-        icu::TimeZone::createTimeZone(icu::UnicodeString(kTimeZone)));
-    UErrorCode error_code = U_ZERO_ERROR;
-    icu::Locale::setDefault(icu::Locale(kLocale), error_code);
-    ASSERT_TRUE(U_SUCCESS(error_code));
 
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
     CreateController(/*send_lns_surface=*/false);
@@ -643,6 +635,8 @@ class ComposeboxQueryControllerTest
       context_upload_status_future_;
 
  private:
+  base::test::ScopedRestoreDefaultTimezone scoped_timezone_{kTimeZone};
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_{kLocale};
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
