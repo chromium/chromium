@@ -306,6 +306,8 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers,
   CHECK(!ash::SessionTerminationManager::IsSendingStopRequestToSessionManager(),
         base::NotFatalUntil::M161);
 
+  browser_shutdown::SetShutdownTrigger(
+      browser_shutdown::ShutdownTrigger::kRestartFlags);
   ash::BootTimesRecorder::Get()->set_restart_requested();
   ash::SessionTerminationManager::SetSendStopRequestToSessionManager(false);
 

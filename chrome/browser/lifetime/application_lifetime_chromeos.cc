@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -89,6 +89,8 @@ void ReportSessionUMAMetrics() {
 
 void AttemptUserExit() {
   VLOG(1) << "AttemptUserExit";
+  browser_shutdown::SetShutdownTrigger(
+      browser_shutdown::ShutdownTrigger::kLogout);
   ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted", false);
 
   ReportSessionUMAMetrics();

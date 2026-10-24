@@ -4604,6 +4604,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.ChromeOS.DBusShutdownDuration" units="ms"
+    expires_after="2027-04-20">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Wall-clock time spent in ChromeBrowserMainPartsAsh::ShutdownDBus() during
+    browser teardown on ChromeOS. Recorded in
+    ChromeBrowserMainPartsAsh::PostDestroyThreads().
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.ChromeOS.PhaseDuration.{Phase}" units="ms"
     expires_after="2027-04-20">
   <owner>achuith@chromium.org</owner>
@@ -4629,6 +4640,26 @@ useful for Chirp alerts (go/crca-alerts). -->
     <variant name="StoppingThreads"
         summary="content thread, network service, and ThreadPool shutdown"/>
   </token>
+</histogram>
+
+<histogram name="Shutdown.ChromeOS.RenderersAtShutdown" units="processes"
+    expires_after="2027-04-20">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Number of initialized, live renderer processes when browser shutdown starts
+    on ChromeOS. Recorded in browser_shutdown::OnShutdownStarting().
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.ChromeOS.TabsAtShutdown" units="tabs"
+    expires_after="2027-04-20">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Total number of open tabs across all browsers when browser shutdown starts
+    on ChromeOS. Recorded in browser_shutdown::OnShutdownStarting().
+  </summary>
 </histogram>
 
 <histogram name="Shutdown.EndSession.Time2" units="ms"

@@ -22,6 +22,7 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/shutdown_signal_handlers_posix.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -71,13 +72,16 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  browser_shutdown::SetShutdownTrigger(
+      browser_shutdown::ShutdownTrigger::kSigterm);
+
   // On ChromeOS, many shut down hangs have been seen in certain PartitionAlloc
   // features. Make Free a Noop to prevent that. This was originally done for
   // normal shutdowns and Googlers can read the report at
   // go/cros-no-op-free-2024, however this was added after it was discovered
   // signal handlers don't hit that path. See crbug.com/561483162.
   base::allocator::MakeFreeNoOp();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // DevTools delegate's browser keeplive may prevent browser from closing so
   // remove it before proceeding because we have an explicit shutdown request.

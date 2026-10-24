@@ -110,6 +110,8 @@ source_set("impl") {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/session_manager",

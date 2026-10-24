@@ -38,6 +38,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -46,6 +47,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/branding_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "build/config/cuttlefish/buildflags.h"  // PLATFORM_CUTTLEFISH
@@ -1958,7 +1960,10 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // GlobalFeatures.
   browser_controller_.reset();
 
+  const base::ElapsedTimer dbus_shutdown_timer;
   ShutdownDBus();
+  base::UmaHistogramTimes("Shutdown.ChromeOS.DBusShutdownDuration",
+                          dbus_shutdown_timer.Elapsed());
 
   // Destroy the SystemTokenCertDbStorage global instance which should outlive
   // NetworkCertLoader and |system_token_certdb_initializer_|.
