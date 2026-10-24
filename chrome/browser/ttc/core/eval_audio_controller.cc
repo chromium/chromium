@@ -44,16 +44,22 @@ void EvalAudioController::PlayAudio(base::span<const int16_t> pcm_data,
   is_playing_ = true;
   recorded_audio_.insert(recorded_audio_.end(), pcm_data.begin(),
                          pcm_data.end());
+  if (!pcm_data.empty()) {
+    const AudioEnvelope envelope = audio_envelope_extractor_.Extract(pcm_data);
+    observers_.Notify(&Observer::OnModelAudioEnvelopeReady, envelope);
+  }
   observers_.Notify(&Observer::OnPlaybackCompleted, sequence_number);
 }
 
 void EvalAudioController::ClearPlaybackQueue() {
   recorded_audio_.clear();
   is_playing_ = false;
+  audio_envelope_extractor_.Reset();
 }
 
 void EvalAudioController::StopPlayback() {
   is_playing_ = false;
+  audio_envelope_extractor_.Reset();
 }
 
 bool EvalAudioController::is_playing() const {

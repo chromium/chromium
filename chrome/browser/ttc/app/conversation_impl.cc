@@ -70,6 +70,11 @@ void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
   session_controller_->UserAudioLevelUpdate(energy);
 }
 
+void ConversationImpl::OnModelAudioEnvelopeReady(
+    const AudioEnvelope& envelope) {
+  session_controller_->OnModelAudioEnvelopeReady(envelope);
+}
+
 void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
   backend_->ReportPlaybackStatus(sequence_number);
 }

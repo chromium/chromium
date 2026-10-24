@@ -242,6 +242,12 @@ void SessionControllerImpl::OnOutputTranscription(const std::string& text) {
   }
 }
 
+void SessionControllerImpl::OnModelAudioEnvelopeReady(
+    const AudioEnvelope& envelope) {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnModelAudioEnvelopeReady(envelope);
+  }
+}
 void SessionControllerImpl::EndSessionAsync() {
   SetSessionLifecycle(SessionLifecycle::kFinished);
 

@@ -134,7 +134,10 @@ class AudioControllerImpl : public AudioController,
   AudioSystemFactory audio_system_factory_;
   std::unique_ptr<media::AudioSystem> audio_system_;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer,
+                     /*check_empty=*/false,
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
+      observers_;
 
   base::RepeatingCallback<
       void(std::vector<int16_t>, media::AudioParameters, float)>
@@ -160,6 +163,7 @@ class AudioControllerImpl : public AudioController,
   mutable base::Lock playback_lock_;
   base::circular_deque<QueuedAudioChunk> playback_queue_
       GUARDED_BY(playback_lock_);
+  AudioEnvelopeExtractor audio_envelope_extractor_;
 
   base::WeakPtrFactory<AudioControllerImpl> weak_factory_{this};
 };

@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
+#include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/actor_task_holder.h"
 #include "chrome/browser/ttc/core/session_controller.h"
@@ -66,6 +67,7 @@ class SessionControllerImpl : public SessionController,
   void OnModelInterrupted() override;
   void OnInputTranscription(const std::string& text) override;
   void OnOutputTranscription(const std::string& text) override;
+  void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override;
 
   // SessionViewDelegate implementation:
   BrowserWindowInterface* GetBrowserWindowInterface() override;

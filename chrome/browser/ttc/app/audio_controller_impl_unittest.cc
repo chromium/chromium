@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <numbers>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -46,6 +47,10 @@ class MockAudioControllerObserver : public AudioController::Observer {
               (base::span<const int16_t> pcm_data,
                const media::AudioParameters& params,
                float energy),
+              (override));
+  MOCK_METHOD(void,
+              OnModelAudioEnvelopeReady,
+              (const AudioEnvelope& envelope),
               (override));
   MOCK_METHOD(void, OnPlaybackCompleted, (int64_t sequence_number), (override));
   MOCK_METHOD(void, OnAudioError, (ErrorCode error), (override));
@@ -688,6 +693,55 @@ TEST_F(AudioControllerImplTest, StopCaptureFlushesFifo) {
     controller.Capture(chunk_bus.get(), base::TimeTicks::Now(), {}, 1.0);
   }
   EXPECT_EQ(callback_count, 0);
+}
+
+TEST_F(AudioControllerImplTest, PlayAudioExtractsAndDispatchesAudioEnvelope) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+
+  // 120ms of 440Hz sine wave at 24kHz (2880 samples = 6 slices of 20ms)
+  // followed by 40ms of silence (960 samples = 2 slices of 20ms).
+  std::vector<int16_t> pcm_samples(2880 + 960, 0);
+  for (size_t i = 0; i < 2880; ++i) {
+    pcm_samples[i] = static_cast<int16_t>(
+        16000.0 *
+        std::sin(2.0 * std::numbers::pi_v<double> * 440.0 * i / 24000.0));
+  }
+
+  AudioEnvelope first_envelope;
+  EXPECT_CALL(observer_, OnModelAudioEnvelopeReady(testing::_))
+      .WillOnce(testing::SaveArg<0>(&first_envelope));
+  controller.PlayAudio(pcm_samples, /*sequence_number=*/1);
+
+  EXPECT_GT(first_envelope.rms, 0.3f);
+  EXPECT_GT(first_envelope.peak_amplitude, 0.45f);
+  EXPECT_GT(first_envelope.zero_crossing_rate, 0.0f);
+  ASSERT_EQ(first_envelope.segments.size(), 2u);
+  EXPECT_EQ(first_envelope.segments[0].start_time, base::Milliseconds(0));
+  EXPECT_EQ(first_envelope.segments[0].duration, base::Milliseconds(120));
+  EXPECT_EQ(first_envelope.segments[1].start_time, base::Milliseconds(120));
+  EXPECT_EQ(first_envelope.segments[1].duration, base::Milliseconds(40));
+
+  // A subsequent PlayAudio chunk continues cumulative segment offsets.
+  AudioEnvelope second_envelope;
+  EXPECT_CALL(observer_, OnModelAudioEnvelopeReady(testing::_))
+      .WillOnce(testing::SaveArg<0>(&second_envelope));
+  controller.PlayAudio(base::span(pcm_samples).first(480u),
+                       /*sequence_number=*/2);
+  ASSERT_EQ(second_envelope.segments.size(), 1u);
+  EXPECT_EQ(second_envelope.segments[0].start_time, base::Milliseconds(160));
+  EXPECT_EQ(second_envelope.segments[0].duration, base::Milliseconds(20));
+
+  // Clearing the playback queue resets the sample offset back to 0ms.
+  controller.ClearPlaybackQueue();
+  AudioEnvelope third_envelope;
+  EXPECT_CALL(observer_, OnModelAudioEnvelopeReady(testing::_))
+      .WillOnce(testing::SaveArg<0>(&third_envelope));
+  controller.PlayAudio(base::span(pcm_samples).first(480u),
+                       /*sequence_number=*/3);
+  ASSERT_EQ(third_envelope.segments.size(), 1u);
+  EXPECT_EQ(third_envelope.segments[0].start_time, base::Milliseconds(0));
+  EXPECT_EQ(third_envelope.segments[0].duration, base::Milliseconds(20));
 }
 
 }  // namespace ttc

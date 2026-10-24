@@ -90,6 +90,7 @@ class FakeSessionController : public SessionController {
   void OnOutputTranscription(const std::string& text) override {
     last_output_transcription_ = text;
   }
+  void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override {}
   void OnSessionInitialized() override { ++session_initialized_count_; }
   void OnError(ErrorCode error) override {
     last_error_ = error;

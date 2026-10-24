@@ -363,6 +363,9 @@ void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
          sequence_number});
   }
   CreateAudioOutputDevice(params);
+
+  const AudioEnvelope envelope = audio_envelope_extractor_.Extract(pcm_data);
+  observers_.Notify(&Observer::OnModelAudioEnvelopeReady, envelope);
 }
 
 void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
@@ -371,8 +374,11 @@ void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
 }
 
 void AudioControllerImpl::ClearPlaybackQueue() {
-  base::AutoLock auto_lock(playback_lock_);
-  playback_queue_.clear();
+  {
+    base::AutoLock auto_lock(playback_lock_);
+    playback_queue_.clear();
+  }
+  audio_envelope_extractor_.Reset();
 }
 
 void AudioControllerImpl::StopPlayback() {
@@ -532,6 +538,9 @@ void AudioControllerImpl::OnRenderError() {
 
 void AudioControllerImpl::OnAudioRenderedOnMainThread(
     int64_t completed_sequence) {
+  if (!is_playing()) {
+    audio_envelope_extractor_.Reset();
+  }
   if (completed_sequence >= 0) {
     observers_.Notify(&Observer::OnPlaybackCompleted, completed_sequence);
   }

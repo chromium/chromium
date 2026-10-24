@@ -59,6 +59,7 @@ class EvalAudioController : public AudioController {
   bool is_playing_ = false;
 
   std::vector<int16_t> recorded_audio_;
+  AudioEnvelopeExtractor audio_envelope_extractor_;
 
   base::ObserverList<Observer> observers_;
 

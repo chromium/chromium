@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/observer_list_types.h"
+#include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/tool_types.h"
@@ -35,6 +36,7 @@ class SessionController {
                                           bool success) {}
     virtual void OnInputTranscription(const std::string& text) {}
     virtual void OnOutputTranscription(const std::string& text) {}
+    virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
   };
 
   virtual ~SessionController() = default;
@@ -87,6 +89,7 @@ class SessionController {
   virtual void OnModelInterrupted() = 0;
   virtual void OnInputTranscription(const std::string& text) = 0;
   virtual void OnOutputTranscription(const std::string& text) = 0;
+  virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) = 0;
 };
 
 }  // namespace ttc

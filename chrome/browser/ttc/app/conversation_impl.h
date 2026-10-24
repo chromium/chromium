@@ -64,6 +64,7 @@ class ConversationImpl : public Conversation,
   void OnCapturedAudio(base::span<const int16_t> pcm_data,
                        const media::AudioParameters& params,
                        float energy) override;
+  void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override;
   void OnPlaybackCompleted(int64_t sequence_number) override;
   void OnAudioError(ErrorCode error) override;
 

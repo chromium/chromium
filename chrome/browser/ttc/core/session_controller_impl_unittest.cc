@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 
+#include <cmath>
+#include <cstdint>
 #include <memory>
+#include <numbers>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -46,6 +49,10 @@ class MockSessionControllerObserver : public SessionController::Observer {
               (override));
   MOCK_METHOD(void, OnInputTranscription, (const std::string&), (override));
   MOCK_METHOD(void, OnOutputTranscription, (const std::string&), (override));
+  MOCK_METHOD(void,
+              OnModelAudioEnvelopeReady,
+              (const AudioEnvelope&),
+              (override));
 };
 
 class TtcSessionControllerImplTest : public testing::Test {
@@ -152,6 +159,44 @@ TEST_F(TtcSessionControllerImplTest, SendTextInputForwardsToConversation) {
   ASSERT_NE(mock_conversation_, nullptr);
   EXPECT_CALL(*mock_conversation_, SendTextInput("Test text input")).Times(1);
   controller.SendTextInput("Test text input");
+}
+
+TEST_F(TtcSessionControllerImplTest, DispatchesAudioEnvelopeToObservers) {
+  SessionControllerImpl controller(*service_);
+  testing::NiceMock<MockSessionControllerObserver> observer;
+  controller.AddObserver(&observer);
+
+  // 120ms of 440Hz sine wave at 24kHz (2880 samples = 6 slices of 20ms)
+  // followed by 40ms of silence (960 samples = 2 slices of 20ms).
+  std::vector<int16_t> pcm_samples(2880 + 960, 0);
+  for (size_t i = 0; i < 2880; ++i) {
+    pcm_samples[i] = static_cast<int16_t>(
+        16000.0 *
+        std::sin(2.0 * std::numbers::pi_v<double> * 440.0 * i / 24000.0));
+  }
+
+  AudioEnvelopeExtractor extractor;
+  const AudioEnvelope envelope = extractor.Extract(pcm_samples);
+
+  AudioEnvelope captured_envelope;
+  EXPECT_CALL(observer, OnModelAudioEnvelopeReady(testing::_))
+      .WillOnce(testing::SaveArg<0>(&captured_envelope));
+
+  controller.OnModelAudioEnvelopeReady(envelope);
+
+  EXPECT_GT(captured_envelope.rms, 0.3f);
+  EXPECT_GT(captured_envelope.peak_amplitude, 0.45f);
+  EXPECT_GT(captured_envelope.zero_crossing_rate, 0.0f);
+  ASSERT_EQ(captured_envelope.segments.size(), 2u);
+  EXPECT_EQ(captured_envelope.segments[0].start_time, base::Milliseconds(0));
+  EXPECT_EQ(captured_envelope.segments[0].duration, base::Milliseconds(120));
+  EXPECT_GT(captured_envelope.segments[0].energy_rms, 0.3f);
+  EXPECT_GT(captured_envelope.segments[0].peak_amplitude, 0.45f);
+  EXPECT_EQ(captured_envelope.segments[1].start_time, base::Milliseconds(120));
+  EXPECT_EQ(captured_envelope.segments[1].duration, base::Milliseconds(40));
+  EXPECT_FLOAT_EQ(captured_envelope.segments[1].energy_rms, 0.0f);
+
+  controller.RemoveObserver(&observer);
 }
 
 #if BUILDFLAG(ENABLE_TTC_WEBUI)

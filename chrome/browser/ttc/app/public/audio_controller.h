@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "media/base/audio_parameters.h"
 
@@ -32,6 +33,10 @@ class AudioController {
     virtual void OnCapturedAudio(base::span<const int16_t> pcm_data,
                                  const media::AudioParameters& params,
                                  float energy) {}
+
+    // Called when acoustic envelope and lookahead segments are extracted for a
+    // queued playback chunk.
+    virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
 
     // Called when an audio chunk sequence finishes playback.
     virtual void OnPlaybackCompleted(int64_t sequence_number) {}
