@@ -309,14 +309,24 @@ class RenderViewHostTestHarness : public ::testing::Test {
   // Derived classes should override this method to use a custom BrowserContext.
   // It is invoked by SetUp after threads were started.
   // RenderViewHostTestHarness will take ownership of the returned
-  // BrowserContext.
+  // BrowserContext. Derived classes whose BrowserContext is not managed by this
+  // class can initialize it here, return nullptr, and override
+  // GetBrowserContext() and DestroyBrowserContext().
   virtual std::unique_ptr<BrowserContext> CreateBrowserContext();
 
   // Derived classes can override this method to have the test harness use a
-  // different BrowserContext than the one owned by this class. This is most
+  // different BrowserContext than the one managed by this class. This is most
   // useful for off-the-record contexts, which are usually owned by the original
-  // context.
+  // context, or for contexts not managed by this class.
   virtual BrowserContext* GetBrowserContext();
+
+  // Releases the BrowserContext used by the harness. Called by TearDown() after
+  // the WebContents and RenderProcessHosts are gone and before the task
+  // environment is destroyed. By default, posts the deletion of the
+  // BrowserContext returned by CreateBrowserContext(). Derived classes whose
+  // BrowserContext is not managed by this class can override this to tear down
+  // their BrowserContext at the same point in TearDown().
+  virtual void DestroyBrowserContext();
 
   BrowserTaskEnvironment* task_environment() { return task_environment_.get(); }
 
