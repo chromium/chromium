@@ -856,6 +856,7 @@ class BASE_EXPORT
   friend class ::ChromeContentRendererClient;
   friend class ::KeyStorageLinux;
   friend class ::NativeDesktopMediaList;
+  friend class ::ash::system::StatisticsProviderImpl;
   friend class android::JavaHandlerThread;
   friend class android_webview::CookieManager;
   friend class android_webview::JsSandboxIsolate;
@@ -899,7 +900,6 @@ class BASE_EXPORT
   friend class vr::VrShell;
 
   // Usage that should be fixed:
-  friend class ::ash::system::StatisticsProviderImpl;  // http://b/261818124
   friend class ::chromeos::BlockingMethodCaller;  // http://crbug.com/125360
   friend class base::Thread;                      // http://crbug.com/918039
   friend class cc::CompletionEvent;               // http://crbug.com/902653
