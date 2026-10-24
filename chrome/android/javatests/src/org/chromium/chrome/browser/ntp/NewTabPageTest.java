@@ -100,6 +100,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -941,7 +942,13 @@ public class NewTabPageTest {
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
         clickAiModeButton();
-        mOmnibox.checkFocus(true);
+        if (OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
+            mOmnibox.checkFocus(true);
+        } else {
+            // Devices that don't support the fusebox (e.g. automotive) navigate to the AI Mode SRP
+            // instead of focusing the omnibox.
+            verifyComposeplateUrlNavigation();
+        }
     }
 
     @Test
