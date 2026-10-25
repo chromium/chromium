@@ -1,0 +1,7 @@
+# crbug.com/576702252: Performance optimization for phone bots. Side panel does
+# not exist on phones, so SidePanelAndroidBrowserTestBase::SetUp()
+# unconditionally skips all tests on phone form factors. Filtering these suites
+# on the host avoids launching a separate ChromeBrowserTestsActivity process per
+# test just to report GTEST_SKIP().
+-SidePanelCoordinatorAndroidBrowserTest.*
+-SidePanelRegistryAndroidBrowserTest.*

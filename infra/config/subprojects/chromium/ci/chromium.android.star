@@ -2552,6 +2552,7 @@ ci.builder(
             "android_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.phone.android_browsertests.filter",
                 ],
                 ci_only = True,
                 swarming = targets.swarming(
@@ -3208,6 +3209,9 @@ ci.builder(
                 ci_only = True,
             ),
             "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.phone.android_browsertests.filter",
+                ],
                 # TODO Re-enable on CQ once the high
                 # pending time is gone
                 ci_only = True,
@@ -4134,6 +4138,9 @@ ci.builder(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.phone.android_browsertests.filter",
+                ],
                 enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 25,

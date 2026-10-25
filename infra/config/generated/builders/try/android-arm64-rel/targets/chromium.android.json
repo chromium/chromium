@@ -3,6 +3,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.phone.android_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
