@@ -2541,7 +2541,6 @@ source_set("browser") {
 
   if (enable_smart_card) {
     # TODO(crbug.com/470349523): Migrate more smart card files to use this flag.
-    defines += [ "ENABLE_SMART_CARD" ]
     sources += [
       "$target_gen_dir/devtools/protocol/smart_card_emulation.cc",
       "$target_gen_dir/devtools/protocol/smart_card_emulation.h",

@@ -1426,6 +1426,7 @@ source_set("web_applications_browser_tests") {
     "//content/public/browser",
     "//services/network/public/cpp",
     "//testing/perf",
+    "//third_party/blink/public:buildflags",
     "//ui/color",
     "//ui/events/devices:test_support",
     "//url",

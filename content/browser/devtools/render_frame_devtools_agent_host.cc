@@ -83,6 +83,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
+#include "third_party/blink/public/public_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -93,7 +94,7 @@
 #include "content/browser/devtools/protocol/webauthn_handler.h"
 #endif
 
-#ifdef ENABLE_SMART_CARD
+#if BUILDFLAG(ENABLE_SMART_CARD)
 #include "content/browser/devtools/protocol/smart_card_emulation_handler.h"
 #endif
 
@@ -435,7 +436,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::MemoryHandler>();
-#ifdef ENABLE_SMART_CARD
+#if BUILDFLAG(ENABLE_SMART_CARD)
   if (is_main_frame) {
     session->CreateAndAddHandler<protocol::SmartCardEmulationHandler>(
         content::WebContents::FromRenderFrameHost(frame_host_));

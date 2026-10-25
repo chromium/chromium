@@ -16,6 +16,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/public_buildflags.h"
 
 namespace web_app {
 
@@ -30,7 +31,7 @@ constexpr std::string_view kEntitledFeatures[] = {
     "direct-sockets", "direct-sockets-multicast",
     "sub-apps",       "usb-unrestricted",
     "web-printing",   "controlled-frame",
-#if defined(ENABLE_SMART_CARD)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     "smart-card",
 #endif
 };
@@ -42,7 +43,7 @@ constexpr PermissionsPolicyFeature kEntitledPermissions[] = {
     PermissionsPolicyFeature::kUsbUnrestricted,
     PermissionsPolicyFeature::kWebPrinting,
     PermissionsPolicyFeature::kControlledFrame,
-#if defined(ENABLE_SMART_CARD)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     PermissionsPolicyFeature::kSmartCard,
 #endif
 };
@@ -54,7 +55,7 @@ constexpr IwaEntitlement kEntitlements[] = {
     IwaEntitlementProto::UNRESTRICTED_WEBUSB,
     IwaEntitlementProto::WEB_PRINTING,
     IwaEntitlementProto::CONTROLLED_FRAME,
-#if defined(ENABLE_SMART_CARD)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     IwaEntitlementProto::SMART_CARD,
 #endif
 };
@@ -69,7 +70,7 @@ class IsolatedWebAppEntitlementsBrowserTest
         {
             blink::features::kSubApps,
             blink::features::kWebPrinting,
-#if defined(ENABLE_SMART_CARD)
+#if BUILDFLAG(ENABLE_SMART_CARD)
             blink::features::kSmartCard,
 #endif
         },
