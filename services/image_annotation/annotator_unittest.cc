@@ -25,6 +25,7 @@
 #include "components/manta/manta_status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/image_annotation/image_annotation_metrics.h"
@@ -422,6 +423,8 @@ TEST(AnnotatorTest, OcrSuccessAndCache) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
   TestImageProcessor processor;
 
   // First call performs original image annotation.
@@ -429,7 +432,7 @@ TEST(AnnotatorTest, OcrSuccessAndCache) {
     std::optional<mojom::AnnotateImageError> error;
     std::vector<mojom::Annotation> annotations;
 
-    annotator.AnnotateImage(
+    remote_annotator->AnnotateImage(
         kImage1Url, kDescLang, processor.GetPendingRemote(),
         base::BindOnce(&ReportResult, &error, &annotations));
     test_task_env.RunUntilIdle();
@@ -495,7 +498,7 @@ TEST(AnnotatorTest, OcrSuccessAndCache) {
     std::optional<mojom::AnnotateImageError> error;
     std::vector<mojom::Annotation> annotations;
 
-    annotator.AnnotateImage(
+    remote_annotator->AnnotateImage(
         kImage1Url, kDescLang, processor.GetPendingRemote(),
         base::BindOnce(&ReportResult, &error, &annotations));
     test_task_env.RunUntilIdle();
@@ -528,13 +531,16 @@ TEST(AnnotatorTest, DescriptionSuccess) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
   TestImageProcessor processor;
 
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -635,13 +641,16 @@ TEST(AnnotatorTest, DoubleOcrResult) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
   TestImageProcessor processor;
 
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -750,13 +759,16 @@ TEST(AnnotatorTest, HttpError) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -806,13 +818,16 @@ TEST(AnnotatorTest, BackendError) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -889,13 +904,16 @@ TEST(AnnotatorTest, OcrBackendError) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -983,13 +1001,16 @@ TEST(AnnotatorTest, DescriptionBackendError) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -1073,13 +1094,16 @@ TEST(AnnotatorTest, ServerError) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -1131,13 +1155,16 @@ TEST(AnnotatorTest, AdultError) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.
@@ -1206,13 +1233,15 @@ TEST(AnnotatorTest, ProcessorFails) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 3> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 3> error;
   std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   for (int i = 0; i < 3; ++i) {
-    annotator.AnnotateImage(
+    remote_annotator->AnnotateImage(
         kImage1Url, kDescLang, processor[i].GetPendingRemote(),
         base::BindOnce(&ReportResult, &error[i], &annotations[i]));
   }
@@ -1286,13 +1315,15 @@ TEST(AnnotatorTest, ProcessorFailedPreviously) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 2> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 2> error;
   std::array<std::vector<mojom::Annotation>, 2> annotations;
 
   // Processor 1 makes a request for annotation of a given image.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[0].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[0], &annotations[0]));
   test_task_env.RunUntilIdle();
@@ -1307,7 +1338,7 @@ TEST(AnnotatorTest, ProcessorFailedPreviously) {
   test_task_env.RunUntilIdle();
 
   // Processor 2 makes a request for annotation of the same image.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[1].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[1], &annotations[1]));
   test_task_env.RunUntilIdle();
@@ -1355,13 +1386,15 @@ TEST(AnnotatorTest, ProcessorDies) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 3> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 3> error;
   std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   for (int i = 0; i < 3; ++i) {
-    annotator.AnnotateImage(
+    remote_annotator->AnnotateImage(
         kImage1Url, kDescLang, processor[i].GetPendingRemote(),
         base::BindOnce(&ReportResult, &error[i], &annotations[i]));
   }
@@ -1430,19 +1463,21 @@ TEST(AnnotatorTest, ConcurrentSameBatch) {
       3 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 3> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 3> error;
   std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   // Request OCR for images 1, 2 and 3.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[0].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[0], &annotations[0]));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage2Url, kDescLang, processor[1].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[1], &annotations[1]));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage3Url, kDescLang, processor[2].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[2], &annotations[2]));
   test_task_env.RunUntilIdle();
@@ -1517,13 +1552,15 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
       3 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 2> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 2> error;
   std::array<std::vector<mojom::Annotation>, 2> annotations;
 
   // Request OCR for image 1.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[0].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[0], &annotations[0]));
   test_task_env.RunUntilIdle();
@@ -1543,7 +1580,7 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
   test_task_env.FastForwardBy(base::Seconds(1));
 
   // Request OCR for image 2.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage2Url, kDescLang, processor[1].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[1], &annotations[1]));
   test_task_env.RunUntilIdle();
@@ -1661,13 +1698,15 @@ TEST(AnnotatorTest, DuplicateWork) {
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 4> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 4> error;
   std::array<std::vector<mojom::Annotation>, 4> annotations;
 
   // First request annotation of the image with processor 1.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[0].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[0], &annotations[0]));
   test_task_env.RunUntilIdle();
@@ -1679,7 +1718,7 @@ TEST(AnnotatorTest, DuplicateWork) {
   ASSERT_THAT(processor[3].callbacks(), IsEmpty());
 
   // Now request annotation of the image with processor 2.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[1].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[1], &annotations[1]));
   test_task_env.RunUntilIdle();
@@ -1697,7 +1736,7 @@ TEST(AnnotatorTest, DuplicateWork) {
   test_task_env.RunUntilIdle();
 
   // Now request annotation of the image with processor 3.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[2].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[2], &annotations[2]));
   test_task_env.RunUntilIdle();
@@ -1714,7 +1753,7 @@ TEST(AnnotatorTest, DuplicateWork) {
   // image with processor 4.
   test_task_env.FastForwardBy(base::Seconds(1));
   EXPECT_THAT(test_url_factory.requests(), SizeIs(1));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[3].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[3], &annotations[3]));
   test_task_env.RunUntilIdle();
@@ -1769,19 +1808,21 @@ TEST(AnnotatorTest, DescPolicy) {
       3 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 3> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 3> error;
   std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   // Request annotation for images 1, 2 and 3.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, kDescLang, processor[0].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[0], &annotations[0]));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage2Url, kDescLang, processor[1].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[1], &annotations[1]));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage3Url, kDescLang, processor[2].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[2], &annotations[2]));
   test_task_env.RunUntilIdle();
@@ -1974,6 +2015,8 @@ TEST(AnnotatorTest, DescLanguage) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
   annotator.server_languages_ = {"en", "it", "fr"};
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   std::array<TestImageProcessor, 3> processor;
   std::array<std::optional<mojom::AnnotateImageError>, 3> error;
@@ -1981,13 +2024,13 @@ TEST(AnnotatorTest, DescLanguage) {
 
   // Request annotation for one image in two languages, and one other image in
   // one language.
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, "fr", processor[0].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[0], &annotations[0]));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage1Url, "it", processor[1].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[1], &annotations[1]));
-  annotator.AnnotateImage(
+  remote_annotator->AnnotateImage(
       kImage2Url, "en", processor[2].GetPendingRemote(),
       base::BindOnce(&ReportResult, &error[2], &annotations[2]));
   test_task_env.RunUntilIdle();
@@ -2172,14 +2215,17 @@ TEST(AnnotatorTest, LanguageFallback) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
   annotator.server_languages_ = {"en", "it", "fr"};
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
   std::vector<mojom::Annotation> annotations;
 
   // Send a request in an unsupported language.
-  annotator.AnnotateImage(kImage1Url, "hu", processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, &annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, "hu", processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, &annotations));
   test_task_env.RunUntilIdle();
 
   // Send back image data.
@@ -2275,10 +2321,12 @@ TEST(AnnotatorTest, ApiKey) {
                         test_url_factory.AsSharedURLLoaderFactory(),
                         /*anchovy_provider=*/nullptr,
                         std::make_unique<TestAnnotatorClient>());
+    mojo::Remote<mojom::Annotator> remote_annotator;
+    annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
     TestImageProcessor processor;
 
-    annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                            base::DoNothing());
+    remote_annotator->AnnotateImage(
+        kImage1Url, kDescLang, processor.GetPendingRemote(), base::DoNothing());
     test_task_env.RunUntilIdle();
 
     // Annotator should have asked processor for pixels.
@@ -2295,6 +2343,7 @@ TEST(AnnotatorTest, ApiKey) {
         "annotation", {{Annotator::kGoogApiKeyHeader, "my_api_key"}},
         ReformatJson(base::StringPrintf(kTemplateRequest, kImage1Url, "AQID")),
         kOcrSuccessResponse, net::HTTP_OK);
+    test_task_env.RunUntilIdle();
   }
 
   // A call to a Google-owned server URL should not include the API key if the
@@ -2310,10 +2359,12 @@ TEST(AnnotatorTest, ApiKey) {
                         test_url_factory.AsSharedURLLoaderFactory(),
                         /*anchovy_provider=*/nullptr,
                         std::make_unique<TestAnnotatorClient>());
+    mojo::Remote<mojom::Annotator> remote_annotator;
+    annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
     TestImageProcessor processor;
 
-    annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                            base::DoNothing());
+    remote_annotator->AnnotateImage(
+        kImage1Url, kDescLang, processor.GetPendingRemote(), base::DoNothing());
     test_task_env.RunUntilIdle();
 
     // Annotator should have asked processor for pixels.
@@ -2330,6 +2381,7 @@ TEST(AnnotatorTest, ApiKey) {
         "annotation", {{Annotator::kGoogApiKeyHeader, std::nullopt}},
         ReformatJson(base::StringPrintf(kTemplateRequest, kImage1Url, "AQID")),
         kOcrSuccessResponse, net::HTTP_OK);
+    test_task_env.RunUntilIdle();
   }
 
   // A call to a non-Google-owned URL should not include the API key.
@@ -2341,10 +2393,12 @@ TEST(AnnotatorTest, ApiKey) {
         kThrottle, 1 /* batch_size */, 1.0 /* min_ocr_confidence */,
         test_url_factory.AsSharedURLLoaderFactory(),
         /*anchovy_provider=*/nullptr, std::make_unique<TestAnnotatorClient>());
+    mojo::Remote<mojom::Annotator> remote_annotator;
+    annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
     TestImageProcessor processor;
 
-    annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                            base::DoNothing());
+    remote_annotator->AnnotateImage(
+        kImage1Url, kDescLang, processor.GetPendingRemote(), base::DoNothing());
     test_task_env.RunUntilIdle();
 
     // Annotator should have asked processor for pixels.
@@ -2361,6 +2415,7 @@ TEST(AnnotatorTest, ApiKey) {
         "annotation", {{Annotator::kGoogApiKeyHeader, std::nullopt}},
         ReformatJson(base::StringPrintf(kTemplateRequest, kImage1Url, "AQID")),
         kOcrSuccessResponse, net::HTTP_OK);
+    test_task_env.RunUntilIdle();
   }
 }
 
@@ -2543,12 +2598,15 @@ void RunAnchovyAnnotatorTest(
       1 /* batch_size */, 1.0 /* min_ocr_confidence */,
       test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
       std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiver(remote_annotator.BindNewPipeAndPassReceiver());
   TestImageProcessor processor;
 
   std::optional<mojom::AnnotateImageError> error;
 
-  annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
-                          base::BindOnce(&ReportResult, &error, annotations));
+  remote_annotator->AnnotateImage(
+      kImage1Url, kDescLang, processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error, annotations));
   test_task_env.RunUntilIdle();
 
   // Annotator should have asked processor for pixels.

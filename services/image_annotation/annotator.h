@@ -110,12 +110,6 @@ class Annotator : public mojom::Annotator {
   // Start providing behavior for the given Mojo receiver.
   void BindReceiver(mojo::PendingReceiver<mojom::Annotator> receiver);
 
-  // mojom::Annotator:
-  void AnnotateImage(const std::string& source_id,
-                     const std::string& description_language_tag,
-                     mojo::PendingRemote<mojom::ImageProcessor> image,
-                     AnnotateImageCallback callback) override;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(AnnotatorTest, DescLanguage);
   FRIEND_TEST_ALL_PREFIXES(AnnotatorTest, ComputePreferredLanguage);
@@ -172,6 +166,12 @@ class Annotator : public mojom::Annotator {
 
   // List of URL loader objects.
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
+  // mojom::Annotator:
+  void AnnotateImage(const std::string& source_id,
+                     const std::string& description_language_tag,
+                     mojo::PendingRemote<mojom::ImageProcessor> image,
+                     AnnotateImageCallback callback) override;
 
   // Returns true if the given dimensions fit the policy of the description
   // backend (i.e. the image has size / shape on which it is acceptable to run
