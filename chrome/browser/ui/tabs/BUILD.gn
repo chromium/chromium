@@ -1139,5 +1139,8 @@ if (!is_android) {
       "//ui/views",
       "//url",
     ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/lifetime" ]
+    }
   }
 }

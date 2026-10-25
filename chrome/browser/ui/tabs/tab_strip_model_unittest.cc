@@ -74,6 +74,11 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/auto_reset.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"  // nogncheck
+#endif                                                 // BUILDFLAG(IS_CHROMEOS)
+
 using content::WebContents;
 
 namespace {
@@ -4896,6 +4901,13 @@ class UnloadListenerTabStripModelDelegate : public TestTabStripModelDelegate {
   ~UnloadListenerTabStripModelDelegate() override = default;
 
   void set_run_unload_listener(bool value) { run_unload_ = value; }
+  void set_should_run_unload_listener(bool value) {
+    should_run_unload_ = value;
+  }
+
+  bool ShouldRunUnloadListenerBeforeClosing(WebContents* contents) override {
+    return should_run_unload_;
+  }
 
   bool RunUnloadListenerBeforeClosing(WebContents* contents) override {
     return run_unload_;
@@ -4903,6 +4915,7 @@ class UnloadListenerTabStripModelDelegate : public TestTabStripModelDelegate {
 
  private:
   // Whether to report that we need to run an unload listener before closing.
+  bool should_run_unload_ = false;
   bool run_unload_ = false;
 };
 
@@ -4973,6 +4986,34 @@ TEST_F(TabStripModelTest, FastShutdown) {
     EXPECT_TRUE(tabstrip.empty());
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(TabStripModelTest, FastShutdownOnSessionEnd) {
+  for (browser_shutdown::ShutdownType type :
+       {browser_shutdown::ShutdownType::kEndSession,
+        browser_shutdown::ShutdownType::kBrowserExit}) {
+    UnloadListenerTabStripModelDelegate delegate;
+    TabStripModel tabstrip(&delegate, profile());
+
+    std::unique_ptr<WebContents> contents1 = CreateWebContents();
+    content::RenderProcessHost* rph =
+        contents1->GetPrimaryMainFrame()->GetProcess();
+    std::unique_ptr<WebContents> contents2 =
+        CreateWebContentsWithSharedRPH(contents1.get());
+
+    tabstrip.AppendWebContents(std::move(contents1), true);
+    tabstrip.AppendWebContents(std::move(contents2), true);
+    delegate.set_should_run_unload_listener(true);
+
+    base::AutoReset<browser_shutdown::ShutdownType> shutdown_type =
+        browser_shutdown::SetShutdownTypeForTesting(type);
+
+    tabstrip.CloseAllTabs();
+    EXPECT_TRUE(rph->FastShutdownStarted());
+    EXPECT_TRUE(tabstrip.empty());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that close_types are preserved when unload listeners are triggered.
 TEST_F(TabStripModelTest, CloseTypesPreservedAfterUnload) {

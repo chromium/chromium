@@ -248,6 +248,7 @@ void OnShutdownStarting(ShutdownType type) {
     base::UmaHistogramCounts1000("Shutdown.ChromeOS.TabsAtShutdown", tab_count);
     int renderer_count = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+    const bool fast_shutdown = ShouldFastShutdownRenderers();
     for (content::RenderProcessHost::iterator i(
              content::RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
@@ -257,7 +258,12 @@ void OnShutdownStarting(ShutdownType type) {
         ++renderer_count;
       }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      rph->FastShutdownIfPossible();
+      rph->FastShutdownIfPossible(
+          /*page_count=*/0,
+          /*skip_unload_handlers=*/fast_shutdown,
+          /*ignore_workers=*/fast_shutdown,
+          /*ignore_keep_alive=*/fast_shutdown,
+          /*ignore_pending_reuse=*/fast_shutdown);
     }
 #if BUILDFLAG(IS_CHROMEOS)
     base::UmaHistogramCounts100("Shutdown.ChromeOS.RenderersAtShutdown",
@@ -275,6 +281,16 @@ bool ShouldIgnoreUnloadHandlers() {
   CheckAccessedOnCorrectThread();
   return g_shutdown_type == ShutdownType::kEndSession ||
          g_shutdown_type == ShutdownType::kSilentExit;
+}
+
+bool ShouldFastShutdownRenderers() {
+  CheckAccessedOnCorrectThread();
+#if BUILDFLAG(IS_CHROMEOS)
+  return ShouldIgnoreUnloadHandlers() ||
+         g_shutdown_type == ShutdownType::kBrowserExit;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ShutdownType GetShutdownType() {

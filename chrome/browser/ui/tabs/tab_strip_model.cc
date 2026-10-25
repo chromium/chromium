@@ -4153,10 +4153,25 @@ bool TabStripModel::CloseWebContentses(
     }
   }
 
-  // We only try the fast shutdown path if the whole browser process is *not*
-  // shutting down. Fast shutdown during browser termination is handled in
-  // browser_shutdown::OnShutdownStarting.
-  if (!browser_shutdown::HasShutdownStarted()) {
+  if (browser_shutdown::ShouldFastShutdownRenderers()) {
+    // Fast-kill any renderer process that was still launching when
+    // browser_shutdown::OnShutdownStarting ran.
+    for (content::WebContents* contents : items) {
+      content::RenderProcessHost* process =
+          contents->GetPrimaryMainFrame()->GetProcess();
+      if (!process->FastShutdownStarted()) {
+        process->FastShutdownIfPossible(/*page_count=*/0,
+                                        /*skip_unload_handlers=*/true,
+                                        /*ignore_workers=*/true,
+                                        /*ignore_keep_alive=*/true,
+                                        /*ignore_pending_reuse=*/true);
+      }
+    }
+  } else if (!browser_shutdown::HasShutdownStarted()) {
+    // We only try the fast shutdown path if the whole browser process is *not*
+    // shutting down. Fast shutdown during browser termination is handled in
+    // browser_shutdown::OnShutdownStarting.
+    //
     // Construct a map of processes to the number of associated tabs that are
     // closing.
     base::flat_map<content::RenderProcessHost*, size_t> processes;
