@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SECURITY_CPSP_CHILD_PROCESS_SECURITY_POLICY_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
+#include "content/browser/site_shard.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/child_process_id.h"
@@ -645,8 +647,19 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // instead of calling this directly. Once a process is used, LockProcess()
   // will reject attempts to lock it to a site, since it is no longer suitable
   // to host a URL that requires a dedicated process.
-  void SetProcessIsUsed(ChildProcessId child_id);
-  void SetProcessIsUsed_Cpp(ChildProcessId child_id);
+  //
+  // If the process has an allows-any-site ProcessLock and was not used yet,
+  // this also assigns it to `shard` (see BrowserContext::
+  // SetSitesForEmbedderShard() and ProcessLock::shard()). Otherwise, `shard`
+  // must match the process's existing shard (which is always the default shard
+  // for processes that are locked to a site), since a process must never host
+  // content from more than one shard. Callers that don't know the shard (e.g.
+  // RenderProcessHost::SetIsUsed()) pass std::nullopt, which leaves an unused
+  // process in the default shard and doesn't check the shard of a used one.
+  void SetProcessIsUsed(ChildProcessId child_id,
+                        const std::optional<SiteShard>& shard = std::nullopt);
+  void SetProcessIsUsed_Cpp(ChildProcessId child_id,
+                            const std::optional<SiteShard>& shard);
 
   // Testing helper method that generates a lock_url from |url| and then
   // calls LockProcess() with that lock URL.

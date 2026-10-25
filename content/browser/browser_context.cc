@@ -427,6 +427,11 @@ base::WeakPtr<BrowserContext> BrowserContext::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void BrowserContext::SetSitesForEmbedderShard(
+    const base::flat_set<net::SchemefulSite>& sites) {
+  impl()->SetSitesForEmbedderShard(sites);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // The //content embedder can override the methods below to change or extend
 // how the //content layer interacts with a BrowserContext.  The code below

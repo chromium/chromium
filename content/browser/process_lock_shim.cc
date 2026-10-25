@@ -30,7 +30,7 @@ bool HaveSameWebExposedIsolationInfo(const ProcessLock& a,
 }
 
 void SetIsUsed(ProcessLock& lock) {
-  lock.set_is_used();
+  lock.SetIsUsed();
 }
 
 }  // namespace content::rust::process_lock

@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_shard.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -152,7 +153,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
         /*is_fenced=*/false, browser_context->UniqueToken(),
-        EmbedderIsolationInfo::CreateNone()));
+        EmbedderIsolationInfo::CreateNone(), SiteShard::kDefault));
   }
 
   WebContentsImpl* web_contents() const {
@@ -183,7 +184,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
         /*is_fenced=*/false, browser_context->UniqueToken(),
-        EmbedderIsolationInfo::CreateNone()));
+        EmbedderIsolationInfo::CreateNone(), SiteShard::kDefault));
   }
 
  protected:
@@ -1825,7 +1826,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_fenced=*/false, browser_context->UniqueToken(),
-      EmbedderIsolationInfo::CreateNone()));
+      EmbedderIsolationInfo::CreateNone(), SiteShard::kDefault));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 

@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
@@ -372,6 +374,48 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
   base::WeakPtr<BrowserContext> GetWeakPtr();
+
+  // Splits sites in this BrowserContext that do not require a dedicated
+  // process into two separate "shards". Sites in different shards never
+  // share a renderer process, while sites within the same shard may share a
+  // process as usual (i.e., via the default SiteInstance). This puts `sites` in
+  // the embedder shard; all other sites are in the default shard. Currently
+  // there is only a single embedder shard, but this could be extended to
+  // support multiple shards if needed.
+  //
+  // This is intended for embedders that do not use full Site Isolation (e.g.
+  // Android WebView), so that a set of sites can be kept out of the process
+  // used by all other web content without giving each site its own process.
+  // Sites that require a dedicated process (e.g. with --site-per-process, or
+  // for isolated origins) are already kept apart from other sites, and are not
+  // part of either shard.
+  // TODO(crbug.com/576925194): These sites are currently given the default
+  // shard; give them a separate shard instead.
+  //
+  // - Each entry in `sites` covers exactly that site, i.e. all origins whose
+  //   scheme and eTLD+1 match it (e.g. "https://example.com" covers
+  //   "https://foo.example.com:8443"). There are no wildcards: e.g.
+  //   "https://github.io" covers only github.io itself, not foo.github.io,
+  //   since github.io is a public suffix.
+  // - When a navigation is assigned a site, it uses the shard of the site of
+  //   the origin it will commit. Content with an opaque origin uses the shard
+  //   of its precursor origin's site, or the default shard if there is no
+  //   precursor. Documents that aren't assigned a site (e.g. about:blank, see
+  //   SiteInstance::ShouldAssignSiteForURL()) don't determine a shard: they
+  //   either stay in their current SiteInstance and process, and so in its
+  //   shard, or load in a SiteInstance without a site (e.g. if a
+  //   browser-initiated navigation swaps BrowsingInstances), whose process
+  //   isn't assigned to a shard until it's used for content with a site.
+  // - `sites` must not be empty, and only HTTP(S) sites are supported.
+  // - Shards must not change while content is loaded, so this may only be
+  //   called once, before any RenderProcessHost in this BrowserContext is used
+  //   (spare or unused renderer processes are fine).
+  // - Shards are not yet supported when default SiteInstanceGroups are enabled
+  //   (see ContentClient::ShouldAllowDefaultSiteInstanceGroup())
+  // - Shards are not supported in single-process mode (see
+  //   RenderProcessHost::run_renderer_in_process()).
+  void SetSitesForEmbedderShard(
+      const base::flat_set<net::SchemefulSite>& sites);
 
   //////////////////////////////////////////////////////////////////////////////
   // The //content embedder can override the methods below to change or extend

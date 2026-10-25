@@ -6,20 +6,29 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
+#include "content/browser/site_instance_impl.h"
+#include "content/browser/site_shard.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -32,6 +41,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -135,6 +145,125 @@ TEST_F(RenderProcessHostUnitTest, RendererProcessLimitOverride) {
 
   // Reset the override to avoid interfering with other tests.
   RenderProcessHost::SetMaxRendererProcessCount(0);
+}
+
+// Tests for process selection with shards (see
+// BrowserContext::SetSitesForEmbedderShard()). These are currently only
+// supported when site isolation is disabled and default SiteInstances (rather
+// than default SiteInstanceGroups) are used, which is the case for Android
+// WebView. These tests put the isolated.com site in the embedder shard. All
+// other sites are in the default shard.
+class RenderProcessHostShardTest : public RenderProcessHostUnitTest {
+ public:
+  RenderProcessHostShardTest() {
+    feature_list_.InitAndDisableFeature(features::kDefaultSiteInstanceGroups);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableSiteIsolation);
+    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+        switches::kSitePerProcess);
+  }
+
+  void SetUp() override {
+    RenderProcessHostUnitTest::SetUp();
+    browser_context()->SetSitesForEmbedderShard({
+        net::SchemefulSite(GURL("http://isolated.com")),
+        net::SchemefulSite(GURL("https://isolated.com")),
+    });
+    ASSERT_FALSE(ShouldUseDefaultSiteInstanceGroup());
+    ASSERT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+  }
+
+  bool IsSuitableHost(RenderProcessHost* host, SiteInstanceImpl* instance) {
+    return RenderProcessHostImpl::IsSuitableHost(
+        host, instance->GetIsolationContext(), instance->GetSiteInfo());
+  }
+
+  // Returns the shard recorded on `host`'s ProcessLock (see
+  // ProcessLock::shard()).
+  SiteShard GetProcessShard(RenderProcessHost* host) {
+    return host->GetProcessLock().shard();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+// Tests that RenderProcessHostImpl::IsSuitableHost() only allows a used
+// process to be reused for content in the same shard.
+TEST_F(RenderProcessHostShardTest, IsSuitableHost) {
+  scoped_refptr<SiteInstanceImpl> unisolated_instance =
+      CreateForUrl(GURL("http://unisolated.com"));
+  scoped_refptr<SiteInstanceImpl> isolated_instance =
+      CreateForUrl(GURL("http://isolated.com"));
+  ASSERT_EQ(SiteShard::kDefault, unisolated_instance->GetSiteInfo().shard());
+  ASSERT_EQ(SiteShard::kEmbedderSites,
+            isolated_instance->GetSiteInfo().shard());
+
+  // A process that has not been used yet is not assigned to a shard (so its
+  // ProcessLock is in the default shard), and can be used for any of them.
+  MockRenderProcessHost unused_host(browser_context());
+  EXPECT_TRUE(unused_host.IsUnused());
+  EXPECT_EQ(SiteShard::kDefault, GetProcessShard(&unused_host));
+  EXPECT_TRUE(IsSuitableHost(&unused_host, unisolated_instance.get()));
+  EXPECT_TRUE(IsSuitableHost(&unused_host, isolated_instance.get()));
+
+  // Since these SiteInstances already have a site, assigning a process to them
+  // marks the process as used and assigns its ProcessLock to their shard.
+  RenderProcessHost* unisolated_host =
+      unisolated_instance->GetOrCreateProcessForTesting();
+  RenderProcessHost* isolated_host =
+      isolated_instance->GetOrCreateProcessForTesting();
+  EXPECT_NE(unisolated_host, isolated_host);
+  EXPECT_FALSE(unisolated_host->IsUnused());
+  EXPECT_FALSE(isolated_host->IsUnused());
+  EXPECT_TRUE(unisolated_host->GetProcessLock().AllowsAnySite());
+  EXPECT_TRUE(isolated_host->GetProcessLock().AllowsAnySite());
+  EXPECT_EQ(SiteShard::kDefault, GetProcessShard(unisolated_host));
+  EXPECT_EQ(SiteShard::kEmbedderSites, GetProcessShard(isolated_host));
+  EXPECT_NE(unisolated_host->GetProcessLock(), isolated_host->GetProcessLock());
+
+  // Used processes can only be reused within their shard.
+  EXPECT_TRUE(IsSuitableHost(unisolated_host, unisolated_instance.get()));
+  EXPECT_FALSE(IsSuitableHost(unisolated_host, isolated_instance.get()));
+  EXPECT_TRUE(IsSuitableHost(isolated_host, isolated_instance.get()));
+  EXPECT_FALSE(IsSuitableHost(isolated_host, unisolated_instance.get()));
+
+  // A process that was marked as used without specifying a shard (e.g., for
+  // a renderer debug URL) is in the default shard.
+  MockRenderProcessHost used_host(browser_context());
+  used_host.SetIsUsed();
+  EXPECT_EQ(SiteShard::kDefault, GetProcessShard(&used_host));
+  EXPECT_TRUE(IsSuitableHost(&used_host, unisolated_instance.get()));
+  EXPECT_FALSE(IsSuitableHost(&used_host, isolated_instance.get()));
+}
+
+// Service workers always use non-default SiteInstances. Tests that their
+// process is assigned to the shard of the worker's site, and so can only be
+// shared with other content from that shard.
+TEST_F(RenderProcessHostShardTest, ServiceWorker) {
+  const GURL kWorkerUrl("https://sub.isolated.com/sw.js");
+  scoped_refptr<SiteInstanceImpl> worker_instance =
+      CreateForServiceWorker(kWorkerUrl);
+  EXPECT_FALSE(worker_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(SiteShard::kEmbedderSites, worker_instance->GetSiteInfo().shard());
+
+  RenderProcessHost* worker_host =
+      worker_instance->GetOrCreateProcessForTesting();
+  EXPECT_EQ(SiteShard::kEmbedderSites, GetProcessShard(worker_host));
+
+  // The worker's process can be used for other content from the same
+  // shard, but not for other content.
+  scoped_refptr<SiteInstanceImpl> isolated_instance =
+      CreateForUrl(GURL("https://isolated.com"));
+  EXPECT_TRUE(IsSuitableHost(worker_host, isolated_instance.get()));
+  scoped_refptr<SiteInstanceImpl> unisolated_instance =
+      CreateForUrl(GURL("https://unisolated.com"));
+  EXPECT_FALSE(IsSuitableHost(worker_host, unisolated_instance.get()));
+
+  // Committing the worker's origin in its process is allowed.
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+      worker_host->GetDeprecatedID(), url::Origin::Create(kWorkerUrl));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

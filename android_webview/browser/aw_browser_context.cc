@@ -1066,6 +1066,15 @@ void AwBrowserContext::RecordNetworkContextInitializationBlocking(
   }
 }
 
+void AwBrowserContext::SetSitesForEmbedderShard(
+    const base::flat_set<net::SchemefulSite>& sites) {
+  // In single-process mode there is only one renderer, so isolated sites
+  // can't be kept apart from other content.
+  CHECK(!content::RenderProcessHost::run_renderer_in_process())
+      << "Isolated sites are not supported in single-process mode.";
+  content::BrowserContext::SetSitesForEmbedderShard(sites);
+}
+
 }  // namespace android_webview
 
 DEFINE_JNI(AwBrowserContext)

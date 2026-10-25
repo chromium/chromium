@@ -53,6 +53,7 @@
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer.h"
@@ -6205,6 +6206,26 @@ ErrorPageProcess NavigationRequest::ComputeErrorPageProcess() {
   //   didn't request the navigation and may have a higher privilege level
   //   than the blocked destination.
   if (net::IsRequestBlockedError(net_error_) && !browser_initiated()) {
+    // With shards, commit blocked error pages in the destination's process, so
+    // that a frame's SiteInstance and process always match the shard of its
+    // URL. Otherwise, the error page could reuse a SiteInstance without a
+    // site, whose process is already used for a different shard, and set its
+    // site to the blocked URL in SelectFrameHostForOnRequestFailedInternal(),
+    // which would move it to the blocked URL's shard (or lock its used
+    // process, for destinations that require a dedicated process).
+    //
+    // For destinations that don't require a dedicated process, this doesn't
+    // weaken the privilege argument above, since shards are peers: no shard
+    // is more privileged than another. Destinations that do require a
+    // dedicated process also get their own locked process, as for other
+    // (non-blocked) errors. This is accepted because shards are only used by
+    // embedders without Site Isolation (i.e. Android WebView), where such
+    // destinations are currently very uncommon (e.g., just WebUI).
+    if (BrowserContextImpl::From(
+            frame_tree_node_->navigator().controller().GetBrowserContext())
+            ->HasShards()) {
+      return ErrorPageProcess::kDestinationProcess;
+    }
     return ErrorPageProcess::kCurrentProcess;
   }
   return ErrorPageProcess::kDestinationProcess;

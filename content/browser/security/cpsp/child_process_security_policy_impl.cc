@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -963,7 +964,11 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     AddBrowsingInstanceInfo(context);
   }
 
-  void SetProcessIsUsed() { rust::process_lock::SetIsUsed(process_lock_); }
+  // Marks the process as used, and assigns or checks its shard (see
+  // ProcessLock::SetIsUsed()).
+  void SetProcessIsUsed(const std::optional<SiteShard>& shard) {
+    rust::process_lock::SetIsUsedForShard(process_lock_, shard);
+  }
 
   void AddBrowsingInstanceInfo(const IsolationContext& context) {
     CHECK(!context.browsing_instance_id().is_null(), base::NotFatalUntil::M159);
@@ -2884,6 +2889,20 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
           UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
               actual_process_lock.GetWebExposedIsolationInfo())));
 
+      // An unlocked process can only access data from origins in its own
+      // shard, which is recorded on its ProcessLock when the process is first
+      // used (see ProcessLock::shard()). Note that unused processes, which can
+      // still be used for any shard, are allowed above.
+      SiteShard process_shard = actual_process_lock.shard();
+      SiteShard expected_shard = site_info.shard();
+      if (process_shard != expected_shard) {
+        base::StrAppend(
+            &out_failure_reason,
+            {" shard_mismatch: process='", SiteShardToString(process_shard),
+             "' vs expected='", SiteShardToString(expected_shard), "' "});
+        continue;
+      }
+
       // A process that's not locked to any site can only access data from
       // origins that do not require a locked process.
       if (!site_info.ShouldLockProcessToSite(isolation_context)) {
@@ -3117,9 +3136,14 @@ void ChildProcessSecurityPolicyImpl::LockProcess_Cpp(
   state->SetProcessLock(process_lock, context);
 }
 
-void ChildProcessSecurityPolicyImpl::SetProcessIsUsed(ChildProcessId child_id) {
+void ChildProcessSecurityPolicyImpl::SetProcessIsUsed(
+    ChildProcessId child_id,
+    const std::optional<SiteShard>& shard) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
+  // The Rust ProcessState doesn't support shards yet (see
+  // BrowserContextImpl::SetSitesForEmbedderShard()), so when it's enabled,
+  // every process is in the default shard and `shard` can be ignored here.
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
     rust::child_process_security_policy::set_process_is_used(child_id);
   }
@@ -3129,15 +3153,16 @@ void ChildProcessSecurityPolicyImpl::SetProcessIsUsed(ChildProcessId child_id) {
   // partially been implemented by the Rust version so far. Once ProcessState
   // is fully supported in Rust, this should be combined into a
   // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
-  SetProcessIsUsed_Cpp(child_id);
+  SetProcessIsUsed_Cpp(child_id, shard);
 }
 
 void ChildProcessSecurityPolicyImpl::SetProcessIsUsed_Cpp(
-    ChildProcessId child_id) {
+    ChildProcessId child_id,
+    const std::optional<SiteShard>& shard) {
   base::AutoLock lock(lock_);
   auto* state = process_states_.GetProcessStateForMutation(child_id);
   CHECK(state);
-  state->SetProcessIsUsed();
+  state->SetProcessIsUsed(shard);
 }
 
 void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
@@ -4524,6 +4549,11 @@ void ChildProcessSecurityPolicyImpl::AddCommittedOrigin(
   auto* state = process_states_.GetProcessStateForMutation(
       ChildProcessId::FromUnsafeValue(child_id));
   CHECK(state, base::NotFatalUntil::M159);
+  // TODO(crbug.com/576113096): Consider adding general defense-in-depth checks
+  // here that `origin` is compatible with the process's ProcessLock (e.g.,
+  // that it belongs to the process's shard, or matches a locked process's
+  // site), so that this also covers commits that don't go through the
+  // navigation checks in CanCommitOriginAndUrl(), such as workers.
   state->AddCommittedOrigin(origin);
 }
 

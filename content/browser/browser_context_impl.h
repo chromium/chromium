@@ -8,15 +8,18 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/btm/btm_service_impl.h"
+#include "content/browser/site_shard.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
@@ -159,6 +162,25 @@ class CONTENT_EXPORT BrowserContextImpl {
   void RemoveInitiatorNavigationStateFromMap(
       InitiatorNavigationState* initiator_navigation_state);
 
+  // Implements BrowserContext::SetSitesForEmbedderShard(). See the comments
+  // there.
+  void SetSitesForEmbedderShard(
+      const base::flat_set<net::SchemefulSite>& sites);
+
+  // Returns the shard that `site` belongs to in this BrowserContext, i.e.
+  // SiteShard::kEmbedderSites if `site` was passed to
+  // SetSitesForEmbedderShard(), or SiteShard::kDefault otherwise.
+  //
+  // Callers should use SiteInfo::GetShardForUrlInfo() rather than calling this
+  // directly, so that shards are computed consistently.
+  SiteShard GetShardForSite(const net::SchemefulSite& site) const;
+
+  // Returns true if any sites are assigned to a non-default shard in this
+  // BrowserContext. When this returns false, GetShardForSite() always returns
+  // SiteShard::kDefault, which allows callers to skip computing the site in the
+  // common case.
+  bool HasShards() const;
+
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
   // decoding performance stats.  Exposed here rather than StoragePartition
@@ -249,6 +271,12 @@ class CONTENT_EXPORT BrowserContextImpl {
   // of multiple navigations in the same RenderFrameHost.
   mojo::UniqueReceiverSet<blink::mojom::NavigationStateKeepAliveHandle>
       keep_alive_handles_receiver_set_;
+
+  // The sites in SiteShard::kEmbedderSites (see SetSitesForEmbedderShard()), or
+  // empty if no shards are configured. This is only set once, before this
+  // BrowserContext is used for navigations, so the mapping doesn't change while
+  // content is loaded.
+  base::flat_set<net::SchemefulSite> embedder_shard_sites_;
 
   // TODO: crbug.com/40169693 - BrowserContext and BrowserContextImpl both have
   // WeakPtrFactories. Remove one once the inheritance is sorted out.

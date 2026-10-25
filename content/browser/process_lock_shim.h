@@ -38,10 +38,9 @@ std::unique_ptr<GURL> GetProcessLockURL(const ProcessLock& lock);
 bool HaveSameWebExposedIsolationInfo(const ProcessLock& a,
                                      const ProcessLock& b);
 
-// Marks the process associated with `lock` as used. Unlike the other shims
-// here, this is also called directly from the C++
-// ChildProcessSecurityPolicyImpl (not only from Rust). It is the only function
-// allowed to call the private ProcessLock::set_is_used().
+// Marks the process associated with `lock` as used. Along with
+// SetIsUsedForShard() (used by the C++ ChildProcessSecurityPolicyImpl), this is
+// the only code allowed to call the private ProcessLock::SetIsUsed().
 void SetIsUsed(ProcessLock& lock);
 
 }  // namespace content::rust::process_lock

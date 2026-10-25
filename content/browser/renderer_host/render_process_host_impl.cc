@@ -5132,6 +5132,15 @@ bool RenderProcessHostImpl::IsSuitableHost(
         return false;
       }
 
+      // Sites from different shards must never share a process (see
+      // BrowserContext::SetSitesForEmbedderShard()). A used process's shard is
+      // recorded on its ProcessLock (see ProcessLock::shard()), while an unused
+      // process can still be used for any shard.
+      if (!host->IsUnused() && process_lock.shard() != site_info.shard()) {
+        TRACE_EVENT_INSTANT("navigation", "NotSuitableHost: shard diff");
+        return false;
+      }
+
       if (!host->IsUnused() &&
           site_info.ShouldLockProcessToSite(isolation_context)) {
         // If this process has been used to host any other content, it cannot

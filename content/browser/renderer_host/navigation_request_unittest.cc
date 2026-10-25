@@ -17,6 +17,7 @@
 #include "content/browser/embedder_isolation_info.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_shard.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -2162,7 +2163,8 @@ TEST_F(NavigationRequestTest,
         params.is_fenced,
         /*browser_context_id=*/base::UnguessableToken(),
         params.embedder_isolation_info.value_or(
-            EmbedderIsolationInfo::CreateNone()));
+            EmbedderIsolationInfo::CreateNone()),
+        SiteShard::kDefault);
   };
 
   request->set_isolation_info_for_testing(kValidIsolationInfo);
@@ -2320,7 +2322,7 @@ TEST_F(NavigationRequestTest,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_fenced=*/false, /*browser_context_id=*/base::UnguessableToken(),
-      EmbedderIsolationInfo::CreateNone());
+      EmbedderIsolationInfo::CreateNone(), SiteShard::kDefault);
   request->set_site_info_for_testing(in_memory_site_info);
 
   EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
@@ -2374,7 +2376,7 @@ TEST_F(
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_fenced=*/false, /*browser_context_id=*/base::UnguessableToken(),
-      EmbedderIsolationInfo::CreateNone());
+      EmbedderIsolationInfo::CreateNone(), SiteShard::kDefault);
   request->set_site_info_for_testing(non_default_site_info);
 
   EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),

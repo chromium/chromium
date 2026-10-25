@@ -9,13 +9,16 @@
 
 #include <map>
 #include <optional>
+#include <string>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/site_shard.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/common/content_navigation_policy.h"
@@ -225,13 +228,19 @@ class CONTENT_EXPORT BrowsingInstance final
   void IncrementActiveContentsCount();
   void DecrementActiveContentsCount();
 
+  // Returns the default SiteInstance for `shard`, or nullptr if there isn't
+  // one.
+  //
+  // TODO(crbug.com/576158849): "Default" now refers to the default shard, not
+  // to "all other sites". Rename this to avoid the ambiguity.
+  SiteInstanceImpl* GetDefaultSiteInstance(SiteShard shard);
   SiteInstanceGroup* default_site_instance_group() {
     CHECK(ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M159);
     return default_site_instance_group_.get();
   }
-  bool has_default_site_instance() const {
+  bool HasDefaultSiteInstance(SiteShard shard) const {
     CHECK(!ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M159);
-    return default_site_instance_ != nullptr;
+    return default_site_instances_.contains(shard);
   }
   bool has_default_site_instance_group() const {
     CHECK(ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M159);
@@ -285,22 +294,38 @@ class CONTENT_EXPORT BrowsingInstance final
   // It also does not contain SiteInstances which have not yet been assigned a
   // site, such as about:blank.  See SiteInstance::ShouldAssignSiteForURL.
   // This map only contains instances that map to a single site. The
-  // |default_site_instance_|, which associates multiple sites with a single
-  // instance, is not contained in this map.
+  // SiteInstances in `default_site_instances_`, which are each shared by many
+  // sites, are not contained in this map.
   SiteInstanceMap site_instance_map_;
 
   // Number of WebContentses currently using this BrowsingInstance.
   size_t active_contents_count_;
 
-  // SiteInstance to use if a URL does not correspond to an instance in
-  // |site_instance_map_| and it does not require a dedicated process. This is a
-  // raw pointer to avoid a reference cycle between the BrowsingInstance and the
-  // SiteInstanceImpl. Note: This can hold cross-origin isolated SiteInstances.
-  // It will however only do so under certain specific circumstances (for
-  // example on a low memory device), which don't use the COOP isolation
-  // heuristic that normally prevents the use of default SiteInstances for
-  // cross-origin isolated pages.
-  raw_ptr<SiteInstanceImpl> default_site_instance_;
+  // SiteInstances that may each be shared by many sites that don't require a
+  // dedicated process (and thus run in processes that aren't locked to a
+  // site). There is at most one per shard (see SiteInfo::shard()), keyed by
+  // the shard. These are used when a URL does not correspond to a SiteInstance
+  // in `site_instance_map_` and can be placed in a default SiteInstance (see
+  // SiteInstanceImpl::CanBePlacedInDefaultSiteInstanceOrGroup()). Note that
+  // some URLs that don't require a dedicated process still get their own
+  // SiteInstance in `site_instance_map_`, e.g. file: URLs and service workers.
+  //
+  // TODO(crbug.com/576158849): "Default" now refers to the default shard, not
+  // to "all other sites". Rename these (and SiteInstanceImpl's "default
+  // SiteInstance" concept) to avoid the ambiguity.
+  //
+  // These are raw pointers to avoid a reference cycle between the
+  // BrowsingInstance and the SiteInstanceImpl. They can't dangle: each
+  // SiteInstance keeps its BrowsingInstance alive, and removes itself from
+  // this map when it is destroyed (~SiteInstanceImpl() calls
+  // UnregisterSiteInstance()). ~BrowsingInstance() CHECKs that the map is
+  // empty.
+  //
+  // Note: This can hold cross-origin isolated SiteInstances. It will however
+  // only do so under certain specific circumstances (for example on a low
+  // memory device), which don't use the COOP isolation heuristic that normally
+  // prevents the use of default SiteInstances for cross-origin isolated pages.
+  base::flat_map<SiteShard, raw_ptr<SiteInstanceImpl>> default_site_instances_;
 
   // SiteInstanceGroup to be used for sites that do not require a dedicated
   // process. Each site will have its own SiteInstance, but they will share a

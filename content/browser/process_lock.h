@@ -9,6 +9,7 @@
 
 #include "content/browser/embedder_isolation_info.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_shard.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -21,8 +22,11 @@ class IsolationContext;
 class ProcessLock;
 
 namespace rust::process_lock {
-// C++ function defined in process_lock_shim.cc. See friend declaration below.
+// C++ function defined in process_lock_shim.cc. See friend declarations below.
 void SetIsUsed(ProcessLock& lock);
+// C++ function defined in process_lock.cc. See friend declarations below.
+void SetIsUsedForShard(ProcessLock& lock,
+                       const std::optional<SiteShard>& shard);
 }  // namespace rust::process_lock
 
 // ProcessLock is a core part of Site Isolation, which is used to determine
@@ -54,6 +58,11 @@ class CONTENT_EXPORT ProcessLock {
   // that wants to commit in this process must have a StoragePartitionConfig
   // and cross-origin isolation and web-exposed isolation information
   // (COOP/COEP, for example) that match the values used to create this lock.
+  //
+  // The lock starts out in the default shard. Its shard is only assigned when
+  // the process is first marked as used (see shard()), since it is not always
+  // known yet when the lock is created (e.g., for a SiteInstance without a
+  // site), and since an unused process can be used for any shard.
   static ProcessLock CreateAllowAnySite(
       const StoragePartitionConfig& storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info,
@@ -151,6 +160,25 @@ class CONTENT_EXPORT ProcessLock {
                                   : EmbedderIsolationInfo::CreateNone();
   }
 
+  // Returns the shard of the SiteInfo associated with this lock (see
+  // BrowserContext::SetSitesForEmbedderShard()), or SiteShard::kDefault if
+  // there is no SiteInfo. Sites in different shards never share a process, and
+  // since this is part of the lock, ProcessLocks for different shards are never
+  // equal.
+  //
+  // Shards only divide up sites that do not require dedicated processes, so
+  // this is always SiteShard::kDefault for locked processes (see
+  // SiteInfo::shard()).
+  // For an allows-any-site lock, the shard is assigned when the process is
+  // first marked as used (see
+  // ChildProcessSecurityPolicyImpl::SetProcessIsUsed() and SetIsUsed()), and
+  // cannot change afterwards. An allows-any-site lock that is still unused is
+  // always in the default shard, but the process can still be used for any
+  // shard.
+  SiteShard shard() const {
+    return site_info_.has_value() ? site_info_->shard() : SiteShard::kDefault;
+  }
+
   // Returns whether this ProcessLock can only be used for error pages.
   bool is_error_page() const {
     return site_info_.has_value() && site_info_->is_error_page();
@@ -243,22 +271,36 @@ class CONTENT_EXPORT ProcessLock {
   std::string ToString() const;
 
  private:
-  // Only ChildProcessSecurityPolicyImpl may mark a ProcessLock as used. Both
-  // its C++ and Rust implementations call set_is_used() through this function
-  // so that CPSP does not need to be a friend of this class.
+  // Only ChildProcessSecurityPolicyImpl may mark a ProcessLock as used (see
+  // SetIsUsed()). It calls SetIsUsed() through these functions so that CPSP
+  // does not need to be a friend of this class. The Rust implementation of
+  // CPSP uses SetIsUsed(), and the C++ implementation uses SetIsUsedForShard(),
+  // which also passes the shard that the process is being used for (the Rust
+  // ProcessState doesn't support shards yet).
   //
-  // Note: despite the `rust::process_lock` namespace, this is a C++ function
-  // (defined in process_lock_shim.cc alongside the other C++ shims exposed to
-  // Rust via FFI). The C++-only CPSP path calls it directly and does not go
-  // through any Rust code.
+  // Note: despite the `rust::process_lock` namespace, these are C++ functions
+  // (SetIsUsed() is defined in process_lock_shim.cc alongside the other C++
+  // shims exposed to Rust via FFI).
   friend void rust::process_lock::SetIsUsed(ProcessLock& lock);
+  friend void rust::process_lock::SetIsUsedForShard(
+      ProcessLock& lock,
+      const std::optional<SiteShard>& shard);
 
   explicit ProcessLock(const SiteInfo& site_info);
 
   // Marks the process associated with this ProcessLock as used. Note that this
   // only mutates this instance, so it has no effect when called on a copy
   // returned by ChildProcessSecurityPolicyImpl::GetProcessLock().
-  void set_is_used() { is_unused_ = false; }
+  //
+  // This is the only place a lock's shard (see shard()) is assigned, so that it
+  // can't change once the process is used. If this is an allows-any-site lock
+  // that is still unused and `shard` is specified, the lock is assigned to
+  // `shard`. Otherwise, `shard` (if specified) must match the lock's existing
+  // shard, since a process must never host content from more than one shard.
+  // `shard` is std::nullopt when the caller doesn't know the shard (e.g.
+  // RenderProcessHost::SetIsUsed()), which leaves an unused lock in the default
+  // shard.
+  void SetIsUsed(const std::optional<SiteShard>& shard = std::nullopt);
 
   // TODO(creis): Consider tracking multiple compatible SiteInfos in ProcessLock
   // (e.g., multiple sites when Site Isolation is disabled). This can better

@@ -31,6 +31,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/browser/webid/in_memory_federated_permission_context.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -38,10 +39,12 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "media/capabilities/webrtc_video_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
@@ -474,6 +477,59 @@ void BrowserContextImpl::RemoveInitiatorNavigationStateFromMap(
     CHECK(it->second == initiator_navigation_state);
     initiator_navigation_state_map_.erase(it);
   }
+}
+
+void BrowserContextImpl::SetSitesForEmbedderShard(
+    const base::flat_set<net::SchemefulSite>& sites) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(embedder_shard_sites_.empty())
+      << "SetSitesForEmbedderShard() may only be called once.";
+  CHECK(!sites.empty()) << "SetSitesForEmbedderShard() requires sites.";
+  // TODO(crbug.com/576113096): Support shards with default SiteInstanceGroups,
+  // e.g. by having one default SiteInstanceGroup per shard.
+  CHECK(!ShouldUseDefaultSiteInstanceGroup())
+      << "Shards are not supported with default SiteInstanceGroups.";
+  // In single-process mode there is only one renderer, so content from
+  // different shards can't be kept apart.
+  CHECK(!RenderProcessHost::run_renderer_in_process())
+      << "Shards are not supported in single-process mode.";
+  // TODO(crbug.com/576113096): Support shards in the Rust implementation of
+  // ChildProcessSecurityPolicy's ProcessState, which doesn't track shards yet.
+  CHECK(!base::FeatureList::IsEnabled(
+      features::kChildProcessSecurityPolicyRustProcessState))
+      << "Shards are not supported with the Rust ProcessState.";
+  // Shards must be set before any RenderProcessHost in this BrowserContext is
+  // used, so that the shard of content never changes after it is loaded.
+  // Enforce this by checking that no process in this BrowserContext has been
+  // used yet. Unused processes (e.g. spare renderers) are allowed, since they
+  // can still be used for any shard.
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
+    RenderProcessHost* host = it.GetCurrentValue();
+    CHECK(host->GetBrowserContext() != self_ || host->IsUnused())
+        << "Shards must be set before any RenderProcessHost in the "
+           "BrowserContext is used.";
+  }
+  for (const net::SchemefulSite& site : sites) {
+    // Only HTTP(S) sites are supported, since other schemes either always
+    // require a dedicated process (e.g. WebUI), or don't have sites that are
+    // computed consistently with SiteInfo (e.g. file:).
+    CHECK(!site.opaque()) << "Opaque sites can't be put in a shard.";
+    CHECK(site.GetURL().SchemeIsHTTPOrHTTPS())
+        << "Only HTTP(S) sites can be put in a shard: " << site;
+  }
+  embedder_shard_sites_ = sites;
+}
+
+SiteShard BrowserContextImpl::GetShardForSite(
+    const net::SchemefulSite& site) const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  return embedder_shard_sites_.contains(site) ? SiteShard::kEmbedderSites
+                                              : SiteShard::kDefault;
+}
+
+bool BrowserContextImpl::HasShards() const {
+  return !embedder_shard_sites_.empty();
 }
 
 }  // namespace content

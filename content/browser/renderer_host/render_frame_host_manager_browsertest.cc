@@ -46,6 +46,7 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/site_shard.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -6519,7 +6520,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(original_process,
             web_contents->GetPrimaryMainFrame()
                 ->GetSiteInstance()
-                ->GetDefaultProcessForBrowsingInstanceForTesting());
+                ->GetDefaultProcessForBrowsingInstanceForTesting(
+                    SiteShard::kDefault));
   // This test expect a cross-site navigation to be same BrowsingInstance. With
   // ProactivelySwapBrowsingInstance, it won't be the case. Opening a popup
   // prevent the BrowsingInstance to change.

@@ -28,6 +28,7 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/site_shard.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -47,6 +48,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "net/base/filename_util.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/file_system/file_permission_policy.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -3668,7 +3670,8 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
                     foo_instance->GetIsolationContext(),
                     StoragePartitionConfig::CreateDefault(&context),
                     WebExposedIsolationInfo::CreateNonIsolated(),
-                    /*cross_origin_isolation_key=*/std::nullopt));
+                    /*cross_origin_isolation_key=*/std::nullopt,
+                    SiteShard::kDefault));
     }
     EXPECT_FALSE(foo_instance->RequiresDedicatedProcess());
   }
@@ -4006,6 +4009,176 @@ TEST_P(ChildProcessSecurityPolicyTest,
 
   p->RevokeFileForBrowserUpload(valid_token);
   EXPECT_FALSE(p->CanReadFileForBrowserUpload(file));
+}
+
+// Tests that processes are only allowed to commit and access data for content
+// in their own shard (see BrowserContext::SetSitesForEmbedderShard()).
+TEST_P(ChildProcessSecurityPolicyTest, Shards) {
+  // TODO(crbug.com/576113096): Support shards in the Rust ProcessState.
+  if (IsRustProcessStateEnabled()) {
+    GTEST_SKIP() << "Shards are not supported by the Rust ProcessState yet.";
+  }
+
+  // Shards are currently only supported when site isolation is disabled and
+  // default SiteInstanceGroups are not used, which is the case for Android
+  // WebView.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kDefaultSiteInstanceGroups);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSiteIsolation);
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kSitePerProcess);
+  // Put the isolated.com site in the embedder shard. All other sites are in
+  // the default shard.
+  browser_context()->SetSitesForEmbedderShard({
+      net::SchemefulSite(GURL("http://isolated.com")),
+      net::SchemefulSite(GURL("https://isolated.com")),
+  });
+  ASSERT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  // Use MockRenderProcessHosts rather than made-up process IDs, so that there
+  // is a real RenderProcessHost for each process. This matches production and
+  // ensures the commit checks below run the full Citadel checks in
+  // ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(), including
+  // the shard check.
+  MockRenderProcessHost isolated_process(browser_context());
+  MockRenderProcessHost default_process(browser_context());
+  MockRenderProcessHost unassigned_process(browser_context());
+  MockRenderProcessHost locked_process(browser_context());
+  const ChildProcessId kIsolatedProcess = isolated_process.GetID();
+  const ChildProcessId kDefaultProcess = default_process.GetID();
+  const ChildProcessId kUnassignedProcess = unassigned_process.GetID();
+  const ChildProcessId kLockedProcess = locked_process.GetID();
+  const int kIsolatedId = isolated_process.GetDeprecatedID();
+  const int kDefaultId = default_process.GetDeprecatedID();
+  const int kUnassignedId = unassigned_process.GetDeprecatedID();
+
+  const GURL kIsolatedUrl("http://isolated.com/");
+  const GURL kIsolatedSubdomainUrl("http://sub.isolated.com/");
+  const GURL kIsolatedBlobUrl("blob:http://isolated.com/1234");
+  const GURL kUnisolatedUrl("http://unisolated.com/");
+  const url::Origin kIsolatedOrigin = url::Origin::Create(kIsolatedUrl);
+  const url::Origin kUnisolatedOrigin = url::Origin::Create(kUnisolatedUrl);
+
+  for (ChildProcessId process :
+       {kIsolatedProcess, kDefaultProcess, kUnassignedProcess}) {
+    // This gives the process an "allow any site" ProcessLock. Until the process
+    // is used, the lock is in the default shard, but the process can still be
+    // used for any shard.
+    LockProcessIfNeeded(process, browser_context());
+    ProcessLock lock = p->GetProcessLock(process);
+    EXPECT_TRUE(lock.AllowsAnySite());
+    EXPECT_TRUE(lock.is_unused());
+    EXPECT_EQ(SiteShard::kDefault, lock.shard());
+
+    // An unused process can commit URLs from any shard; see the Citadel
+    // exception for unused processes in PerformJailAndCitadelChecks().
+    EXPECT_TRUE(p->CanCommitURL(process.GetUnsafeValue(), kIsolatedUrl));
+    EXPECT_TRUE(p->CanCommitURL(process.GetUnsafeValue(), kUnisolatedUrl));
+  }
+
+  // Processes are assigned to a shard on their ProcessLock when they are first
+  // used. A process that is marked as used without specifying a shard is in
+  // the default shard.
+  p->SetProcessIsUsed(kIsolatedProcess, SiteShard::kEmbedderSites);
+  p->SetProcessIsUsed(kDefaultProcess, SiteShard::kDefault);
+  p->SetProcessIsUsed(kUnassignedProcess);
+  for (ChildProcessId process :
+       {kIsolatedProcess, kDefaultProcess, kUnassignedProcess}) {
+    EXPECT_TRUE(p->GetProcessLock(process).AllowsAnySite());
+    EXPECT_FALSE(p->GetProcessLock(process).is_unused());
+  }
+  EXPECT_EQ(SiteShard::kEmbedderSites,
+            p->GetProcessLock(kIsolatedProcess).shard());
+  EXPECT_EQ(SiteShard::kDefault, p->GetProcessLock(kDefaultProcess).shard());
+  EXPECT_EQ(SiteShard::kDefault, p->GetProcessLock(kUnassignedProcess).shard());
+
+  // ProcessLocks in different shards are not equal.
+  EXPECT_NE(p->GetProcessLock(kIsolatedProcess),
+            p->GetProcessLock(kDefaultProcess));
+  EXPECT_EQ(p->GetProcessLock(kDefaultProcess),
+            p->GetProcessLock(kUnassignedProcess));
+
+  // Marking a used process as used again for the same shard, or without
+  // specifying a shard, does not change its shard.
+  p->SetProcessIsUsed(kIsolatedProcess, SiteShard::kEmbedderSites);
+  p->SetProcessIsUsed(kIsolatedProcess);
+  EXPECT_EQ(SiteShard::kEmbedderSites,
+            p->GetProcessLock(kIsolatedProcess).shard());
+  p->SetProcessIsUsed(kUnassignedProcess, SiteShard::kDefault);
+  EXPECT_EQ(SiteShard::kDefault, p->GetProcessLock(kUnassignedProcess).shard());
+
+  // Processes that are locked to a site are always in the default shard.
+  p->LockProcessForTesting(
+      IsolationContext(
+          BrowsingInstanceId(1), browser_context(),
+          /*is_guest=*/false, /*is_fenced=*/false,
+          OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+              browser_context())),
+      kLockedProcess, kUnisolatedUrl);
+  EXPECT_TRUE(p->GetProcessLock(kLockedProcess).IsLockedToSite());
+  p->SetProcessIsUsed(kLockedProcess, SiteShard::kDefault);
+  EXPECT_FALSE(p->GetProcessLock(kLockedProcess).is_unused());
+  EXPECT_EQ(SiteShard::kDefault, p->GetProcessLock(kLockedProcess).shard());
+
+  // A used process can commit URLs in its own shard only. kIsolatedProcess and
+  // kDefaultProcess differ only in the shard of their ProcessLocks, and each
+  // can commit URLs in its own shard, so the failures for the other shard can
+  // only come from the shard check.
+  EXPECT_TRUE(p->CanCommitURL(kIsolatedId, kIsolatedUrl));
+  EXPECT_TRUE(p->CanCommitURL(kIsolatedId, kIsolatedSubdomainUrl));
+  EXPECT_TRUE(p->CanCommitURL(kIsolatedId, kIsolatedBlobUrl));
+  EXPECT_FALSE(p->CanCommitURL(kIsolatedId, kUnisolatedUrl));
+
+  EXPECT_TRUE(p->CanCommitURL(kDefaultId, kUnisolatedUrl));
+  EXPECT_FALSE(p->CanCommitURL(kDefaultId, kIsolatedUrl));
+  EXPECT_FALSE(p->CanCommitURL(kDefaultId, kIsolatedSubdomainUrl));
+  EXPECT_FALSE(p->CanCommitURL(kDefaultId, kIsolatedBlobUrl));
+
+  // A process that was marked as used without specifying a shard is in the
+  // default shard.
+  EXPECT_TRUE(p->CanCommitURL(kUnassignedId, kUnisolatedUrl));
+  EXPECT_FALSE(p->CanCommitURL(kUnassignedId, kIsolatedUrl));
+
+  // Data access is also restricted to the process's shard, including for
+  // opaque origins (e.g. for data: URLs) whose precursor is in that shard.
+  p->AddCommittedOrigin(kIsolatedId, kIsolatedOrigin);
+  p->AddCommittedOrigin(kIsolatedId, kIsolatedOrigin.DeriveNewOpaqueOrigin());
+  p->AddCommittedOrigin(kDefaultId, kUnisolatedOrigin);
+  p->AddCommittedOrigin(kDefaultId, kUnisolatedOrigin.DeriveNewOpaqueOrigin());
+  EXPECT_TRUE(p->CanAccessDataForOrigin(kIsolatedId, kIsolatedOrigin));
+  EXPECT_TRUE(p->CanAccessDataForOrigin(
+      kIsolatedId, kIsolatedOrigin.DeriveNewOpaqueOrigin()));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(kIsolatedId, kUnisolatedOrigin));
+  EXPECT_TRUE(p->CanAccessDataForOrigin(kDefaultId, kUnisolatedOrigin));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(kDefaultId, kIsolatedOrigin));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(
+      kDefaultId, kIsolatedOrigin.DeriveNewOpaqueOrigin()));
+
+  // Changing the shard of a used process, or assigning a non-default shard to
+  // a process that is locked to a site, indicates a bug in process selection
+  // and is fatal.
+  [[maybe_unused]] constexpr char expected_death_message[] =
+      "Attempting to change the shard";
+  EXPECT_CHECK_DEATH_WITH(
+      p->SetProcessIsUsed(kIsolatedProcess, SiteShard::kDefault),
+      expected_death_message);
+  EXPECT_CHECK_DEATH_WITH(
+      p->SetProcessIsUsed(kDefaultProcess, SiteShard::kEmbedderSites),
+      expected_death_message);
+  EXPECT_CHECK_DEATH_WITH(
+      p->SetProcessIsUsed(kUnassignedProcess, SiteShard::kEmbedderSites),
+      expected_death_message);
+  EXPECT_CHECK_DEATH_WITH(
+      p->SetProcessIsUsed(kLockedProcess, SiteShard::kEmbedderSites),
+      expected_death_message);
+
+  // The MockRenderProcessHosts remove their processes from
+  // ChildProcessSecurityPolicy when they are destroyed.
 }
 
 // This intentionally excludes {kCppOnly, kProcessState} since that behaves

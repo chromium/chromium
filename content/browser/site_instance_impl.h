@@ -15,6 +15,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/process_reuse_policy.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_shard.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
@@ -445,6 +446,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   const IsolationContext& GetIsolationContext();
 
   // Returns true if this object was constructed as a default site instance.
+  // TODO(crbug.com/576158849): Default SiteInstances are now per shard (see
+  // SiteInfo::shard()), so "default" is ambiguous. Rename this concept.
   bool IsDefaultSiteInstance() const;
 
   // Returns true if |site_url| is a site url that the BrowsingInstance has
@@ -491,9 +494,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
       const UrlInfo& url_info,
       const url::Origin& parent_origin);
 
-  // Returns the process used by non-isolated sites in this SiteInstance's
-  // BrowsingInstance.
-  RenderProcessHost* GetDefaultProcessForBrowsingInstanceForTesting();
+  // Returns the process used by non-isolated sites in `shard` in this
+  // SiteInstance's BrowsingInstance.
+  RenderProcessHost* GetDefaultProcessForBrowsingInstanceForTesting(
+      SiteShard shard);
 
   // Sets the process for `this`, creating a SiteInstanceGroup if necessary.
   void SetProcessForTesting(RenderProcessHost* process);
@@ -551,10 +555,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // "lock_to_site" lock.
   void LockProcessIfNeeded();
 
-  // Sets the SiteInfo and other fields so that this instance becomes a
-  // default SiteInstance.
+  // Sets the SiteInfo and other fields so that this instance becomes the
+  // default SiteInstance for `shard`.
   void SetSiteInfoToDefault(
-      const StoragePartitionConfig& storage_partition_config);
+      const StoragePartitionConfig& storage_partition_config,
+      SiteShard shard);
 
   // Sets |site_info_| with |site_info| and registers this object with
   // |browsing_instance_|. SetSite() calls this method to set the site and lock
