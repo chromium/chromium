@@ -202,6 +202,15 @@ ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
   return resolver->Promise();
 }
 
+ScriptPromise<IDLUndefined> SmartCardContext::release(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  // TODO(crbug.com/573866986): Implement.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented.");
+  return EmptyPromise();
+}
+
 void SmartCardContext::Trace(Visitor* visitor) const {
   visitor->Trace(scard_context_);
   visitor->Trace(request_);

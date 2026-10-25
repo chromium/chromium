@@ -91,4 +91,12 @@ dictionary SmartCardConnectOptions {
       DOMString readerName,
       SmartCardAccessMode accessMode,
       optional SmartCardConnectOptions options = {});
+
+  [
+    RuntimeEnabled=SmartCardContextRelease,
+    CallWith=ScriptState,
+    MeasureAs=SmartCardContextRelease,
+    RaisesException
+  ]
+  Promise<undefined> release();
 };

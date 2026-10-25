@@ -4461,7 +4461,8 @@ enum WebFeature {
   kSvgContextFillOrStroke = 5156,
   kARIAActionsAttribute = 5157,
   kOBSOLETE_ResolveToConfigValueCoercedToTrue = 5158,
-  kOBSOLETE_ServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement = 5159,
+  kOBSOLETE_ServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement =
+      5159,
   kHasCapUnits = 5160,
   kHasRcapUnits = 5161,
   kHasIcUnits = 5162,
@@ -5360,6 +5361,7 @@ enum WebFeature {
   kViewTransitionPreventSvgFilterPaint = 6043,
   kMulticastControllerJoinGroupWithSourceAddress = 6044,
   kCSSGridLanesLayout = 6045,
+  kSmartCardContextRelease = 6046,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

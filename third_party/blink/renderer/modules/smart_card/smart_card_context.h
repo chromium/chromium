@@ -56,6 +56,9 @@ class SmartCardContext final : public ScriptWrappable,
       SmartCardConnectOptions* options,
       ExceptionState& exception_state);
 
+  ScriptPromise<IDLUndefined> release(ScriptState* script_state,
+                                      ExceptionState& exception_state);
+
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
 
