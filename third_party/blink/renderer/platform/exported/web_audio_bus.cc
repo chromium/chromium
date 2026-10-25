@@ -24,6 +24,7 @@
 
 #include "third_party/blink/public/platform/web_audio_bus.h"
 
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
@@ -87,11 +88,12 @@ double WebAudioBus::SampleRate() const {
   return private_->SampleRate();
 }
 
-float* WebAudioBus::ChannelData(unsigned channel_index) {
-  if (!private_)
-    return nullptr;
-  DCHECK_LT(channel_index, NumberOfChannels());
-  return private_->Channel(channel_index)->MutableSpan().data();
+base::span<float> WebAudioBus::ChannelData(unsigned channel_index) {
+  if (!private_) {
+    return {};
+  }
+  CHECK_LT(channel_index, NumberOfChannels());
+  return private_->Channel(channel_index)->MutableSpan();
 }
 
 scoped_refptr<AudioBus> WebAudioBus::Release() {

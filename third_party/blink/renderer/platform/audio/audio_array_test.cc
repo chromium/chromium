@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/memory/aligned_memory.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
@@ -92,8 +94,22 @@ TEST(AudioBusTest, TryCreateBySampleRateConvertingInvalidSampleRate) {
       AudioBus::TryCreateBySampleRateConverting(bus.get(), false, 48000),
       nullptr);
 
-  // Set a valid sample rate. This should succeed and return a valid pointer.
+  // Set a valid source sample rate, and test invalid target sample rates.
   bus->SetSampleRate(44100);
+  EXPECT_EQ(AudioBus::TryCreateBySampleRateConverting(bus.get(), false, 0),
+            nullptr);
+  EXPECT_EQ(AudioBus::TryCreateBySampleRateConverting(bus.get(), false, -44100),
+            nullptr);
+  EXPECT_EQ(
+      AudioBus::TryCreateBySampleRateConverting(
+          bus.get(), false, audio_utilities::MinAudioBufferSampleRate() - 1),
+      nullptr);
+  EXPECT_EQ(
+      AudioBus::TryCreateBySampleRateConverting(
+          bus.get(), false, audio_utilities::MaxAudioBufferSampleRate() + 1),
+      nullptr);
+
+  // Both source and target sample rates are valid.
   EXPECT_NE(
       AudioBus::TryCreateBySampleRateConverting(bus.get(), false, 48000),
       nullptr);
@@ -109,4 +125,60 @@ TEST(WebAudioBusTest, SafeCast) {
   EXPECT_FALSE(success);
 }
 
-} // namespace blink
+namespace {
+
+class FakeAudioDecodePlatform : public TestingPlatformSupport {
+ public:
+  std::unique_ptr<WebAudioBus> DecodeAudioFileData(
+      base::span<const char> audio_file_data) override {
+    if (audio_file_data.empty()) {
+      return nullptr;
+    }
+    auto web_bus = std::make_unique<WebAudioBus>();
+    constexpr unsigned kChannels = 2;
+    constexpr size_t kFrames = 128;
+    constexpr double kNativeSampleRate = 44100.0;
+    CHECK(web_bus->TryInitialize(kChannels, kFrames, kNativeSampleRate));
+    std::ranges::fill(web_bus->ChannelData(0), 0.25f);
+    std::ranges::fill(web_bus->ChannelData(1), 0.75f);
+    return web_bus;
+  }
+};
+
+}  // namespace
+
+TEST(AudioBusTest, CreateBusFromInMemoryAudioFileNativeSampleRate) {
+  ScopedTestingPlatformSupport<FakeAudioDecodePlatform> platform;
+  const uint8_t fake_data[] = {1, 2, 3, 4};
+  scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
+      fake_data, /*mix_to_mono=*/false, /*sample_rate=*/0.0f);
+  ASSERT_NE(bus, nullptr);
+  EXPECT_EQ(bus->SampleRate(), 44100.0f);
+  EXPECT_EQ(bus->NumberOfChannels(), 2u);
+  EXPECT_EQ(bus->length(), 128u);
+  EXPECT_FLOAT_EQ(bus->Channel(0)->Span()[0], 0.25f);
+  EXPECT_FLOAT_EQ(bus->Channel(1)->Span()[0], 0.75f);
+}
+
+TEST(AudioBusTest, CreateBusFromInMemoryAudioFileNativeSampleRateMixToMono) {
+  ScopedTestingPlatformSupport<FakeAudioDecodePlatform> platform;
+  const uint8_t fake_data[] = {1, 2, 3, 4};
+  scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
+      fake_data, /*mix_to_mono=*/true, /*sample_rate=*/0.0f);
+  ASSERT_NE(bus, nullptr);
+  EXPECT_EQ(bus->SampleRate(), 44100.0f);
+  EXPECT_EQ(bus->NumberOfChannels(), 1u);
+  EXPECT_EQ(bus->length(), 128u);
+  EXPECT_FLOAT_EQ(bus->Channel(0)->Span()[0], 0.5f);
+}
+
+TEST(AudioBusTest,
+     CreateBusFromInMemoryAudioFileNegativeSampleRateReturnsNull) {
+  ScopedTestingPlatformSupport<FakeAudioDecodePlatform> platform;
+  const uint8_t fake_data[] = {1, 2, 3, 4};
+  scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
+      fake_data, /*mix_to_mono=*/false, /*sample_rate=*/-44100.0f);
+  EXPECT_EQ(bus, nullptr);
+}
+
+}  // namespace blink

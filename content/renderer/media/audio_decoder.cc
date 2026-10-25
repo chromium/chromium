@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -75,8 +74,7 @@ std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
   std::vector<base::SpanWriter<float>> dest_channels;
   dest_channels.reserve(number_of_channels);
   for (size_t ch = 0; ch < number_of_channels; ++ch) {
-    dest_channels.emplace_back(
-        UNSAFE_TODO(base::span(out->ChannelData(ch), out->length())));
+    dest_channels.emplace_back(out->ChannelData(ch));
   }
 
   // Append all `decoded_audio_packets`, channel per channel.

@@ -625,8 +625,10 @@ scoped_refptr<AudioBus> AudioBus::TryCreateBySampleRateConverting(
     const AudioBus* source_bus,
     bool mix_to_mono,
     double new_sample_rate) {
-  if (!source_bus || !audio_utilities::IsValidAudioBufferSampleRate(
-                         source_bus->SampleRate())) {
+  if (!source_bus ||
+      !audio_utilities::IsValidAudioBufferSampleRate(
+          source_bus->SampleRate()) ||
+      !audio_utilities::IsValidAudioBufferSampleRate(new_sample_rate)) {
     return nullptr;
   }
 
@@ -812,14 +814,17 @@ scoped_refptr<AudioBus> AudioBus::CreateBusFromInMemoryAudioFile(
     return nullptr;
   }
 
+  const float target_sample_rate =
+      sample_rate == 0.0f ? audio_bus->SampleRate() : sample_rate;
+
   // If the bus needs no conversion then return as is.
   if ((!mix_to_mono || audio_bus->NumberOfChannels() == 1) &&
-      audio_bus->SampleRate() == sample_rate) {
+      audio_bus->SampleRate() == target_sample_rate) {
     return audio_bus;
   }
 
   return AudioBus::TryCreateBySampleRateConverting(audio_bus.get(), mix_to_mono,
-                                                   sample_rate);
+                                                   target_sample_rate);
 }
 
 }  // namespace blink

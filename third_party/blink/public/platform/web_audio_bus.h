@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_BUS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_BUS_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -63,7 +64,7 @@ class BLINK_PLATFORM_EXPORT WebAudioBus {
   size_t length() const;
   double SampleRate() const;
 
-  float* ChannelData(unsigned channel_index);
+  base::span<float> ChannelData(unsigned channel_index);
 
 #if INSIDE_BLINK
   scoped_refptr<AudioBus> Release();
