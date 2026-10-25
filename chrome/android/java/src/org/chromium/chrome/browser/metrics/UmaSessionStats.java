@@ -50,8 +50,6 @@ import org.chromium.url.GURL;
 public class UmaSessionStats {
     private static final String TAG = "UmaSessionStats";
 
-    private static long sNativeUmaSessionStats;
-
     // TabModelSelector is needed to get the count of open tabs. We want to log the number of open
     // tabs on every page load.
     private @Nullable TabModelSelector mTabModelSelector;
@@ -132,7 +130,6 @@ public class UmaSessionStats {
             @ActivityType int activityType,
             @Nullable TabModelSelector tabModelSelector,
             @Nullable AndroidPermissionDelegate permissionDelegate) {
-        ensureNativeInitialized();
         mTabbedSessionContainedGoogleSearch = false;
         mCurrentActivityType = activityType;
 
@@ -173,18 +170,10 @@ public class UmaSessionStats {
                     };
         }
 
-        UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats);
+        UmaSessionStatsJni.get().umaResumeSession();
         updatePreferences();
         updateMetricsServiceState();
         DefaultBrowserInfoUmaRecorder.logDefaultBrowserStats();
-    }
-
-    private static void ensureNativeInitialized() {
-        // Lazily create the native object and the notification handler. These objects are never
-        // destroyed.
-        if (sNativeUmaSessionStats == 0) {
-            sNativeUmaSessionStats = UmaSessionStatsJni.get().init();
-        }
     }
 
     /** Unregisters observers, and if this is the last active session, logs the current session. */
@@ -201,7 +190,7 @@ public class UmaSessionStats {
                     mTabbedSessionContainedGoogleSearch);
         }
 
-        UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats);
+        UmaSessionStatsJni.get().umaEndSession();
     }
 
     /**
@@ -309,8 +298,6 @@ public class UmaSessionStats {
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        long init();
-
         void changeMetricsReportingState(boolean enabled, int calledFrom);
 
         void initMetricsAndCrashReportingForTesting();
@@ -321,9 +308,9 @@ public class UmaSessionStats {
 
         void updateMetricsServiceState(boolean mayUpload);
 
-        void umaResumeSession(long nativeUmaSessionStats);
+        void umaResumeSession();
 
-        void umaEndSession(long nativeUmaSessionStats);
+        void umaEndSession();
 
         void registerExternalExperiment(
                 @JniType("std::vector<int32_t>") int[] experimentIds, boolean overrideExistingIds);

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-
 import android.content.ComponentName;
 import android.content.Intent;
 
@@ -88,8 +86,8 @@ public class UmaActivityObserverTest {
                     Assert.assertEquals(
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession();
 
         // Create second CTA window. This should be unnecessary but I cannot figure out how to
         // convince Android to create an adjacent window for a new Activity. In any case, this
@@ -108,8 +106,8 @@ public class UmaActivityObserverTest {
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
         // Resume needs to happen before end to ensure the log isn't closed.
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession();
 
         // Start a CCT over the second window.
         Intent intent =
@@ -125,8 +123,8 @@ public class UmaActivityObserverTest {
         mCctTestRule.startCustomTabActivityWithIntent(intent);
         CriteriaHelper.pollUiThread(
                 () -> UmaActivityObserver.getCurrentActivityType() == ActivityType.CUSTOM_TAB);
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
@@ -145,8 +143,8 @@ public class UmaActivityObserverTest {
 
         CriteriaHelper.pollUiThread(
                 () -> UmaActivityObserver.getCurrentActivityType() == ActivityType.TABBED);
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
@@ -162,8 +160,8 @@ public class UmaActivityObserverTest {
 
         CriteriaHelper.pollUiThread(
                 () -> UmaActivityObserver.getCurrentActivityType() == ActivityType.CUSTOM_TAB);
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession();
     }
 
     @Test
@@ -177,8 +175,8 @@ public class UmaActivityObserverTest {
                     Assert.assertEquals(
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession();
 
         // Open settings, preserving the session.
         SettingsStation settingsStation = pageInFirstWindow.openRegularTabAppMenu().openSettings();
@@ -187,8 +185,8 @@ public class UmaActivityObserverTest {
                     Assert.assertEquals(
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaResumeSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession();
 
         // Start a non-chrome activity (file chooser) for result so we can close it.
         int requestCode = 1234;
@@ -201,8 +199,8 @@ public class UmaActivityObserverTest {
                     () ->
                             ApplicationStatus.getStateForActivity(settingsStation.getActivity())
                                     == ActivityState.STOPPED);
-            mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaResumeSession(anyLong());
-            mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession(anyLong());
+            mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaResumeSession();
+            mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession();
         } finally {
             // Close the file chooser activity.
             settingsStation.getActivity().finishActivity(requestCode);
@@ -217,8 +215,8 @@ public class UmaActivityObserverTest {
         // separate SettingsActivity, ideally we would re-start the session here, but this is
         // complicated and enough of an edge case that it's not worth fixing for now.
         mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(settingsInTab ? 1 : 0))
-                .umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
+                .umaResumeSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession();
 
         // Close settings and return to Tabbed activity.
         if (settingsInTab) {
@@ -239,7 +237,7 @@ public class UmaActivityObserverTest {
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
         mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(settingsInTab ? 0 : 1))
-                .umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
+                .umaResumeSession();
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession();
     }
 }
