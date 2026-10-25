@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test_base.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -110,6 +111,13 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // In-product help can conflict with tests' expected window activation and
+  // focus. Individual tests can re-enable IPH using another
+  // ScopedIphFeatureList.
+  feature_engagement::test::ScopedIphFeatureList block_all_iph_feature_list_;
 
   bool use_test_network_connection_tracker_ = true;
 
