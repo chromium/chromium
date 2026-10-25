@@ -39,20 +39,31 @@ using ::chrome_test_util::ForwardButton;
 using ::chrome_test_util::PrimaryToolbar;
 using ::chrome_test_util::SecondaryToolbar;
 
-// Open split screen. Should only be invoked for iPad.
+// Forces compact horizontal size class to simulate split screen. Should only
+// be invoked for iPad.
 void OpenSplitScreen() {
-  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad without multiwindow support.");
-  }
-  [ChromeEarlGrey openNewWindow];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
-                                                        WindowWithNumber(0)];
+  GREYAssertTrue([ChromeEarlGrey isIPadIdiom],
+                 @"OpenSplitScreen should only be invoked on iPad.");
+  chrome_test_util::GetAnyKeyWindow().traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
 }
 
 // Reload the current page from omnibox.
 void ReloadFromOmnibox() {
   [ChromeEarlGreyUI focusOmnibox];
+  // The simulated Return key is delivered to the current first responder. On
+  // iPad, the omnibox text input occasionally resigns first responder right
+  // after being focused while its popup stays presented; the key press would
+  // then be dropped and no reload would happen. Tap the text input in that
+  // case so that it owns focus before pressing Return.
+  id<GREYMatcher> focusedOmnibox =
+      grey_allOf(chrome_test_util::Omnibox(), grey_firstResponder(), nil);
+  if (![ChromeEarlGrey testUIElementAppearanceWithMatcher:focusedOmnibox
+                                                  timeout:base::Seconds(2)]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_tap()];
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:focusedOmnibox];
+  }
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   [ChromeEarlGrey waitForPageToFinishLoading];
 }
@@ -99,6 +110,8 @@ void ReloadFromOmnibox() {
       resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [self addTeardownBlock:^{
     GREYWaitForAppToIdle(@"App failed to idle");
+    chrome_test_util::GetAnyKeyWindow().traitOverrides.horizontalSizeClass =
+        UIUserInterfaceSizeClassUnspecified;
     [ChromeEarlGrey closeAllExtraWindows];
     [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
     ResetFirstRunRecency();
@@ -135,11 +148,6 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
 - (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/508240659): Test is flaky on ios-fieldtrial-rel.
-    EARL_GREY_TEST_DISABLED(
-        @"Test disabled on iPad due to flakiness from split screen.");
-  }
   [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
                 safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -200,14 +208,8 @@ void ReloadFromOmnibox() {
       @"Pull to refresh IPH did not dismiss after changing tab.");
 }
 
-// Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
-// TODO(crbug.com/508240659): Test is flaky on ios-fieldtrial-rel.
+// Tests that the pull-to-refresh IPH disappears when entering the tab grid.
 - (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/508240659): Test is flaky on ios-fieldtrial-rel.
-    EARL_GREY_TEST_DISABLED(
-        @"Test disabled on iPad due to flakiness from split screen.");
-  }
   [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
                 safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -235,11 +237,6 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/508240659): Test is flaky on ios-fieldtrial-rel.
-    EARL_GREY_TEST_DISABLED(
-        @"Test disabled on iPad due to flakiness from split screen.");
-  }
   [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
                 safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -308,11 +305,6 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
 - (void)testPullToRefreshPerformAction {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/508240659): Test is flaky on ios-fieldtrial-rel.
-    EARL_GREY_TEST_DISABLED(
-        @"Test disabled on iPad due to flakiness from split screen.");
-  }
   [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
                 safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
