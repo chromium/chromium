@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -95,7 +96,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphFirstLetterPre) {
   EXPECT_EQ(Position(text, 3),
             EndOfParagraph(CreateVisiblePositionInDomTree(*text, 2))
                 .DeepEquivalent());
-  EXPECT_EQ(Position(text, 6),
+  EXPECT_EQ(Position(text, 3),
             EndOfParagraph(CreateVisiblePositionInDomTree(*text, 3))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
@@ -196,6 +197,59 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimplePre) {
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
             EndOfParagraph(CreateVisiblePositionInDomTree(*text, 6))
+                .DeepEquivalent());
+}
+
+TEST_F(VisibleUnitsParagraphTest, StartOfParagraphSimplePre) {
+  SetBodyContent("<pre id=sample>1ab\nde</pre>");
+  Node* text = GetElementById("sample")->firstChild();
+
+  for (int offset : {0, 1, 2, 3}) {
+    EXPECT_EQ(Position(text, 0),
+              StartOfParagraph(CreateVisiblePositionInDomTree(*text, offset))
+                  .DeepEquivalent())
+        << "offset " << offset;
+  }
+  for (int offset : {4, 5, 6}) {
+    EXPECT_EQ(Position(text, 4),
+              StartOfParagraph(CreateVisiblePositionInDomTree(*text, offset))
+                  .DeepEquivalent())
+        << "offset " << offset;
+  }
+}
+
+TEST_F(VisibleUnitsParagraphTest, StartOfParagraphFirstLetterPre) {
+  SetBodyContent(
+      "<style>pre::first-letter { color: red }</style>"
+      "<pre id=sample>1ab\nde</pre>");
+  Node* text = GetElementById("sample")->firstChild();
+
+  // Must match StartOfParagraphSimplePre: styling the first letter must not
+  // move paragraph boundaries.
+  for (int offset : {0, 1, 2, 3}) {
+    EXPECT_EQ(Position(text, 0),
+              StartOfParagraph(CreateVisiblePositionInDomTree(*text, offset))
+                  .DeepEquivalent())
+        << "offset " << offset;
+  }
+  for (int offset : {4, 5, 6}) {
+    EXPECT_EQ(Position(text, 4),
+              StartOfParagraph(CreateVisiblePositionInDomTree(*text, offset))
+                  .DeepEquivalent())
+        << "offset " << offset;
+  }
+}
+
+TEST_F(VisibleUnitsParagraphTest, FirstLetterParagraphOffsetsDisabled) {
+  ScopedFirstLetterParagraphOffsetsForTest disable_flag(false);
+  SetBodyContent(
+      "<style>pre::first-letter { color: red }</style>"
+      "<pre id=sample>1ab\nde</pre>");
+  Node* text = GetElementById("sample")->firstChild();
+
+  // With the flag disabled, the old behavior returns 6 for offset 3.
+  EXPECT_EQ(Position(text, 6),
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 3))
                 .DeepEquivalent());
 }
 

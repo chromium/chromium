@@ -3251,6 +3251,10 @@
       status: "stable",
     },
     {
+      name: "FirstLetterParagraphOffsets",
+      status: "stable",
+    },
+    {
       // https://github.com/w3c/csswg-drafts/issues/13926
       name: "FirstLineAndLetterExcludeInputTextarea",
       status: "stable",
