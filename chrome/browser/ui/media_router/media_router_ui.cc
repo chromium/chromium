@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -154,8 +155,8 @@ MediaRouterUI::CreateWithMediaSessionRemotePlayback(
     content::WebContents* initiator,
     media::VideoCodec video_codec,
     media::AudioCodec audio_codec) {
-  DCHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
-  DCHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
+  CHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
+  CHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
   return CreateMediaRouterUI(MediaRouterUIParameters(
       CreateMediaCastModeSet(MediaCastMode::REMOTE_PLAYBACK), initiator,
       nullptr, video_codec, audio_codec));

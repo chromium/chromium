@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -378,8 +379,8 @@ void MediaRouteStarter::InitRemotePlaybackSources(
   if (!IsCastModeAvailable(initial_modes, MediaCastMode::REMOTE_PLAYBACK)) {
     return;
   }
-  DCHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
-  DCHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
+  CHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
+  CHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
 
   // Use a placeholder URL as origin for Remote Playback.
   url::Origin origin = url::Origin::Create(GURL());
