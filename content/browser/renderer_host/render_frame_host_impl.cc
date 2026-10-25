@@ -13724,8 +13724,8 @@ void RenderFrameHostImpl::DiscardFrame(base::OnceClosure on_discarded_cb) {
           // terminated dedicated renderer processes after running unload
           // handlers.
           self->GetProcess()->FastShutdownIfPossible(
-              0u, /*skip_unload_handlers=*/true,
-              /*ignore_workers=*/false,
+              /*page_count=*/0u, /*skip_unload_handlers=*/true,
+              /*ignore_workers=*/true,
               /*ignore_keep_alive=*/false,
               /*ignore_pending_reuse=*/false,
               /*use_outermost_main_frame_check=*/true);

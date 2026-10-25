@@ -294,6 +294,9 @@ bool MockRenderProcessHost::FastShutdownIfPossible(
       GetActiveViewCount() != page_count) {
     return false;
   }
+  if (worker_ref_count_ > 0 && !ignore_workers) {
+    return false;
+  }
   // We aren't actually going to do anything, but set |fast_shutdown_started_|
   // to true so that tests know we've been called.
   fast_shutdown_started_ = true;

@@ -1390,6 +1390,37 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverrideAndroid) {
 }
 #endif
 
+// Observer that listens for process exits and counts when they are treated as
+// fast shutdown cases.
+class FastShutdownExitObserver : public RenderProcessHostObserver {
+ public:
+  explicit FastShutdownExitObserver(RenderProcessHost* process) {
+    observation_.Observe(process);
+  }
+  ~FastShutdownExitObserver() override = default;
+
+  // RenderProcessHostObserver:
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override {
+    if (host->FastShutdownStarted()) {
+      fast_shutdown_exit_count_++;
+    }
+  }
+
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override {
+    observation_.Reset();
+  }
+
+  int fast_shutdown_exit_count() { return fast_shutdown_exit_count_; }
+
+  void reset_exit_count() { fast_shutdown_exit_count_ = 0; }
+
+ private:
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_{this};
+  int fast_shutdown_exit_count_ = 0;
+};
+
 class DiscardFrameBrowserTest : public RenderProcessHostTestBase,
                                 public WebContentsObserver {
  public:
@@ -1440,7 +1471,7 @@ IN_PROC_BROWSER_TEST_F(DiscardFrameBrowserTest,
 
   // Keep the renderer process alive after discard.
   EXPECT_TRUE(process->IsInitializedAndNotDead());
-  process->IncrementWorkerRefCount();
+  process->IncrementPendingReuseRefCount();
 
   // Discard the page.
   web_contents().Discard(base::NullCallback());
@@ -1458,6 +1489,37 @@ IN_PROC_BROWSER_TEST_F(DiscardFrameBrowserTest,
     return process->GetPriority() == base::Process::Priority::kBestEffort;
   }));
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+
+  process->DecrementPendingReuseRefCount();
+}
+
+IN_PROC_BROWSER_TEST_F(DiscardFrameBrowserTest, VerifyFastShutdownWithWorker) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderProcessHost* process =
+      web_contents().GetPrimaryMainFrame()->GetProcess();
+
+  // Add a worker to the process.
+  EXPECT_TRUE(process->IsInitializedAndNotDead());
+  process->IncrementWorkerRefCount();
+
+  FastShutdownExitObserver fast_shutdown_observer(process);
+  RenderProcessHostWatcher watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  // Discard the page and verify that Stage 2 (the LocalMainFrame::Discard()
+  // reply callback) initiates fast shutdown synchronously before running the
+  // discard completion callback, rather than waiting ~500ms for
+  // DiscardedRFHProcessHelper.
+  base::RunLoop run_loop;
+  web_contents().Discard(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(process->FastShutdownStarted());
+  watcher.Wait();
+
+  EXPECT_EQ(1, fast_shutdown_observer.fast_shutdown_exit_count());
+  EXPECT_FALSE(process->IsInitializedAndNotDead());
 
   process->DecrementWorkerRefCount();
 }
@@ -1622,33 +1684,6 @@ class LeakCleanupObserver : public WebContentsObserver {
   int termination_count_ = 0;
 };
 
-// Observer that listens for process exits and counts when they are treated as
-// fast shutdown cases.
-class FastShutdownExitObserver : public RenderProcessHostObserver {
- public:
-  explicit FastShutdownExitObserver(RenderProcessHost* process) {
-    process->AddObserver(this);
-  }
-  ~FastShutdownExitObserver() override = default;
-
-  // RenderProcessHostObserver:
-  void RenderProcessExited(RenderProcessHost* host,
-                           const ChildProcessTerminationInfo& info) override {
-    if (host->FastShutdownStarted())
-      fast_shutdown_exit_count_++;
-  }
-
-  void RenderProcessHostDestroyed(RenderProcessHost* host) override {
-    host->RemoveObserver(this);
-  }
-
-  int fast_shutdown_exit_count() { return fast_shutdown_exit_count_; }
-
-  void reset_exit_count() { fast_shutdown_exit_count_ = 0; }
-
- private:
-  int fast_shutdown_exit_count_ = 0;
-};
 
 }  // namespace
 
