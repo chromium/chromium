@@ -96,7 +96,10 @@ struct EpWorkarounds {
   bool resample2d_limit_to_nchw = false;
 
   // Whether the EP may report the NPU driver version in legacy concatenated
-  // format (e.g., "1004404") instead of 4-part dot-separated format.
+  // format (e.g., "1004404") instead of 4-part dot-separated format. This is
+  // a per-EP reporting format statement queried directly by
+  // IsNpuDriverVersionBlocked(), so it is intentionally not merged in
+  // operator|=.
   bool npu_concatenated_driver_version = false;
 
   EpWorkarounds& operator|=(const EpWorkarounds& other) {
