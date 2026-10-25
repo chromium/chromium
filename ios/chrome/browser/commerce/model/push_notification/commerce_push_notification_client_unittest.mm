@@ -328,20 +328,18 @@ TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
   commerce_push_notification_client_->HandleNotificationReception(dict);
 }
 
-// TODO(crbug.com/422437406): Re-enable the test by correcting the expectation.
-TEST_F(CommercePushNotificationClientTest,
-       DISABLED_TestNotificationInteraction) {
+TEST_F(CommercePushNotificationClientTest, TestNotificationInteraction) {
   NSDictionary* user_info = SerializeOptGuideCommercePayload();
-
-  // Simulate user clicking 'visit site'.
-  HandleNotificationInteraction(kVisitSiteActionId, user_info,
-                                base::DoNothing());
 
   // Check PriceDropNotification Destination URL loaded.
   OCMExpect([application_handler_
       openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
         return kHintKey == command.URL;
       }]]);
+
+  // Simulate user clicking 'visit site'.
+  HandleNotificationInteraction(kVisitSiteActionId, user_info,
+                                base::DoNothing());
 }
 
 TEST_F(CommercePushNotificationClientTest, TestActionableNotifications) {
@@ -412,8 +410,7 @@ TEST_F(CommercePushNotificationClientTest, TestUntrackPriceFailed) {
                                      /*sample=*/true, /*expected_count=*/1);
 }
 
-// TODO(crbug.com/422436433): Re-enable the test by correcting the expectation.
-TEST_F(CommercePushNotificationClientTest, DISABLED_TestBrowserInitialization) {
+TEST_F(CommercePushNotificationClientTest, TestBrowserInitialization) {
   browser_list_->RemoveBrowser(GetBrowser());
   NSDictionary* user_info = SerializeOptGuideCommercePayload();
 
@@ -424,14 +421,15 @@ TEST_F(CommercePushNotificationClientTest, DISABLED_TestBrowserInitialization) {
   CommercePushNotificationClient* commerce_push_notification_client =
       GetCommercePushNotificationClient();
   browser_list_->AddBrowser(GetBrowser());
-  commerce_push_notification_client->OnSceneActiveForegroundBrowserReady();
-  EXPECT_TRUE(GetActionsDelayedForLoading().empty());
 
   // Check PriceDropNotification Destination URL loaded.
   OCMExpect([application_handler_
       openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
         return kHintKey == command.URL;
       }]]);
+
+  commerce_push_notification_client->OnSceneActiveForegroundBrowserReady();
+  EXPECT_TRUE(GetActionsDelayedForLoading().empty());
 }
 
 TEST_F(CommercePushNotificationClientTest,
