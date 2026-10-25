@@ -134,11 +134,13 @@ class SBDatabase {
   // Searches for hash prefixes matching the `full_hashes` in stores in the
   // database, filtered by `stores_to_check`. The callback is run
   // asynchronously, with the identifier of the stores along with the matching
-  // hash prefixes.
+  // hash prefixes. When `reply_task_runner` is provided, `callback` is posted
+  // onto `reply_task_runner` instead of the caller's default task runner.
   virtual void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
-      base::OnceCallback<void(DbLookupResult)> callback);
+      base::OnceCallback<void(DbLookupResult)> callback,
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner);
 
   // Returns the file size of the store in bytes. Returns 0 if the store is not
   // found.

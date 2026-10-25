@@ -470,7 +470,8 @@ SafeBrowsingUrlCheckerImpl::GetHashRealTimeLookupMechanism(
   return std::make_unique<DatabaseManagerMechanism>(
       url, url_checker_delegate_->GetThreatTypes(), database_manager_,
       /*check_type=*/CheckBrowseUrlType::kHashRealTime,
-      /*check_allowlist=*/false, v5_get_hash_protocol_manager_);
+      /*check_allowlist=*/false, v5_get_hash_protocol_manager_,
+      /*custom_callback_task_runner=*/nullptr);
 }
 
 SafeBrowsingUrlCheckerImpl::KickOffLookupMechanismResult
@@ -533,7 +534,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         /*check_type=*/CheckBrowseUrlType::kHashDatabase,
         /*check_allowlist=*/check_allowlist_before_hash_database_,
-        v5_get_hash_protocol_manager_);
+        v5_get_hash_protocol_manager_, ui_task_runner_);
   }
   DCHECK(performed_check != PerformedCheck::kUnknown);
   lookup_mechanism_runner_ =

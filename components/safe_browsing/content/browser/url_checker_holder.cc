@@ -15,6 +15,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
@@ -69,7 +70,8 @@ UrlCheckerHolder::UrlCheckerHolder(
     SessionID tab_id,
     std::optional<internal::ReferringAppInfo> referring_app_info,
     base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
-        v5_get_hash_protocol_manager)
+        v5_get_hash_protocol_manager,
+    bool prioritize_navigation_callbacks)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       navigation_id_(navigation_id),
@@ -87,7 +89,8 @@ UrlCheckerHolder::UrlCheckerHolder(
           check_allowlist_before_hash_database),
       tab_id_(tab_id),
       referring_app_info_(referring_app_info),
-      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {}
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
+      prioritize_navigation_callbacks_(prioritize_navigation_callbacks) {}
 
 UrlCheckerHolder::~UrlCheckerHolder() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -108,10 +111,14 @@ void UrlCheckerHolder::Start(const StartParams& params) {
         frame_tree_node_id_.value(), navigation_id_,
         url_real_time_lookup_enabled_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
-        content::GetUIThreadTaskRunner({}), url_lookup_service_,
-        hash_realtime_service_, hash_realtime_selection_, is_async_check_,
-        check_allowlist_before_hash_database_, tab_id_, referring_app_info_,
-        v5_get_hash_protocol_manager_);
+        content::GetUIThreadTaskRunner(
+            prioritize_navigation_callbacks_
+                ? content::BrowserTaskTraits{content::BrowserTaskType::
+                                                 kNavigationNetworkResponse}
+                : content::BrowserTaskTraits{}),
+        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
+        is_async_check_, check_allowlist_before_hash_database_, tab_id_,
+        referring_app_info_, v5_get_hash_protocol_manager_);
   }
 
   CheckUrl(params.url, params.method);

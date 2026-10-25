@@ -299,7 +299,8 @@ class FakeSBDatabase : public SBDatabase {
   void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
-      base::OnceCallback<void(DbLookupResult)> callback) override {
+      base::OnceCallback<void(DbLookupResult)> callback,
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
     DbLookupResult lookup_result;
     lookup_result.db_thread_post_time = base::TimeTicks::Now();
     lookup_result.db_thread_start_time = base::TimeTicks::Now();
@@ -317,9 +318,10 @@ class FakeSBDatabase : public SBDatabase {
     }
     lookup_result.db_thread_end_time = base::TimeTicks::Now();
     // Simulate async behavior of real implementation.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(lookup_result)));
+    (reply_task_runner ? std::move(reply_task_runner)
+                       : base::SequencedTaskRunner::GetCurrentDefault())
+        ->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                             std::move(lookup_result)));
   }
 
   // SBDatabase implementation

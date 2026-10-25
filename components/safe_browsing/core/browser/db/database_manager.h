@@ -130,6 +130,12 @@ class SafeBrowsingDatabaseManager
     virtual base::WeakPtr<V5GetHashProtocolManager>
     GetV5GetHashProtocolManager() = 0;
 
+    // Returns the UI thread task runner on which asynchronous database lookup
+    // replies for this client should be posted, or nullptr to use the caller's
+    // default task runner.
+    virtual scoped_refptr<base::SequencedTaskRunner>
+    GetCustomCallbackTaskRunner();
+
     // Returns a WeakPtr to this.
     base::WeakPtr<Client> GetWeakPtr();
 

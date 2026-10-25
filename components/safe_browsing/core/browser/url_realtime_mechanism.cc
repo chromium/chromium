@@ -382,7 +382,8 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
     hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
         url, threat_types_, database_manager_,
         /*check_type=*/CheckBrowseUrlType::kHashDatabase,
-        /*check_allowlist=*/false, v5_get_hash_protocol_manager_);
+        /*check_allowlist=*/false, v5_get_hash_protocol_manager_,
+        /*custom_callback_task_runner=*/nullptr);
     result = hash_database_mechanism_->StartCheck(
         base::BindOnce(&UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
                        weak_factory_.GetWeakPtr(), fallback_trigger));

@@ -726,7 +726,8 @@ TEST_P(SBDatabaseTest_V4V5, TestAllStoresMatchFullHash) {
       {expected_identifiers_[0], expected_identifiers_[1]});
   base::test::TestFuture<DbLookupResult> results;
   sb_database_->GetStoresMatchingFullHash({"anything"}, stores_to_check,
-                                          results.GetCallback());
+                                          results.GetCallback(),
+                                          /*reply_task_runner=*/nullptr);
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(2u, store_and_hash_prefixes.size());
@@ -735,6 +736,40 @@ TEST_P(SBDatabaseTest_V4V5, TestAllStoresMatchFullHash) {
     stores_found.insert(it.list_id);
   }
   EXPECT_EQ(stores_to_check, stores_found);
+}
+
+// Verifies that when `reply_task_runner` is provided to
+// `GetStoresMatchingFullHash`, the completion callback is posted onto
+// `reply_task_runner` instead of the caller's default task runner.
+TEST_P(SBDatabaseTest_V4V5, TestGetStoresMatchingFullHashReplyTaskRunner) {
+  RegisterFactory(/*hash_prefix_matches=*/true);
+
+  auto db_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  WaitForSBDatabaseReady(db_task_runner,
+                         /*simple_task_runners_to_wait_for=*/{db_task_runner});
+
+  auto reply_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  bool callback_called = false;
+  sb_database_->GetStoresMatchingFullHash(
+      {"anything"},
+      StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]}),
+      base::BindOnce(
+          [](bool* called, DbLookupResult result) {
+            *called = true;
+            EXPECT_EQ(2u, result.results["anything"].size());
+          },
+          &callback_called),
+      reply_task_runner);
+
+  db_task_runner->RunPendingTasks();
+  EXPECT_FALSE(callback_called);
+  EXPECT_TRUE(reply_task_runner->HasPendingTask());
+
+  reply_task_runner->RunPendingTasks();
+  EXPECT_TRUE(callback_called);
+
+  sb_database_.reset();
+  db_task_runner->RunPendingTasks();
 }
 
 // Test to ensure the case that no stores match a given full hash.
@@ -749,7 +784,7 @@ TEST_P(SBDatabaseTest_V4V5, TestNoStoreMatchesFullHash) {
   sb_database_->GetStoresMatchingFullHash(
       {"anything"},
       StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]}),
-      results.GetCallback());
+      results.GetCallback(), /*reply_task_runner=*/nullptr);
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_TRUE(store_and_hash_prefixes.empty());
@@ -781,7 +816,7 @@ TEST_P(SBDatabaseTest_V4V5, TestSomeStoresMatchFullHash) {
   sb_database_->GetStoresMatchingFullHash(
       {"anything"},
       StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]}),
-      results.GetCallback());
+      results.GetCallback(), /*reply_task_runner=*/nullptr);
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(1u, store_and_hash_prefixes.size());
@@ -803,7 +838,7 @@ TEST_P(SBDatabaseTest_V4V5, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
   base::test::TestFuture<DbLookupResult> results;
   sb_database_->GetStoresMatchingFullHash(
       {"anything"}, StoresToCheck({expected_identifiers_[1]}),
-      results.GetCallback());
+      results.GetCallback(), /*reply_task_runner=*/nullptr);
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(1u, store_and_hash_prefixes.size());
@@ -853,7 +888,7 @@ TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCorruptedStoreAndReset) {
     base::test::TestFuture<DbLookupResult> results;
     sb_database_->GetStoresMatchingFullHash(
         {full_hash}, StoresToCheck({corrupted_id, healthy_id}),
-        results.GetCallback());
+        results.GetCallback(), /*reply_task_runner=*/nullptr);
     FullHashToStoreAndHashPrefixesMap map = results.Get().results;
     std::unordered_set<ListIdentifier> matched;
     for (const auto& match : map[full_hash]) {

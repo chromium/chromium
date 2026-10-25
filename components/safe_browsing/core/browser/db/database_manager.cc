@@ -21,6 +21,11 @@ namespace safe_browsing {
 SafeBrowsingDatabaseManager::Client::Client(base::PassKey<Client> pass_key) {}
 SafeBrowsingDatabaseManager::Client::~Client() = default;
 
+scoped_refptr<base::SequencedTaskRunner>
+SafeBrowsingDatabaseManager::Client::GetCustomCallbackTaskRunner() {
+  return nullptr;
+}
+
 base::WeakPtr<SafeBrowsingDatabaseManager::Client>
 SafeBrowsingDatabaseManager::Client::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

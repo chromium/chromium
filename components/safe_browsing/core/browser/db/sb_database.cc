@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -379,7 +380,8 @@ bool SBDatabase::AreAllStoresAvailable(
 void SBDatabase::GetStoresMatchingFullHash(
     const std::vector<FullHashStr>& full_hashes,
     const StoresToCheck& stores_to_check,
-    base::OnceCallback<void(DbLookupResult)> callback) {
+    base::OnceCallback<void(DbLookupResult)> callback,
+    scoped_refptr<base::SequencedTaskRunner> reply_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::pair<ListIdentifier, SBStore*>> stores;
@@ -398,8 +400,18 @@ void SBDatabase::GetStoresMatchingFullHash(
 
   // The SBStores ptrs are guaranteed to be valid because their deletion would
   // be sequenced on the DB thread, after this posted task is serviced.
-  db_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, std::move(check_stores), std::move(callback));
+  // When `reply_task_runner` is provided (e.g. `kNavigationNetworkResponse` for
+  // navigation-blocking checks), post the lookup reply onto it instead of
+  // `GetCurrentDefault()`, which is `QueueType::kDefault` when initiated from
+  // `NavigationURLLoaderImpl::Start` and would otherwise priority-invert local
+  // hash-prefix lookup completion.
+  db_task_runner_->PostTask(
+      FROM_HERE, std::move(check_stores)
+                     .Then(base::BindPostTask(
+                         reply_task_runner
+                             ? std::move(reply_task_runner)
+                             : base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback))));
 }
 
 void SBDatabase::ResetStores(

@@ -854,7 +854,8 @@ void SBLocalDatabaseManager::GetPrefixMatches(
 
   check->local_db_lookup_start_time = base::TimeTicks::Now();
   sb_database_->GetStoresMatchingFullHash(
-      check->full_hashes, check->stores_to_check, std::move(callback));
+      check->full_hashes, check->stores_to_check, std::move(callback),
+      check->client ? check->client->GetCustomCallbackTaskRunner() : nullptr);
 }
 
 void SBLocalDatabaseManager::GetSeverestThreatTypeAndMetadata(

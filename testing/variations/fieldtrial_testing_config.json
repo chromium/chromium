@@ -14691,6 +14691,24 @@
             ]
         }
     ],
+    "PrioritizeSafeBrowsingNavigationCallbacks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrioritizeSafeBrowsingNavigationCallbacks"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivateInsights": [
         {
             "platforms": [

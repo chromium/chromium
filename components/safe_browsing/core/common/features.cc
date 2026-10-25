@@ -452,6 +452,9 @@ BASE_FEATURE(kNoticeQueueForEsb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrioritizeSafeBrowsingNavigationCallbacks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProactivePasswordProtection, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<double> kCsdProactivePasswordProtectionSampleRate{
     &kProactivePasswordProtection, "CsdProactivePasswordProtectionSampleRate",
