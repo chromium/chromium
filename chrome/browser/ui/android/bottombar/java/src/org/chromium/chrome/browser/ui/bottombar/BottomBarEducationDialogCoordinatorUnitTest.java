@@ -39,12 +39,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.EducationOnboardingEvent;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -156,6 +158,15 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
 
     @Test
     public void testPositiveButton() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.ACCEPTED)
+                        .build();
         assertTrue(mCoordinator.maybeShow(mProfile));
         verify(mModalDialogManager)
                 .showDialog(
@@ -189,10 +200,20 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
                                 ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS,
                                 /* defaultValue= */ false));
         assertTrue(BottomBarConfigUtils.isBottomBarUserEnabled());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testNegativeButton() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.DECLINED)
+                        .build();
         assertTrue(mCoordinator.maybeShow(mProfile));
         verify(mModalDialogManager)
                 .showDialog(
@@ -213,6 +234,7 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
                         .contains(ChromePreferenceKeys.BOTTOM_BAR_ENABLED));
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -234,6 +256,15 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
 
     @Test
     public void testDestroyWhileShowing() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.DISMISSED_OTHER)
+                        .build();
         assertTrue(mCoordinator.maybeShow(mProfile));
         verify(mModalDialogManager)
                 .showDialog(
@@ -247,6 +278,7 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
 
         verify(mModalDialogManager).dismissDialog(model, DialogDismissalCause.ACTIVITY_DESTROYED);
         verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        histogramWatcher.assertExpected();
     }
 
     @Test

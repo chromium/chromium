@@ -32,6 +32,43 @@ public class BottomBarMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarPromoEvent)
 
+    // LINT.IfChange(AndroidBottomBarEducationOnboardingEvent)
+    /** Events associated with the bottom bar education bubble and opt-in dialog. */
+    @IntDef({
+        EducationOnboardingEvent.SHOWN,
+        EducationOnboardingEvent.ACCEPTED,
+        EducationOnboardingEvent.DECLINED,
+        EducationOnboardingEvent.SETTINGS_CLICKED,
+        EducationOnboardingEvent.DISMISSED_OTHER
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EducationOnboardingEvent {
+        int SHOWN = 0;
+        int ACCEPTED = 1;
+        int DECLINED = 2;
+        int SETTINGS_CLICKED = 3;
+        int DISMISSED_OTHER = 4;
+        int COUNT = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarEducationOnboardingEvent)
+
+    // LINT.IfChange(AndroidBottomBarEducationOnboardingType)
+    /** The education UI that recorded the event; the {OnboardingType} histogram variant. */
+    @StringDef({
+        EducationOnboardingType.DEFAULT_BUBBLE,
+        EducationOnboardingType.GEMINI_BUBBLE,
+        EducationOnboardingType.OPT_IN_DIALOG
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EducationOnboardingType {
+        String DEFAULT_BUBBLE = "DefaultBubble";
+        String GEMINI_BUBBLE = "GeminiBubble";
+        String OPT_IN_DIALOG = "OptInDialog";
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:AndroidBottomBarEducationOnboardingType)
+
     // LINT.IfChange(AndroidBottomBarIphEvent)
     /** Events representing showing, dismissing, or acting on Bottom Bar In-Product Helps (IPH). */
     @IntDef({IphEvent.SHOWN, IphEvent.DISMISSED, IphEvent.MOVED_TO_BOTTOM})
@@ -46,12 +83,18 @@ public class BottomBarMetrics {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarIphEvent)
 
     // LINT.IfChange(AndroidBottomBarIphFeature)
-    @StringDef({IphFeature.ADDRESS_BAR, IphFeature.GLIC, IphFeature.NEW_TAB})
+    @StringDef({
+        IphFeature.ADDRESS_BAR,
+        IphFeature.GLIC,
+        IphFeature.NEW_TAB,
+        IphFeature.TAB_SWITCHER
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface IphFeature {
         String ADDRESS_BAR = "AddressBar";
         String GLIC = "Glic";
         String NEW_TAB = "NewTab";
+        String TAB_SWITCHER = "TabSwitcher";
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:AndroidBottomBarIphFeature)
@@ -182,6 +225,20 @@ public class BottomBarMetrics {
     public static void recordPromoEvent(@PromoEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.BottomBar.Promo.Event", event, PromoEvent.COUNT);
+    }
+
+    /**
+     * Records education dialog and bubble events.
+     *
+     * @param onboardingType The onboarding type (e.g. "DefaultBubble", "OptInDialog").
+     * @param event The event type.
+     */
+    public static void recordEducationOnboardingEvent(
+            @EducationOnboardingType String onboardingType, @EducationOnboardingEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.Education.Onboarding." + onboardingType + ".Event",
+                event,
+                EducationOnboardingEvent.COUNT);
     }
 
     /**

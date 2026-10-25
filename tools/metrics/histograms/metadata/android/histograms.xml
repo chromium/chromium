@@ -1180,6 +1180,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomBar.Education.Onboarding.{OnboardingType}.Event"
+    enum="AndroidBottomBarEducationOnboardingEvent" expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Recorded when an education UI element ({OnboardingType}) is shown, accepted,
+    declined, or dismissed in the Android Bottom Bar flow.
+  </summary>
+<!-- LINT.IfChange(AndroidBottomBarEducationOnboardingType) -->
+
+  <token key="OnboardingType">
+    <variant name="DefaultBubble" summary="Default education bubble"/>
+    <variant name="GeminiBubble" summary="Gemini education bubble"/>
+    <variant name="OptInDialog" summary="Opt-in dialog"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarEducationOnboardingType) -->
+
+</histogram>
+
 <histogram name="Android.BottomBar.EnabledState" enum="BooleanEnabled"
     expires_after="2027-05-26">
   <owner>madhavpruthi@google.com</owner>
@@ -1273,8 +1293,11 @@ chromium-metrics-reviews@google.com.
   <owner>polardz@google.com</owner>
   <summary>
     Recorded when the {IPHType} In-Product Help (IPH) in the Android Bottom Bar
-    triggers (is shown, dismissed, or acted upon to move the address bar to the
-    bottom).
+    triggers. The education tour tooltips (Glic, NewTab, TabSwitcher) record
+    only Shown and Dismissed. MovedToBottom applies to the AddressBar IPH only.
+    A user sees either the standalone IPHs or the tour, never both (standalone
+    IPHs are skipped while education is enabled), so the sources can be
+    separated by the education experiment arm.
   </summary>
 <!-- LINT.IfChange(AndroidBottomBarIphFeature) -->
 
@@ -1282,6 +1305,7 @@ chromium-metrics-reviews@google.com.
     <variant name="AddressBar" summary="Address bar move-to-bottom"/>
     <variant name="Glic" summary="Gemini button"/>
     <variant name="NewTab" summary="New Tab button"/>
+    <variant name="TabSwitcher" summary="Tab Switcher button"/>
   </token>
 <!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarIphFeature) -->
 
