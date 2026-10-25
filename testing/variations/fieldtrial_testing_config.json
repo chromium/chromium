@@ -17546,7 +17546,7 @@
             ]
         }
     ],
-    "TranslateAsyncDomTranslator": [
+    "TranslateElementFeatures": [
         {
             "platforms": [
                 "android",
@@ -17560,7 +17560,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "ef": "eadt"
+                        "ef": "ests,eadt"
                     },
                     "enable_features": [
                         "TranslateElementExperimentFeatures"
