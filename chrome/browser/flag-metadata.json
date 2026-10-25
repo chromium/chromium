@@ -9211,6 +9211,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "smart-card-context-release",
+    "owners": [ "zgroza@chromium.org" ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu@chromium.org" ],
     "expiry_milestone": 100

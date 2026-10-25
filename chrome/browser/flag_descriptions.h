@@ -4683,6 +4683,13 @@ inline constexpr char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "As part of the Sign In Level Up experiment, changes the decline "
     "sign in CTA string in profile creation entry points";
 
+inline constexpr char kSmartCardContextReleaseName[] =
+    "Smart Card Context Release";
+inline constexpr char kSmartCardContextReleaseDescription[] =
+    "Enables SmartCardContext.release() in the Web Smart Card API, which "
+    "releases a smart card context and its connections without waiting for "
+    "garbage collection.";
+
 inline constexpr char kSmoothScrollingName[] = "Smooth Scrolling";
 inline constexpr char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";

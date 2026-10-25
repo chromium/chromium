@@ -6297,6 +6297,12 @@
       },
     },
     {
+      // https://chromestatus.com/feature/5141169477648384
+      name: "SmartCardContextRelease",
+      depends_on: ["SmartCard"],
+      status: "test",
+    },
+    {
       name: "SmartZoom",
       base_feature: "none",
       public: true,

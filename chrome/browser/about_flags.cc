@@ -264,6 +264,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_features.mojom.h"
@@ -14361,6 +14362,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaCaptureElementPreviewDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kMediaCaptureElementPreview)},
+
+#if BUILDFLAG(ENABLE_SMART_CARD)
+    {"smart-card-context-release",
+     flag_descriptions::kSmartCardContextReleaseName,
+     flag_descriptions::kSmartCardContextReleaseDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(blink::features::kSmartCardContextRelease)},
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
