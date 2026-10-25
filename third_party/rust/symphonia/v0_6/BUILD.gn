@@ -44,7 +44,11 @@ cargo_crate("lib") {
     "//third_party/rust/symphonia_metadata/v0_6:lib",
   ]
   features = [
+    "all-meta",
+    "ape",
     "flac",
+    "id3v1",
+    "id3v2",
     "isomp4",
     "mkv",
     "mp1",

@@ -54,7 +54,10 @@ cargo_crate("lib") {
     "//third_party/rust/symphonia_core/v0_6:lib",
   ]
   features = [
+    "ape",
     "flac",
+    "id3v1",
+    "id3v2",
     "riff-info",
     "vorbis",
   ]
