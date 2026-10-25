@@ -132,6 +132,7 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
     @Test
     public void testShownAndTitleText() {
         assertTrue(mCoordinator.maybeShow(mProfile));
+        assertTrue(BottomBarEducationCoordinator.hasEducationShownThisSession());
         verify(mModalDialogManager)
                 .showDialog(
                         mModelCaptor.capture(),

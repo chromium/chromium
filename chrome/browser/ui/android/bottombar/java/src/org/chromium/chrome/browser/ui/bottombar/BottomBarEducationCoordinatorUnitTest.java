@@ -138,8 +138,17 @@ public class BottomBarEducationCoordinatorUnitTest {
     }
 
     @Test
+    public void testEducationShownThisSession_IsFalseBeforeBubbleShows() {
+        setupForShow();
+        assertFalse(BottomBarEducationCoordinator.hasEducationShownThisSession());
+        triggerShow();
+        assertTrue(BottomBarEducationCoordinator.hasEducationShownThisSession());
+    }
+
+    @Test
     public void testShouldTriggerHelpUiFalse_DoesNotShow() {
         setupForShow();
+        assertFalse(BottomBarEducationCoordinator.hasEducationShownThisSession());
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(false);
         triggerShow();
@@ -147,6 +156,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         verify(mScrimManager, never()).showScrim(any());
         assertEquals(BrowserControlsState.BOTH, mVisibilityDelegate.get().intValue());
         assertNull(mCoordinator.getBubbleViewForTesting());
+        assertFalse(BottomBarEducationCoordinator.hasEducationShownThisSession());
     }
 
     @Test
@@ -154,6 +164,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         setupForShow();
         triggerShow();
         verify(mTracker).shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        assertTrue(BottomBarEducationCoordinator.hasEducationShownThisSession());
         assertEquals(BrowserControlsState.SHOWN, mVisibilityDelegate.get().intValue());
         mCoordinator.destroy();
         verify(mScrimManager).hideScrim(any(), anyBoolean());
@@ -626,6 +637,7 @@ public class BottomBarEducationCoordinatorUnitTest {
 
         triggerShow();
 
+        assertTrue(BottomBarEducationCoordinator.hasEducationShownThisSession());
         TextBubble tooltip = mCoordinator.getCurrentTooltipForTesting();
         assertNotNull(tooltip);
         assertTrue(tooltip.getDismissOnTouchInteractionForTesting());

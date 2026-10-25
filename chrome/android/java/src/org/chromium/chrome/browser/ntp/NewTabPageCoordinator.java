@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarEducationCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -1319,11 +1320,21 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (!mHasShownView) {
             mHasShownView = true;
             onInitializationProgressChanged();
-            if (NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
-                    mWindowAndroid, mIsLff, sCount)) {
-                triggerCustomizationBottomSheet();
-            }
+            maybeTriggerCustomizationBottomSheet();
             TraceEvent.instant("NewTabPageSearchAvailable");
+        }
+    }
+
+    /**
+     * Shows the NTP theme tip bottom sheet when it can trigger, unless bottom bar education has
+     * shown this session. The tip is only marked as shown when it actually shows, so education
+     * defers it instead of dropping it.
+     */
+    void maybeTriggerCustomizationBottomSheet() {
+        if (!BottomBarEducationCoordinator.hasEducationShownThisSession()
+                && NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
+                        mWindowAndroid, mIsLff, sCount)) {
+            triggerCustomizationBottomSheet();
         }
     }
 

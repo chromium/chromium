@@ -81,6 +81,7 @@ public class BottomBarEducationCoordinator
     };
 
     private static boolean sSkipTooltipShowCheckForTesting;
+    private static boolean sEducationShownThisSession;
 
     private final Context mContext;
     private final ScrimManager mScrimManager;
@@ -180,6 +181,8 @@ public class BottomBarEducationCoordinator
         if (hasPendingTooltips()) {
             ChromeSharedPreferences.getInstance()
                     .removeKey(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS);
+            // Set at approval time like FET; if UI fails, tip is deferred.
+            setEducationShownThisSession();
             activate(State.SHOWING_TOOLTIPS);
             startTooltipChain();
             return;
@@ -206,6 +209,8 @@ public class BottomBarEducationCoordinator
             return;
         }
 
+        // Set at approval time like FET; if UI fails, tip is deferred.
+        setEducationShownThisSession();
         activate(State.SHOWING_BUBBLE);
         mActiveTracker = tracker;
         showScrim(anchorView);
@@ -663,5 +668,25 @@ public class BottomBarEducationCoordinator
 
     @Nullable TextBubble getCurrentTooltipForTesting() {
         return mCurrentTooltip;
+    }
+
+    /**
+     * Records that bottom bar education has shown this session (process lifetime), which defers
+     * (doesn't drop) the NTP theme tip. It's never cleared until the process dies.
+     */
+    static void setEducationShownThisSession() {
+        if (sEducationShownThisSession) return;
+        sEducationShownThisSession = true;
+        ResettersForTesting.register(() -> sEducationShownThisSession = false);
+    }
+
+    /** Returns whether bottom bar education has shown this session. */
+    public static boolean hasEducationShownThisSession() {
+        return sEducationShownThisSession;
+    }
+
+    /** Marks bottom bar education as shown this session. Reset after each test. */
+    public static void setEducationShownThisSessionForTesting() {
+        setEducationShownThisSession();
     }
 }

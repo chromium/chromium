@@ -102,6 +102,9 @@ public class BottomBarEducationDialogCoordinator
         mTrackerDismissed = false;
 
         showDialog();
+        // Setting the flag at request time is acceptable even if the dialog queues because it only
+        // defers the NTP tip.
+        BottomBarEducationCoordinator.setEducationShownThisSession();
         return true;
     }
 
