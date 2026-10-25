@@ -161,8 +161,9 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
             return '';
         }
         const texts = [];
-        if (node.innerText) {
-            texts.push(node.innerText);
+        const nodeText = (node.innerText || '').trim();
+        if (nodeText) {
+            texts.push(nodeText);
         }
         // The node itself and its light-DOM descendants may be shadow hosts.
         // querySelectorAll does not cross shadow boundaries, so shadow hosts

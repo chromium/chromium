@@ -88,7 +88,7 @@ function shouldDetachPageContext(): boolean {
 // helpers so a hostile page cannot break extraction.
 function getInnerTextIncludingShadowDom(node: Element): string {
   const texts: string[] = [];
-  const nodeText = (node as HTMLElement).innerText;
+  const nodeText = ((node as HTMLElement).innerText ?? '').trim();
   if (nodeText) {
     texts.push(nodeText);
   }

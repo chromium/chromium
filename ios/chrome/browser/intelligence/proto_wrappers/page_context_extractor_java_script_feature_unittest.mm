@@ -217,7 +217,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
 
   base::Value expected_value(
       base::DictValue()
-          .Set("currentNodeInnerText", "Main frame text\n\n")
+          .Set("currentNodeInnerText", "Main frame text")
           .Set("title", "Main")
           .Set("sourceUrl", test_server_.GetURL(kMainPagePath).spec())
           .Set(
