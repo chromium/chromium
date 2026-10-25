@@ -3604,7 +3604,7 @@
     "es": {
       "AutofillEnableExpandIbanRegexPattern": [
         {
-          "positive_pattern": "(\\biban(\\b|_)|international bank account number|número de cuentas)",
+          "positive_pattern": "(\\biban(\\b|_)|international bank account number|número de cuenta)",
           "positive_score": 0.975,
           "negative_pattern": null,
           "match_field_attributes": [
