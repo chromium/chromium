@@ -202,7 +202,7 @@ class PLATFORM_EXPORT Length {
 
   ~Length() {
     if (IsCalculated()) [[unlikely]] {
-      DeferredDecrementCalculatedCount();
+      DecrementCalculatedCount();
     }
   }
 
@@ -423,7 +423,6 @@ class PLATFORM_EXPORT Length {
   }
   void IncrementCalculatedCount() const;
   void DecrementCalculatedCount() const;
-  void DeferredDecrementCalculatedCount() const;
   NOINLINE Length& AssignSlow(const Length& length);
 
   union {
