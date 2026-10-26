@@ -1056,6 +1056,14 @@ BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillShowGmailOtpSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the PHONE_EXTENSION regex only matches "ext" as a token
+// (e.g. "Ext.", "phone_ext", "phoneExt") and no longer matches words that
+// merely contain it (e.g. "text-8", "next", "extra", "exterior"). Such fields
+// right after a phone number were misclassified as PHONE_HOME_EXTENSION.
+// TODO(crbug.com/417192418): Clean up when launched.
+BASE_FEATURE(kAutofillStricterPhoneExtensionRegex,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this feature is enabled, the AddressFieldParser does NOT try to parse
 // address lines once it has found a street name and house number or other
 // combinations of fields that indicate that an address form uses structured
