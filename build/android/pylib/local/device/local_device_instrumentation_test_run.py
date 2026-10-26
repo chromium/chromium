@@ -129,6 +129,9 @@ _EXTRA_PACKAGE_UNDER_TEST = (
 
 _EXTRA_WEBVIEW_PROCESS_MODE = 'AwJUnit4ClassRunner.ProcessMode'
 
+# Tests are hermetic; don't let AndroidJUnitRunner upload usage analytics.
+_EXTRA_DISABLE_ANALYTICS = 'disableAnalytics'
+
 # IME id prefix of the CTS MockIme (CtsMockInputMethod.apk).
 _CTS_MOCK_IME_ID_PREFIX = 'com.android.cts.mockime/'
 
@@ -1322,7 +1325,7 @@ class LocalDeviceInstrumentationTestRun(
 
     # override
     def _RunTest(self, device, test):
-        extras = {}
+        extras = {_EXTRA_DISABLE_ANALYTICS: 'true'}
 
         if self._test_instance.GetRunDisabledFlag():
             extras[_EXTRA_RUN_DISABLED_TEST] = 'true'
@@ -1947,6 +1950,7 @@ class LocalDeviceInstrumentationTestRun(
                 junit4_runner_class = self._test_instance.junit4_runner_class
                 test_package = self._test_instance.test_package
                 extras = {
+                    _EXTRA_DISABLE_ANALYTICS: 'true',
                     'log': 'true',
                     # Workaround for https://github.com/mockito/mockito/issues/922
                     'notPackage': 'net.bytebuddy',
