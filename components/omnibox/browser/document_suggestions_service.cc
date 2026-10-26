@@ -123,6 +123,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
           trigger: "Signed-in user enters text in the omnibox."
           data: "The query string from the omnibox."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "cloudsearch.googleapis.com"
         }
         policy {
           cookies_allowed: YES
