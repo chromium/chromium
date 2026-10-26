@@ -488,6 +488,10 @@ BASE_DECLARE_FEATURE(kReportNotificationContentDetectionData);
 extern const base::FeatureParam<int>
     kReportNotificationContentDetectionDataRate;
 
+// Enables the Rust implementation of mojom::PhishingModelSetter in the
+// renderer process.
+BASE_DECLARE_FEATURE(kRustPhishingModelSetter);
+
 // Enables client side phishing daily reports limit to be configured via Finch
 // for ESB and SBER users
 BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);

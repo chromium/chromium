@@ -9,9 +9,20 @@
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 
 namespace safe_browsing {
 
+namespace rust_bridge {
+// Defined in rust/phishing_model_setter_bridge.rs. Forward-declared so that
+// files including this header don't also need the generated bridge header.
+struct PhishingModelSetterState;
+}  // namespace rust_bridge
+
+// TODO(crbug.com/561593066): Once `kRustPhishingModelSetter` has fully rolled
+// out, delete the flag and the mojom::PhishingModelSetter implementation here,
+// leaving only the RenderThreadObserver that owns the Rust state and forwards
+// receivers to it.
 class PhishingModelSetterImpl : public mojom::PhishingModelSetter,
                                 public content::RenderThreadObserver {
  public:
@@ -55,6 +66,10 @@ class PhishingModelSetterImpl : public mojom::PhishingModelSetter,
   mojo::Remote<mojom::PhishingModelSetterTestObserver> observer_for_testing_;
 
   mojo::AssociatedReceiver<mojom::PhishingModelSetter> receiver_{this};
+
+  // State shared by every receiver bound to the Rust implementation, which is
+  // used instead of the C++ one when `kRustPhishingModelSetter` is enabled.
+  rust::Box<rust_bridge::PhishingModelSetterState> rust_state_;
 };
 }  // namespace safe_browsing
 

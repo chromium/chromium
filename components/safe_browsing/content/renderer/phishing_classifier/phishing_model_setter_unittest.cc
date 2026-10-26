@@ -19,9 +19,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_model_setter_impl.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -83,15 +85,20 @@ class ScorerChangeWaiter : public ScorerStorage::Observer {
 
 // Test fixture that allows users to create new `AssociatedRemote`s for the
 // `PhishingModelSetter` interface.
-class PhishingModelSetterTest : public testing::Test {
+class PhishingModelSetterTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
+    feature_list_.InitWithFeatureState(kRustPhishingModelSetter, GetParam());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     static_cast<content::RenderThreadObserver&>(setter_).RegisterMojoInterfaces(
         &registry_);
   }
 
   void TearDown() override {
+    // Let any pending disconnect notifications run. Rust receivers own
+    // themselves until they see the disconnect, so skipping this would leak
+    // them.
+    task_environment_.RunUntilIdle();
     static_cast<content::RenderThreadObserver&>(setter_)
         .UnregisterMojoInterfaces(&registry_);
     mojo::AssociatedRemote<mojom::PhishingModelSetter> remote;
@@ -129,8 +136,8 @@ class PhishingModelSetterTest : public testing::Test {
   // notifications they trigger: the setter, its receivers and this test all
   // share one sequence, so running it until idle leaves nothing in flight.
   // (`AssociatedRemote::FlushForTesting()` is deliberately not used because
-  // the Rust implementation of this interface, which these tests will also
-  // cover, does not yet answer the control message it relies on.)
+  // the Rust implementation does not yet answer the control message it relies
+  // on.)
   void DispatchPendingMessages() { task_environment_.RunUntilIdle(); }
 
   // Creates a temporary file with `content` and opens it read-only, as
@@ -145,13 +152,18 @@ class PhishingModelSetterTest : public testing::Test {
 
   Scorer* scorer() { return ScorerStorage::GetInstance()->GetScorer(); }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   PhishingModelSetterImpl setter_;
   blink::AssociatedInterfaceRegistry registry_;
 };
 
-TEST_F(PhishingModelSetterTest, ModelLifecycleAndObserverNotifications) {
+// This lets us test the phishing model setter with both the Rust and
+// original C++ implementations.
+INSTANTIATE_TEST_SUITE_P(All, PhishingModelSetterTest, testing::Bool());
+
+TEST_P(PhishingModelSetterTest, ModelLifecycleAndObserverNotifications) {
   FakeTestObserver observer;
   auto remote = BindNewRemote();
   SetTestObserverAndWait(remote, observer.BindNewPipeAndPassRemote());
@@ -202,7 +214,7 @@ TEST_F(PhishingModelSetterTest, ModelLifecycleAndObserverNotifications) {
 // Verifies that a test observer registered on one Mojo connection still
 // receives notifications when the browser opens a new connection to push a
 // model.
-TEST_F(PhishingModelSetterTest, TestObserverSurvivesRebinding) {
+TEST_P(PhishingModelSetterTest, TestObserverSurvivesRebinding) {
   FakeTestObserver observer;
 
   // Register the test observer on a first connection, then close it.

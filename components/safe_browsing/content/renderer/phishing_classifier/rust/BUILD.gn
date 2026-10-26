@@ -10,8 +10,7 @@ import("//components/safe_browsing/buildflags.gni")
 # //components/safe_browsing/content/common:interfaces. Note that the mojom
 # feature covers both non-zero safe browsing modes, not just FULL_SAFE_BROWSING.
 if (safe_browsing_mode != 0) {
-  # The cxx bridge to the C++ Scorer shim, split out so that the crate holding
-  # the actual logic does not need `allow_unsafe`.
+  # A cxx bridge exposing the ability to call C++ Scorer functions.
   rust_static_library("scorer_bridge") {
     crate_root = "scorer_bridge.rs"
     sources = [ "scorer_bridge.rs" ]
@@ -22,6 +21,29 @@ if (safe_browsing_mode != 0) {
       "//base",
       "//base:file",
       "//components/safe_browsing/content/renderer/phishing_classifier:scorer_rust_shim",
+      "//third_party/rust/cxx/v1:lib",
+    ]
+  }
+
+  # A cxx bridge exposing the ability to call Rust functions from
+  # C++. Normally this would be part of the above target, but that
+  # would create a dependency cycle with the `phishing_model_setter`
+  # target.
+  #
+  # We could merge all three targets into one, but that would cause
+  # `allow_unsafe` to apply to `phishing_model_setter` as well, and
+  # it's nice to know statically that all our non-FFI code is safe.
+  rust_static_library("phishing_model_setter_bridge") {
+    crate_root = "phishing_model_setter_bridge.rs"
+    sources = [ "phishing_model_setter_bridge.rs" ]
+    cxx_bindings = [ "phishing_model_setter_bridge.rs" ]
+    allow_unsafe = true
+
+    deps = [
+      ":phishing_model_setter",
+      "//base",
+      "//components/safe_browsing/content/common:interfaces_rust",
+      "//mojo/public/rust/bindings",
       "//third_party/rust/cxx/v1:lib",
     ]
   }

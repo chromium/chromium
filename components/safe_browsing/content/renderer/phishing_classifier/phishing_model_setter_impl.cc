@@ -4,12 +4,17 @@
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_model_setter_impl.h"
 
+#include "base/feature_list.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/rust/phishing_model_setter_bridge.rs.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
+#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace safe_browsing {
 
-PhishingModelSetterImpl::PhishingModelSetterImpl() = default;
+PhishingModelSetterImpl::PhishingModelSetterImpl()
+    : rust_state_(rust_bridge::CreatePhishingModelSetterState()) {}
 PhishingModelSetterImpl::~PhishingModelSetterImpl() = default;
 
 void PhishingModelSetterImpl::RegisterMojoInterfaces(
@@ -96,6 +101,13 @@ void PhishingModelSetterImpl::SetTestObserver(
 
 void PhishingModelSetterImpl::OnRendererAssociatedRequest(
     mojo::PendingAssociatedReceiver<mojom::PhishingModelSetter> receiver) {
+  if (base::FeatureList::IsEnabled(kRustPhishingModelSetter)) {
+    // The Rust receiver owns itself and lives until the browser disconnects.
+    rust_bridge::BindPhishingModelSetterReceiver(
+        *rust_state_, mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+                          std::move(receiver)));
+    return;
+  }
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
