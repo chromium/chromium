@@ -267,13 +267,6 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
       didSubmitFormWithName:kTestFormName
                     frameID:[OCMArg any]
              perfectFilling:[OCMArg any]];
-
-  [[[autofill_controller_delegate_ expect] ignoringNonObjectArgs]
-         autofillController:autofill_controller_
-      didSubmitFormWithName:kTestFormName
-                    frameID:[OCMArg any]
-              userInitiated:[OCMArg any]
-             perfectFilling:[OCMArg any]];
   // The 'submit' event listener defined in form.js is only called during the
   // bubbling phase.
   NSString* submit_script = [NSString
@@ -404,13 +397,6 @@ TEST_F(WebViewAutofillTest, TestChildFrameSubmission) {
          autofillController:autofill_controller_
       didSubmitFormWithName:[OCMArg any]
                     frameID:[OCMArg any]
-             perfectFilling:[OCMArg any]];  // Relax just in case.
-
-  [[autofill_controller_delegate_ expect]
-         autofillController:autofill_controller_
-      didSubmitFormWithName:[OCMArg any]
-                    frameID:[OCMArg any]
-              userInitiated:YES             // Usually YES if clicked.
              perfectFilling:[OCMArg any]];  // Relax just in case.
 
   // Wait for child frame and submit.

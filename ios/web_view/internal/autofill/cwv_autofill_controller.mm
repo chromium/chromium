@@ -1186,13 +1186,9 @@ struct FocusedFieldState {
                     formData:(const autofill::FormData&)form {
   // Skip immediately if the delegate doesn't handle submission to save
   // computation.
-  if (![_delegate respondsToSelector:@selector
-                  (autofillController:
-                      didSubmitFormWithName:frameID:perfectFilling:)] &&
-      ![_delegate
-          respondsToSelector:@selector
-          (autofillController:
-              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
+  if (![_delegate
+          respondsToSelector:@selector(autofillController:didSubmitFormWithName:
+                                       frameID:perfectFilling:)]) {
     return;
   }
 
@@ -1205,31 +1201,10 @@ struct FocusedFieldState {
 
   BOOL perfectFilling = autofill::IsFormDataPerfectlyFilled(form);
 
-  if ([_delegate respondsToSelector:@selector
-                 (autofillController:
-                     didSubmitFormWithName:frameID:perfectFilling:)]) {
-    [_delegate autofillController:self
-            didSubmitFormWithName:base::SysUTF16ToNSString(form.name())
-                          frameID:nsFrameID
-                   perfectFilling:perfectFilling];
-  }
-
-  // Use YES as a dummy value for `userInitiated` since that bit
-  // isn't supported by the _delegate implementations and we can't get that
-  // information on -onAfterFormSubmitted. Also, a value of YES should cover
-  // most of the submission cases that probably consist of user initiated
-  // submissions, and note that computing that bit is based on a best guess so
-  // it isn't that reliable.
-  if ([_delegate
-          respondsToSelector:@selector
-          (autofillController:
-              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
-    [_delegate autofillController:self
-            didSubmitFormWithName:base::SysUTF16ToNSString(form.name())
-                          frameID:nsFrameID
-                    userInitiated:YES
-                   perfectFilling:perfectFilling];
-  }
+  [_delegate autofillController:self
+          didSubmitFormWithName:base::SysUTF16ToNSString(form.name())
+                        frameID:nsFrameID
+                 perfectFilling:perfectFilling];
 }
 
 - (void)

@@ -887,12 +887,6 @@ TEST_P(CWVAutofillControllerTest, SubmitCallback) {
       didSubmitFormWithName:kTestFormName
                     frameID:base::SysUTF8ToNSString(web::kMainFakeFrameId)
              perfectFilling:YES]);
-  OCMExpect([delegate
-         autofillController:autofill_controller_
-      didSubmitFormWithName:kTestFormName
-                    frameID:base::SysUTF8ToNSString(web::kMainFakeFrameId)
-              userInitiated:YES
-             perfectFilling:YES]);
 
   autofill::FormData test_form_data;
   test_form_data.set_name(base::SysNSStringToUTF16(kTestFormName));
