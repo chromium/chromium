@@ -37,12 +37,14 @@ WebSigninTrackerBridge::WebSigninTrackerBridge(
     : tracker_(identity_manager,
                account_reconcilor,
                std::move(signin_account),
-               std::move(callback)) {
-  // TODO(crbug.com/570450501): Let callers start the tracker separately.
-  tracker_.Start();
-}
+               std::move(callback)) {}
 
 WebSigninTrackerBridge::~WebSigninTrackerBridge() = default;
+
+void WebSigninTrackerBridge::Start() {
+  // May destroy `this`; don't access members afterwards.
+  tracker_.Start();
+}
 
 static int64_t JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
     JNIEnv* env,
@@ -59,9 +61,12 @@ static int64_t JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  return reinterpret_cast<intptr_t>(
+  auto* bridge =
       new WebSigninTrackerBridge(identity_manager, account_reconcilor,
-                                 account_id, std::move(on_signin_completed)));
+                                 account_id, std::move(on_signin_completed));
+  // TODO(crbug.com/570450501): Start the bridge from Java instead.
+  bridge->Start();
+  return reinterpret_cast<intptr_t>(bridge);
 }
 
 static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
@@ -79,9 +84,12 @@ static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  return reinterpret_cast<intptr_t>(new WebSigninTrackerBridge(
-      identity_manager, account_reconcilor, account_email,
-      std::move(on_signin_completed)));
+  auto* bridge =
+      new WebSigninTrackerBridge(identity_manager, account_reconcilor,
+                                 account_email, std::move(on_signin_completed));
+  // TODO(crbug.com/570450501): Start the bridge from Java instead.
+  bridge->Start();
+  return reinterpret_cast<intptr_t>(bridge);
 }
 
 static void JNI_WebSigninTrackerBridge_Destroy(

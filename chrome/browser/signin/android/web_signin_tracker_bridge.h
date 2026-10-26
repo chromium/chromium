@@ -12,6 +12,8 @@
 // Glue class to expose `WebSigninTracker` to Java.
 class WebSigninTrackerBridge {
  public:
+  // The sign-in isn't tracked until `Start()` is called, so
+  // `on_signin_completed` is never run from the constructor.
   explicit WebSigninTrackerBridge(
       signin::IdentityManager* identity_manager,
       AccountReconcilor* account_reconcilor,
@@ -23,6 +25,12 @@ class WebSigninTrackerBridge {
   WebSigninTrackerBridge& operator=(const WebSigninTrackerBridge&) = delete;
 
   ~WebSigninTrackerBridge();
+
+  // Starts tracking the sign-in. Must be called at most once. If the result is
+  // already known (e.g. the account is already in cookies),
+  // `on_signin_completed` is run synchronously and may destroy `this` before
+  // this method returns.
+  void Start();
 
  private:
   signin::WebSigninTracker tracker_;
