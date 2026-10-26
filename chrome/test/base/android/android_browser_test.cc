@@ -10,7 +10,10 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -18,6 +21,7 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -41,6 +45,22 @@ AndroidBrowserTest::AndroidBrowserTest() {
   InitializeHTTPSTestServer();
 
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+
+  // Match InProcessBrowserTest's default disabled background features to avoid
+  // unnecessary startup overhead and non-deterministic background work. Note:
+  // Do not block all IPH via ScopedIphFeatureList::InitWithNoFeaturesAllowed()
+  // here; on tablet and desktop Android, suppressing IPH queries during
+  // TabbedRootUiCoordinator.initializeIph() alters deferred startup and omnibox
+  // focus timing, breaking WebUI focus and bottom sheet tests.
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          features::kPreconnectToSearch,
+          features::kRestartNetworkServiceUnsandboxedForFailedLaunch,
+          performance_manager::features::kTransientKeepAlivePolicy,
+          features::kPrewarm,
+      });
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   allow_unpacked_without_developer_mode_ = extensions::ExtensionManagement::
       AllowUnpackedWithoutDeveloperModeForTesting();

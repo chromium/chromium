@@ -1393,10 +1393,14 @@ if (is_android) {
     deps = [
       ":chrome_test_path_utils",
       ":test_launcher_utils",
+      "//chrome/browser:browser_features",
+      "//chrome/browser/navigation_predictor",
       "//chrome/browser/net",
+      "//chrome/browser/preloading",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/browser_window",
       "//components/keyed_service/content",
+      "//components/performance_manager",
       "//extensions/buildflags",
       "//testing/android/native_test:native_browser_test_support",
     ]
@@ -1455,9 +1459,13 @@ if (is_android) {
     deps = [
       ":android_browser_test",
       "//base",
+      "//chrome/browser:browser_features",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/navigation_predictor",
+      "//chrome/browser/preloading",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/android/tab_model",
+      "//components/performance_manager",
       "//content/public/browser",
       "//content/test:test_support",
       "//net",

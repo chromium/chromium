@@ -111,6 +111,8 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   bool use_test_network_connection_tracker_ = true;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
