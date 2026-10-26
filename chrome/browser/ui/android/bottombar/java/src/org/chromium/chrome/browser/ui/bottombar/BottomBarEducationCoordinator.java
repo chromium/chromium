@@ -26,8 +26,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.actions.ActionId;
@@ -107,6 +105,7 @@ public class BottomBarEducationCoordinator
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private ViewTreeObserver.@Nullable OnGlobalLayoutListener mGlobalLayoutListener;
     private @Nullable Tracker mActiveTracker;
+    private @Nullable String mActiveFeature;
     private @State int mState = State.IDLE;
     private int mLastOrientation = Configuration.ORIENTATION_UNDEFINED;
     private @Nullable TextBubble mCurrentTooltip;
@@ -170,12 +169,16 @@ public class BottomBarEducationCoordinator
     }
 
     /**
-     * Returns whether the opt-in dialog handed over to the tooltip chain before the activity
-     * recreated.
+     * Returns whether Feature Engagement would trigger the tooltip tour. It becomes eligible once
+     * the user accepts the opt-in dialog.
      */
-    boolean hasPendingTooltips() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS, false);
+    boolean wouldShowTooltips(@Nullable Profile profile) {
+        if (profile == null) return false;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
+        return tracker != null
+                && tracker.isInitialized()
+                && tracker.wouldTriggerHelpUi(
+                        FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS);
     }
 
     /**
@@ -183,7 +186,7 @@ public class BottomBarEducationCoordinator
      * @return Whether the education IPH would be shown if requested.
      */
     public boolean wouldShow(Profile profile) {
-        if (hasPendingTooltips()) return true;
+        if (wouldShowTooltips(profile)) return true;
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
         return tracker != null
                 && tracker.isInitialized()
@@ -201,16 +204,6 @@ public class BottomBarEducationCoordinator
             return;
         }
 
-        if (hasPendingTooltips()) {
-            ChromeSharedPreferences.getInstance()
-                    .removeKey(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS);
-            // Set at approval time like FET; if UI fails, tip is deferred.
-            setEducationShownThisSession();
-            activate(State.SHOWING_TOOLTIPS);
-            startTooltipChain();
-            return;
-        }
-
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
         if (!tracker.isInitialized()) {
             tracker.addOnInitializedCallback(
@@ -219,6 +212,8 @@ public class BottomBarEducationCoordinator
                     });
             return;
         }
+
+        if (maybeShowTooltipsAfterOptIn(tracker)) return;
 
         View controlContainer = mControlContainer;
         View anchorView =
@@ -234,8 +229,9 @@ public class BottomBarEducationCoordinator
 
         // Set at approval time like FET; if UI fails, tip is deferred.
         setEducationShownThisSession();
-        activate(State.SHOWING_BUBBLE);
         mActiveTracker = tracker;
+        mActiveFeature = FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION;
+        activate(State.SHOWING_BUBBLE);
         showScrim(anchorView);
         showBubble();
     }
@@ -286,10 +282,11 @@ public class BottomBarEducationCoordinator
             mCurrentHighlightView = null;
         }
 
-        if (mActiveTracker != null) {
-            mActiveTracker.dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
-            mActiveTracker = null;
+        if (mActiveTracker != null && mActiveFeature != null) {
+            mActiveTracker.dismissed(mActiveFeature);
         }
+        mActiveTracker = null;
+        mActiveFeature = null;
 
         hideScrim();
         if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
@@ -599,6 +596,19 @@ public class BottomBarEducationCoordinator
             default:
                 throw new IllegalStateException("No IPH feature for tooltip action " + actionId);
         }
+    }
+
+    private boolean maybeShowTooltipsAfterOptIn(Tracker tracker) {
+        if (tracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS)) {
+            // Set at approval time like FET; if UI fails, tip is deferred.
+            setEducationShownThisSession();
+            mActiveTracker = tracker;
+            mActiveFeature = FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS;
+            activate(State.SHOWING_TOOLTIPS);
+            startTooltipChain();
+            return true;
+        }
+        return false;
     }
 
     private void startTooltipChain() {

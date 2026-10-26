@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -122,6 +123,8 @@ public class BottomBarEducationCoordinatorUnitTest {
     private BottomBarButtonContainer mGlicBtn;
     private BottomBarEducationCoordinator mCoordinator;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+
+    @Captor private ArgumentCaptor<Callback<Boolean>> mInitializedCallbackCaptor;
 
     @Before
     public void setUp() {
@@ -343,11 +346,9 @@ public class BottomBarEducationCoordinatorUnitTest {
         verify(mScrimManager, never()).showScrim(any());
 
         // Simulate callback
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
-        verify(mTracker).addOnInitializedCallback(callbackCaptor.capture());
+        verify(mTracker).addOnInitializedCallback(mInitializedCallbackCaptor.capture());
         when(mTracker.isInitialized()).thenReturn(true);
-        callbackCaptor.getValue().onResult(true);
+        mInitializedCallbackCaptor.getValue().onResult(true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mScrimManager).showScrim(any());
@@ -1213,21 +1214,21 @@ public class BottomBarEducationCoordinatorUnitTest {
     }
 
     @Test
-    public void testWouldShow_ReturnsTrueWhenPendingTooltips() {
+    public void testWouldShow_ReturnsTrueWhenTooltipsWouldTrigger() {
         setupForShow();
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(false);
-        setPendingTooltips();
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS))
+                .thenReturn(true);
         assertTrue(mCoordinator.wouldShow(mProfile));
+        assertTrue(mCoordinator.wouldShowTooltips(mProfile));
     }
 
     @Test
-    public void testPendingTooltips_StartsTooltipChainWithoutBubble() {
+    public void testTooltipsTrigger_StartsTooltipChainWithoutBubble() {
         setupForShow();
         allowTooltipsToShowInRobolectric();
-        // The hand-over does not depend on the tracker.
-        when(mTracker.isInitialized()).thenReturn(false);
-        setPendingTooltips();
+        setTooltipsFeatureCanTrigger();
 
         triggerShow();
 
@@ -1239,26 +1240,24 @@ public class BottomBarEducationCoordinatorUnitTest {
                 mContext.getString(R.string.bottom_bar_education_tooltip_gemini),
                 getTooltipText(tooltip));
         assertNull(mCoordinator.getBubbleViewForTesting());
-        assertFalse(
-                ChromeSharedPreferences.getInstance()
-                        .contains(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS));
         verify(mScrimManager, never()).showScrim(any());
-        verify(mTracker, never()).shouldTriggerHelpUi(any());
+        verify(mTracker)
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS);
         verify(mVisibilityManager).addObserver(mCoordinator);
         assertEquals(BrowserControlsState.SHOWN, mVisibilityDelegate.get().intValue());
 
         mCoordinator.dismiss();
         verify(mVisibilityManager).removeObserver(mCoordinator);
         assertEquals(BrowserControlsState.BOTH, mVisibilityDelegate.get().intValue());
-        verify(mTracker, never()).dismissed(any());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS);
     }
 
     @Test
     @Config(qualifiers = "land")
-    public void testPendingTooltips_RotationReshowsCurrentTooltip() {
+    public void testTooltipsTrigger_RotationReshowsCurrentTooltip() {
         setupForShow();
         allowTooltipsToShowInRobolectric();
-        setPendingTooltips();
+        setTooltipsFeatureCanTrigger();
         triggerShow();
 
         TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
@@ -1315,14 +1314,16 @@ public class BottomBarEducationCoordinatorUnitTest {
         return mCoordinator.getBubbleViewForTesting() != null;
     }
 
-    private void setPendingTooltips() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS, true);
-    }
-
     private static String getTooltipText(TextBubble tooltip) {
         TextView msgView = tooltip.getTextBubbleContentViewForTesting().findViewById(R.id.message);
         return msgView.getText().toString();
+    }
+
+    private void setTooltipsFeatureCanTrigger() {
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS))
+                .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS))
+                .thenReturn(true);
     }
 
     private void allowTooltipsToShowInRobolectric() {
@@ -1587,5 +1588,26 @@ public class BottomBarEducationCoordinatorUnitTest {
     private void advanceTimeBySeconds(long seconds) {
         ShadowSystemClock.advanceBy(Duration.ofSeconds(seconds));
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @Test
+    public void testTooltipsTrigger_WaitsForTrackerInitialization() {
+        setupForShow();
+        when(mTracker.isInitialized()).thenReturn(false);
+        triggerShow();
+
+        // Not shown yet
+        verify(mTracker).addOnInitializedCallback(mInitializedCallbackCaptor.capture());
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+        assertFalse(isBubbleShowing());
+
+        // Simulate callback
+        when(mTracker.isInitialized()).thenReturn(true);
+        setTooltipsFeatureCanTrigger();
+        mInitializedCallbackCaptor.getValue().onResult(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNotNull(mCoordinator.getCurrentTooltipForTesting());
+        assertFalse(isBubbleShowing());
     }
 }

@@ -821,10 +821,10 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testEducation_HasPendingTooltips_MaybeShowCalledWithoutClaimingSlot() {
+    public void testEducation_WouldShowTooltips_MaybeShowCalledWithoutClaimingSlot() {
         createMediator(true, false);
         assertNotNull(mMediator);
-        when(mEducationCoordinator.hasPendingTooltips()).thenReturn(true);
+        when(mEducationCoordinator.wouldShowTooltips(mProfile)).thenReturn(true);
         mOmniboxFocusStateSupplier.set(false); // visible
 
         // Even without claiming the promo slot, maybeShow should be called
@@ -834,11 +834,11 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testEducation_HasPendingTooltips_Incognito_NotCalled() {
+    public void testEducation_WouldShowTooltips_Incognito_NotCalled() {
         when(mTab.isOffTheRecord()).thenReturn(true);
         createMediator(true, false);
         assertNotNull(mMediator);
-        when(mEducationCoordinator.hasPendingTooltips()).thenReturn(true);
+        when(mEducationCoordinator.wouldShowTooltips(mProfile)).thenReturn(true);
         mOmniboxFocusStateSupplier.set(false); // visible
 
         mMediator.onStartupPromoFlowFinished(false);

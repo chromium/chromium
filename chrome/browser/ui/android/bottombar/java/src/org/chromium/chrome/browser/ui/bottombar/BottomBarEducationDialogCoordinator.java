@@ -14,8 +14,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -156,11 +154,9 @@ public class BottomBarEducationDialogCoordinator
                 EducationOnboardingType.OPT_IN_DIALOG, EducationOnboardingEvent.ACCEPTED);
         if (mTracker != null) {
             mTracker.notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
+            mTracker.notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED);
         }
         dismissFeatureEngagementTracker();
-        // Must call dismissed before flipping pref to avoid breaking other IPHs
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS, true);
 
         // Dismiss before writing the pref: pref listeners are notified synchronously, and
         // ChromeTabbedActivity recreates itself with the bottom bar in response.

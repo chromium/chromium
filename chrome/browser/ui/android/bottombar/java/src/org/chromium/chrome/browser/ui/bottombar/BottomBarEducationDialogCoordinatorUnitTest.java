@@ -190,15 +190,12 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
         InOrder inOrder = inOrder(mTracker, mModalDialogManager);
         inOrder.verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
+        inOrder.verify(mTracker, times(1))
+                .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED);
         inOrder.verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
         inOrder.verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
 
-        assertTrue(
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS,
-                                /* defaultValue= */ false));
         assertTrue(BottomBarConfigUtils.isBottomBarUserEnabled());
         histogramWatcher.assertExpected();
     }
@@ -225,10 +222,9 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
         mCoordinator.onClick(model, ModalDialogProperties.ButtonType.NEGATIVE);
 
         verify(mTracker, never()).notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
+        verify(mTracker, never())
+                .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED);
         verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
-        assertFalse(
-                ChromeSharedPreferences.getInstance()
-                        .contains(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS));
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .contains(ChromePreferenceKeys.BOTTOM_BAR_ENABLED));
