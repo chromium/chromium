@@ -4136,8 +4136,9 @@ IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
                                         /*should_document_pip=*/false);
 }
 
+// TODO(crbug.com/577969196): Flaky across multiple platforms/variants.
 IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
-                       SizeConstraintMetricsBlocked) {
+                       DISABLED_SizeConstraintMetricsBlocked) {
   LoadNotRegisteredPage(browser());
   auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   PlayVideo(web_contents);
