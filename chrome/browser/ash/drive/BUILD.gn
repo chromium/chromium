@@ -12,9 +12,6 @@ static_library("drive") {
     "drive_integration_service_factory.h",
     "drivefs_native_message_host.cc",
     "drivefs_native_message_host.h",
-    "drivefs_native_message_host_ash.cc",
-    "drivefs_native_message_host_ash.h",
-    "drivefs_native_message_host_origins.h",
     "file_system_util.cc",
     "file_system_util.h",
   ]
