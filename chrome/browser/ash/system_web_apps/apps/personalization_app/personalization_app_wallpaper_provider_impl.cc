@@ -767,9 +767,10 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
       wallpaper_controller->GetWallpaperInfoForAccountId(
           GetAccountId(profile_));
   CHECK(info, base::NotFatalUntil::M160);
-  CHECK(info->type == WallpaperType::kDaily ||
-            info->type == WallpaperType::kDailyGooglePhotos,
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/577411168): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(info->type == WallpaperType::kDaily ||
+         info->type == WallpaperType::kDailyGooglePhotos);
   auto* client = WallpaperControllerClientImpl::Get();
   client->RecordWallpaperSourceUMA(info->type);
 
