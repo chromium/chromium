@@ -98,12 +98,6 @@ class VIEWS_EXPORT InkDropHost {
   void SetCreateHighlightCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()> callback);
 
-  // Callback replacement of CreateInkDropMask().
-  // TODO(pbos): Investigate removing this. It currently is only used by
-  // PieMenuView.
-  void SetCreateMaskCallback(
-      base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback);
-
   // Toggles ink drop attention state on/off. If set on, a pulsing highlight
   // is shown, prompting users to interact with `host_view_`.
   // Called by components that want to call into user's attention, e.g. IPH.
@@ -281,9 +275,6 @@ class VIEWS_EXPORT InkDropHost {
       create_ink_drop_ripple_callback_;
   base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>
       create_ink_drop_highlight_callback_;
-
-  base::RepeatingCallback<std::unique_ptr<InkDropMask>()>
-      create_ink_drop_mask_callback_;
 
   base::RepeatingClosureList highlighted_changed_callbacks_;
 

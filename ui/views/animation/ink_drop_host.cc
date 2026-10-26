@@ -149,16 +149,8 @@ std::unique_ptr<views::InkDropMask> InkDropHost::CreateInkDropMask() const {
         host_view_, GetHighlightPath(host_view_));
   }
 
-  if (create_ink_drop_mask_callback_) {
-    return create_ink_drop_mask_callback_.Run();
-  }
   return std::make_unique<views::PathInkDropMask>(host_view_->size(),
                                                   GetHighlightPath(host_view_));
-}
-
-void InkDropHost::SetCreateMaskCallback(
-    base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback) {
-  create_ink_drop_mask_callback_ = std::move(callback);
 }
 
 void InkDropHost::ToggleAttentionState(bool attention_on) {
