@@ -712,12 +712,13 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
-     * Called when the active background fails to initialize. Resets to the default background. If a
-     * synced background is pending, the SharedPreferences hold it and are kept so that it will be
-     * applied by {@link #maybeApplyBackgroundUpdateFromDeviceSync(Context)}.
+     * Called when the active background fails to initialize. Resets to the default background. If
+     * the persisted background was replaced by sync in the meantime, the SharedPreferences hold the
+     * synced background (or nothing for a synced reset) and are kept so that it will be applied by
+     * {@link #maybeApplyBackgroundUpdateFromDeviceSync(Context)}.
      */
     private void onBackgroundInitializationFailed() {
-        if (mSyncedNtpBackgroundData == null) {
+        if (!mIsPersistedThemeReplacedBySync) {
             NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
             // The daily refresh which may have been applied to the failed background is gone too.
             NtpThemeDailyRefreshManager.getInstance().discardPendingDailyRefresh();
