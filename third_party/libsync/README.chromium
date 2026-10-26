@@ -2,7 +2,7 @@ Name: Android Explicit Synchronization
 URL: https://android.googlesource.com/platform/system/core
 Description: libsync helper library.
 Version: N/A
-Revision: 9e6842258a9f962e1e06c97bc965c0bb697be775
+Revision: a3b721a32242006b59cb12bd62c9133632af3a2d
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes

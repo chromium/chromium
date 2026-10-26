@@ -1,9 +1,9 @@
 upstream {
-  commit: "9e6842258a9f962e1e06c97bc965c0bb697be775"
+  commit: "a3b721a32242006b59cb12bd62c9133632af3a2d"
   artifacts {
     git {
       repository: "https://android.googlesource.com/platform/system/core"
-      commit: "9e6842258a9f962e1e06c97bc965c0bb697be775"
+      commit: "a3b721a32242006b59cb12bd62c9133632af3a2d"
     }
   }
 }
@@ -12,4 +12,10 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  git {
+    repository: "https://android.googlesource.com/platform/system/core"
+    branch: "HEAD"
+  }
 }

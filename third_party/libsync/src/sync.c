@@ -117,7 +117,7 @@ enum uapi_version {
     UAPI_MODERN,
     UAPI_LEGACY
 };
-static atomic_int g_uapi_version = ATOMIC_VAR_INIT(UAPI_UNKNOWN);
+static atomic_int g_uapi_version = UAPI_UNKNOWN;
 
 // ---------------------------------------------------------------------------
 
