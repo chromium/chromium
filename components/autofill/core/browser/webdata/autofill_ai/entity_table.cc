@@ -238,7 +238,7 @@ bool EntityTable::MigrateToVersion(int version,
       // does not introduce any backwards-incompatible schema changes.
       return MigrateToVersion157CleanupOrphanedEntityChildData();
     }
-    case 158: {
+    case 159: {
       // In this version, `autofill_ai_entities_metadata_wallet` table was added
       // to store Wallet-specific metadata such as `management_url`.
       return CreateTableIfNotExists(
