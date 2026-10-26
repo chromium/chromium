@@ -373,11 +373,13 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpBackgroundType.COLOR_FROM_HEX);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(false);
         NtpCustomizationUtils.removeCustomizedPrimaryColorFromSharedPreference();
+        clearInvocations(mNtpThemeDailyRefreshManager);
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         assertEquals(NtpBackgroundType.DEFAULT, mNtpCustomizationConfigManager.getBackgroundType());
         verify(mListener, never())
                 .onBackgroundColorChanged(any(), anyInt(), anyBoolean(), anyInt(), anyInt());
         verify(mListener).onBackgroundReset(NtpBackgroundType.COLOR_FROM_HEX);
+        verify(mNtpThemeDailyRefreshManager).discardPendingDailyRefresh();
         mNtpCustomizationConfigManager.removeListener(mListener);
         clearInvocations(mListener);
 
@@ -1377,6 +1379,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         String filePath = NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference();
         assertNotNull(filePath);
+        clearInvocations(mNtpThemeDailyRefreshManager);
 
         manager.onSyncedThemeCollectionImageChanged(
                 mContext, createTestThemeCollectionDataWithColor(info, Color.RED));
@@ -1387,6 +1390,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(
                 filePath, NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
         verify(mNtpBackgroundDataManager, never()).maybeCleanUpUnusedSyncedImageData(any());
+        verify(mNtpThemeDailyRefreshManager, never()).discardPendingDailyRefresh();
 
         // A synced reset to default clears SharedPreferences while the in-memory background is
         // still THEME_COLLECTION. The same theme synced again in that window is staged normally.
@@ -1503,6 +1507,39 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(NtpBackgroundType.DEFAULT, manager.getBackgroundType());
         assertNull(manager.getNtpBackgroundData());
         verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testSyncedBackground_discardsPendingDailyRefresh() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+
+        manager.onSyncedChromeColorChanged(mContext, createTestColorData());
+        verify(mNtpThemeDailyRefreshManager).discardPendingDailyRefresh();
+        clearInvocations(mNtpThemeDailyRefreshManager);
+
+        manager.onSyncedThemeCollectionImageChanged(
+                mContext, createTestThemeCollectionData(createTestCustomBackgroundInfo()));
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mNtpThemeDailyRefreshManager).discardPendingDailyRefresh();
+        clearInvocations(mNtpThemeDailyRefreshManager);
+
+        manager.onSyncedDefaultThemeReset(mContext);
+        verify(mNtpThemeDailyRefreshManager).discardPendingDailyRefresh();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnBackgroundDataChanged_discardsPendingDailyRefresh() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        clearInvocations(mNtpThemeDailyRefreshManager);
+
+        // A local selection replaces the persisted background, so a daily refresh computed from
+        // the previous background must not be saved over it.
+        manager.onBackgroundDataChanged(mContext, createTestColorData());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNtpThemeDailyRefreshManager).discardPendingDailyRefresh();
     }
 
     @Test

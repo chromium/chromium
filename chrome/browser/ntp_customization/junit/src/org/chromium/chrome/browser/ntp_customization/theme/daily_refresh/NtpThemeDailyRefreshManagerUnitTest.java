@@ -40,6 +40,8 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
@@ -172,6 +174,39 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         assertNull(mManager.getNtpThemeColorIdForTesting());
         assertFalse(mManager.getIsDailyUpdateAppliedForTesting());
         verify(mOnDailyRefreshThemeCollectionApplied, never()).run();
+    }
+
+    @Test
+    public void testDiscardPendingDailyRefresh() {
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(NtpThemeColorId.NTP_COLORS_BLUE);
+        mManager.setDailyUpdateStatusForChromeColor(
+                NtpThemeColorId.NTP_COLORS_AQUA, /* timestamp= */ 100);
+        assertTrue(mManager.getIsDailyUpdateAppliedForTesting());
+
+        mManager.discardPendingDailyRefresh();
+
+        // The getter falls back to the persisted color, and nothing is left to save.
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE, mManager.getNtpThemeColorIdForChromeColorTheme());
+        mManager.maybeSaveDailyRefreshAndReset(mOnDailyRefreshThemeCollectionApplied);
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
+        assertPendingDailyRefreshDropped();
+    }
+
+    @Test
+    public void testDiscardPendingDailyRefresh_clearsSkippedState() {
+        setDailyRefreshThemeCollection();
+        mFakeTime.advanceMillis(TimeUtils.MILLISECONDS_PER_DAY + 10);
+        // No prefetched image, so the refresh is skipped.
+        mManager.maybeApplyDailyRefreshForThemeCollection();
+        assertTrue(mManager.getShouldSkipDailyRefreshForThemeCollectionForTesting());
+
+        mManager.discardPendingDailyRefresh();
+
+        mManager.maybeSaveDailyRefreshAndReset(mOnDailyRefreshThemeCollectionApplied);
+        assertPendingDailyRefreshDropped();
     }
 
     @Test
@@ -471,5 +506,22 @@ public class NtpThemeDailyRefreshManagerUnitTest {
                         DAILY_REFRESH_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true));
+    }
+
+    /**
+     * Asserts that the pending daily refresh was dropped: nothing was persisted or re-fetched, and
+     * the manager state is reset.
+     */
+    private void assertPendingDailyRefreshDropped() {
+        verify(mOnDailyRefreshThemeCollectionApplied, never()).run();
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .contains(
+                                ChromePreferenceKeys
+                                        .NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+        assertFalse(mManager.getIsDailyUpdateAppliedForTesting());
+        assertFalse(mManager.getShouldSkipDailyRefreshForThemeCollectionForTesting());
+        assertNull(mManager.getLastDailyUpdateTimestampForTesting());
+        assertNull(mManager.getNtpThemeColorIdForTesting());
     }
 }

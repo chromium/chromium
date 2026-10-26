@@ -574,6 +574,9 @@ public class NtpCustomizationConfigManager {
         mSyncedNtpBackgroundData = null;
         mIsPersistedThemeReplacedBySync = false;
         NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
+        // A daily refresh applied in memory was computed from the background that is being
+        // replaced, and must not be saved over the new one at deferred startup.
+        NtpThemeDailyRefreshManager.getInstance().discardPendingDailyRefresh();
     }
 
     /**
@@ -716,6 +719,8 @@ public class NtpCustomizationConfigManager {
     private void onBackgroundInitializationFailed() {
         if (mSyncedNtpBackgroundData == null) {
             NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
+            // The daily refresh which may have been applied to the failed background is gone too.
+            NtpThemeDailyRefreshManager.getInstance().discardPendingDailyRefresh();
         }
         onBackgroundReset();
     }

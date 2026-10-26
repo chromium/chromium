@@ -243,7 +243,6 @@ public class NtpThemeDailyRefreshManager {
 
         if (mNtpThemeColorId != null) {
             NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(mNtpThemeColorId);
-            mNtpThemeColorId = null;
         }
 
         if (NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference() == THEME_COLLECTION) {
@@ -258,11 +257,21 @@ public class NtpThemeDailyRefreshManager {
         if (mLastDailyUpdateTimestamp != null) {
             NtpCustomizationUtils.setDailyRefreshTimestampToSharedPreference(
                     mLastDailyUpdateTimestamp);
-            mLastDailyUpdateTimestamp = null;
         }
+        discardPendingDailyRefresh();
+    }
 
+    /**
+     * Discards a daily refresh that was applied in memory but not saved to SharedPreferences yet.
+     * Called when the background in SharedPreferences is replaced, e.g. by a synced theme or a
+     * local selection, so that the getters stop returning the stale rotation and {@link
+     * #maybeSaveDailyRefreshAndReset} doesn't save it over the new background.
+     */
+    public void discardPendingDailyRefresh() {
         mIsDailyUpdateApplied = false;
         mShouldSkipDailyRefreshForThemeCollection = false;
+        mLastDailyUpdateTimestamp = null;
+        mNtpThemeColorId = null;
     }
 
     public static NtpThemeDailyRefreshManager createInstanceForTesting() {
