@@ -15,7 +15,7 @@ bool CanExtractPageContextForWebState(web::WebState* web_state,
     return false;
   }
 
-  const GURL& url = web_state->GetVisibleURL();
+  const GURL& url = web_state->GetLastCommittedURL();
   const std::string mime_type = web_state->GetContentsMimeType();
 
   bool mime_type_ok = web::IsContentTypeHtml(mime_type) ||

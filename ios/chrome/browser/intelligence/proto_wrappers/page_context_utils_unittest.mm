@@ -4,19 +4,41 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 
+#import <optional>
+
 #import "base/strings/string_number_conversions.h"
 #import "base/unguessable_token.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Fake WebState that allows `GetVisibleURL()` to differ from
+// `GetLastCommittedURL()` to simulate an uncommitted pending navigation.
+class PendingNavigationFakeWebState : public web::FakeWebState {
+ public:
+  void SetPendingVisibleURL(const GURL& url) { pending_visible_url_ = url; }
+
+  const GURL& GetVisibleURL() const override {
+    return pending_visible_url_.has_value()
+               ? *pending_visible_url_
+               : web::FakeWebState::GetVisibleURL();
+  }
+
+ private:
+  std::optional<GURL> pending_visible_url_;
+};
+
+}  // namespace
+
 // Test fixture for page_context_utils.
 class PageContextUtilsTest : public PlatformTest {
  protected:
-  web::FakeWebState* web_state() { return &web_state_; }
+  PendingNavigationFakeWebState* web_state() { return &web_state_; }
 
  private:
-  web::FakeWebState web_state_;
+  PendingNavigationFakeWebState web_state_;
 };
 
 // Tests that CanExtractPageContextForWebState returns true for HTTP URLs with
@@ -87,6 +109,21 @@ TEST_F(PageContextUtilsTest, TestUnsupportedContentType) {
 TEST_F(PageContextUtilsTest, TestNullWebState) {
   EXPECT_FALSE(
       CanExtractPageContextForWebState(nullptr, /*pdf_enabled=*/false));
+}
+
+// Tests that CanExtractPageContextForWebState evaluates GetLastCommittedURL()
+// rather than GetVisibleURL() when a pending navigation has not yet committed.
+TEST_F(PageContextUtilsTest, TestUsesLastCommittedUrlOverVisibleUrl) {
+  web_state()->SetCurrentURL(GURL("chrome://newtab"));
+  web_state()->SetPendingVisibleURL(GURL("https://www.example.com"));
+  web_state()->SetContentsMimeType("text/html");
+  EXPECT_FALSE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
+
+  web_state()->SetCurrentURL(GURL("https://www.example.com"));
+  web_state()->SetPendingVisibleURL(GURL("chrome://newtab"));
+  EXPECT_TRUE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
 }
 
 // Tests DeserializeFrameIdAsLocalFrameToken with a valid ID.

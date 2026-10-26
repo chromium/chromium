@@ -20,8 +20,9 @@ class WebState;
 // Returns true if the context for `web_state` can be extracted. Note that
 // unrealized WebStates will return false, as they have an empty mime type until
 // they are realized. PageContexts are available for HTML and image pages (and
-// PDFs, if `pdf_enabled` is true) that use http/https schemes. Namely, this
-// filters out PDFs (unless `pdf_enabled` is true), NTPs and chrome:// pages.
+// PDFs, if `pdf_enabled` is true) whose last committed URL uses an http/https
+// scheme. Namely, this filters out PDFs (unless `pdf_enabled` is true), NTPs
+// and chrome:// pages.
 // TODO(crbug.com/485311221): Remove `pdf_enabled` and support PDFs by default.
 bool CanExtractPageContextForWebState(web::WebState* web_state,
                                       bool pdf_enabled);
