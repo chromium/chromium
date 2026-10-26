@@ -162,6 +162,9 @@ class SerialChooserContextTestBase {
     SerialBlocklist::Get().ResetToDefaultValuesForTesting();
   }
 
+  TestingProfileManager* testing_profile_manager() {
+    return testing_profile_manager_.get();
+  }
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
   TestingProfile* profile() { return profile_; }
   TestingPrefServiceSimple* local_state() {
@@ -1182,6 +1185,29 @@ TEST_F(SerialChooserContextTest, ClearBrowsingDataEphemeralDevice) {
 
   // Check if the permission is still returned.
   EXPECT_FALSE(context()->HasPortPermission(kOrigin, *port));
+}
+
+TEST_F(SerialChooserContextTest, GetPortInfoBeforeInitialization) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+  TestingProfile* uninitialized_profile =
+      testing_profile_manager()->CreateTestingProfile(
+          "uninitialized@example.com");
+  ASSERT_TRUE(uninitialized_profile);
+
+  SerialChooserContext* uninitialized_context =
+      SerialChooserContextFactory::GetForProfile(uninitialized_profile);
+  ASSERT_TRUE(uninitialized_context);
+
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+
+  EXPECT_EQ(nullptr, uninitialized_context->GetPortInfo(port->token));
+
+  uninitialized_context->GrantPortPermission(kOrigin, *port);
+  const device::mojom::SerialPortInfo* port_info =
+      uninitialized_context->GetPortInfo(port->token);
+  ASSERT_TRUE(port_info);
+  EXPECT_EQ(port->token, port_info->token);
 }
 
 // Boolean parameter means if user is affiliated on the device. Affiliated

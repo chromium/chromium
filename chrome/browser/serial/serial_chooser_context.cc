@@ -582,7 +582,6 @@ bool SerialChooserContext::CanStorePersistentEntry(
 
 const device::mojom::SerialPortInfo* SerialChooserContext::GetPortInfo(
     const base::UnguessableToken& token) {
-  CHECK(is_initialized_, base::NotFatalUntil::M162);
   auto it = port_info_.find(token);
   return it == port_info_.end() ? nullptr : it->second.get();
 }
@@ -692,7 +691,6 @@ void SerialChooserContext::OnGetDevices(
     std::vector<device::mojom::SerialPortInfoPtr> ports) {
   for (auto& port : ports)
     port_info_.insert({port->token, std::move(port)});
-  is_initialized_ = true;
 }
 
 void SerialChooserContext::OnPortManagerConnectionError() {

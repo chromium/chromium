@@ -75,9 +75,9 @@ class SerialChooserContext
   static bool CanStorePersistentEntry(
       const device::mojom::SerialPortInfo& port);
 
-  // Only call this if you're sure |port_info_| has been initialized
-  // before-hand. The returned raw pointer is owned by |port_info_| and will be
-  // destroyed when the port is removed.
+  // Gets the port info for a particular port, identified by its |token|, or
+  // nullptr if the port is not found. The returned raw pointer is owned by
+  // |port_info_| and will be destroyed when the port is removed.
   const device::mojom::SerialPortInfo* GetPortInfo(
       const base::UnguessableToken& token);
 
@@ -123,8 +123,6 @@ class SerialChooserContext
   // SerialChooserContextFactory as KeyedServices that will be destroyed when
   // the Profile object is destroyed.
   const raw_ptr<Profile> profile_;
-
-  bool is_initialized_ = false;
 
   // Tracks the set of ports to which an origin has access to.
   std::map<url::Origin, std::set<base::UnguessableToken>> ephemeral_ports_;
