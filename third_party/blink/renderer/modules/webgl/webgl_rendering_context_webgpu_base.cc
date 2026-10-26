@@ -135,11 +135,13 @@ const WebGLWebGPUDriver& GetDriverHelper(
   return *driver.get();
 }
 
-#define GLFN(DRIVER, FUNC)                        \
-  ([&d = GetDriverHelper(DRIVER)](auto... args) { \
-    auto fn = d.driver_gl.fn.FUNC##Fn;            \
-    DCHECK(fn) << #FUNC " is null.";              \
-    return fn(args...);                           \
+// Calls the GL_ANGLE_explicit_context variant of FUNC, with the display and
+// context of DRIVER.
+#define GLFN(DRIVER, FUNC)                         \
+  ([&d = GetDriverHelper(DRIVER)](auto... args) {  \
+    auto fn = d.driver_gl.fn.FUNC##ContextANGLEFn; \
+    DCHECK(fn) << #FUNC " is null.";               \
+    return fn(d.display, d.context, args...);      \
   })
 
 // The maximum supported size of an ArrayBuffer is the maximum size that can be
@@ -1122,7 +1124,7 @@ void WebGLRenderingContextWebGPUBase::depthMask(GLboolean mask) {
 
 void WebGLRenderingContextWebGPUBase::depthRange(GLfloat z_near,
                                                  GLfloat z_far) {
-  GLFN(driver_, glDepthRange)(z_near, z_far);
+  GLFN(driver_, glDepthRangef)(z_near, z_far);
 }
 
 void WebGLRenderingContextWebGPUBase::detachShader(WebGLProgram* program,
@@ -4683,6 +4685,9 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // With the context created, we can load the GL entry points
   driver_.driver_gl.InitializeStaticBindings(get_proc_address);
 
+  // Explicitly call GL functions instead of using GLFN. GLFN calls the ANGLE
+  // explicit context entry points which will not be loaded until
+  // InitializeDynamicBindings below.
   const char* extensions_string = reinterpret_cast<const char*>(
       driver_.driver_gl.fn.glGetStringFn(GL_EXTENSIONS));
   gfx::ExtensionSet extensions = gfx::MakeExtensionSet(extensions_string);
