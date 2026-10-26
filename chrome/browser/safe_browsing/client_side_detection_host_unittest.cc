@@ -1034,12 +1034,9 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
 // TODO(crbug.com/542592773): Flaky on Linux TSan.
 #define MAYBE_UnfamiliarLoginPageTriggersClassification \
   DISABLED_UnfamiliarLoginPageTriggersClassification
-#define MAYBE_UnfamiliarLoginPageSampleRate \
-  DISABLED_UnfamiliarLoginPageSampleRate
 #else
 #define MAYBE_UnfamiliarLoginPageTriggersClassification \
   UnfamiliarLoginPageTriggersClassification
-#define MAYBE_UnfamiliarLoginPageSampleRate UnfamiliarLoginPageSampleRate
 #endif
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1049,9 +1046,7 @@ TEST_F(ClientSideDetectionHostTest,
   }
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kProactivePasswordProtection,
-      {{kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
+  feature_list.InitAndEnableFeature(kProactivePasswordProtection);
 
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
@@ -1077,56 +1072,6 @@ TEST_F(ClientSideDetectionHostTest,
             fake_phishing_detector_.last_request_type());
 }
 
-TEST_F(ClientSideDetectionHostTest, MAYBE_UnfamiliarLoginPageSampleRate) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  safe_browsing::SetSafeBrowsingState(
-      profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
-
-  GURL url("http://example.com/");
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse);
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-
-  NavigateAndCommit(url);
-  WaitAndCheckPreClassificationChecks();
-
-  {
-    // Set sample rate to 0.0 (always stop).
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        kProactivePasswordProtection,
-        {{kCsdProactivePasswordProtectionSampleRate.name, "0.0"}});
-
-    fake_phishing_detector_.Reset();
-
-    ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, &kFalse);
-    csd_host_->OnUnfamiliarLoginPageDetected();
-    WaitAndCheckPreClassificationChecks();
-
-    EXPECT_FALSE(fake_phishing_detector_.phishing_detection_started());
-  }
-
-  fake_phishing_detector_.Reset();
-
-  {
-    // Set sample rate to 1.0 (always proceed).
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        kProactivePasswordProtection,
-        {{kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
-
-    ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, &kFalse);
-    csd_host_->OnUnfamiliarLoginPageDetected();
-    WaitAndCheckPreClassificationChecks();
-
-    EXPECT_TRUE(fake_phishing_detector_.phishing_detection_started());
-  }
-}
-
 // TODO(crbug.com/542592773): Flaky on Linux TSAN.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger \
@@ -1142,10 +1087,8 @@ TEST_F(ClientSideDetectionHostTest,
   }
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kProactivePasswordProtection,
-                             {{kCsdProactivePasswordProtectionSampleRate.name,
-                               "1.0"}}}},
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kProactivePasswordProtection},
       /*disabled_features=*/{kClientSideDetectionOnlyESBClassification});
 
   // Disable Enhanced Protection.

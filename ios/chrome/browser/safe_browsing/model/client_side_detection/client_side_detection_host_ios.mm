@@ -1051,9 +1051,6 @@ bool ClientSideDetectionHostIOS::ShouldStopAtPreClassification() {
     case ClientSideDetectionType::CREDIT_CARD_FORM:
       return base::RandDouble() >=
              safe_browsing::kCsdCreditCardFormSampleRate.Get();
-    case ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
-      return base::RandDouble() >=
-             safe_browsing::kCsdProactivePasswordProtectionSampleRate.Get();
     default:
       break;
   }

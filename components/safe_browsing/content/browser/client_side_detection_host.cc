@@ -647,9 +647,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
         return base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get();
       case CREDIT_CARD_FORM:
         return base::RandDouble() >= kCsdCreditCardFormSampleRate.Get();
-      case UNFAMILIAR_LOGIN_PAGE:
-        return base::RandDouble() >=
-               kCsdProactivePasswordProtectionSampleRate.Get();
       default:
         break;
     }

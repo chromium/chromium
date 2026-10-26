@@ -459,6 +459,11 @@ TEST_F(PasswordProtectionServiceTest, NoSendPingPrivateIpHostname) {
 
 TEST_F(PasswordProtectionServiceTest,
        MaybeStartPasswordFieldOnFocusRequest_TriggersCSD) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kProactivePasswordProtection,
+      {{kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
+
   GURL main_frame_url(kTargetUrl);
   GURL password_form_action(kFormActionUrl);
   GURL password_form_frame_url(kPasswordFrameUrl);
@@ -486,6 +491,85 @@ TEST_F(PasswordProtectionServiceTest,
   password_protection_service_->MaybeStartPasswordFieldOnFocusRequest(
       web_contents_.get(), main_frame_url, password_form_action,
       password_form_frame_url);
+
+  EXPECT_EQ(0u, password_protection_service_->GetPendingRequestsCount());
+}
+
+TEST_F(PasswordProtectionServiceTest,
+       MaybeStartPasswordFieldOnFocusRequest_SampleRate) {
+  GURL main_frame_url(kTargetUrl);
+  GURL password_form_action(kFormActionUrl);
+  GURL password_form_frame_url(kPasswordFrameUrl);
+
+  {
+    // Sample rate 100%: should trigger CSD and not send a PhishGuard ping.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kProactivePasswordProtection,
+        {{kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
+
+    EXPECT_CALL(*password_protection_service_, IsPingingEnabled(_, _))
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*password_protection_service_,
+                MaybeStartPasswordFieldOnFocusRequest(_, _, _, _))
+        .WillOnce([this](content::WebContents* web_contents,
+                         const GURL& main_frame_url,
+                         const GURL& password_form_action,
+                         const GURL& password_form_frame_url) {
+          password_protection_service_
+              ->PasswordProtectionService::
+                  MaybeStartPasswordFieldOnFocusRequest(
+                      web_contents, main_frame_url, password_form_action,
+                      password_form_frame_url);
+        });
+
+    EXPECT_CALL(*password_protection_service_,
+                MaybeTriggerClientSideDetectionScan(web_contents_.get()))
+        .Times(1);
+
+    password_protection_service_->MaybeStartPasswordFieldOnFocusRequest(
+        web_contents_.get(), main_frame_url, password_form_action,
+        password_form_frame_url);
+
+    EXPECT_EQ(0u, password_protection_service_->GetPendingRequestsCount());
+    testing::Mock::VerifyAndClearExpectations(
+        password_protection_service_.get());
+  }
+
+  {
+    // Sample rate 0%: should send a PhishGuard ping and not trigger CSD.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kProactivePasswordProtection,
+        {{kCsdProactivePasswordProtectionSampleRate.name, "0.0"}});
+
+    EXPECT_CALL(*password_protection_service_, IsPingingEnabled(_, _))
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*password_protection_service_,
+                MaybeStartPasswordFieldOnFocusRequest(_, _, _, _))
+        .WillOnce([this](content::WebContents* web_contents,
+                         const GURL& main_frame_url,
+                         const GURL& password_form_action,
+                         const GURL& password_form_frame_url) {
+          password_protection_service_
+              ->PasswordProtectionService::
+                  MaybeStartPasswordFieldOnFocusRequest(
+                      web_contents, main_frame_url, password_form_action,
+                      password_form_frame_url);
+        });
+
+    EXPECT_CALL(*password_protection_service_,
+                MaybeTriggerClientSideDetectionScan(web_contents_.get()))
+        .Times(0);
+
+    password_protection_service_->MaybeStartPasswordFieldOnFocusRequest(
+        web_contents_.get(), main_frame_url, password_form_action,
+        password_form_frame_url);
+
+    EXPECT_EQ(1u, password_protection_service_->GetPendingRequestsCount());
+  }
 }
 
 class PasswordProtectionServiceBaseTest

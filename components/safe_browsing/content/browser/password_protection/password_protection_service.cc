@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -73,7 +74,10 @@ void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
           PasswordType::PASSWORD_TYPE_UNKNOWN,
           /*username=*/"");
   if (CanSendPing(trigger_type, main_frame_url, reused_password_account_type)) {
-    MaybeTriggerClientSideDetectionScan(web_contents);
+    if (base::RandDouble() < kCsdProactivePasswordProtectionSampleRate.Get()) {
+      MaybeTriggerClientSideDetectionScan(web_contents);
+      return;
+    }
     StartRequest(web_contents, main_frame_url, password_form_action,
                  password_form_frame_url, /* username */ "",
                  PasswordType::PASSWORD_TYPE_UNKNOWN,

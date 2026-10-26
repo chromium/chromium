@@ -3022,41 +3022,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
 }
 
-// Tests that UNFAMILIAR_LOGIN_PAGE pre-classification stops when the sample
-// rate is 0.0.
-TEST_F(ClientSideDetectionHostIOSTest,
-       UnfamiliarLoginPageSamplingStopsPreClassification) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      safe_browsing::kProactivePasswordProtection,
-      {{safe_browsing::kCsdProactivePasswordProtectionSampleRate.name, "0.0"}});
-
-  RunSamplingPreClassificationTest(
-      safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE);
-
-  histogram_tester_.ExpectUniqueSample(
-      "SBClientPhishing.PreClassificationCheckResult.UnfamiliarLoginPage",
-      safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC,
-      1);
-}
-
-// Tests that UNFAMILIAR_LOGIN_PAGE pre-classification proceeds to CLASSIFY when
-// the sample rate is 1.0.
-TEST_F(ClientSideDetectionHostIOSTest,
-       UnfamiliarLoginPageSamplingAllowsClassification) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      safe_browsing::kProactivePasswordProtection,
-      {{safe_browsing::kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
-
-  RunSamplingPreClassificationTest(
-      safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE);
-
-  histogram_tester_.ExpectUniqueSample(
-      "SBClientPhishing.PreClassificationCheckResult.UnfamiliarLoginPage",
-      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
-}
-
 // Tests that pre-classification stops if the profile is off-the-record.
 TEST_F(ClientSideDetectionHostIOSTest,
        PreClassificationOffTheRecordPreventsClassification) {
