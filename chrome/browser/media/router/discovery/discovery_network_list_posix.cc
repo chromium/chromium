@@ -12,6 +12,9 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
@@ -54,7 +57,6 @@ base::span<const uint8_t> SocketAddressAsByteSpan(const sll* ll_addr) {
 void GetDiscoveryNetworkInfoListImpl(
     const struct ifaddrs* if_list,
     std::vector<DiscoveryNetworkInfo>* network_info_list) {
-  std::string ssid;
   for (; if_list != nullptr; if_list = if_list->ifa_next) {
     if ((if_list->ifa_flags & IFF_RUNNING) == 0 ||
         (if_list->ifa_flags & IFF_UP) == 0) {
@@ -85,8 +87,8 @@ void GetDiscoveryNetworkInfoListImpl(
     }
 
 #if !BUILDFLAG(IS_ANDROID)
-    if (MaybeGetWifiSSID(name, &ssid)) {
-      network_info_list->push_back({name, ssid});
+    if (std::optional<std::string> ssid = MaybeGetWifiSSID(name)) {
+      network_info_list->emplace_back(name, std::move(*ssid));
       continue;
     }
 #endif

@@ -5,44 +5,47 @@
 #include "chrome/browser/media/router/discovery/discovery_network_list_wifi.h"
 
 #include <linux/wireless.h>
-#include <string.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "base/check.h"
-#include "base/compiler_specific.h"
+#include <array>
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/files/scoped_file.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/network_interfaces_linux.h"
 
 namespace media_router {
 
-bool MaybeGetWifiSSID(const std::string& if_name, std::string* ssid_out) {
-  CHECK(ssid_out, base::NotFatalUntil::M161);
-
+std::optional<std::string> MaybeGetWifiSSID(std::string_view if_name) {
   base::ScopedFD ioctl_socket(socket(AF_INET, SOCK_DGRAM, 0));
   if (!ioctl_socket.is_valid()) {
     // AF_INET is for IPv4, so it may fail for IPv6-only hosts even when there
     // are interfaces up.
     ioctl_socket.reset(socket(AF_INET6, SOCK_DGRAM, 0));
     if (!ioctl_socket.is_valid()) {
-      return false;
+      return std::nullopt;
     }
   }
   struct iwreq wreq = {};
-  UNSAFE_TODO(strncpy(wreq.ifr_name, if_name.data(), IFNAMSIZ - 1));
+  base::strlcpy(wreq.ifr_name, if_name);
 
-  char ssid[IW_ESSID_MAX_SIZE + 1] = {};
-  wreq.u.essid.pointer = ssid;
-  wreq.u.essid.length = IW_ESSID_MAX_SIZE;
+  std::array<char, IW_ESSID_MAX_SIZE + 1> ssid = {};
+  wreq.u.essid.pointer = ssid.data();
+  wreq.u.essid.length = ssid.size() - 1;  // Keep room for the NUL.
   if (ioctl(ioctl_socket.get(), SIOCGIWESSID, &wreq) == -1) {
-    return false;
+    return std::nullopt;
   }
-  if (ssid[0] != 0) {
-    ssid_out->assign(ssid);
-    return true;
+  std::string_view ssid_view = base::as_string_view(ssid);
+  ssid_view = ssid_view.substr(0, ssid_view.find('\0'));
+  if (ssid_view.empty()) {
+    return std::nullopt;
   }
-  return false;
+  return std::string(ssid_view);
 }
 
 }  // namespace media_router
