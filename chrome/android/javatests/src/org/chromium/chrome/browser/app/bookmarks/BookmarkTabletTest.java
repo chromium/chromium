@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -41,6 +42,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
@@ -52,9 +54,8 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
-import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -111,25 +112,21 @@ public class BookmarkTabletTest {
     }
 
     /**
-     * Simulates a click on a tab, selecting it.
+     * Selects |tab| with CtaPageStation#selectTabFast(), hopping on at the current tab.
      *
-     * @param incognito Whether or not this tab is in the incognito or normal stack.
-     * @param id The id of the tab to click.
+     * @return The CtaPageStation for the selected tab.
      */
-    protected void selectTab(final boolean incognito, final int id) {
-        ChromeTabUtils.selectTabWithAction(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        TabStripUtils.clickTab(
-                                TabStripUtils.findStripLayoutTab(
-                                        mActivityTestRule.getActivity(), incognito, id),
-                                InstrumentationRegistry.getInstrumentation(),
-                                mActivityTestRule.getActivity());
-                    }
-                });
+    private CtaPageStation selectTab(Tab tab) {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        Tab currentTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
+        CtaPageStation page =
+                TrafficControl.hopOnAt(
+                        activity,
+                        CtaPageStation.newGenericBuilder()
+                                .withTabAlreadySelected(currentTab)
+                                .withIncognito(currentTab.isIncognitoBranded())
+                                .build());
+        return page.selectTabFast(tab, CtaPageStation::newGenericBuilder);
     }
 
     @Test
@@ -143,7 +140,7 @@ public class BookmarkTabletTest {
                 mBookmarkModel);
 
         mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl());
-        selectTab(false, bookmarksTab.getId());
+        selectTab(bookmarksTab);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertFalse(

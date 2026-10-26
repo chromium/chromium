@@ -593,47 +593,6 @@ public class ChromeTabUtils {
         closeAllTabs(instrumentation, activity.getTabModelSelectorSupplier());
     }
 
-    /** Selects a tab with the given action and waits for the selection event to be observed. */
-    public static void selectTabWithAction(
-            Instrumentation instrumentation, final ChromeTabbedActivity activity, Runnable action) {
-        final CallbackHelper selectCallback = new CallbackHelper();
-        final TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        selectCallback.notifyCalled();
-                    }
-                };
-        instrumentation.runOnMainSync(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        TabModelSelector selector = activity.getTabModelSelector();
-                        for (TabModel tabModel : selector.getModels()) {
-                            tabModel.addObserver(observer);
-                        }
-                    }
-                });
-
-        action.run();
-
-        try {
-            selectCallback.waitForCallback(0);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Tab selected event was never received", e);
-        }
-        instrumentation.runOnMainSync(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        TabModelSelector selector = activity.getTabModelSelector();
-                        for (TabModel tabModel : selector.getModels()) {
-                            tabModel.removeObserver(observer);
-                        }
-                    }
-                });
-    }
-
     /**
      * @param windowAndroid the WindowAndroid used to acquire the TabModelSelector.
      * @return The TabModelSelector used with the supplied WindowAndroid.
