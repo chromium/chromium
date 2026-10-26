@@ -453,6 +453,78 @@ TEST_F(AccessibilityTest, ImageMapsDirtyOnMapOrUsemapChanges) {
   expect_dirty_then_clean();
 }
 
+TEST_F(AccessibilityTest, CacheRelationsSkipsElementsWithoutIdOrRelations) {
+  SetBodyInnerHTML(R"HTML(
+      <button id="button" aria-labelledby="target"></button>
+      <div id="owner" aria-owns="target"></div>
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXRelationCache* relation_cache = cache.RelationCache();
+  ASSERT_NE(nullptr, relation_cache);
+  const wtf_size_t initial_registered_ids =
+      relation_cache->registered_id_attributes_.size();
+
+  // Connecting elements without attributes or with only non-ID, non-ARIA
+  // attributes does not register IDs or allocate a `DOMNodeId` (when
+  // `AX_FAIL_FAST_BUILD()` is false; when `AX_FAIL_FAST_BUILD()` is true,
+  // `processed_elements_` tracks all connected elements via `DOMNodeId`).
+  Element* plain_div = GetDocument().CreateRawElement(html_names::kDivTag);
+  Element* classed_div = GetDocument().CreateRawElement(html_names::kDivTag);
+  classed_div->setAttribute(html_names::kClassAttr, AtomicString("item"));
+
+  EXPECT_FALSE(relation_cache->IsARIALabelOrDescription(*plain_div));
+  EXPECT_FALSE(relation_cache->IsARIALabelOrDescription(*classed_div));
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(plain_div));
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(classed_div));
+
+  GetDocument().body()->AppendChild(plain_div);
+  GetDocument().body()->AppendChild(classed_div);
+#if !AX_FAIL_FAST_BUILD()
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(plain_div));
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(classed_div));
+#endif
+  EXPECT_EQ(initial_registered_ids,
+            relation_cache->registered_id_attributes_.size());
+
+  // Connecting an element with `id="target"` allocates a `DOMNodeId`,
+  // registers its ID, and resolves `aria-labelledby` and `aria-owns`.
+  Element* target = GetDocument().CreateRawElement(html_names::kDivTag);
+  target->setAttribute(html_names::kIdAttr, AtomicString("target"));
+  target->setTextContent("Target label");
+  GetDocument().body()->AppendChild(target);
+
+  const DOMNodeId target_node_id = DOMNodeIds::ExistingIdForNode(target);
+  EXPECT_NE(kInvalidDOMNodeId, target_node_id);
+  EXPECT_TRUE(
+      relation_cache->registered_id_attributes_.Contains(target_node_id));
+  EXPECT_EQ(initial_registered_ids + 1,
+            relation_cache->registered_id_attributes_.size());
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  AXObject* ax_button = GetAXObjectByElementId("button");
+  AXObject* ax_owner = GetAXObjectByElementId("owner");
+  AXObject* ax_target = cache.Get(target);
+  ASSERT_NE(nullptr, ax_button);
+  ASSERT_NE(nullptr, ax_owner);
+  ASSERT_NE(nullptr, ax_target);
+  EXPECT_EQ("Target label", ax_button->ComputedName());
+  EXPECT_TRUE(cache.IsAriaOwned(ax_target));
+  EXPECT_EQ(ax_owner, ax_target->ParentObject());
+
+  // Removing the `id` attribute unregisters it from `AXRelationCache` and
+  // updates the related objects.
+  target->removeAttribute(html_names::kIdAttr);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(
+      relation_cache->registered_id_attributes_.Contains(target_node_id));
+  EXPECT_EQ(initial_registered_ids,
+            relation_cache->registered_id_attributes_.size());
+  EXPECT_EQ("", ax_button->ComputedName());
+}
+
 class MockAXObject : public AXObject {
  public:
   explicit MockAXObject(AXObjectCacheImpl& ax_object_cache)

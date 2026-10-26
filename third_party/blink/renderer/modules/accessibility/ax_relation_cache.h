@@ -7,12 +7,13 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -28,7 +29,7 @@ using TargetIdToSourceNodeMap = HashMap<AtomicString, HashSet<DOMNodeId>>;
 using TargetNodeToSourceNodeMap = HashMap<DOMNodeId, HashSet<DOMNodeId>>;
 
 // This class should only be used from inside the accessibility directory.
-class AXRelationCache {
+class MODULES_EXPORT AXRelationCache {
   USING_FAST_MALLOC(AXRelationCache);
 
  public:
@@ -214,18 +215,8 @@ class AXRelationCache {
       Document& document,
       HeapVector<Member<Element>>& images_with_changed_map);
 
-  // Check that the element has been previouslly processed.
-  void CheckElementWasProcessed(Element&) const;
-
-  // Get any explicitly-set attr elements associated with source for
-  // the given attribute, whether set via the element or element internals.
-  static void GetExplicitlySetElementsForAttr(
-      const Element& source,
-      const QualifiedName& attr_name,
-      HeapVector<Member<Element>>& target_elements);
-
-  // Get ID or element reference relation targets for source for the
-  // given attribute. Either ids or elements will be populated with the
+  // Get ID or element reference relation targets for `source` for the
+  // given attribute. Either `ids` or `elements` will be populated with the
   // appropriate values, depending on whether the attribute was set as a content
   // attribute or an element reference attribute.
   static void GetRelationTargets(const Element& source,
@@ -328,10 +319,13 @@ class AXRelationCache {
   // related object.
   void UpdateRelatedText(Node*);
 
-  static base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
-  GetTextRelationAttributes();
-  static base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
-  GetOtherRelationAttributes();
+  using TextRelationAttributeArray =
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 4>;
+  using OtherRelationAttributeArray =
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 7>;
+
+  static const TextRelationAttributeArray& GetTextRelationAttributes();
+  static const OtherRelationAttributeArray& GetOtherRelationAttributes();
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
@@ -357,8 +351,8 @@ class AXRelationCache {
       HeapVector<Member<AXObject>>& validated_owned_children_result,
       bool force);
 
-  // Save the current id attribute for the given DOMNodeId.
-  void UpdateRegisteredIdAttribute(Element& element, DOMNodeId node_id);
+  // Save the current `id` attribute for the given `element`.
+  void UpdateRegisteredIdAttribute(Element& element);
 
   WeakPersistent<AXObjectCacheImpl> object_cache_;
 
@@ -424,6 +418,8 @@ class AXRelationCache {
   // Whether a <map> or <img usemap> changed since the last update.
   bool has_dirty_image_maps_ = false;
 
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           CacheRelationsSkipsElementsWithoutIdOrRelations);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
                            RegisteredIdAttributesAreRemovedOnDisconnection);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
