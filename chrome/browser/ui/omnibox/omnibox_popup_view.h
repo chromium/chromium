@@ -94,6 +94,11 @@ class OmniboxPopupView {
   // Called when the active tab changes.
   virtual void OnTabChanged(content::WebContents* contents) {}
 
+  // Reopens the popup if the edit model kept a draft while the popup was closed
+  // for reasons other than the user dismissing it, e.g. while the location bar
+  // wasn't drawn.
+  virtual void ReshowPopup() {}
+
   // Called when the omnibox gains focus.
   virtual void OnFocus(bool query_zps, bool select_all, bool show_full_url) {}
 
