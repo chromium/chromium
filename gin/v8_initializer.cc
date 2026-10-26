@@ -588,7 +588,9 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   // The V8 sandbox is guaranteed to be large enough to host the pool.
   CHECK(pool_base);
   partition_alloc::internal::PartitionAddressSpace::InitConfigurablePool(
-      pool_base, pool_size);
+      pool_base, pool_size,
+      sandbox_address_space->ActiveMemoryProtectionKey().value_or(
+          partition_alloc::internal::kInvalidPkey));
   // TODO(saelo) maybe record the size of the Pool into UMA.
 #endif  // V8_ENABLE_SANDBOX
 
