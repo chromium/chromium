@@ -60,6 +60,18 @@ if (safe_browsing_mode != 0) {
     ]
   }
 
+  # C++ shim exposing Scorer and ScorerStorage to the Rust PhishingModelSetter
+  # crate. Defined as a separate target so the Rust crate can depend on it
+  # while ":phishing_classifier" depends on the Rust crate.
+  source_set("scorer_rust_shim") {
+    sources = [
+      "scorer_rust_shim.cc",
+      "scorer_rust_shim.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [ "//components/safe_browsing/core/common/phishing_classifier" ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [

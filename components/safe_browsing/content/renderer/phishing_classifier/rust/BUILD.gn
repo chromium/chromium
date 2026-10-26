@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//components/safe_browsing/buildflags.gni")
+
+# Rust has no preprocessor, so these targets must be gated in GN on the same
+# condition that enables the `full_safe_browsing` mojom feature in
+# //components/safe_browsing/content/common:interfaces. Note that the mojom
+# feature covers both non-zero safe browsing modes, not just FULL_SAFE_BROWSING.
+if (safe_browsing_mode != 0) {
+  # The cxx bridge to the C++ Scorer shim, split out so that the crate holding
+  # the actual logic does not need `allow_unsafe`.
+  rust_static_library("scorer_bridge") {
+    crate_root = "scorer_bridge.rs"
+    sources = [ "scorer_bridge.rs" ]
+    cxx_bindings = [ "scorer_bridge.rs" ]
+    allow_unsafe = true
+
+    deps = [
+      "//base",
+      "//base:file",
+      "//components/safe_browsing/content/renderer/phishing_classifier:scorer_rust_shim",
+      "//third_party/rust/cxx/v1:lib",
+    ]
+  }
+}
