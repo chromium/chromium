@@ -886,9 +886,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kUniversalOptOutErrorToastShown, false);
 
-  // Deprecated 11/2025.
-  registry->RegisterListPref(kReaderModeRecentlyUsedTimestampsPref);
-
   // Deprecated 12/2025.
   registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
 
@@ -988,9 +985,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
                     prefs);
-
-  // Added 11/2025.
-  prefs->ClearPref(kReaderModeRecentlyUsedTimestampsPref);
 
   // Added 12/2025.
   prefs->ClearPref(kAutofillStatesDataDir);

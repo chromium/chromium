@@ -48,9 +48,6 @@ const char kReaderModeAccessPointHistogram[] = "IOS.ReaderMode.AccessPoint";
 const char kReaderModeAccessPointWithModeHistogram[] =
     "IOS.ReaderMode.AccessPointWithMode";
 
-const char kReaderModeRecentlyUsedTimestampsPref[] =
-    "reader_mode.recently_used_timestamps";
-
 std::vector<double> ReaderModeFontScaleMultipliers() {
   return {0.5, 0.75, 1.0, 1.25, 1.5, 2.0};
 }
