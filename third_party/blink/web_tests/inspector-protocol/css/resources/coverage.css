@@ -31,3 +31,22 @@ div {
         display: block;
     }
 }
+
+body {
+    color: green;
+    .unused {
+        color: yellow;
+    }
+    .class {
+        color: purple;
+    }
+}
+
+body {
+    .unused {
+        color: magenta;
+    }
+    .class {
+        color: cyan;
+    }
+}

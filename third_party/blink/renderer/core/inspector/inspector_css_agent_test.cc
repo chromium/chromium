@@ -66,11 +66,11 @@ class InspectorCSSAgentTest : public PageTestBase {
     LocalFrame* frame = GetDocument().GetFrame();
     InspectedFrames* inspected_frames =
         MakeGarbageCollected<InspectedFrames>(frame);
+    auto* dom_agent = MakeGarbageCollected<InspectorDOMAgent>(
+        GetDocument().GetExecutionContext()->GetIsolate(), inspected_frames);
+    dom_agent->FrameDocumentUpdated(frame);
     InspectorCSSAgent* agent = MakeGarbageCollected<InspectorCSSAgent>(
-        MakeGarbageCollected<InspectorDOMAgent>(
-            GetDocument().GetExecutionContext()->GetIsolate(),
-            inspected_frames),
-        inspected_frames,
+        dom_agent, inspected_frames,
         MakeGarbageCollected<InspectorNetworkAgent>(inspected_frames, nullptr,
                                                     /*client_is_trusted=*/true),
         MakeGarbageCollected<InspectorResourceContentLoader>(
@@ -185,6 +185,14 @@ class InspectorCSSAgentTest : public PageTestBase {
         *document, "<length-percentage>", value_str);
     return InspectorCSSAgent::ResolvePercentagesValues(element, property_name,
                                                        value, value_str);
+  }
+
+  std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>
+  StopRuleUsageTracking(InspectorCSSAgent* agent) {
+    agent->UpdateActiveStyleSheets(&GetDocument());
+    std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>> result;
+    agent->stopRuleUsageTracking(&result);
+    return result;
   }
 };
 
@@ -1588,6 +1596,60 @@ TEST_F(InspectorCSSAgentTest, ResolvePercentagesDisplayTable) {
   EXPECT_EQ(
       InspectorResolvePercentageValues(element, CSSPropertyID::kHeight, value),
       value);
+}
+
+TEST_F(InspectorCSSAgentTest, TakeCoverageDeltaNestedStyleRules) {
+  InspectorCSSAgent* agent = CreateInspectorCSSAgent();
+  agent->SetCoverageEnabled(true);
+
+  String css = R"CSS(#parent1 {
+  color: red;
+  .unused { color: yellow; }
+  .used1 { color: blue; }
+  .used2 { color: green; }
+  font-size: 12px;
+}
+#parent2 {
+  .unused { color: pink; }
+  .used { color: cyan; }
+})CSS";
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<style>" + css +
+                                                        R"HTML(</style>
+    <div id="parent1">
+      <span class="used1"></span>
+      <span class="used2"></span>
+    </div>
+    <div id="parent2">
+      <span class="used"></span>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>> coverage =
+      StopRuleUsageTracking(agent);
+  ASSERT_TRUE(coverage);
+
+  std::vector<std::pair<int, int>> ranges;
+  for (const std::unique_ptr<protocol::CSS::RuleUsage>& rule : *coverage) {
+    EXPECT_TRUE(rule->getUsed());
+    ranges.emplace_back(rule->getStartOffset(), rule->getEndOffset());
+  }
+  std::sort(ranges.begin(), ranges.end());
+
+  Vector<String> used_rule_texts;
+  for (const auto& [start, end] : ranges) {
+    used_rule_texts.push_back(css.substr(start, end - start));
+  }
+
+  Vector<String> expected = {
+      "#parent1 {\n  color: red;",
+      ".used1 { color: blue; }",
+      ".used2 { color: green; }",
+      "font-size: 12px;",
+      "#parent2 ",
+      ".used { color: cyan; }",
+  };
+  EXPECT_EQ(used_rule_texts, expected);
 }
 
 }  // namespace blink

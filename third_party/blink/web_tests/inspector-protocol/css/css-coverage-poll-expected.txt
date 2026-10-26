@@ -1,8 +1,8 @@
 Test css coverage.
 
 Initial coverage:
-Coverage delta (8 entries)
-    css/resources/coverage.css: +0-35 +36-56 +57-74 +105-135 +141-191 +327-517 +529-546 +596-634
+Coverage delta (12 entries)
+    css/resources/coverage.css: +0-35 +36-56 +57-74 +105-135 +141-191 +327-517 +529-546 +596-634 +638-662 +710-747 +751-756 +806-841
 
 Load stylesheet coverage2.css:
 Coverage delta (1 entries)

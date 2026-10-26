@@ -5332,6 +5332,7 @@ protocol::Response InspectorCSSAgent::takeCoverageDelta(
     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>> rule_to_css_rule;
     BuildRulesMap(style_sheet, &rule_to_css_rule);
 
+    HeapHashSet<Member<CSSRule>> used_rules;
     for (const auto& used_rule : *entry.value) {
       auto rule_to_css_rule_it = rule_to_css_rule.find(used_rule);
       if (rule_to_css_rule_it == rule_to_css_rule.end())
@@ -5344,13 +5345,13 @@ protocol::Response InspectorCSSAgent::takeCoverageDelta(
       // If the rule comes from an @import'ed file, the `rule_style_sheet` is
       // different from `style_sheet`.
       InspectorStyleSheet* rule_style_sheet = it->value;
-      CSSRule* rule = css_style_rule;
-      while (rule) {
+      for (CSSRule* rule = css_style_rule;
+           rule && used_rules.insert(rule).is_new_entry;
+           rule = rule->parentRule()) {
         if (std::unique_ptr<protocol::CSS::RuleUsage> rule_usage_object =
                 rule_style_sheet->BuildObjectForRuleUsage(rule, true)) {
           (*result)->emplace_back(std::move(rule_usage_object));
         }
-        rule = rule->parentRule();
       }
     }
   }
