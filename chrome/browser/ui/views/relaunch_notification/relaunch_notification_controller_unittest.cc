@@ -1430,9 +1430,8 @@ class RelaunchNotificationControllerPlatformImplTest
   std::optional<RelaunchNotificationControllerPlatformImpl> impl_;
 };
 
-// Flaky on all platforms: https://crbug.com/40820313
 TEST_F(RelaunchNotificationControllerPlatformImplTest,
-       DISABLED_SynchronousNotification) {
+       SynchronousNotification) {
   // Make the UX visible to the user so that no delay will be incurred
   ASSERT_NO_FATAL_FAILURE(SetVisibility(true));
 
@@ -1459,13 +1458,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
-//  Flaky on Mac: https://crbug.com/1312578
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DeferredDeadline DISABLED_DeferredDeadline
-#else
-#define MAYBE_DeferredDeadline DeferredDeadline
-#endif
-TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
+TEST_F(RelaunchNotificationControllerPlatformImplTest, DeferredDeadline) {
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
   base::Time deadline = base::Time::Now() + base::Hours(1);
