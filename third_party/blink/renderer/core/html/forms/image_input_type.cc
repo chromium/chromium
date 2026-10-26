@@ -247,6 +247,9 @@ void ImageInputType::EnsurePrimaryContent() {
   if (!HasCreatedShadowSubtree()) {
     return;
   }
+  if (GetElement().GetDocument().InStyleRecalc()) {
+    return;
+  }
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())
     root->RemoveChildren();
   CreateShadowSubtree();
