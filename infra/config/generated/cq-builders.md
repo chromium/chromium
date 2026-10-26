@@ -275,6 +275,11 @@ builder.
   * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//third_party/jni_zero/.+`](https://cs.chromium.org/chromium/src/third_party/jni_zero/)
 
+* [android-cronet-x86-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x86-dbg""))
+
+  Location filters:
+  * [`//net/.+`](https://cs.chromium.org/chromium/src/net/)
+
 * [android-cronet-x86-dbg-nougat-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg-nougat-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x86-dbg-nougat-tests""))
 
   Location filters:

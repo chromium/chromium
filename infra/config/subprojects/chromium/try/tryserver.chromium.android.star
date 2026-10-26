@@ -895,6 +895,11 @@ try_.builder(
     gn_args = "ci/android-cronet-x86-dbg",
     ssd = True,
     contact_team_email = "cronet-team@google.com",
+    cq_settings = try_.cq_settings(
+        location_filters = [
+            "net/.+",
+        ],
+    ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

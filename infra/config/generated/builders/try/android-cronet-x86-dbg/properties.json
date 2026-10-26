@@ -49,6 +49,9 @@
       "targets_spec_directory": "infra/config/generated/builders/try/android-cronet-x86-dbg/targets"
     }
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true
+  },
   "$build/siso": {
     "configs": [
       "builder",
@@ -71,5 +74,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
