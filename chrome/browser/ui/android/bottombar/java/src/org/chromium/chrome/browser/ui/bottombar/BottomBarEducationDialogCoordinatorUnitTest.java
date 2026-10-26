@@ -255,6 +255,31 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
     }
 
     @Test
+    public void testDismissal_NavigateBackOrTouchOutside_RecordsBackPressed() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.BACK_PRESSED)
+                        .build();
+        assertTrue(mCoordinator.maybeShow(mProfile));
+        verify(mModalDialogManager)
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(true));
+
+        PropertyModel model = mModelCaptor.getValue();
+        mCoordinator.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+
+        verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testDestroyWhileShowing() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

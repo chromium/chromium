@@ -1187,7 +1187,11 @@ chromium-metrics-reviews@google.com.
   <owner>polardz@google.com</owner>
   <summary>
     Recorded when an education UI element ({OnboardingType}) is shown, accepted,
-    declined, or dismissed in the Android Bottom Bar flow.
+    declined, or dismissed in the Android Bottom Bar flow. DismissedOther means
+    the UI was closed by teardown, such as the activity being destroyed or the
+    bottom bar being hidden. For a bubble, BackPressed means back closed only
+    the bubble; when back leaves Chrome instead, the bubble closes as
+    DismissedOther.
   </summary>
 <!-- LINT.IfChange(AndroidBottomBarEducationOnboardingType) -->
 

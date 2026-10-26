@@ -230,9 +230,15 @@ public class BottomBarEducationDialogCoordinator
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         if (!mResultRecorded) {
             mResultRecorded = true;
+            // CANCEL_ON_TOUCH_OUTSIDE is false, so NAVIGATE_BACK_OR_TOUCH_OUTSIDE can only
+            // come from back.
+            @EducationOnboardingEvent
+            int event =
+                    dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                            ? EducationOnboardingEvent.BACK_PRESSED
+                            : EducationOnboardingEvent.DISMISSED_OTHER;
             BottomBarMetrics.recordEducationOnboardingEvent(
-                    EducationOnboardingType.OPT_IN_DIALOG,
-                    EducationOnboardingEvent.DISMISSED_OTHER);
+                    EducationOnboardingType.OPT_IN_DIALOG, event);
         }
         mDialogModel = null;
         mDialogView = null;

@@ -107,6 +107,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Declined"/>
   <int value="3" label="SettingsClicked"/>
   <int value="4" label="DismissedOther"/>
+  <int value="5" label="TappedScrim">
+    Tapped outside the bubble, not on the bottom bar
+  </int>
+  <int value="6" label="TappedBottomBar">
+    Tapped the bottom bar, outside the bubble
+  </int>
+  <int value="7" label="BackPressed">Closed with system back</int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarEducationOnboardingEvent) -->

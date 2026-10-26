@@ -39,7 +39,10 @@ public class BottomBarMetrics {
         EducationOnboardingEvent.ACCEPTED,
         EducationOnboardingEvent.DECLINED,
         EducationOnboardingEvent.SETTINGS_CLICKED,
-        EducationOnboardingEvent.DISMISSED_OTHER
+        EducationOnboardingEvent.DISMISSED_OTHER,
+        EducationOnboardingEvent.TAPPED_SCRIM,
+        EducationOnboardingEvent.TAPPED_BOTTOM_BAR,
+        EducationOnboardingEvent.BACK_PRESSED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface EducationOnboardingEvent {
@@ -48,7 +51,10 @@ public class BottomBarMetrics {
         int DECLINED = 2;
         int SETTINGS_CLICKED = 3;
         int DISMISSED_OTHER = 4;
-        int COUNT = 5;
+        int TAPPED_SCRIM = 5;
+        int TAPPED_BOTTOM_BAR = 6;
+        int BACK_PRESSED = 7;
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarEducationOnboardingEvent)

@@ -22,9 +22,11 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.SystemClock;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -74,6 +76,27 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"})
 public class BottomBarEducationCoordinatorUnitTest {
+
+    private static final int BAR_LEFT = 0;
+    private static final int BAR_TOP = 1800;
+    private static final int BAR_RIGHT = 1080;
+    private static final int BAR_BOTTOM = 2000;
+
+    private static final int BUBBLE_LEFT = 0;
+    private static final int BUBBLE_TOP = 0;
+    private static final int BUBBLE_RIGHT = 100;
+    private static final int BUBBLE_BOTTOM = 100;
+
+    private static final int TAP_X = 500;
+    private static final int RAW_Y_IN_BAR = 1900;
+    private static final int RAW_Y_SCRIM = 500;
+    private static final int UP_EVENT_DELAY_MS = 100;
+
+    private static final int MOVE_EVENT_DELAY_MS = 50;
+    private static final int INSIDE_BUBBLE_X = 10;
+    private static final int INSIDE_BUBBLE_Y = 10;
+    private static final int OUTSIDE_BUBBLE_X = 1000;
+    private static final int OUTSIDE_BUBBLE_Y = 1000;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -391,6 +414,338 @@ public class BottomBarEducationCoordinatorUnitTest {
     }
 
     @Test
+    public void testTappedBottomBar() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.TAPPED_BOTTOM_BAR)
+                        .build();
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_IN_BAR, 0);
+        MotionEvent up =
+                MotionEvent.obtain(
+                        time,
+                        time + UP_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_UP,
+                        TAP_X,
+                        RAW_Y_IN_BAR,
+                        0);
+
+        int localYOutsideBar = 1700;
+        down.offsetLocation(0, localYOutsideBar - RAW_Y_IN_BAR);
+        up.offsetLocation(0, localYOutsideBar - RAW_Y_IN_BAR);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+
+        assertTrue(interceptor.onTouch(bubbleView, down));
+        assertTrue(isBubbleShowing()); // not dismissed yet
+        assertTrue(interceptor.onTouch(bubbleView, up));
+
+        assertFalse(isBubbleShowing());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testTappedScrim() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.TAPPED_SCRIM)
+                        .build();
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_SCRIM, 0);
+        MotionEvent up =
+                MotionEvent.obtain(
+                        time,
+                        time + UP_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_UP,
+                        TAP_X,
+                        RAW_Y_SCRIM,
+                        0);
+
+        int localYInBar = 1900;
+        down.offsetLocation(0, localYInBar - RAW_Y_SCRIM);
+        up.offsetLocation(0, localYInBar - RAW_Y_SCRIM);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+
+        assertTrue(interceptor.onTouch(bubbleView, down));
+        assertTrue(isBubbleShowing());
+        assertTrue(interceptor.onTouch(bubbleView, up));
+
+        assertFalse(isBubbleShowing());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testTappedBottomBar_Cancel() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .build();
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_IN_BAR, 0);
+        MotionEvent cancel =
+                MotionEvent.obtain(
+                        time,
+                        time + UP_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_CANCEL,
+                        TAP_X,
+                        RAW_Y_IN_BAR,
+                        0);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+
+        assertTrue(interceptor.onTouch(bubbleView, down));
+        assertTrue(interceptor.onTouch(bubbleView, cancel));
+
+        assertTrue(isBubbleShowing()); // not dismissed
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testTappedBottomBar_DownAlone() {
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_IN_BAR, 0);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+
+        assertTrue(interceptor.onTouch(bubbleView, down));
+
+        assertTrue(isBubbleShowing()); // not dismissed yet
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testDrag_FromScrimToBar_DismissesAndRecordsBottomBar() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.TAPPED_BOTTOM_BAR)
+                        .build();
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_SCRIM, 0);
+        MotionEvent move =
+                MotionEvent.obtain(
+                        time,
+                        time + MOVE_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_MOVE,
+                        TAP_X,
+                        RAW_Y_IN_BAR,
+                        0);
+        MotionEvent up =
+                MotionEvent.obtain(
+                        time,
+                        time + UP_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_UP,
+                        TAP_X,
+                        RAW_Y_IN_BAR,
+                        0);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+
+        down.offsetLocation(OUTSIDE_BUBBLE_X - TAP_X, OUTSIDE_BUBBLE_Y - RAW_Y_SCRIM);
+        move.offsetLocation(OUTSIDE_BUBBLE_X - TAP_X, OUTSIDE_BUBBLE_Y - RAW_Y_IN_BAR);
+        up.offsetLocation(OUTSIDE_BUBBLE_X - TAP_X, OUTSIDE_BUBBLE_Y - RAW_Y_IN_BAR);
+
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+
+        assertTrue(interceptor.onTouch(bubbleView, down));
+        assertTrue(interceptor.onTouch(bubbleView, move));
+        assertTrue(interceptor.onTouch(bubbleView, up));
+
+        assertFalse(isBubbleShowing());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRotateMidGesture_ResetsPendingFlag() {
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down1 =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_SCRIM, 0);
+        View bubbleView1 = mCoordinator.getBubbleViewForTesting();
+        bubbleView1.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+
+        down1.offsetLocation(OUTSIDE_BUBBLE_X - TAP_X, OUTSIDE_BUBBLE_Y - RAW_Y_SCRIM);
+
+        View.OnTouchListener interceptor1 = mCoordinator.getTouchInterceptorForTesting();
+        assertTrue(interceptor1.onTouch(bubbleView1, down1));
+
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mCoordinator.onConfigurationChanged(newConfig);
+
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        time = SystemClock.uptimeMillis();
+        MotionEvent up2 =
+                MotionEvent.obtain(
+                        time,
+                        time + UP_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_UP,
+                        INSIDE_BUBBLE_X,
+                        INSIDE_BUBBLE_Y,
+                        0);
+
+        View bubbleView2 = mCoordinator.getBubbleViewForTesting();
+        bubbleView2.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+
+        View.OnTouchListener interceptor2 = mCoordinator.getTouchInterceptorForTesting();
+
+        assertFalse(interceptor2.onTouch(bubbleView2, up2));
+
+        assertTrue(isBubbleShowing());
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testTapInsideBubble_NotDismissed() {
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(
+                        time, time, MotionEvent.ACTION_DOWN, INSIDE_BUBBLE_X, INSIDE_BUBBLE_Y, 0);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        // simulate tap inside bubble (coordinates within view width/height)
+        bubbleView.measure(
+                View.MeasureSpec.makeMeasureSpec(BUBBLE_RIGHT, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(BUBBLE_BOTTOM, View.MeasureSpec.EXACTLY));
+        bubbleView.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+
+        boolean consumed = interceptor.onTouch(bubbleView, down);
+        assertFalse(consumed); // not consumed by interceptor, so bubble handles it
+        assertTrue(isBubbleShowing());
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testBackPressed() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.BACK_PRESSED)
+                        .build();
+        setupForShow();
+        triggerShow();
+
+        // Simulate back pressed which causes the framework to dismiss the PopupWindow without going
+        // through our dismiss() first
+        mCoordinator.getPopupWindowForTesting().dismiss();
+
+        assertFalse(isBubbleShowing());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testBackSwipe_RecordsBackPressedNotTappedScrim() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.BACK_PRESSED)
+                        .build();
+        setupForShow();
+        triggerShow();
+
+        mBottomBarView.layout(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM);
+        long time = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, TAP_X, RAW_Y_SCRIM, 0);
+        MotionEvent cancel =
+                MotionEvent.obtain(
+                        time,
+                        time + UP_EVENT_DELAY_MS,
+                        MotionEvent.ACTION_CANCEL,
+                        TAP_X,
+                        RAW_Y_SCRIM,
+                        0);
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.layout(BUBBLE_LEFT, BUBBLE_TOP, BUBBLE_RIGHT, BUBBLE_BOTTOM);
+        down.offsetLocation(OUTSIDE_BUBBLE_X - TAP_X, OUTSIDE_BUBBLE_Y - RAW_Y_SCRIM);
+        cancel.offsetLocation(OUTSIDE_BUBBLE_X - TAP_X, OUTSIDE_BUBBLE_Y - RAW_Y_SCRIM);
+
+        View.OnTouchListener interceptor = mCoordinator.getTouchInterceptorForTesting();
+        assertTrue(interceptor.onTouch(bubbleView, down));
+        assertTrue(interceptor.onTouch(bubbleView, cancel));
+
+        // The popup self-dismisses (like system back callback)
+        mCoordinator.getPopupWindowForTesting().dismiss();
+
+        assertFalse(isBubbleShowing());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
+    }
+
+    @Test
     public void testSettingsLinkOpensSettings() {
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -487,12 +842,22 @@ public class BottomBarEducationCoordinatorUnitTest {
 
     @Test
     public void testOnControlsPositionChangedDismisses() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.DISMISSED_OTHER)
+                        .build();
         setupForShow();
         triggerShow();
 
         mCoordinator.onControlsPositionChanged(ControlsPosition.BOTTOM);
 
         verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
     }
 
     @Test
@@ -919,6 +1284,15 @@ public class BottomBarEducationCoordinatorUnitTest {
 
     @Test
     public void testOnBottomBarHidden_DismissesBubble() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.DefaultBubble.Event",
+                                EducationOnboardingEvent.DISMISSED_OTHER)
+                        .build();
         setupForShow();
         triggerShow();
         assertTrue(isBubbleShowing());
@@ -927,6 +1301,7 @@ public class BottomBarEducationCoordinatorUnitTest {
 
         assertFalse(isBubbleShowing());
         verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
     }
 
     @Test
