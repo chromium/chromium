@@ -48,7 +48,6 @@
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
-#include "chrome/common/chrome_features.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/variations_switches.h"
@@ -560,8 +559,7 @@ bool WebAppShortcutCreator::CreateShortcuts(
     WebAppAutoLoginUtil::GetInstance()->AddToLoginItems(updated_app_paths[0],
                                                         false);
   }
-  if (creation_reason == SHORTCUT_CREATION_BY_USER &&
-      !base::FeatureList::IsEnabled(features::kWebAppInstallDialog)) {
+  if (creation_reason == SHORTCUT_CREATION_BY_USER) {
     RevealAppShimInFinder(updated_app_paths[0]);
   }
   RecordCreateShortcut(CreateShortcutResult::kSuccess);
