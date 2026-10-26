@@ -114,7 +114,11 @@ message SearchToClientMessage {
   // Query submission request sent when the user submits a query, asking Chrome
   // to finalize the attached context before the query is issued. Chrome
   // answers with an OnSubmitQueryResponse.
-  message OnSubmitQueryRequest {}
+  message OnSubmitQueryRequest {
+    // Text of the query being submitted, used by Chrome for smart tab selection
+    // and query contextualization.
+    string query_text = 1;
+  }
 
   // Message sent by Search Web to Chrome to synchronize the thread's context
   // library upon restoration or update.
