@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/android/android_info.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -115,27 +114,20 @@ void LongScreenshotsTabService::CaptureTab(
   base::UmaHistogramPercentage("Sharing.LongScreenshots.MemoryLimitOnCapture",
                                memory_limit().percent());
 
-  bool no_memory_check = base::FeatureList::IsEnabled(
-      chrome::android::kLongScreenshotsNoMemoryCheck);
-  base::MemoryLimit memory_threshold =
-      (no_memory_check ||
-       base::FeatureList::IsEnabled(
-           chrome::android::kLongScreenshotsLenientMemoryCheck))
-          ? base::MemoryLimit::CriticalPressureThreshold()
-          : base::MemoryLimit::ModeratePressureThreshold();
-
-  // If the system is under memory pressure don't try to capture. On Android <
-  // 16 (BAKLAVA), only fall back to CriticalPressureThreshold() instead of
-  // skipping the memory check entirely (b/278379299).
-  bool skip_memory_check =
-      base::android::android_info::sdk_int() >=
-          base::android::android_info::SDK_VERSION_BAKLAVA &&
-      no_memory_check;
-  if (!skip_memory_check && memory_limit() <= memory_threshold) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_LongScreenshotsTabService_processCaptureTabStatus(
-        env, java_ref_, Status::kLowMemoryDetected);
-    return;
+  // If the system is under memory pressure don't try to capture.
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kLongScreenshotsNoMemoryCheck)) {
+    const base::MemoryLimit memory_threshold =
+        base::FeatureList::IsEnabled(
+            chrome::android::kLongScreenshotsLenientMemoryCheck)
+            ? base::MemoryLimit::CriticalPressureThreshold()
+            : base::MemoryLimit::ModeratePressureThreshold();
+    if (memory_limit() <= memory_threshold) {
+      JNIEnv* env = base::android::AttachCurrentThread();
+      Java_LongScreenshotsTabService_processCaptureTabStatus(
+          env, java_ref_, Status::kLowMemoryDetected);
+      return;
+    }
   }
 
   // Mark |contents| as being captured so that the renderer doesn't go away

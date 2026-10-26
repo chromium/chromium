@@ -41,6 +41,7 @@ source_set("unit_tests") {
     ":long_screenshots",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/flags:flags_android",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/paint_preview/common",
