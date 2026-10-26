@@ -16,7 +16,7 @@
       'clearNoJS': clearNoJS
     }
   };
-  fetch("resources/wasm_webgpu.wasm").then(
+  fetch("resources/wasm_webgl.wasm").then(
     response => response.arrayBuffer()).then(
       buffer => {console.log(buffer); return WebAssembly.compile(buffer)}).then(
     wasmModule => WebAssembly.instantiate(wasmModule, imports)).then(
