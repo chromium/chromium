@@ -140,8 +140,7 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     factories_.MaybeRegister<TestHelpBubbleFactory>();
-    factories_.MaybeRegister<user_education::HelpBubbleFactoryViews>(
-        GetHelpBubbleDelegate());
+    RegisterChromeHelpBubbleFactories(factories_);
   }
 
   void TearDownOnMainThread() override {
