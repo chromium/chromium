@@ -16,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/lens/lens_features.h"
@@ -47,6 +48,19 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace lens {
+
+namespace {
+
+// Timeout for `CopyFromSurfaceSecure()` when capturing a tab screenshot. If a
+// background tab's current `LocalSurfaceId` has no activated `viz::Surface`
+// (for example, when the tab was hidden or resized before its renderer
+// submitted a compositor frame for the new surface ID),
+// `PendingCopyOutputRequest` in Viz will time out instead of stalling
+// `GetPageContext()` indefinitely, allowing page context extraction to complete
+// with the annotated page content.
+constexpr base::TimeDelta kCaptureScreenshotTimeout = base::Seconds(1);
+
+}  // namespace
 
 DEFINE_USER_DATA(TabContextualizationController);
 
@@ -674,7 +688,8 @@ void TabContextualizationController::CaptureScreenshot(
   // Use CopyFromSurfaceSecure() because Lens / Contextual Search is a trusted
   // internal browser feature.
   view->CopyFromSurfaceSecure(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      kCaptureScreenshotTimeout,
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          std::move(callback_wrapper)));
 }

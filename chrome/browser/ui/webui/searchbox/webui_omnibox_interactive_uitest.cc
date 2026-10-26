@@ -692,16 +692,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
 
-// TODO(crbug.com/490226386): Re-enable on Mac once tab context upload
-// flake in the AIM popup is resolved.
-// TODO(crbug.com/509753148): Re-enable on Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_QueryWithTabContext DISABLED_QueryWithTabContext
-#else
-#define MAYBE_QueryWithTabContext QueryWithTabContext
-#endif
-IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       MAYBE_QueryWithTabContext) {
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, QueryWithTabContext) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   ASSERT_TRUE(embedded_test_server()->Start());
 
