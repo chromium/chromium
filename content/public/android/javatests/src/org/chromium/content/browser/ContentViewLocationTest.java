@@ -19,7 +19,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.Visibility;
@@ -171,7 +170,6 @@ public class ContentViewLocationTest {
     @Test
     @MediumTest
     @Feature({"Location"})
-    @DisabledTest(message = "https://crbug.com/447442632")
     public void testWatchHideNewWatchShow() throws Throwable {
         startGeolocationWatchPosition();
         pollForPositionCallback();
