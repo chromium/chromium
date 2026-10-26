@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
+#include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 
@@ -50,6 +51,52 @@ int32_t ToJavaPlaybackState(read_aloud::mojom::PlaybackState state) {
       return 6;  // PlaybackListener.State.STOPPED
     case read_aloud::mojom::PlaybackState::kPlaybackCreation:
       return 7;  // PlaybackListener.State.PLAYBACK_CREATION
+  }
+  NOTREACHED();
+}
+
+// Maps Pitch onto the integer values of Java PlaybackVoice.Pitch @IntDef.
+int32_t ToJavaVoicePitch(Pitch pitch) {
+  switch (pitch) {
+    case Pitch::kNone:
+      return 0;
+    case Pitch::kLow:
+      return 1;
+    case Pitch::kMid:
+      return 2;
+  }
+  NOTREACHED();
+}
+
+// Maps Tone onto the integer values of Java PlaybackVoice.Tone @IntDef.
+int32_t ToJavaVoiceTone(Tone tone) {
+  switch (tone) {
+    case Tone::kNone:
+      return 0;
+    case Tone::kBold:
+      return 1;
+    case Tone::kCalm:
+      return 2;
+    case Tone::kSteady:
+      return 3;
+    case Tone::kSmooth:
+      return 4;
+    case Tone::kRelaxed:
+      return 5;
+    case Tone::kWarm:
+      return 6;
+    case Tone::kSerene:
+      return 7;
+    case Tone::kGentle:
+      return 8;
+    case Tone::kBright:
+      return 9;
+    case Tone::kBreezy:
+      return 10;
+    case Tone::kSoothing:
+      return 11;
+    case Tone::kPeaceful:
+      return 12;
   }
   NOTREACHED();
 }
@@ -130,25 +177,36 @@ void ReadAloudBridge::OnPlaybackStateChanged(
       env, j_bridge, ToJavaPlaybackState(playback_state));
 }
 
-void ReadAloudBridge::OnVoicesAvailable(
-    const std::vector<ReadAloudService::Voice>& voices,
-    std::string_view selected_voice_id) {
-  std::vector<std::string> ids;
-  std::vector<std::string> display_names;
-  ids.reserve(voices.size());
-  display_names.reserve(voices.size());
-  for (const auto& voice : voices) {
-    ids.push_back(voice.id);
-    display_names.push_back(voice.display_name);
-  }
-
+void ReadAloudBridge::OnVoicesAvailable(base::span<const VoiceInfo> voices) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
   if (!j_bridge) {
     return;
   }
+
+  std::vector<std::string> ids;
+  std::vector<std::string> display_names;
+  std::vector<std::string> langs;
+  std::vector<std::string> regions;
+  std::vector<int32_t> pitches;
+  std::vector<int32_t> tones;
+  ids.reserve(voices.size());
+  display_names.reserve(voices.size());
+  langs.reserve(voices.size());
+  regions.reserve(voices.size());
+  pitches.reserve(voices.size());
+  tones.reserve(voices.size());
+  for (const auto& voice : voices) {
+    ids.emplace_back(voice.id);
+    display_names.emplace_back(voice.display_name);
+    langs.emplace_back(voice.lang);
+    regions.emplace_back(voice.region);
+    pitches.push_back(ToJavaVoicePitch(voice.pitch));
+    tones.push_back(ToJavaVoiceTone(voice.tone));
+  }
+
   Java_ReadAloudNativeBridge_onVoicesAvailable(
-      env, j_bridge, ids, display_names, std::string(selected_voice_id));
+      env, j_bridge, ids, display_names, langs, regions, pitches, tones);
 }
 
 void ReadAloudBridge::OnWordHighlightUpdated(int absolute_start_index,
@@ -359,6 +417,12 @@ void ReadAloudBridge::SendFeedback(JNIEnv* env, int32_t feedback_type) {
 void ReadAloudBridge::CheckReadability(JNIEnv* env, const GURL& url) {
   if (service_) {
     service_->CheckReadability(url);
+  }
+}
+
+void ReadAloudBridge::InitVoices(JNIEnv* env) {
+  if (service_) {
+    service_->InitVoices();
   }
 }
 

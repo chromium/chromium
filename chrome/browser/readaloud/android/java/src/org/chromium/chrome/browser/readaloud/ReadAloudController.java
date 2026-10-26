@@ -108,6 +108,7 @@ import org.chromium.url.GURL;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -465,6 +466,8 @@ public class ReadAloudController
                     ObservableSuppliers.createNonNull(
                             PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
 
+    // Voices populated by the native C++ ReadAloudService, keyed by language code.
+    private final Map<String, List<PlaybackVoice>> mNativeVoiceCatalog = new HashMap<>();
     // Voices to show in voice selection menu.
     private final SettableMonotonicObservableSupplier<List<PlaybackVoice>> mCurrentLanguageVoices =
             ObservableSuppliers.createMonotonic();
@@ -713,6 +716,7 @@ public class ReadAloudController
         // Initialize native C++ ReadAloudService binding when native Read Aloud is enabled.
         if (ReadAloudFeatures.isNativeEnabled()) {
             mNativeBridge.initialize(profile, this);
+            mNativeBridge.initVoices();
         }
         ReadAloudReadabilityHooksFactory factory =
                 ServiceLoaderUtil.maybeCreate(ReadAloudReadabilityHooksFactory.class);
@@ -1309,7 +1313,8 @@ public class ReadAloudController
         mPlayingTabTranslationObserver.observeTab(tab);
         mCurrentlyPlayingGurl = tab.getUrl();
 
-        if (!assumeNonNull(mPlaybackHooks).voicesInitialized()) {
+        if (!ReadAloudFeatures.isNativeEnabled()
+                && !assumeNonNull(mPlaybackHooks).voicesInitialized()) {
             mPlaybackHooks.initVoices();
         }
 
@@ -1326,7 +1331,7 @@ public class ReadAloudController
         assumeNonNull(mPlayerCoordinator).playTabRequested(playbackModes.get(0));
 
         boolean isTranslated = isTranslated(tab);
-        var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
+        var voices = getVoicesForLanguage(playbackLanguage);
         // TODO: Don't show entrypoints for unsupported languages
         if (voices == null || voices.isEmpty()) {
             onCreatePlaybackFailed(entrypoint);
@@ -1342,8 +1347,11 @@ public class ReadAloudController
                         isTranslated
                                 ? playbackLanguage
                                 : null,
-                        mPlaybackHooks.getPlaybackVoiceList(
-                                ReadAloudPrefs.getVoices(getPrefService())),
+                        ReadAloudFeatures.isNativeEnabled()
+                                ? voices
+                                : assumeNonNull(mPlaybackHooks)
+                                        .getPlaybackVoiceList(
+                                                ReadAloudPrefs.getVoices(getPrefService())),
                         /* dateModifiedMsSinceEpoch= */ dateModified,
                         /* playbackModes= */ playbackModes);
         Log.d(TAG, "Creating playback with args: %s", args);
@@ -1716,12 +1724,21 @@ public class ReadAloudController
         mPlaybackModeSelectionEnabled.set(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_CLASSIC_UNAVAILABLE);
     }
 
+    private @Nullable List<PlaybackVoice> getVoicesForLanguage(String language) {
+        return ReadAloudFeatures.isNativeEnabled()
+                ? mNativeVoiceCatalog.get(language)
+                : assumeNonNull(mPlaybackHooks).getVoicesFor(language);
+    }
+
     private void updateVoiceMenu(@Nullable String language) {
         if (language == null) {
             return;
         }
 
-        List<PlaybackVoice> voices = assumeNonNull(mPlaybackHooks).getVoicesFor(language);
+        List<PlaybackVoice> voices = getVoicesForLanguage(language);
+        if (voices == null || voices.isEmpty()) {
+            return;
+        }
         mCurrentLanguageVoices.set(voices);
 
         String selectedVoiceId = ReadAloudPrefs.getVoices(getPrefService()).get(language);
@@ -2450,15 +2467,32 @@ public class ReadAloudController
     }
 
     // Called when the list of available synthesis voices is loaded or changed.
-    void onVoicesAvailable(String[] voiceIds, String[] voiceDisplayNames, String selectedVoiceId) {
-        // TODO: Update property model with available voices.
-        Log.d(
-                TAG,
-                "onVoicesAvailable: voiceIds count = %d, voiceDisplayNames count = %d,"
-                        + " selectedVoiceId = %s",
-                voiceIds.length,
-                voiceDisplayNames.length,
-                selectedVoiceId);
+    void onVoicesAvailable(
+            String[] voiceIds,
+            String[] voiceDisplayNames,
+            String[] voiceLangs,
+            String[] voiceRegions,
+            int[] voicePitches,
+            int[] voiceTones) {
+        assert voiceIds.length == voiceDisplayNames.length
+                && voiceIds.length == voiceLangs.length
+                && voiceIds.length == voiceRegions.length
+                && voiceIds.length == voicePitches.length
+                && voiceIds.length == voiceTones.length;
+        mNativeVoiceCatalog.clear();
+        for (int i = 0; i < voiceIds.length; i++) {
+            String lang = voiceLangs[i];
+            mNativeVoiceCatalog
+                    .computeIfAbsent(lang, k -> new ArrayList<>())
+                    .add(
+                            new PlaybackVoice(
+                                    lang,
+                                    voiceRegions[i],
+                                    voiceIds[i],
+                                    voiceDisplayNames[i],
+                                    voicePitches[i],
+                                    voiceTones[i]));
+        }
     }
 
     // Called when the active word highlight boundary shifts in the text.

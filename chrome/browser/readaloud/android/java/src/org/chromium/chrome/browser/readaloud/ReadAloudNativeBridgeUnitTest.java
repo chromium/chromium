@@ -153,6 +153,9 @@ public class ReadAloudNativeBridgeUnitTest {
 
         mBridge.checkReadability(TEST_GURL);
         verify(mNativeBridgeNatives).checkReadability(eq(NATIVE_PTR), eq(TEST_GURL));
+
+        mBridge.initVoices();
+        verify(mNativeBridgeNatives).initVoices(eq(NATIVE_PTR));
     }
 
     @Test
@@ -175,6 +178,7 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.setHighlightingEnabled(true);
         mBridge.sendFeedback(2);
         mBridge.checkReadability(TEST_GURL);
+        mBridge.initVoices();
 
         verify(mNativeBridgeNatives, never()).play(anyLong(), any());
         verify(mNativeBridgeNatives, never()).pause(anyLong());
@@ -192,6 +196,7 @@ public class ReadAloudNativeBridgeUnitTest {
         verify(mNativeBridgeNatives, never()).setHighlightingEnabled(anyLong(), anyBoolean());
         verify(mNativeBridgeNatives, never()).sendFeedback(anyLong(), anyInt());
         verify(mNativeBridgeNatives, never()).checkReadability(anyLong(), any());
+        verify(mNativeBridgeNatives, never()).initVoices(anyLong());
     }
 
     @Test
@@ -229,8 +234,12 @@ public class ReadAloudNativeBridgeUnitTest {
 
         String[] ids = new String[] {"id1", "id2"};
         String[] names = new String[] {"Name 1", "Name 2"};
-        mBridge.onVoicesAvailable(ids, names, "id1");
-        verify(mController).onVoicesAvailable(ids, names, "id1");
+        String[] langs = new String[] {"en", "es"};
+        String[] regions = new String[] {"US", "ES"};
+        int[] pitches = new int[] {2, 1};
+        int[] tones = new int[] {6, 9};
+        mBridge.onVoicesAvailable(ids, names, langs, regions, pitches, tones);
+        verify(mController).onVoicesAvailable(ids, names, langs, regions, pitches, tones);
 
         String[] chunks = new String[] {"Paragraph 1", "Paragraph 2"};
         mBridge.onTextChunked(chunks);
@@ -265,7 +274,8 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.onMetadataAvailable("Title", "Publisher");
         mBridge.onPlaybackProgressUpdated(100L, 500L);
         mBridge.onPlaybackStateChanged(1);
-        mBridge.onVoicesAvailable(new String[0], new String[0], "");
+        mBridge.onVoicesAvailable(
+                new String[0], new String[0], new String[0], new String[0], new int[0], new int[0]);
         mBridge.onTextChunked(new String[] {"Chunk"});
         mBridge.onWordHighlightUpdated(0, 5);
         mBridge.onHighlightingSupported(false);

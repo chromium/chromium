@@ -12,9 +12,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/readaloud/read_aloud_service.h"
+#include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
@@ -57,8 +59,7 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
                                  base::TimeDelta duration) override;
   void OnPlaybackStateChanged(
       read_aloud::mojom::PlaybackState playback_state) override;
-  void OnVoicesAvailable(const std::vector<ReadAloudService::Voice>& voices,
-                         std::string_view selected_voice_id) override;
+  void OnVoicesAvailable(base::span<const VoiceInfo> voices) override;
   void OnWordHighlightUpdated(int absolute_start_index,
                               int absolute_end_index) override;
   void OnTextChunked(const std::vector<std::u16string>& chunks) override;
@@ -91,6 +92,7 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
   void SetHighlightingEnabled(JNIEnv* env, jboolean enabled);
   void SendFeedback(JNIEnv* env, int32_t feedback_type);
   void CheckReadability(JNIEnv* env, const GURL& url);
+  void InitVoices(JNIEnv* env);
   void Destroy(JNIEnv* env);
 
  private:

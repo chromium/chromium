@@ -376,6 +376,15 @@ public class ReadAloudControllerUnitTest {
                         mLayoutStateProviderSupplier,
                         mFullscreenManager,
                         /* sideUiStateProviderSupplier= */ null);
+        if (ReadAloudFeatures.isNativeEnabled()) {
+            controller.onVoicesAvailable(
+                    new String[] {"voiceA"},
+                    new String[] {"Ruby"},
+                    new String[] {"en"},
+                    new String[] {"US"},
+                    new int[] {PlaybackVoice.Pitch.MID},
+                    new int[] {PlaybackVoice.Tone.WARM});
+        }
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         return controller;
     }
@@ -2857,9 +2866,21 @@ public class ReadAloudControllerUnitTest {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);
 
-        var voiceA = new PlaybackVoice("en", "voiceA", "");
-        var voiceB = new PlaybackVoice("en", "voiceB", "");
-        doReturn(List.of(voiceA, voiceB)).when(mPlaybackHooks).getVoicesFor(anyString());
+        var voiceB =
+                new PlaybackVoice(
+                        "en",
+                        "US",
+                        "voiceB",
+                        "River",
+                        PlaybackVoice.Pitch.MID,
+                        PlaybackVoice.Tone.CALM);
+        mController.onVoicesAvailable(
+                new String[] {"voiceA", "voiceB"},
+                new String[] {"Ruby", "River"},
+                new String[] {"en", "en"},
+                new String[] {"US", "US"},
+                new int[] {PlaybackVoice.Pitch.MID, PlaybackVoice.Pitch.MID},
+                new int[] {PlaybackVoice.Tone.WARM, PlaybackVoice.Tone.CALM});
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
@@ -2879,6 +2900,51 @@ public class ReadAloudControllerUnitTest {
         verify(mNativeBridgeNatives).stop(eq(12345L));
         verify(mNativeBridgeNatives).setVoice(eq(12345L), eq("voiceB"));
         verify(mNativeBridgeNatives, times(2)).play(eq(12345L), eq(mWebContents));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testOnVoicesAvailable_populatesCatalogAndUpdatesVoiceMenu_nativeEnabled() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+        verify(mNativeBridgeNatives).initVoices(eq(12345L));
+
+        MockPrefServiceHelper.setVoices(
+                mReadAloudPrefsNatives, Map.of("en", "en-GB-Chirp3-HD-Fern"));
+
+        mController.onVoicesAvailable(
+                new String[] {
+                    "en-US-Chirp3-HD-Ruby", "en-GB-Chirp3-HD-Fern", "es-ES-Chirp3-HD-Marina"
+                },
+                new String[] {"Ruby", "Fern", "Marina"},
+                new String[] {"en", "en", "es"},
+                new String[] {"US", "GB", "ES"},
+                new int[] {
+                    PlaybackVoice.Pitch.MID, PlaybackVoice.Pitch.LOW, PlaybackVoice.Pitch.MID
+                },
+                new int[] {
+                    PlaybackVoice.Tone.WARM, PlaybackVoice.Tone.CALM, PlaybackVoice.Tone.BRIGHT
+                });
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        List<PlaybackVoice> enVoices = mController.getCurrentLanguageVoicesSupplier().get();
+        assertNotNull(enVoices);
+        assertEquals(2, enVoices.size());
+        assertEquals("en", enVoices.get(0).getLanguage());
+        assertEquals("US", enVoices.get(0).getAccentRegionCode());
+        assertEquals("en-US-Chirp3-HD-Ruby", enVoices.get(0).getVoiceId());
+        assertEquals("Ruby", enVoices.get(0).getDisplayName());
+        assertEquals(PlaybackVoice.Pitch.MID, enVoices.get(0).getPitch());
+        assertEquals(PlaybackVoice.Tone.WARM, enVoices.get(0).getTone());
+        assertEquals("en", enVoices.get(1).getLanguage());
+        assertEquals("GB", enVoices.get(1).getAccentRegionCode());
+        assertEquals("en-GB-Chirp3-HD-Fern", enVoices.get(1).getVoiceId());
+        assertEquals("Fern", enVoices.get(1).getDisplayName());
+        assertEquals(PlaybackVoice.Pitch.LOW, enVoices.get(1).getPitch());
+        assertEquals(PlaybackVoice.Tone.CALM, enVoices.get(1).getTone());
+        assertEquals("en-GB-Chirp3-HD-Fern", mController.getVoiceIdSupplier().get());
     }
 
     @Test

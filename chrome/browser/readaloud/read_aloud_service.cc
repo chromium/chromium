@@ -24,6 +24,7 @@
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
+#include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/browser/readaloud/voice_preview_controller.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
@@ -273,6 +274,12 @@ void ReadAloudService::CheckReadability(const GURL& url) {
   if (delegate_) {
     bool is_readable = dom_distiller::url_utils::IsUrlDistillable(url);
     delegate_->OnReadabilityResult(url, is_readable);
+  }
+}
+
+void ReadAloudService::InitVoices() {
+  if (delegate_) {
+    delegate_->OnVoicesAvailable(kAvailableVoices);
   }
 }
 

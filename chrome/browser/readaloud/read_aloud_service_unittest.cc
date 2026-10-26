@@ -26,6 +26,7 @@
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/fake_audio_stream_factory.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
+#include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -88,8 +89,7 @@ class MockDelegate : public ReadAloudService::Delegate {
               (override));
   MOCK_METHOD(void,
               OnVoicesAvailable,
-              (const std::vector<ReadAloudService::Voice>& voices,
-               std::string_view selected_voice_id),
+              (base::span<const VoiceInfo> voices),
               (override));
   MOCK_METHOD(void,
               OnWordHighlightUpdated,
@@ -2161,6 +2161,22 @@ TEST_F(ReadAloudServiceTest, CheckReadability) {
   service()->CheckReadability(invalid_url);
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, InitVoices) {
+  MockDelegate* delegate_ptr = SetUpMockDelegate();
+
+  EXPECT_CALL(*delegate_ptr, OnVoicesAvailable(testing::_))
+      .WillOnce([](base::span<const VoiceInfo> voices) {
+        ASSERT_EQ(voices.size(), std::size(kAvailableVoices));
+        EXPECT_EQ(voices[0].id, kAvailableVoices[0].id);
+        EXPECT_EQ(voices[0].display_name, kAvailableVoices[0].display_name);
+        EXPECT_EQ(voices[0].lang, kAvailableVoices[0].lang);
+        EXPECT_EQ(voices[0].region, kAvailableVoices[0].region);
+        EXPECT_EQ(voices[0].pitch, kAvailableVoices[0].pitch);
+        EXPECT_EQ(voices[0].tone, kAvailableVoices[0].tone);
+      });
+  service()->InitVoices();
 }
 
 TEST_F(ReadAloudServiceTest,

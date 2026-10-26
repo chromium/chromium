@@ -10,10 +10,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
+#include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -90,11 +92,6 @@ class ReadAloudService
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudOverviewOutcome)
 
-  struct Voice {
-    std::string id;
-    std::string display_name;
-  };
-
   // Interface for dispatching events from the native service to the UI.
   // State changes are sent to the UI via this delegate.
   class Delegate {
@@ -113,9 +110,8 @@ class ReadAloudService
     virtual void OnPlaybackStateChanged(
         read_aloud::mojom::PlaybackState playback_state) = 0;
 
-    // Called when the available voices list and currently selected voice are updated.
-    virtual void OnVoicesAvailable(const std::vector<Voice>& voices,
-                                   std::string_view selected_voice_id) = 0;
+    // Called when the available voices catalog is provided to the UI.
+    virtual void OnVoicesAvailable(base::span<const VoiceInfo> voices) = 0;
 
     // Called when a new word is reached, providing offsets for UI highlighting.
     virtual void OnWordHighlightUpdated(int absolute_start_index,
@@ -217,6 +213,9 @@ class ReadAloudService
 
   // Initiates an asynchronous check to determine if the URL is readable.
   void CheckReadability(const GURL& url);
+
+  // Initializes and pushes the available synthesis voices to the delegate.
+  void InitVoices();
 
   // Methods called by ReadAloudPlaybackSession:
   void OnSessionSuspended();
