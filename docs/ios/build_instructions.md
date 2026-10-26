@@ -652,3 +652,14 @@ Only accepting for all users of the machine requires root:
 ```shell
 $ sudo xcodebuild -license
 ```
+
+### Exclude checkout from Spotlight indexing
+
+Chromium's checkout contains a lot of files, and building generates many more.
+Spotlight will try to index all of those files, and uses a lot of CPU time
+doing so, especially during a build, which can slow things down.
+
+To prevent the Chromium checkout from being indexed by Spotlight, open **System
+Settings** -> **Siri & Spotlight** (or **Spotlight**), click **Spotlight
+Privacy...** (or **Search Privacy...**) at the bottom, and add your Chromium
+checkout directory to the list of excluded locations.
