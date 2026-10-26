@@ -25,4 +25,16 @@ if (safe_browsing_mode != 0) {
       "//third_party/rust/cxx/v1:lib",
     ]
   }
+
+  rust_static_library("phishing_model_setter") {
+    crate_root = "phishing_model_setter.rs"
+    sources = [ "phishing_model_setter.rs" ]
+
+    deps = [
+      ":scorer_bridge",
+      "//base:file",
+      "//components/safe_browsing/content/common:interfaces_rust",
+      "//mojo/public/rust/bindings",
+    ]
+  }
 }
