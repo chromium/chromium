@@ -123,8 +123,9 @@ const CGFloat kTitleMaxPointSize = 24.0f;
                             LayoutSides::kTop | LayoutSides::kHorizontal);
   AddSameConstraintsToSides(_titleLabel, self,
                             LayoutSides::kBottom | LayoutSides::kHorizontal);
-  CGFloat iconSize =
-      IsComposeboxPlusButtonLargeCarousel() ? kIconLargeSize : kIconSize;
+  BOOL useLargeIcon = IsComposeboxPlusButtonLargeCarousel() ||
+                      IsPlusButtonMenuMoreOptionsSubmenu();
+  CGFloat iconSize = useLargeIcon ? kIconLargeSize : kIconSize;
   AddSizeConstraints(_imageView, CGSizeMake(iconSize, iconSize));
   CGFloat imageBackgroundHeight = IsComposeboxPlusButtonLargeCarousel()
                                       ? kImageBackgroundLargeHeight
