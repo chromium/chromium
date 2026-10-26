@@ -42,6 +42,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAimActivationHint,
     &kIPHAndroidBottomBarAddressBar,
     &kIPHAndroidBottomBarEducation,
+    &kIPHAndroidBottomBarEducationTooltips,
     &kIPHAndroidBottomBarGlic,
     &kIPHAndroidBottomBarNewTab,
     &kIPHAndroidBottomBarPromoDialog,

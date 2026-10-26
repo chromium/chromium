@@ -264,6 +264,8 @@ should be able to be added at any place in this file.
   <variant name="_AndroidBottomBarEducation"
       summary="For the education onboarding flow and IPHs for the Android
                bottom bar."/>
+  <variant name="_AndroidBottomBarEducationTooltips"
+      summary="For the education tooltips for the Android bottom bar."/>
   <variant name="_AndroidBottomBarGlic"
       summary="Describes the GLIC button added in the bottom bar."/>
   <variant name="_AndroidBottomBarNewTab"

@@ -373,6 +373,9 @@ BASE_FEATURE(kIPHAndroidBottomBarAddressBar,
 BASE_FEATURE(kIPHAndroidBottomBarEducation,
              "IPH_AndroidBottomBarEducation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAndroidBottomBarEducationTooltips,
+             "IPH_AndroidBottomBarEducationTooltips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAndroidBottomBarGlic,
              "IPH_AndroidBottomBarGlic",
              base::FEATURE_DISABLED_BY_DEFAULT);

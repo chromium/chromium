@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.AIM_ACTIVATION_HINT,
     FeatureConstants.ANDROID_BOTTOM_BAR_ADDRESS_BAR,
     FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION,
+    FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS,
     FeatureConstants.ANDROID_BOTTOM_BAR_GLIC,
     FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB,
     FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG,
@@ -190,6 +191,9 @@ public @interface FeatureConstants {
 
     /** Bottom bar education bubble and tooltips. */
     String ANDROID_BOTTOM_BAR_EDUCATION = "IPH_AndroidBottomBarEducation";
+
+    /** Bottom bar education tooltip tour shown after the user opts in. */
+    String ANDROID_BOTTOM_BAR_EDUCATION_TOOLTIPS = "IPH_AndroidBottomBarEducationTooltips";
 
     /** Describes the GLIC button on the new bottom bar. */
     String ANDROID_BOTTOM_BAR_GLIC = "IPH_AndroidBottomBarGlic";

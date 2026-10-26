@@ -837,8 +837,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // IPH only shows if no other IPH has shown this session.
     config.session_rate = Comparator(EQUAL, 0);
 
-    // Showing this IPH does not block other IPHs from showing this session.
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Count toward the session rate, so session-limited IPHs (e.g. NTP theme
+    // customization) don't show in the same session as the education bubble
+    // or opt-in dialog, including after the opt-in activity recreate.
+    config.session_rate_impact.type = SessionRateImpact::Type::ALL;
 
     // IPH only shows once per 360 days.
     config.trigger =
@@ -849,6 +851,51 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used =
         EventConfig("android_bottom_bar_education_used", Comparator(EQUAL, 0),
                     /*window=*/360, /*storage=*/360);
+    return config;
+  }
+
+  if (kIPHAndroidBottomBarEducationTooltips.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+
+    config.availability = kAlwaysAvailable;
+
+    // Not limited by session rate: the tour starts right after the opt-in
+    // dialog, which already counted toward this session.
+    config.session_rate = kNoRestrictions;
+
+    // The tour is the payoff of an explicit opt-in, so don't let another IPH
+    // that happens to be showing push it to a later visit.
+    config.blocked_by.type = BlockedBy::Type::NONE;
+
+    // It must block any other features from showing while the tooltips
+    // are active.
+    config.blocking.type = Blocking::Type::ALL;
+
+    // Count toward the session rate, so session-limited IPHs don't show in
+    // the same session as the tour.
+    config.session_rate_impact.type = SessionRateImpact::Type::ALL;
+
+    // IPH only shows once per 360 days.
+    config.trigger =
+        EventConfig("android_bottom_bar_education_tooltips_trigger",
+                    Comparator(EQUAL, 0), /*window=*/360, /*storage=*/360);
+
+    // The tour is a one-time walkthrough of several bottom bar buttons that
+    // starts right after the user opts in, so no single action makes it
+    // redundant, and the trigger already limits it to once per 360 days.
+    config.used =
+        EventConfig("android_bottom_bar_education_tooltips_used", kAlwaysTrue,
+                    /*window=*/0, /*storage=*/360);
+
+    // Only triggers after the user accepts the opt-in dialog. The tour
+    // normally starts right after the activity recreate; the 360-day window
+    // lets a user who opted in but missed it still get it on a later visit.
+    config.event_configs.insert(
+        EventConfig("android_bottom_bar_education_opt_in_accepted",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/360,
+                    /*storage=*/360));
+
     return config;
   }
 

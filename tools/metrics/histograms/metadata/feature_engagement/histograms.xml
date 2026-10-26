@@ -65,6 +65,8 @@ chromium-metrics-reviews@google.com.
                the Android bottom bar education flow."/>
   <variant name="IPH_AndroidBottomBarEducation"
       summary="Education onboarding and IPHs for the Android bottom bar."/>
+  <variant name="IPH_AndroidBottomBarEducationTooltips"
+      summary="Education tooltips for the Android bottom bar."/>
   <variant name="IPH_AndroidBottomBarGlic"
       summary="Describes the GLIC button added in the bottom bar."/>
   <variant name="IPH_AndroidBottomBarNewTab"

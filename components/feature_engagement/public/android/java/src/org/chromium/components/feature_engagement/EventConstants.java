@@ -51,6 +51,10 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED =
             "adaptive_toolbar_page_summary_web_used";
 
+    /** The user accepted the bottom bar opt-in dialog. */
+    public static final String ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED =
+            "android_bottom_bar_education_opt_in_accepted";
+
     /** The user tapped "Show me" in the bottom bar education onboarding flow. */
     public static final String ANDROID_BOTTOM_BAR_EDUCATION_USED =
             "android_bottom_bar_education_used";
