@@ -155,6 +155,16 @@ public class BottomBarEducationCoordinator
     }
 
     /**
+     * Called when the bottom bar is hidden, e.g. for the tab switcher or while the omnibox is
+     * focused. Dismisses the bubble, but keeps a running tooltip tour paused so that it resumes
+     * once the bar is visible again.
+     */
+    public void onBottomBarHidden() {
+        if (mState == State.SHOWING_TOOLTIPS) return;
+        dismiss();
+    }
+
+    /**
      * Returns whether the opt-in dialog handed over to the tooltip chain before the activity
      * recreated.
      */
@@ -255,16 +265,16 @@ public class BottomBarEducationCoordinator
             mActiveBubbleOnboardingType = null;
         }
 
+        if (mLastShownTooltipStep == mTooltipStep && mTooltipStep < TOOLTIP_ACTION_IDS.length) {
+            BottomBarMetrics.recordIphEvent(
+                    IphEvent.DISMISSED, getTooltipTypeForAction(TOOLTIP_ACTION_IDS[mTooltipStep]));
+        }
+        mLastShownTooltipStep = NO_TOOLTIP_STEP;
+
         if (mCurrentTooltip != null) {
-            if (mLastShownTooltipStep == mTooltipStep) {
-                BottomBarMetrics.recordIphEvent(
-                        IphEvent.DISMISSED,
-                        getTooltipTypeForAction(TOOLTIP_ACTION_IDS[mTooltipStep]));
-            }
             TextBubble tooltip = mCurrentTooltip;
             mCurrentTooltip = null;
             tooltip.dismiss();
-            mLastShownTooltipStep = NO_TOOLTIP_STEP;
         }
         if (mCurrentHighlightView != null) {
             ViewHighlighter.turnOffHighlight(mCurrentHighlightView);
@@ -566,6 +576,14 @@ public class BottomBarEducationCoordinator
     private void showCurrentTooltip() {
         if (mState != State.SHOWING_TOOLTIPS) return;
 
+        // The bar is temporarily hidden, e.g. by the tab switcher, so resume instead of skipping.
+        // TODO(crbug.com/577706671): Resume only once the tab switcher has finished hiding.
+        // The bar shows first, so the tooltip briefly draws over the tab switcher.
+        if (!mBottomBarView.isLaidOut() || !mBottomBarView.isShown()) {
+            waitForLayout(this::showCurrentTooltip);
+            return;
+        }
+
         while (mTooltipStep < TOOLTIP_ACTION_IDS.length) {
             int actionId = TOOLTIP_ACTION_IDS[mTooltipStep];
             BottomBarButtonContainer container = mBottomBarView.getContainerForAction(actionId);
@@ -610,14 +628,20 @@ public class BottomBarEducationCoordinator
         mCurrentTooltip.addOnDismissListener(
                 () -> {
                     if (mCurrentTooltip != tooltip) return;
-                    BottomBarMetrics.recordIphEvent(
-                            IphEvent.DISMISSED, getTooltipTypeForAction(actionId));
 
+                    mCurrentTooltip = null;
                     if (mCurrentHighlightView != null) {
                         ViewHighlighter.turnOffHighlight(mCurrentHighlightView);
                         mCurrentHighlightView = null;
                     }
-                    mCurrentTooltip = null;
+
+                    if (!mBottomBarView.isShown()) {
+                        waitForLayout(this::showCurrentTooltip);
+                        return;
+                    }
+
+                    BottomBarMetrics.recordIphEvent(
+                            IphEvent.DISMISSED, getTooltipTypeForAction(actionId));
                     mTooltipStep++;
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,

@@ -242,7 +242,7 @@ public class BottomBarMediator
         mVisibilityDelegate.onVisibilityChanged(isVisible);
 
         if (!isVisible && mEducationCoordinator != null) {
-            mEducationCoordinator.dismiss();
+            mEducationCoordinator.onBottomBarHidden();
         }
 
         if (didBecomeVisible) {

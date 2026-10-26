@@ -870,13 +870,14 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testEducation_DismissedOnInvisible() {
+    public void testEducation_NotifiedWhenHidden() {
         createMediator(true, false);
         mOmniboxFocusStateSupplier.set(false); // visible
         clearInvocations(mEducationCoordinator);
 
         mOmniboxFocusStateSupplier.set(true); // invisible
-        verify(mEducationCoordinator).dismiss();
+        verify(mEducationCoordinator).onBottomBarHidden();
+        verify(mEducationCoordinator, never()).dismiss();
     }
 
     @Test

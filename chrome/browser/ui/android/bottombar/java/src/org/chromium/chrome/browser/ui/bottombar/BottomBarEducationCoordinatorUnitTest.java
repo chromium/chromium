@@ -860,4 +860,200 @@ public class BottomBarEducationCoordinatorUnitTest {
         mCoordinator.maybeShow();
         RobolectricUtil.runAllBackgroundAndUi();
     }
+
+    @Test
+    public void testTourPausesWhenBarHidden_ResumesOnVisible() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.BottomBar.IPH.Glic.Event",
+                                IphEvent.SHOWN,
+                                IphEvent.DISMISSED)
+                        .build();
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+
+        // System hide
+        mBottomBarView.setVisibility(View.GONE);
+        tooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+
+        // Resume
+        mBottomBarView.setVisibility(View.VISIBLE);
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble newTooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(newTooltip1);
+        TextView msgView =
+                newTooltip1.getTextBubbleContentViewForTesting().findViewById(R.id.message);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_gemini),
+                msgView.getText().toString());
+
+        // User dismiss
+        newTooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        TextView msgView2 =
+                tooltip2.getTextBubbleContentViewForTesting().findViewById(R.id.message);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_new_tab),
+                msgView2.getText().toString());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnBottomBarHidden_DismissesBubble() {
+        setupForShow();
+        triggerShow();
+        assertTrue(isBubbleShowing());
+
+        mCoordinator.onBottomBarHidden();
+
+        assertFalse(isBubbleShowing());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testOnBottomBarHidden_PausesTourUntilVisible() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+        mCoordinator.getBubbleViewForTesting().findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+        TextBubble tooltip = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip);
+
+        // The tab switcher hides the bar: the mediator notifies the coordinator, and the tooltip
+        // is dismissed because its anchor is hidden.
+        mBottomBarView.setVisibility(View.GONE);
+        mCoordinator.onBottomBarHidden();
+        tooltip.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        // The paused tour still counts as active, so the NTP theme tip stays deferred.
+
+        mBottomBarView.setVisibility(View.VISIBLE);
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble resumedTooltip = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(resumedTooltip);
+        TextView msgView =
+                resumedTooltip.getTextBubbleContentViewForTesting().findViewById(R.id.message);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_gemini),
+                msgView.getText().toString());
+    }
+
+    @Test
+    public void testUserDismissalThenBarHides_ShowsNextStepOnVisible() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+
+        // User dismissal
+        tooltip1.onDismissForTesting(false);
+        // Bar hides before the posted task runs
+        mBottomBarView.setVisibility(View.GONE);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+
+        // Resume
+        mBottomBarView.setVisibility(View.VISIBLE);
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        TextView msgView = tooltip2.getTextBubbleContentViewForTesting().findViewById(R.id.message);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_new_tab),
+                msgView.getText().toString());
+    }
+
+    @Test
+    public void testDestroyWhilePaused_RecordsDismissed() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+
+        // System hide
+        mBottomBarView.setVisibility(View.GONE);
+        tooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Android.BottomBar.IPH.Glic.Event", IphEvent.DISMISSED)
+                        .build();
+
+        mCoordinator.destroy();
+
+        histogramWatcher.assertExpected();
+        verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    @Config(qualifiers = "land")
+    public void testRotateThenDestroy_RecordsDismissed() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Simulate a configuration change during tooltips.
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mCoordinator.onConfigurationChanged(newConfig);
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Android.BottomBar.IPH.Glic.Event", IphEvent.DISMISSED)
+                        .build();
+
+        mCoordinator.destroy();
+
+        histogramWatcher.assertExpected();
+    }
 }
