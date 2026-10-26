@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator that presents composebox UI elements for integration tests.
+// While the software keyboard is shown, an opaque view covers the keyboard
+// area so that EarlGrey visibility checks consider views covered by the
+// keyboard as not visible.
 @interface ComposeboxInttestCoordinator : ChromeCoordinator
 @end
 

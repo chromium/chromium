@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/autocomplete/test/autocomplete_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
@@ -31,6 +30,16 @@ const int kNumberOfSearchSuggestions = 12;
 /// suggestions + 1 verbatim + 1 URL suggestion.
 const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
 
+/// Returns a matcher for the popup row at `row` containing `string`. Hidden
+/// rows are excluded as the table view keeps reused cells hidden in the view
+/// hierarchy with the same accessibility identifier as the visible row.
+id<GREYMatcher> PopupRowMatcher(NSInteger row, NSString* string) {
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+  return grey_allOf(omnibox::PopupRowAtIndex(indexPath),
+                    chrome_test_util::OmniboxPopupRowWithString(string),
+                    grey_hidden(NO), nil);
+}
+
 }  // namespace
 
 // Tests the composebox adaptive suggestions integration.
@@ -52,13 +61,9 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
       enableFakeSuggestionsInContext:kPresentationContext];
 
   // Suggestions are sorted with search above URLs. Without adaptive
-  // suggestions, on phone some suggestions might be covered by the keyboard or
-  // the bottom composebox. Adaptive suggestions will first sort suggestions
-  // that are visible so high ranked URLs will stay visible above the keyboard.
-
-  // Setup bottom composebox and populate suggestions.
-  [ChromeEarlGrey setBoolValue:YES
-             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
+  // suggestions, on phone some suggestions might be covered by the keyboard.
+  // Adaptive suggestions will first sort suggestions that are visible so high
+  // ranked URLs will stay visible above the keyboard.
 
   // Suggestions are populated and ranked as:
   // Verbatim
@@ -81,7 +86,7 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
 
   [ChromeCoordinatorAppInterface startComposeboxCoordinator];
 
-  // Adaptive suggestions is not availabe on ZPS (zero prefix state, so type
+  // Adaptive suggestions are not available on ZPS (zero prefix state, so type
   // something).
   [ChromeEarlGreyUI replaceTextInOmnibox:@"search"];
 
@@ -115,13 +120,8 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
   // Iterate through search suggestions until we find the first non search or
   // non visible suggestion.
   for (NSInteger i = 1; i < kNumberOfFakeSuggestions; i++) {
-    NSString* searchQuery = SearchQuery(i);
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
     BOOL isSearchSuggestionAndVisible = [ChromeEarlGrey
-        isMatcherSufficientlyVisible:
-            grey_allOf(omnibox::PopupRowAtIndex(indexPath),
-                       chrome_test_util::OmniboxPopupRowWithString(searchQuery),
-                       nil)];
+        isMatcherSufficientlyVisible:PopupRowMatcher(i, SearchQuery(i))];
     if (!isSearchSuggestionAndVisible) {
       // This index either contains the URL suggestion or is the first hidden
       // row. This is where we expect the URL suggestion to be.
@@ -133,58 +133,45 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
 
 - (void)tearDownHelper {
   [super tearDownHelper];
-  [ChromeEarlGrey setBoolValue:NO
-             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeCoordinatorAppInterface reset];
 }
 
 #pragma mark - Tests
 
 // Tests that the high ranked URL suggestion is visible.
-// TODO(crbug.com/556656308) Test needs to be adjusted for top omnibox.
-- (void)DISABLED_testAdaptiveSuggestionURLSuggestionIsVisible {
-  // Bottom composebox wich is required for this test is not available on iPad.
+- (void)testAdaptiveSuggestionURLSuggestionIsVisible {
+  // Adaptive suggestions require the keyboard to cover the suggestions, which
+  // is only the case on iPhone.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped as bottom composebox is not available on iPad.");
+    EARL_GREY_TEST_SKIPPED(@"Skipped as the keyboard covers the suggestions "
+                           @"only on iPhone.");
   }
 
   // Verify that the URL suggestion is present and visible at the identified
   // index.
-  NSIndexPath* urlIndexPath = [NSIndexPath indexPathForRow:_urlSuggestionIndex
-                                                 inSection:0];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   omnibox::PopupRowAtIndex(urlIndexPath),
-                                   chrome_test_util::OmniboxPopupRowWithString(
-                                       kURLSuggestionTitle),
-                                   nil)]
+  [[EarlGrey selectElementWithMatcher:PopupRowMatcher(_urlSuggestionIndex,
+                                                      kURLSuggestionTitle)]
       // Lower the visibility percentage as the last suggestion might be
-      // partially covered by the gradient or the composebox.
+      // partially covered by the gradient or the keyboard.
       assertWithMatcher:grey_minimumVisiblePercent(0.4)];
 }
 
 // Tests that the search suggestion below the high ranked URL suggestion is
 // hidden.
-// TODO(crbug.com/556656308) Test needs to be adjusted for top omnibox.
-- (void)DISABLED_testAdaptiveSuggestionSearchBelowURLIsHidden {
-  // Bottom composebox wich is required for this test is not available on iPad.
+- (void)testAdaptiveSuggestionSearchBelowURLIsHidden {
+  // Adaptive suggestions require the keyboard to cover the suggestions, which
+  // is only the case on iPhone.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped as bottom composebox is not available on iPad.");
+    EARL_GREY_TEST_SKIPPED(@"Skipped as the keyboard covers the suggestions "
+                           @"only on iPhone.");
   }
 
   // Verify that search N is present at index N+1 and is not visible.
   int displacedSearchNumber = _urlSuggestionIndex;
   if (displacedSearchNumber < kNumberOfSearchSuggestions) {
-    NSString* displacedSearchQuery = SearchQuery(displacedSearchNumber);
-    NSIndexPath* displacedSearchIndex =
-        [NSIndexPath indexPathForRow:displacedSearchNumber + 1 inSection:0];
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(omnibox::PopupRowAtIndex(displacedSearchIndex),
-                              chrome_test_util::OmniboxPopupRowWithString(
-                                  displacedSearchQuery),
-                              nil)]
+    [[EarlGrey selectElementWithMatcher:PopupRowMatcher(
+                                            displacedSearchNumber + 1,
+                                            SearchQuery(displacedSearchNumber))]
         assertWithMatcher:grey_allOf(grey_notNil(),
                                      grey_not(grey_sufficientlyVisible()),
                                      nil)];
