@@ -311,9 +311,7 @@ public class StripLayoutTabDelegate {
                 // The last tab is positioned next to the new tab button.
                 tabStartHidden =
                         tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
-                                < visibleLeftBound
-                                        + newTabButton.getDrawX()
-                                        + newTabButton.getWidth();
+                                < newTabButton.getDrawX() + newTabButton.getWidth();
             } else {
                 tabStartHidden =
                         tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
@@ -330,7 +328,7 @@ public class StripLayoutTabDelegate {
                 // The last tab is positioned next to the new tab button.
                 tabEndHidden =
                         tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
-                                > visibleLeftBound + newTabButton.getDrawX();
+                                > newTabButton.getDrawX();
             } else {
                 tabEndHidden =
                         (tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP

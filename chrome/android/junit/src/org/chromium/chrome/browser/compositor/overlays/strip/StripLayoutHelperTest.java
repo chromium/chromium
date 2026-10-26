@@ -1143,9 +1143,10 @@ public class StripLayoutHelperTest {
                         /* rtl= */ false, /* incognito= */ true, /* selectedIndex= */ 4);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
 
-        // Last tab overlapping NTB:
-        // drawX(600) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
-        selectTabAtDrawX(tabs, 4, 600.f);
+        // Last tab overlapping NTB (within PADDING_LEFT(10) of NTB_X so double-counting left
+        // padding would miss the overlap):
+        // drawX(595) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
+        selectTabAtDrawX(tabs, 4, 595.f);
 
         // Close btn is hidden on the selected last tab. Close button is hidden for the rest of
         // tabs.
@@ -1204,6 +1205,15 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs =
                 initializeCloseButtonTest(
                         /* rtl= */ true, /* incognito= */ false, /* selectedIndex= */ 4);
+        // Simulate RTL desktop windowing left padding larger than TAB_OVERLAP_WIDTH_DP (28dp).
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
+                /* orientationChanged= */ false,
+                TIMESTAMP,
+                /* leftPadding= */ 100.f,
+                PADDING_RIGHT,
+                /* topPadding= */ 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X_RTL);
 
         // Last tab not overlapping NTB:
