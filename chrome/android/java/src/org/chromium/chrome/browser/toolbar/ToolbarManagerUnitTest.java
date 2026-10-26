@@ -1177,6 +1177,7 @@ public class ToolbarManagerUnitTest {
     public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab() {
         MarginLayoutParams params =
                 setUpTabletLayoutForAutoHiddenVerticalTab(/* initialRightMargin= */ 20);
+        params.leftMargin = 30;
         View toolbarContainer = mControlContainer.findViewById(R.id.toolbar_container);
         MarginLayoutParams containerParams =
                 (MarginLayoutParams) toolbarContainer.getLayoutParams();
@@ -1201,12 +1202,12 @@ public class ToolbarManagerUnitTest {
         isAutoHiddenSupplier.set(false);
         assertEquals(0, containerParams.topMargin);
         assertEquals(20, params.rightMargin);
-        assertEquals(0, params.leftMargin);
+        assertEquals(30, params.leftMargin);
     }
 
     @Test
-    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab_UpdateRightMarginWhileHidden() {
-        // Simulate returning from fullscreen where right margin was 0.
+    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab_UpdateMarginsWhileHidden() {
+        // Simulate returning from fullscreen where margins were 0.
         MarginLayoutParams params =
                 setUpTabletLayoutForAutoHiddenVerticalTab(/* initialRightMargin= */ 0);
         View toolbarContainer = mControlContainer.findViewById(R.id.toolbar_container);
@@ -1225,16 +1226,19 @@ public class ToolbarManagerUnitTest {
         // Vertical Tabs is auto-hidden in narrow window.
         isAutoHiddenSupplier.set(true);
         assertEquals(tabStripHeight, containerParams.topMargin);
+        assertEquals(0, params.leftMargin);
         assertEquals(0, params.rightMargin);
 
-        // Insets update notifies a new right margin while Vertical Tabs is auto-hidden.
-        mToolbarManager.onToolbarRightMarginChanged(20);
-        // Active layout margin remains 0 while auto-hidden.
+        // Insets update notifies new left and right margins while Vertical Tabs is auto-hidden.
+        mToolbarManager.onToolbarHorizontalMarginsChanged(15, 20);
+        // Active layout margins remain 0 while auto-hidden.
+        assertEquals(0, params.leftMargin);
         assertEquals(0, params.rightMargin);
 
-        // When Vertical Tabs gets shown again on window widening, the updated margin is restored.
+        // When Vertical Tabs gets shown again on window widening, the updated margins are restored.
         isAutoHiddenSupplier.set(false);
         assertEquals(0, containerParams.topMargin);
+        assertEquals(15, params.leftMargin);
         assertEquals(20, params.rightMargin);
     }
 

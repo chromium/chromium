@@ -385,6 +385,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         mCoordinator.onSideUiSpecsChangeStarted(
                 specs(mExpandedRailWidth, mExpandedRailWidth),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ false));
+        verify(mMockTabListCoordinator).setVerticalTabsReservedWidth(mExpandedRailWidth);
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
     }
 

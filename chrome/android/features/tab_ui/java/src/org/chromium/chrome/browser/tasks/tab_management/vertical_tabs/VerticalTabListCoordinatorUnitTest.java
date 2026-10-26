@@ -1572,6 +1572,19 @@ public class VerticalTabListCoordinatorUnitTest {
                 300,
                 (int) widthSupplier.get());
 
+        // When collapsed and expanded for hovering, reserved width remains at the collapsed width
+        // and is not overwritten by the hover-expanded container layout width.
+        mCoordinator.setVerticalTabsReservedWidth(52);
+        assertEquals(52, (int) widthSupplier.get());
+        mCoordinator.getCollapseController().toggleCollapseState();
+        mCoordinator.getCollapseController().setHovering(true);
+        containerView.layout(0, 0, 240, 500);
+        assertEquals(
+                "Width supplier should retain reserved width during hover-expand.",
+                52,
+                (int) widthSupplier.get());
+        mCoordinator.getCollapseController().setHovering(false);
+
         // Simulate layout change when container is hidden (visibility GONE).
         containerView.setVisibility(View.GONE);
         containerView.layout(0, 0, 0, 0);

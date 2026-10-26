@@ -210,6 +210,7 @@ public class VerticalTabListCoordinator {
     private final VerticalTabPinnedDropIndicatorDecoration mPinnedDropIndicatorDecoration;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private final NonNullObservableSupplier<Boolean> mVerticalTabsActiveSupplier;
+    private final SettableNonNullObservableSupplier<Integer> mVerticalTabsWidthSupplier;
     private final VerticalTabRailCollapseController mCollapseController;
     private final VerticalTabRailHoverController mRailHoverController;
     private final Callback<Boolean> mActiveObserver = this::setActive;
@@ -415,6 +416,7 @@ public class VerticalTabListCoordinator {
             BackPressManager backPressManager) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
+        mVerticalTabsWidthSupplier = verticalTabsWidthSupplier;
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
         mWindowAndroid = windowAndroid;
@@ -560,7 +562,12 @@ public class VerticalTabListCoordinator {
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     int width = right - left;
                     boolean isVisible = mContainerView.getVisibility() == View.VISIBLE;
-                    verticalTabsWidthSupplier.set(isVisible ? width : 0);
+                    if (mCollapseController.getEffectiveRailCollapseState()
+                                    != RailCollapseState.EXPANDED_FOR_HOVERING
+                            && mCollapseController.getRailCollapseStateSupplier().get()
+                                    != RailCollapseState.EXPANDED_FOR_HOVERING) {
+                        mVerticalTabsWidthSupplier.set(isVisible ? width : 0);
+                    }
                     if (isVisible && width > 0 && width != (oldRight - oldLeft)) {
                         updatePinnedLayoutSpanCount();
                     }
@@ -1073,6 +1080,13 @@ public class VerticalTabListCoordinator {
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
         updatePinnedLayoutSpanCount();
         updatePinnedTabsSeparatorVisibility();
+    }
+
+    /**
+     * Updates the reserved width of the vertical tab rail in {@code mVerticalTabsWidthSupplier}.
+     */
+    void setVerticalTabsReservedWidth(int widthPx) {
+        mVerticalTabsWidthSupplier.set(widthPx);
     }
 
     /**

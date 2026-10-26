@@ -502,6 +502,7 @@ public class ToolbarManager
     private @Nullable ViewMarginAdjusterForSideUi mProgressBarSideUiObserver;
     private boolean mIsVerticalTabsHiddenDueToNarrow;
     private boolean mIsXrFsm;
+    private int mRestoredLeftMargin;
     private int mRestoredRightMargin;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
@@ -946,7 +947,8 @@ public class ToolbarManager
                         mToolbarPositionSupplier,
                         /* matchTrustedCdnUrl= */ mIsCustomTab);
         mControlContainer = controlContainer;
-        mControlContainer.setToolbarRightMarginCallback(this::onToolbarRightMarginChanged);
+        mControlContainer.setToolbarHorizontalMarginCallback(
+                this::onToolbarHorizontalMarginsChanged);
         mLocationBarEmbedderUiOverrides.setIsFullWidthExpansionAllowedSupplier(
                 () -> !mControlContainer.isToolbarInAppHeader());
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
@@ -4048,11 +4050,14 @@ public class ToolbarManager
         boolean update = false;
         if (hidden && !mIsVerticalTabsHiddenDueToNarrow) {
             mIsVerticalTabsHiddenDueToNarrow = true;
+            mRestoredLeftMargin = lp.leftMargin;
             mRestoredRightMargin = lp.rightMargin;
+            lp.leftMargin = 0;
             lp.rightMargin = 0;
             update = true;
         } else if (!hidden && mIsVerticalTabsHiddenDueToNarrow) {
             mIsVerticalTabsHiddenDueToNarrow = false;
+            lp.leftMargin = mRestoredLeftMargin;
             lp.rightMargin = mRestoredRightMargin;
             update = true;
         }
@@ -4069,10 +4074,11 @@ public class ToolbarManager
     }
 
     @VisibleForTesting
-    void onToolbarRightMarginChanged(int rightMargin) {
-        // When Vertical Tabs is in auto-hidden mode, keep the right margin intact on the layout
-        // and update the margin to be restored when Vertical Tabs un-hides.
+    void onToolbarHorizontalMarginsChanged(int leftMargin, int rightMargin) {
+        // When Vertical Tabs is in auto-hidden mode, keep the margins intact on the layout
+        // and update the margins to be restored when Vertical Tabs un-hides.
         if (mIsVerticalTabsHiddenDueToNarrow) {
+            mRestoredLeftMargin = leftMargin;
             mRestoredRightMargin = rightMargin;
             return;
         }
@@ -4084,7 +4090,8 @@ public class ToolbarManager
         var lp = (ViewGroup.MarginLayoutParams) toolbarTabletLayout.getLayoutParams();
         if (lp == null) return;
 
-        if (lp.rightMargin != rightMargin) {
+        if (lp.leftMargin != leftMargin || lp.rightMargin != rightMargin) {
+            lp.leftMargin = leftMargin;
             lp.rightMargin = rightMargin;
             toolbarTabletLayout.setLayoutParams(lp);
             mToolbarLayout.onWidthConsumerVisibilityChanged();

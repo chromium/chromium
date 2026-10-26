@@ -446,6 +446,7 @@ public class VerticalTabsSideUiCoordinator
     @Override
     public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         mCollapseController.applyEffectiveState();
+        mTabListCoordinator.setVerticalTabsReservedWidth(sideUiSpecs.getReservedWidth(mAnchorSide));
     }
 
     @Override

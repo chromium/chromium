@@ -2629,7 +2629,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 showVerticalTabs(true);
                             }
                             if (mControlContainer != null) {
-                                mControlContainer.updateToolbarRightOffset();
+                                mControlContainer.updateToolbarHorizontalMargins();
                             }
                             var transitionCoord =
                                     assumeNonNull(mToolbarManager)
