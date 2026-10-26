@@ -10,8 +10,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/chrome_content_browser_client.h",
-  "+chrome/browser/ui/browser_window/public",
   "+chrome/grit",
   "+chrome/test",
 ]
@@ -23,5 +21,10 @@ specific_include_rules = {
   ],
   'os_settings_browser_test_mixin\\.cc': [
     '+chrome/browser/browser_process.h',
+    '+chrome/browser/chrome_content_browser_client.h',
+    '+chrome/browser/ui/browser_window/public',
+  ],
+  'os_settings_browser_test_mixin\\.h': [
+    '+chrome/browser/chrome_content_browser_client.h',
   ],
 }
