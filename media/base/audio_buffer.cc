@@ -23,7 +23,6 @@
 #include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace media {
 
@@ -176,10 +175,6 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
     return;
   }
 
-  absl::Cleanup populate_channel_data_on_exit = [this] {
-    PopulateChannelData();
-  };
-
   CHECK_NE(sample_format, kUnknownSampleFormat);
 
   if (sample_format == kSampleFormatIECDts) {
@@ -299,10 +294,6 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
     CHECK_GT(data_size_, 0u);
     return;
   }
-
-  absl::Cleanup populate_channel_data_on_exit = [this] {
-    PopulateChannelData();
-  };
 
   const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
   const size_t data_size_per_channel = frame_count * bytes_per_channel;
@@ -742,15 +733,6 @@ void AudioBuffer::TrimRange(int start, int end) {
 
 bool AudioBuffer::IsBitstreamFormat() const {
   return IsBitstream(sample_format_);
-}
-
-void AudioBuffer::PopulateChannelData() {
-  CHECK(channel_data_.empty());
-
-  channel_data_.reserve(channel_spans_.size());
-
-  std::ranges::transform(channel_spans_, std::back_inserter(channel_data_),
-                         [](base::span<uint8_t> span) { return span.data(); });
 }
 
 }  // namespace media

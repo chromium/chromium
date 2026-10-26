@@ -1090,13 +1090,6 @@ TEST(AudioBufferTest, PlanarAccessors) {
     EXPECT_EQ(planar_data[ch].data(), channel_span.data());
     EXPECT_EQ(planar_data[ch].size(), channel_span.size());
     EXPECT_EQ(expected_channel_bytes, channel_span.size());
-
-    // Compare against legacy `channels()` and `channel_data()` accessors.
-    // TODO(crbug.com/373960632): Remove when `channels()` and `channel_data()`
-    // are deleted.
-    EXPECT_EQ(buffer->channels()[ch].data(), channel_span.data());
-    EXPECT_EQ(expected_channel_bytes, buffer->channels()[ch].size());
-    EXPECT_EQ(buffer->channel_data()[ch], channel_span.data());
   }
 }
 
@@ -1220,12 +1213,6 @@ TEST(AudioBufferTest, InterleavedAccessors) {
   base::span<uint8_t> interleaved = buffer->interleaved_data();
   EXPECT_EQ(buffer->data_size(), interleaved.size());
   EXPECT_EQ(kChannels * kFrames * sizeof(float), interleaved.size());
-
-  // Compare against legacy `channels()` and `channel_data()` accessors.
-  // TODO(crbug.com/373960632): Remove when `channels()` and `channel_data()`
-  // are deleted.
-  EXPECT_EQ(buffer->channels()[0].data(), interleaved.data());
-  EXPECT_EQ(buffer->channel_data()[0], interleaved.data());
 }
 
 template <typename SampleType>
@@ -1276,12 +1263,6 @@ TEST(AudioBufferTest, BitstreamAccessors) {
   EXPECT_EQ(sizeof(kData), bitstream.size());
   EXPECT_EQ(sizeof(kData), buffer->data_size());
   EXPECT_EQ(bitstream, base::span(kData));
-
-  // Compare against legacy `channels()` and `channel_data()` accessors.
-  // TODO(crbug.com/373960632): Remove when `channels()` and `channel_data()`
-  // are deleted.
-  EXPECT_EQ(buffer->channels()[0].data(), bitstream.data());
-  EXPECT_EQ(buffer->channel_data()[0], bitstream.data());
 }
 
 TEST(AudioBufferTest, FormatTypeCompatibility) {
