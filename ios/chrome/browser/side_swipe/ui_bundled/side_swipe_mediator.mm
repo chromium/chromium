@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 
 #import <memory>
+#import <optional>
 
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -24,8 +27,12 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+
+// Kill switch for recording user actions for back and forward edge swipes.
+BASE_FEATURE(kRecordEdgeSwipeMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -53,6 +60,9 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
   // Timer to ensure that snapshot updates that take longer than a maximum
   // delay will release their callback even if the update is incomplete.
   base::OneShotTimer _snapshotTimer;
+
+  // Pending direction of an in-progress native WKWebView edge swipe, if any.
+  std::optional<NavigationDirection> _pendingWebViewEdgeSwipeDirection;
 }
 
 // The current active WebState.
@@ -180,15 +190,38 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+    _pendingWebViewEdgeSwipeDirection = std::nullopt;
+  }
   if (direction == NavigationDirectionBack) {
+    if (base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+      base::RecordAction(base::UserMetricsAction("MobileEdgeSwipeBack"));
+    }
     web_navigation_util::GoBack(self.activeWebState);
   } else {
+    if (base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+      base::RecordAction(base::UserMetricsAction("MobileEdgeSwipeForward"));
+    }
     web_navigation_util::GoForward(self.activeWebState);
   }
 
   CHECK(self.engagementTracker);
   self.engagementTracker->NotifyEvent(
       feature_engagement::events::kIOSSwipeBackForwardUsed);
+}
+
+- (void)webViewEdgeSwipeDidStartInDirection:(NavigationDirection)direction {
+  if (!base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+    return;
+  }
+  _pendingWebViewEdgeSwipeDirection = direction;
+}
+
+- (void)webViewEdgeSwipeDidCancel {
+  if (!base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+    return;
+  }
+  _pendingWebViewEdgeSwipeDirection = std::nullopt;
 }
 
 #pragma mark - SideSwipeTabDelegate
@@ -268,7 +301,36 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
 }
 
 - (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigation {
+  if (!base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+    return;
+  }
+  if (!(navigation->GetPageTransition() &
+        ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) ||
+      navigation->HasUserGesture() || navigation->IsSameDocument()) {
+    _pendingWebViewEdgeSwipeDirection = std::nullopt;
+  }
+}
+
+- (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
+  if (base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+    if (_pendingWebViewEdgeSwipeDirection.has_value() &&
+        navigation->HasCommitted() &&
+        (navigation->GetPageTransition() &
+         ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) &&
+        !navigation->HasUserGesture() && !navigation->IsSameDocument()) {
+      if (_pendingWebViewEdgeSwipeDirection.value() ==
+          NavigationDirectionBack) {
+        base::RecordAction(base::UserMetricsAction("Back"));
+        base::RecordAction(base::UserMetricsAction("MobileEdgeSwipeBack"));
+      } else {
+        base::RecordAction(base::UserMetricsAction("Forward"));
+        base::RecordAction(base::UserMetricsAction("MobileEdgeSwipeForward"));
+      }
+    }
+    _pendingWebViewEdgeSwipeDirection = std::nullopt;
+  }
   [self updateNavigationEdgeSwipeForWebState:webState];
 }
 
@@ -281,6 +343,9 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
+    _pendingWebViewEdgeSwipeDirection = std::nullopt;
+  }
   // Cancel any an ongoing swipe for the old webState.
   [self.consumer cancelOnGoingSwipe];
 

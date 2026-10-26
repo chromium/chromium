@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//base",
     "//base/i18n:test_support",
     "//base/test:test_support",
+    "//components/feature_engagement/test:test_support",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/reader_mode/model:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -118,6 +119,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//components/omnibox/browser:pref_names",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
