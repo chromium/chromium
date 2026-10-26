@@ -432,13 +432,14 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
     return context;
   }
 
-  const gpu::SyncToken& GetSyncToken(const CanvasResource* resource) {
-    return resource->sync_token();
+  const gpu::SyncToken& GetSyncToken(const ExportedCanvasResource* resource) {
+    return resource->GetResourceForTesting()->sync_token();
   }
 
-  void EnsureResourceRecycled(scoped_refptr<CanvasResource>&& resource) {
+  void EnsureResourceRecycled(
+      scoped_refptr<ExportedCanvasResource>&& resource) {
     auto transferable_resource = resource->PrepareTransferableResource();
-    CanvasResource::DropRefOnOwningThread(std::move(resource));
+    resource.reset();
   }
 
   test::TaskEnvironment task_environment_{
@@ -456,7 +457,7 @@ TEST_F(BaseRenderingContext2DSharedImageTest, UnacceleratedOverlay) {
   auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
                                                            FlushReason::kOther);
   ASSERT_TRUE(resource);
-  auto shared_image = resource->GetSharedImage();
+  auto shared_image = resource->GetSharedImageForTesting();
   ASSERT_TRUE(shared_image);
   EXPECT_EQ(shared_image->size(), kSize);
   EXPECT_EQ(shared_image->format(), viz::SharedImageFormat::N32Format());
@@ -479,7 +480,7 @@ TEST_F(BaseRenderingContext2DSharedImageTest, ResourceRecyclingViaSnapshot) {
   EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
   EXPECT_EQ(
       context->PaintRenderingResultsToResource(kBackBuffer, FlushReason::kOther)
-          ->GetSharedImage(),
+          ->GetSharedImageForTesting(),
       image->GetSharedImage());
 
   // Resource updated after draw.
@@ -543,7 +544,7 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
                                                            FlushReason::kOther);
   auto sync_token = GetSyncToken(resource.get());
   ASSERT_TRUE(resource);
-  auto shared_image = resource->GetSharedImage();
+  auto shared_image = resource->GetSharedImageForTesting();
   ASSERT_TRUE(shared_image);
   EXPECT_EQ(shared_image->size(), kSize);
   EXPECT_EQ(shared_image->alpha_type(), kPremul_SkAlphaType);
@@ -557,8 +558,10 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
 #else
   EXPECT_EQ(shared_image->format(), viz::SinglePlaneFormat::kRGBA_8888);
 #endif
-  EXPECT_EQ(resource, context->PaintRenderingResultsToResource(
-                          kBackBuffer, FlushReason::kOther));
+  EXPECT_EQ(
+      resource->GetSharedImageForTesting(),
+      context->PaintRenderingResultsToResource(kBackBuffer, FlushReason::kOther)
+          ->GetSharedImageForTesting());
   EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
   context->fillRect(0, 0, 1, 1);
@@ -572,14 +575,14 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
   } else {
     EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   }
-  auto* resource_ptr = resource.get();
+  auto old_shared_image = resource->GetSharedImageForTesting();
 
   EnsureResourceRecycled(std::move(resource));
 
   context->fillRect(0, 0, 1, 1);
   auto resource_again = context->PaintRenderingResultsToResource(
       kBackBuffer, FlushReason::kOther);
-  EXPECT_EQ(resource_ptr, resource_again);
+  EXPECT_EQ(old_shared_image.get(), resource_again->GetSharedImageForTesting());
   if (base::FeatureList::IsEnabled(
           ::features::kUseAutomaticSyncTokenManagement)) {
     EXPECT_FALSE(GetSyncToken(resource_again.get()).HasData());

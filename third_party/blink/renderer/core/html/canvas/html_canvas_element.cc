@@ -284,14 +284,11 @@ bool HTMLCanvasElement::PrepareTransferableResource(
 
   DoDeferredPaintInvalidation();
 
-  scoped_refptr<CanvasResource> frame =
+  scoped_refptr<ExportedCanvasResource> exported_resource =
       RenderingContext()->PaintRenderingResultsToResource(kBackBuffer, reason);
-  if (!frame) {
+  if (!exported_resource) {
     return false;
   }
-
-  auto exported_resource =
-      base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
 
   CHECK_DEREF(out_resource) = exported_resource->PrepareTransferableResource();
 
@@ -723,12 +720,10 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   // context types, setting the attribute is a no-op).
   if (LowLatencyEnabled() && (IsWebGL() || IsRenderingContext2D()) &&
       frame_dispatcher_ && !dirty_rect_.IsEmpty()) {
-    if (scoped_refptr<CanvasResource> canvas_resource =
+    if (scoped_refptr<ExportedCanvasResource> exported_resource =
             context_->PaintRenderingResultsToResource(kBackBuffer, reason)) {
       const gfx::Rect src_rect(Size());
       dirty_rect_.Intersect(src_rect);
-      auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-          std::move(canvas_resource));
       frame_dispatcher_->DispatchFrame(std::move(exported_resource),
                                        dirty_rect_, IsOpaque());
       dirty_rect_ = gfx::Rect();

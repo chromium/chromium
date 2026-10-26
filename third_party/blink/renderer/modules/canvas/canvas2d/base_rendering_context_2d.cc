@@ -524,7 +524,7 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
   return Snapshot();
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<ExportedCanvasResource>
 BaseRenderingContext2D::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
@@ -532,7 +532,10 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
     return nullptr;
   }
   FlushCanvas(reason);
-  return shared_image_provider_->ProduceCanvasResource(surface_.get());
+  auto resource = shared_image_provider_->ProduceCanvasResource(surface_.get());
+  return resource
+             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
+             : nullptr;
 }
 
 const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {

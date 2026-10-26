@@ -720,7 +720,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer) override;
   void ClearMarkedCanvasDirty() override { marked_canvas_dirty_ = false; }
-  scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
+  scoped_refptr<ExportedCanvasResource> PaintRenderingResultsToResource(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
 

@@ -133,7 +133,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
  private:
   void FinalizeFrame(FlushReason) final;
 
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
+  scoped_refptr<ExportedCanvasResource> ProduceCanvasResource(FlushReason);
 
   bool InitializeBacking() override;
 };

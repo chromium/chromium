@@ -35,6 +35,9 @@ class PLATFORM_EXPORT ExportedCanvasResource
   viz::TransferableResource PrepareTransferableResource();
 
   CanvasResource* GetResourceForTesting() const { return resource_.get(); }
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImageForTesting() {
+    return GetResourceForTesting()->GetSharedImage();
+  }
 
  private:
   scoped_refptr<CanvasResource> resource_;
