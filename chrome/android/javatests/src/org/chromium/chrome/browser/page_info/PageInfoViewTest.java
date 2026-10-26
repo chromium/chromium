@@ -1154,7 +1154,8 @@ public class PageInfoViewTest {
     /** Tests that the User Bypass has an accessibility live region set up correctly. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462750864
+    // Automotive: crbug.com/462750864. Desktop: https://crbug.com/578060914.
+    @DisableIf.Device({DeviceFormFactor.AUTOMOTIVE, DeviceFormFactor.DESKTOP})
     public void a11yLiveRegionInUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
