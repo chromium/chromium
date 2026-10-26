@@ -2648,7 +2648,7 @@ enum ClickabilityReason {
 }
 
 // Provides hints that indicate that interaction with this node is disabled.
-// Next ID: 6
+// Next ID: 8
 enum InteractionDisabledReason {
   INTERACTION_DISABLED_REASON_UNSPECIFIED = 0;
 
@@ -2667,6 +2667,15 @@ enum InteractionDisabledReason {
 
   // The node has an ARIA Role of `presentation` or `none`.
   INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL = 5;
+
+  // The node or an ancestor has `pointer-events: none` or is marked inert.
+  INTERACTION_DISABLED_REASON_POINTER_EVENTS_NONE = 6;
+
+  // The node has no visible pixels and cannot be scrolled into view, either
+  // because an `overflow: hidden` ancestor clips it out (e.g.
+  // `max-height: 0; overflow: hidden`) or because it is anchored outside the
+  // scrollable bounds (e.g. `left: -9999px` or off-viewport `position: fixed`).
+  INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE = 7;
 }
 
 // Next ID: 5
