@@ -573,13 +573,16 @@ TEST_F(ManagedGuestSessionInstallTest, AppInstalled) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
 
+  WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening({url_info.app_id()});
+
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),
       IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
           url_info.web_bundle_id()));
 
+  EXPECT_EQ(install_observer.Wait(), url_info.app_id());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  task_environment().RunUntilIdle();
 
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(url_info.app_id());
