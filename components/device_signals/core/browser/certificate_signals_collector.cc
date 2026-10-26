@@ -87,14 +87,16 @@ std::vector<MatchedCert> MatchCertsWithChallenges(
 }  // namespace
 
 CertificateSignalsCollector::CertificateSignalsCollector(
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
+    std::unique_ptr<Delegate> delegate)
     : BaseSignalsCollector({
           {SignalName::kCertificates,
            base::BindRepeating(
                &CertificateSignalsCollector::GetCertificateSignal,
                base::Unretained(this))},
       }),
-      client_cert_store_(std::move(client_cert_store)) {}
+      delegate_(std::move(delegate)) {
+  CHECK(delegate_);
+}
 
 CertificateSignalsCollector::~CertificateSignalsCollector() = default;
 
@@ -120,6 +122,11 @@ void CertificateSignalsCollector::GetCertificateSignal(
     OnSignalsCollected(base::TimeTicks::Now(), response,
                        std::move(done_closure), std::move(cert_response));
     return;
+  }
+  // Lazily create the store the first time certificates are collected.
+  if (!client_cert_store_created_) {
+    client_cert_store_created_ = true;
+    client_cert_store_ = delegate_->CreateClientCertStore();
   }
   if (!client_cert_store_) {
     OnClientCertsRetrieved(

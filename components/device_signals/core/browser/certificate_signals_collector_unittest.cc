@@ -10,6 +10,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -280,12 +281,29 @@ class CertificateSignalsCollectorTest : public testing::Test {
 
   void InitializeCollector() {
     collector_ = std::make_unique<CertificateSignalsCollector>(
-        CreateFakeClientCertStore());
+        std::make_unique<FakeDelegate>(this));
   }
+
+  // Delegate which creates the store configured by the test fixture and
+  // counts how many times it was asked to.
+  class FakeDelegate : public CertificateSignalsCollector::Delegate {
+   public:
+    explicit FakeDelegate(CertificateSignalsCollectorTest* test)
+        : test_(test) {}
+
+    std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
+      ++test_->create_cert_store_call_count_;
+      return test_->CreateFakeClientCertStore();
+    }
+
+   private:
+    raw_ptr<CertificateSignalsCollectorTest> test_;
+  };
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  int create_cert_store_call_count_ = 0;
   std::vector<std::string> cn_to_return_;
   std::vector<base::Time> cert_start_times_;
   bool simulate_null_store_ = false;
@@ -450,6 +468,36 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_Success) {
   VerifySuccessResponse(response, /*expected_count=*/1u, cert_cn);
   histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
+}
+
+TEST_F(CertificateSignalsCollectorTest, GetSignal_CreatesCertStoreLazily) {
+  std::string cert_cn = "Test";
+  SetCertificatesToReturn(1, std::string(CN_KEY) + "=" + cert_cn);
+  InitializeCollector();
+
+  // Creating the collector must not create the client certificate store.
+  EXPECT_EQ(create_cert_store_call_count_, 0);
+
+  for (int i = 0; i < 2; ++i) {
+    SignalsAggregationRequest request;
+    request.signal_names.emplace(SignalName::kCertificates);
+    request.certificate_signal_parameters.push_back(CreateCertificateOptions(
+        /*subject=*/CreateFilter(cert_cn), /*issuer=*/base::DictValue()));
+    SignalsAggregationResponse response;
+
+    base::RunLoop run_loop;
+    collector_->GetSignal(SignalName::kCertificates, UserPermission::kGranted,
+                          request, response, run_loop.QuitClosure());
+    run_loop.Run();
+
+    ASSERT_TRUE(response.certificate_signals_response.has_value());
+    EXPECT_EQ(
+        response.certificate_signals_response->serialized_caa_responses.size(),
+        1u);
+  }
+
+  // The store is created on the first collection and then reused.
+  EXPECT_EQ(create_cert_store_call_count_, 1);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_FiltersOutMismatchedIssuer) {

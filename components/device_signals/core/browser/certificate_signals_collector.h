@@ -38,8 +38,19 @@ class CertificateSignalsCollector : public BaseSignalsCollector {
   using CertificateSignalsResponseCallback =
       base::RepeatingCallback<void(CertificateSignalsResponse)>;
 
-  explicit CertificateSignalsCollector(
-      std::unique_ptr<net::ClientCertStore> client_cert_store);
+  // Provides the platform-specific dependencies of the collector.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Creates the store used to retrieve client certificates. May return
+    // nullptr. Only called the first time certificates are collected, so that
+    // creating the collector (e.g. during profile initialization) does not
+    // create the store and the services it depends on.
+    virtual std::unique_ptr<net::ClientCertStore> CreateClientCertStore() = 0;
+  };
+
+  explicit CertificateSignalsCollector(std::unique_ptr<Delegate> delegate);
   ~CertificateSignalsCollector() override;
 
  private:
@@ -111,6 +122,9 @@ class CertificateSignalsCollector : public BaseSignalsCollector {
       CertificateSignalsResponse certificate_signals_response);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  std::unique_ptr<Delegate> delegate_;
+  // Whether `delegate_` was already asked to create `client_cert_store_`.
+  bool client_cert_store_created_ = false;
   std::unique_ptr<net::ClientCertStore> client_cert_store_;
   base::WeakPtrFactory<CertificateSignalsCollector> weak_ptr_factory_{this};
 };

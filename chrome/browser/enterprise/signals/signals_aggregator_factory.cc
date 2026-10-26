@@ -13,14 +13,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/signals/certificate_signals_collector_delegate_impl.h"
 #include "chrome/browser/enterprise/signals/profile_signals_collector.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/buildflags/buildflags.h"
-
 #include "components/device_signals/core/browser/certificate_signals_collector.h"
 #include "components/device_signals/core/browser/file_system_signals_collector.h"
 #include "components/device_signals/core/browser/settings_signals_collector.h"
@@ -29,11 +28,11 @@
 #include "components/device_signals/core/browser/signals_collector.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_features.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/browser_context.h"
-#include "net/ssl/client_cert_store.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -145,18 +144,16 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (enterprise_signals::features::IsCertificateCollectionEnabled()) {
-    auto* profile_network_service =
-        ProfileNetworkContextServiceFactory::GetForContext(profile);
-    std::unique_ptr<net::ClientCertStore> cert_store =
-        profile_network_service
-            ? profile_network_service->CreateClientCertStore()
-            : nullptr;
-    if (cert_store) {
-      collectors.push_back(
-          std::make_unique<device_signals::CertificateSignalsCollector>(
-              std::move(cert_store)));
-    }
+  if (enterprise_signals::features::IsCertificateCollectionEnabled() &&
+      ProfileNetworkContextServiceFactory::GetForContext(profile)) {
+    // The client certificate store is only created when certificates are
+    // first collected. Creating it here would create the profile's
+    // CertificateProvisioningService during profile initialization, which
+    // is otherwise deferred until after browser startup.
+    collectors.push_back(
+        std::make_unique<device_signals::CertificateSignalsCollector>(
+            std::make_unique<CertificateSignalsCollectorDelegateImpl>(
+                profile)));
   }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
