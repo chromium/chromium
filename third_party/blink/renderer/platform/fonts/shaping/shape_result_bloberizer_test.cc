@@ -468,6 +468,55 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
       }});
 }
 
+TEST_F(ShapeResultBloberizerTest, EndAtLeadingSurrogate) {
+  // Codepoints which encode to four UTF-8 code units.
+  const UChar kStr[] = {0xD841, 0xDF31, 0xD841, 0xDF79};
+  String string{base::span(kStr)};
+
+  Font* font = MakeGarbageCollected<Font>(font_description);
+  HarfBuzzShaper shaper(string);
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  ShapeResultView* result_view = ShapeResultView::Create(result);
+  // End at offset 1, splitting the first surrogate pair.
+  TextFragmentPaintInfo text_info{StringView(string), 0, 1, result_view};
+  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+      font->GetFontDescription(), text_info.text, text_info.from, text_info.to,
+      text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
+
+  const auto& glyphs = PendingRunGlyphs(bloberizer);
+  EXPECT_EQ(1u, glyphs.size());
+
+  CheckBlobBuffer(bloberizer.Blobs(),
+                  {{
+                      {1, string.substr(0, 2).Utf8(),
+                       ExpectedRun::ClusterDirection::kAscending},
+                  }});
+}
+
+TEST_F(ShapeResultBloberizerTest, Latin1TwoByteUtf8) {
+  const LChar kStr[] = {'a', 0xE9, 'b', 0xFF};
+  String string{base::span(kStr)};
+  ASSERT_TRUE(string.Is8Bit());
+
+  Font* font = MakeGarbageCollected<Font>(font_description);
+  HarfBuzzShaper shaper(string);
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  ShapeResultView* result_view = ShapeResultView::Create(result);
+  TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
+                                  result_view};
+  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+      font->GetFontDescription(), text_info.text, text_info.from, text_info.to,
+      text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
+
+  CheckBlobBuffer(
+      bloberizer.Blobs(),
+      {{
+          {4, string.Utf8(), ExpectedRun::ClusterDirection::kAscending},
+      }});
+}
+
 TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
   TextDirection direction = TextDirection::kLtr;
   String string = "Testing ShapeResultIterator::CopyRange";

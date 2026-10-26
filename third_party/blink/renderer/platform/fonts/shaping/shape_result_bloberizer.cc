@@ -10,7 +10,9 @@
 #include <ranges>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/to_string.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -111,28 +113,34 @@ void ShapeResultBloberizer::CommitText() {
 
   wtf_size_t size = to - from;
   Vector<uint32_t, 256> pending_utf8_character_index_from_character_index(size);
+  wtf_size_t utf8_size = pending_utf8_.size();
   if (current_text_.Is8Bit()) {
-    const LChar* latin1 = current_text_.Span8().data();
-    wtf_size_t utf8_size = pending_utf8_.size();
-    for (wtf_size_t i = from; i < to;) {
-      pending_utf8_character_index_from_character_index[i - from] = utf8_size;
-
-      LChar cp = UNSAFE_TODO(latin1[i++]);
-      pending_utf8_.Grow(utf8_size + U8_LENGTH(cp));
-      UNSAFE_TODO(U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp));
+    const base::span<const LChar> latin1 =
+        current_text_.Span8().subspan(from, size);
+    // Each Latin-1 (U+0000..U+00FF) code point takes at most 2 UTF-8 bytes.
+    pending_utf8_.Grow(
+        base::CheckAdd(utf8_size, base::CheckMul(size, 2u)).ValueOrDie());
+    base::span<uint8_t> dst(pending_utf8_);
+    for (wtf_size_t i = 0; i < size; ++i) {
+      pending_utf8_character_index_from_character_index[i] = utf8_size;
+      U8_APPEND_UNSAFE(dst, utf8_size, latin1[i]);
     }
   } else {
-    const UChar* utf16 = current_text_.Span16().data();
-    wtf_size_t utf8_size = pending_utf8_.size();
+    const base::span<const UChar> utf16 = current_text_.Span16();
+    // +1 because a leading surrogate at `to - 1` paired with a trailing
+    // surrogate at `to` produces 4 UTF-8 bytes instead of at most 3.
+    pending_utf8_.Grow(
+        base::CheckAdd(utf8_size, base::CheckMul(size, 3u), 1u).ValueOrDie());
+    base::span<uint8_t> dst(pending_utf8_);
     for (wtf_size_t i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
       UChar32 cp;
-      UNSAFE_TODO(U16_NEXT_OR_FFFD(utf16, i, current_text_length, cp));
-      pending_utf8_.Grow(utf8_size + U8_LENGTH(cp));
-      UNSAFE_TODO(U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp));
+      U16_NEXT_OR_FFFD(utf16, i, current_text_length, cp);
+      U8_APPEND_UNSAFE(dst, utf8_size, cp);
     }
   }
+  pending_utf8_.Shrink(utf8_size);
 
   for (wtf_size_t character_index : current_character_indexes_) {
     wtf_size_t index = character_index - from;
@@ -143,9 +151,8 @@ void ShapeResultBloberizer::CommitText() {
   current_character_indexes_.Shrink(0);
 
   DVLOG(4) << "  CommitText appended UTF-8: \""
-           << std::string(
-                  &pending_utf8_[pending_utf8_original_size],
-                  UNSAFE_TODO(pending_utf8_.data() + pending_utf8_.size()))
+           << std::string_view(base::as_chars(base::span(pending_utf8_))
+                                   .subspan(pending_utf8_original_size))
            << "\"";
   DVLOG(4) << "  CommitText UTF-8 indexes: "
            << base::ToString(
