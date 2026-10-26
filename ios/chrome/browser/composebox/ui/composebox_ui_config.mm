@@ -150,10 +150,6 @@
 }
 
 - (NSString*)modelSectionHeader {
-  // With the strings update, the models section header is not shown.
-  if (IsPlusButtonMenuStringUpdatesEnabled()) {
-    return nil;
-  }
   if (_modelSectionHeader.length > 0) {
     return _modelSectionHeader;
   }
@@ -170,11 +166,6 @@
 }
 
 - (NSString*)toolsSectionHeader {
-  // With the strings update, the tools section header is not shown.
-  if (IsPlusButtonMenuStringUpdatesEnabled()) {
-    return nil;
-  }
-
   if (_toolsSectionHeader.length > 0) {
     return _toolsSectionHeader;
   }
