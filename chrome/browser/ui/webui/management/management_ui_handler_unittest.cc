@@ -2081,24 +2081,24 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo_SecureGateway) {
   auto info = handler_.GetThreatProtectionInfo(profile_);
   EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
 
-  // When kProxyProvisioningDomains is set, but the feature is disabled,
-  // showSecureGatewayDisclosure remains false.
+  // When kProxyProvisioningDomains is set and the feature is enabled by
+  // default, showSecureGatewayDisclosure is true.
   base::ListValue domains;
   domains.Append("example.com");
   profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
                                 std::move(domains));
 
   info = handler_.GetThreatProtectionInfo(profile_);
-  EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+  EXPECT_TRUE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
 
-  // When the feature is enabled and kProxyProvisioningDomains is set,
-  // showSecureGatewayDisclosure is true.
+  // When the feature is disabled, showSecureGatewayDisclosure is false even
+  // if kProxyProvisioningDomains is set.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  scoped_feature_list.InitAndDisableFeature(
       enterprise_net::kEnableDynamicRouteFetching);
 
   info = handler_.GetThreatProtectionInfo(profile_);
-  EXPECT_TRUE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+  EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

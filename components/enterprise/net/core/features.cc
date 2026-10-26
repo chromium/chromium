@@ -4,12 +4,27 @@
 
 #include "components/enterprise/net/core/features.h"
 
+#include "build/build_config.h"
+
 #if BUILDFLAG(ENTERPRISE_PROXY)
 
 namespace enterprise_net {
 
-BASE_FEATURE(kEnableDynamicRouteFetching, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnterpriseProxyErrorHandling, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDynamicRouteFetching,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kEnterpriseProxyErrorHandling,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 constexpr size_t kDefaultPvdConfigMaxSizeBytes = 3 * 1024 * 1024;
 

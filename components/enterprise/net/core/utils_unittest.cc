@@ -1087,24 +1087,38 @@ TEST(UtilsTest, IsSecureGatewayEnabled) {
   TestingPrefServiceSimple prefs;
   RegisterProfilePrefs(prefs.registry());
 
-  // Test feature disabled and empty pref list.
+  // Empty preference list should return false regardless of feature state.
   EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
-
-  // Feature enabled but empty preference list should still return false.
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(kEnableDynamicRouteFetching);
+    EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kEnableDynamicRouteFetching);
     EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
   }
 
   base::ListValue domains;
   domains.Append("example.com");
   prefs.SetList(kProxyProvisioningDomains, std::move(domains));
-  EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableDynamicRouteFetching);
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(IsSecureGatewayEnabled(&prefs));
+#else
+  EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
+#endif
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kEnableDynamicRouteFetching);
+    EXPECT_TRUE(IsSecureGatewayEnabled(&prefs));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kEnableDynamicRouteFetching);
+    EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
