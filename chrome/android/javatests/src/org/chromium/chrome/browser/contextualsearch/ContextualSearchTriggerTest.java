@@ -135,7 +135,10 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444186
+    @DisableIf.Device({
+        DeviceFormFactor.DESKTOP, // https://crbug.com/481444186
+        DeviceFormFactor.ONLY_TABLET // https://crbug.com/577409798
+    })
     public void testTapGestureFollowedByScrollClearsSelection() throws Exception {
         clickWordNode("intelligence");
         fakeResponse(false, 200, "Intelligence", "Intelligence", "alternate-term", false);
