@@ -53,7 +53,8 @@ CloudProfileReportingServiceFactoryIOS::BuildServiceInstanceFor(
       profile->GetSharedURLLoaderFactory(), profile->GetProfileName(),
       delegate_factory.GetReportSchedulerDelegate(profile),
       IOSSignalsAggregatorFactory::GetForProfile(profile),
-      CreateSaasUsageReportScheduler(profile));
+      CreateSaasUsageReportScheduler(profile),
+      profile->GetUserCloudPolicyManager());
 }
 
 CloudProfileReportingServiceFactoryIOS::CloudProfileReportingServiceFactoryIOS(

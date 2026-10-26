@@ -300,7 +300,8 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
             /*profile_name=*/"",
             /*report_scheduler_delegate=*/nullptr,
             /*signals_aggregator=*/nullptr,
-            /*saas_usage_report_scheduler=*/nullptr);
+            /*saas_usage_report_scheduler=*/nullptr,
+            /*user_cloud_policy_manager=*/nullptr);
       }));
   std::unique_ptr<TestProfileIOS> test_profile = std::move(builder).Build();
 
