@@ -1385,7 +1385,6 @@ public class TabGridDialogTest {
     @MediumTest
     @RequiresRestart("Finishes the activity which can have cascading effects.")
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "https://crbug.com/40147345")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule.getActivityTestRule(), 2, 0, "about:blank");
@@ -1601,7 +1600,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/40148943")
     public void testAccessibilityString() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 3);
@@ -1959,7 +1957,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @EnableAnimations
-    @DisabledTest(message = "crbug.com/412364951")
     public void testCreateIncognitoGroupAndCloseAllTabsInDialogTwice_Bug354745444() {
         // The first round leaves the dialog torn down mid-animation.
         CtaPageStation page = createIncognitoGroupAndCloseAllTabsInDialog(mPage);
