@@ -46,8 +46,12 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/native_theme/native_theme.h"
 
 // The methods in this file are shared by all themes on every platform.
@@ -55,6 +59,20 @@
 namespace blink {
 
 using mojom::blink::FormControlType;
+
+gfx::Rect ThemePainter::SnapRectForPaint(const PhysicalRect& paint_rect,
+                                         AppearanceValue appearance) {
+  if (RuntimeEnabledFeatures::ConsistentFormControlPaintSnappingEnabled() &&
+      (appearance == AppearanceValue::kCheckbox ||
+       appearance == AppearanceValue::kRadio)) {
+    // Rounding the size on its own, rather than snapping both edges, keeps
+    // the painted size independent of the sub-pixel position.
+    const gfx::RectF rect(paint_rect);
+    return gfx::Rect(gfx::ToRoundedPoint(rect.origin()),
+                     gfx::ToRoundedSize(rect.size()));
+  }
+  return ToPixelSnappedRect(paint_rect);
+}
 
 namespace {
 

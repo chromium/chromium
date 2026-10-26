@@ -281,6 +281,7 @@ blink_core_tests_paint = [
   "text_fragment_painter_test.cc",
   "text_painter_test.cc",
   "text_selection_repaint_test.cc",
+  "theme_painter_test.cc",
   "timing/container_timing_paint_attribution_tracker_test.cc",
   "timing/container_timing_test.cc",
   "timing/element_timing_test.cc",

@@ -1464,6 +1464,12 @@
       status: "experimental",
     },
     {
+      name: "ConsistentFormControlPaintSnapping",
+      // Keep checkbox/radio painted size constant regardless of sub-pixel
+      // position. https://crbug.com/41288048
+      status: "stable",
+    },
+    {
       name: "ConstructableStylesheetCache",
       status: "test",
     },

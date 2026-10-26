@@ -539,7 +539,8 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
   // If we have a native theme appearance, paint that before painting our
   // background.  The theme will tell us whether or not we should also paint the
   // CSS background.
-  gfx::Rect snapped_paint_rect = ToPixelSnappedRect(paint_rect);
+  gfx::Rect snapped_paint_rect =
+      ThemePainter::SnapRectForPaint(paint_rect, style.EffectiveAppearance());
   ThemePainter& theme_painter = LayoutTheme::GetTheme().Painter();
   bool theme_painted =
       box_decoration_data.HasAppearance() &&

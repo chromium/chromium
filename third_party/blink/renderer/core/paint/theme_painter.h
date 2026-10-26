@@ -23,6 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_THEME_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_THEME_PAINTER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -44,6 +46,13 @@ class ThemePainter {
 
  public:
   explicit ThemePainter();
+
+  // Snaps `paint_rect` for painting a native theme part with `appearance`.
+  // Checkbox and radio parts round their size independently of the offset so
+  // the painted size stays constant regardless of sub-pixel position; other
+  // parts snap both edges like ToPixelSnappedRect().
+  CORE_EXPORT static gfx::Rect SnapRectForPaint(const PhysicalRect& paint_rect,
+                                                AppearanceValue appearance);
 
   // This method is called to paint the widget as a background of the
   // LayoutObject.  A widget's foreground, e.g., the text of a button, is always

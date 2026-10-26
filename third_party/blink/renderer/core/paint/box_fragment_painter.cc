@@ -1830,7 +1830,8 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
     }
   }
 
-  gfx::Rect snapped_paint_rect = ToPixelSnappedRect(paint_rect);
+  gfx::Rect snapped_paint_rect =
+      ThemePainter::SnapRectForPaint(paint_rect, style.EffectiveAppearance());
   ThemePainter& theme_painter = LayoutTheme::GetTheme().Painter();
   bool theme_painted =
       box_decoration_data.HasAppearance() &&
