@@ -51,6 +51,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -87,6 +88,7 @@
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 #include "third_party/blink/renderer/core/frame/frame_overlay.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/frame_view_auto_size_info.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1284,7 +1286,25 @@ LocalFrameView::NaturalSizeLayoutScope::NaturalSizeLayoutScope(
     view->layout_size_for_natural_size_ = layout_size;
     return;
   }
-  if (*view->layout_size_for_natural_size_ == layout_size) {
+  gfx::Size target_size;
+  if (RuntimeEnabledFeatures::ResponsiveIframesSingleAxisIcbEnabled()) {
+    target_size = layout_size;
+    if (const FrameOwner* owner = view->GetFrame().Owner()) {
+      switch (owner->GetResponsiveSizing()) {
+        case mojom::blink::FrameResponsiveSizing::kNone:
+          break;
+        case mojom::blink::FrameResponsiveSizing::kWidth:
+          target_size.set_width(view->layout_size_for_natural_size_->width());
+          break;
+        case mojom::blink::FrameResponsiveSizing::kHeight:
+          target_size.set_height(view->layout_size_for_natural_size_->height());
+          break;
+      }
+    }
+  } else {
+    target_size = *view->layout_size_for_natural_size_;
+  }
+  if (target_size == layout_size) {
     return;
   }
 
@@ -1292,8 +1312,7 @@ LocalFrameView::NaturalSizeLayoutScope::NaturalSizeLayoutScope(
   is_fixed_to_frame_size_ = view->LayoutSizeFixedToFrameSize();
   saved_layout_size_ = layout_size;
   view->SetLayoutSizeFixedToFrameSize(false, {.should_suppress_events = true});
-  view->SetLayoutSizeInternal(*view->layout_size_for_natural_size_,
-                              {.should_suppress_events = true});
+  view->SetLayoutSizeInternal(target_size, {.should_suppress_events = true});
 }
 
 LocalFrameView::NaturalSizeLayoutScope::~NaturalSizeLayoutScope() {

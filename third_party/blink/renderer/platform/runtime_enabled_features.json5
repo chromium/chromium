@@ -5581,6 +5581,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/565383556.
+      name: "ResponsiveIframesSingleAxisIcb",
+      status: "stable",
+    },
+    {
       name: "RestrictGamepadAccess",
       public: true,
       status: "experimental",
