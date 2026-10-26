@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"

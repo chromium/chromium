@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/manta/proto/scanner.pb.h"
