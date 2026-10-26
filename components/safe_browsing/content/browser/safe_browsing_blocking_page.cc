@@ -266,12 +266,11 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
 #else
       kRedWarningSurvey;
 #endif
-  if (base::FeatureList::IsEnabled(hats_feature)) {
-    is_hats_candidate =
-        SafeBrowsingHatsDelegate::IsSurveyCandidate(
-            threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),
-            kRedWarningSurveyDidProceedFilter.Get()) &&
-        !is_proceed_anyway_disabled_ && is_safe_browsing_surveys_enabled_;
+  if (!is_proceed_anyway_disabled_ && is_safe_browsing_surveys_enabled_ &&
+      base::FeatureList::IsEnabled(hats_feature)) {
+    is_hats_candidate = SafeBrowsingHatsDelegate::IsSurveyCandidate(
+        threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),
+        kRedWarningSurveyDidProceedFilter.Get());
   }
 
 #if BUILDFLAG(IS_ANDROID)
