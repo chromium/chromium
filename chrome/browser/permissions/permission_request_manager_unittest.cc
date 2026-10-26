@@ -56,13 +56,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
-#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/session_manager/test/user_session_test_environment.h"
-#endif
+#include "components/user_manager/user_type.h"  // nogncheck
+#endif                                          // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -74,17 +70,14 @@ class PermissionRequestManagerTest
  public:
   PermissionRequestManagerTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        params_request1_(permissions::RequestType::kGeolocation,
-                         permissions::PermissionRequestGestureType::GESTURE),
-        params_request2_(permissions::RequestType::kMultipleDownloads,
-                         permissions::PermissionRequestGestureType::NO_GESTURE),
-        params_request_mic_(
-            permissions::RequestType::kMicStream,
-            permissions::PermissionRequestGestureType::NO_GESTURE),
-        params_request_camera_(
-            permissions::RequestType::kCameraStream,
-            permissions::PermissionRequestGestureType::NO_GESTURE) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+#if BUILDFLAG(IS_CHROMEOS)
+  explicit PermissionRequestManagerTest(LogInParams log_in_params)
+      : ChromeRenderViewHostTestHarness(
+            std::move(log_in_params),
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -101,6 +94,7 @@ class PermissionRequestManagerTest
 
   void TearDown() override {
     prompt_factory_ = nullptr;
+    manager_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -143,14 +137,20 @@ class PermissionRequestManagerTest
   }
 
   std::pair<permissions::RequestType, permissions::PermissionRequestGestureType>
-      params_request1_;
+      params_request1_{permissions::RequestType::kGeolocation,
+                       permissions::PermissionRequestGestureType::GESTURE};
   std::pair<permissions::RequestType, permissions::PermissionRequestGestureType>
-      params_request2_;
+      params_request2_{permissions::RequestType::kMultipleDownloads,
+                       permissions::PermissionRequestGestureType::NO_GESTURE};
   std::pair<permissions::RequestType, permissions::PermissionRequestGestureType>
-      params_request_mic_;
+      params_request_mic_{
+          permissions::RequestType::kMicStream,
+          permissions::PermissionRequestGestureType::NO_GESTURE};
   std::pair<permissions::RequestType, permissions::PermissionRequestGestureType>
-      params_request_camera_;
-  raw_ptr<permissions::PermissionRequestManager, DanglingUntriaged> manager_;
+      params_request_camera_{
+          permissions::RequestType::kCameraStream,
+          permissions::PermissionRequestGestureType::NO_GESTURE};
+  raw_ptr<permissions::PermissionRequestManager> manager_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
@@ -353,64 +353,29 @@ TEST_F(PermissionRequestManagerTest, TestEmbargoForEmbeddedPermissionRequest) {
 class PermissionRequestManagerWebKioskTest
     : public PermissionRequestManagerTest {
  public:
-  void SetUp() override {
-    auto* browser_process = TestingBrowserProcess::GetGlobal();
-    PrefService* local_state = browser_process->local_state();
-    auto delegate =
-        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
-            browser_process);
-    session_delegate_ = delegate.get();
-    user_session_test_environment_ =
-        std::make_unique<ash::test::UserSessionTestEnvironment>(
-            local_state, std::move(delegate));
-    ASSERT_TRUE(user_session_test_environment_->AddKioskWebAppUser(
-        account_id_.GetUserEmail()));
-    user_session_test_environment_->LogIn(account_id_);
-    kiosk_profile_ = Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-            account_id_));
-    ASSERT_TRUE(kiosk_profile_);
+  PermissionRequestManagerWebKioskTest()
+      : PermissionRequestManagerTest(
+            {.account_id = WebKioskAccountId(),
+             .user_type = user_manager::UserType::kKioskWebApp}) {}
 
+  void SetUp() override {
     PermissionRequestManagerTest::SetUp();
 
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    PrefService* local_state = browser_process->local_state();
     cryptohome_remover_ =
         std::make_unique<ash::KioskCryptohomeRemover>(local_state);
     kiosk_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
         local_state, browser_process->shared_url_loader_factory(),
         cryptohome_remover_.get());
-    kiosk_app_manager_->AddAppForTesting(account_id_,
+    kiosk_app_manager_->AddAppForTesting(WebKioskAccountId(),
                                          GURL("https://google.com/launch"));
   }
 
   void TearDown() override {
     kiosk_app_manager_.reset();
     cryptohome_remover_.reset();
-    // The profile is owned by the env's ProfileManager, not the harness.
-    // The harness's TearDown() deletes its own BrowserContext after its
-    // RenderProcessHosts and then destroys the task environment, which the
-    // profile still needs. So delete the profile at the point the harness
-    // would delete its own: after the WebContents, before the parent's
-    // TearDown().
-    // TODO(crbug.com/534323787): Make the harness support an externally owned
-    // profile, so it can be deleted after the parent's TearDown(), mirroring
-    // the login before the parent's SetUp().
-    prompt_factory_ = nullptr;
-    DeleteContents();
-    kiosk_profile_ = nullptr;
-    session_delegate_->testing_profile_manager().DeleteAllTestingProfiles();
     PermissionRequestManagerTest::TearDown();
-    session_delegate_ = nullptr;
-    user_session_test_environment_.reset();
-  }
-
-  // The profile is owned by the env's ProfileManager, so the harness must not
-  // create or own one.
-  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
-    return nullptr;
-  }
-
-  content::BrowserContext* GetBrowserContext() override {
-    return kiosk_profile_;
   }
 
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
@@ -434,15 +399,11 @@ class PermissionRequestManagerWebKioskTest
   }
 
  private:
-  const AccountId account_id_ =
-      AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-          "lala",
-          policy::DeviceLocalAccountType::kWebKioskApp));
-  std::unique_ptr<ash::test::UserSessionTestEnvironment>
-      user_session_test_environment_;
-  raw_ptr<ash::test::ChromeUserSessionTestEnvironmentDelegate>
-      session_delegate_ = nullptr;
-  raw_ptr<Profile> kiosk_profile_ = nullptr;
+  static AccountId WebKioskAccountId() {
+    return AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
+        "lala", policy::DeviceLocalAccountType::kWebKioskApp));
+  }
+
   std::unique_ptr<ash::KioskCryptohomeRemover> cryptohome_remover_;
   std::unique_ptr<ash::KioskWebAppManager> kiosk_app_manager_;
 };

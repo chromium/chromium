@@ -36,7 +36,7 @@ void ProfileUserManagerController::OnProfileAdded(Profile* profile) {
   }
 
   if (!profile->GetUserCloudPolicyManagerAsh() &&
-      !user->IsDeviceLocalAccount()) {
+      !user->IsDeviceLocalAccount() && !user->is_managed().has_value()) {
     // If policy manager is not instantiated, the User is not a managed account
     // and will not be updated. So set the policy values here forcibly.
     user_manager_->SetUserPolicyStatus(user->GetAccountId(),

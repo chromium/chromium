@@ -4,14 +4,35 @@
 
 assert(is_chromeos)
 
+# Kept apart from :test_support so that light fixtures such as
+# ChromeRenderViewHostTestHarness can depend on it without the login mixins.
+source_set("user_session_test_environment_delegate") {
+  testonly = true
+
+  sources = [
+    "chrome_user_session_test_environment_delegate.cc",
+    "chrome_user_session_test_environment_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/test/base:testing_profile",
+    "//chromeos/ash/components/login/login_state",
+    "//components/account_id",
+    "//components/session_manager/test:test_support",
+    "//components/user_manager",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 
   sources = [
     "auth_ui_utils.cc",
     "auth_ui_utils.h",
-    "chrome_user_session_test_environment_delegate.cc",
-    "chrome_user_session_test_environment_delegate.h",
     "composite_waiter.cc",
     "composite_waiter.h",
     "cryptohome_mixin.cc",
@@ -89,6 +110,7 @@ static_library("test_support") {
   ]
 
   public_deps = [
+    ":user_session_test_environment_delegate",
     "//ash/constants",
     "//base",
     "//base/test:test_support",

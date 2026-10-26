@@ -137,12 +137,22 @@ source_set("chrome_render_view_host_test_harness") {
     "//content/test:test_support",
   ]
   deps = [
+    ":testing_browser_process",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/signin",
   ]
   if (is_chromeos) {
-    deps += [ "//ash" ]
+    public_deps += [ "//components/user_manager:common" ]
+    deps += [
+      "//ash",
+      "//chrome/browser/ash/login/test:user_session_test_environment_delegate",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/login/login_state",
+      "//components/account_id",
+      "//components/session_manager/test:test_support",
+      "//components/user_manager",
+    ]
   }
 }
 

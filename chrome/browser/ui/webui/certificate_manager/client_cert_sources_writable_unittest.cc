@@ -27,7 +27,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/hash.h"
@@ -45,11 +44,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id_literal.h"
 #include "crypto/scoped_test_nss_chromeos_user.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -61,7 +60,9 @@ using testing::ElementsAre;
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-constexpr char kUsername[] = "test@example.com";
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@example.com",
+                                            GaiaId::Literal("123456"));
 #endif
 
 bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
@@ -151,29 +152,25 @@ class ClientCertSourceWritableUnitTest
       public testing::WithParamInterface<bool>
 {
  public:
-  void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
+#if BUILDFLAG(IS_CHROMEOS)
+  // nss_service_chromeos configures the system slot only for affiliated users.
+  ClientCertSourceWritableUnitTest()
+      : ChromeRenderViewHostTestHarness(LogInParams{.account_id = kAccountId,
+                                                    .is_managed = true,
+                                                    .is_affiliated = true}) {}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+  void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS)
     ASSERT_TRUE(test_nss_user_.constructed_successfully());
     test_nss_user_.FinishInit();
-
-    ash::LoginState::Initialize();
+#else
+    ASSERT_TRUE(profile_manager_.SetUp());
 #endif
 
     ChromeRenderViewHostTestHarness::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS)
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    // is_affiliated=true is required for nss_service_chromeos to configure the
-    // system slot.
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_, /*is_affiliated=*/true, user_manager::UserType::kRegular,
-        profile());
-    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
-    fake_user_manager_->OnUserProfileCreated(account_, profile()->GetPrefs());
-    fake_user_manager_->LoginUser(account_);
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
     nss_service_ = FakeNssService::InitializeForBrowserContext(profile());
 #endif
 
@@ -188,8 +185,6 @@ class ClientCertSourceWritableUnitTest
     ui::SelectFileDialog::SetFactory(nullptr);
     cert_source_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
-    fake_user_manager_.Reset();
-    ash::LoginState::Shutdown();
     kcer::KcerFactoryAsh::ClearNssTokenMapForTesting();
 #else
     nss_service_ = nullptr;
@@ -201,7 +196,7 @@ class ClientCertSourceWritableUnitTest
   bool use_hardware_backed() const { return GetParam(); }
 
   std::string username_hash() const {
-    return user_manager::TestHelper::GetFakeUsernameHash(account_);
+    return user_manager::TestHelper::GetFakeUsernameHash(kAccountId);
   }
 #endif
 
@@ -336,18 +331,13 @@ class ClientCertSourceWritableUnitTest
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list_;
-  AccountId account_{AccountId::FromUserEmail(kUsername)};
   crypto::ScopedTestNSSChromeOSUser test_nss_user_{username_hash()};
   crypto::ScopedTestSystemNSSKeySlot test_nss_system_slot_{
       /*simulate_token_loader=*/true};
-
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
 #else
   raw_ptr<FakeNssService> nss_service_;
-#endif
-
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+#endif
 
   mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       fake_page_remote_;

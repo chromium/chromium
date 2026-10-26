@@ -108,14 +108,15 @@ if (chrome_root_store_cert_management_ui) {
       sources += [ "client_cert_sources_writable_unittest.cc" ]
       deps += [
         "//chrome/browser/net",
+        "//components/account_id:test_support",
         "//net:test_support",
       ]
       if (is_chromeos) {
         deps += [
           "//chrome/browser/ash/kcer",
-          "//chrome/browser/ash/login/users:test_support",
-          "//chromeos/ash/components/login/login_state",
+          "//components/user_manager:test_support",
           "//crypto:test_support",
+          "//google_apis",
         ]
       }
     }
