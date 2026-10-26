@@ -1,1 +1,4 @@
 mixins: "//base/android/COMMON_METADATA"
+mixins: "//agents/knowledge_base/rules/general/cpp_naming_and_comments/COMMON_METADATA"
+mixins: "//agents/knowledge_base/rules/general/java/COMMON_METADATA"
+mixins: "//agents/knowledge_base/rules/general/docs_l10n_and_configs/COMMON_METADATA"
