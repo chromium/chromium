@@ -16,7 +16,7 @@ namespace {
 // Helper to disambiguate the call to GetForProfile(...).
 // TODO(crbug.com/576182342): delete when GetForProfile(...) has no overload.
 autofill::LogRouter* GetAutofillLogRouter(ProfileIOS& profile) {
-  return autofill::AutofillLogRouterFactory::GetForProfile(&profile);
+  return autofill::AutofillLogRouterFactory::GetForProfile(profile);
 }
 
 }  // anonymous namespace
