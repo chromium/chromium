@@ -2,21 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/json/string_escape.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -75,6 +82,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/find_in_page/find_tab_helper.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -90,9 +98,11 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -148,6 +158,11 @@ const DeepQuery kFirstSuggestionMatchPrimaryText = {
 const DeepQuery kDefaultMatchKeywordChip = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index='0']", "#keyword"};
+// The text of the default match, e.g. "query - Google Search" for the
+// search-what-you-typed match.
+const DeepQuery kDefaultMatchSuggestion = {
+    "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index='0']", "#suggestion"};
 const DeepQuery kComposeButton = {"omnibox-full-app", "omnibox-popup-searchbox",
                                   "cr-searchbox-compose-button",
                                   "#composeButton"};
@@ -552,6 +567,87 @@ class FullWebUIOmniboxInteractiveTestBase
     return WaitForStateChange(kPopupWebView, selection_changed);
   }
 
+  // Sends a real key press to the popup for each character of `text`, which
+  // must be lowercase ASCII letters. Unlike `InputWebUIText()`, which sets the
+  // input's value from JS, this goes through the platform's key event routing
+  // to the popup widget and Blink's text editing, as real typing does.
+  auto TypeWebUITextWithKeyPresses(std::string_view text) {
+    MultiStep steps;
+    for (const char c : text) {
+      CHECK(base::IsAsciiLower(c));
+      AddStep(steps, InAnyContext(SendKeyPress(
+                         kPopupWebView,
+                         static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a')),
+                         ui::EF_NONE)));
+    }
+    return steps;
+  }
+
+  // Sends a real key press to the popup that moves the caret to the start
+  // (`to_start`) or end of the text, like Home/End. On macOS, where Home/End
+  // scroll rather than move the caret, this is Cmd+Left/Right.
+  auto PressWebUIHomeOrEndKey(bool to_start) {
+#if BUILDFLAG(IS_MAC)
+    return InAnyContext(SendKeyPress(kPopupWebView,
+                                     to_start ? ui::VKEY_LEFT : ui::VKEY_RIGHT,
+                                     ui::EF_COMMAND_DOWN));
+#else
+    return InAnyContext(SendKeyPress(
+        kPopupWebView, to_start ? ui::VKEY_HOME : ui::VKEY_END, ui::EF_NONE));
+#endif
+  }
+
+  // Sends a real Ctrl+`key` (Cmd+`key` on macOS) key press to the popup, e.g.
+  // Ctrl/Cmd+A to select all.
+  auto PressWebUIAcceleratorKey(ui::KeyboardCode key, int extra_flags = 0) {
+    return InAnyContext(SendKeyPress(
+        kPopupWebView, key, ui::EF_PLATFORM_ACCELERATOR | extra_flags));
+  }
+
+  // Adds `url` to history as a typed URL, so that typing a prefix of it inline
+  // autocompletes it. `HistoryURLProvider` only inline autocompletes URLs that
+  // were typed.
+  void AddTypedUrlToHistory(const GURL& url) {
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
+    ASSERT_TRUE(history_service);
+    ui_test_utils::WaitForHistoryToLoad(history_service);
+    history_service->AddPageWithDetails(
+        url, u"Example", /*visit_count=*/1, /*typed_count=*/1,
+        base::Time::Now() - base::Hours(1), /*hidden=*/false,
+        history::SOURCE_BROWSED);
+    // Let the history backend add the page and update the in-memory database
+    // that `HistoryURLProvider` inline autocompletes from.
+    content::RunAllTasksUntilIdle();
+  }
+
+  // Writes `text` to the copy/paste clipboard.
+  auto WriteClipboardText(const std::u16string& text) {
+    return Do([text]() {
+      ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+          .WriteText(text);
+    });
+  }
+
+  // Returns the text on the copy/paste clipboard.
+  static std::u16string ReadClipboardText() {
+    base::test::TestFuture<std::u16string> future;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        future.GetCallback());
+    CHECK(future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+    return future.Take();
+  }
+
+  // Waits until the copy/paste clipboard holds `expected_text`, e.g. after the
+  // WebUI hands a copy or cut off to the browser.
+  auto WaitForClipboardText(const std::u16string& expected_text) {
+    return PollUntil(
+        [expected_text]() { return ReadClipboardText() == expected_text; },
+        "WaitForClipboardText");
+  }
+
   auto WaitForOmniboxText(const std::u16string& expected_text) {
     return PollUntil(
         [this, expected_text]() {
@@ -580,6 +676,14 @@ class FullWebUIOmniboxInteractiveTestBase
           FROM_HERE, run_loop.QuitClosure(), delay);
       run_loop.Run();
     });
+  }
+
+  // Opens a New Tab Page, whose permanent text is empty, and waits for the
+  // focused popup.
+  auto OpenNtpAndWaitForPopupReady(ui::ElementIdentifier tab_id) {
+    return Steps(WaitForPopupTransitionLockout(),
+                 AddInstrumentedTab(tab_id, GURL(chrome::kChromeUINewTabURL)),
+                 WaitForWebContentsReady(tab_id), WaitForPopupReady());
   }
 
   auto SwitchTab(ui::ElementIdentifier tab_strip, int tab_index) {
@@ -1394,9 +1498,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
   AddKeywordSearchEngine(u"kw");
   RunTestSequence(
       // Open an NTP, whose permanent text is empty, and wait for the popup.
-      WaitForPopupTransitionLockout(),
-      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
-      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      OpenNtpAndWaitForPopupReady(kTab1),
       // Type the keyword and wait for its chip on the default match.
       InputWebUIText("kw"),
       InAnyContext(
@@ -1420,9 +1522,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
   AddKeywordSearchEngine(u"kw");
   RunTestSequence(
       // Open an NTP, whose permanent text is empty, and wait for the popup.
-      WaitForPopupTransitionLockout(),
-      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
-      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      OpenNtpAndWaitForPopupReady(kTab1),
       // Type the keyword and wait for its chip on the default match.
       InputWebUIText("kw"),
       InAnyContext(
@@ -2891,6 +2991,136 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+// Verifies that typing with real key presses updates the WebUI input, the
+// native omnibox text, and the suggestions on every keystroke. Unlike
+// `InputWebUIText()`, real key presses go through the platform's key event
+// routing to the popup widget and Blink's text editing.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RealKeyTypingUpdatesSuggestionsPerKeystroke) {
+  auto type_key_and_wait_for_suggestions = [this](std::string_view key,
+                                                  const std::string& text) {
+    return Steps(
+        TypeWebUITextWithKeyPresses(key),
+        InAnyContext(WaitForWebUIInputValue(text)),
+        WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, text),
+        WaitForOmniboxText(base::UTF8ToUTF16(text)));
+  };
+  RunTestSequence(OpenNtpAndWaitForPopupReady(kTab1),
+                  type_key_and_wait_for_suggestions("f", "f"),
+                  WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                       "(el) => el && el.dropdownIsVisible"),
+                  type_key_and_wait_for_suggestions("o", "fo"),
+                  type_key_and_wait_for_suggestions("x", "fox"),
+                  CheckUserInputInProgress(true),
+                  InAnyContext(CheckWebUIInputSelection(3, 3)));
+}
+
+// Verifies that real Backspace and Delete (Fn+Backspace on macOS) key presses
+// with the caret in the middle of the text delete the character before and
+// after the caret, respectively, keep the caret in place once the updated
+// suggestions arrive, and update the native omnibox text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RealKeyBackspaceAndDeleteAtMidTextCaret) {
+  RunTestSequence(
+      OpenNtpAndWaitForPopupReady(kTab1), TypeWebUITextWithKeyPresses("fork"),
+      InAnyContext(WaitForWebUIInputValue("fork")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "fork"),
+      // Move the caret between "fo" and "rk".
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_LEFT, ui::EF_NONE)),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_LEFT, ui::EF_NONE)),
+      InAnyContext(CheckWebUIInputSelection(2, 2)),
+      // Backspace deletes the "o" before the caret.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_BACK, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("frk")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "frk"),
+      WaitForOmniboxText(u"frk"), InAnyContext(CheckWebUIInputSelection(1, 1)),
+      // Delete deletes the "r" after the caret.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DELETE, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("fk")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "fk"),
+      WaitForOmniboxText(u"fk"), InAnyContext(CheckWebUIInputSelection(1, 1)));
+}
+
+// Verifies that real Home and End key presses (Cmd+Left/Right on macOS) with an
+// inline autocompletion accept it as typed text and move the caret to the
+// start or end of it, so that typing continues there.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RealKeyHomeEndAcceptInlineAutocompletion) {
+  AddTypedUrlToHistory(GURL("http://example.com/"));
+  RunTestSequence(
+      OpenNtpAndWaitForPopupReady(kTab1),
+      // Typing "exa" inline autocompletes "example.com", with the inline
+      // autocompletion selected.
+      TypeWebUITextWithKeyPresses("exa"),
+      InAnyContext(WaitForWebUIInputValue("example.com")),
+      InAnyContext(CheckWebUIInputSelection(3, 11)),
+      // End accepts the inline autocompletion and moves the caret to its end.
+      PressWebUIHomeOrEndKey(/*to_start=*/false),
+      InAnyContext(CheckWebUIInputSelection(11, 11)),
+      InAnyContext(WaitForWebUIInputValue("example.com")),
+      TypeWebUITextWithKeyPresses("z"),
+      InAnyContext(WaitForWebUIInputValue("example.comz")),
+      InAnyContext(CheckWebUIInputSelection(12, 12)),
+      WaitForOmniboxText(u"example.comz"),
+      // Select all and type "exa" again to show the inline autocompletion
+      // again.
+      PressWebUIAcceleratorKey(ui::VKEY_A),
+      InAnyContext(CheckWebUIInputSelection(0, 12)),
+      TypeWebUITextWithKeyPresses("exa"),
+      InAnyContext(WaitForWebUIInputValue("example.com")),
+      InAnyContext(CheckWebUIInputSelection(3, 11)),
+      // Home accepts the inline autocompletion and moves the caret to the
+      // start.
+      PressWebUIHomeOrEndKey(/*to_start=*/true),
+      InAnyContext(CheckWebUIInputSelection(0, 0)),
+      InAnyContext(WaitForWebUIInputValue("example.com")),
+      TypeWebUITextWithKeyPresses("w"),
+      InAnyContext(WaitForWebUIInputValue("wexample.com")),
+      InAnyContext(CheckWebUIInputSelection(1, 1)),
+      WaitForOmniboxText(u"wexample.com"));
+}
+
+// Verifies the real Ctrl/Cmd+A (select all), Ctrl/Cmd+C (copy), Ctrl/Cmd+X
+// (cut), Ctrl/Cmd+V (paste), Ctrl/Cmd+Z (undo), and Ctrl/Cmd+Shift+Z (redo)
+// key presses in the WebUI input.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RealKeySelectAllClipboardAndUndo) {
+  RunTestSequence(
+      OpenNtpAndWaitForPopupReady(kTab1), TypeWebUITextWithKeyPresses("fox"),
+      InAnyContext(WaitForWebUIInputValue("fox")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "fox"),
+      // Select all.
+      PressWebUIAcceleratorKey(ui::VKEY_A),
+      InAnyContext(CheckWebUIInputSelection(0, 3)),
+      // Copy keeps the text and selection.
+      WriteClipboardText(u"stale"), PressWebUIAcceleratorKey(ui::VKEY_C),
+      WaitForClipboardText(u"fox"), InAnyContext(WaitForWebUIInputValue("fox")),
+      InAnyContext(CheckWebUIInputSelection(0, 3)),
+      // Cut removes the text.
+      WriteClipboardText(u"stale"), PressWebUIAcceleratorKey(ui::VKEY_X),
+      WaitForClipboardText(u"fox"), InAnyContext(WaitForWebUIInputValue("")),
+      WaitForOmniboxText(u""),
+      // Paste twice inserts the text at the caret each time.
+      PressWebUIAcceleratorKey(ui::VKEY_V),
+      InAnyContext(WaitForWebUIInputValue("fox")),
+      InAnyContext(CheckWebUIInputSelection(3, 3)), WaitForOmniboxText(u"fox"),
+      PressWebUIAcceleratorKey(ui::VKEY_V),
+      InAnyContext(WaitForWebUIInputValue("foxfox")),
+      InAnyContext(CheckWebUIInputSelection(6, 6)),
+      WaitForOmniboxText(u"foxfox"),
+      // Undo reverts the pastes, then the cut.
+      PressWebUIAcceleratorKey(ui::VKEY_Z),
+      InAnyContext(WaitForWebUIInputValue("fox")),
+      PressWebUIAcceleratorKey(ui::VKEY_Z),
+      InAnyContext(WaitForWebUIInputValue("")),
+      PressWebUIAcceleratorKey(ui::VKEY_Z),
+      InAnyContext(WaitForWebUIInputValue("fox")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "fox"),
+      // Redo redoes the cut.
+      PressWebUIAcceleratorKey(ui::VKEY_Z, ui::EF_SHIFT_DOWN),
+      InAnyContext(WaitForWebUIInputValue("")));
+}
+
 // Verifies that opening a suggestion in a new foreground tab via Alt+Enter
 // leaves the Omnibox on the new tab unfocused and the popup closed.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
@@ -3036,11 +3266,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForBrowserActive(),
       AddInstrumentedTab(kTab1, embedded_test_server()->GetURL("/title1.html")),
       WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
-      WaitForPopupDismissed(), WaitForPopupTransitionLockout(), Do([]() {
-        ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-            .WriteText(u"pasted text");
-      }),
-      MoveMouseTo(kOmniboxElementId), ClickMouse(ui_controls::RIGHT),
+      WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
+      WriteClipboardText(u"pasted text"), MoveMouseTo(kOmniboxElementId),
+      ClickMouse(ui_controls::RIGHT),
 #if BUILDFLAG(IS_MAC)
       // The native context menu runs a nested run loop, and since it is shown
       // from a task no application tasks run until it closes, including this
@@ -3100,11 +3328,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForBrowserActive(),
       AddInstrumentedTab(kTab1, embedded_test_server()->GetURL("/title1.html")),
       WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
-      WaitForPopupDismissed(), WaitForPopupTransitionLockout(), Do([]() {
-        ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-            .WriteText(u"pasted text");
-      }),
-      Do([this]() {
+      WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
+      WriteClipboardText(u"pasted text"), Do([this]() {
         ui::AXActionData action;
         action.action = ax::mojom::Action::kShowContextMenu;
         // Request the context menu the way a screen reader does, via the
