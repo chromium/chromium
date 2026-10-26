@@ -158,6 +158,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns a matcher for the managed profile creation screen.
+id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
+  return grey_accessibilityID(
+      kManagedProfileCreationScreenAccessibilityIdentifier);
+}
+
 }  // namespace
 
 // Test suite for User Policy.
@@ -275,8 +281,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
 // Tests that the managed accout confirmation dialog is shown in the sign-in
 // flow with its contextual and specific content.
-// TODO(crbug.com/441924945): Fix this flaky test.
-- (void)FLAKY_testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
+- (void)testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
@@ -288,6 +293,9 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
   // Disable egtest synchronization to avoid infinite spinner loop.
   ScopedSynchronizationDisabler disabler;
+
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
 
   // Verify the management disclosure UI.
   [ChromeEarlGrey waitForMatcher:ManagedProfileCreationTitleMatcher()];
@@ -303,12 +311,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:
           IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE];
-  [ChromeEarlGrey waitForMatcher:acceptButton];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:acceptButton];
   [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
 
   // Verify that the confirmation dialog was dismissed.
-  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationTitleMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
 
   // Verify that the flow was successful by validating that the account is
   // signed in after accepting from the confirmation dialog.
@@ -317,8 +325,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
 // Tests that when user policies are enabled, in the sign-in flow, sign-in error
 // popup isn't shown after cancelling the managed accout confirmation dialog.
-// TODO(crbug.com/441924945): Fix this flaky test.
-- (void)FLAKY_testCancelSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
+- (void)testCancelSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
 
@@ -329,14 +336,17 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Disable egtest synchronization to avoid infinite spinner loop.
   ScopedSynchronizationDisabler disabler;
 
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
+
   // Cancel the sign-in flow by tapping on the cancel button.
   [ChromeEarlGrey waitForMatcher:DeclineManagementButtonMatcher()];
   [[EarlGrey selectElementWithMatcher:DeclineManagementButtonMatcher()]
       performAction:grey_tap()];
 
   // Verify that the confirmation dialog was dismissed.
-  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationTitleMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
 
   // Verify that no sign-in error alert action is shown.
   [ChromeEarlGrey
