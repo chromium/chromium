@@ -282,7 +282,9 @@ apps::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent() {
 void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(arc_window_, base::NotFatalUntil::M160);
-  CHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0u, base::NotFatalUntil::M160);
+  // TODO(crbug.com/575975547): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0u);
 
   DVLOG(1) << __func__;
   if (result == base::File::FILE_ERROR_NO_SPACE) {
