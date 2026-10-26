@@ -1,0 +1,19 @@
+Reduce the maximum UTF-8 word length to 2 * MAXWORDLEN
+
+Suggestions are slow for long words. Chromium checks UTF-8 words of up to
+2 * MAXWORDLEN bytes instead of upstream's 3 * MAXWORDLEN (Chromium commit
+8d8f80ec0d9bd, https://crbug.com/767334).
+
+diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
+index 4d0b212..afd971d 100644
+--- a/src/hunspell/hunspell.cxx
++++ b/src/hunspell/hunspell.cxx
+@@ -87,7 +87,7 @@
+ #include <memory>
+ #include <string>
+ 
+-#define MAXWORDUTF8LEN (MAXWORDLEN * 3)
++#define MAXWORDUTF8LEN (MAXWORDLEN * 2)
+ #define MAXSPELLMLLEN 8192
+ 
+ class HunspellImpl

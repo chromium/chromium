@@ -1,0 +1,15 @@
+upstream {
+  version: "v1.7.4"
+  artifacts {
+    git {
+      repository: "https://github.com/hunspell/hunspell"
+      commit: "92aa34b3f378ec115562fb06bd1728d566a339ec"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

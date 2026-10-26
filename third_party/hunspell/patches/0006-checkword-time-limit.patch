@@ -1,0 +1,31 @@
+Skip the per-candidate time limit check in SuggestMgr::checkword
+
+Upstream afde4d6 ("ofz#488133878 Timeout", in v1.7.3) makes
+SuggestMgr::checkword reject every candidate once 100 ms of wall-clock
+time have passed since SuggestMgr::suggest() started. In debug builds
+this drops suggestions such as "crochet" for "rocet" in
+MultilingualSpellCheckTest. Under HUNSPELL_CHROME_CLIENT skip this
+check. The overall limit between the suggestion steps and the per-step
+limits stay.
+
+As before v1.7.3, no time check then stops twowords or ngsuggest while
+they run; only the checks after each step and after ngsuggest do. So
+hunspell_suggest_fuzzer can again hit the OSS-Fuzz timeout that
+afde4d6 fixed.
+
+diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
+index 64797e8..c3ffa89 100644
+--- a/src/hunspell/suggestmgr.cxx
++++ b/src/hunspell/suggestmgr.cxx
+@@ -1858,9 +1858,11 @@ int SuggestMgr::checkword(const std::string& word,
+                           int cpdsuggest,
+                           int* timer,
+                           std::chrono::steady_clock::time_point* timelimit) {
++#ifndef HUNSPELL_CHROME_CLIENT
+   // check overall suggestion time limit
+   if (std::chrono::steady_clock::now() - suggest_start > TIMELIMIT_SUGGESTION_MS)
+     return 0;
++#endif
+ 
+   // check time limit
+   if (timer) {

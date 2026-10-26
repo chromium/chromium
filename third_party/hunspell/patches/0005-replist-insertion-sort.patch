@@ -1,0 +1,34 @@
+Sort RepList entries by swapping in RepList::add
+
+Replaces the shift-based insertion with a swap-based one that compares
+std::string patterns directly (Chromium commit 047b36f906a4d,
+https://crbug.com/643804).
+
+diff --git a/src/hunspell/replist.cxx b/src/hunspell/replist.cxx
+index 0e8ebf4..bfcde83 100644
+--- a/src/hunspell/replist.cxx
++++ b/src/hunspell/replist.cxx
+@@ -170,6 +170,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
+   mystrrep(r->outstrings[type], "_", " ");
+   dat.push_back(r);
+   // sort to the right place in the list
++#if 0
+   size_t i;
+   for (i = dat.size() - 1; i > 0; --i) {
+     if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
+@@ -178,6 +179,15 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
+       break;
+   }
+   dat[i] = r;
++#else
++  for (int i = dat.size() - 1; i > 0; --i) {
++    r = dat[i];
++    if (r->pattern < dat[i - 1]->pattern) {
++      dat[i] = dat[i - 1];
++      dat[i - 1] = r;
++    } else break;
++  }
++#endif
+   return 0;
+ }
+ 

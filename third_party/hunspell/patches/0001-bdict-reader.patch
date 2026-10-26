@@ -1,3 +1,13 @@
+Read dictionaries from BDICT data instead of .aff/.dic files
+
+Chromium ships Hunspell dictionaries as BDICT files
+(third_party/hunspell_dictionaries/), read by the code in
+third_party/hunspell/google/. Under HUNSPELL_CHROME_CLIENT, Hunspell takes
+the BDICT bytes, AffixMgr and HashMgr take a hunspell::BDictReader instead of
+file paths, SuggestMgr gets the reader too, FileMgr reads lines through a
+LineIterator, HashMgr looks words up in the BDICT and caches the hentry
+objects, and SuggestMgr uses the BDICT replacement table.
+
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
 index 4ec377c..cda63f3 100644
 --- a/src/hunspell/affixmgr.cxx
@@ -832,10 +842,10 @@ index 8fd2215..8899294 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index ac35cf8..afd971d 100644
+index ac35cf8..e2cce20 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
-@@ -78,23 +78,32 @@
+@@ -78,6 +78,9 @@
  #include "hunspelltrace.hxx"
  #include "suggestmgr.hxx"
  #include "hunspell.h"
@@ -845,13 +855,7 @@ index ac35cf8..afd971d 100644
  #include "csutil.hxx"
  
  #include <limits>
- #include <memory>
- #include <string>
- 
--#define MAXWORDUTF8LEN (MAXWORDLEN * 3)
-+#define MAXWORDUTF8LEN (MAXWORDLEN * 2)
- #define MAXSPELLMLLEN 8192
- 
+@@ -90,11 +93,17 @@
  class HunspellImpl
  {
  public:
@@ -977,21 +981,7 @@ index ac35cf8..afd971d 100644
    struct hentry* rv = nullptr;
  
    int info2 = 0;
-@@ -867,6 +916,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
-   if (word.empty())
-     return nullptr;
- 
-+#ifdef HUNSPELL_CHROME_CLIENT
-+  // We need to check if the word length is valid to make coverity (Event
-+  // fixed_size_dest: Possible overrun of N byte fixed size buffer) happy.
-+  if ((utf8 && word.size() >= MAXWORDUTF8LEN) || (!utf8 && word.size() >= MAXWORDLEN))
-+    return NULL;
-+#endif
-+
-   // word reversing wrapper for complex prefixes
-   if (complexprefixes) {
-     if (utf8)
-@@ -1229,6 +1285,9 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
+@@ -1229,6 +1278,9 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
    // user asked about.
    TraceSuppress no_trace(m_trace.get());
  
@@ -1001,7 +991,7 @@ index ac35cf8..afd971d 100644
    captype = NOCAP;
    abbv = 0;
    capwords = false;
-@@ -2319,18 +2378,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2319,18 +2371,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
    return 0;
  }
  
@@ -1027,7 +1017,7 @@ index ac35cf8..afd971d 100644
  
  bool Hunspell::spell(const std::string& word, int* info, std::string* root) {
    std::vector<std::string> candidate_stack;
-@@ -2471,22 +2537,32 @@ void Hunspell::set_trace_callback(HunspellTraceCallback callback, void* userdata
+@@ -2471,22 +2530,32 @@ void Hunspell::set_trace_callback(HunspellTraceCallback callback, void* userdata
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
@@ -1096,53 +1086,8 @@ index adc6e0a..ef3f0ed 100644
  
    /* spell(word) - spellcheck word
     * output: false = bad word, true = good word
-diff --git a/src/hunspell/replist.cxx b/src/hunspell/replist.cxx
-index 0e8ebf4..bfcde83 100644
---- a/src/hunspell/replist.cxx
-+++ b/src/hunspell/replist.cxx
-@@ -170,6 +170,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
-   mystrrep(r->outstrings[type], "_", " ");
-   dat.push_back(r);
-   // sort to the right place in the list
-+#if 0
-   size_t i;
-   for (i = dat.size() - 1; i > 0; --i) {
-     if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
-@@ -178,6 +179,15 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
-       break;
-   }
-   dat[i] = r;
-+#else
-+  for (int i = dat.size() - 1; i > 0; --i) {
-+    r = dat[i];
-+    if (r->pattern < dat[i - 1]->pattern) {
-+      dat[i] = dat[i - 1];
-+      dat[i - 1] = r;
-+    } else break;
-+  }
-+#endif
-   return 0;
- }
- 
-diff --git a/src/hunspell/replist.hxx b/src/hunspell/replist.hxx
-index a791ab9..a1dadf5 100644
---- a/src/hunspell/replist.hxx
-+++ b/src/hunspell/replist.hxx
-@@ -72,6 +72,12 @@
- #ifndef REPLIST_HXX_
- #define REPLIST_HXX_
- 
-+#ifdef HUNSPELL_CHROME_CLIENT
-+// Compilation issues in spellchecker.cc think near is a macro, therefore
-+// removing it here solves that problem.
-+#undef near
-+#endif
-+
- #include "w_char.hxx"
- 
- #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index 3088f42..c3ffa89 100644
+index 3088f42..64797e8 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -84,7 +84,112 @@ const w_char W_VLINE = {'\0', '|'};
@@ -1307,18 +1252,6 @@ index 3088f42..c3ffa89 100644
          has_roots = true;
          lval = sc;
          for (int j = 0; j < MAX_ROOTS; j++)
-@@ -1733,9 +1858,11 @@ int SuggestMgr::checkword(const std::string& word,
-                           int cpdsuggest,
-                           int* timer,
-                           std::chrono::steady_clock::time_point* timelimit) {
-+#ifndef HUNSPELL_CHROME_CLIENT
-   // check overall suggestion time limit
-   if (std::chrono::steady_clock::now() - suggest_start > TIMELIMIT_SUGGESTION_MS)
-     return 0;
-+#endif
- 
-   // check time limit
-   if (timer) {
 diff --git a/src/hunspell/suggestmgr.hxx b/src/hunspell/suggestmgr.hxx
 index 5ab7f64..2edd094 100644
 --- a/src/hunspell/suggestmgr.hxx

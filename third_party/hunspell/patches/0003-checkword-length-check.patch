@@ -1,0 +1,24 @@
+Reject too long words in HunspellImpl::checkword
+
+Under HUNSPELL_CHROME_CLIENT, return early for words of MAXWORDUTF8LEN
+(UTF-8) or MAXWORDLEN bytes or more. Coverity reported a possible overrun
+of a fixed-size buffer here (fixed_size_dest).
+
+diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
+index e2cce20..4d0b212 100644
+--- a/src/hunspell/hunspell.cxx
++++ b/src/hunspell/hunspell.cxx
+@@ -916,6 +916,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
+   if (word.empty())
+     return nullptr;
+ 
++#ifdef HUNSPELL_CHROME_CLIENT
++  // We need to check if the word length is valid to make coverity (Event
++  // fixed_size_dest: Possible overrun of N byte fixed size buffer) happy.
++  if ((utf8 && word.size() >= MAXWORDUTF8LEN) || (!utf8 && word.size() >= MAXWORDLEN))
++    return NULL;
++#endif
++
+   // word reversing wrapper for complex prefixes
+   if (complexprefixes) {
+     if (utf8)

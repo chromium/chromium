@@ -10,52 +10,28 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell v1.7.4 with the following changes:
-* Move README.md onto the README symlink.
-* Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
-  LineIterator.
-* Add ScopedHashEntry, which creates temporary hentry objects, to
-  src/hunspell/suggestmgr.cxx
-* Change the input params of the constructors to receive a BDICTReader instead
-  of a file path.
-* Merge http://hunspell.cvs.sourceforge.net/viewvc/hunspell/hunspell/src/hunspell/affixmgr.cxx?r1=1.40&r2=1.41
-The patch is in google.patch.
-* Add a pointer to the bdict_reader into the "SuggestMgr" so that it can use the
-  replacement table from the bdict file for the secondary suggestion mechanism.
-* Avoid crash in SuggestMgr::forgotchar_utf() and SuggestMgr::forgotchar() on
-  Windows by using a one-character larger buffer.
-* Fix string OOB write in reverse_condition in src/hunspell/affixmgr.cxx
-  Upstream issue: https://github.com/hunspell/hunspell/issues/714
-* Improve performance of HashMgr::InitHashEntry when BDICT file is used.
-* Skip the per-candidate time limit check that upstream afde4d6 added to
-  SuggestMgr::checkword, under HUNSPELL_CHROME_CLIENT.
-
-Chromium-specific changes are in google.patch. To update the patch, follow these
-steps.
-1) Create an environment variable for Chromium Hunspell directory
-   $ export CHROMIUM_HUNSPELL=~/chromium/src/third_party/hunspell
-2) Checkout hunspell:
-   $ git clone https://github.com/hunspell/hunspell.git
-   $ cd hunspell
-   $ git checkout v1.7.4
-3) Apply the existing patch:
-   $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
-4) Make your new changes inside the git hunspell directory.
-5) Generate the updated patch:
-   $ git diff > $CHROMIUM_HUNSPELL/google.patch
-6) Copy the patched source to Chromium:
-   $ cp -r src/ $CHROMIUM_HUNSPELL
-   $ cp README.md COPYING* license* $CHROMIUM_HUNSPELL/src
-   $ rm -r $CHROMIUM_HUNSPELL/src/Makefile.am \
-       $CHROMIUM_HUNSPELL/src/hunspell/utf_info.hxx \
-       $CHROMIUM_HUNSPELL/src/hunspell/Makefile.am \
-       $CHROMIUM_HUNSPELL/src/parsers/.gitignore \
-       $CHROMIUM_HUNSPELL/src/parsers/Makefile.am \
-       $CHROMIUM_HUNSPELL/src/tools/
-7) In the Chromium src folder:
-   $ git add third_party/hunspell
+This is a partial copy of Hunspell: the upstream license files,
+README.md, src/hunspell/ and src/parsers/, without the Makefile.am files,
+src/hunspell/utf_info.hxx and src/parsers/.gitignore.
 
 All dictionaries used by Chromium has been checked in to the
 'third_party/hunspell_dictionaries' directory. They have several additions over
 the default myspell/hunspell dictionaries.
 (See 'third_party/hunspell_dictionaries/README.chromium' for their details.)
+
+Local Modifications:
+The patches are in patches/; copy.bara.sky applies them in this order.
+0001-bdict-reader.patch: Read dictionaries from BDICT data (read by google/)
+  instead of .aff/.dic files, under HUNSPELL_CHROME_CLIENT.
+0002-undef-near.patch: Undefine the near macro in replist.hxx.
+0003-checkword-length-check.patch: Reject too long words in
+  HunspellImpl::checkword.
+0004-max-utf8-word-length.patch: Reduce the maximum UTF-8 word length to
+  2 * MAXWORDLEN.
+0005-replist-insertion-sort.patch: Sort RepList entries by swapping.
+0006-checkword-time-limit.patch: Skip the per-candidate time limit
+  check that upstream afde4d6 added to SuggestMgr::checkword.
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./

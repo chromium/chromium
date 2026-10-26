@@ -1,0 +1,22 @@
+Undefine the near macro in replist.hxx
+
+Under HUNSPELL_CHROME_CLIENT, #undef near: Chromium code that includes
+Hunspell headers otherwise sees near as a macro.
+
+diff --git a/src/hunspell/replist.hxx b/src/hunspell/replist.hxx
+index a791ab9..a1dadf5 100644
+--- a/src/hunspell/replist.hxx
++++ b/src/hunspell/replist.hxx
+@@ -72,6 +72,12 @@
+ #ifndef REPLIST_HXX_
+ #define REPLIST_HXX_
+ 
++#ifdef HUNSPELL_CHROME_CLIENT
++// Compilation issues in spellchecker.cc think near is a macro, therefore
++// removing it here solves that problem.
++#undef near
++#endif
++
+ #include "w_char.hxx"
+ 
+ #include <string>

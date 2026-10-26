@@ -1,0 +1,34 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob(
+        [
+            "COPYING*",
+            "README.md",
+            "license.hunspell",
+            "license.myspell",
+            "src/hunspell/**",
+            "src/parsers/**",
+        ],
+        exclude = [
+            "src/hunspell/Makefile.am",
+            "src/hunspell/utf_info.hxx",
+            "src/parsers/.gitignore",
+            "src/parsers/Makefile.am",
+        ],
+    ),
+    transformations = [
+        # Upstream keeps the code in its own src/ directory.
+        core.move("src/src", "src"),
+        patch.apply(
+            patches = [
+                "patches/0001-bdict-reader.patch",
+                "patches/0002-undef-near.patch",
+                "patches/0003-checkword-length-check.patch",
+                "patches/0004-max-utf8-word-length.patch",
+                "patches/0005-replist-insertion-sort.patch",
+                "patches/0006-checkword-time-limit.patch",
+            ],
+        ),
+    ],
+)
