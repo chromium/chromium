@@ -58,7 +58,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   bool IsAutofillWalletImportEnabled() const override;
   bool IsPaymentsWalletSyncTransportEnabled() const override;
   bool ShouldSuggestServerPaymentMethods() const override;
-  bool IsPaymentMethodsMandatoryReauthEnabled() override;
+  bool IsPaymentMethodsMandatoryReauthEnabled() const override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;

@@ -1347,7 +1347,7 @@ void PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
   prefs::SetPaymentMethodsMandatoryReauthEnabled(pref_service_, enabled);
 }
 
-bool PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
+bool PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() const {
   return prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_);
 }
 

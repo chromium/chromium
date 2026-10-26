@@ -45,6 +45,8 @@ class AutofillDataProvider {
   // Retrieves all data entries whose raw value matches `query` (content-based
   // search, see `MatchesRawValueQuery()`). A record yields an entry per
   // matching type; these are ordered by the types' priority, codes first.
+  // Payment data is only searched if filling it does not require
+  // re-authentication.
   virtual void RetrieveAllByContent(
       std::u16string_view query,
       base::OnceCallback<void(std::vector<MemorySearchResult>)> callback);
@@ -56,13 +58,15 @@ class AutofillDataProvider {
       base::span<const MemoryDataType> memory_data_types,
       base::optional_ref<const RawValueQuery> query);
 
-  // Fetches IBAN data from `personal_data_manager_`. If `query` is set,
-  // only local IBANs whose value matches it are returned.
+  // Fetches IBAN data from `personal_data_manager_`. If `query` is set, only
+  // local IBANs whose value matches it are returned, and none if filling
+  // payment data requires re-authentication.
   std::vector<MemorySearchResult> FetchIbanData(
       base::optional_ref<const RawValueQuery> query);
 
-  // Fetches credit card data from `personal_data_manager_`. If `query`
-  // is set, only local cards whose raw value matches it are returned.
+  // Fetches credit card data from `personal_data_manager_`. If `query` is set,
+  // only local cards whose raw value matches it are returned, and none if
+  // filling payment data requires re-authentication.
   std::vector<MemorySearchResult> FetchCreditCardData(
       FieldType field_type,
       MemoryDataType memory_data_type,

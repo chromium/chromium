@@ -76,6 +76,15 @@ bool YieldsEntry(MemoryDataType type,
              type, normalization::NormalizeForComparison(value), *query);
 }
 
+// Returns whether payment data is excluded from the retrieval for `query`:
+// content queries are matched against raw payment data, which must not be
+// exposed if filling it requires re-authentication.
+bool SkipsPaymentData(const PaymentsDataManager& payments_data_manager,
+                      base::optional_ref<const RawValueQuery> query) {
+  return query &&
+         payments_data_manager.IsPaymentMethodsMandatoryReauthEnabled();
+}
+
 // Extracts a `TypedValue` from `attribute` if there is a non-empty one.
 std::optional<TypedValue> GetAttributeTypedValue(
     const AttributeInstance& attribute) {
@@ -506,6 +515,10 @@ std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
 
 std::vector<MemorySearchResult> AutofillDataProvider::FetchIbanData(
     base::optional_ref<const RawValueQuery> query) {
+  if (SkipsPaymentData(personal_data_manager_->payments_data_manager(),
+                       query)) {
+    return {};
+  }
   std::vector<MemorySearchResult> entries;
   for (const Iban* iban :
        personal_data_manager_->payments_data_manager().GetIbans()) {
@@ -543,6 +556,10 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     FieldType field_type,
     MemoryDataType memory_data_type,
     base::optional_ref<const RawValueQuery> query) {
+  if (SkipsPaymentData(personal_data_manager_->payments_data_manager(),
+                       query)) {
+    return {};
+  }
   std::vector<MemorySearchResult> entries;
   const std::string& app_locale =
       personal_data_manager_->address_data_manager().app_locale();
