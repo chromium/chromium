@@ -1489,9 +1489,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::kOffTheRecord;
   {
-    content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::AllBrowserTabAddedWaiter observer(1);
     Navigate(&params);
-    observer.Wait();
+    content::WaitForLoadStopWithoutSuccessCheck(observer.Wait());
   }
 
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -1645,9 +1645,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 
   {
-    content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::AllBrowserTabAddedWaiter observer(1);
     ShowSettings(browser());
-    observer.Wait();
+    content::WaitForLoadStopWithoutSuccessCheck(observer.Wait());
   }
   EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GetSettingsURL(),
@@ -1765,10 +1765,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
     observer.Wait();
   }
   {
-    content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::AllBrowserTabAddedWaiter observer(1);
     chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
                                   ui::PAGE_TRANSITION_LINK);
-    observer.Wait();
+    content::WaitForLoadStopWithoutSuccessCheck(observer.Wait());
   }
 
   // This load should simply cause a tab switch.
@@ -1788,10 +1788,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
     observer.Wait();
   }
   {
-    content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::AllBrowserTabAddedWaiter observer(1);
     chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
                                   ui::PAGE_TRANSITION_LINK);
-    observer.Wait();
+    content::WaitForLoadStopWithoutSuccessCheck(observer.Wait());
   }
   BrowserWindowInterface* app_browser =
       CreateBrowserForApp("TestApp", browser()->GetProfile());
@@ -1812,10 +1812,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_CloseSingletonTab) {
   for (int i = 0; i < 2; ++i) {
-    content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::AllBrowserTabAddedWaiter observer(1);
     chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
                                   ui::PAGE_TRANSITION_TYPED);
-    observer.Wait();
+    content::WaitForLoadStopWithoutSuccessCheck(observer.Wait());
   }
 
   browser()->GetTabStripModel()->ActivateTabAt(

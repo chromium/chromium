@@ -17,6 +17,7 @@
 namespace omnibox {
 namespace {
 constexpr bool IS_ANDROID = !!BUILDFLAG(IS_ANDROID);
+constexpr bool IS_CHROMEOS = !!BUILDFLAG(IS_CHROMEOS);
 constexpr bool IS_IOS = !!BUILDFLAG(IS_IOS);
 
 constexpr base::FeatureState DISABLED = base::FEATURE_DISABLED_BY_DEFAULT;
@@ -239,13 +240,15 @@ BASE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReadyWithFullWebUI, DISABLED);
 // its WebContents and renderer) while the browser window is built. It creates
 // it after the browser window's first presentation, or earlier if the popup is
 // shown or another caller needs the AIM WebContents. See
-// `OmniboxPopupAimPresenter`.
-BASE_FEATURE(kOmniboxAimPopupDeferCreation, DISABLED);
+// `OmniboxPopupAimPresenter`. Enabled on ChromeOS, where session restore at
+// login creates every restored window at once.
+BASE_FEATURE(kOmniboxAimPopupDeferCreation, enable_if(IS_CHROMEOS));
 // When enabled, the WebUI omnibox popup that shows suggestions does not create
 // its WebUI content (and so its WebContents and renderer) while the browser
 // window is built. It creates it after the browser window's first
 // presentation, or earlier if the popup is shown. See `OmniboxPopupPresenter`.
-BASE_FEATURE(kOmniboxWebUIPopupDeferCreation, DISABLED);
+// Enabled on ChromeOS, like `kOmniboxAimPopupDeferCreation`.
+BASE_FEATURE(kOmniboxWebUIPopupDeferCreation, enable_if(IS_CHROMEOS));
 // When enabled, the Omnibox WebUI popup will defer showing until the WebUI has
 // painted a clean frame, avoiding the issue of the popup being shown with a
 // stale frame.
