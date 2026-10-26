@@ -91,6 +91,14 @@ ResultExpr XrProcessPolicy::EvaluateSyscall(int system_call_number) const {
       return If(pid == 0, Allow()).Else(Error(EPERM));
     }
 #endif
+    // Some Mesa drivers, such as Turnip, set up tracing with inotify when a
+    // Vulkan device is created. The baseline crashes on inotify; refusing it
+    // with EPERM only leaves that tracing off.
+#if defined(__NR_inotify_init)
+    case __NR_inotify_init:
+#endif
+    case __NR_inotify_init1:
+      return Error(EPERM);
     default:
       // Everything else (GPU/DRM/Vulkan syscalls, directory enumeration, the
       // file broker, etc.) is handled by the GPU process policy.
