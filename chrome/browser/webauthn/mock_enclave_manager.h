@@ -19,13 +19,13 @@ class MockEnclaveManager : public EnclaveManagerInterface {
   MockEnclaveManager& operator=(const MockEnclaveManager&) = delete;
 
   MOCK_METHOD(void, Unenroll, (EnclaveManagerInterface::Callback), (override));
-  MOCK_METHOD(bool, IsRegistered, (), (const override));
+  MOCK_METHOD(bool, IsRegistered, (), (const, override));
   MOCK_METHOD(void,
               LoadAndCheckIsRegistered,
               (EnclaveManagerInterface::Callback),
               (override));
-  MOCK_METHOD(bool, IsLoaded, (), (const override));
-  MOCK_METHOD(bool, IsReady, (), (const override));
+  MOCK_METHOD(bool, IsLoaded, (), (const, override));
+  MOCK_METHOD(bool, IsReady, (), (const, override));
   MOCK_METHOD(std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>,
               CheckGpmPinAvailability,
               (EnclaveManagerInterface::GpmPinAvailabilityCallback),

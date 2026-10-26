@@ -33,7 +33,7 @@ class MockPasswordManagerClient
   MOCK_METHOD(const password_manager::MockPasswordFeatureManager*,
               GetPasswordFeatureManager,
               (),
-              (const override));
+              (const, override));
 };
 
 class MockManagePasswordsUIController : public ManagePasswordsUIController {

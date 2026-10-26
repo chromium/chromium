@@ -74,7 +74,7 @@ class MockActiveSessionAuthController
               ShowAuthDialog,
               (std::unique_ptr<ash::AuthRequest> auth_request),
               (override));
-  MOCK_METHOD(bool, IsShown, (), (const override));
+  MOCK_METHOD(bool, IsShown, (), (const, override));
   MOCK_METHOD(void,
               SetFingerprintClient,
               (ash::ActiveSessionFingerprintClient * fp_client),
