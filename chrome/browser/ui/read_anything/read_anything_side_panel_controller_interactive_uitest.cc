@@ -6,8 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -22,14 +21,10 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chrome/test/user_education/interactive_feature_promo_test.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -40,6 +35,7 @@ using read_anything::mojom::ReadAnythingOpenTrigger;
 
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadAnythingWebContentsId);
 }  // namespace
 
 class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
@@ -191,158 +187,6 @@ IN_PROC_BROWSER_TEST_F(
           ReadAnythingController::PresentationState::kInactive));
 }
 
-class ReadAnythingKeyboardShortcutCUJTest
-    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
- public:
-  template <typename... Args>
-  explicit ReadAnythingKeyboardShortcutCUJTest(Args&&... args)
-      : PageActionInteractiveTestMixin(
-            UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {}
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
-    non_distillable_url_ = GURL("chrome://blank");
-
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingOmniboxChip,
-        feature_engagement::kIPHReadingModeKeyboardShortcutFeature};
-    feature_list_.InitAndEnableFeatures(enabled_features);
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
-
-    InteractiveFeaturePromoTest::SetUp();
-  }
-  void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTest::SetUpOnMainThread();
-    embedded_test_server()->StartAcceptingConnections();
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
-        ->AddHintForTesting(
-            distillable_url_, optimization_guide::proto::READER_MODE_ELIGIBLE,
-            std::optional<optimization_guide::OptimizationMetadata>());
-  }
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
-    InteractiveFeaturePromoTest::TearDownOnMainThread();
-  }
-
-  using PageActionInteractiveTestMixin::InvokePageAction;
-
-  auto WaitForPageActionChipVisible() {
-    return PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
-        kActionSidePanelShowReadAnything);
-  }
-
-  auto WaitForPageActionChipNotVisible() {
-    return PageActionInteractiveTestMixin::WaitForPageActionChipNotVisible(
-        kActionSidePanelShowReadAnything);
-  }
-
-  auto InvokePageAction() {
-    return PageActionInteractiveTestMixin::InvokePageAction(
-        kActionSidePanelShowReadAnything);
-  }
-
-  GURL distillable_url_;
-  GURL non_distillable_url_;
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingKeyboardShortcutCUJTest, ShowAndHideIph) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, distillable_url_),
-
-      // Open Reading Mode.
-      WaitForPageActionChipVisible(), InvokePageAction(),
-
-      // Wait for the promo to show.
-      WaitForPromo(feature_engagement::kIPHReadingModeKeyboardShortcutFeature),
-
-      // Hide the Iph by navigating away.
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-class ReadAnythingPresentationModeCUJTest
-    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
- public:
-  template <typename... Args>
-  explicit ReadAnythingPresentationModeCUJTest(Args&&... args)
-      : PageActionInteractiveTestMixin(
-            UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {}
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
-    non_distillable_url_ = GURL("chrome://blank");
-
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingOmniboxChip,
-        feature_engagement::kIPHReadingModePresentationModeFeature};
-    feature_list_.InitAndEnableFeatures(enabled_features);
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
-
-    InteractiveFeaturePromoTest::SetUp();
-  }
-  void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTest::SetUpOnMainThread();
-    embedded_test_server()->StartAcceptingConnections();
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
-        ->AddHintForTesting(
-            distillable_url_, optimization_guide::proto::READER_MODE_ELIGIBLE,
-            std::optional<optimization_guide::OptimizationMetadata>());
-  }
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
-    InteractiveFeaturePromoTest::TearDownOnMainThread();
-  }
-
-  using PageActionInteractiveTestMixin::InvokePageAction;
-
-  auto WaitForPageActionChipVisible() {
-    return PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
-        kActionSidePanelShowReadAnything);
-  }
-
-  auto WaitForPageActionChipNotVisible() {
-    return PageActionInteractiveTestMixin::WaitForPageActionChipNotVisible(
-        kActionSidePanelShowReadAnything);
-  }
-
-  auto InvokePageAction() {
-    return PageActionInteractiveTestMixin::InvokePageAction(
-        kActionSidePanelShowReadAnything);
-  }
-
-  GURL distillable_url_;
-  GURL non_distillable_url_;
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingPresentationModeCUJTest, ShowAndHideIph) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, distillable_url_),
-
-      // Open Reading Mode.
-      WaitForPageActionChipVisible(), InvokePageAction(),
-
-      // Wait for the promo to show.
-      WaitForPromo(feature_engagement::kIPHReadingModePresentationModeFeature),
-
-      // Hide the Iph by navigating away.
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadAnythingWebContentsId);
-}
-
 class ReadAnythingSidePanelInteractiveTest
     : public ReadAnythingSidePanelControllerInteractiveTest {
  public:
@@ -407,97 +251,4 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelInteractiveTest, ToggleImages) {
                        old_setting;
               },
               "Wait for setting to change.")));
-}
-
-class ReadAnythingAiPlaybackCUJTest
-    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
- public:
-  template <typename... Args>
-  explicit ReadAnythingAiPlaybackCUJTest(Args&&... args)
-      : PageActionInteractiveTestMixin(
-            UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {}
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
-    non_distillable_url_ = GURL("chrome://blank");
-
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingOmniboxChip,
-        features::kReadAnythingReadAloudExperimentalPlaybackUi,
-        feature_engagement::kIPHReadingModeAiPlaybackFeature,
-        feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature};
-    feature_list_.InitAndEnableFeatures(enabled_features);
-    ReadAnythingController::SetAiPlaybackIphDelayForTesting(base::Seconds(0));
-
-    InteractiveFeaturePromoTest::SetUp();
-  }
-  void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTest::SetUpOnMainThread();
-    embedded_test_server()->StartAcceptingConnections();
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
-        ->AddHintForTesting(
-            distillable_url_, optimization_guide::proto::READER_MODE_ELIGIBLE,
-            std::optional<optimization_guide::OptimizationMetadata>());
-  }
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    ReadAnythingController::SetAiPlaybackIphDelayForTesting(
-        ReadAnythingController::kAiPlaybackIphDefaultDelay);
-    InteractiveFeaturePromoTest::TearDownOnMainThread();
-  }
-
-  using PageActionInteractiveTestMixin::InvokePageAction;
-
-  auto WaitForPageActionChipVisible() {
-    return PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
-        kActionSidePanelShowReadAnything);
-  }
-
-  auto InvokePageAction() {
-    return PageActionInteractiveTestMixin::InvokePageAction(
-        kActionSidePanelShowReadAnything);
-  }
-
-  GURL distillable_url_;
-  GURL non_distillable_url_;
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAiPlaybackCUJTest, ShowAndHideIph) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, distillable_url_),
-
-      // Open Reading Mode.
-      WaitForPageActionChipVisible(), InvokePageAction(),
-
-      // Wait for the promo to show.
-      WaitForPromo(feature_engagement::kIPHReadingModeAiPlaybackFeature),
-
-      // Hide the Iph by navigating away.
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAiPlaybackCUJTest,
-                       ToggleAiPlaybackShowsSettingsPromo) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, distillable_url_),
-
-      // Open Reading Mode.
-      WaitForPageActionChipVisible(), InvokePageAction(),
-
-      // Wait for the AI playback promo to show.
-      WaitForPromo(feature_engagement::kIPHReadingModeAiPlaybackFeature),
-
-      // Click the AI playback toggle button.
-      InAnyContext(PressButton(kReadAnythingAiPlaybackToggleElementId)),
-
-      // Verify the settings toast promo shows.
-      WaitForPromo(
-          feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature));
 }

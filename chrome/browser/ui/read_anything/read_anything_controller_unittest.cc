@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "pdf/buildflags.h"
@@ -64,10 +63,6 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
     browser_window_features_ = std::make_unique<BrowserWindowFeatures>();
     ON_CALL(*mock_browser_window_interface_, GetFeatures())
         .WillByDefault(testing::ReturnRef(*browser_window_features_));
-
-    mock_user_education_interface_ =
-        std::make_unique<testing::NiceMock<MockBrowserUserEducationInterface>>(
-            mock_browser_window_interface_.get());
 
     mock_side_panel_ui_ = std::make_unique<testing::NiceMock<MockSidePanelUI>>(
         mock_browser_window_interface_->GetUnownedUserDataHost());
@@ -116,7 +111,6 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
     controller_.reset();
     side_panel_registry_.reset();
     mock_side_panel_ui_.reset();
-    mock_user_education_interface_.reset();
     mock_tab_.reset();
     browser_window_features_.reset();
     mock_browser_window_interface_.reset();
@@ -143,8 +137,6 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
       mock_browser_window_interface_;
   std::unique_ptr<BrowserWindowFeatures> browser_window_features_;
-  std::unique_ptr<testing::NiceMock<MockBrowserUserEducationInterface>>
-      mock_user_education_interface_;
   std::unique_ptr<testing::NiceMock<MockSidePanelUI>> mock_side_panel_ui_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;

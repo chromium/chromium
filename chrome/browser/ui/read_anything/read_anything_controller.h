@@ -11,10 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -203,11 +201,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   void OnDistillationStateChanged(DistillationState new_state);
 
-  void OnAiPlaybackStateChanged(bool enabled);
-
-  static constexpr base::TimeDelta kAiPlaybackIphDefaultDelay =
-      base::Seconds(30);
-
   // Called when the Reading Mode WebUI reports the result of a distillation
   // attempt. Coordinates any follow-up work that depends on how Reading Mode
   // was opened (e.g. logging omnibox entry point metrics).
@@ -217,11 +210,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   static constexpr int kMaxWordsDistilled = 25000;
   static constexpr int kWordsDistilledBuckets = 100;
 
-  // For testing only. Pauses distillation-related reactions from occurring.
+  // For testing only. Pauses this controller's reactions to distillation state
+  // changes.
   static void SetFreezeDistillationOnCreationForTesting(bool locked);
-
-  // For testing only. Overrides the delay before showing the AI Playback IPH.
-  static void SetAiPlaybackIphDelayForTesting(base::TimeDelta delay);
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
@@ -234,6 +225,13 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // determine if the Reading Mode is ready to be shown, or if it should wait
   // for a notification that it is ready.
   bool has_shown_ui() const { return has_shown_ui_; }
+
+  // Returns whether Reading Mode is switching between the side panel and
+  // immersive presentations. True from the start of a switch until the new
+  // presentation is shown.
+  bool is_presentation_transitioning() const {
+    return is_presentation_transitioning_;
+  }
 
   void SetWebUIWrapperForTest(ReadAnythingContentsWrapper web_ui_wrapper);
 
@@ -259,6 +257,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
  private:
   friend class ReadAnythingControllerBrowserTest;
   friend class ReadAnythingControllerUnitTest;
+  friend class ReadAnythingIphControllerTest;
 
   // Displays the Reading Mode UI in the Side Panel.
   void ShowSidePanelUI(SidePanelOpenTrigger trigger);
@@ -290,8 +289,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // ensures that find-in-page (Cmd-F) targets the IRM overlay when it's open,
   // rather than the occluded main WebContents.
   void MaybeUpdateFindBarController();
-
-  void MaybeShowAiPlaybackIph();
 
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
   std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
@@ -375,10 +372,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   DistillationState distillation_state_ = DistillationState::kUndefined;
 
-  // Timer for showing the AI Playback IPH promo after the user has used
-  // Reading Mode for at least 30 seconds.
-  base::OneShotTimer ai_playback_iph_timer_;
-
   // The trigger used the last time Reading Mode was shown. Intentionally not
   // reset when Reading Mode is hidden, so that a distillation result arriving
   // after the UI is closed is still attributed to the right entry point.
@@ -395,9 +388,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   base::ScopedClosureRunner main_contents_capturer_handle_;
 
   static bool freeze_distillation_for_testing_;
-  static base::TimeDelta ai_playback_iph_delay_;
-
-  base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_

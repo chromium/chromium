@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_iph_controller.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
@@ -43,7 +43,6 @@
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/task_tracker.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -469,6 +468,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   CHECK(read_anything_controller_);
   read_anything_controller_->AddObserver(this);
   tab_ = read_anything_controller_->tab();
+  iph_controller_ =
+      std::make_unique<ReadAnythingIphController>(read_anything_controller_);
   pinned_toolbar_ = PinnedToolbarActionsModel::Get(Profile::FromWebUI(web_ui));
   pinned_toolbar_actions_observation_.Observe(pinned_toolbar_);
   MaybeUpdateImmersivePinStatus();
@@ -836,6 +837,9 @@ void ReadAnythingUntrustedPageHandler::OnDistillationStateChanged(
   }
 
   distillation_state_ = new_state;
+  // Update IPH before ReadAnythingController, which moves Reading Mode from
+  // immersive to the side panel when the page is empty.
+  iph_controller_->OnDistillationStateChanged(new_state);
   auto* ra_controller = GetReadAnythingController();
   CHECK(ra_controller);
 
@@ -1093,24 +1097,12 @@ void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
       return;
     }
 
-    if (tab_ && tab_->GetBrowserWindowInterface()) {
-      if (auto* user_ed = BrowserUserEducationInterface::From(
-              tab_->GetBrowserWindowInterface())) {
-        user_ed->NotifyFeaturePromoFeatureUsed(
-            feature_engagement::kIPHReadingModeLineFocusFeature,
-            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-      }
-    }
+    iph_controller_->OnLineFocusTurnedOn();
   }
 }
 
 void ReadAnythingUntrustedPageHandler::OnAiPlaybackStateChanged(bool enabled) {
-  if (!features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
-    return;
-  }
-  if (auto* ra_controller = GetReadAnythingController()) {
-    ra_controller->OnAiPlaybackStateChanged(enabled);
-  }
+  iph_controller_->OnAiPlaybackStateChanged(enabled);
 }
 
 void ReadAnythingUntrustedPageHandler::UpdateForListenToThisPage(

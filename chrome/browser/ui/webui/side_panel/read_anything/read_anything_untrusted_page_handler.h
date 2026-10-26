@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -51,6 +52,7 @@ class NavigationHandle;
 class ScopedAccessibilityMode;
 }
 
+class ReadAnythingIphController;
 class ReadAnythingUntrustedPageHandler;
 
 // LINT.IfChange(EngineInstallationState)
@@ -473,6 +475,9 @@ class ReadAnythingUntrustedPageHandler :
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
   raw_ptr<tabs::TabInterface> tab_;
+
+  // Shows and closes Reading Mode's IPH.
+  std::unique_ptr<ReadAnythingIphController> iph_controller_;
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;
 

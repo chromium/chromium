@@ -34,12 +34,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "url/url_constants.h"
 
@@ -796,4 +798,57 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 
   EXPECT_FALSE(is_good_candidate);
+}
+
+class ReadAnythingEntryPointControllerUserEducationBrowserTest
+    : public ReadAnythingEntryPointControllerTestBase {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ReadAnythingEntryPointControllerTestBase::
+        SetUpInProcessBrowserTestFixture();
+    user_ed_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(
+                base::BindRepeating([](BrowserWindowInterface& window) {
+                  return std::make_unique<
+                      testing::NiceMock<MockBrowserUserEducationInterface>>(
+                      &window);
+                }));
+  }
+
+  MockBrowserUserEducationInterface* mock_user_education_interface() {
+    return static_cast<MockBrowserUserEducationInterface*>(
+        BrowserUserEducationInterface::From(browser()));
+  }
+
+ private:
+  ui::UserDataFactory::ScopedOverride user_ed_override_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerUserEducationBrowserTest,
+                       ToggleUI_KeyboardShortcutNotifiesFeatureUsed) {
+  EXPECT_CALL(
+      *mock_user_education_interface(),
+      NotifyFeaturePromoFeatureUsed(
+          testing::Ref(
+              feature_engagement::kIPHReadingModeKeyboardShortcutFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(0);
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
+  testing::Mock::VerifyAndClearExpectations(mock_user_education_interface());
+
+  EXPECT_CALL(
+      *mock_user_education_interface(),
+      NotifyFeaturePromoFeatureUsed(
+          testing::Ref(
+              feature_engagement::kIPHReadingModeKeyboardShortcutFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(2);
+  // Closes Reading Mode.
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kKeyboardShortcut);
+  // Opens Reading Mode.
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kKeyboardShortcut);
 }

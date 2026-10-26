@@ -292,6 +292,15 @@ void ReadAnythingEntryPointController::ToggleUI(
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);
+    // Tell user education the keyboard shortcut was used, whether it opens or
+    // closes Reading Mode.
+    if (open_trigger == ReadAnythingOpenTrigger::kKeyboardShortcut) {
+      if (auto* user_ed = BrowserUserEducationInterface::From(bwi)) {
+        user_ed->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHReadingModeKeyboardShortcutFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      }
+    }
     controller->ToggleUI(base::PassKey<ReadAnythingEntryPointController>(),
                          open_trigger);
   }

@@ -7,12 +7,14 @@ assert(!is_android)
 source_set("read_anything") {
   sources = [
     "chrome_os_extension_wrapper.cc",
+    "read_anything_iph_controller.cc",
     "read_anything_translate_observer.cc",
     "read_anything_untrusted_page_handler.cc",
     "read_anything_untrusted_ui.cc",
   ]
   public = [
     "chrome_os_extension_wrapper.h",
+    "read_anything_iph_controller.h",
     "read_anything_translate_observer.h",
     "read_anything_untrusted_page_handler.h",
     "read_anything_untrusted_ui.h",
@@ -79,17 +81,28 @@ source_set("read_anything") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "read_anything_translate_observer_unittest.cc" ]
+  sources = [
+    "read_anything_iph_controller_unittest.cc",
+    "read_anything_translate_observer_unittest.cc",
+  ]
   deps = [
     ":read_anything",
     "//base/test:test_support",
     "//chrome/browser/translate",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/read_anything",
+    "//chrome/browser/ui/read_anything:impl",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/side_panel:test_support",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/user_education:impl",
+    "//components/tabs:test_support",
     "//components/translate/content/browser",
     "//components/translate/content/common",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//components/user_education/test",
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -97,6 +110,7 @@ source_set("unit_tests") {
     "//pdf:features",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/accessibility",
     "//url",
   ]
 }
@@ -132,5 +146,33 @@ source_set("browser_tests") {
     "//pdf:features",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "read_anything_iph_controller_interactive_uitest.cc" ]
+  deps = [
+    ":read_anything",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:command_ids",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/read_anything",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/page_action:interactive_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/user_education:impl",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/user_education/views",
+    "//content/test:test_support",
+    "//ui/accessibility",
+    "//ui/base",
+    "//url",
   ]
 }
