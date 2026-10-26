@@ -58,7 +58,8 @@ class ReportQueueManualTestContextTest : public testing::Test {
                           base::Unretained(this));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>
       mock_report_queue_ =
@@ -70,15 +71,8 @@ class ReportQueueManualTestContextTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-// TODO(crbug.com/40878091) Disabled due to flake on Mac.
-#if BUILDFLAG(IS_MAC)
-TEST_F(
-    ReportQueueManualTestContextTest,
-    DISABLED_BuildsReportQueueManualTestContextAndUploadsDeviceEventMessages) {
-#else
 TEST_F(ReportQueueManualTestContextTest,
        BuildsReportQueueManualTestContextAndUploadsDeviceEventMessages) {
-#endif
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
       .Times(kNumberOfMessagesToEnqueue)
       .WillRepeatedly(
@@ -91,19 +85,15 @@ TEST_F(ReportQueueManualTestContextTest,
       kMessagePeriod, kNumberOfMessagesToEnqueue, kDestination, kPriority,
       EventType::kDevice, completion_event.cb(), task_runner_,
       GetQueueBuilder());
+  task_environment_.FastForwardBy(kMessagePeriod * kNumberOfMessagesToEnqueue);
 
   const Status status = completion_event.result();
   EXPECT_OK(status) << status;
   EXPECT_THAT(dm_token_, IsEmpty());
 }
 
-#if BUILDFLAG(IS_MAC)
-TEST_F(ReportQueueManualTestContextTest,
-       DISABLED_BuildsReportQueueManualTestContextAndUploadsUserEventMessages) {
-#else
 TEST_F(ReportQueueManualTestContextTest,
        BuildsReportQueueManualTestContextAndUploadsUserEventMessages) {
-#endif
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
       .Times(kNumberOfMessagesToEnqueue)
       .WillRepeatedly(
@@ -115,6 +105,7 @@ TEST_F(ReportQueueManualTestContextTest,
   Start<ReportQueueManualTestContext>(
       kMessagePeriod, kNumberOfMessagesToEnqueue, kDestination, kPriority,
       EventType::kUser, completion_event.cb(), task_runner_, GetQueueBuilder());
+  task_environment_.FastForwardBy(kMessagePeriod * kNumberOfMessagesToEnqueue);
 
   const Status status = completion_event.result();
   EXPECT_OK(status) << status;
