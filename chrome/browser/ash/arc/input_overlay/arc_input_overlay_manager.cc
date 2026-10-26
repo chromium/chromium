@@ -592,7 +592,9 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
   }
 
   // It should always unregister the window first, then register another window.
-  CHECK(!registered_top_level_window_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/577682914): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!registered_top_level_window_);
 
   const auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end()) {
