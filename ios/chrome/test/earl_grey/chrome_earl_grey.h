@@ -59,9 +59,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // will properly synchronize the UI for Earl Grey tests.
 @interface ChromeEarlGreyImpl : BaseEGTestHelperImpl
 
-// Reloads the page without waiting for the page to load.
-- (void)startReloading;
-
 #pragma mark - Test Utilities
 
 // Wait until `matcher` is accessible (not nil) on the device.
@@ -451,11 +448,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
                                     textFragment:(NSString*)textFragment
                                        entryGUID:(NSString*)guid;
 
-// Deletes an autofill profile from the fake sync server with `GUID`, if it
-// exists. If it doesn't exist, nothing is done.
-- (void)deleteAutofillProfileFromFakeSyncServerWithGUID:
-    (const std::string&)GUID;
-
 // Verifies the sessions hierarchy on the Sync FakeServer. `URLs` is
 // the collection of URLs that are to be expected for a single window. A
 // GREYAssert is induced on failure. See the SessionsHierarchy class for
@@ -543,9 +535,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the number of incognito tabs.
 - (NSUInteger)incognitoTabCount [[nodiscard]];
 
-// Returns the number of browsers.
-- (NSUInteger)browserCount [[nodiscard]];
-
 // Returns the number of the realized web states from the existing web states.
 - (NSInteger)realizedWebStatesCount [[nodiscard]];
 
@@ -608,9 +597,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the number of windows, including background and disconnected or
 // archived windows.
 - (NSUInteger)windowCount [[nodiscard]];
-
-// Returns the number of foreground (visible on screen) windows.
-- (NSUInteger)foregroundWindowCount [[nodiscard]];
 
 // Waits for there to be `count` number of browsers within a timeout,
 // or a GREYAssert is induced.
@@ -809,13 +795,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Cache-Control response header says otherwise.
 - (void)purgeCachedWebViewPages;
 
-// Returns YES if the current WebState's web view uses the content inset to
-// correctly align the top of the content with the bottom of the top bar.
-- (BOOL)webStateWebViewUsesContentInset;
-
-// Returns the size of the current WebState's web view.
-- (CGSize)webStateWebViewSize;
-
 // Stops any pending navigations in all WebStates which are loading.
 - (void)stopAllWebStatesLoading;
 
@@ -856,11 +835,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // not be used.
 // Fails if the execution causes an error.
 - (void)evaluateJavaScriptForSideEffect:(NSString*)javaScript;
-
-// Same as -evaluateJavaScriptForSideEffect but executes the javascript in the
-// isolated world instead of the page content world. This allows interacting
-// with the gcrweb objects that are injected there.
-- (void)evaluateJavaScriptInIsolatedWorldForSideEffect:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
 - (NSString*)mobileUserAgentString;
@@ -938,10 +912,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether Aim Cobrowse Web Selection Search is enabled.
 - (BOOL)isAimCobrowseWebSelectionSearchEnabled;
 
-// Returns YES if the view with `accessibilityID` or any of its ancestors is
-// animating.
-- (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;
-
 // Waits for the view with `accessibilityID` to stop animating within `timeout`.
 - (void)waitForViewToStopAnimatingWithAccessibilityID:(NSString*)accessibilityID
                                               timeout:(base::TimeDelta)timeout;
@@ -1011,8 +981,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Gets the value of a local state pref.
 - (bool)localStateBooleanPref:(const std::string&)prefName;
 - (int)localStateIntegerPref:(const std::string&)prefName;
-- (std::string)localStateStringPref:(const std::string&)prefName;
-- (base::Time)localStateTimePref:(const std::string&)prefName;
 
 // Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
@@ -1123,18 +1091,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Watcher utilities
 
-// Starts monitoring for buttons (based on traits) with the given
-// (accessibility) `labels`. Monitoring will stop once all are found, or if
-// timeout expires. If a previous set is currently being watched for it gets
-// replaced with this set. Note that timeout is best effort and can be a bit
-// longer than specified. This method returns immediately.
-- (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
-                          timeout:(base::TimeDelta)timeout;
-
-// Returns YES if the button with given (accessibility) `label` was observed at
-// some point since `watchForButtonsWithLabels:timeout:` was called.
-- (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
-
 // Clear the watcher list, stopping monitoring.
 - (void)stopWatcher;
 
@@ -1142,9 +1098,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Clears default browser promo data to restart capping for the promos.
 - (void)clearDefaultBrowserPromoData;
-
-// Copies a chrome:// URL that doesn't require internet connection.
-- (void)copyURLToPasteBoard;
 
 #pragma mark - ActivitySheet utilities
 
@@ -1190,11 +1143,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 - (void)requestTipsNotification:(TipsNotificationType)type;
 
-#pragma mark - Variations Utilities
-
-// Forces an override of the variations stored permanent country.
-- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
-
 #pragma mark - Shared Tab Groups Utilities
 
 // Waits for the MessagingBackendService to be initialized.
@@ -1208,9 +1156,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Hides Reader mode in the current tab.
 - (void)hideReaderMode;
-
-// Programmatically crashes the host application.
-- (void)induceCrash;
 
 @end
 

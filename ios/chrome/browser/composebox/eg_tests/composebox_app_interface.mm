@@ -27,16 +27,6 @@
       .WillByDefault(testing::Return(eligible));
 }
 
-+ (void)setAimLocallyEligible:(BOOL)eligible {
-  ON_CALL(*[self mockService], IsAimLocallyEligible)
-      .WillByDefault(testing::Return(eligible));
-}
-
-+ (void)setServerEligibilityEnabled:(BOOL)enabled {
-  ON_CALL(*[self mockService], IsServerEligibilityEnabled)
-      .WillByDefault(testing::Return(enabled));
-}
-
 + (void)setTabUploadAutoSucceed:(BOOL)autoSucceed {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   contextual_search::ContextualSearchService* service =

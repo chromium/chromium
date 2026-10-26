@@ -92,9 +92,6 @@ class GURL;
 // If there is no signed-in account returns an empty string.
 - (GaiaId)primaryAccountGaiaID;
 
-// Returns the gaia IDs of all accounts in the current profile.
-- (const base::flat_set<GaiaId>)accountsInProfileGaiaIDs;
-
 // Checks that no identity is signed in.
 - (BOOL)isSignedOut;
 

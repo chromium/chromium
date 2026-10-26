@@ -39,9 +39,6 @@
 // Returns the number of suggestions in the shortcuts database.
 + (NSInteger)numberOfShortcutsInDatabase;
 
-// Returns YES if `element` or `element.text` is a valid URL.
-+ (BOOL)isElementURL:(id)element;
-
 /// Asserts the omnibox text field `shouldHaveAutocompleteText`.
 + (id<GREYAssertion>)displaysInlineAutocompleteText:
     (BOOL)shouldHaveAutocompleteText;

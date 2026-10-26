@@ -73,10 +73,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
   return ntp_home::CollectionView();
 }
 
-+ (UICollectionView*)contentSuggestionsCollectionView {
-  return ntp_home::ContentSuggestionsCollectionView();
-}
-
 + (UIView*)fakeOmnibox {
   return ntp_home::FakeOmnibox();
 }
@@ -114,12 +110,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
   return view.complete;
 }
 
-+ (BOOL)setUpListItemAutofillInMagicStackIsComplete {
-  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
-             set_up_list::kAutofillItemID)
-      .complete;
-}
-
 + (BOOL)setUpListItemSafariImportInMagicStackIsComplete {
   return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
              set_up_list::kSafariImportItemID)
@@ -132,12 +122,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
 
 + (BOOL)hasBackgroundImage {
   return ntp_home::HasBackgroundImage();
-}
-
-+ (CGFloat)magicStackCollectionViewWidth {
-  UIView* view = SubviewWithAccessibilityIdentifier(
-      kMagicStackScrollViewAccessibilityIdentifier, GetAnyKeyWindow());
-  return view.bounds.size.width;
 }
 
 + (CGFloat)magicStackFirstCellWidth {

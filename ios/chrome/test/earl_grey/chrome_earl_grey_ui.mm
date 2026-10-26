@@ -216,11 +216,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [self tapToolsMenuButton:SettingsDestinationButton()];
 }
 
-- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber {
-  [self openToolsMenuInWindowWithNumber:windowNumber];
-  [self tapToolsMenuButton:SettingsDestinationButton()];
-}
-
 - (void)openNewTabMenu {
   // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
@@ -336,24 +331,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
          usingSearchAction:ScrollDown()
       onElementWithMatcher:chrome_test_util::SettingsNotificationsTableView()]
-      performAction:grey_tap()];
-}
-
-- (void)tapTrackingPriceMenuButton:(id<GREYMatcher>)buttonMatcher {
-  ScopedDisableTimerTracking disabler;
-  id<GREYMatcher> interactableButtonMatcher =
-      grey_allOf(buttonMatcher, grey_interactable(), nil);
-  [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
-         usingSearchAction:ScrollDown()
-      onElementWithMatcher:chrome_test_util::SettingsTrackingPriceTableView()]
-      performAction:grey_tap()];
-}
-
-- (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher {
-  ScopedDisableTimerTracking disabler;
-  [[[EarlGrey selectElementWithMatcher:buttonMatcher]
-         usingSearchAction:ScrollDown()
-      onElementWithMatcher:chrome_test_util::SettingsAccountsCollectionView()]
       performAction:grey_tap()];
 }
 

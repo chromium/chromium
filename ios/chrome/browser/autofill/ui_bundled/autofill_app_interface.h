@@ -93,9 +93,6 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the number of credit cards in the local store.
 + (NSInteger)localCreditCount;
 
-// Returns the CVC of the first saved local credit card.
-+ (NSString*)firstLocalCreditCardCvc;
-
 // Returns the cardholder name of the sample local credit card.
 + (NSString*)exampleCreditCardName;
 
@@ -182,9 +179,6 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Removes the entity with the given UUID.
 + (void)removeEntityWithUUID:(NSString*)uuid;
 
-// Deletes all entities modified since the given time.
-+ (void)removeEntityModifiedSince:(NSDate*)time;
-
 // Saves a Passport entity with test data.
 + (BOOL)savePassportEntity;
 
@@ -193,9 +187,6 @@ enum CreditCardSaveManagerObserverEvent : int {
 
 // Saves a Vehicle entity with test data.
 + (BOOL)saveVehicleEntity;
-
-// Returns YES if there is at least one form cached in the AutofillManager.
-+ (BOOL)isFormCachedInMainFrame;
 
 // Wait until a form is cached in the AutofillManager.
 + (BOOL)waitForFormToBeCachedInMainFrame;

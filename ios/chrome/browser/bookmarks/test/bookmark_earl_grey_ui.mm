@@ -396,47 +396,6 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)verifyActionSheetsForSingleFolderWithEditEnabled:(BOOL)editEnabled {
-  // Verify it shows the action sheets.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeContextMenuIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify options on the action sheets.
-  // Verify that the edit menu option is enabled/disabled according to
-  // `editEnabled`.
-  id<GREYMatcher> matcher =
-      editEnabled ? grey_sufficientlyVisible()
-                  : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
-      assertWithMatcher:matcher];
-
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
-      assertWithMatcher:matcher];
-}
-
-- (void)dismissActionSheets {
-  // Verify it shows the context menu.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeContextMenuIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Dismiss the context menu. On non compact width tap the Bookmarks TableView
-  // to dismiss, since there might not be a cancel button.
-  if ([ChromeEarlGrey isCompactWidth]) {
-    [[EarlGrey
-        selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kBookmarksHomeTableViewIdentifier)]
-        performAction:grey_tap()];
-  }
-}
-
 - (void)verifyContextBarInDefaultStateWithSelectEnabled:(BOOL)selectEnabled
                                        newFolderEnabled:(BOOL)newFolderEnabled {
   if (!iOS26_OR_ABOVE()) {

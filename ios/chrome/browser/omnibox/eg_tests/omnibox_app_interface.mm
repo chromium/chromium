@@ -137,22 +137,6 @@ const base::FilePath& GetTestDataDir() {
   return 0;
 }
 
-+ (BOOL)isElementURL:(id)element {
-  NSString* string = nil;
-  if ([element isKindOfClass:[NSString class]]) {
-    string = reinterpret_cast<NSString*>(element);
-  } else if ([element respondsToSelector:@selector(text)]) {
-    string = base::apple::ObjCCast<NSString>(
-        [element performSelector:@selector(text)]);
-  }
-  if (!string) {
-    return NO;
-  }
-
-  std::string UTFString = base::SysNSStringToUTF8(string);
-  return GURL(UTFString).is_valid() || GURL("http://" + UTFString).is_valid();
-}
-
 + (id<GREYAssertion>)displaysInlineAutocompleteText:
     (BOOL)shouldHaveAutocompleteText {
   NSString* name =

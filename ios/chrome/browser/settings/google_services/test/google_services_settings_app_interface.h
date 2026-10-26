@@ -10,12 +10,6 @@
 // The app interface for Google services settings tests.
 @interface GoogleServicesSettingsAppInterface : NSObject
 
-// Blocks all navigation requests to be loaded in Chrome.
-+ (void)blockAllNavigationRequestsForCurrentWebState;
-
-// Unblocks all navigation requests to be loaded in Chrome.
-+ (void)unblockAllNavigationRequestsForCurrentWebState;
-
 // Returns whether the metrics consent restructure feature is enabled.
 + (BOOL)shouldUseMetricsConsentRestructure;
 

@@ -132,10 +132,6 @@ id<GREYMatcher> SearchIconButton();
 
 - (void)verifyActionSheetsForSingleURLWithEditEnabled:(BOOL)editEnabled;
 
-- (void)verifyActionSheetsForSingleFolderWithEditEnabled:(BOOL)editEnabled;
-
-- (void)dismissActionSheets;
-
 - (void)verifyContextBarInDefaultStateWithSelectEnabled:(BOOL)selectEnabled
                                        newFolderEnabled:(BOOL)newFolderEnabled;
 

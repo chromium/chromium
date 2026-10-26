@@ -25,9 +25,6 @@
 // Returns the NTP collection view.
 + (UICollectionView*)collectionView;
 
-// Returns the content suggestions collection view.
-+ (UICollectionView*)contentSuggestionsCollectionView;
-
 // Returns the fake omnibox.
 + (UIView*)fakeOmnibox;
 
@@ -44,10 +41,6 @@
 // is complete.
 + (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete;
 
-// Returns YES if the Autofill SetUpListItemView item in the Magic Stack is
-// complete.
-+ (BOOL)setUpListItemAutofillInMagicStackIsComplete;
-
 // Returns YES if the Safari Import SetUpListItemView item in the Magic Stack is
 // complete.
 + (BOOL)setUpListItemSafariImportInMagicStackIsComplete;
@@ -57,9 +50,6 @@
 
 // Returns whether the NTP has a custom background image.
 + (BOOL)hasBackgroundImage;
-
-// Returns the width of the Magic Stack collection view.
-+ (CGFloat)magicStackCollectionViewWidth;
 
 // Returns the width of the first cell in the Magic Stack.
 + (CGFloat)magicStackFirstCellWidth;

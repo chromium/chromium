@@ -46,9 +46,6 @@ class EmbeddedTestServer;
 - (void)addShorcuts:(NSUInteger)shortcutCount
        toTestServer:(net::test_server::EmbeddedTestServer*)testServer;
 
-/// Returns a matcher for a valid URL.
-- (id<GREYMatcher>)isURLMatcher;
-
 /// Defocus the omnibox.
 - (void)defocusOmnibox;
 

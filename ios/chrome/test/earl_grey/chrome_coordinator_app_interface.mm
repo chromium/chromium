@@ -397,20 +397,6 @@
   [self.helper.coordinator start];
 }
 
-+ (void)startPopupMenuCoordinator {
-  // The IOSLanguageDetectionTabHelper is required by the PopupMenu.
-  PrefService* prefs = self.helper.browser->GetProfile()->GetPrefs();
-  language::IOSLanguageDetectionTabHelper::CreateForWebState(
-      self.helper.browser->GetWebStateList()->GetWebStateAt(0),
-      /*url_language_histogram=*/nullptr, nullptr, prefs);
-
-  PopupMenuCoordinator* coordinator =
-      [[PopupMenuCoordinator alloc] initWithBrowser:self.helper.browser];
-  coordinator.baseViewController = [self rootViewController];
-  self.helper.coordinator = coordinator;
-  [self.helper.coordinator start];
-}
-
 + (void)startPrivacySafeBrowsingCoordinator {
   // Setup & display the `SettingsNavigationController`.
   Browser* browser = self.helper.browser;

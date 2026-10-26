@@ -161,9 +161,6 @@ enum class TipsNotificationType;
 // Returns the number of open incognito tabs.
 + (NSUInteger)incognitoTabCount [[nodiscard]];
 
-// Returns the number of open browsers.
-+ (NSUInteger)browserCount [[nodiscard]];
-
 // Returns the number of the realized web states from the existing web states.
 + (NSInteger)realizedWebStatesCount [[nodiscard]];
 
@@ -403,13 +400,6 @@ enum class TipsNotificationType;
 // from the cache even if the Cache-Control response header says otherwise.
 + (NSError*)purgeCachedWebViewPages;
 
-// Returns YES if the current WebState's web view uses the content inset to
-// correctly align the top of the content with the bottom of the top bar.
-+ (BOOL)webStateWebViewUsesContentInset;
-
-// Returns the size of the current WebState's web view.
-+ (CGSize)webStateWebViewSize;
-
 // Stops any pending navigations in all WebStates which are loading.
 + (void)stopAllWebStatesLoading;
 
@@ -552,10 +542,6 @@ enum class TipsNotificationType;
 + (BOOL)isAutofillProfilePresentWithGUID:(NSString*)GUID
                      autofillProfileName:(NSString*)fullName;
 
-// Deletes an autofill profile from the fake sync server with `GUID`, if it
-// exists. If it doesn't exist, nothing is done.
-+ (void)deleteAutofillProfileFromFakeSyncServerWithGUID:(NSString*)GUID;
-
 // Verifies the sessions hierarchy on the Sync FakeServer. `specs` is
 // the collection of URLs that are to be expected for a single window. On
 // failure, returns a NSError describing the failure. See the
@@ -591,12 +577,6 @@ enum class TipsNotificationType;
 // JavaScript exception is thrown, `success` is NO.
 // otherwise returns object representing execution result.
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript;
-
-// Same as -executeJavaScript but executes the script in the isolated world
-// instead of the page content world. This allows interacting with the gcrweb
-// objects that are injected there.
-+ (JavaScriptExecutionResult*)executeJavaScriptInIsolatedWorld:
-    (NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
 + (NSString*)mobileUserAgentString;
@@ -720,10 +700,6 @@ enum class TipsNotificationType;
 // returns a Value of type NONE.
 + (NSString*)localStatePrefValue:(NSString*)prefName;
 
-// Gets the time value for the local state pref with `prefName`. Local State
-// contains the preferences that are shared between all profiles.
-+ (base::Time)localStateTimePref:(NSString*)prefName;
-
 // Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
 // contains the preferences that are shared between all profiles.
@@ -831,18 +807,6 @@ enum class TipsNotificationType;
 
 #pragma mark - Watcher utilities
 
-// Starts monitoring for buttons (based on traits) with the given
-// (accessibility) `labels`. Monitoring will stop once all are found, or if
-// timeout expires. If a previous set is currently being watched for it gets
-// replaced with this set. Note that timeout is best effort and can be a bit
-// longer than specified. This method returns immediately.
-+ (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
-                          timeout:(base::TimeDelta)timeout;
-
-// Returns YES if the button with given (accessibility) `label` was observed at
-// some point since `watchForButtonsWithLabels:timeout:` was called.
-+ (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
-
 // Clear the watcher list, stopping monitoring.
 + (void)stopWatcher;
 
@@ -850,9 +814,6 @@ enum class TipsNotificationType;
 
 // Clears default browser promo data to restart capping for the promos.
 + (void)clearDefaultBrowserPromoData;
-
-// Copies a chrome:// URL that doesn't require internet connection.
-+ (void)copyURLToPasteBoard;
 
 #pragma mark - First Run Utilities
 
@@ -870,11 +831,6 @@ enum class TipsNotificationType;
 
 + (void)requestTipsNotification:(TipsNotificationType)type;
 
-#pragma mark - Variations Utilities
-
-// Forces an override of the variations stored permanent country.
-+ (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
-
 #pragma mark - Shared Tab Groups Utilities
 
 // Waits for the MessagingBackendService to be initialized.
@@ -883,9 +839,6 @@ enum class TipsNotificationType;
 // Returns YES if the view with `accessibilityID` or any of its ancestors is
 // animating.
 + (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;
-
-// Programmatically crashes the host application.
-+ (void)induceCrash;
 
 @end
 

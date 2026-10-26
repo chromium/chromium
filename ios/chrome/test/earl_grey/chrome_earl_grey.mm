@@ -152,10 +152,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Test Utilities
 
-- (void)startReloading {
-  [ChromeEarlGreyAppInterface startReloading];
-}
-
 - (void)waitForMatcher:(id<GREYMatcher>)matcher {
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -440,10 +436,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (NSUInteger)incognitoTabCount {
   return [ChromeEarlGreyAppInterface incognitoTabCount];
-}
-
-- (NSUInteger)browserCount {
-  return [ChromeEarlGreyAppInterface browserCount];
 }
 
 - (NSInteger)realizedWebStatesCount {
@@ -1124,14 +1116,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [self waitForPageToFinishLoading];
 }
 
-- (BOOL)webStateWebViewUsesContentInset {
-  return [ChromeEarlGreyAppInterface webStateWebViewUsesContentInset];
-}
-
-- (CGSize)webStateWebViewSize {
-  return [ChromeEarlGreyAppInterface webStateWebViewSize];
-}
-
 - (void)stopAllWebStatesLoading {
   [ChromeEarlGreyAppInterface stopAllWebStatesLoading];
   // Wait for any UI change.
@@ -1356,13 +1340,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface waitForSyncInvalidationFields]);
 }
 
-- (void)deleteAutofillProfileFromFakeSyncServerWithGUID:
-    (const std::string&)UTF8GUID {
-  NSString* GUID = base::SysUTF8ToNSString(UTF8GUID);
-  [ChromeEarlGreyAppInterface
-      deleteAutofillProfileFromFakeSyncServerWithGUID:GUID];
-}
-
 - (void)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout {
   EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
       waitForSyncTransportStateActiveWithTimeout:timeout]);
@@ -1437,10 +1414,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (NSUInteger)windowCount [[nodiscard]] {
   return [ChromeEarlGreyAppInterface windowCount];
-}
-
-- (NSUInteger)foregroundWindowCount [[nodiscard]] {
-  return [ChromeEarlGreyAppInterface foregroundWindowCount];
 }
 
 - (void)closeAllExtraWindows {
@@ -1757,13 +1730,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       result.success, @"An error was produced during the script's execution");
 }
 
-- (void)evaluateJavaScriptInIsolatedWorldForSideEffect:(NSString*)javaScript {
-  JavaScriptExecutionResult* result =
-      [ChromeEarlGreyAppInterface executeJavaScriptInIsolatedWorld:javaScript];
-  EG_TEST_HELPER_ASSERT_TRUE(
-      result.success, @"An error was produced during the script's execution");
-}
-
 - (NSString*)mobileUserAgentString {
   return [ChromeEarlGreyAppInterface mobileUserAgentString];
 }
@@ -1975,20 +1941,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   BOOL success = value && value->is_int();
   EG_TEST_HELPER_ASSERT_TRUE(success, @"Expected int");
   return success ? value->GetInt() : 0;
-}
-
-- (std::string)localStateStringPref:(const std::string&)prefName {
-  std::optional<base::Value> value = [self localStatePrefValue:prefName];
-  BOOL success = value && value->is_string();
-  EG_TEST_HELPER_ASSERT_TRUE(success, @"Expected string");
-  return success ? value->GetString() : "";
-}
-
-- (base::Time)localStateTimePref:(const std::string&)prefName {
-  // Note: `localStatePrefValue` cannot be used here because base::Value doesn't
-  // support base::Time.
-  return [ChromeEarlGreyAppInterface
-      localStateTimePref:base::SysUTF8ToNSString(prefName)];
 }
 
 - (void)setIntegerValue:(int)value
@@ -2257,15 +2209,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Watcher utilities
 
-- (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
-                          timeout:(base::TimeDelta)timeout {
-  [ChromeEarlGreyAppInterface watchForButtonsWithLabels:labels timeout:timeout];
-}
-
-- (BOOL)watcherDetectedButtonWithLabel:(NSString*)label {
-  return [ChromeEarlGreyAppInterface watcherDetectedButtonWithLabel:label];
-}
-
 - (void)stopWatcher {
   [ChromeEarlGreyAppInterface stopWatcher];
 }
@@ -2274,10 +2217,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)clearDefaultBrowserPromoData {
   [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
-}
-
-- (void)copyURLToPasteBoard {
-  [ChromeEarlGreyAppInterface copyURLToPasteBoard];
 }
 
 #pragma mark - ActivitySheet utilities
@@ -2403,13 +2342,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface requestTipsNotification:type];
 }
 
-#pragma mark - Variations Utilities
-
-- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country {
-  return [ChromeEarlGreyAppInterface
-      overrideVariationsServiceStoredPermanentCountry:country];
-}
-
 #pragma mark - Shared Tab Groups Utilities
 
 - (NSError*)waitForMessagingBackendServiceInitialized {
@@ -2461,11 +2393,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                      entryGUID:guid];
 }
 
-- (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID {
-  return [ChromeEarlGreyAppInterface
-      isViewAnimatingWithAccessibilityID:accessibilityID];
-}
-
 - (void)waitForViewToStopAnimatingWithAccessibilityID:(NSString*)accessibilityID
                                               timeout:(base::TimeDelta)timeout {
   ConditionBlock condition = ^{
@@ -2478,10 +2405,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [NSString stringWithFormat:@"View with ID %@ did not stop animating",
                                  accessibilityID];
   EG_TEST_HELPER_ASSERT_TRUE(matched, errorString);
-}
-
-- (void)induceCrash {
-  [ChromeEarlGreyAppInterface induceCrash];
 }
 
 @end

@@ -54,7 +54,6 @@
 + (void)startNewTabPageCoordinator;
 + (void)startOmniboxCoordinator;
 + (void)startPasswordSuggestionCoordinator;
-+ (void)startPopupMenuCoordinator;
 + (void)startPrivacySafeBrowsingCoordinator;
 + (void)startQRScannerLegacyCoordinator;
 + (void)startReadingListCoordinator;
@@ -66,12 +65,6 @@
 + (void)stopCoordinator;
 
 // Resets the isolated dispatcher and dismisses the blank rootViewController.
-// Calls `completion` after the rootViewController is dismissed. Should pass a
-// `completion` callback when the same coordinator is started twice in the same
-// test.
-+ (void)resetWithCompletion:(ProceduralBlock)completion;
-
-// `-resetWithCompletion` with no completion callback.
 + (void)reset;
 
 @end

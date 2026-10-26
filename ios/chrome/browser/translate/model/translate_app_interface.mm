@@ -174,15 +174,6 @@ class TranslateAppInterfaceHelper {
   return base::SysUTF8ToNSString(details->adopted_language);
 }
 
-+ (void)setAutoTranslateFromLanguage:(NSString*)source
-                          toLanguage:(NSString*)target {
-  std::unique_ptr<translate::TranslatePrefs> prefs(
-      ChromeIOSTranslateClient::CreateTranslatePrefs(
-          chrome_test_util::GetOriginalProfile()->GetPrefs()));
-  return prefs->AddLanguagePairToAlwaysTranslateList(
-      base::SysNSStringToUTF8(source), base::SysNSStringToUTF8(target));
-}
-
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source
                              toLanguage:(NSString*)target {
   std::unique_ptr<translate::TranslatePrefs> prefs(
@@ -204,22 +195,6 @@ class TranslateAppInterfaceHelper {
       ChromeIOSTranslateClient::CreateTranslatePrefs(
           chrome_test_util::GetOriginalProfile()->GetPrefs()));
   return prefs->IsSiteOnNeverPromptList(base::SysNSStringToUTF8(hostName));
-}
-
-+ (int)infobarAutoAlwaysThreshold {
-  return translate::GetAutoAlwaysThreshold();
-}
-
-+ (int)infobarAutoNeverThreshold {
-  return translate::GetAutoNeverThreshold();
-}
-
-+ (int)infobarMaximumNumberOfAutoAlways {
-  return translate::GetMaximumNumberOfAutoAlways();
-}
-
-+ (int)infobarMaximumNumberOfAutoNever {
-  return translate::GetMaximumNumberOfAutoNever();
 }
 
 #pragma mark private methods

@@ -87,9 +87,6 @@ constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
 + (BOOL)UMALogHasBirthYear:(int)year
                     gender:(metrics::UserDemographicsProto::Gender)gender;
 
-// Returns YES if the UMA log has user demographics.
-+ (BOOL)UMALogHasUserDemographics;
-
 // Returns whether DWA recording is `enabled`.
 + (BOOL)checkDWARecordingEnabled:(BOOL)enabled;
 

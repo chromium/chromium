@@ -528,10 +528,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return chrome_test_util::GetIncognitoTabCount();
 }
 
-+ (NSUInteger)browserCount {
-  return chrome_test_util::RegularBrowserCount();
-}
-
 + (NSInteger)realizedWebStatesCount {
   int count = 0;
   int tab_count = chrome_test_util::GetMainTabCount();
@@ -1036,16 +1032,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return nil;
 }
 
-+ (BOOL)webStateWebViewUsesContentInset {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return web_state && web_state->GetWebViewProxy().shouldUseViewContentInset;
-}
-
-+ (CGSize)webStateWebViewSize {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return web_state ? [web_state->GetWebViewProxy() bounds].size : CGSizeZero;
-}
-
 + (void)stopAllWebStatesLoading {
   if (!chrome_test_util::GetForegroundActiveScene()) {
     return;
@@ -1287,11 +1273,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return chrome_test_util::IsAutofillProfilePresent(utfGUID, utfFullName);
 }
 
-+ (void)deleteAutofillProfileFromFakeSyncServerWithGUID:(NSString*)GUID {
-  chrome_test_util::DeleteAutofillProfileFromFakeSyncServer(
-      base::SysNSStringToUTF8(GUID));
-}
-
 + (NSError*)waitForSyncTransportStateActiveWithTimeout:
     (base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{
@@ -1426,13 +1407,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return [ChromeEarlGreyAppInterface
       executeJavaScript:javaScript
                 inWorld:static_cast<int>(web::ContentWorld::kPageContentWorld)];
-}
-
-+ (JavaScriptExecutionResult*)executeJavaScriptInIsolatedWorld:
-    (NSString*)javaScript {
-  return [ChromeEarlGreyAppInterface
-      executeJavaScript:javaScript
-                inWorld:static_cast<int>(web::ContentWorld::kIsolatedWorld)];
 }
 
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript
@@ -1682,12 +1656,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return SerializedPref(pref);
 }
 
-+ (base::Time)localStateTimePref:(NSString*)prefName {
-  std::string path = base::SysNSStringToUTF8(prefName);
-  PrefService* prefService = GetApplicationContext()->GetLocalState();
-  return prefService->GetTime(path);
-}
-
 + (void)setIntegerValue:(int)value forLocalStatePref:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   PrefService* prefService = GetApplicationContext()->GetLocalState();
@@ -1845,113 +1813,13 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 
 #pragma mark - Watcher utilities
 
-// Delay between two watch cycles.
-constexpr base::TimeDelta kWatcherCycleDelay = base::Milliseconds(200);
-
-// Set of buttons being watched for.
-NSMutableSet* watchingButtons;
-// Set of buttons that were actually watched.
-NSMutableSet* watchedButtons;
-
-// Current watch number, to allow terminating older scheduled runs.
-int watchRunNumber = 0;
-
-+ (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
-                          timeout:(base::TimeDelta)timeout {
-  watchRunNumber++;
-  watchedButtons = [NSMutableSet set];
-  watchingButtons = [NSMutableSet set];
-  for (NSString* label in labels) {
-    [watchingButtons addObject:label];
-  }
-  [self scheduleNextWatchForButtonsWithTimeout:timeout
-                                     runNumber:watchRunNumber];
-}
-
-+ (BOOL)watcherDetectedButtonWithLabel:(NSString*)label {
-  return [watchedButtons containsObject:label];
-}
-
 + (void)stopWatcher {
-  [watchingButtons removeAllObjects];
-  [watchedButtons removeAllObjects];
-}
-
-// Schedule the next watch cycles from a background thread, that will dispatch
-// the actual check, async, on the main thread, since UI objects can only
-// be accessed from there. Scheduling directly on the main
-// thread would let EG to try to drain the main thread queue without
-// success.
-+ (void)scheduleNextWatchForButtonsWithTimeout:(base::TimeDelta)timeout
-                                     runNumber:(int)runNumber {
-  dispatch_queue_t background_queue =
-      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, kWatcherCycleDelay.InNanoseconds()),
-      background_queue, ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-          if (!watchingButtons.count || runNumber != watchRunNumber) {
-            return;
-          }
-
-          NSMutableArray<UIWindow*>* windows = [[NSMutableArray alloc] init];
-          for (UIScene* scene in UIApplication.sharedApplication
-                   .connectedScenes) {
-            UIWindowScene* windowScene =
-                base::apple::ObjCCastStrict<UIWindowScene>(scene);
-            [windows addObjectsFromArray:windowScene.windows];
-          }
-
-          [self findButtonsWithLabelsInViews:windows];
-
-          if (watchingButtons.count && timeout.is_positive()) {
-            [self scheduleNextWatchForButtonsWithTimeout:timeout -
-                                                         kWatcherCycleDelay
-                                               runNumber:runNumber];
-          } else {
-            [watchingButtons removeAllObjects];
-          }
-        });
-      });
-}
-
-// Looks for a button (based on traits) with the given `label`,
-// recursively in the given `views`.
-+ (void)findButtonsWithLabelsInViews:(NSArray<UIView*>*)views {
-  if (!watchingButtons.count) {
-    return;
-  }
-
-  for (UIView* view in views) {
-    [self buttonsWithLabelsMatchView:view];
-    [self findButtonsWithLabelsInViews:view.subviews];
-  }
-}
-
-// Checks if the given `view` is a button (based on traits) with the
-// given accessibility label.
-+ (void)buttonsWithLabelsMatchView:(UIView*)view {
-  if (![view respondsToSelector:@selector(accessibilityLabel)]) {
-    return;
-  }
-  if (([view accessibilityTraits] & UIAccessibilityTraitButton) == 0) {
-    return;
-  }
-  if ([watchingButtons containsObject:view.accessibilityLabel]) {
-    [watchedButtons addObject:view.accessibilityLabel];
-    [watchingButtons removeObject:view.accessibilityLabel];
-  }
 }
 
 #pragma mark - Default Browser Promo Utilities
 
 + (void)clearDefaultBrowserPromoData {
   ClearDefaultBrowserPromoData();
-}
-
-+ (void)copyURLToPasteBoard {
-  UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
-  pasteboard.URL = [NSURL URLWithString:@"chrome://version"];
 }
 
 #pragma mark - First Run Utilities
@@ -1995,15 +1863,6 @@ int watchRunNumber = 0;
                     trigger:nil];
 
   [center addNotificationRequest:request withCompletionHandler:nil];
-}
-
-#pragma mark - Variations Utilities
-
-+ (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country {
-  std::string UTF8Country = base::SysNSStringToUTF8(country);
-  variations::VariationsService* variationsService =
-      GetApplicationContext()->GetVariationsService();
-  variationsService->OverrideStoredPermanentCountry(UTF8Country);
 }
 
 #pragma mark - Shared Tab Groups Utilities
@@ -2064,10 +1923,6 @@ int watchRunNumber = 0;
     current = current.superview;
   }
   return NO;
-}
-
-+ (void)induceCrash {
-  abort();
 }
 
 @end

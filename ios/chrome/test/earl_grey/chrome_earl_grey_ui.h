@@ -55,12 +55,6 @@
 // calling this method.
 - (void)openSettingsMenu;
 
-// Opens the settings menu by opening the tools menu, and then tapping the
-// Settings button. There will be a GREYAssert if the tools menu is open when
-// calling this method.
-// Sets and Leaves the root matcher to the given window with `windowNumber`.
-- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber;
-
 // Makes the toolbar visible by swiping downward, if necessary. Then long-
 // presses on the New Tab menu button. At least one tab needs to be open and
 // visible when calling this method.
@@ -98,22 +92,11 @@
 // there will be a GREYAssert.
 - (void)tapPriceNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher;
 
-// Scrolls to find the button in the Tracking Price menu with the
-// corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is not
-// found, or the Tracking Price menu is not open when this is called
-// there will be a GREYAssert.
-- (void)tapTrackingPriceMenuButton:(id<GREYMatcher>)buttonMatcher;
-
 // Scrolls to find the button in the Clear Browsing Data menu with the
 // corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is
 // not found, or the Clear Browsing Data menu is not open when this is called
 // there will be a GREYAssert.
 - (void)tapClearBrowsingDataMenuButton:(id<GREYMatcher>)buttonMatcher;
-
-// Scrolls to find the button in the accounts menu with the corresponding
-// `buttonMatcher`, and then taps it. If `buttonMatcher` is not found, or the
-// accounts menu is not open when this is called there will be a GREYAssert.
-- (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher;
 
 // Focuses the omnibox by tapping and types `text` into it. The '\n' symbol can
 // be passed in order to commit the string.

@@ -65,9 +65,6 @@ enum class UserSelectableType;
 // If there is no signed-in account returns an empty string.
 + (NSString*)primaryAccountEmail;
 
-// Returns the gaia IDs of all accounts in the current profile.
-+ (NSSet<NSString*>*)accountsInProfileGaiaIDs;
-
 // Checks that no identity is signed in.
 + (BOOL)isSignedOut;
 

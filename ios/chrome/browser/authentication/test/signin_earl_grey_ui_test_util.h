@@ -44,16 +44,6 @@
 // dismisses the confirmation snackbar on sign-out.
 + (void)dismissSignoutSnackbar;
 
-// Opens the confirmation dialog to remove an account from the device, without
-// confirming it.
-+ (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
-    (FakeSystemIdentity*)fakeIdentity;
-
-// Taps "Remove from this device" button and follow-up confirmation.
-// Assumes the user is on the Settings screen.
-+ (void)tapRemoveAccountFromDeviceWithFakeIdentity:
-    (FakeSystemIdentity*)fakeIdentity;
-
 // Opens the recent tabs and tap in the primary sign-in button.
 + (void)tapPrimarySignInButtonInRecentTabs;
 

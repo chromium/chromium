@@ -255,32 +255,6 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "adaptive_toolbar_app_interface.h",
-    "adaptive_toolbar_app_interface.mm",
-  ]
-  deps = [
-    "//ios/chrome/browser/infobars/model",
-    "//ios/chrome/browser/infobars/ui_bundled:eg_app_support+eg2",
-    "//ios/chrome/test/app:test_support",
-  ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-
-  sources = [
-    "adaptive_toolbar_app_interface.h",
-    "adaptive_toolbar_app_interface_stub.mm",
-  ]
-
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -289,7 +263,6 @@ source_set("eg2_tests") {
     "toolbar_egtest.mm",
   ]
   deps = [
-    ":eg_test_support+eg2",
     "//components/omnibox/browser:pref_names",
     "//components/strings",
     "//ios/chrome/app/strings",

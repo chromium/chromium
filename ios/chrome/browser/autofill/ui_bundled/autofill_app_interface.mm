@@ -573,17 +573,6 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
       .size();
 }
 
-+ (NSString*)firstLocalCreditCardCvc {
-  autofill::PaymentsDataManager& paymentsDataManager =
-      [self personalDataManager]->payments_data_manager();
-  const std::vector<const autofill::CreditCard*>& cards =
-      paymentsDataManager.GetLocalCreditCards();
-  if (cards.empty()) {
-    return nil;
-  }
-  return autofill::GetCreditCardCvcString(*cards[0]);
-}
-
 + (NSString*)exampleCreditCardName {
   autofill::CreditCard card = autofill::test::GetCreditCard();
   return base::SysUTF16ToNSString(
@@ -760,15 +749,6 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   }
   entityDataManager->RemoveEntityInstance(
       autofill::EntityInstance::EntityId(base::SysNSStringToUTF8(uuid)));
-}
-
-+ (void)removeEntityModifiedSince:(NSDate*)time {
-  autofill::EntityDataManager* entityDataManager = [self entityDataManager];
-  if (!entityDataManager) {
-    return;
-  }
-  entityDataManager->RemoveEntityInstancesModifiedBetween(
-      base::Time::FromNSDate(time), base::Time::Now());
 }
 
 + (BOOL)savePassportEntity {

@@ -200,16 +200,6 @@ bool ClearProfilePasswordStore() {
   return consumer.GetStoreResults().empty();
 }
 
-bool ClearAccountPasswordStore() {
-  GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
-      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
-  FakeStoreConsumer consumer;
-  if (!consumer.FetchAccountStoreResults()) {
-    return false;
-  }
-  return consumer.GetStoreResults().empty();
-}
-
 bool ClearPasswordStores() {
   GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
       FROM_HERE, base::Time(), base::Time(), base::DoNothing());
@@ -370,20 +360,8 @@ bool ClearPasswordStores() {
   return consumer.GetStoreResults().size();
 }
 
-+ (NSInteger)passwordAccountStoreResultsCount {
-  FakeStoreConsumer consumer;
-  if (!consumer.FetchAccountStoreResults()) {
-    return -1;
-  }
-  return consumer.GetStoreResults().size();
-}
-
 + (BOOL)clearProfilePasswordStore {
   return ClearProfilePasswordStore();
-}
-
-+ (BOOL)clearAccountPasswordStore {
-  return ClearAccountPasswordStore();
 }
 
 + (BOOL)clearPasswordStores {

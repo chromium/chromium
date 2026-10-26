@@ -20,9 +20,6 @@
 // Removes all credentials stored in the profile store.
 + (BOOL)clearProfilePasswordStore;
 
-// Removes all credentials stored in the account store.
-+ (BOOL)clearAccountPasswordStore;
-
 // Removes all credentials from both the profile and the account store.
 + (BOOL)clearPasswordStores;
 
@@ -82,9 +79,6 @@
 
 // Returns the number of password forms stored in the profile store.
 + (NSInteger)passwordProfileStoreResultsCount;
-
-// Returns the number of password forms stored in the account store.
-+ (NSInteger)passwordAccountStoreResultsCount;
 
 // Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;

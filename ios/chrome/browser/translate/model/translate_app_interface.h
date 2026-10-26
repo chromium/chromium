@@ -16,11 +16,6 @@
 // Tears down the testing set up for the app.
 + (void)tearDown;
 
-// Registers an observer of the IOSLanguageDetectionTabHelper to capture
-// the details of webpage language detection. The captured details can be
-// used for test verification.
-+ (void)setUpLanguageDetectionTabHelperObserver;
-
 // Deallocates the observer for IOSLanguageDetectionTabHelper.
 + (void)tearDownLanguageDetectionTabHelperObserver;
 
@@ -42,9 +37,6 @@
 // Returns the language code for the language determined from the webpage.
 + (NSString*)adoptedLanguage;
 
-+ (void)setAutoTranslateFromLanguage:(NSString*)source
-                          toLanguage:(NSString*)target;
-
 /// Whether user has set a preference to translate from `source` language to
 // `target` language.
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source
@@ -55,13 +47,6 @@
 
 // Whether user has set a preference to translate any pages on `hostName`.
 + (BOOL)isBlockedSite:(NSString*)hostName;
-
-// The following are Translate Infobar UI constants. Test client needs to know
-// to verify that Translate Infobar is behaving correctly.
-+ (int)infobarAutoAlwaysThreshold;
-+ (int)infobarAutoNeverThreshold;
-+ (int)infobarMaximumNumberOfAutoAlways;
-+ (int)infobarMaximumNumberOfAutoNever;
 
 @end
 
