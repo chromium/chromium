@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_static_library.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 
@@ -59,4 +61,50 @@ source_set("registry_controlled_domains") {
     "//base",
     "//url",
   ]
+}
+
+source_set("filename_util_shim") {
+  sources = [
+    "filename_util_rust_shim.cc",
+    "filename_util_rust_shim.h",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//url",
+  ]
+}
+
+rust_static_library("filename_util") {
+  crate_root = "filename_util.rs"
+  sources = [ "filename_util.rs" ]
+  allow_unsafe = true
+  public_deps = [
+    "//base:file_path",
+    "//url:url_rust",
+  ]
+  deps = [
+    ":filename_util_shim",
+    "//net",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+  cxx_bindings = [ "filename_util.rs" ]
+}
+
+rust_static_library("filename_util_unittest") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "filename_util_unittest.rs"
+  sources = [ "filename_util_unittest.rs" ]
+  deps = [
+    ":filename_util",
+    "//base:file_path",
+    "//testing/rust_gtest_interop",
+    "//url:url_rust",
+  ]
+}
+
+group("unittests") {
+  testonly = true
+  deps = [ ":filename_util_unittest" ]
 }
