@@ -118,7 +118,7 @@ public class WebApkUtilsTest {
         info.packageName = packageName;
         info.applicationInfo = new ApplicationInfo();
         info.applicationInfo.enabled = false;
-        mPackageManager.addPackage(info);
+        mPackageManager.installPackage(info);
 
         Assert.assertFalse(WebApkUtils.isInstalled(mContext.getPackageManager(), packageName));
     }

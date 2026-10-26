@@ -131,7 +131,7 @@ public class HostBrowserClassLoaderTest {
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.packageName = REMOTE_PACKAGE_NAME;
         packageInfo.versionCode = versionCode;
-        Shadows.shadowOf(mPackageManager).addPackage(packageInfo);
+        Shadows.shadowOf(mPackageManager).installPackage(packageInfo);
     }
 
     /**

@@ -15,12 +15,15 @@ import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.SHELL
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.START_URL;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.WEB_MANIFEST_URL;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -50,6 +53,7 @@ public class WebApkValidatorTest {
     private static final String TEST_DATA_DIR = "webapks/";
     private static final String TEST_STARTURL = "https://non-empty.com/starturl";
     private static final String MANIFEST_URL = "https://www.foo.com/manifest.json";
+    private static final String URL_HANDLER_ACTIVITY = "UrlHandlerActivity";
     private static final int SHELL_VERSION = 100;
 
     private static final byte[] EXPECTED_SIGNATURE =
@@ -106,25 +110,18 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testQueryWebApkPackageReturnsPackageIfTheURLCanBeHandled() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ true);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null));
-
-            assertEquals(
-                    WEBAPK_PACKAGE_NAME,
-                    WebApkValidator.queryFirstWebApkPackage(
-                            RuntimeEnvironment.getApplication(), URL_OF_WEBAPK));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertEquals(
+                WEBAPK_PACKAGE_NAME,
+                WebApkValidator.queryFirstWebApkPackage(
+                        RuntimeEnvironment.getApplication(), URL_OF_WEBAPK));
     }
 
     /**
@@ -133,23 +130,17 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testQueryWebApkPackageReturnsNullForNonBrowsableIntent() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ false);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null));
-
-            assertNull(
-                    WebApkValidator.queryFirstWebApkPackage(
-                            RuntimeEnvironment.getApplication(), URL_OF_WEBAPK));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertNull(
+                WebApkValidator.queryFirstWebApkPackage(
+                        RuntimeEnvironment.getApplication(), URL_OF_WEBAPK));
     }
 
     /**
@@ -158,24 +149,17 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testQueryWebApkPackageReturnsNullWhenNoWebApkHandlesTheURL() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ true);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null));
-
-            assertNull(
-                    WebApkValidator.queryFirstWebApkPackage(
-                            RuntimeEnvironment.getApplication(), URL_WITHOUT_WEBAPK));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertNull(
+                WebApkValidator.queryFirstWebApkPackage(
+                        RuntimeEnvironment.getApplication(), URL_WITHOUT_WEBAPK));
     }
 
     /**
@@ -184,28 +168,20 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testCanWebApkHandleUrlReturnsTrueIfTheURLCanBeHandled() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-            intent.setPackage(WEBAPK_PACKAGE_NAME);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ true);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null));
-
-            assertTrue(
-                    WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.getApplication(),
-                            WEBAPK_PACKAGE_NAME,
-                            URL_OF_WEBAPK,
-                            0));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertTrue(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.getApplication(),
+                        WEBAPK_PACKAGE_NAME,
+                        URL_OF_WEBAPK,
+                        0));
     }
 
     /**
@@ -214,51 +190,38 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testCanWebApkHandleUrlReturnsFalseIfWebApkIsNotValid() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-            intent.setPackage(WEBAPK_PACKAGE_NAME);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), TEST_STARTURL, null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ true);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), TEST_STARTURL, null));
-
-            assertFalse(
-                    WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.getApplication(),
-                            WEBAPK_PACKAGE_NAME,
-                            URL_OF_WEBAPK,
-                            0));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertFalse(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.getApplication(),
+                        WEBAPK_PACKAGE_NAME,
+                        URL_OF_WEBAPK,
+                        0));
     }
 
-    /** Tests {@link WebApkValidator.canWebApkHandleUrl()} returns false for a non-browsable WebAPK. */
+    /**
+     * Tests {@link WebApkValidator.canWebApkHandleUrl()} returns false for a non-browsable WebAPK.
+     */
     @Test
     public void testCanWebApkHandleUrlReturnsFalseForNonBrowsableIntent() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.setPackage(WEBAPK_PACKAGE_NAME);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ false);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null));
-
-            assertFalse(
-                    WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.getApplication(),
-                            WEBAPK_PACKAGE_NAME,
-                            URL_OF_WEBAPK,
-                            0));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertFalse(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.getApplication(),
+                        WEBAPK_PACKAGE_NAME,
+                        URL_OF_WEBAPK,
+                        0));
     }
 
     /**
@@ -267,28 +230,20 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testCanWebApkHandleUrlReturnsFalseWhenNoWebApkHandlesTheURL() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-            intent.setPackage(WEBAPK_PACKAGE_NAME);
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null));
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ true);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null));
-
-            assertFalse(
-                    WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.getApplication(),
-                            WEBAPK_PACKAGE_NAME,
-                            URL_WITHOUT_WEBAPK,
-                            0));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertFalse(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.getApplication(),
+                        WEBAPK_PACKAGE_NAME,
+                        URL_WITHOUT_WEBAPK,
+                        0));
     }
 
     /**
@@ -297,7 +252,7 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testIsValidWebApkReturnsTrueForValidWebApk() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME,
                         new Signature(EXPECTED_SIGNATURE),
@@ -315,7 +270,7 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testIsValidWebApkFalseForInvalidPackageName() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         INVALID_WEBAPK_PACKAGE_NAME,
                         new Signature(EXPECTED_SIGNATURE),
@@ -374,7 +329,7 @@ public class WebApkValidatorTest {
                     new Signature(EXPECTED_SIGNATURE),
                     new Signature(SIGNATURE_2)
                 };
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfo(WEBAPK_PACKAGE_NAME, signatures, null, TEST_STARTURL, null));
 
         assertFalse(
@@ -390,7 +345,7 @@ public class WebApkValidatorTest {
     public void testIsValidWebApkReturnsFalseForWebApkWithMultipleSignaturesWithoutAnyMatched() {
         Signature[] signatures =
                 new Signature[] {new Signature(SIGNATURE_1), new Signature(SIGNATURE_2)};
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfo(WEBAPK_PACKAGE_NAME, signatures, null, TEST_STARTURL, null));
 
         assertFalse(
@@ -407,7 +362,7 @@ public class WebApkValidatorTest {
 
         for (String filename : filenames) {
             mPackageManager.removePackage(packageName);
-            mPackageManager.addPackage(
+            mPackageManager.installPackage(
                     newPackageInfo(
                             packageName, signature, testFilePath(filename), TEST_STARTURL, null));
             assertTrue(
@@ -450,7 +405,7 @@ public class WebApkValidatorTest {
 
         for (String filename : filenames) {
             mPackageManager.removePackage(packageName);
-            mPackageManager.addPackage(
+            mPackageManager.installPackage(
                     newPackageInfo(
                             packageName, signature, testFilePath(filename), TEST_STARTURL, null));
             assertFalse(
@@ -466,7 +421,7 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testIsValidV1WebApkReturnsTrueForValidWebApk() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME,
                         new Signature(EXPECTED_SIGNATURE),
@@ -484,7 +439,7 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testIsValidV1WebApkFalseForInvalidPackageName() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         INVALID_WEBAPK_PACKAGE_NAME,
                         new Signature(EXPECTED_SIGNATURE),
@@ -501,7 +456,7 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testQueryBoundWebApkForManifestUrl() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME,
                         new Signature(EXPECTED_SIGNATURE),
@@ -514,10 +469,12 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.getApplication(), MANIFEST_URL));
     }
 
-    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid package name. */
+    /**
+     * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid package name.
+     */
     @Test
     public void testQueryBoundWebApkForManifestUrlWithInvalidPackageName() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         INVALID_WEBAPK_PACKAGE_NAME,
                         new Signature(EXPECTED_SIGNATURE),
@@ -532,7 +489,7 @@ public class WebApkValidatorTest {
     /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid signature. */
     @Test
     public void testQueryBoundWebApkForManifestUrlWithInvalidSignature() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), null, MANIFEST_URL));
 
@@ -541,10 +498,12 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.getApplication(), MANIFEST_URL));
     }
 
-    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid manifest URL. */
+    /**
+     * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid manifest URL.
+     */
     @Test
     public void testQueryBoundWebApkForManifestUrlWithInvalidManifestUrl() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), null, MANIFEST_URL));
 
@@ -559,7 +518,7 @@ public class WebApkValidatorTest {
      */
     @Test
     public void testIsValidWebApkWithOverridesSignature() {
-        mPackageManager.addPackage(
+        mPackageManager.installPackage(
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), TEST_STARTURL, null));
 
@@ -586,7 +545,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         webapkPackage.applicationInfo.metaData.remove(START_URL);
-        mPackageManager.addPackage(webapkPackage);
+        mPackageManager.installPackage(webapkPackage);
 
         WebApkValidator.setDisableValidationForTesting(true);
         assertFalse(
@@ -657,6 +616,30 @@ public class WebApkValidatorTest {
         return resolveInfo;
     }
 
+    /**
+     * Adds an activity to the installed package `packageName` with an intent filter for VIEW
+     * intents to the host of `url`.
+     *
+     * @param browsable Whether the intent filter has CATEGORY_BROWSABLE.
+     */
+    private void addUrlHandlerActivity(String packageName, String url, boolean browsable) {
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = packageName;
+        activityInfo.name = URL_HANDLER_ACTIVITY;
+        // Empty label, so that the deprecation toast shows an empty app name.
+        activityInfo.nonLocalizedLabel = "";
+        mPackageManager.addOrUpdateActivity(activityInfo);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        if (browsable) filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        Uri uri = Uri.parse(url);
+        filter.addDataScheme(uri.getScheme());
+        filter.addDataAuthority(uri.getHost(), null);
+        mPackageManager.addIntentFilterForActivity(
+                new ComponentName(packageName, URL_HANDLER_ACTIVITY), filter);
+    }
+
     private static PackageInfo newPackageInfo(
             String packageName,
             Signature[] signatures,
@@ -690,18 +673,10 @@ public class WebApkValidatorTest {
 
     private void addWebApkResolveInfoWithPackageName(
             String startUrl, String packageName, byte[] signature) {
-        try {
-            Intent intent = Intent.parseUri(startUrl, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-            intent.setPackage(packageName);
-
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(packageName));
-            mPackageManager.addPackage(
-                    newPackageInfoWithBrowserSignature(
-                            packageName, new Signature(signature), startUrl, null));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        mPackageManager.installPackage(
+                newPackageInfoWithBrowserSignature(
+                        packageName, new Signature(signature), startUrl, null));
+        addUrlHandlerActivity(packageName, startUrl, /* browsable= */ true);
     }
 
     @Test
@@ -743,8 +718,10 @@ public class WebApkValidatorTest {
             intent.setPackage(WEBAPK_PACKAGE_NAME);
 
             String differentPackage = "org.chromium.webapk.different";
+            // Intent filters never resolve an intent with a package to another package, so the
+            // deprecated API is needed to reach canWebApkHandleUrl()'s package check.
             mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(differentPackage));
-            mPackageManager.addPackage(
+            mPackageManager.installPackage(
                     newPackageInfoWithBrowserSignature(
                             differentPackage,
                             new Signature(EXPECTED_SIGNATURE),
@@ -772,7 +749,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         packageInfo.splitNames = new String[] {"split_feature"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertFalse(
                 WebApkValidator.isValidWebApk(
@@ -792,7 +769,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         packageInfo.applicationInfo.splitNames = new String[] {"split_feature"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertFalse(
                 WebApkValidator.isValidWebApk(
@@ -812,7 +789,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         packageInfo.applicationInfo.splitSourceDirs = new String[] {"/path/to/split.apk"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertFalse(
                 WebApkValidator.isValidWebApk(
@@ -832,7 +809,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         packageInfo.applicationInfo.splitPublicSourceDirs = new String[] {"/path/to/split.apk"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertFalse(
                 WebApkValidator.isValidWebApk(
@@ -849,7 +826,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         packageInfo.splitNames = new String[] {"split_feature"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertFalse(
                 WebApkValidator.isValidV1WebApk(
@@ -866,7 +843,7 @@ public class WebApkValidatorTest {
                 newPackageInfo(
                         packageName, signature, testFilePath("example.apk"), TEST_STARTURL, null);
         packageInfo.splitNames = new String[] {"split_feature"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertFalse(
                 WebApkValidator.isValidWebApk(RuntimeEnvironment.getApplication(), packageName));
@@ -879,7 +856,7 @@ public class WebApkValidatorTest {
                 newPackageInfoWithBrowserSignature(
                         WEBAPK_PACKAGE_NAME, new Signature(EXPECTED_SIGNATURE), null, MANIFEST_URL);
         packageInfo.splitNames = new String[] {"split_feature"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         assertNull(
                 WebApkValidator.queryBoundWebApkForManifestUrl(
@@ -889,30 +866,22 @@ public class WebApkValidatorTest {
     /** Tests {@link WebApkValidator#canWebApkHandleUrl} returns false for split APK. */
     @Test
     public void testCanWebApkHandleUrlReturnsFalseForSplitApk() {
-        try {
-            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
-            intent.setPackage(WEBAPK_PACKAGE_NAME);
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.installPackage(packageInfo);
+        addUrlHandlerActivity(WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, /* browsable= */ true);
 
-            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
-            PackageInfo packageInfo =
-                    newPackageInfoWithBrowserSignature(
-                            WEBAPK_PACKAGE_NAME,
-                            new Signature(EXPECTED_SIGNATURE),
-                            TEST_STARTURL,
-                            null);
-            packageInfo.splitNames = new String[] {"split_feature"};
-            mPackageManager.addPackage(packageInfo);
-
-            assertFalse(
-                    WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.getApplication(),
-                            WEBAPK_PACKAGE_NAME,
-                            URL_OF_WEBAPK,
-                            0));
-        } catch (URISyntaxException e) {
-            throw new AssertionError("URI is invalid.", e);
-        }
+        assertFalse(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.getApplication(),
+                        WEBAPK_PACKAGE_NAME,
+                        URL_OF_WEBAPK,
+                        0));
     }
 
     /**
@@ -928,7 +897,7 @@ public class WebApkValidatorTest {
                         TEST_STARTURL,
                         null);
         packageInfo.splitNames = new String[] {"split_feature"};
-        mPackageManager.addPackage(packageInfo);
+        mPackageManager.installPackage(packageInfo);
 
         WebApkValidator.setDisableValidationForTesting(true);
         assertFalse(

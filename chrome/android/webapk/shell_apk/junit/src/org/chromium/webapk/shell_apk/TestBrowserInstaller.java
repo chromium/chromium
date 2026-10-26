@@ -4,10 +4,11 @@
 
 package org.chromium.webapk.shell_apk;
 
-import android.content.pm.ActivityInfo;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 
 import org.robolectric.RuntimeEnvironment;
@@ -25,6 +26,11 @@ public class TestBrowserInstaller {
     public static final String COMPONENT_CLASS = "com.component.class.name";
 
     Set<String> mInstalledBrowsers = new HashSet<>();
+
+    // Intent filter priority for the next installed browser. Each browser gets a lower priority
+    // than the browsers installed before it, so the first installed browser resolves first and is
+    // the default browser.
+    private int mNextBrowserPriority;
 
     /** Changes the installed browsers to the passed-in list. */
     public void setInstalledModernBrowsers(String defaultBrowserPackage, String[] newPackages) {
@@ -54,9 +60,12 @@ public class TestBrowserInstaller {
         if (mInstalledBrowsers.contains(packageName)) return;
 
         ShadowPackageManager packageManager = getShadowPackageManager();
-        packageManager.addResolveInfoForIntent(
-                WebApkUtils.getQueryInstalledBrowsersIntent(), newResolveInfo(packageName));
-        packageManager.addPackage(newPackageInfo(packageName, versionName));
+        packageManager.installPackage(newPackageInfo(packageName, versionName));
+        ComponentName component = new ComponentName(packageName, COMPONENT_CLASS);
+        packageManager.addActivityIfNotPresent(component);
+        packageManager.addIntentFilterForActivity(
+                component, newBrowserIntentFilter(mNextBrowserPriority));
+        mNextBrowserPriority--;
 
         mInstalledBrowsers.add(packageName);
     }
@@ -73,8 +82,8 @@ public class TestBrowserInstaller {
         if (!mInstalledBrowsers.contains(packageName)) return;
 
         ShadowPackageManager packageManager = getShadowPackageManager();
-        packageManager.removeResolveInfosForIntent(
-                WebApkUtils.getQueryInstalledBrowsersIntent(), packageName);
+        // Also drops the intent filter, which removePackage() leaves behind.
+        packageManager.removeActivity(new ComponentName(packageName, COMPONENT_CLASS));
         packageManager.removePackage(packageName);
 
         mInstalledBrowsers.remove(packageName);
@@ -84,13 +93,15 @@ public class TestBrowserInstaller {
         return Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
     }
 
-    private static ResolveInfo newResolveInfo(String packageName) {
-        ActivityInfo activityInfo = new ActivityInfo();
-        activityInfo.packageName = packageName;
-        activityInfo.name = COMPONENT_CLASS;
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = activityInfo;
-        return resolveInfo;
+    /** Returns a filter which matches {@link WebApkUtils#getQueryInstalledBrowsersIntent()}. */
+    private static IntentFilter newBrowserIntentFilter(int priority) {
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        // HostBrowserUtils resolves the default browser with MATCH_DEFAULT_ONLY.
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        filter.addDataScheme("http");
+        filter.setPriority(priority);
+        return filter;
     }
 
     private static PackageInfo newPackageInfo(String packageName, String versionName) {

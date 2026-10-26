@@ -4,14 +4,17 @@
 
 package org.chromium.webapk.test;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.ProviderInfo;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PatternMatcher;
 
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
@@ -21,11 +24,10 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
-import java.net.URISyntaxException;
-
 /** Helper class for WebAPK JUnit tests. */
 public class WebApkTestHelper {
     private static final String SHARE_TARGET_ACTIVITY_CLASS_NAME_PREFIX = "TestShareTargetActivity";
+    private static final String URL_HANDLER_ACTIVITY_CLASS_NAME = "TestUrlHandlerActivity";
 
     /** Returns the simplest intent for launching a WebAPK. */
     public static Intent createMinimalWebApkIntent(String webApkPackageName, String url) {
@@ -51,30 +53,26 @@ public class WebApkTestHelper {
         Resources res = Mockito.mock(Resources.class);
         ShadowPackageManager.resources.put(packageName, res);
 
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.setPackage(packageName);
-
-        // Remove old data in case that we are overwriting an old WebAPK registration.
-        packageManager.removeResolveInfosForIntent(shareIntent, packageName);
-
-        String[] shareTargetActivityClassNames = null;
-        if (shareTargetMetaData != null) {
-            shareTargetActivityClassNames = new String[shareTargetMetaData.length];
-            for (int i = 0; i < shareTargetMetaData.length; ++i) {
-                shareTargetActivityClassNames[i] = getGeneratedShareTargetActivityClassName(i);
-                packageManager.addResolveInfoForIntent(
-                        shareIntent,
-                        newResolveInfo(
-                                packageName,
-                                shareTargetActivityClassNames[i],
-                                shareTargetMetaData[i]));
-            }
-        }
-
-        packageManager.addPackage(
+        // This replaces an old registration of the WebAPK, including its share target activities.
+        // The share target activities are added after the package is installed because
+        // ShadowPackageManager only accepts intent filters for activities added with
+        // addOrUpdateActivity(), not for activities in an installed PackageInfo.
+        packageManager.installPackage(
                 newPackageInfo(
-                        packageName, metaData, shareTargetActivityClassNames, shareTargetMetaData));
+                        packageName,
+                        metaData,
+                        /* shareTargetActivityClassNames= */ null,
+                        /* shareTargetMetaData= */ null));
+
+        if (shareTargetMetaData == null) return;
+
+        for (int i = 0; i < shareTargetMetaData.length; ++i) {
+            String className = getGeneratedShareTargetActivityClassName(i);
+            packageManager.addOrUpdateActivity(
+                    newActivityInfo(packageName, className, shareTargetMetaData[i]));
+            packageManager.addIntentFilterForActivity(
+                    new ComponentName(packageName, className), newShareTargetIntentFilter());
+        }
     }
 
     /** Returns generated share activity class name for the given index. */
@@ -82,18 +80,26 @@ public class WebApkTestHelper {
         return SHARE_TARGET_ACTIVITY_CLASS_NAME_PREFIX + index;
     }
 
-    /** Registers intent filter for the passed-in package name and URL. */
+    /**
+     * Registers intent filter for the passed-in package name and URL. The WebAPK must have been
+     * registered with {@link #registerWebApkWithMetaData} first.
+     */
     public static void addIntentFilterForUrl(String packageName, String url) {
         ShadowPackageManager packageManager =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-        try {
-            Intent deepLinkIntent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-            deepLinkIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-            deepLinkIntent.setPackage(packageName);
-            packageManager.addResolveInfoForIntent(
-                    deepLinkIntent, newResolveInfo(packageName, null, null));
-        } catch (URISyntaxException e) {
-        }
+        ComponentName component = new ComponentName(packageName, URL_HANDLER_ACTIVITY_CLASS_NAME);
+        packageManager.addActivityIfNotPresent(component);
+
+        // Matches the browsable VIEW intent which WebApkValidator builds for exactly this URL.
+        Uri uri = Uri.parse(url);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        filter.addDataScheme(uri.getScheme());
+        filter.addDataAuthority(
+                uri.getHost(), uri.getPort() == -1 ? null : String.valueOf(uri.getPort()));
+        filter.addDataPath(uri.getPath(), PatternMatcher.PATTERN_LITERAL);
+        packageManager.addIntentFilterForActivity(component, filter);
     }
 
     /** Sets the resource for the given package name. */
@@ -129,12 +135,11 @@ public class WebApkTestHelper {
         return packageInfo;
     }
 
-    private static ResolveInfo newResolveInfo(
-            String packageName, String activityClassName, Bundle activityMetaData) {
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo =
-                newActivityInfo(packageName, activityClassName, activityMetaData);
-        return resolveInfo;
+    /** Returns the share intent filter which a WebAPK's manifest declares for a share target. */
+    private static IntentFilter newShareTargetIntentFilter() {
+        IntentFilter filter = IntentFilter.create(Intent.ACTION_SEND, "text/plain");
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        return filter;
     }
 
     private static ActivityInfo newActivityInfo(

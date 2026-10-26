@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -1427,17 +1426,12 @@ public class WebApkUpdateManagerUnitTest {
      */
     @Test
     public void testShellApkOutOfDateInterval() {
+        // setUp() registered the WebAPK for REQUEST_UPDATE_FOR_SHELL_APK_VERSION. Mark it as
+        // updated now.
         ShadowPackageManager pm =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-        PackageInfo packageInfo =
-                WebApkTestHelper.newPackageInfo(
-                        WEBAPK_PACKAGE_NAME,
-                        createWebApkMetadata(
-                                defaultManifestData(), REQUEST_UPDATE_FOR_SHELL_APK_VERSION),
-                        null,
-                        null);
-        packageInfo.lastUpdateTime = TimeUtils.currentTimeMillis();
-        pm.addPackage(packageInfo);
+        pm.getInternalMutablePackageInfo(WEBAPK_PACKAGE_NAME).lastUpdateTime =
+                TimeUtils.currentTimeMillis();
 
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
         TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivity);

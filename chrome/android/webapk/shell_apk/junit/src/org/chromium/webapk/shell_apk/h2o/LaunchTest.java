@@ -17,9 +17,9 @@ import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.net.Uri;
@@ -73,6 +73,10 @@ public final class LaunchTest {
     private ShadowPackageManager mShadowPackageManager;
 
     private final TestBrowserInstaller mTestBrowserInstaller = new TestBrowserInstaller();
+
+    // Whether installBrowser() gives the browser a CustomTabsService which handles
+    // CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS.
+    private boolean mBrowserSupportsSiteSettings;
 
     @Before
     public void setUp() {
@@ -1057,13 +1061,19 @@ public final class LaunchTest {
         metadata.putBoolean(WebApkMetaDataKeys.ENABLE_SITE_SETTINGS_SHORTCUT, enableInMetadata);
         WebApkTestHelper.registerWebApkWithMetaData(sWebApkPackageName, metadata, null);
 
-        if (!addCategory) return;
+        // launchAndCheckBrowserLaunched() reinstalls the browser package, which would drop a
+        // service added here, so installBrowser() adds the service.
+        mBrowserSupportsSiteSettings = addCategory;
+    }
 
-        Intent intent =
-                new Intent().setAction("android.support.customtabs.action.CustomTabsService");
-        intent.setPackage(BROWSER_PACKAGE_NAME);
-        intent.addCategory(CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS);
-        mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
+    /** Adds a CustomTabsService which handles CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS. */
+    private void addSiteSettingsCustomTabsService(String browserPackageName) {
+        ComponentName service = new ComponentName(browserPackageName, "TestCustomTabsService");
+        mShadowPackageManager.addServiceIfNotPresent(service);
+        IntentFilter filter =
+                new IntentFilter("android.support.customtabs.action.CustomTabsService");
+        filter.addCategory(CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS);
+        mShadowPackageManager.addIntentFilterForService(service, filter);
     }
 
     /**
@@ -1253,6 +1263,9 @@ public final class LaunchTest {
     private void installBrowser(String browserPackageName) {
         mTestBrowserInstaller.uninstallBrowser(browserPackageName);
         mTestBrowserInstaller.installModernBrowser(browserPackageName);
+        if (mBrowserSupportsSiteSettings) {
+            addSiteSettingsCustomTabsService(browserPackageName);
+        }
     }
 
     private static void setAppTaskTopActivity(int taskId, Activity topActivity) {
