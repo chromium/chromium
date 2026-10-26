@@ -1,0 +1,6 @@
+monorail: {
+  component: "UI>Browser>Passwords"
+}
+buganizer_public: {
+  component_id: 1457410
+}

@@ -1,7 +1,1 @@
-monorail: {
-  component: "Speed>Tracing"
-}
-team_email: "tracing@chromium.org"
-buganizer_public: {
-  component_id: 1457213
-}
+mixins: "//chrome/android/java/src/org/chromium/chrome/browser/tracing/COMMON_METADATA"

@@ -1,0 +1,7 @@
+monorail: {
+  component: "Internals>Media>UI"
+}
+team_email: "media-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456838
+}

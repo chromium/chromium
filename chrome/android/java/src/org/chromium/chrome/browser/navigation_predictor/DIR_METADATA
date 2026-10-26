@@ -1,6 +1,1 @@
-monorail: {
-  component: "Internals>Preload"
-}
-buganizer_public: {
-  component_id: 1457018
-}
+mixins: "//chrome/browser/preloading/COMMON_METADATA"
