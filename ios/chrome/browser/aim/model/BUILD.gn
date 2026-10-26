@@ -50,10 +50,12 @@ source_set("aim_availability") {
     "ios_chrome_aim_eligibility_service_factory.mm",
   ]
   deps = [
+    "//build:branding_buildflags",
     "//components/contextual_tasks/public:feature_list",
     "//components/omnibox/browser",
     "//components/search",
     "//components/variations/service",
+    "//components/version_info",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
@@ -63,6 +65,7 @@ source_set("aim_availability") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
     "//ios/web/public",
+    "//net",
     "//ui/base",
   ]
   public_deps = [
@@ -114,6 +117,7 @@ source_set("unit_tests") {
   sources = [
     "ai_mode_button_service_ios_unittest.mm",
     "aim_tab_helper_unittest.mm",
+    "ios_chrome_aim_eligibility_service_factory_unittest.mm",
   ]
   deps = [
     ":aim_availability",
@@ -121,15 +125,20 @@ source_set("unit_tests") {
     ":tab_helper",
     ":test_support",
     "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/contextual_tasks/public:feature_list",
     "//components/favicon/core/test:test_support",
     "//components/favicon_base",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/keyed_service/core",
+    "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
     "//components/omnibox/common",
     "//components/search_engines",
     "//components/strings",
+    "//components/variations:test_support",
+    "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/favicon/model:test_support",
@@ -139,6 +148,9 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/favicon",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
