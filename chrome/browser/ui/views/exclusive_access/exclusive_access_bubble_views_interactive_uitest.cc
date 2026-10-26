@@ -328,9 +328,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
 }
 
 // This test is Windows-only because it tests Win32-specific pointer-lock
-// behavior (unadjusted movement drifting cursor to screen boundaries causing
-// DWM caption click interception) and utilizes Win32-specific APIs
-// (GetCursorPos).
+// behavior (unadjusted movement drifting the cursor to the fullscreen window's
+// top boundary, where resize-border hit testing can intercept clicks).
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
                        PointerLockUnadjustedMovementFullscreenClickAtTop) {
@@ -338,14 +337,17 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Focus the tab content.
-  ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
+  ui_test_utils::FocusView(browser(), VIEW_ID_TAB_CONTAINER);
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_TAB_CONTAINER,
+                                  /*focused=*/true);
 
   // Enter tab fullscreen.
-  EnterActiveTabFullscreen();
-  ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
-
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
+  ASSERT_EQ(true,
+            content::EvalJs(web_contents, "!!document.fullscreenElement"));
 
   // Set up listeners for lock and mouse events.
   ASSERT_TRUE(content::ExecJs(web_contents, R"(
@@ -362,10 +364,10 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   )"));
 
   // Send a click in the center of the window to trigger pointer lock.
-  gfx::Rect window_bounds =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetBoundsInScreen();
-  gfx::Point center_point = window_bounds.CenterPoint();
-  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center_point));
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  const gfx::Point center = widget->GetWindowBoundsInScreen().CenterPoint();
+  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
   ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
       ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP));
 
@@ -375,33 +377,49 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
                 .ExtractString()
                 .empty();
   }));
-  EXPECT_EQ(content::EvalJs(web_contents, "window.lockStatus").ExtractString(),
+  ASSERT_EQ(content::EvalJs(web_contents, "window.lockStatus").ExtractString(),
             "success");
+  ASSERT_EQ(
+      1, content::EvalJs(web_contents, "window.mousedownCount").ExtractInt());
+  ASSERT_EQ(1,
+            content::EvalJs(web_contents, "window.mouseupCount").ExtractInt());
 
-  // Move the mouse to the top edge of the screen (y = bounds.y()).
-  gfx::Point top_point(window_bounds.CenterPoint().x(), window_bounds.y());
-  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(top_point));
+  // Verify capture is not held. Otherwise, the click could be delivered to the
+  // page regardless of the hit-test result.
+  ASSERT_EQ(nullptr, ::GetCapture());
 
-  // Check the physical cursor position.
-  // The cursor should have drifted to the top and been clipped by ClipCursor
-  // (which insets by 5 pixels).
-  POINT cursor_pos;
-  ASSERT_TRUE(::GetCursorPos(&cursor_pos));
-  EXPECT_LE(cursor_pos.y, 5);
+  // Move the mouse to the top of the pointer-lock clipping region.
+  RECT clip;
+  ASSERT_TRUE(::GetClipCursor(&clip));
+  INPUT move = {};
+  move.type = INPUT_MOUSE;
+  move.mi.dy = -10000;
+  move.mi.dwFlags = MOUSEEVENTF_MOVE;
+  ASSERT_EQ(1u, ::SendInput(1, &move, sizeof(move)));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    POINT position;
+    return ::GetCursorPos(&position) && position.y == clip.top;
+  }));
 
   // Click at the top edge.
-  ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
+  ASSERT_TRUE(ui_controls::SendMouseEvents(
       ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP));
 
+  // Wait for the top-edge mouse down and up events to reach the page.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(
+               web_contents,
+               "window.mousedownCount >= 2 && window.mouseupCount >= 2")
+        .ExtractBool();
+  }));
+
   // Check if mouse down and up events were registered on the page.
-  // With the OnNCHitTest fix, the click should be routed to the client area
-  // and reach the page.
   EXPECT_EQ(
       2, content::EvalJs(web_contents, "window.mousedownCount").ExtractInt());
   EXPECT_EQ(2,
             content::EvalJs(web_contents, "window.mouseupCount").ExtractInt());
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 // Menus are excluded on Mac because `MenuRunner` runs a blocking native menu
 // there, and because the fullscreen transition only cancels menus once the
