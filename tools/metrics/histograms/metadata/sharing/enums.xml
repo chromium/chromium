@@ -92,7 +92,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SendTabToSelfAutoOpenOutcome) -->
 
 <enum name="SendTabToSelfAutoOpenOutcome">
-  <int value="0" label="Unopened immediately (no window or in background)"/>
+  <int value="0"
+      label="(Deprecated) Unopened immediately (no window or in background)"/>
   <int value="1" label="First tab opened in foreground (Desktop)"/>
   <int value="2" label="Tabs opened immediately in background"/>
   <int value="3" label="Tabs opened upon browser activation"/>

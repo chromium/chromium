@@ -40,7 +40,7 @@ namespace {
 
 NSString* const kTestUrl = @"https://www.example.com";
 constexpr char kAutoOpenOutcomeHistogram[] =
-    "Sharing.SendTabToSelf.AutoOpenOutcome2";
+    "Sharing.SendTabToSelf.AutoOpenOutcome3";
 
 }  // namespace
 
@@ -188,8 +188,10 @@ TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
   EXPECT_EQ(model_->last_activated_entry_point(),
             send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
 
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.AutoOpenedImmediately", 0);
   histogram_tester.ExpectUniqueSample(
-      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      kAutoOpenOutcomeHistogram,
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "IOS.Notifications.SendTab.Interaction"),
@@ -248,6 +250,8 @@ TEST_F(SendTabPushNotificationClientTest,
 
   // Verify that only the single notification outcome was recorded, and NO
   // reentrant kTabsOpenedInBackgroundUponActivation was recorded.
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.AutoOpenedImmediately", 0);
   histogram_tester.ExpectUniqueSample(
       kAutoOpenOutcomeHistogram,
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
@@ -289,11 +293,9 @@ TEST_F(SendTabPushNotificationClientTest,
   EXPECT_EQ(model_->last_activated_entry_point(),
             send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
 
-  histogram_tester.ExpectTotalCount(kAutoOpenOutcomeHistogram, 2);
-  histogram_tester.ExpectBucketCount(
-      kAutoOpenOutcomeHistogram,
-      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenedImmediately", false, 1);
+  histogram_tester.ExpectUniqueSample(
       kAutoOpenOutcomeHistogram,
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
   EXPECT_EQ(user_action_tester.GetActionCount(

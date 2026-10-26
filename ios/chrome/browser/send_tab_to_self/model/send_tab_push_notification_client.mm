@@ -173,13 +173,11 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
   if (!entry) {
     // When a push notification is tapped before Sync has downloaded the entry,
     // `MarkEntryOpened()` buffers the GUID in `unknown_opened_entries_` so
-    // `DisplayNewEntries()` will never be called for it. Record
-    // `kUnopenedImmediately` here to match Android, where this bucket is
-    // logged whenever an entry is not auto-opened right away (if `entry` is
-    // already in the model, `DisplayNewEntries()` has already recorded
-    // `kUnopenedImmediately`).
-    send_tab_to_self::RecordAutoOpenOutcome(
-        send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately);
+    // `DisplayNewEntries()` will never be called for it. Record `false` here
+    // to match Android, where `AutoOpenedImmediately` is logged as `false`
+    // whenever an entry is not auto-opened right away (if `entry` is already
+    // in the model, `DisplayNewEntries()` has already recorded it).
+    send_tab_to_self::RecordAutoOpenedImmediately(false);
   }
   send_tab_to_self::RecordAutoOpenOutcome(
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification);

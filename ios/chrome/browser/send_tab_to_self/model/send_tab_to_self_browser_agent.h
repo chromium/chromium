@@ -179,7 +179,8 @@ class SendTabToSelfBrowserAgent
   // Timestamp of when the app most recently entered the foreground, or null
   // while the app is in the background. Used to distinguish entries shared
   // while Chrome was backgrounded from entries shared during the current
-  // foreground session when recording AutoOpenOutcome metrics.
+  // foreground session when recording AutoOpenedImmediately and AutoOpenOutcome
+  // metrics.
   base::Time foreground_session_start_;
 
   base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};

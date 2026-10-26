@@ -173,12 +173,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest,
             browser()->GetTabStripModel()->GetWebContentsAt(2)->GetURL());
   EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
-  histogram_tester.ExpectBucketCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenedImmediately", true, 2);
+  histogram_tester.ExpectBucketCount("Sharing.SendTabToSelf.AutoOpenOutcome3",
                                      AutoOpenOutcome::kTabOpenedInForeground,
                                      1);
   histogram_tester.ExpectBucketCount(
-      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      "Sharing.SendTabToSelf.AutoOpenOutcome3",
       AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome3",
+                                    2);
 
   // Tab activation dispatches visibility changes asynchronously on macOS.
   // Wait for the model activation callback before asserting.
@@ -238,8 +242,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest,
   // The entries should not be opened yet because the browser is inactive.
   EXPECT_EQ(original_tab_count, browser()->GetTabStripModel()->count());
 
-  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome2",
-                                      AutoOpenOutcome::kUnopenedImmediately, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenedImmediately", false, 2);
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome3",
+                                    0);
 
   EXPECT_FALSE(
       ToastService::From(browser())->toast_controller()->IsShowingToast());
@@ -258,8 +264,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest,
             browser()->GetTabStripModel()->GetWebContentsAt(2)->GetURL());
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
-  histogram_tester.ExpectBucketCount(
-      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome3",
       AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation, 2);
 
   EXPECT_EQ(
@@ -540,8 +546,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest, AutoOpenOnRestart) {
   EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
-  histogram_tester.ExpectBucketCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
-                                     AutoOpenOutcome::kUnopenedImmediately, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenedImmediately", false, 2);
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome3",
+                                    0);
 
   // Open a new browser with the same profile.
   BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
@@ -557,8 +565,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAutoOpenBrowserTest, AutoOpenOnRestart) {
             new_browser->GetTabStripModel()->GetWebContentsAt(2)->GetURL());
   EXPECT_EQ(0, new_browser->GetTabStripModel()->active_index());
 
-  histogram_tester.ExpectBucketCount(
-      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome3",
       AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation, 2);
 }
 #endif  // !BUILDFLAG(IS_LINUX)

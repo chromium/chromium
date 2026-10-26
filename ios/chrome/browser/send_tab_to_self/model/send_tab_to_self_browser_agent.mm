@@ -189,9 +189,10 @@ void RecordScrollPositionResult(
   }
 }
 
-// Records AutoOpenOutcome metrics for `entry` when it is auto-opened in the
-// background immediately upon receipt in `DisplayNewEntries`.
-void RecordAutoOpenOutcomeForNewEntry(
+// Records AutoOpenedImmediately and AutoOpenOutcome metrics for `entry` when it
+// is auto-opened in the background immediately upon receipt in
+// `DisplayNewEntries`.
+void RecordAutoOpenMetricsForNewEntry(
     const send_tab_to_self::SendTabToSelfEntry* entry,
     base::Time foreground_session_start) {
   // On iOS, entries shared while the user was away from Chrome can still take
@@ -204,23 +205,19 @@ void RecordAutoOpenOutcomeForNewEntry(
   //    suspends Sync while backgrounded and only downloads the entry shortly
   //    after Chrome returns to the foreground.
   // Record both cases like other platforms do for entries shared while away:
-  // `kUnopenedImmediately` followed by
-  // `kTabsOpenedInBackgroundUponActivation`. Note that `GetSharedTime()` uses
-  // the sending device's clock, so clock skew between devices can misclassify
-  // entries shared close to the foreground transition.
+  // `AutoOpenedImmediately` as `false` followed by
+  // `AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation`. Note that
+  // `GetSharedTime()` uses the sending device's clock, so clock skew between
+  // devices can misclassify entries shared close to the foreground transition.
   const bool shared_while_away =
       foreground_session_start.is_null() ||
       entry->GetSharedTime() < foreground_session_start;
-  if (shared_while_away) {
-    send_tab_to_self::RecordAutoOpenOutcome(
-        send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately);
-    send_tab_to_self::RecordAutoOpenOutcome(
-        send_tab_to_self::AutoOpenOutcome::
-            kTabsOpenedInBackgroundUponActivation);
-  } else {
-    send_tab_to_self::RecordAutoOpenOutcome(
-        send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
-  }
+  send_tab_to_self::RecordAutoOpenedImmediately(!shared_while_away);
+  send_tab_to_self::RecordAutoOpenOutcome(
+      shared_while_away ? send_tab_to_self::AutoOpenOutcome::
+                              kTabsOpenedInBackgroundUponActivation
+                        : send_tab_to_self::AutoOpenOutcome::
+                              kTabsOpenedImmediatelyInBackground);
 }
 
 }  // namespace
@@ -306,7 +303,7 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
   if (should_auto_open) {
     for (const send_tab_to_self::SendTabToSelfEntry* entry : new_entries) {
       OpenEntryInBackgroundTab(entry);
-      RecordAutoOpenOutcomeForNewEntry(entry, foreground_session_start_);
+      RecordAutoOpenMetricsForNewEntry(entry, foreground_session_start_);
     }
     // Only display the infobar banner if the active WebState is currently
     // visible (i.e., user is not in the Tab Grid screen or a Settings page).
@@ -315,10 +312,7 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
                      new_entries.size());
     }
   } else {
-    for (size_t ii = 0; ii < new_entries.size(); ++ii) {
-      send_tab_to_self::RecordAutoOpenOutcome(
-          send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately);
-    }
+    send_tab_to_self::RecordAutoOpenedImmediately(false, new_entries.size());
   }
 }
 
@@ -409,7 +403,8 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
 
 void SendTabToSelfBrowserAgent::RegisterAppLifecycleObservers() {
   // Observe app background and foreground transitions to track when the
-  // current foreground session started for AutoOpenOutcome metrics.
+  // current foreground session started for AutoOpenedImmediately and
+  // AutoOpenOutcome metrics.
   // UIApplicationDidEnterBackgroundNotification and
   // UIApplicationWillEnterForegroundNotification are used instead of
   // active/inactive notifications so that transient inactive states (such as

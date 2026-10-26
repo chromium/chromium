@@ -398,22 +398,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SendTabToSelf.AutoOpenOutcome2"
+<histogram name="Sharing.SendTabToSelf.AutoOpenedImmediately"
+    enum="BooleanOpened" expires_after="2027-03-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records whether a received Send Tab To Self entry was automatically opened
+    immediately upon arrival (true) or not (false), for example because the app
+    was in the background, had no active window, or had no visible tab. Recorded
+    once per entry when it is received and evaluated for auto-opening (or when a
+    push notification is tapped on iOS before Sync downloads the entry).
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendTabToSelf.AutoOpenOutcome3"
     enum="SendTabToSelfAutoOpenOutcome" expires_after="2027-03-30">
   <owner>ankushkush@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
-    Outcome of an attempt to automatically open a received Send Tab To Self
-    entry in the foreground. Recorded whenever a new entry is received and
-    evaluated for auto-opening.
-
-    Prior to M157, on iOS, entries shared while the app was backgrounded or
-    closed and auto-opened upon returning to the foreground (or while in the
-    background) were recorded as &quot;Tabs Opened Immediately in
-    Background&quot; instead of &quot;Unopened Immediately&quot; followed by
-    &quot;Tabs Opened in Background Upon Activation&quot;, and push notification
-    taps before Sync downloaded the entry did not record &quot;Unopened
-    Immediately&quot;.
+    The mechanism by which a received Send Tab To Self entry was opened.
+    Recorded when opening a tab is triggered (either auto-opened immediately,
+    auto-opened delayed upon activation, or opened via notification tap).
   </summary>
 </histogram>
 

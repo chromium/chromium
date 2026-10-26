@@ -167,6 +167,8 @@ void AndroidNotificationHandler::DisplayNewEntries(
   content::WebContents* const target_web_contents = GetActiveWebContents(
       /*require_visible=*/!base::FeatureList::IsEnabled(
           kSendTabToSelfSupportAutoOpenInTabGrid));
+  RecordAutoOpenedImmediately(target_web_contents != nullptr,
+                              new_entries.size());
 
   if (target_web_contents) {
     // If there is a target tab (i.e. Chrome is active / in the foreground),
@@ -178,7 +180,6 @@ void AndroidNotificationHandler::DisplayNewEntries(
     // Chrome is *not* in the foreground, so show notifications for the entries.
     for (const SendTabToSelfEntry* entry : new_entries) {
       ShowNotification(*entry);
-      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
     }
   }
 }

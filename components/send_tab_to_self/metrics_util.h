@@ -75,7 +75,7 @@ void RecordSendResult(SendTabToSelfResult result);
 // Records the status of a received STTS notification.
 void RecordNotificationStatus(NotificationStatus status);
 
-// Status of the auto-open attempt for a received STTS tab.
+// Outcome of an auto-open attempt when opening a tab is triggered.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -83,12 +83,7 @@ void RecordNotificationStatus(NotificationStatus status);
 //   org.chromium.chrome.browser.share.send_tab_to_self)
 // LINT.IfChange(AutoOpenOutcome)
 enum class AutoOpenOutcome {
-  // Tab(s) received but could not be opened immediately. This happens when:
-  // - Desktop: No active browser window is available.
-  // - Android: The app is in the background (a system notification is shown).
-  // - iOS: The app is in the background or the active tab is not visible (e.g.,
-  //   user is in the Tab Grid).
-  kUnopenedImmediately = 0,
+  // Deprecated: kUnopenedImmediately = 0,
 
   // Tab(s) opened immediately upon receipt (browser was active).
   kTabOpenedInForeground = 1,  // Desktop only (single tab).
@@ -113,6 +108,11 @@ enum class AutoOpenOutcome {
   kMaxValue = kDeprecatedUnopenedUponActivation,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfAutoOpenOutcome)
+
+// Records whether received STTS tab(s) were auto-opened immediately upon
+// arrival (`true`) or not (`false`). `count` is the number of entries being
+// recorded.
+void RecordAutoOpenedImmediately(bool opened_immediately, size_t count = 1);
 
 // Records the outcome of an auto-open attempt.
 void RecordAutoOpenOutcome(AutoOpenOutcome outcome);

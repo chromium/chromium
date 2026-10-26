@@ -56,8 +56,11 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     return;
   }
 
+  BrowserWindowInterface* const browser = GetActiveBrowser();
+  RecordAutoOpenedImmediately(browser != nullptr, new_entries.size());
+
   // If there is an active browser for this profile, open the tabs immediately.
-  if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
+  if (browser) {
     // Open the first tab in the foreground and all the others in the
     // background.
     OpenEntryInNewForegroundTab(profile_, *new_entries[0],
@@ -79,11 +82,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     ToastService::From(browser)->toast_controller()->MaybeShowToast(
         std::move(params));
   } else {
-    // If no browser is active, record the entries as pending and wait for
-    // a browser window to be activated.
-    for (size_t ii = 0; ii < new_entries.size(); ++ii) {
-      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
-    }
+    // If no browser is active, wait for a browser window to be activated.
     StartObservingBrowserCollection();
   }
 }
