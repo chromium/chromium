@@ -24,6 +24,8 @@ class DeviceAttributeApi {
 
   virtual void ReportNotAffiliatedError(NotificationCallback callback) = 0;
   virtual void ReportNotAllowedError(NotificationCallback callback) = 0;
+  virtual void ReportNotSupportedPlatformError(
+      NotificationCallback callback) = 0;
   virtual void GetDirectoryId(
       blink::mojom::DeviceAPIService::GetDirectoryIdCallback callback) = 0;
   virtual void GetHostname(
@@ -44,6 +46,7 @@ class DeviceAttributeApiImpl : public DeviceAttributeApi {
 
   void ReportNotAffiliatedError(NotificationCallback callback) override;
   void ReportNotAllowedError(NotificationCallback callback) override;
+  void ReportNotSupportedPlatformError(NotificationCallback callback) override;
   void GetDirectoryId(
       blink::mojom::DeviceAPIService::GetDirectoryIdCallback callback) override;
   void GetHostname(

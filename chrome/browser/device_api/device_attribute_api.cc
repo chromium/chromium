@@ -29,10 +29,8 @@ constexpr char kNoDeviceAttributesPermissionErrorMessage[] =
     "The current origin cannot use this web API because it was not granted the "
     "'device-attributes' permission.";
 
-#if !BUILDFLAG(IS_CHROMEOS)
-const char kNotSupportedPlatformErrorMessage[] =
+constexpr char kNotSupportedPlatformErrorMessage[] =
     "This web API is not supported on the current platform.";
-#endif
 
 }  // namespace
 
@@ -50,6 +48,11 @@ void DeviceAttributeApiImpl::ReportNotAllowedError(
       base::unexpected(kNoDeviceAttributesPermissionErrorMessage));
 }
 
+void DeviceAttributeApiImpl::ReportNotSupportedPlatformError(
+    NotificationCallback callback) {
+  std::move(callback).Run(base::unexpected(kNotSupportedPlatformErrorMessage));
+}
+
 void DeviceAttributeApiImpl::GetDirectoryId(
     DeviceAPIService::GetDirectoryIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -63,7 +66,7 @@ void DeviceAttributeApiImpl::GetDirectoryId(
     std::move(callback).Run(blink::mojom::DeviceAttributeValue::New(attribute));
   }
 #else  // Other platforms
-  std::move(callback).Run(base::unexpected(kNotSupportedPlatformErrorMessage));
+  ReportNotSupportedPlatformError(std::move(callback));
 #endif
 }
 
@@ -77,7 +80,7 @@ void DeviceAttributeApiImpl::GetHostname(
           ->GetHostnameChosenByAdministrator();
   std::move(callback).Run(blink::mojom::DeviceAttributeValue::New(attribute));
 #else  // Other platforms
-  std::move(callback).Run(base::unexpected(kNotSupportedPlatformErrorMessage));
+  ReportNotSupportedPlatformError(std::move(callback));
 #endif
 }
 
@@ -91,7 +94,7 @@ void DeviceAttributeApiImpl::GetSerialNumber(
                 : std::nullopt));
 
 #else  // Other platforms
-  std::move(callback).Run(base::unexpected(kNotSupportedPlatformErrorMessage));
+  ReportNotSupportedPlatformError(std::move(callback));
 #endif
 }
 
@@ -108,7 +111,7 @@ void DeviceAttributeApiImpl::GetAnnotatedAssetId(
     std::move(callback).Run(blink::mojom::DeviceAttributeValue::New(attribute));
   }
 #else  // Other platforms
-  std::move(callback).Run(base::unexpected(kNotSupportedPlatformErrorMessage));
+  ReportNotSupportedPlatformError(std::move(callback));
 #endif
 }
 
@@ -125,6 +128,6 @@ void DeviceAttributeApiImpl::GetAnnotatedLocation(
     std::move(callback).Run(blink::mojom::DeviceAttributeValue::New(attribute));
   }
 #else  // Other platforms
-  std::move(callback).Run(base::unexpected(kNotSupportedPlatformErrorMessage));
+  ReportNotSupportedPlatformError(std::move(callback));
 #endif
 }

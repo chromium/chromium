@@ -1274,6 +1274,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_browsing_data_browsertest.cc",
     "isolated_web_apps/isolated_web_app_csp_browsertest.cc",
     "isolated_web_apps/isolated_web_app_dev_tools_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_device_attributes_browsertest.cc",
     "isolated_web_apps/isolated_web_app_entitlements_browsertest.cc",
     "isolated_web_apps/isolated_web_app_error_page_browsertest.cc",
     "isolated_web_apps/isolated_web_app_file_handling_browsertest.cc",
@@ -1331,7 +1332,6 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     sources += [
       "commands/install_app_from_verified_manifest_command_browsertest.cc",
-      "isolated_web_apps/isolated_web_app_device_attributes_browsertest.cc",
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",

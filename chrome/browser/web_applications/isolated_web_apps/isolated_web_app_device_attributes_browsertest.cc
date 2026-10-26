@@ -2,23 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <string>
 #include <tuple>
 
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -29,15 +44,11 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
-#include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 namespace {
 
-using ::testing::Eq;
 using ::testing::HasSubstr;
 
 constexpr std::array<const char*, 5> kDeviceAttributeNames = {
@@ -52,6 +63,10 @@ content::EvalJsResult CallDeviceAttributesApi(
                                              {attribute_name}, nullptr));
 }
 
+constexpr char kPermissionsPolicyError[] =
+    "Permissions-Policy: device-attributes are disabled.";
+
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kDeviceAnnotatedAssetId[] = "iwa_test_asset_id";
 constexpr char kDeviceAnnotatedLocation[] = "iwa_test_location";
 constexpr char kDeviceDirectoryApiId[] = "iwa_test_directory_id";
@@ -68,9 +83,6 @@ constexpr char kTestAffiliationId[] = "test-affiliation-id";
 
 constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
-
-constexpr char kPermissionsPolicyError[] =
-    "Permissions-Policy: device-attributes are disabled.";
 
 constexpr char kNoDeviceAttributesPermissionErrorMessage[] =
     "The current origin cannot use this web API because it was not granted the "
@@ -91,8 +103,14 @@ struct IsolatedWebAppDeviceAttributesBrowserTestParams {
         user_affiliated(std::get<2>(t)),
         permissions_policy(std::get<3>(t)) {}
 };
+#else
+constexpr char kNotSupportedPlatformErrorMessage[] =
+    "This web API is not supported on the current platform.";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
+
+#if BUILDFLAG(IS_CHROMEOS)
 
 class IsolatedWebAppDeviceAttributesBrowserTest
     : public IsolatedWebAppBrowserTestHarness,
@@ -380,5 +398,126 @@ INSTANTIATE_TEST_SUITE_P(
           info.param.user_affiliated ? "Affiliated" : "Unaffiliated",
           info.param.permissions_policy ? "Granted" : "Denied");
     });
+
+#else  // !BUILDFLAG(IS_CHROMEOS)
+
+class IsolatedWebAppDeviceAttributesDefaultFeaturesNonChromeOSBrowserTest
+    : public IsolatedWebAppBrowserTestHarness {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebAppDevMode};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDeviceAttributesDefaultFeaturesNonChromeOSBrowserTest,
+    DevModeIwaWithPermissionsPolicyLaunchesWithoutCrash) {
+  auto manifest_builder = ManifestBuilder().AddPermissionsPolicy(
+      network::mojom::PermissionsPolicyFeature::kDeviceAttributes,
+      /*self=*/true, {});
+  std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+      IsolatedWebAppBuilder(manifest_builder).BuildBundle();
+  bundle->TrustSigningKey();
+  IsolatedWebAppUrlInfo url_info =
+      bundle
+          ->InstallWithSource(profile(),
+                              &IsolatedWebAppInstallSource::FromDevUi)
+          .value();
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(app_frame, nullptr);
+  EXPECT_EQ(
+      "undefined",
+      content::EvalJs(app_frame, "typeof navigator.managed.getSerialNumber"));
+}
+
+class IsolatedWebAppDeviceAttributesNonChromeOSBrowserTest
+    : public IsolatedWebAppBrowserTestHarness {
+ public:
+  IsolatedWebAppDeviceAttributesNonChromeOSBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kIsolatedWebAppDevMode, blink::features::kDeviceAttributes},
+        {});
+  }
+
+ protected:
+  enum class InstallType { kDevMode, kPolicy };
+
+  IsolatedWebAppUrlInfo InstallIwa(InstallType install_type,
+                                   bool grant_permissions_policy) {
+    auto manifest_builder = ManifestBuilder();
+    if (grant_permissions_policy) {
+      manifest_builder.AddPermissionsPolicy(
+          network::mojom::PermissionsPolicyFeature::kDeviceAttributes,
+          /*self=*/true, {});
+    }
+    std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(manifest_builder).BuildBundle();
+    bundle->TrustSigningKey();
+    switch (install_type) {
+      case InstallType::kDevMode:
+        return bundle
+            ->InstallWithSource(profile(),
+                                &IsolatedWebAppInstallSource::FromDevUi)
+            .value();
+      case InstallType::kPolicy:
+        return bundle
+            ->InstallWithSource(
+                profile(), &IsolatedWebAppInstallSource::FromExternalPolicy)
+            .value();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDeviceAttributesNonChromeOSBrowserTest,
+    DevModeIwaWithPermissionsPolicyReturnsNotSupportedError) {
+  IsolatedWebAppUrlInfo url_info =
+      InstallIwa(InstallType::kDevMode, /*grant_permissions_policy=*/true);
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(app_frame, nullptr);
+
+  for (const char* attribute_name : kDeviceAttributeNames) {
+    EXPECT_THAT(CallDeviceAttributesApi(app_frame, attribute_name),
+                content::EvalJsResult::ErrorIs(
+                    HasSubstr(kNotSupportedPlatformErrorMessage)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDeviceAttributesNonChromeOSBrowserTest,
+    DevModeIwaWithoutPermissionsPolicyReturnsPermissionsPolicyError) {
+  IsolatedWebAppUrlInfo url_info =
+      InstallIwa(InstallType::kDevMode, /*grant_permissions_policy=*/false);
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(app_frame, nullptr);
+
+  for (const char* attribute_name : kDeviceAttributeNames) {
+    EXPECT_THAT(
+        CallDeviceAttributesApi(app_frame, attribute_name),
+        content::EvalJsResult::ErrorIs(HasSubstr(kPermissionsPolicyError)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppDeviceAttributesNonChromeOSBrowserTest,
+    PolicyInstalledIwaWithPermissionsPolicyReturnsNotSupportedError) {
+  IsolatedWebAppUrlInfo url_info =
+      InstallIwa(InstallType::kPolicy, /*grant_permissions_policy=*/true);
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(app_frame, nullptr);
+
+  for (const char* attribute_name : kDeviceAttributeNames) {
+    EXPECT_THAT(CallDeviceAttributesApi(app_frame, attribute_name),
+                content::EvalJsResult::ErrorIs(
+                    HasSubstr(kNotSupportedPlatformErrorMessage)));
+  }
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

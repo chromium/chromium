@@ -13,14 +13,19 @@
 #include "base/memory/self_deleting.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace content {
 class RenderFrameHost;
 }
@@ -29,8 +34,12 @@ class RenderFrameHost;
 // API. Available only to trusted web applications.
 class DeviceServiceImpl final
     : public content::DocumentService<blink::mojom::DeviceAPIService>,
-      public web_app::WebAppInstallManagerObserver,
-      public content_settings::Observer {
+      public web_app::WebAppInstallManagerObserver
+#if BUILDFLAG(IS_CHROMEOS)
+    ,
+      public content_settings::Observer
+#endif  // BUILDFLAG(IS_CHROMEOS)
+{
  public:
   using DeviceAttributeCallback = base::OnceCallback<void(
       base::expected<blink::mojom::DeviceAttributeValuePtr, std::string>)>;
@@ -81,11 +90,13 @@ class DeviceServiceImpl final
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+#if BUILDFLAG(IS_CHROMEOS)
   // content_settings::Observer:
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void OnDisposingIfNeeded();
 
@@ -93,8 +104,10 @@ class DeviceServiceImpl final
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
+#if BUILDFLAG(IS_CHROMEOS)
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DeviceAttributeApi> device_attribute_api_;
 };
 

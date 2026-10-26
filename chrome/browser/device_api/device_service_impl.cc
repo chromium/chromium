@@ -15,9 +15,7 @@
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -28,7 +26,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/origin.h"
@@ -40,6 +37,7 @@
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/user_manager.h"
@@ -103,6 +101,7 @@ GetRegistrar(content::RenderFrameHost& host) {
   return web_app_provider->registrar_unsafe();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Check whether an app with the target origin is in the WebAppRegistrar and is
 // a dev mode installed IWA.
 bool IsDevModeInstalledIwaOrigin(content::RenderFrameHost& host,
@@ -117,14 +116,25 @@ bool IsDevModeInstalledIwaOrigin(content::RenderFrameHost& host,
 }
 
 bool IsAffiliatedUser(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return (user != nullptr) && user->IsAffiliated();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+bool IsAllowedByContentSettings(content::RenderFrameHost& host,
+                                const url::Origin& origin) {
+  switch (HostContentSettingsMapFactory::GetForProfile(GetProfile(host))
+              ->GetContentSetting(origin.GetURL(), origin.GetURL(),
+                                  ContentSettingsType::DEVICE_ATTRIBUTES)) {
+    case CONTENT_SETTING_ALLOW:
+      return true;
+    case CONTENT_SETTING_BLOCK:
+      return false;
+    default:
+      NOTREACHED();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsTrustedContext(content::RenderFrameHost& host,
                       const url::Origin& origin) {
@@ -162,20 +172,6 @@ bool IsAllowedByPermissionsPolicy(content::RenderFrameHost& host) {
   return host.IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kDeviceAttributes);
 }
-
-bool IsAllowedByContentSettings(content::RenderFrameHost& host,
-                                const url::Origin& origin) {
-  switch (HostContentSettingsMapFactory::GetForProfile(GetProfile(host))
-              ->GetContentSetting(origin.GetURL(), origin.GetURL(),
-                                  ContentSettingsType::DEVICE_ATTRIBUTES)) {
-    case CONTENT_SETTING_ALLOW:
-      return true;
-    case CONTENT_SETTING_BLOCK:
-      return false;
-    default:
-      NOTREACHED();
-  }
-}
 }  // namespace
 
 DeviceServiceImpl::DeviceServiceImpl(
@@ -200,9 +196,9 @@ DeviceServiceImpl::DeviceServiceImpl(
       ash::prefs::kKioskBrowserPermissionsAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   auto& provider = CHECK_DEREF(web_app::WebAppProvider::GetForWebApps(profile));
   install_manager_observation_.Observe(&provider.install_manager());
 }
@@ -268,6 +264,7 @@ void DeviceServiceImpl::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void DeviceServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -277,6 +274,7 @@ void DeviceServiceImpl::OnContentSettingChanged(
   }
   OnDisposingIfNeeded();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void DeviceServiceImpl::OnDisposingIfNeeded() {
   // DeviceServiceImpl is allocated on the heap, thus it is safe to remove it
@@ -311,8 +309,12 @@ void DeviceServiceImpl::GetAnnotatedLocation(
 }
 
 void DeviceServiceImpl::GetDeviceAttribute(
-    void (DeviceAttributeApi::*method)(DeviceAttributeCallback callback),
+    [[maybe_unused]] void (DeviceAttributeApi::*method)(
+        DeviceAttributeCallback callback),
     DeviceAttributeCallback callback) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  device_attribute_api_->ReportNotSupportedPlatformError(std::move(callback));
+#else
   if (!IsAffiliatedUser(GetProfile(render_frame_host())) &&
       !IsDevModeInstalledIwaOrigin(render_frame_host(), origin())) {
     device_attribute_api_->ReportNotAffiliatedError(std::move(callback));
@@ -325,4 +327,5 @@ void DeviceServiceImpl::GetDeviceAttribute(
   }
 
   (device_attribute_api_.get()->*method)(std::move(callback));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }

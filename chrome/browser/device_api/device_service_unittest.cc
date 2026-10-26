@@ -87,6 +87,9 @@ constexpr char kTrustedUrl[] = "https://example.com/sample";
 constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
 constexpr char kUserEmail[] = "user-email@example.com";
 
+constexpr char kPermissionsPolicyMojoErrorMessage[] =
+    "Permissions policy blocks access to Device Attributes.";
+
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
 constexpr char kKioskAppUrl[] = "https://kiosk.com/sample";
@@ -94,10 +97,11 @@ constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
 constexpr char kNoDeviceAttributesPermissionErrorMessage[] =
     "The current origin cannot use this web API because it was not granted the "
     "'device-attributes' permission.";
-constexpr char kPermissionsPolicyMojoErrorMessage[] =
-    "Permissions policy blocks access to Device Attributes.";
 constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
+#else
+constexpr char kNotSupportedPlatformErrorMessage[] =
+    "This web API is not supported on the current platform.";
 #endif
 
 }  // namespace
@@ -126,6 +130,10 @@ class FakeDeviceAttributeApi : public DeviceAttributeApi {
   // actual error reported by the service.
   void ReportNotAffiliatedError(NotificationCallback callback) override {
     device_attributes_api_.ReportNotAffiliatedError(std::move(callback));
+  }
+
+  void ReportNotSupportedPlatformError(NotificationCallback callback) override {
+    device_attributes_api_.ReportNotSupportedPlatformError(std::move(callback));
   }
 
   void GetDirectoryId(blink::mojom::DeviceAPIService::GetDirectoryIdCallback
@@ -378,7 +386,141 @@ TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForUntrustedApps) {
   ASSERT_FALSE(remote()->is_connected());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
+
+class DeviceAPIServiceNonChromeOSIwaTest : public DeviceAPIServiceTest,
+                                           public web_app::IsolatedWebAppTest {
+ public:
+  void SetUp() override {
+    web_app::IsolatedWebAppTest::SetUp();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile(), /*instance=*/nullptr);
+  }
+
+  void TearDown() override {
+    web_contents_.reset();
+    rvh_test_enabler_.reset();
+    web_app::IsolatedWebAppTest::TearDown();
+  }
+
+  enum class InstallType { kPolicy, kDevMode, kGraphicalInstaller };
+
+  web_app::IsolatedWebAppUrlInfo InstallIWA(InstallType install_type,
+                                            bool grant_permissions_policy) {
+    auto manifest_builder = web_app::ManifestBuilder();
+    if (grant_permissions_policy) {
+      manifest_builder.AddPermissionsPolicy(
+          network::mojom::PermissionsPolicyFeature::kDeviceAttributes,
+          /*self=*/true, {});
+    }
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(manifest_builder).BuildBundle();
+    bundle->TrustSigningKey();
+    switch (install_type) {
+      case InstallType::kPolicy:
+        return bundle
+            ->InstallWithSource(
+                profile(),
+                &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+            .value();
+      case InstallType::kDevMode:
+        return bundle
+            ->InstallWithSource(
+                profile(), &web_app::IsolatedWebAppInstallSource::FromDevUi)
+            .value();
+      case InstallType::kGraphicalInstaller:
+        return bundle->InstallChecked(profile());
+    }
+  }
+
+  void TryCreatingService(
+      const GURL& url,
+      std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
+    DeviceAPIServiceTest::TryCreatingService(
+        url, std::move(device_attribute_api), web_contents_.get());
+  }
+
+  void EnableDevMode() {
+    feature_list_.InitAndEnableFeature(features::kIsolatedWebAppDevMode);
+  }
+
+ private:
+  std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DeviceAPIServiceNonChromeOSIwaTest,
+       DevModeIwaWithPermissionsPolicyReturnsNotSupportedError) {
+  EnableDevMode();
+  auto url_info =
+      InstallIWA(InstallType::kDevMode, /*grant_permissions_policy=*/true);
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      remote()->get(), kNotSupportedPlatformErrorMessage);
+}
+
+TEST_F(DeviceAPIServiceNonChromeOSIwaTest,
+       DevModeIwaDoesNotLeakFakeAttributesOnUnsupportedPlatform) {
+  EnableDevMode();
+  auto url_info =
+      InstallIWA(InstallType::kDevMode, /*grant_permissions_policy=*/true);
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<FakeDeviceAttributeApi>());
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      remote()->get(), kNotSupportedPlatformErrorMessage);
+}
+
+TEST_F(DeviceAPIServiceNonChromeOSIwaTest,
+       PolicyInstalledIwaWithPermissionsPolicyReturnsNotSupportedError) {
+  auto url_info =
+      InstallIWA(InstallType::kPolicy, /*grant_permissions_policy=*/true);
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      remote()->get(), kNotSupportedPlatformErrorMessage);
+}
+
+TEST_F(DeviceAPIServiceNonChromeOSIwaTest,
+       DevModeIwaWithoutPermissionsPolicyReportsBadMessage) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  EnableDevMode();
+  auto url_info =
+      InstallIWA(InstallType::kDevMode, /*grant_permissions_policy=*/false);
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            kPermissionsPolicyMojoErrorMessage);
+}
+
+TEST_F(DeviceAPIServiceNonChromeOSIwaTest,
+       UntrustedIwaWithDevModeFlagDoesNotConnect) {
+  EnableDevMode();
+  auto url_info = InstallIWA(InstallType::kGraphicalInstaller,
+                             /*grant_permissions_policy=*/true);
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+#else  // BUILDFLAG(IS_CHROMEOS)
 
 class DeviceAPIServiceIwaTest
     : public DeviceAPIServiceTest,
