@@ -1250,12 +1250,17 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word, std::vec
   // output conversion
   RepList* rl = (pAMgr) ? pAMgr->get_oconvtable() : nullptr;
   if (rl) {
+    // hold the converted suggestions to the same ceiling as an analysis
+    size_t total = 0;
     size_t l = 0;
     for (size_t i = 0; i < slst.size(); ++i) {
       std::string wspace;
-      if (rl->conv(slst[i], wspace)) {
+      if (rl->conv(slst[i], wspace, MAXMORPHRESULT - total)) {
         slst[i] = std::move(wspace);
       }
+      if (slst[i].size() > MAXMORPHRESULT - total)
+        break;
+      total += slst[i].size();
       // gh#1002: OCONV can map a generated form back to the input word
       // (e.g. "románórum" -> "romanórum" when the user typed "romanórum"),
       // leaving the misspelled word as its own suggestion.
@@ -1755,14 +1760,12 @@ std::vector<std::string> HunspellImpl::analyze(const std::string& word) {
     size_t i = 0;
     for (; i < slst.size(); ++i) {
       std::string wspace;
-      if (rl->conv(slst[i], wspace)) {
+      if (rl->conv(slst[i], wspace, MAXMORPHRESULT - total)) {
         slst[i] = std::move(wspace);
       }
-      total += slst[i].size();
-      if (total > MAXMORPHRESULT) {
-        ++i;
+      if (slst[i].size() > MAXMORPHRESULT - total)
         break;
-      }
+      total += slst[i].size();
     }
     slst.resize(i);
   }

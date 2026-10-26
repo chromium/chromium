@@ -191,11 +191,11 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
   return 0;
 }
 
-bool RepList::conv(const std::string& in_word, std::string& dest) {
+bool RepList::conv(const std::string& in_word, std::string& dest, size_t maxlen) {
   // get_status guards against a trie that overflowed its index type while
   // building, in which case the linear scan below is the correct fallback.
   if (can_use_trie && trie.get_status())
-    return trie.transcode(in_word, dest) != TranscodeResult::None;
+    return trie.transcode(in_word, dest, maxlen) != TranscodeResult::None;
 
   dest.clear();
 
@@ -203,7 +203,7 @@ bool RepList::conv(const std::string& in_word, std::string& dest) {
   const char* word = in_word.c_str();
 
   bool change = false;
-  for (size_t i = 0; i < wordlen; ++i) {
+  for (size_t i = 0; i < wordlen && dest.size() <= maxlen; ++i) {
     int n = -1;
     std::string l;
 

@@ -208,7 +208,7 @@ public:
     // Scans the source string and attempts to dive as deep as possible into the trie
     // for each character. Tracks whether we successfully applied substitutions, 
     // fell back to verbatim copies, or a mix of both.
-    TranscodeResult transcode(const std::string& src, std::string& dst) const {
+    TranscodeResult transcode(const std::string& src, std::string& dst, size_t maxlen) const {
         // Halt and return None if the trie is in an invalid memory state
         if (!status_ok || src.empty()) return TranscodeResult::None;
         
@@ -221,7 +221,7 @@ public:
         
         size_t i = 0;
         
-        while (i < src.size()) {
+        while (i < src.size() && dst.size() <= maxlen) {
             size_t curr_idx = 0;
             size_t match_len = 0;
             uint32_t best_sub = 0xFFFFFFFF;
@@ -297,6 +297,7 @@ class RepList {
   int add(const std::string& pat1, const std::string& pat2);
   int find(const char* word, size_t max_len);
   std::string replace(const size_t wordlen, int n, bool atstart);
-  bool conv(const std::string& word, std::string& dest);
+  // dest can end just over maxlen, with the rest of the word left unconverted
+  bool conv(const std::string& word, std::string& dest, size_t maxlen = std::string::npos);
 };
 #endif

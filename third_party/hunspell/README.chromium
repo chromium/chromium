@@ -1,8 +1,8 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: v1.7.4
+Version: v1.7.5
 Update Mechanism: Manual
-CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.4
+CPEPrefix: cpe:/a:hunspell_project:hunspell
 License: MPL-1.1
 License Android Compatible: yes
 License File: src/COPYING.MPL

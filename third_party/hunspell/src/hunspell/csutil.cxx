@@ -382,7 +382,8 @@ size_t append_compound_parts(const std::string& desc, std::string& result) {
   size_t nextpart = desc.find(MORPH_PART, part + 1);
   while (nextpart != std::string::npos) {
     const char* field = desc.c_str() + part + MORPH_TAG_LEN;
-    result.append(field, fieldlen(field));
+    size_t len = std::min<size_t>(fieldlen(field), nextpart - part - MORPH_TAG_LEN);
+    result.append(field, len);
     part = nextpart;
     nextpart = desc.find(MORPH_PART, part + 1);
   }
