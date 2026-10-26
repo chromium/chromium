@@ -5538,6 +5538,145 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListThreeLevels) {
   CheckListItem(top_list->GetChildAtIndex(1u), "Level 1 sibling");
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListLatexEnDash) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Embeddings", "–", "2 × seq_len", "– Key, query", "•", "Attention"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(75.0f, 53.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 70.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 87.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 83.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ(ax::mojom::Role::kList, top_list->GetRole());
+  EXPECT_EQ("ul",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(2u, top_list->GetChildCount());
+
+  const ui::AXNode* nested_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Embeddings");
+  CheckUnorderedList(nested_list, {"2 × seq_len", "Key, query"}, "– ");
+
+  CheckListItem(top_list->GetChildAtIndex(1u), "Attention");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedOnlyMarkerAtTopLevelIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // A standalone en dash outside any list is punctuation, not a list item.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"–", "Punctuation at start"},
+                                {
+                                    gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 40.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+  EXPECT_EQ(ax::mojom::Role::kParagraph, page->GetChildAtIndex(0u)->GetRole());
+}
+
+// A nested-only marker indented beyond `kMaxListNestingIndentEm` (e.g. in the
+// next column) is not a list marker.
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedOnlyMarkerBeyondNestingRange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The en dash is 300 px right of the bullet, far more than 4 em at 12 pt.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Item", "–", "Dash text"},
+                                {
+                                    gfx::RectF(30.0f, 100.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 96.0f, 80.0f, 12.0f),
+                                    gfx::RectF(330.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(345.0f, 40.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item"});
+  CheckParagraph(page->GetChildAtIndex(1u), "–Dash text");
+}
+
+// A wrapped line that starts with "– " lines up with the item's text, so it
+// stays in the item. A nested-only marker further right still nests.
+TEST_F(PdfAccessibilityTreeTest, HeuristicWrappedLineStartingWithEnDash) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Each test char is 10 px wide, so the item text after "• " starts at x = 50.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"• Pages 10", "– 20 are blank", "– Nested"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 100.0f, 12.0f),
+                                    gfx::RectF(50.0f, 53.0f, 140.0f, 12.0f),
+                                    gfx::RectF(65.0f, 66.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(1u, top_list->GetChildCount());
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Pages 10– 20 are blank");
+  CheckUnorderedList(nested_list, {"Nested"}, "– ");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedOnlyMarkerSmallFont) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The en dash is indented 30 px: more than 4 em at the 6 pt marker size, but
+  // less than 4 em at the 12 pt text size.
+  const std::vector<std::string> words = {"•", "Parent", "–", "Child"};
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{12.0f, 12.0f, 6.0f, 12.0f},
+      std::vector<chrome_pdf::AccessibilityTextStyleInfo>(words.size(),
+                                                          CreateNormalStyle()),
+      MakeCharVector(words),
+      /*bounds=*/
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(60.0f, 57.0f, 2.0f, 2.0f),
+          gfx::RectF(75.0f, 53.0f, 60.0f, 12.0f),
+      });
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(1u, top_list->GetChildCount());
+  const ui::AXNode* nested_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Parent");
+  CheckUnorderedList(nested_list, {"Child"}, "– ");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListWrappedChild) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

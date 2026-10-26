@@ -174,6 +174,15 @@ constexpr float kListIndentThreshold = 5.0f;
 // column in a multi-column layout) starts a new list instead.
 constexpr float kMaxListNestingIndentEm = 4.0f;
 
+// Markers that only count when they open or continue a nested level, because
+// at the top level they usually aren't bullets (e.g. "–" as punctuation).
+// LaTeX uses these for itemize levels 2-4.
+constexpr auto kNestedOnlyListMarkers = std::to_array<std::string_view>({
+    "\xE2\x80\x93",  // – U+2013 (en dash)
+    "\xE2\x88\x97",  // ∗ U+2217 (asterisk operator)
+    "\xC2\xB7",      // · U+00B7 (middle dot)
+});
+
 // Code points used only as bullets, covering the defaults of common authoring
 // tools. Characters with other common uses, such as '-', '*', 'o', or dashes,
 // are excluded to avoid false positives (e.g. "-" for an empty table cell or
@@ -1528,6 +1537,38 @@ ListMarkerKind ClassifyUnorderedMarker(
   return ListMarkerKind::kNone;
 }
 
+// Returns the parent list level for a marker at `run_x`, or nullptr if there is
+// no shallower list level.
+//
+// Nested-only markers (such as en dashes) must be indented deeper than their
+// parent list to be recognized. For the first item in a sublist, the parent is
+// the innermost list level. For subsequent sibling items at the same sublist
+// level, the innermost list shares the marker's x-coordinate, so scanning
+// backwards locates the enclosing parent level.
+const ListLevel* GetParentListLevel(base::span<const ListLevel> list_levels,
+                                    float run_x) {
+  for (const ListLevel& list_level : std::views::reverse(list_levels)) {
+    if (run_x > list_level.marker_x + kListIndentThreshold) {
+      return &list_level;
+    }
+  }
+  return nullptr;
+}
+
+// Returns the font size of the item text for a list marker of `kind`. A
+// standalone marker's font size can differ from its item text's because some
+// authoring tools size bullets separately. For example, PowerPoint sizes
+// bullets as a percentage of the text size, so a 20pt item with a 70% bullet
+// has a 14pt marker run. Standalone markers therefore use the following run.
+float GetListItemFontSize(const TextRunContext& run_context,
+                          ListMarkerKind kind) {
+  if (kind == ListMarkerKind::kStandaloneUnordered) {
+    CHECK(run_context.next_run);
+    return run_context.next_run->style.font_size;
+  }
+  return run_context.run->style.font_size;
+}
+
 // Returns how a list marker at `x` should be placed relative to `levels`.
 ListPlacement GetListPlacement(base::span<const ListLevel> levels,
                                float x,
@@ -1554,14 +1595,38 @@ ListPlacement GetListPlacement(base::span<const ListLevel> levels,
 
 // Classifies whether `run_context` is a standalone list marker run or combines
 // a list marker with item text.
-ListMarkerKind ClassifyListMarker(const TextRunContext& run_context) {
+ListMarkerKind ClassifyListMarker(const TextRunContext& run_context,
+                                  base::span<const ListLevel> list_levels) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   if (!IsLeftToRightRun(*run_context.run)) {
     return ListMarkerKind::kNone;
   }
 
   const std::string text = GetTrimmedText(run_context.chars);
-  return ClassifyUnorderedMarker(text, kUnorderedListMarkers, run_context);
+  const ListMarkerKind unordered_kind =
+      ClassifyUnorderedMarker(text, kUnorderedListMarkers, run_context);
+  if (unordered_kind != ListMarkerKind::kNone) {
+    return unordered_kind;
+  }
+
+  // Nested-only markers require an enclosing list level and must start right of
+  // the parent item's text, so a wrapped line that begins with punctuation such
+  // as "–" stays in the item.
+  const float run_x = run_context.run->bounds.x();
+  const ListLevel* parent = GetParentListLevel(list_levels, run_x);
+  if (parent && run_x > parent->item_text_x + kListIndentThreshold) {
+    const ListMarkerKind nested_kind =
+        ClassifyUnorderedMarker(text, kNestedOnlyListMarkers, run_context);
+    if (nested_kind != ListMarkerKind::kNone) {
+      const float max_nest = kMaxListNestingIndentEm *
+                             GetListItemFontSize(run_context, nested_kind);
+      if (run_x <= parent->marker_x + max_nest) {
+        return nested_kind;
+      }
+    }
+  }
+
+  return ListMarkerKind::kNone;
 }
 
 struct ListMarkerPrefix {
@@ -1628,8 +1693,8 @@ std::string GetUnorderedListMarkerName(
     return name;
   }
   // Only called for runs that `ClassifyListMarker()` matched, whose trimmed
-  // text starts with a non-whitespace marker from `kUnorderedListMarkers`, so
-  // `chars` always contains a non-whitespace character.
+  // text starts with a non-whitespace marker, so `chars` always contains a
+  // non-whitespace character.
   NOTREACHED();
 }
 
@@ -1666,7 +1731,8 @@ bool BreakAtListBoundary(const TextRunContext& next_run_context,
                          base::span<const ListLevel> list_levels) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   CHECK(block_node);
-  if (ClassifyListMarker(next_run_context) != ListMarkerKind::kNone) {
+  if (ClassifyListMarker(next_run_context, list_levels) !=
+      ListMarkerKind::kNone) {
     return true;
   }
   return block_node->role == ax::mojom::Role::kListItem &&
@@ -2066,11 +2132,21 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     if (list_marker_kind != ListMarkerKind::kNone) {
       CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
       gfx::RectF marker_bounds = text_run.bounds;
+      float item_text_x;
       if (list_marker_kind == ListMarkerKind::kCombinedUnordered) {
         const ListMarkerPrefix prefix = GetListMarkerPrefix(run_context.chars);
         marker_prefix_char_count = prefix.char_count;
         marker_bounds.set_width(prefix.marker_width);
+        item_text_x = text_run.bounds.x() +
+                      GetCharsWidth(run_context.chars.first(prefix.char_count));
+      } else {
+        CHECK_EQ(list_marker_kind, ListMarkerKind::kStandaloneUnordered);
+        // Standalone markers are only classified when item text follows in
+        // `next_run`.
+        CHECK(run_context.next_run);
+        item_text_x = run_context.next_run->bounds.x();
       }
+      list_levels_.back().item_text_x = item_text_x;
 
       AddListMarkerToNode(GetUnorderedListMarkerName(run_context.chars),
                           marker_bounds, block_node);
@@ -2300,17 +2376,13 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     // start a new list if there is none. The marker run itself becomes the
     // item's `kListMarker` in `BuildPageTree()`.
     if (!header_footer_ax_role.has_value()) {
-      result.list_marker_kind = ClassifyListMarker(run_context);
+      result.list_marker_kind = ClassifyListMarker(run_context, levels);
     }
     if (result.list_marker_kind != ListMarkerKind::kNone) {
-      // Use the item text's font size, since authoring tools can scale
-      // standalone markers independently (e.g. PowerPoint's bullet size).
-      const float item_font_size =
-          result.list_marker_kind == ListMarkerKind::kStandaloneUnordered
-              ? run_context.next_run->style.font_size
-              : run_context.run->style.font_size;
-      result.node =
-          CreateListItemNode(run_context, item_font_size, std::move(levels));
+      result.node = CreateListItemNode(
+          run_context,
+          GetListItemFontSize(run_context, result.list_marker_kind),
+          std::move(levels));
       return result;
     }
   }

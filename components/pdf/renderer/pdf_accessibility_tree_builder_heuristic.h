@@ -51,6 +51,8 @@ struct ListLevel {
   // The most recent `kListItem` at this level. A deeper marker opens a
   // nested list inside it.
   raw_ptr<ui::AXNodeData> last_item;
+  // The x-coordinate, in page pixels, where `last_item`'s text starts.
+  float item_text_x = 0.0f;
 };
 
 // Heuristic-based accessibility tree building for untagged PDFs.
