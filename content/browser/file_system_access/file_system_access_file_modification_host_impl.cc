@@ -79,6 +79,11 @@ void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
     RequestCapacityChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (capacity_delta == 0) {
+    std::move(callback).Run(0);
+    return;
+  }
+
   int64_t new_granted_capacity;
   bool capacity_within_bounds =
       base::CheckAdd(granted_capacity_, capacity_delta)
@@ -86,6 +91,19 @@ void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
   if (!capacity_within_bounds || new_granted_capacity < 0) {
     mojo::ReportBadMessage("A file's size cannot be negative or out of bounds");
     std::move(callback).Run(0);
+    return;
+  }
+
+  if (capacity_delta < 0) {
+    // Releases never need a quota check. Applying them here, before the next
+    // message is dispatched, means each release is checked against capacity
+    // that already reflects earlier ones.
+    granted_capacity_ = new_granted_capacity;
+    quota_manager_proxy()->NotifyBucketModified(
+        storage::QuotaClientType::kFileSystem, *url_.bucket(), capacity_delta,
+        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
+        base::DoNothing());
+    std::move(callback).Run(capacity_delta);
     return;
   }
 
@@ -121,7 +139,7 @@ void FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota(
   bool capacity_within_bounds =
       base::CheckAdd(granted_capacity_, capacity_delta)
           .AssignIfValid(&new_granted_capacity);
-  if (!capacity_within_bounds || new_granted_capacity < 0) {
+  if (!capacity_within_bounds) {
     std::move(callback).Run(0);
     return;
   }

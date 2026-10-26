@@ -182,6 +182,21 @@ TEST_F(FileSystemAccessFileModificationHostImplTest,
 }
 
 TEST_F(FileSystemAccessFileModificationHostImplTest,
+       RequestCapacityChange_ZeroCapacity) {
+  // A zero delta needs neither a quota lookup nor a usage update, so the
+  // request completes even though quota lookups are deferred.
+  quota_manager_proxy()->set_defer_callbacks(true);
+
+  base::test::TestFuture<int64_t> future;
+  allocation_host_->RequestCapacityChange(0, future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), 0);
+  EXPECT_EQ(allocation_host_->granted_capacity(), 0);
+  EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 0);
+}
+
+TEST_F(FileSystemAccessFileModificationHostImplTest,
        RequestCapacityChange_PositiveAndNegativeCapacity) {
   const int64_t positive_requested_capacity = 50;
   const int64_t negative_requested_capacity = -40;
@@ -250,21 +265,26 @@ TEST_F(FileSystemAccessFileModificationHostImplTest,
 
 TEST_F(FileSystemAccessFileModificationHostImplTest,
        RequestCapacityChange_ConcurrentNegativeCapacityBelowZero) {
-  // Both requests pass the initial bounds check, but granting both would make
-  // `granted_capacity_` negative.
+  // Each release is valid on its own, but releasing both would make
+  // `granted_capacity_` negative. Releases are applied without waiting for a
+  // quota lookup, so the second one is checked against the updated capacity
+  // and rejected as a bad message.
   auto host = CreateHost(/*file_size=*/50);
   quota_manager_proxy()->set_defer_callbacks(true);
 
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   base::test::TestFuture<int64_t> future1;
   base::test::TestFuture<int64_t> future2;
   host->RequestCapacityChange(-40, future1.GetCallback());
   host->RequestCapacityChange(-40, future2.GetCallback());
-  quota_manager_proxy()->RunDeferredCallbacks();
 
   EXPECT_EQ(future1.Get(), -40);
   EXPECT_EQ(future2.Get(), 0);
   EXPECT_EQ(host->granted_capacity(), 10);
   EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 1);
+  EXPECT_EQ("A file's size cannot be negative or out of bounds",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace content
