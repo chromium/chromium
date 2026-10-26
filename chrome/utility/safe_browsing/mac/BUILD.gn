@@ -5,8 +5,8 @@
 import("//build/rust/rust_static_library.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-# Pure-Rust parser for UDIF (.dmg) disk images and HFS+/HFSX filesystems.
-# Kept free of `unsafe` code.
+# Pure-Rust parser for UDIF (.dmg) disk images, HFS+/HFSX filesystems, and
+# Mach-O binaries. Kept free of `unsafe` code.
 rust_static_library("dmg_parser") {
   visibility = [ ":*" ]
 
@@ -14,6 +14,7 @@ rust_static_library("dmg_parser") {
   sources = [
     "rust/hfs.rs",
     "rust/lib.rs",
+    "rust/mach_o.rs",
     "rust/udif.rs",
   ]
   deps = [

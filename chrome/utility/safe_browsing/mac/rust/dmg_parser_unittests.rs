@@ -23,6 +23,10 @@ use dmg_parser::hfs::{
     HFS_PLUS_SIG_WORD, MAX_EXTENT_BUFFER_SIZE, S_IFLNK, UF_COMPRESSED, VOLUME_HEADER_OFFSET,
     VOLUME_HEADER_SIZE,
 };
+use dmg_parser::mach_o::{
+    MachOError, MachOImage, FAT_CIGAM, FAT_MAGIC, LC_CODE_SIGNATURE, MACH_HEADER_64_SIZE,
+    MACH_HEADER_SIZE, MH_CIGAM, MH_CIGAM_64, MH_MAGIC, MH_MAGIC_64,
+};
 use dmg_parser::udif::{
     parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkReadStream, UdifBlockChunkType,
     UdifBlockData, UdifError, UdifParser, UdifPartitionReadStream, UdifResourceFile,
@@ -2357,4 +2361,129 @@ fn test_partial_read_before_chunk_creation_error_returns_bytes() {
     // The next read surfaces the error without moving the position.
     expect_eq!(err_kind(&part.read(&mut buf)), Some(ErrorKind::InvalidData));
     expect_eq!(part.stream_position().unwrap(), 512);
+}
+
+#[gtest(RustMachOImageReaderTest, EmptySliceFailsToParse)]
+fn test_empty_mach_o_slice_fails_to_parse() {
+    expect_eq!(MachOImage::parse(&[]).err(), Some(MachOError::EmptyImage));
+}
+
+#[gtest(RustMachOImageReaderTest, MagicValues)]
+fn test_mach_o_magic_values() {
+    expect_true!(MachOImage::is_mach_o_magic_value(MH_MAGIC));
+    expect_true!(MachOImage::is_mach_o_magic_value(MH_CIGAM));
+    expect_true!(MachOImage::is_mach_o_magic_value(MH_MAGIC_64));
+    expect_true!(MachOImage::is_mach_o_magic_value(MH_CIGAM_64));
+    expect_true!(MachOImage::is_mach_o_magic_value(FAT_MAGIC));
+    expect_true!(MachOImage::is_mach_o_magic_value(FAT_CIGAM));
+    expect_false!(MachOImage::is_mach_o_magic_value(0xdeadbeef));
+}
+
+fn push_ne_u32(buf: &mut Vec<u8>, val: u32) {
+    buf.extend_from_slice(&val.to_ne_bytes());
+}
+
+fn build_thin_64_with_code_signature(sig_payload: &[u8]) -> Vec<u8> {
+    let mut image = Vec::new();
+    // mach_header_64 (32 bytes): magic, cputype, cpusubtype, filetype=2
+    // (MH_EXECUTE), ncmds=1, sizeofcmds=16, flags=0, reserved=0.
+    for val in [MH_MAGIC_64, 0x0100_0007, 3, 2, 1, 16, 0, 0] {
+        push_ne_u32(&mut image, val);
+    }
+    // linkedit_data_command (16 bytes) at offset 32, pointing to signature at
+    // offset 48.
+    let sig_offset = (MACH_HEADER_64_SIZE + 16) as u32;
+    for val in [LC_CODE_SIGNATURE, 16, sig_offset, sig_payload.len() as u32] {
+        push_ne_u32(&mut image, val);
+    }
+    image.extend_from_slice(sig_payload);
+    image
+}
+
+#[gtest(RustMachOImageReaderTest, Thin64WithCodeSignature)]
+fn test_thin_64_with_code_signature() {
+    let sig = b"fake-code-signature";
+    let raw = build_thin_64_with_code_signature(sig);
+    let parsed = MachOImage::parse(&raw).expect("valid 64-bit Mach-O should parse");
+
+    expect_true!(parsed.is_64_bit());
+    expect_eq!(parsed.file_type(), 2);
+    expect_eq!(parsed.mach_header_bytes().len(), MACH_HEADER_SIZE);
+    expect_eq!(parsed.mach_header_64_bytes().len(), MACH_HEADER_64_SIZE);
+    expect_eq!(parsed.load_commands().len(), 1);
+    expect_eq!(parsed.load_commands()[0].cmd(), LC_CODE_SIGNATURE);
+    expect_eq!(parsed.load_commands()[0].cmdsize(), 16);
+    expect_eq!(parsed.code_signature(), Some(sig.as_slice()));
+}
+
+#[gtest(RustMachOImageReaderTest, ByteSwappedThin32AndSmallCmdsize)]
+fn test_byte_swapped_thin_32_and_small_cmdsize() {
+    let mut image = Vec::new();
+    // mach_header (28 bytes) in swapped byte order (`MH_CIGAM`): ncmds = 2.
+    push_ne_u32(&mut image, MH_CIGAM);
+    for val in [7u32, 3, 6, 2, 16, 0] {
+        push_ne_u32(&mut image, val.swap_bytes());
+    }
+    // Command 0: cmdsize = 5 (< sizeof(load_command) = 8), per https://crbug.com/40432691.
+    // Command 1: normal 8-byte load_command immediately following the 8-byte
+    // base struct.
+    for val in [0x3u32, 5, 0x1, 8] {
+        push_ne_u32(&mut image, val.swap_bytes());
+    }
+
+    let parsed = MachOImage::parse(&image).expect("byte-swapped 32-bit Mach-O should parse");
+    expect_false!(parsed.is_64_bit());
+    expect_eq!(parsed.mach_header_64_bytes().len(), 0);
+    expect_eq!(parsed.load_commands().len(), 2);
+    expect_eq!(parsed.load_commands()[0].data.len(), 8);
+    expect_eq!(parsed.load_commands()[0].cmdsize(), 5u32.swap_bytes());
+    expect_eq!(parsed.load_commands()[1].cmd(), 0x1u32.swap_bytes());
+}
+
+#[gtest(RustMachOImageReaderTest, RejectsInvalidAndTruncatedInputs)]
+fn test_rejects_invalid_and_truncated_inputs() {
+    expect_eq!(MachOImage::parse(&[0xfe, 0xed]).err(), Some(MachOError::TruncatedHeader));
+    expect_eq!(
+        MachOImage::parse(&0xdeadbeefu32.to_ne_bytes()).err(),
+        Some(MachOError::InvalidMagic)
+    );
+    expect_eq!(
+        MachOImage::parse(&MH_MAGIC_64.to_ne_bytes()).err(),
+        Some(MachOError::TruncatedHeader)
+    );
+
+    // 64-bit header claiming ncmds = 1 with no load command bytes following.
+    let mut truncated_cmd = Vec::new();
+    for val in [MH_MAGIC_64, 0, 0, 2, 1, 16, 0, 0] {
+        push_ne_u32(&mut truncated_cmd, val);
+    }
+    expect_eq!(MachOImage::parse(&truncated_cmd).err(), Some(MachOError::TruncatedLoadCommand));
+
+    // 64-bit header + 8-byte load_command header claiming cmdsize = 32, but
+    // truncated before the remaining 24 command bytes.
+    let mut truncated_full_cmd = truncated_cmd.clone();
+    for val in [0x1u32, 32] {
+        push_ne_u32(&mut truncated_full_cmd, val);
+    }
+    expect_eq!(
+        MachOImage::parse(&truncated_full_cmd).err(),
+        Some(MachOError::TruncatedLoadCommand)
+    );
+
+    // LC_CODE_SIGNATURE smaller than linkedit_data_command (16 bytes) or with
+    // out-of-bounds dataoff/datasize still parses as a valid Mach-O image, but
+    // yields `code_signature() == None`.
+    let mut short_sig_cmd = truncated_cmd.clone();
+    for val in [LC_CODE_SIGNATURE, 8] {
+        push_ne_u32(&mut short_sig_cmd, val);
+    }
+    let parsed_short_sig = MachOImage::parse(&short_sig_cmd).expect("thin Mach-O should parse");
+    expect_eq!(parsed_short_sig.code_signature(), None);
+
+    let mut oob_sig_cmd = truncated_cmd.clone();
+    for val in [LC_CODE_SIGNATURE, 16, 1024, 64] {
+        push_ne_u32(&mut oob_sig_cmd, val);
+    }
+    let parsed_oob_sig = MachOImage::parse(&oob_sig_cmd).expect("thin Mach-O should parse");
+    expect_eq!(parsed_oob_sig.code_signature(), None);
 }

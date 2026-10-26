@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Pure-Rust parser for macOS UDIF (`.dmg`) disk images and HFS+/HFSX
-//! filesystems.
+//! Pure-Rust parser for macOS UDIF (`.dmg`) disk images, HFS+/HFSX
+//! filesystems, and Mach-O binary images.
 //!
 //! This crate is intentionally free of `unsafe` code; all C++ FFI glue lives in
 //! the separate `dmg_ffi_bridge` crate (`ffi.rs`), and bzip2 decompression FFI
@@ -16,6 +16,7 @@ use std::io::{self, Read, Seek, SeekFrom};
 use std::rc::Rc;
 
 pub mod hfs;
+pub mod mach_o;
 pub mod udif;
 
 /// Combined `Read + Seek` trait equivalent to C++
