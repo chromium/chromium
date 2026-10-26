@@ -971,7 +971,9 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   }
 
   void AddBrowsingInstanceInfo(const IsolationContext& context) {
-    CHECK(!context.browsing_instance_id().is_null(), base::NotFatalUntil::M159);
+    // TODO(crbug.com/577421080): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!context.browsing_instance_id().is_null());
     browsing_instance_default_isolation_states_.insert(
         {context.browsing_instance_id(), context.default_isolation_state()});
 
