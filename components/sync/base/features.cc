@@ -152,7 +152,7 @@ BASE_FEATURE(kSyncDisambiguateDeviceNamesWithChannel,
 BASE_FEATURE(kSyncNigoriAuthenticateIV, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncMigrateFromImplicitPassphrase,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncMigrateLoopbackServerBookmarksToClientTagHash,
              base::FEATURE_DISABLED_BY_DEFAULT);
