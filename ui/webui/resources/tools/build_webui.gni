@@ -574,7 +574,7 @@ template("build_webui") {
       }
       if (enable_source_maps) {
         deps += [ ":create_source_maps" ]
-      } else {
+      } else if (has_ts_in_files) {
         deps += [ ":preprocess_ts_files" ]
       }
 
