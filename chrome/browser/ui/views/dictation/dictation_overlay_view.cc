@@ -187,7 +187,7 @@ DictationOverlayView::DictationOverlayView(
   SetShowCloseButton(false);
   set_margins(gfx::Insets(0));
   set_corner_radius(kCornerRadius);
-  set_shadow(views::BubbleBorder::STANDARD_SHADOW);
+  set_shadow_config({.shadow_type = views::BubbleBorder::STANDARD_SHADOW});
 }
 
 DictationOverlayView::~DictationOverlayView() = default;
