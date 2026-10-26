@@ -52,7 +52,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "browser_tests": {
-                "shards": 81,
+                "shards": 100,
                 "try_builder": "linux-chromeos-rel"
             },
             "components_unittests": {
@@ -116,7 +116,7 @@
                 "try_builder": "linux-rel"
             },
             "browser_tests": {
-                "shards": 25,
+                "shards": 35,
                 "try_builder": "linux-rel"
             },
             "components_unittests": {
