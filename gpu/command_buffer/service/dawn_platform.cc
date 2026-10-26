@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gl/progress_reporter.h"
@@ -222,13 +221,10 @@ void EmitUnifiedHistogram(const std::string& uma_prefix,
 DawnPlatform::CacheCountsMap::CacheCountsMap() = default;
 DawnPlatform::CacheCountsMap::~CacheCountsMap() = default;
 
-DawnPlatform::DawnPlatform(
-    std::unique_ptr<DawnCachingInterface> dawn_caching_interface,
-    gl::ProgressReporter* progress_reporter,
-    const char* uma_prefix,
-    bool record_cache_count_uma)
-    : dawn_caching_interface_(std::move(dawn_caching_interface)),
-      progress_reporter_(progress_reporter),
+DawnPlatform::DawnPlatform(gl::ProgressReporter* progress_reporter,
+                           const char* uma_prefix,
+                           bool record_cache_count_uma)
+    : progress_reporter_(progress_reporter),
       uma_prefix_(uma_prefix),
       cache_map_(base::MakeRefCounted<CacheCountsMap>()),
       startup_time_(base::TimeTicks::Now()) {
@@ -318,10 +314,6 @@ void DawnPlatform::HistogramSparse(const char* name, int sample) {
 
 void DawnPlatform::HistogramBoolean(const char* name, bool sample) {
   base::UmaHistogramBoolean(uma_prefix_ + name, sample);
-}
-
-dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {
-  return dawn_caching_interface_.get();
 }
 
 std::unique_ptr<dawn::platform::WorkerTaskPool>

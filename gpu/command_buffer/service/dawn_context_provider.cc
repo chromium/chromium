@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -45,6 +46,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_util.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
@@ -540,7 +542,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
                   const GpuDriverBugWorkarounds& workarounds,
                   DawnContextProvider::ValidateAdapterFn validate_adapter_fn);
   void SetCachingInterface(
-      std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface);
+      std::unique_ptr<webgpu::DawnInMemoryCache> dawn_caching_interface);
   void SetCachingInterface(scoped_refptr<GpuPersistentCache> persistent_cache);
 
   wgpu::Device GetDevice() const { return device_; }
@@ -768,11 +770,19 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  // caching_interface_ is null or set to either dawn_caching_interface_ or
-  // persistent_cache_
-  std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface_;
-  scoped_refptr<GpuPersistentCache> persistent_cache_;
-  raw_ptr<dawn::platform::CachingInterface> caching_interface_ = nullptr;
+  webgpu::DawnCachingInterface* GetCache() const {
+    return std::visit<webgpu::DawnCachingInterface*>(
+        absl::Overload{
+            [](std::monostate) { return nullptr; },
+            [](const auto& cache) { return cache.get(); },
+        },
+        cache_);
+  }
+
+  std::variant<std::monostate,
+               std::unique_ptr<webgpu::DawnInMemoryCache>,
+               scoped_refptr<GpuPersistentCache>>
+      cache_;
 
   webgpu::DawnPlatform platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
@@ -803,8 +813,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
 DawnSharedContext::DawnSharedContext(gl::ProgressReporter* progress_reporter,
                                      bool use_thread_safe_graphite_context)
-    : platform_(/*dawn_caching_interface=*/nullptr,
-                progress_reporter,
+    : platform_(progress_reporter,
                 /*uma_prefix=*/"GPU.GraphiteDawn.",
                 /*record_cache_count_uma=*/true),
       use_thread_safe_graphite_context_(use_thread_safe_graphite_context) {
@@ -995,22 +1004,22 @@ bool DawnSharedContext::Initialize(
   // Start initializing dawn device here.
   wgpu::DawnCacheDeviceDescriptor cache_desc;
   cache_desc.SetDawnLoadCacheDataCallback(
-      [](std::span<const std::byte> key, std::span<std::byte> value,
+      [](std::string_view key, base::span<uint8_t> value,
          DawnSharedContext* context) -> size_t {
-        if (auto caching_interface = context->caching_interface_) {
+        if (auto* cache = context->GetCache()) {
           if (value.empty()) {
-            return caching_interface->FindKey(key);
+            return cache->FindKey(key);
           }
-          return caching_interface->LoadData(key, value);
+          return cache->LoadData(key, value);
         }
         return 0;
       },
       this);
   cache_desc.SetDawnStoreCacheDataCallback(
-      [](std::span<const std::byte> key, std::span<const std::byte> value,
+      [](std::string_view key, base::span<const uint8_t> value,
          DawnSharedContext* context) {
-        if (auto caching_interface = context->caching_interface_) {
-          caching_interface->StoreData(key, value);
+        if (auto* cache = context->GetCache()) {
+          cache->StoreData(key, value);
         }
       },
       this);
@@ -1130,17 +1139,15 @@ bool DawnSharedContext::Initialize(
 }
 
 void DawnSharedContext::SetCachingInterface(
-    std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface) {
-  CHECK(!caching_interface_);
-  dawn_caching_interface_ = std::move(dawn_caching_interface);
-  caching_interface_ = dawn_caching_interface_.get();
+    std::unique_ptr<webgpu::DawnInMemoryCache> dawn_caching_interface) {
+  CHECK(std::holds_alternative<std::monostate>(cache_));
+  cache_ = std::move(dawn_caching_interface);
 }
 
 void DawnSharedContext::SetCachingInterface(
     scoped_refptr<GpuPersistentCache> persistent_cache) {
-  CHECK(!caching_interface_);
-  persistent_cache_ = std::move(persistent_cache);
-  caching_interface_ = persistent_cache_.get();
+  CHECK(std::holds_alternative<std::monostate>(cache_));
+  cache_ = std::move(persistent_cache);
 }
 
 std::optional<error::ContextLostReason> DawnSharedContext::GetResetStatus()
@@ -1403,7 +1410,7 @@ bool DawnContextProvider::InitializeGraphiteContext(
 }
 
 void DawnContextProvider::SetCachingInterface(
-    std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface) {
+    std::unique_ptr<webgpu::DawnInMemoryCache> dawn_caching_interface) {
   CHECK(dawn_shared_context_->HasOneRef());
   CHECK(!graphite_shared_context_);
   dawn_shared_context_->SetCachingInterface(std::move(dawn_caching_interface));

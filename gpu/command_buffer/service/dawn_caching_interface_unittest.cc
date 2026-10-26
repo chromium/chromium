@@ -321,9 +321,9 @@ TEST_F(DawnCachingInterfaceTest, OnUpdateMemoryLimitStateful) {
 
   DawnCachingInterfaceFactory factory(base::BindRepeating(
       []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
-  std::unique_ptr<DawnCachingInterface> interface_graphite =
+  std::unique_ptr<DawnInMemoryCache> interface_graphite =
       factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnGraphiteHandle));
-  std::unique_ptr<DawnCachingInterface> interface_webgpu =
+  std::unique_ptr<DawnInMemoryCache> interface_webgpu =
       factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnWebGPUHandle));
 
   // 1. Setup data for both caches.
@@ -383,7 +383,7 @@ TEST_F(DawnCachingInterfaceTest, NewlyCreatedBackendRespectsMemoryLimit) {
   // Set memory limit to critical before creating the backend instance.
   factory.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
 
-  std::unique_ptr<DawnCachingInterface> interface =
+  std::unique_ptr<DawnInMemoryCache> interface =
       factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnGraphiteHandle));
 
   // Newly created backend should have size limit of 0 under critical pressure.
@@ -411,9 +411,9 @@ TEST_F(DawnCachingInterfaceTest, OnReleaseMemoryLimitPersistsStateful) {
 
   DawnCachingInterfaceFactory factory(base::BindRepeating(
       []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
-  std::unique_ptr<DawnCachingInterface> interface_graphite =
+  std::unique_ptr<DawnInMemoryCache> interface_graphite =
       factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnGraphiteHandle));
-  std::unique_ptr<DawnCachingInterface> interface_webgpu =
+  std::unique_ptr<DawnInMemoryCache> interface_webgpu =
       factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnWebGPUHandle));
 
   factory.OnReleaseMemory(base::kCriticalMemoryPressureThreshold);
@@ -425,7 +425,7 @@ TEST_F(DawnCachingInterfaceTest, OnReleaseMemoryLimitPersistsStateful) {
   EXPECT_EQ(0u, interface_webgpu->FindKey(kKey1));
 
   // Backends created after OnReleaseMemory() also respect the limit.
-  std::unique_ptr<DawnCachingInterface> interface_other_webgpu =
+  std::unique_ptr<DawnInMemoryCache> interface_other_webgpu =
       factory.CreateInstance(gpu::GpuDiskCacheHandle(kOtherDawnWebGPUHandle));
   interface_other_webgpu->StoreData(kKey1, base::as_byte_span(kData1));
   EXPECT_EQ(0u, interface_other_webgpu->FindKey(kKey1));

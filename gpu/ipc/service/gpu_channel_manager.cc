@@ -637,9 +637,8 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
       TRACE_EVENT1("gpu", "GpuChannelManager::PopulateCacheDawn", "handle_type",
                    gpu::GetHandleType(handle));
-      std::unique_ptr<gpu::webgpu::DawnCachingInterface>
-          dawn_caching_interface =
-              dawn_caching_interface_factory()->CreateInstance(handle);
+      std::unique_ptr<gpu::webgpu::DawnInMemoryCache> dawn_caching_interface =
+          dawn_caching_interface_factory()->CreateInstance(handle);
       if (!dawn_caching_interface) {
         return;
       }

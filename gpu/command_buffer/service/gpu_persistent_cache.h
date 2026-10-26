@@ -34,7 +34,7 @@
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-#include <dawn/platform/DawnPlatform.h>
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
 #endif
 
 namespace persistent_cache {
@@ -51,7 +51,7 @@ class MemoryCache;
 // initialized are copied into it on initialization.
 class GPU_GLES2_EXPORT GpuPersistentCache :
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-    public dawn::platform::CachingInterface,
+    public webgpu::DawnCachingInterface,
 #endif
     public GrContextOptions::PersistentCache,
     public base::RefCountedThreadSafe<GpuPersistentCache> {
@@ -126,9 +126,10 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
                            use_shader_cache_shm_count = nullptr);
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  size_t FindKey(std::string_view key);
-  size_t LoadData(std::string_view key, base::span<uint8_t> dest);
-  void StoreData(std::string_view key, base::span<const uint8_t> src);
+  // webgpu::DawnCachingInterface implementation.
+  size_t FindKey(std::string_view key) override;
+  size_t LoadData(std::string_view key, base::span<uint8_t> dest) override;
+  void StoreData(std::string_view key, base::span<const uint8_t> src) override;
 #endif
 
   // GrContextOptions::PersistentCache implementation.
@@ -162,15 +163,6 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
   friend class base::RefCountedThreadSafe<GpuPersistentCache>;
 
   ~GpuPersistentCache() override;
-
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  // dawn::platform::CachingInterface implementation.
-  size_t FindKey(std::span<const std::byte> key) override;
-  size_t LoadData(std::span<const std::byte> key,
-                  std::span<std::byte> dest) override;
-  void StoreData(std::span<const std::byte> key,
-                 std::span<const std::byte> src) override;
-#endif
 
   struct DiskCache;
 

@@ -22,7 +22,7 @@ class DawnPlatformTest : public testing::Test {
 };
 
 TEST_F(DawnPlatformTest, RecordsCacheHistogramsAfterDelay) {
-  DawnPlatform platform(nullptr, nullptr, "GPU.GraphiteDawn.", true);
+  DawnPlatform platform(nullptr, "GPU.GraphiteDawn.", true);
 
   // Simulate some cache hits and misses.
   platform.HistogramCustomCounts("D3D11.CompileShader.CacheHit", 1, 1, 100, 50);
@@ -64,7 +64,7 @@ TEST_F(DawnPlatformTest, RecordsCacheHistogramsAfterDelay) {
 }
 
 TEST_F(DawnPlatformTest, RecordsCacheHistogramsOnFramePresented) {
-  DawnPlatform platform(nullptr, nullptr, "GPU.GraphiteDawn.", true);
+  DawnPlatform platform(nullptr, "GPU.GraphiteDawn.", true);
 
   // Simulate some cache hits and misses.
   platform.HistogramCustomCounts("D3D11.CompileShader.CacheHit", 1, 1, 100, 50);
@@ -103,7 +103,7 @@ TEST_F(DawnPlatformTest, RecordsAbsoluteHistograms) {
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
   {
     // Test Graphite path: uses custom unified names.
-    DawnPlatform platform(nullptr, nullptr, "GPU.GraphiteDawn.", false);
+    DawnPlatform platform(nullptr, "GPU.GraphiteDawn.", false);
     platform.HistogramCustomCounts("Vulkan.CreateGraphicsPipelines.CacheHit",
                                    10, 1, 100, 50);
     histogram_tester_.ExpectUniqueSample(
@@ -113,7 +113,7 @@ TEST_F(DawnPlatformTest, RecordsAbsoluteHistograms) {
 
   {
     // Test WebGPU path: no changes to name.
-    DawnPlatform platform(nullptr, nullptr, "GPU.WebGPU.", false);
+    DawnPlatform platform(nullptr, "GPU.WebGPU.", false);
     platform.HistogramCustomCounts("Custom.Metric", 20, 1, 100, 50);
     histogram_tester_.ExpectUniqueSample("GPU.WebGPU.Custom.Metric", 20, 1);
   }

@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <string_view>
+#include <tuple>
 #include <variant>
 
 #include "base/compiler_specific.h"
@@ -19,42 +20,54 @@
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
 
+namespace wgpu::detail {
+namespace {
+
+using LoadCacheDataConverter =
+    CArgConverter<WGPUDawnLoadCacheDataCallbackInfo,
+                  std::tuple<std::string_view, base::span<uint8_t>>>;
+using StoreCacheDataConverter =
+    CArgConverter<WGPUDawnStoreCacheDataCallbackInfo,
+                  std::tuple<std::string_view, base::span<const uint8_t>>>;
+
+}  // namespace
+
+// static
+LoadCacheDataConverter::Result LoadCacheDataConverter::Convert(
+    size_t key_size,
+    const uint8_t* key,
+    size_t value_size,
+    uint8_t* value) {
+  return std::make_tuple(
+      std::string_view(reinterpret_cast<const char*>(key), key_size),
+      // SAFETY: `key` and `value` are provided by Dawn with valid sizes.
+      UNSAFE_BUFFERS(base::span<uint8_t>(value, value_size)));
+}
+
+// static
+StoreCacheDataConverter::Result StoreCacheDataConverter::Convert(
+    size_t key_size,
+    const uint8_t* key,
+    size_t value_size,
+    const uint8_t* value) {
+  return std::make_tuple(
+      std::string_view(reinterpret_cast<const char*>(key), key_size),
+      // SAFETY: `key` and `value` are provided by Dawn with valid sizes.
+      UNSAFE_BUFFERS(base::span<const uint8_t>(value, value_size)));
+}
+
+}  // namespace wgpu::detail
+
 namespace gpu::webgpu {
 
-DawnCachingInterface::DawnCachingInterface(scoped_refptr<MemoryCache> backend,
-                                           CacheBlobCallback callback)
+DawnInMemoryCache::DawnInMemoryCache(scoped_refptr<MemoryCache> backend,
+                                     CacheBlobCallback callback)
     : memory_cache_backend_(std::move(backend)),
       cache_blob_callback_(std::move(callback)) {}
 
-DawnCachingInterface::~DawnCachingInterface() = default;
+DawnInMemoryCache::~DawnInMemoryCache() = default;
 
-size_t DawnCachingInterface::FindKey(std::span<const std::byte> key) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
-  return FindKey(key_str);
-}
-
-size_t DawnCachingInterface::LoadData(std::span<const std::byte> key,
-                                      std::span<std::byte> dst) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
-  // SAFETY: `dst` is provided by the caller who is responsible.
-  base::span<uint8_t> dst_span = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<uint8_t*>(dst.data()), dst.size()));
-  return LoadData(key_str, dst_span);
-}
-
-void DawnCachingInterface::StoreData(std::span<const std::byte> key,
-                                     std::span<const std::byte> src) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
-  // SAFETY: `src` is provided by the caller who is responsible.
-  base::span<const uint8_t> src_span = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const uint8_t*>(src.data()), src.size()));
-  return StoreData(key_str, src_span);
-}
-
-size_t DawnCachingInterface::FindKey(std::string_view key) {
+size_t DawnInMemoryCache::FindKey(std::string_view key) {
   if (memory_cache() == nullptr) {
     return 0u;
   }
@@ -65,8 +78,8 @@ size_t DawnCachingInterface::FindKey(std::string_view key) {
   return entry->DataSize();
 }
 
-size_t DawnCachingInterface::LoadData(std::string_view key,
-                                      base::span<uint8_t> dst) {
+size_t DawnInMemoryCache::LoadData(std::string_view key,
+                                   base::span<uint8_t> dst) {
   if (memory_cache() == nullptr) {
     return 0u;
   }
@@ -83,8 +96,8 @@ size_t DawnCachingInterface::LoadData(std::string_view key,
   return 0u;
 }
 
-void DawnCachingInterface::StoreData(std::string_view key,
-                                     base::span<const uint8_t> src) {
+void DawnInMemoryCache::StoreData(std::string_view key,
+                                  base::span<const uint8_t> src) {
   if (memory_cache() == nullptr || src.empty()) {
     return;
   }
@@ -115,17 +128,16 @@ DawnCachingInterfaceFactory::~DawnCachingInterfaceFactory() {
       this);
 }
 
-std::unique_ptr<DawnCachingInterface>
-DawnCachingInterfaceFactory::CreateInstance(
+std::unique_ptr<DawnInMemoryCache> DawnCachingInterfaceFactory::CreateInstance(
     const gpu::GpuDiskCacheHandle& handle,
-    DawnCachingInterface::CacheBlobCallback callback) {
-  return base::WrapUnique(new DawnCachingInterface(
-      GetOrCreateMemoryCache(handle), std::move(callback)));
+    DawnInMemoryCache::CacheBlobCallback callback) {
+  return base::WrapUnique(new DawnInMemoryCache(GetOrCreateMemoryCache(handle),
+                                                std::move(callback)));
 }
 
-std::unique_ptr<DawnCachingInterface>
+std::unique_ptr<DawnInMemoryCache>
 DawnCachingInterfaceFactory::CreateInstance() {
-  return base::WrapUnique(new DawnCachingInterface(backend_factory_.Run()));
+  return base::WrapUnique(new DawnInMemoryCache(backend_factory_.Run()));
 }
 
 scoped_refptr<MemoryCache> DawnCachingInterfaceFactory::GetOrCreateMemoryCache(

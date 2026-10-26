@@ -431,6 +431,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
 
+  std::unique_ptr<DawnCachingInterface> dawn_caching_interface_;
   std::unique_ptr<dawn::platform::Platform> dawn_platform_;
   std::unique_ptr<DawnInstance> dawn_instance_;
   std::unique_ptr<DawnServiceMemoryTransferService> memory_transfer_service_;
@@ -1127,10 +1128,11 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
               std::move(memory_tracker))),
-      dawn_platform_(new DawnPlatform(
+      dawn_caching_interface_(
           base::FeatureList::IsEnabled(features::kWebGPUBlobCache)
               ? std::move(dawn_caching_interface)
-              : nullptr,
+              : nullptr),
+      dawn_platform_(new DawnPlatform(
           /*progress_reporter=*/nullptr,
           /*uma_prefix=*/"GPU.WebGPU.",
           /*record_cache_count_uma=*/false)),
@@ -1622,6 +1624,23 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   wgpu::DawnCacheDeviceDescriptor dawn_cache;
   if (!isolation_key_->empty()) {
     dawn_cache.isolationKey = isolation_key_->c_str();
+    if (dawn_caching_interface_) {
+      dawn_cache.SetDawnLoadCacheDataCallback(
+          [](std::string_view key, base::span<uint8_t> value,
+             DawnCachingInterface* caching_interface) -> size_t {
+            if (value.empty()) {
+              return caching_interface->FindKey(key);
+            }
+            return caching_interface->LoadData(key, value);
+          },
+          dawn_caching_interface_.get());
+      dawn_cache.SetDawnStoreCacheDataCallback(
+          [](std::string_view key, base::span<const uint8_t> value,
+             DawnCachingInterface* caching_interface) {
+            caching_interface->StoreData(key, value);
+          },
+          dawn_caching_interface_.get());
+    }
     ChainStruct(desc, &dawn_cache);
   }
 

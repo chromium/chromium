@@ -1015,13 +1015,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers\.cc',
             r'third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers\.h',
 
-            # Needed to implement and use Dawn caching interfaces.
-            r'gpu/command_buffer/service/dawn_caching_interface\.cc',
-            r'gpu/command_buffer/service/dawn_caching_interface\.h',
-            r'gpu/command_buffer/service/dawn_context_provider\.cc',
-            r'gpu/command_buffer/service/gpu_persistent_cache\.cc',
-            r'gpu/command_buffer/service/gpu_persistent_cache\.h',
-
             # Clang tools do not depend on //base. Some are even emitting
             # std::span rewrite for non chromium projects.
             r'^tools/clang/.*',

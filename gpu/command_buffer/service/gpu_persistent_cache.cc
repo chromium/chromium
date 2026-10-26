@@ -586,22 +586,6 @@ size_t GpuPersistentCache::LoadData(std::string_view key,
 
   return discovered_size;
 }
-
-size_t GpuPersistentCache::FindKey(std::span<const std::byte> key) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
-  return FindKey(key_str);
-}
-
-size_t GpuPersistentCache::LoadData(std::span<const std::byte> key,
-                                    std::span<std::byte> dest) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
-  // SAFETY: `dest` is provided by the caller who is responsible.
-  base::span<uint8_t> dest_span = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<uint8_t*>(dest.data()), dest.size()));
-  return LoadData(key_str, dest_span);
-}
 #endif
 
 sk_sp<SkData> GpuPersistentCache::load(const SkData& key) {
@@ -826,16 +810,6 @@ void GpuPersistentCache::StoreData(std::string_view key,
   // does evict otherwise useful data.
   const bool skip_memory_cache = IsDawnVkPipelineCache(key);
   StoreImpl(key, src, skip_memory_cache);
-}
-
-void GpuPersistentCache::StoreData(std::span<const std::byte> key,
-                                   std::span<const std::byte> src) {
-  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
-                           key.size());
-  // SAFETY: `src` is provided by the caller who is responsible.
-  base::span<const uint8_t> src_span = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const uint8_t*>(src.data()), src.size()));
-  return StoreData(key_str, src_span);
 }
 #endif
 
