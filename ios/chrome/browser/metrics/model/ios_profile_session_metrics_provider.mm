@@ -6,6 +6,7 @@
 
 #import <algorithm>
 
+#import "base/check_deref.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/activity_reporter/activity_reporter.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
@@ -21,7 +22,7 @@ bool IsSessionActive(const std::vector<ProfileIOS*>& profiles) {
   for (ProfileIOS* profile : profiles) {
     IOSProfileSessionDurationsService* service =
         IOSProfileSessionDurationsServiceFactory::GetForProfileIfExists(
-            profile);
+            CHECK_DEREF(profile));
     if (service && service->IsSessionActive()) {
       return true;
     }
