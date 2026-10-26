@@ -1182,10 +1182,17 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
     // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
-    blit_request = BlitRequest(
-        content_rect.origin(), LetterboxingBehavior::kLetterbox,
-        frame_capture.frame->shared_image(), sync_token,
-        /*populates_mappable_shared_image=*/prefer_mappable_shared_image);
+    // Consumers read the frame outside of the shared image system, either by
+    // mapping it or by importing its native handle, so they can't wait on the
+    // write fence. Deliver it only once the GPU work populating it is done.
+    CHECK(buffer_format_preference_ ==
+              mojom::BufferFormatPreference::kPreferMappableSharedImage ||
+          buffer_format_preference_ ==
+              mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle);
+    blit_request =
+        BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
+                    frame_capture.frame->shared_image(), sync_token,
+                    /*populates_mappable_shared_image=*/true);
 
     // We haven't captured the frame yet, but let's pretend that we did for
     // the sake of blend information computation. We will be asking for an

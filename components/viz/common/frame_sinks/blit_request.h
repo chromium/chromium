@@ -136,9 +136,10 @@ class VIZ_COMMON_EXPORT BlitRequest {
   // SyncToken to wait on before accessing `shared_image_`;
   gpu::SyncToken sync_token_;
 
-  // True if `shared_image_` is mappable. In this case, the `CopyOutputResult`
-  // needs to be sent out only after it's safe to map the SharedImage to
-  // system memory.
+  // True if the `CopyOutputResult` must be sent only after the GPU work
+  // populating the SharedImage has completed. Required for consumers that
+  // access the image outside the SharedImage synchronization system, including
+  // CPU mapping and native-handle capture.
   bool populates_mappable_shared_image_;
 
   // Collection of bitmaps that will be blended onto the texture.

@@ -2445,11 +2445,7 @@ TEST_P(FrameSinkVideoCapturerTest, ConfiguresSharedImageBlitRequest) {
 
   ASSERT_TRUE(frame_sink_.last_blit_request_populates_mappable_shared_image()
                   .has_value());
-  const bool expect_mappable =
-      buffer_format_preference_ ==
-      mojom::BufferFormatPreference::kPreferMappableSharedImage;
-  EXPECT_EQ(expect_mappable,
-            *frame_sink_.last_blit_request_populates_mappable_shared_image());
+  EXPECT_TRUE(*frame_sink_.last_blit_request_populates_mappable_shared_image());
 
   StopCapture();
 }
