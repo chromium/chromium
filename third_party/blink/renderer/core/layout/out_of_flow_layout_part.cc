@@ -1142,7 +1142,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
     NodeInfo node_info = SetupNodeInfo(candidate);
     const OffsetInfo offset_info =
         CalculateOffset(node_info, is_inside_fragmentation_context);
-    NodeToLayout node_to_layout = {node_info, offset_info};
+    NodeToLayout node_to_layout(node_info, offset_info);
 
     const BlockBreakToken* break_token = node_info.break_token;
     if (GetConstraintSpace().HasKnownFragmentainerBlockSize() &&
@@ -1574,12 +1574,11 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         }
 
         NodeInfo node_info = SetupNodeInfo(descendant);
-        NodeToLayout node_to_layout = {
+        NodeToLayout node_to_layout(
             node_info,
             CalculateOffset(node_info,
-                            /*is_inside_fragmentation_context=*/true)};
-        node_to_layout.containing_block_fragment =
-            descendant.containing_block.Fragment();
+                            /*is_inside_fragmentation_context=*/true),
+            descendant.containing_block.Fragment());
         node_to_layout.offset_info.original_offset =
             node_to_layout.offset_info.offset;
 
@@ -2792,7 +2791,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   bool is_repeatable = false;
   if (is_in_block_fragmentation) {
     if (Node().IsPaginatedRoot() && style.GetPosition() == EPosition::kFixed &&
-        !oof_node_to_layout.containing_block_fragment) {
+        !oof_node_to_layout.ContainingBlockFragment()) {
       // Paginated fixed-positioned elements are repeated on every page, if
       // contained by the initial containing block (i.e. when not contained by a
       // transformed element or similar) and may therefore not fragment.

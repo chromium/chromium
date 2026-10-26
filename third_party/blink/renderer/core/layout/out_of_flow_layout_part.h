@@ -299,15 +299,30 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     DISALLOW_NEW();
 
    public:
+    NodeToLayout(const NodeInfo& node_info,
+                 const OffsetInfo& offset_info,
+                 const PhysicalFragment* containing_block_fragment = nullptr)
+        : node_info(node_info),
+          offset_info(offset_info),
+          containing_block_fragment(containing_block_fragment) {
+      DCHECK(!containing_block_fragment ||
+             !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    }
+
     NodeInfo node_info;
     OffsetInfo offset_info;
 
+    void Trace(Visitor* visitor) const;
+
+    const PhysicalFragment* ContainingBlockFragment() const {
+      return containing_block_fragment;
+    }
+
+   private:
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the
     // spec: https://www.w3.org/TR/css-position-3/#absolute-cb.
     Member<const PhysicalFragment> containing_block_fragment;
-
-    void Trace(Visitor* visitor) const;
   };
 
   static std::optional<LogicalSize> InitialContainingBlockFixedSize(
