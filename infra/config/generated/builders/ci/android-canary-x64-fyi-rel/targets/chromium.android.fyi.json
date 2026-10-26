@@ -994,8 +994,7 @@
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}",
-          "--bypass-skia-gold-functionality"
+          "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
           "enable": true,
