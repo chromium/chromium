@@ -69,18 +69,6 @@ bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
   return true;
 }
 
-bool WebUIReloadControl::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool WebUIReloadControl::IsCommandIdEnabled(int command_id) const {
-  return true;
-}
-
-bool WebUIReloadControl::IsCommandIdVisible(int command_id) const {
-  return true;
-}
-
 bool WebUIReloadControl::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {

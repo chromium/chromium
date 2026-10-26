@@ -172,18 +172,6 @@ void ReloadButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   ChangeMode(intended_mode_, true);
 }
 
-bool ReloadButton::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool ReloadButton::IsCommandIdEnabled(int command_id) const {
-  return true;
-}
-
-bool ReloadButton::IsCommandIdVisible(int command_id) const {
-  return true;
-}
-
 bool ReloadButton::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
