@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -413,6 +414,19 @@ class GlicBrowserTestMixin : public T {
     // JNI cleanup tasks) have finished running before the test fixture is
     // destroyed (which destroys ScopedFeatureList).
     base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    T::TearDown();
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, BrowserTestBase::SetUp() releases the BEST_EFFORT execution
+    // fence and tears down the browser at the end of SetUp() without shutting
+    // down ThreadPoolInstance. Flush any queued background tasks before ~Test()
+    // destroys the fixture's ScopedFeatureList instances.
+    if (auto* thread_pool = base::ThreadPoolInstance::Get()) {
+      thread_pool->FlushForTesting();
+    }
+#endif
   }
 
   // Toggles the Glic UI.
