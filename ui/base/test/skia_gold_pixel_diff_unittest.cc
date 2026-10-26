@@ -287,6 +287,43 @@ TEST_F(SkiaGoldPixelDiffTest, ExplicitCodeReviewSystem) {
   EXPECT_TRUE(ret);
 }
 
+TEST_F(SkiaGoldPixelDiffTest, DefaultContinuousIntegrationSystem) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
+  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
+  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
+
+  EXPECT_CALL(mock_launch_process(), Call(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_launch_process(),
+      Call(AllOf(Property(&base::CommandLine::GetCommandLineString,
+                          HasSubstr(FILE_PATH_LITERAL("--cis=buildbucket"))))))
+      .Times(1);
+  auto* mock_pixel = SkiaGoldPixelDiff::GetSession();
+  bool ret = mock_pixel->CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
+TEST_F(SkiaGoldPixelDiffTest, ExplicitContinuousIntegrationSystem) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
+  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
+  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
+  cmd_line->AppendSwitchASCII("continuous-integration-system", "new-cis");
+
+  EXPECT_CALL(mock_launch_process(), Call(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_launch_process(),
+      Call(AllOf(Property(&base::CommandLine::GetCommandLineString,
+                          HasSubstr(FILE_PATH_LITERAL("--cis=new-cis"))),
+                 Property(&base::CommandLine::GetCommandLineString,
+                          Not(HasSubstr(FILE_PATH_LITERAL("buildbucket")))))))
+      .Times(1);
+  auto* mock_pixel = SkiaGoldPixelDiff::GetSession();
+  bool ret = mock_pixel->CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
 TEST_F(SkiaGoldPixelDiffTest, DryRunLocally) {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);

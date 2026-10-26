@@ -73,6 +73,8 @@ constexpr char kIssueKey[] = "gerrit-issue";
 constexpr char kPatchSetKey[] = "gerrit-patchset";
 constexpr char kJobIdKey[] = "buildbucket-id";
 constexpr char kCodeReviewSystemKey[] = "code-review-system";
+constexpr char kContinuousIntegrationSystemKey[] =
+    "continuous-integration-system";
 
 constexpr char kNoLuciAuth[] = "no-luci-auth";
 constexpr char kBypassSkiaGoldFunctionality[] =
@@ -324,7 +326,7 @@ void SkiaGoldPixelDiff::InitSkiaGold() const {
     cmd.AppendSwitchASCII("patchset", patchset_);
     cmd.AppendSwitchASCII("jobid", job_id_);
     cmd.AppendSwitchASCII("crs", code_review_system_);
-    cmd.AppendSwitchASCII("cis", "buildbucket");
+    cmd.AppendSwitchASCII("cis", continuous_integration_system_);
   }
 
   AppendArgsJustAfterProgram(
@@ -365,6 +367,11 @@ void SkiaGoldPixelDiff::Init(const std::string& corpus,
     code_review_system_ = cmd_line->GetSwitchValueASCII(kCodeReviewSystemKey);
     if (code_review_system_.empty()) {
       code_review_system_ = "gerrit";
+    }
+    continuous_integration_system_ =
+        cmd_line->GetSwitchValueASCII(kContinuousIntegrationSystemKey);
+    if (continuous_integration_system_.empty()) {
+      continuous_integration_system_ = "buildbucket";
     }
   }
   if (cmd_line->HasSwitch(kNoLuciAuth) || is_dry_run_) {

@@ -170,6 +170,8 @@ class SkiaGoldPixelDiff final {
   // Which code review system is being used, typically "gerrit" for Chromium
   // and "gerrit-internal" for Chrome.
   std::string code_review_system_;
+  // Which continuous integration system is being used, typically "buildbucket".
+  std::string continuous_integration_system_;
   // The working dir for goldctl. It's the dir for storing temporary files.
   base::FilePath working_dir_;
   // The key-value pairs that will be associated with screenshot baselines.
