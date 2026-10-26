@@ -266,7 +266,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
       return nullptr;
     }
 
-    auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
+    auto image = UnacceleratedStaticBitmapImage::Create(
+        sk_image, ImageOrientationEnum::kDefault, hdr_metadata_);
     image->SetOriginClean(OriginClean());
     return image;
   }

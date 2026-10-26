@@ -220,8 +220,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
   auto dest_image = bm.asImage();
 
   // Strip the color space if requested.
+  gfx::HDRMetadata dest_hdr_metadata = source->GetHdrMetadata();
   if (options.reinterpret_as_srgb) {
     dest_image = dest_image->reinterpretColorSpace(SkColorSpace::MakeSRGB());
+    dest_hdr_metadata = gfx::HDRMetadata();
   }
 
   // Return the result.
@@ -229,6 +231,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
       PaintImageBuilder::WithDefault()
           .set_id(cc::PaintImage::GetNextId())
           .set_image(std::move(dest_image), cc::PaintImage::GetNextContentId())
+          .set_hdr_metadata(dest_hdr_metadata)
           .TakePaintImage();
   return UnacceleratedStaticBitmapImage::Create(std::move(dest_paint_image),
                                                 source_orientation);
@@ -298,8 +301,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   cc::SkiaPaintCanvas canvas(surface->getCanvas());
   BlitToCanvas(canvas, source_paint_image, source_orientation,
                SkRect::Make(source_rect), dest_size, options);
-  return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot(),
-                                                source_orientation);
+  return UnacceleratedStaticBitmapImage::Create(
+      surface->makeImageSnapshot(), source_orientation, dest_hdr_metadata);
 }
 
 // Apply the transformations indicated in `options` on `source`, and return the

@@ -295,7 +295,7 @@ scoped_refptr<StaticBitmapImage>
 AcceleratedStaticBitmapImage::MakeUnaccelerated() {
   CreateImageFromMailboxIfNeeded();
   return UnacceleratedStaticBitmapImage::Create(
-      PaintImageForCurrentFrame().GetSwSkImage(), orientation_);
+      PaintImageForCurrentFrame().GetSwSkImage(), orientation_, hdr_metadata_);
 }
 
 bool AcceleratedStaticBitmapImage::CopyToTexture(

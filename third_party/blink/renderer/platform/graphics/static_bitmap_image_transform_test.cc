@@ -34,7 +34,8 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      gfx::ColorSpace color_space) {
+      gfx::ColorSpace color_space,
+      gfx::HDRMetadata hdr_metadata = gfx::HDRMetadata()) {
     auto client_si = test_sii_->CreateSharedImage(
         {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
          gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -43,7 +44,7 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
         gpu::kNullSurfaceHandle);
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
         std::move(client_si), test_sii_->GenUnverifiedSyncToken(), alpha_type,
-        gfx::HDRMetadata(), SharedGpuContext::ContextProviderWrapper(),
+        hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
         base::PlatformThread::CurrentRef(),
         base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
   }
@@ -70,6 +71,56 @@ TEST_F(StaticBitmapImageTransformTest, ConvertColorSpace) {
       image, gfx::ColorSpace::CreateDisplayP3D65());
   EXPECT_NE(image_p3, image);
   EXPECT_TRUE(image_p3->IsTextureBacked());
+}
+
+TEST_F(StaticBitmapImageTransformTest, HdrMetadataMakeUnaccelerated) {
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.SetExtendedRangeWithHeadroom(2.f);
+  auto image = CreateAccelerated(gfx::Size(100, 100), GetN32FormatForCanvas(),
+                                 kPremul_SkAlphaType,
+                                 gfx::ColorSpace::CreateSRGB(), hdr_metadata);
+  EXPECT_EQ(image->GetHdrMetadata(), hdr_metadata);
+
+  // MakeUnaccelerated should preserve HDR metadata.
+  auto unaccelerated = image->MakeUnaccelerated();
+  ASSERT_TRUE(unaccelerated);
+  EXPECT_FALSE(unaccelerated->IsTextureBacked());
+  EXPECT_EQ(unaccelerated->GetHdrMetadata(), hdr_metadata);
+}
+
+TEST_F(StaticBitmapImageTransformTest, HdrMetadataTransform) {
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.SetExtendedRangeWithHeadroom(2.f);
+  auto image = CreateAccelerated(gfx::Size(100, 100), GetN32FormatForCanvas(),
+                                 kPremul_SkAlphaType,
+                                 gfx::ColorSpace::CreateSRGB(), hdr_metadata);
+  EXPECT_EQ(image->GetHdrMetadata(), hdr_metadata);
+
+  // Accelerated blit transform should preserve HDR metadata.
+  auto image_p3 = StaticBitmapImageTransform::ConvertToColorSpace(
+      image, gfx::ColorSpace::CreateDisplayP3D65());
+  ASSERT_TRUE(image_p3);
+  EXPECT_TRUE(image_p3->IsTextureBacked());
+  EXPECT_EQ(image_p3->GetHdrMetadata(), hdr_metadata);
+
+  auto unaccelerated = image->MakeUnaccelerated();
+  ASSERT_TRUE(unaccelerated);
+
+  // Unaccelerated blit transform should preserve HDR metadata.
+  auto unaccelerated_p3 = StaticBitmapImageTransform::ConvertToColorSpace(
+      unaccelerated, gfx::ColorSpace::CreateDisplayP3D65());
+  ASSERT_TRUE(unaccelerated_p3);
+  EXPECT_FALSE(unaccelerated_p3->IsTextureBacked());
+  EXPECT_EQ(unaccelerated_p3->GetHdrMetadata(), hdr_metadata);
+
+  // Pixmap transform (unpremul) should preserve HDR metadata.
+  StaticBitmapImageTransform::Params options;
+  options.source_rect = gfx::Rect(100, 100);
+  options.dest_size = gfx::Size(100, 100);
+  options.premultiply_alpha = false;
+  auto unpremul = StaticBitmapImageTransform::Apply(unaccelerated, options);
+  ASSERT_TRUE(unpremul);
+  EXPECT_EQ(unpremul->GetHdrMetadata(), hdr_metadata);
 }
 
 }  // namespace
