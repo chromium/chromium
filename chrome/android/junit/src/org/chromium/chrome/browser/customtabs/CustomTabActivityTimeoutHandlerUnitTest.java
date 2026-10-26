@@ -85,7 +85,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
 
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mShadowPowerManager = shadowOf(powerManager);
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
@@ -224,7 +224,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
 
     @Test
     public void onStop_isLockingScreen_doesNotSetTimestamp() {
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
 
@@ -350,7 +350,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
                         constructorContext, mFinishRunnable, mIntentWithExtra);
         verify(constructorContext).getSystemService(Context.POWER_SERVICE);
 
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
         timeoutHandler.onStop(onStopContext);
         verify(onStopContext, never()).getSystemService(Context.POWER_SERVICE);
 
@@ -372,7 +372,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
                         constructorContext, mFinishRunnable, mIntentWithExtra);
         verify(constructorContext).getSystemService(Context.POWER_SERVICE);
 
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
         timeoutHandler.onStop(onStopContext);
         verify(onStopContext, never()).getSystemService(Context.POWER_SERVICE);
 
@@ -394,7 +394,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
                         constructorContext, mFinishRunnable, mIntentWithExtra);
         verify(constructorContext, never()).getSystemService(Context.POWER_SERVICE);
 
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
         timeoutHandler.onStop(onStopContext);
         verify(onStopContext).getSystemService(Context.POWER_SERVICE);
 

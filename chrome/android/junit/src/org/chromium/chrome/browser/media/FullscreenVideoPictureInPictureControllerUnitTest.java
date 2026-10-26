@@ -122,7 +122,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 Shadows.shadowOf((PowerManager) mActivity.getSystemService(Context.POWER_SERVICE));
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
 
         mController =
                 new FullscreenVideoPictureInPictureControllerWithOverrides(
@@ -376,7 +376,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         enterPip();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
 
         // Expect that there will be no attempt to exit pip yet, because the screen is off.
         // Instead, it will be deferred until it unlocks and we get an `onStart` about it.  We call
@@ -388,7 +388,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         // When the device is unlocked, we will get `onStart`.  This should cause pip to close
         // because it's still deferred from the `onResume` call, above.
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
         mController.onStart();
         assertTrue(mShadowActivity.isTaskMovedToBack());
     }

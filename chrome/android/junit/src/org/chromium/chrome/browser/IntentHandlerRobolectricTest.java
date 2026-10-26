@@ -645,11 +645,11 @@ public class IntentHandlerRobolectricTest {
     public void testScreenOffNoContext() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent, null));
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
         intent = new Intent(Intent.ACTION_MAIN);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -669,11 +669,11 @@ public class IntentHandlerRobolectricTest {
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent, activity));
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, activity));
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
         intent = new Intent(Intent.ACTION_MAIN);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, activity));
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -695,16 +695,16 @@ public class IntentHandlerRobolectricTest {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
         // Test with main screen on
-        mShadowPowerManager.setIsInteractive(true);
-        shadowPowerManagerAct.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(true);
+        shadowPowerManagerAct.turnScreenOn(false);
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent, activity));
-        shadowPowerManagerAct.setIsInteractive(true);
+        shadowPowerManagerAct.turnScreenOn(true);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, activity));
         // Test with main screen off
-        mShadowPowerManager.setIsInteractive(false);
-        shadowPowerManagerAct.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
+        shadowPowerManagerAct.turnScreenOn(false);
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(intent, activity));
-        shadowPowerManagerAct.setIsInteractive(true);
+        shadowPowerManagerAct.turnScreenOn(true);
         Assert.assertFalse(IntentHandler.shouldIgnoreIntent(intent, activity));
     }
 

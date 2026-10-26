@@ -73,11 +73,11 @@ public class OmahaServiceStartDelayerTest {
     }
 
     private void setInteractive() {
-        mShadowPowerManager.setIsInteractive(true);
+        mShadowPowerManager.turnScreenOn(true);
     }
 
     private void setNonInteractive() {
-        mShadowPowerManager.setIsInteractive(false);
+        mShadowPowerManager.turnScreenOn(false);
     }
 
     private void verifyTaskScheduled() {
