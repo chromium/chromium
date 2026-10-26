@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
