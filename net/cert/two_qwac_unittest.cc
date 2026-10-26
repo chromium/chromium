@@ -6,15 +6,21 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "crypto/ecdsa_utils.h"
 #include "crypto/hash.h"
 #include "net/test/cert_builder.h"
 #include "net/test/two_qwac_cert_binding_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace net {
@@ -512,6 +518,35 @@ TEST(VerifyTwoQwacCertBinding, ValidSignatureES256) {
   // Check that the JWS header has "alg": "ES256"
   EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
   EXPECT_TRUE(cert_binding->VerifySignature());
+}
+
+TEST(VerifyTwoQwacCertBinding, DerEncodedSignatureRejectedForES256) {
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetJwsSigAlg(JwsSigAlg::kEcdsaP256Sha256);
+
+  std::optional<std::vector<uint8_t>> raw_sig =
+      base::Base64UrlDecode(binding_builder.GetSignature(),
+                            base::Base64UrlDecodePolicy::DISALLOW_PADDING);
+  ASSERT_TRUE(raw_sig.has_value());
+  EXPECT_EQ(raw_sig->size(), 64u);
+
+  EC_KEY* ec_key =
+      EVP_PKEY_get0_EC_KEY(binding_builder.GetLeafBuilder()->GetKey());
+  ASSERT_TRUE(ec_key);
+  std::optional<std::vector<uint8_t>> der_sig =
+      crypto::ConvertEcdsaRawSignatureToDer(EC_KEY_get0_group(ec_key),
+                                            *raw_sig);
+  ASSERT_TRUE(der_sig.has_value());
+
+  std::string der_sig_b64;
+  base::Base64UrlEncode(*der_sig, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &der_sig_b64);
+  std::string jws = binding_builder.GetHeader() + ".." + der_sig_b64;
+
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
+  EXPECT_FALSE(cert_binding->VerifySignature());
 }
 
 TEST(VerifyTwoQwacCertBinding, InvalidEcdsaCurve) {

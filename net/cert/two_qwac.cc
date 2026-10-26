@@ -5,12 +5,16 @@
 #include "net/cert/two_qwac.h"
 
 #include <algorithm>
+#include <optional>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
+#include "crypto/ecdsa_utils.h"
 #include "crypto/sign.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
@@ -473,12 +477,22 @@ bool TwoQwacCertBinding::VerifySignature() {
   // Annex B) that the "alg" JWS header field not conflict with the type of the
   // public key in the "x5c" JWS header field.
   crypto::sign::SignatureKind sig_kind;
+  std::optional<std::vector<uint8_t>> ecdsa_der_sig;
+  base::span<const uint8_t> signature = signature_;
   switch (header_.sig_alg) {
     case JwsSigAlg::kEcdsaP256Sha256:
       if (!pubkey->IsEcP256()) {
         return false;
       }
       sig_kind = crypto::sign::ECDSA_SHA256;
+      // JWS ES256 signatures are 64-byte IEEE P1363 raw R || S values (RFC
+      // 7518, section 3.4), whereas crypto::sign::Verifier expects an ASN.1
+      // DER-encoded ECDSA-Sig-Value.
+      ecdsa_der_sig = crypto::ConvertEcdsaRawSignatureToDer(*pubkey, signature);
+      if (!ecdsa_der_sig.has_value()) {
+        return false;
+      }
+      signature = *ecdsa_der_sig;
       break;
     case JwsSigAlg::kRsaPkcs1Sha256:
       if (!pubkey->IsRsa()) {
@@ -493,7 +507,7 @@ bool TwoQwacCertBinding::VerifySignature() {
       sig_kind = crypto::sign::RSA_PSS_SHA256;
       break;
   }
-  crypto::sign::Verifier verifier(sig_kind, *pubkey, signature_);
+  crypto::sign::Verifier verifier(sig_kind, *pubkey, signature);
 
   // RFC 7515 section 5.2 steps 1-7 are performed by TwoQwacCertBinding::Parse.
 
