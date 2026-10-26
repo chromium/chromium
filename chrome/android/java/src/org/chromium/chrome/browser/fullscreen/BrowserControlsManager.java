@@ -768,8 +768,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             // With BCIV, if there's an animation, updating offsets here causes incorrect animation
             // frames because the browser submits a frame with the height update before the offsets
             // in the renderer and browser are updated.
-            // When visibility is forced, BCIV doesn't apply, so offsets should still be updated.
-            if (!shouldAnimateBrowserControlsHeightChanges() || isVisibilityForced()) {
+            // Without a renderer-driven animation (e.g. native pages), push offsets now. Otherwise
+            // wait for renderer frames; notifying here would end the height animation on frame 0.
+            if (!shouldAnimateBrowserControlsHeightChanges()
+                    || !canAnimateNativeBrowserControls()) {
                 notifyControlOffsetChanged();
             }
             notifyControlsPositionChanged();

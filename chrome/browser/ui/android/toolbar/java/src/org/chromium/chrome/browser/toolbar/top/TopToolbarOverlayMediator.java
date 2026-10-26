@@ -335,9 +335,7 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
                     @Override
                     public void onBottomControlsHeightAnimationStarted() {
                         mCurrentlyAnimating = true;
-                        if (getControlsPosition() == ControlsPosition.BOTTOM) {
-                            mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, null);
-                        }
+                        updateOffsetTag(mBrowserControlsOffsetTagsInfo);
                     }
 
                     @Override
@@ -405,7 +403,15 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
 
     void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         mBrowserControlsOffsetTagsInfo = offsetTagsInfo;
-        if (mCurrentlyAnimating) return;
+        // During a bottom controls height animation, BottomControlsStacker drops the bottom offset
+        // tags and positions bottom layers itself from the renderer's per-frame offsets, which a
+        // bottom-anchored toolbar follows via LEGACY_CONTENT_OFFSET. A top-anchored toolbar isn't
+        // part of that animation and is still moved by viz with the top tag, so keep applying it
+        // (e.g. as soon as an animated swap moves the toolbar to the top).
+        if (mCurrentlyAnimating && getControlsPosition() == ControlsPosition.BOTTOM) {
+            mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, null);
+            return;
+        }
 
         if (offsetTagsInfo == null) {
             mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, null);

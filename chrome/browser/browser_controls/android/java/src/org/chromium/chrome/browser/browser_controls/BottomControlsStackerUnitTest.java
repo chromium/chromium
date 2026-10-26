@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -111,6 +112,30 @@ public class BottomControlsStackerUnitTest {
         assertTrue(
                 "Not just the bottom layer is showing, the top layer is also showing.",
                 mBottomControlsStacker.hasVisibleLayersOtherThan(bottom.mType));
+    }
+
+    @Test
+    public void testRunWithDeferredHeightUpdates() {
+        TestLayerWithColor bottom =
+                new TestLayerWithColor(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE,
+                        Color.GREEN);
+        mBottomControlsStacker.addLayer(bottom);
+
+        mBottomControlsStacker.runWithDeferredHeightUpdates(
+                () -> mBottomControlsStacker.requestLayerUpdate(true));
+        // Sizes are recomputed but nothing is pushed to the sizer.
+        assertEquals(10, mBottomControlsStacker.getTotalHeight());
+        verify(mBrowserControlsSizer, never()).setBottomControlsHeight(anyInt(), anyInt());
+        verify(mBrowserControlsSizer, never()).setAnimateBrowserControlsHeightChanges(anyBoolean());
+        verify(mBrowserControlsSizer, never()).notifyBackgroundColor(anyInt());
+
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
+        verify(mBrowserControlsSizer).notifyBackgroundColor(Color.GREEN);
     }
 
     // Visibility

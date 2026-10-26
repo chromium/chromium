@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -223,6 +224,26 @@ public class StaticLayout extends Layout {
                             // animations will be applied by OffsetTags.
                             int height = mBrowserControlsStateProvider.getTopControlsHeight();
                             mModel.set(LayoutTab.CONTENT_OFFSET_Y, height);
+                        }
+                    }
+
+                    @Override
+                    public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
+                        // An animated position change doesn't notify offsets until the renderer
+                        // submits a frame at the new heights, but the browser frame carrying the
+                        // new heights already embeds that renderer frame. Set the content offset
+                        // to the new top height now, so the content offset tag is applied
+                        // relative to the right base on that first frame.
+                        // BrowserControlsManager#setControlsPosition only skips the synchronous
+                        // offset notify for animated swaps on renderer-animated tabs. Native pages
+                        // lock the controls to SHOWN (visibility forced), so the guard below
+                        // leaves them to the offsets notified synchronously.
+                        if (mBrowserControlsStateProvider
+                                        .shouldAnimateBrowserControlsHeightChanges()
+                                && !mBrowserControlsStateProvider.isVisibilityForced()) {
+                            mModel.set(
+                                    LayoutTab.CONTENT_OFFSET_Y,
+                                    mBrowserControlsStateProvider.getTopControlsHeight());
                         }
                     }
                 };

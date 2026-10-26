@@ -151,6 +151,9 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // fresh offsets to layers whose visibility flipped without changing the bottom controls
     // heights, since the sizer does not notify observers in that case.
     private boolean mVisibilityChangedSinceReposition;
+    // Whether #requestLayerUpdate should only recompute layer sizes without pushing them to the
+    // sizer. See #runWithDeferredHeightUpdates.
+    private boolean mDeferHeightUpdates;
 
     // The heights of each layer at their fully shown positions.
     private final SparseIntArray mLayerRestingOffsets = new SparseIntArray(STACK_ORDER.length);
@@ -302,6 +305,24 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     }
 
     /**
+     * Runs {@code runnable} while {@link #requestLayerUpdate} only recomputes the layer sizes. This
+     * lets a caller fold layer height changes made by synchronous observers into its own single
+     * browser controls update, e.g. so they don't interrupt an animated height change.
+     *
+     * <p>While deferred, {@link #requestLayerUpdate} skips the height push to the {@link
+     * BrowserControlsSizer} (including its animate bit), the background color update and layer
+     * repositioning. Only calls made synchronously within {@code runnable} are covered. The caller
+     * must push the resulting {@link #getTotalHeight()} and then call {@link #requestLayerUpdate}
+     * in the same stack frame.
+     */
+    public void runWithDeferredHeightUpdates(Runnable runnable) {
+        assert !mDeferHeightUpdates;
+        mDeferHeightUpdates = true;
+        runnable.run();
+        mDeferHeightUpdates = false;
+    }
+
+    /**
      * Trigger the browser controls height update based on the current layer status. If there's
      * already an animated transition running, this call might cause it to skip to the end state.
      *
@@ -309,6 +330,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     public void requestLayerUpdate(boolean animate) {
         updateLayerVisibilitiesAndSizes();
+        if (mDeferHeightUpdates) return;
         // BrowserControlsSizer#setBottomControlsHeight is a no-op when the heights are unchanged,
         // so #onBottomControlsHeightChanged (and the reposition it triggers) will not run.
         boolean heightsUnchanged =

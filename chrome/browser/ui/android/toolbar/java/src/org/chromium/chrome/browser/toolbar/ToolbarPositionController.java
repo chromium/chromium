@@ -577,7 +577,15 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         int newTopHeight;
         int controlContainerHeight = mControlContainer.getToolbarHeight();
-        mCurrentPosition.set(newControlsPosition);
+        if (animatingToTop || animatingToBottom) {
+            // Position observers may resize bottom layers (e.g. the bottom bar's top padding).
+            // Defer pushing those heights so they are included in the animated
+            // setControlsPosition() call below; a separate push would interrupt the animation.
+            mBottomControlsStacker.runWithDeferredHeightUpdates(
+                    () -> mCurrentPosition.set(newControlsPosition));
+        } else {
+            mCurrentPosition.set(newControlsPosition);
+        }
 
         if (mEnableLogs) {
             Log.i(TAG, "Set a new control position: %d.", newControlsPosition);

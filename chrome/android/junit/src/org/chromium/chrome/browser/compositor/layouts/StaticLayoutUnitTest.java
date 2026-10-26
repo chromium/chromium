@@ -47,6 +47,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -271,6 +272,55 @@ public class StaticLayoutUnitTest {
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         assertEquals(height, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
+    }
+
+    @Test
+    public void testAnimatedPositionChange_setsContentOffsetToNewTopHeight() {
+        final int height = 150;
+        mModel.set(LayoutTab.CONTENT_OFFSET_Y, 0);
+        doReturn(height).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(true)
+                .when(mBrowserControlsStateProvider)
+                .shouldAnimateBrowserControlsHeightChanges();
+        doReturn(false).when(mBrowserControlsStateProvider).isVisibilityForced();
+
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.TOP);
+        assertEquals(height, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
+    }
+
+    @Test
+    public void testNonAnimatedPositionChange_doesNotOverrideContentOffset() {
+        final int contentOffset = 10;
+        mModel.set(LayoutTab.CONTENT_OFFSET_Y, contentOffset);
+        doReturn(150).when(mBrowserControlsStateProvider).getTopControlsHeight();
+
+        // Not animating: offsets were already pushed by onControlsOffsetChanged.
+        doReturn(false)
+                .when(mBrowserControlsStateProvider)
+                .shouldAnimateBrowserControlsHeightChanges();
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.TOP);
+        assertEquals(contentOffset, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
+    }
+
+    @Test
+    public void testAnimatedPositionChange_visibilityForced_doesNotOverrideContentOffset() {
+        final int contentOffset = 10;
+        mModel.set(LayoutTab.CONTENT_OFFSET_Y, contentOffset);
+        doReturn(150).when(mBrowserControlsStateProvider).getTopControlsHeight();
+
+        // Forced visibility: the browser applies the content offset itself.
+        doReturn(true)
+                .when(mBrowserControlsStateProvider)
+                .shouldAnimateBrowserControlsHeightChanges();
+        doReturn(true).when(mBrowserControlsStateProvider).isVisibilityForced();
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.TOP);
+        assertEquals(contentOffset, (int) mModel.get(LayoutTab.CONTENT_OFFSET_Y));
     }
 
     @Test

@@ -830,6 +830,44 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
+    public void testSetControlsPosition_visibilityForced_animationNotEndedOnFrameZero() {
+        setControlsPosition(ControlsPosition.BOTTOM, 0);
+        doReturn(true).when(mBrowserControlsManager).isVisibilityForced();
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+        Mockito.clearInvocations(mBrowserControlsStateProviderObserver);
+
+        setControlsPosition(ControlsPosition.TOP, -TOOLBAR_HEIGHT);
+
+        verify(mBrowserControlsStateProviderObserver, never())
+                .onBottomControlsHeightAnimationEnded();
+        assertTrue(mBrowserControlsManager.hasBottomControlsHeightAnimation());
+    }
+
+    @Test
+    public void testSetControlsPosition_withAnimation_onNativePage_animationNotTrapped() {
+        when(mTab.isNativePage()).thenReturn(true);
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+        Mockito.clearInvocations(mBrowserControlsStateProviderObserver);
+
+        setControlsPosition(ControlsPosition.BOTTOM, TOOLBAR_HEIGHT);
+
+        assertFalse(mBrowserControlsManager.hasBottomControlsHeightAnimation());
+        verify(mBrowserControlsStateProviderObserver).onBottomControlsHeightAnimationEnded();
+    }
+
+    private void setControlsPosition(@ControlsPosition int position, int rendererOffset) {
+        boolean top = position == ControlsPosition.TOP;
+        mBrowserControlsManager.setControlsPosition(
+                position,
+                /* newTopControlsHeight= */ top ? TOOLBAR_HEIGHT : 0,
+                /* newTopControlsMinHeight= */ 0,
+                /* newRendererTopControlsOffset= */ top ? rendererOffset : 0,
+                /* newBottomControlsHeight= */ top ? 0 : TOOLBAR_HEIGHT,
+                /* newBottomControlsMinHeight= */ 0,
+                /* newRendererBottomControlsOffset= */ top ? 0 : rendererOffset);
+    }
+
+    @Test
     public void testSetPositionsForTabOverridesOffsetsOnNativePage() {
         remakeWithoutSpy();
         notifyAddTab(mTab);

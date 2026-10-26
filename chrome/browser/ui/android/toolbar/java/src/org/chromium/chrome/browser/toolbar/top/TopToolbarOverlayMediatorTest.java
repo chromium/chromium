@@ -603,6 +603,131 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    public void testOffsetTag_animatedSwapToTop_attachesTopTagDuringBottomAnimation() {
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        doReturn(ControlsPosition.BOTTOM)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mMediator.updateOffsetTag(offsetTagsInfo);
+        assertEquals(
+                offsetTagsInfo.getBottomControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        // BrowserControlsManager starts the bottom height animation before it updates the
+        // position.
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationStarted();
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        doReturn(ControlsPosition.TOP)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+
+        // The top tag must be attached before the first frame at the new position, while the
+        // bottom height animation is still running.
+        assertEquals(
+                offsetTagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationEnded();
+        assertEquals(
+                offsetTagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+    }
+
+    @Test
+    public void testOffsetTag_animatedSwapToBottom_clearsTopTagDuringBottomAnimation() {
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        doReturn(ControlsPosition.TOP)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mMediator.updateOffsetTag(offsetTagsInfo);
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationStarted();
+        assertEquals(
+                offsetTagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        doReturn(ControlsPosition.BOTTOM)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
+
+        // The stale top tag must not stay attached to the bottom-anchored toolbar.
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationEnded();
+        assertEquals(
+                offsetTagsInfo.getBottomControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+    }
+
+    @Test
+    public void testOffsetTag_animatedSwapToBottom_visibilityForced_noTag() {
+        // With forced visibility the renderer provides no offset tags (TTOM doesn't query
+        // isVisibilityForced() directly).
+        BrowserControlsOffsetTagsInfo offsetTagsInfo =
+                new BrowserControlsOffsetTagsInfo(null, null, null);
+        doReturn(ControlsPosition.TOP)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mMediator.updateOffsetTag(offsetTagsInfo);
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationStarted();
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        doReturn(ControlsPosition.BOTTOM)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationEnded();
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+    }
+
+    @Test
+    public void testOffsetTag_bottomAnimationWhileTop_appliesNewTagImmediately() {
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        doReturn(ControlsPosition.TOP)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mMediator.updateOffsetTag(offsetTagsInfo);
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationStarted();
+
+        BrowserControlsOffsetTagsInfo newOffsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        mMediator.updateOffsetTag(newOffsetTagsInfo);
+        assertEquals(
+                newOffsetTagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+    }
+
+    @Test
+    public void testOffsetTag_bottomAnimationWhileTop_clearsTagImmediately() {
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        doReturn(ControlsPosition.TOP)
+                .when(mBrowserControlsVisibilityManager)
+                .getControlsPosition();
+        mMediator.updateOffsetTag(offsetTagsInfo);
+
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationStarted();
+        assertEquals(
+                offsetTagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        // TopControlsStacker clears the tag via prepForHeightAdjustmentAnimation() before a top
+        // controls height animation, which may overlap with the bottom controls height animation.
+        mMediator.updateOffsetTag(null);
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+    }
+
+    @Test
     public void testThemeColorChanged() {
         // Clear testing overrides to allow mock invocation
         TopToolbarOverlayMediator.setToolbarBackgroundColorForTesting(null);
