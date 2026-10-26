@@ -371,7 +371,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTTabModalDialog,
     &kCCTTabSwitcherEnabledForChromeExperiment,
     &kCCTTabSwitcherEnabledForEmbedderExperiment,
-    &kCacheDeprecatedSystemLocationSetting,
     &kCacheIsGoogleSigned,
     &kCacheIsMultiInstanceApi31Enabled,
     &kCctTabResumption,
@@ -799,7 +798,6 @@ BASE_FEATURE(kCCTResizableForThirdParties, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTTabModalDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTTabSwitcherEnabledForChromeExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTTabSwitcherEnabledForEmbedderExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCacheDeprecatedSystemLocationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in downstream code.
 BASE_FEATURE(kCacheIsGoogleSigned, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheIsMultiInstanceApi31Enabled, base::FEATURE_ENABLED_BY_DEFAULT);
