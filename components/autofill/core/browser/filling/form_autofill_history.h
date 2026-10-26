@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -83,10 +84,10 @@ class FormAutofillHistory {
     // especially since a single field can now be filled via different products.
     FillingProduct filling_product = FillingProduct::kNone;
 
-    // The undo functionality is supposed to work only on autofilled fields.
-    // However when this boolean is enabled, this check is relaxed to include
-    // non-autofilled fields as well provided that the undo history contains a
-    // value for the field.
+    // Undo normally acts only on autofilled fields. When true (because the
+    // filling operation intentionally emptied the field, e.g. during payments
+    // suggestion swapping, leaving it non-autofilled), Undo also reverts the
+    // field as long as its value is still empty.
     bool ignore_is_autofilled = false;
   };
 
@@ -101,11 +102,15 @@ class FormAutofillHistory {
   ~FormAutofillHistory();
 
   // Adds a new history entry in the beginning of the list.
-  // `filled_fields` contain the state of the fields that were filled BEFORE
-  // the filling operation happened.
-  void AddFormFillingEntry(base::span<const AutofillField* const> filled_fields,
-                           FillingProduct filling_product,
-                           bool is_refill);
+  // `filled_fields` contains the state of the fields that were filled BEFORE
+  // the filling operation happened. `emptied_field_ids` contains the IDs of
+  // fields in `filled_fields` whose values were intentionally cleared by the
+  // filling operation (e.g. during payments suggestion swapping).
+  void AddFormFillingEntry(
+      base::span<const AutofillField* const> filled_fields,
+      const base::flat_set<FieldGlobalId>& emptied_field_ids,
+      FillingProduct filling_product,
+      bool is_refill);
 
   // Erases the field history information corresponding to all `field_ids` from
   // `filling_entry`. If `filling_entry` becomes empty afterwards, the function

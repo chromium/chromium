@@ -405,11 +405,6 @@ TEST_F(FormFillerTest, UndoResetsFormFillingData) {
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
   FormsSeen({form});
 
-  base::flat_set<FieldGlobalId> safe_fields{form.fields().front().global_id()};
-  EXPECT_CALL(autofill_driver(), ApplyFormAction)
-      .Times(2)
-      .WillRepeatedly(Return(safe_fields));
-
   const FormStructure* form_structure = GetFormStructure(form);
   ASSERT_TRUE(form_structure);
   ASSERT_NE(form_structure->field(0)->last_modifier(),
@@ -419,11 +414,7 @@ TEST_F(FormFillerTest, UndoResetsFormFillingData) {
   ASSERT_EQ(form_structure->field(0)->filling_product(), FillingProduct::kNone);
 
   AutofillProfile profile = test::GetFullProfile();
-  form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &profile, *GetFormStructure(form),
-      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
-      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  form = AutofillForm(form, form.fields().front(), &profile);
 
   ASSERT_EQ(form_structure->field(0)->last_modifier(),
             FieldModifier::kAutofill);
@@ -436,9 +427,7 @@ TEST_F(FormFillerTest, UndoResetsFormFillingData) {
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
-                                  form.global_id(),
-                                  form.fields().front().global_id());
+  UndoAutofill(form, form.fields().front());
 
   EXPECT_NE(form_structure->field(0)->last_modifier(),
             FieldModifier::kAutofill);
@@ -482,6 +471,9 @@ TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
       GetAutofillField(form.global_id(), form.fields().front().global_id());
   AutofillProfile profile = test::GetFullProfile();
 
+  form = AutofillForm(form, form.fields().front(), &profile);
+  ASSERT_EQ(autofill_field->last_modifier(), FieldModifier::kAutofill);
+
   EXPECT_CALL(autofill_driver(), ApplyFormAction)
       .Times(testing::AnyNumber())
       .WillRepeatedly([](mojom::FormActionType, mojom::ActionPersistence,
@@ -491,13 +483,6 @@ TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
         return base::flat_set<FieldGlobalId>(
             base::ToVector(fields, &FormFieldData::global_id));
       });
-
-  form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &profile, *GetFormStructure(form),
-      *autofill_field, AutofillTriggerSource::kPopup, /*blocked_fields=*/{},
-      FillId::Create(), /*forced_fill_values=*/{},
-      FormFiller::RefillOptions::NotRefill());
-  ASSERT_EQ(autofill_field->last_modifier(), FieldModifier::kAutofill);
 
   // A preview of the undo operation won't reset the autofill state.
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kPreview,
@@ -701,6 +686,97 @@ TEST_F(FormFillerTest, PaymentsSwappingUpdatesAutofillField) {
             FieldModifier::kAutofill);
   EXPECT_NE(form_structure->field(3)->last_modifier(),
             FieldModifier::kAutofill);
+}
+
+// Tests that undoing a payments swapping fill restores fields that were
+// emptied by swapping, while skipping fields that were subsequently edited or
+// cleared by the user.
+TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData_Undo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  FormsSeen({form});
+
+  CreditCard credit_card_full;
+  test::SetCreditCardInfo(&credit_card_full, "Elvis Presley",
+                          "4234 5678 9012 3456",  // Visa
+                          "04", "2999", "1");
+
+  CreditCard credit_card_without_name;
+  test::SetCreditCardInfo(&credit_card_without_name, "",
+                          "5412 7512 3412 3456",  // Mastercard
+                          "06", "2998", "1");
+
+  form = AutofillForm(form, form.fields()[1], &credit_card_full);
+  form = AutofillForm(form, form.fields()[1], &credit_card_without_name);
+  ASSERT_EQ(form.fields()[0].value(), u"");
+  ASSERT_FALSE(form.fields()[0].is_autofilled_according_to_renderer());
+  ASSERT_THAT(form.fields()[1], AutofilledWith(u"5412751234123456"));
+  ASSERT_THAT(form.fields()[2], AutofilledWith(u"06"));
+  ASSERT_THAT(form.fields()[3], AutofilledWith(u"2998"));
+
+  // Simulate the user editing the expiration month and clearing the expiration
+  // year after the swap, while leaving the swap-emptied cardholder name
+  // untouched.
+  test_api(form).field(2).set_value(u"12");
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(false);
+  test_api(form).field(3).set_value(u"");
+  test_api(form).field(3).set_is_autofilled_according_to_renderer(false);
+  test_api(*GetFormStructure(form)).UpdateFormData(form);
+
+  form = UndoAutofill(form, form.fields()[1]);
+
+  // The swap-emptied cardholder name and the untouched card number revert to
+  // the first card, while user-edited and user-cleared fields are preserved.
+  EXPECT_THAT(form.fields()[0], AutofilledWith(u"Elvis Presley"));
+  EXPECT_THAT(form.fields()[1], AutofilledWith(u"4234567890123456"));
+  EXPECT_EQ(form.fields()[2].value(), u"12");
+  EXPECT_FALSE(form.fields()[2].is_autofilled_according_to_renderer());
+  EXPECT_EQ(form.fields()[3].value(), u"");
+  EXPECT_FALSE(form.fields()[3].is_autofilled_according_to_renderer());
+}
+
+// Tests that if a field was emptied by payments swapping and the user then
+// manually types a value into it, undoing the swap preserves the user's input.
+TEST_F(FormFillerTest,
+       PaymentsSwappingWithPartiallyEmptyData_UndoSkipsUserEditedEmptiedField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  FormsSeen({form});
+
+  CreditCard credit_card_full;
+  test::SetCreditCardInfo(&credit_card_full, "Elvis Presley",
+                          "4234 5678 9012 3456",  // Visa
+                          "04", "2999", "1");
+
+  CreditCard credit_card_with_empty_year;
+  test::SetCreditCardInfo(&credit_card_with_empty_year, "Elvis Presley New",
+                          "5412 7512 3412 3456",  // Mastercard
+                          "06", "", "1");
+
+  form = AutofillForm(form, form.fields().front(), &credit_card_full);
+  form =
+      AutofillForm(form, form.fields().front(), &credit_card_with_empty_year);
+  ASSERT_EQ(form.fields()[3].value(), u"");
+  ASSERT_FALSE(form.fields()[3].is_autofilled_according_to_renderer());
+
+  // Simulate the user typing into the field that swapping emptied.
+  test_api(form).field(3).set_value(u"2030");
+  test_api(form).field(3).set_is_autofilled_according_to_renderer(false);
+  test_api(*GetFormStructure(form)).UpdateFormData(form);
+
+  form = UndoAutofill(form, form.fields()[0]);
+
+  EXPECT_THAT(form.fields()[0], AutofilledWith(u"Elvis Presley"));
+  EXPECT_EQ(form.fields()[3].value(), u"2030");
+  EXPECT_FALSE(form.fields()[3].is_autofilled_according_to_renderer());
 }
 
 struct PartialCreditCardDateParams {
@@ -2502,6 +2578,47 @@ TEST_F(FormFillerTest, UndoSkipsFieldsAutofilledFurther) {
   // The second field should not change, because the last operation that
   // modified it isn't the one that is being currently undone.
   EXPECT_THAT(form.fields()[1], AutofilledWith(u"Other"));
+}
+
+// Tests that undoing a form fill skips fields that were subsequently edited or
+// cleared by the user, including fields that had a pre-filled value prior to
+// autofilling.
+TEST_F(FormFillerTest, UndoSkipsUserModifiedFields) {
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+           {.role = ADDRESS_HOME_COUNTRY,
+            .value = u"DE",
+            .autocomplete_attribute = "country",
+            .form_control_type = FormControlType::kSelectOne,
+            .select_options = {{{.value = u"DE", .text = u"Germany"},
+                                {.value = u"US", .text = u"United States"},
+                                {.value = u"CA", .text = u"Canada"}}}}}});
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  form = AutofillForm(form, form.fields()[0], &profile);
+  ASSERT_THAT(form.fields()[0], AutofilledWith(u"John"));
+  ASSERT_THAT(form.fields()[1], AutofilledWith(u"Doe"));
+  ASSERT_THAT(form.fields()[2], AutofilledWith(u"US"));
+
+  // Simulate the user clearing `NAME_FIRST` and changing the `<select>` value,
+  // while leaving `NAME_LAST` autofilled.
+  test_api(form).field(0).set_value(u"");
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(false);
+  test_api(form).field(2).set_value(u"CA");
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(false);
+  test_api(*GetFormStructure(form)).UpdateFormData(form);
+
+  form = UndoAutofill(form, form.fields()[1]);
+
+  EXPECT_EQ(form.fields()[0].value(), u"");
+  EXPECT_FALSE(form.fields()[0].is_autofilled_according_to_renderer());
+  EXPECT_EQ(form.fields()[1].value(), u"");
+  EXPECT_FALSE(form.fields()[1].is_autofilled_according_to_renderer());
+  EXPECT_EQ(form.fields()[2].value(), u"CA");
+  EXPECT_FALSE(form.fields()[2].is_autofilled_according_to_renderer());
 }
 
 // Regression test for crbug.com/416019464

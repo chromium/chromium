@@ -738,14 +738,15 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
         field_fill_operation_it != fill_operation_it ||
         // Skip not-autofilled fields as undo only acts on autofilled
         // fields. Only exception is the fields that were emptied due to
-        // suggestion swapping.
-        // Note that `field_fill_operation` is guaranteed to have an entry for
-        // `field.global_id()` because of the condition right above.
+        // suggestion swapping (and remain empty).
+        // Note that `field_fill_operation_it` is guaranteed to have an entry
+        // for `field.global_id()` because of the condition right above.
         // TODO(crbug.com/393114125): Change to use
         // `AutofillField::field_modifiers_`.
         (!field.is_autofilled_according_to_renderer() &&
-         !field.value().empty() &&
-         field_fill_operation_it->at(field.global_id()).ignore_is_autofilled) ||
+         !(field.value().empty() &&
+           field_fill_operation_it->at(field.global_id())
+               .ignore_is_autofilled)) ||
         // Skip fields that are not cached to avoid unexpected outcomes.
         !cached_fields.contains(field.global_id()) ||
         // Skip fields which have a different filling product than the trigger
@@ -820,8 +821,8 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
   if (field && action_persistence == mojom::ActionPersistence::kFill) {
     if (ShouldRecordFillingHistory(filling_product)) {
       form_autofill_history_.AddFormFillingEntry(
-          std::to_array<const AutofillField*>({field}), filling_product,
-          /*is_refill=*/false);
+          std::to_array<const AutofillField*>({field}),
+          /*emptied_field_ids=*/{}, filling_product, /*is_refill=*/false);
     }
     field->AddFieldModifier(FieldModifier::kAutofill);
     field->set_autofilled_type(field_type_used);
@@ -936,8 +937,15 @@ void FormFiller::FillOrPreviewForm(
     // Save filling history to support undoing it later if needed.
     if (ShouldRecordFillingHistory(
             augmented_filling_payload.filling_product())) {
+      base::flat_set<FieldGlobalId> emptied_field_ids;
+      for (const FormFieldData& result_field : result_fields) {
+        if (result_field.value().empty()) {
+          emptied_field_ids.insert(result_field.global_id());
+        }
+      }
       form_autofill_history_.AddFormFillingEntry(
-          safe_filled_fields, augmented_filling_payload.filling_product(),
+          safe_filled_fields, emptied_field_ids,
+          augmented_filling_payload.filling_product(),
           refill_options.is_refill());
     }
 

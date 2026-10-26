@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -77,6 +78,7 @@ FormAutofillHistory::~FormAutofillHistory() = default;
 
 void FormAutofillHistory::AddFormFillingEntry(
     base::span<const AutofillField* const> filled_fields,
+    const base::flat_set<FieldGlobalId>& emptied_field_ids,
     FillingProduct filling_product,
     bool is_refill) {
   // Intuitively, `if (!is_refill) history_.emplace_front()` suffices, but it
@@ -93,25 +95,23 @@ void FormAutofillHistory::AddFormFillingEntry(
     // fill operation, with initial value `A` and filled value `B`, might be
     // refilled with a newer value `C`. We do not store this so that upon
     // undoing Autofill, the field's value reverts from `C` to `A` directly as
-    // this is what happened from a user's perspective.
-    size_ +=
-        history_.front()
-            .emplace(
-                field->global_id(),
-                FieldFillingEntry(
-                    field->value(),
-                    field->is_autofilled_according_to_renderer(),
-                    field->field_modifiers(/*pass_key=*/{}),
-                    field->autofill_source_profile_guid(),
-                    field->autofilled_type(), field->filling_product(),
-                    // `FormAutofillHistory::AddFormFillingEntry` only gets
-                    // fields that were autofilled. In case a field has an
-                    // empty value, this means Autofill intentionally
-                    // filled an empty string into it, and therefore when
-                    // undoing changes to this field we should not look at
-                    // `FormFieldData::is_autofilled_according_to_renderer`.
-                    /*ignore_is_autofilled=*/field->value().empty()))
-            .second;
+    // this is what happened from a user's perspective. However, update
+    // `ignore_is_autofilled` to reflect whether the latest fill/refill left
+    // a previously non-empty field intentionally empty.
+    auto [it, inserted] = history_.front().emplace(
+        field->global_id(),
+        FieldFillingEntry(field->value(),
+                          field->is_autofilled_according_to_renderer(),
+                          field->field_modifiers(/*pass_key=*/{}),
+                          field->autofill_source_profile_guid(),
+                          field->autofilled_type(), field->filling_product(),
+                          /*ignore_is_autofilled=*/false));
+    if (inserted) {
+      ++size_;
+    }
+    it->second.ignore_is_autofilled =
+        !it->second.value.empty() &&
+        emptied_field_ids.contains(field->global_id());
   }
   // Drop the last history entry while the history size exceeds the limit.
   while (size_ > kMaxStorableFieldFillHistory) {

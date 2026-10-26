@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
@@ -51,11 +52,13 @@ class FormAutofillHistoryTest : public testing::Test {
     filled_autofill_fields_.push_back(std::move(autofill_field));
     return field.global_id();
   }
-  void AddFormFilling(bool is_refill) {
+  void AddFormFilling(
+      bool is_refill,
+      const base::flat_set<FieldGlobalId>& emptied_field_ids = {}) {
     std::vector<const AutofillField*> autofill_fields = base::ToVector(
         filled_autofill_fields_, [](const auto& field) { return &field; });
     form_autofill_history_.AddFormFillingEntry(
-        autofill_fields, FillingProduct::kNone, is_refill);
+        autofill_fields, emptied_field_ids, FillingProduct::kNone, is_refill);
   }
 
   std::vector<FormFieldData> filled_fields_;
@@ -88,6 +91,56 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_NormalFill) {
 
   form_autofill_history_.Reset();
   EXPECT_FALSE(form_autofill_history_.HasHistory(first_name_id));
+}
+
+// Tests that `ignore_is_autofilled` is set based on whether the filling
+// operation emptied the field, rather than whether the field was empty prior
+// to filling.
+TEST_F(FormAutofillHistoryTest,
+       AddFormFillingEntry_IgnoreIsAutofilledReflectsPostFillEmptying) {
+  FieldGlobalId initially_empty_field_id = AddNewFieldFilling(
+      "first name", "first name", "", FormControlType::kInputText, NAME_FIRST,
+      /*is_autofilled_according_to_renderer=*/false, /*modifiers=*/{});
+  FieldGlobalId swapped_to_empty_field_id = AddNewFieldFilling(
+      "exp year", "exp year", "2999", FormControlType::kInputText,
+      CREDIT_CARD_EXP_4_DIGIT_YEAR,
+      /*is_autofilled_according_to_renderer=*/true,
+      std::vector<FieldModifier>{FieldModifier::kAutofill});
+  AddFormFilling(/*is_refill=*/false,
+                 /*emptied_field_ids=*/{swapped_to_empty_field_id});
+
+  ASSERT_TRUE(form_autofill_history_.HasHistory(initially_empty_field_id));
+  EXPECT_EQ(form_autofill_history_
+                .GetLastFormFillingEntryForField(initially_empty_field_id)
+                ->at(initially_empty_field_id),
+            FormAutofillHistory::FieldFillingEntry(
+                u"", /*field_is_autofilled_according_to_renderer=*/false,
+                /*field_modifiers=*/{}, kGuid,
+                /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*ignore_is_autofilled=*/false));
+
+  ASSERT_TRUE(form_autofill_history_.HasHistory(swapped_to_empty_field_id));
+  EXPECT_EQ(form_autofill_history_
+                .GetLastFormFillingEntryForField(swapped_to_empty_field_id)
+                ->at(swapped_to_empty_field_id),
+            FormAutofillHistory::FieldFillingEntry(
+                u"2999", /*field_is_autofilled_according_to_renderer=*/true,
+                std::vector<FieldModifier>{FieldModifier::kAutofill}, kGuid,
+                /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*ignore_is_autofilled=*/true));
+
+  // If a subsequent refill fills a non-empty value into the previously emptied
+  // field, the stored pre-fill value ("2999") is preserved while
+  // `ignore_is_autofilled` is updated to false.
+  AddFormFilling(/*is_refill=*/true, /*emptied_field_ids=*/{});
+  EXPECT_EQ(form_autofill_history_
+                .GetLastFormFillingEntryForField(swapped_to_empty_field_id)
+                ->at(swapped_to_empty_field_id),
+            FormAutofillHistory::FieldFillingEntry(
+                u"2999", /*field_is_autofilled_according_to_renderer=*/true,
+                std::vector<FieldModifier>{FieldModifier::kAutofill}, kGuid,
+                /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*ignore_is_autofilled=*/false));
 }
 
 // Tests the function FormAutofillHistory::AddFormFillingEntry upon a refill.
