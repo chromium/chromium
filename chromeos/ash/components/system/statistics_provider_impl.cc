@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -228,6 +229,22 @@ std::optional<std::string> GetCrossystemValue(
     return std::nullopt;
   }
   return std::string(trimmed);
+}
+
+// Move entries from `parsed_pairs` whose keys are in `allowed_keys` into
+// `machine_info`, preserving any existing values in `machine_info`.
+void AddAllowedStatistics(NameValuePairsParser::NameValueMap parsed_pairs,
+                          const base::flat_set<std::string_view>& allowed_keys,
+                          NameValuePairsParser::NameValueMap& machine_info) {
+  for (auto& [key, value] : parsed_pairs) {
+    if (!allowed_keys.contains(key)) {
+      VLOG(1) << "Ignoring unexpected statistic key: " << key;
+      continue;
+    }
+    if (!machine_info.contains(key)) {
+      machine_info[key] = std::move(value);
+    }
+  }
 }
 
 StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
@@ -760,11 +777,30 @@ void StatisticsProviderImpl::LoadMachineInfoFile() {
     }
   }
 
+  // Allowlist of keys expected from the machine-info file.
+  // This is the intersection of:
+  // - all parameters used in calls to GetMachineStatistic
+  // - all keys written by
+  //   src/platform2/login_manager/init/scripts/write-machine-info
+  const base::flat_set<std::string_view> kMachineInfoKeys = {
+      kCustomizationIdKey,
+      kFirmwareWriteProtectCurrentKey,
+      kFlexIdKey,
+      kFlexProductNameKey,
+      kFlexProductVersionKey,
+      kFlexSysVendorKey,
+      kRlzBrandCodeKey,
+      kSerialNumberKey,
+  };
+
   // The machine-info file is generated only for OOBE and enterprise enrollment
   // and may not be present. See login-manager/init/machine-info.conf.
-  NameValuePairsParser(&machine_info_)
+  NameValuePairsParser::NameValueMap parsed_pairs;
+  NameValuePairsParser(&parsed_pairs)
       .ParseNameValuePairsFromFile(sources_.machine_info_filepath,
                                    NameValuePairsFormat::kMachineInfo);
+  AddAllowedStatistics(std::move(parsed_pairs), kMachineInfoKeys,
+                       machine_info_);
 }
 
 void StatisticsProviderImpl::LoadVpd() {
@@ -774,8 +810,6 @@ void StatisticsProviderImpl::LoadVpd() {
     return;
   }
 
-  NameValuePairsParser parser(&machine_info_);
-
   std::string output;
   int exit_code;
   if (!base::GetAppOutputWithExitCode(sources_.vpd_tool, &output, &exit_code)) {
@@ -783,6 +817,9 @@ void StatisticsProviderImpl::LoadVpd() {
     vpd_status_ = VpdStatus::kInvalid;
     return;
   }
+
+  NameValuePairsParser::NameValueMap parsed_pairs;
+  NameValuePairsParser parser(&parsed_pairs);
   if (!parser.ParseNameValuePairsFromString(output,
                                             NameValuePairsFormat::kVpdDump)) {
     LOG(ERROR) << "Errors parsing output from: "
@@ -790,6 +827,35 @@ void StatisticsProviderImpl::LoadVpd() {
     vpd_status_ = VpdStatus::kInvalid;
     return;
   }
+
+  // Allowlist of keys expected from the VPD dump tool.
+  // This is the intersection of:
+  // - all parameters used in calls to GetMachineStatistic
+  // - all keys dumped by src/platform/vpd/util/dump_filtered_vpd.cc
+  //
+  // Note:
+  // - dump_filtered_vpd also outputs "panel_backlight_max_nits" and
+  //   "sku_number" (used by debugd), which are not queried via
+  //   StatisticsProvider.
+  // - kDockMacAddressKey ("dock_mac"), kEthernetMacAddressKey
+  //   ("ethernet_mac0"), and kManufactureDateKey ("mfg_date") are queried via
+  //   GetMachineStatistic (in CreateDeviceCloudPolicyClientAsh), and
+  //   kKeyboardMechanicalLayoutKey ("keyboard_mechanical_layout") is populated
+  //   from cros-regions.json, but none of these four are dumped by
+  //   dump_filtered_vpd.
+  const base::flat_set<std::string_view> kVpdKeys = {
+      kActivateDateKey,         kAttestedDeviceIdKey,
+      kBlockDevModeKey,         kCheckEnrollmentKey,
+      kCustomizationIdKey,      kDisplayProfilesKey,
+      kInitialLocaleKey,        kInitialTimezoneKey,
+      kKeyboardLayoutKey,       kLegacySerialNumberKey,
+      kMachineModelName,        kMachineOemName,
+      kOemDeviceRequisitionKey, kOffersCouponCodeKey,
+      kOffersGroupCodeKey,      kRegionKey,
+      kRlzBrandCodeKey,         kRlzEmbargoEndDateKey,
+      kSerialNumberKey,         kShouldSendRlzPingKey,
+  };
+  AddAllowedStatistics(std::move(parsed_pairs), kVpdKeys, machine_info_);
 
   switch (exit_code) {
     case static_cast<int>(DumpVpdExitCodes::kValid):
