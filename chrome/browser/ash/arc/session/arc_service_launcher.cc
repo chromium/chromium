@@ -53,6 +53,7 @@
 #include "chrome/browser/ash/arc/notification/arc_boot_error_notification.h"
 #include "chrome/browser/ash/arc/notification/arc_provision_notification_service.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_auto_launch_service.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
@@ -312,6 +313,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(
   ArcAppPerformanceTracing::GetForBrowserContext(profile);
   ArcAudioBridge::GetForBrowserContext(profile);
   ArcAuthService::GetForBrowserContext(profile);
+  ArcAutoLaunchService::GetForBrowserContext(profile);
   ArcBluetoothBridge::GetForBrowserContext(profile);
   ArcBootErrorNotification::GetForBrowserContext(profile);
   ArcBootPhaseMonitorBridge::GetForBrowserContext(profile);
@@ -523,6 +525,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcAppfuseBridge::EnsureFactoryBuilt();
   ArcAudioBridge::EnsureFactoryBuilt();
   ArcAuthService::EnsureFactoryBuilt();
+  ArcAutoLaunchService::EnsureFactoryBuilt();
   ArcBluetoothBridge::EnsureFactoryBuilt();
   ArcBootErrorNotification::EnsureFactoryBuilt();
   ArcBootPhaseMonitorBridgeFactory::GetInstance();

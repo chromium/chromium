@@ -14,6 +14,7 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc/enterprise/cert_store",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/arc/test",
@@ -32,6 +33,9 @@ specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/consent_auditor",
     "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+  ],
+  "arc_auto_launch_service_unittest\\.cc": [
+    "+chrome/browser/apps/app_service",
   ],
   "arc_policy_bridge\\.cc": [
     "+chrome/browser/browser_process.h",
