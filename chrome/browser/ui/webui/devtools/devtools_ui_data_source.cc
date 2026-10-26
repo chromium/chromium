@@ -163,15 +163,16 @@ void DevToolsDataSource::StartDataRequest(
     return;
   }
 
-  // Serve request to devtools://devtools-remote/remote (and temporarily
-  // devtools://devtools/remote until devtools-frontend migrates getRemoteBase
-  // to devtools://devtools-remote) from remote location.
-  // TODO(crbug.com/553161888): Restrict /remote/ to kChromeUIDevToolsRemoteHost
-  // once devtools-frontend rolls.
-  std::string remote_path_prefix(chrome::kChromeUIDevToolsRemotePath);
-  remote_path_prefix += "/";
-  if (base::StartsWith(path, remote_path_prefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+  if (source_name_ == chrome::kChromeUIDevToolsRemoteHost) {
+    // Serve request to devtools://devtools-remote/remote from remote location.
+    std::string remote_path_prefix(chrome::kChromeUIDevToolsRemotePath);
+    remote_path_prefix += "/";
+    if (!base::StartsWith(path, remote_path_prefix,
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      std::move(callback).Run(CreateNotFoundResponse());
+      return;
+    }
+
     std::string remote_path = path.substr(remote_path_prefix.length());
     if (MaybeHandleCustomRequest(remote_path, &callback)) {
       return;
@@ -189,11 +190,6 @@ void DevToolsDataSource::StartDataRequest(
       DLOG(ERROR) << "Refusing to load invalid remote front-end URL";
       std::move(callback).Run(CreateNotFoundResponse());
     }
-    return;
-  }
-
-  if (source_name_ == chrome::kChromeUIDevToolsRemoteHost) {
-    std::move(callback).Run(CreateNotFoundResponse());
     return;
   }
 

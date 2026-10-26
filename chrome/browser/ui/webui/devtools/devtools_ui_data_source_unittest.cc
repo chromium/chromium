@@ -346,6 +346,12 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteHostDataSource) {
       data(),
       "url: https://chrome-devtools-frontend.appspot.com/devtools_app.html");
 
+  // Test remote URL is rejected on the local devtools host.
+  StartRequest(remote_path.GetPath());
+  EXPECT_TRUE(data_received());
+  EXPECT_TRUE(base::StartsWith(data(), kDevToolsUITest404Response,
+                               base::CompareCase::SENSITIVE));
+
   // Test bundled and custom URLs are rejected on the devtools-remote host.
   const GURL bundled_path = DevToolsRemoteUrl().Resolve(
       DevToolsBundledPath(kDevToolsUITestFrontEndUrl));

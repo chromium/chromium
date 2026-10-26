@@ -6504,7 +6504,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
   WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       opener,
-      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+      GURL("devtools://devtools-remote/remote/serve_rev/@12345/empty.html")));
   VerifyRemoteOpenerHasRestrictedBindings(opener);
 
   WebContents* popup = OpenPopupFrom(opener, "devtools://devtools/blank");
@@ -6520,7 +6520,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
   WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       opener,
-      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+      GURL("devtools://devtools-remote/remote/serve_rev/@12345/empty.html")));
   VerifyRemoteOpenerHasRestrictedBindings(opener);
 
   WebContents* popup =
@@ -6537,7 +6537,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
   WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       opener,
-      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+      GURL("devtools://devtools-remote/remote/serve_rev/@12345/empty.html")));
   VerifyRemoteOpenerHasRestrictedBindings(opener);
 
   WebContents* popup =
@@ -6554,7 +6554,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
   WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       opener,
-      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+      GURL("devtools://devtools-remote/remote/serve_rev/@12345/empty.html")));
   VerifyRemoteOpenerHasRestrictedBindings(opener);
 
   content::TestNavigationObserver nav_observer(opener);
@@ -6571,7 +6571,7 @@ IN_PROC_BROWSER_TEST_F(
   WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       opener,
-      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+      GURL("devtools://devtools-remote/remote/serve_rev/@12345/empty.html")));
   VerifyRemoteOpenerHasRestrictedBindings(opener);
 
   WebContents* popup = OpenPopupFrom(opener, "about:blank");
@@ -6599,7 +6599,7 @@ IN_PROC_BROWSER_TEST_F(
   WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       opener,
-      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+      GURL("devtools://devtools-remote/remote/serve_rev/@12345/empty.html")));
   VerifyRemoteOpenerHasRestrictedBindings(opener);
 
   WebContents* popup = OpenPopupFrom(opener, "devtools://devtools/blank");
