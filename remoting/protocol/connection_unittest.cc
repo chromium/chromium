@@ -656,8 +656,10 @@ TEST_F(ConnectionTest, Audio) {
   std::unique_ptr<AudioStream> audio_stream =
       host_connection_->StartAudioStream(std::make_unique<TestAudioSource>());
 
-  // Wait for 1 second worth of audio samples.
-  client_audio_player_.WaitForSamples(kAudioSampleRate * 2);
+  // Wait for 500 ms worth of stereo audio samples (after skipping the initial
+  // 200 ms warmup window in Verify(), 300 ms provides 900 left-channel and 600
+  // right-channel cycles for zero-crossing frequency estimation).
+  client_audio_player_.WaitForSamples(kAudioSampleRate / 2);
   client_audio_player_.Verify();
 }
 
