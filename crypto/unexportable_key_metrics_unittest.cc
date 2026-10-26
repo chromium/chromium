@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -16,9 +17,17 @@
 #include "base/containers/to_vector.h"
 #include "base/containers/transparent_hash.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/check_deref.h"
+#include "base/strings/strcat.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace crypto {
 
@@ -219,6 +228,54 @@ TEST_F(UnexportableKeyMetricTest, GatherAllMetrics) {
                   "Crypto.TPMOperation.WrappedAttestationKeyCreationECDSA"),
               BucketsAre(base::Bucket(true, 1)));
 }
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
+
+void GenerateKeyWithTag(std::string application_tag) {
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider({
+          .keychain_access_group = kTestKeychainAccessGroup,
+          .application_tag = std::move(application_tag),
+      });
+  ASSERT_TRUE(provider);
+  const sign::SignatureKind kAlgorithms[] = {sign::ECDSA_SHA256};
+  ASSERT_TRUE(provider->GenerateSigningKeySlowly(kAlgorithms));
+}
+
+// Returns the application tags of all keys in the test access group.
+std::vector<std::string> GetAllKeyTags() {
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider(
+          {.keychain_access_group = kTestKeychainAccessGroup});
+  std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>> keys =
+      CHECK_DEREF(
+          CHECK_DEREF(provider.get()).AsStatefulUnexportableKeyProvider())
+          .GetAllKeysSlowly();
+  return base::ToVector(keys.value(), [](const auto& key) {
+    return CHECK_DEREF(key->AsStatefulKey()).GetKeyTag();
+  });
+}
+
+// Tests that the benchmark deletes its own keys, including ones left behind
+// by an earlier interrupted run, and leaves keys with other tags alone.
+TEST(UnexportableKeyMetricMacTest, DeletesLeftoverKeys) {
+  apple::ScopedFakeKeychainV2 scoped_fake_keychain(kTestKeychainAccessGroup);
+  const std::string other_tag =
+      base::StrCat({kTestKeychainAccessGroup, ".other"});
+  GenerateKeyWithTag(base::StrCat({kTestKeychainAccessGroup, ".tpm-metrics"}));
+  GenerateKeyWithTag(other_tag);
+  GenerateKeyWithTag("");
+
+  base::HistogramTester histogram_tester;
+  MaybeMeasureTpmOperations(
+      {.keychain_access_group = kTestKeychainAccessGroup});
+
+  histogram_tester.ExpectUniqueSample("Crypto.TPMOperation.NewKeyCreationECDSA",
+                                      true, 1);
+  EXPECT_THAT(GetAllKeyTags(), testing::UnorderedElementsAre("", other_tag));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 

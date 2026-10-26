@@ -8,10 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
@@ -19,6 +22,13 @@
 namespace crypto {
 
 namespace {
+
+#if BUILDFLAG(IS_APPLE)
+// Appended to the keychain access group to form the application tag of the
+// benchmark keys. Keys under this tag belong to no feature, so the benchmark
+// may delete any it finds.
+constexpr std::string_view kTpmMetricsApplicationTagSuffix = ".tpm-metrics";
+#endif  // BUILDFLAG(IS_APPLE)
 
 const sign::SignatureKind kAllAlgorithms[] = {
     sign::ECDSA_SHA256,
@@ -78,6 +88,13 @@ bool VerifySignature(sign::SignatureKind alg,
 }
 
 void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
+#if BUILDFLAG(IS_APPLE)
+  // Keys on Apple platforms persist in the keychain. Give the benchmark keys
+  // their own tag so that they can be told apart from keys of real features.
+  config.application_tag = base::StrCat(
+      {config.keychain_access_group, kTpmMetricsApplicationTagSuffix});
+#endif  // BUILDFLAG(IS_APPLE)
+
   internal::TPMSupport supported_algo = internal::TPMSupport::kNone;
   std::unique_ptr<UnexportableKeyProvider> provider =
       GetUnexportableKeyProvider(std::move(config));
@@ -117,6 +134,16 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   if (supported_algo == internal::TPMSupport::kNone) {
     return;
   }
+
+#if BUILDFLAG(IS_APPLE)
+  // The keys below are deleted when they go out of scope, but a browser that
+  // exits mid-measurement leaves them in the keychain. Delete such leftovers
+  // from earlier runs, so that they don't accumulate (crbug.com/566267325).
+  if (StatefulUnexportableKeyProvider* stateful_provider =
+          provider->AsStatefulUnexportableKeyProvider()) {
+    stateful_provider->DeleteAllKeysSlowly();
+  }
+#endif  // BUILDFLAG(IS_APPLE)
 
   auto delete_key = [&provider](UnexportableSigningKey* key) {
     if (StatefulUnexportableKeyProvider* stateful_provider =
