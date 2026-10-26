@@ -503,13 +503,7 @@ void NoDeleteBrowsingDataDialogHistogram(
 }
 
 // Tests the "sign out of Chrome" link in the footer.
-// TODO(crbug.com/395061778): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSignOutFooterLink FLAKY_testSignOutFooterLink
-#else
-#define MAYBE_testSignOutFooterLink testSignOutFooterLink
-#endif
-- (void)MAYBE_testSignOutFooterLink {
+- (void)testSignOutFooterLink {
   // Sign in is required to show the footer.
   [self signIn];
 
@@ -535,22 +529,40 @@ void NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kSignoutLinkOpened);
 
   // Tap on the "sign out of Chrome" link.
-  // As the sign out link can be split into two lines we need a more precise
-  // point tap to avoid failure on larger screens.
+  // When the link wraps across multiple lines, a center tap hits the empty
+  // whitespace between lines in the multi-line bounding box, so tap on the
+  // second line where the wrapped text starts. Otherwise, a standard center
+  // tap hits the single-line link.
+  CGFloat lineHeight =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote].lineHeight;
+  id<GREYMatcher> isMultilineLink = [GREYElementMatcherBlock
+      matcherWithMatchesBlock:^BOOL(id element) {
+        return [element accessibilityFrame].size.height > lineHeight * 1.5;
+      }
+      descriptionBlock:^(id<GREYDescription> description) {
+        [description appendText:@"is a multiline link"];
+      }];
+
+  NSError* error = nil;
   [[EarlGrey selectElementWithMatcher:SignOutLinkMatcher()]
-      performAction:chrome_test_util::TapAtPointPercentage(0.95, 0.05)];
+      assertWithMatcher:isMultilineLink
+                  error:&error];
+  id<GREYAction> tapAction =
+      error ? grey_tap() : chrome_test_util::TapAtPointPercentage(0.15, 0.75);
+  [[EarlGrey selectElementWithMatcher:SignOutLinkMatcher()]
+      performAction:tapAction];
 
-  // Dismiss the sign outsnackbar, so that it can't obstruct other UI items.
+  // Dismiss the sign out snackbar, so that it can't obstruct other UI items.
   [SigninEarlGreyUI dismissSignoutSnackbar];
-
-  // Assert that the footer is hidden.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kQuickDeleteBrowsingDataFooterIdentifier)]
-      assertWithMatcher:grey_notVisible()];
 
   // Assert that the user is signed out.
   [SigninEarlGrey verifySignedOut];
+
+  // Assert that the footer is hidden once the sign-out completes and updates
+  // the data source.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kQuickDeleteBrowsingDataFooterIdentifier)];
 
   // Assert that the correct sign out metrics are populated.
   GREYAssertNil(
