@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -99,6 +101,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -1742,6 +1746,66 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
       // Ensure omnibox is focused.
       WaitForOmniboxFocus(true));
+}
+
+// Verifies that a new tab focuses the omnibox when an extension overrides the
+// New Tab Page, as it does for the built-in NTP, and that another page of the
+// same extension doesn't.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       NtpOverrideExtensionFocusesOmniboxOnNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
+  // The "NTP overridden" dialog would take focus on platforms that show it.
+  extensions::SetNtpPostInstallUiEnabledForTesting(false);
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteFile(FILE_PATH_LITERAL("ntp.html"),
+                          "<body>Extension NTP</body>");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                          "<body>Extension page</body>");
+  extension_dir.WriteManifest(R"({
+        "name": "NTP override",
+        "manifest_version": 3,
+        "version": "0.1",
+        "chrome_url_overrides": {"newtab": "ntp.html"}
+      })");
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(browser()->GetProfile())
+          .LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const GURL extension_ntp_url = extension->ResolveExtensionURL("ntp.html");
+
+  RunTestSequence(
+      // Tab 1 is the initial NTP, which loaded before the extension.
+      FocusOmniboxOnInitialNtp(kTab1),
+
+      // Open a new tab, which shows the extension's page.
+      UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2),
+      // `GetLastCommittedURL()` reports chrome://newtab/ for an override, so
+      // check the committed entry's URL.
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetController()
+                .GetLastCommittedEntry()
+                ->GetURL();
+          },
+          extension_ntp_url, "CheckExtensionNtpCommitted"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      // Ensure omnibox is focused.
+      WaitForOmniboxFocus(true),
+
+      // Open another page of the extension, which isn't a New Tab Page.
+      UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab3, extension->ResolveExtensionURL("page.html")),
+      WaitForWebContentsReady(kTab3),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      // Ensure omnibox is not focused.
+      WaitForOmniboxFocus(false));
 }
 
 // Verifies that reloading the page while the Full WebUI Omnibox popup is open

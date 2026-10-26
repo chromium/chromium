@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -31,11 +30,8 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,24 +63,13 @@ searchbox::mojom::InputKeywordModelPtr CreateInputKeywordModel(
   return keyword_model;
 }
 
-// Returns true if `contents` should automatically focus the location bar by
-// default (e.g. New Tab Page), verifying both the visible and pending URLs to
-// avoid false-positives from stale navigation entries during tab creation.
+// Returns true if `contents` should focus the omnibox when it becomes active
+// with no saved omnibox state, e.g. on any New Tab Page, including one that an
+// extension overrides. A browser-initiated initial about:blank navigation is
+// excluded, although `FocusLocationBarByDefault()` is true for it too.
 bool ShouldFocusLocationBarForTab(content::WebContents* contents) {
-  if (!contents || !contents->FocusLocationBarByDefault()) {
-    return false;
-  }
-  const GURL& visible_url = contents->GetVisibleURL();
-  content::NavigationEntry* pending_entry =
-      contents->GetController().GetPendingEntry();
-  const GURL& pending_url = pending_entry ? pending_entry->GetURL() : GURL();
-
-  auto is_ntp_url = [](const GURL& url) {
-    return search::IsNTPURL(url) ||
-           url.spec() == chrome::kChromeUISplitViewNewTabPageURL;
-  };
-
-  return is_ntp_url(visible_url) || is_ntp_url(pending_url);
+  return contents->FocusLocationBarByDefault() &&
+         !contents->GetVisibleURL().IsAboutBlank();
 }
 
 }  // namespace
