@@ -324,7 +324,7 @@ ntp-lens-upload-dialog {
   background: var(--color-composebox-scrim-background);
   inset: 0;
   opacity: var(--ntp-scrim-opacity_);
-  position: fixed;
+  position: absolute;
   transition: all 250ms ease;
   z-index: 1;
 }
@@ -533,6 +533,9 @@ ntp-lens-upload-dialog {
 
 #lhsWrapper {
   flex-shrink: 0;
+  /* This is one layer above rhs, so that the tooltips can overflow on top of
+   * rhs. */
+  z-index: 2;
 }
 
 /* The query container for the @container rules above. This can't be
