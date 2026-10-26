@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
@@ -63,6 +64,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -280,6 +282,15 @@ public class SigninFirstRunFragment extends Fragment
     @Override
     public void recordNativeInitializedHistogram() {
         assumeNonNull(getPageDelegate()).recordNativeInitializedHistogram();
+    }
+
+    /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
+    @Override
+    public void logPromoShownFunnelEventOnBackPress(
+            @SigninAccessPoint int accessPoint, @SigninFunnelEvent int event) {
+        // This fragment and its coordinator are reused when the user navigates back to the
+        // sign-in page, so the promo shown event needs to be logged again.
+        SigninMetricsUtils.logSigninFunnelEvent(accessPoint, event);
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */

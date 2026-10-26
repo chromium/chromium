@@ -274,6 +274,7 @@ robolectric_library("junit") {
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/externalauth/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
     "//components/signin/core/browser:signin_enums_java",

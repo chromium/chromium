@@ -1364,6 +1364,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Timeout"/>
 </enum>
 
+<!-- LINT.IfChange(SigninFunnelEvent) -->
+
+<enum name="SigninFunnelEvent">
+  <int value="0" label="PromoShownWithAccount"/>
+  <int value="1" label="PromoShownNoAccount"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:SigninFunnelEvent) -->
+
 <enum name="SigninGaiaAuthFetcherIOSCookiesState">
   <int value="0" label="No Cookies"/>
   <int value="1" label="All Cookies Insecure"/>

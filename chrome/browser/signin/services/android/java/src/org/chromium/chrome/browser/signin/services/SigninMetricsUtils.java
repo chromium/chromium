@@ -15,6 +15,7 @@ import org.chromium.components.signin.base.ExternalEntryPoint;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.CrossDeviceInitialState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 
@@ -114,6 +115,17 @@ public class SigninMetricsUtils {
         SigninMetricsUtilsJni.get().recordCrossDeviceInitialState(entryPoint, state);
     }
 
+    /**
+     * Logs Signin.SigninFunnel.{AccessPoint} histograms.
+     *
+     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
+     * @param event {@link SigninFunnelEvent} that occurred.
+     */
+    public static void logSigninFunnelEvent(
+            @SigninAccessPoint int accessPoint, @SigninFunnelEvent int event) {
+        SigninMetricsUtilsJni.get().logSigninFunnelEvent(accessPoint, event);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -125,6 +137,8 @@ public class SigninMetricsUtils {
 
         void recordCrossDeviceInitialState(
                 @ExternalEntryPoint int entryPoint, @CrossDeviceInitialState int state);
+
+        void logSigninFunnelEvent(@SigninAccessPoint int accessPoint, @SigninFunnelEvent int event);
     }
 
     private SigninMetricsUtils() {}

@@ -60,6 +60,28 @@ std::string_view ReauthFlowEventToHistogramSuffix(ReauthFlowEvent event) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+// Returns the histogram suffix of the Signin.SigninFunnel histogram for
+// `access_point`, or an empty string if the funnel is not supported for
+// `access_point`.
+// LINT.IfChange(GetSigninFunnelAccessPointName)
+std::string_view GetSigninFunnelAccessPointName(AccessPoint access_point) {
+  switch (access_point) {
+    case AccessPoint::kStartPage:
+      return "StartPage";
+    case AccessPoint::kFullscreenSigninPromo:
+      return "FullscreenSigninPromo";
+    case AccessPoint::kForcedSignin:
+      return "ForcedSignin";
+    case AccessPoint::kDeepLinkDefault:
+      return "DeepLinkDefault";
+    case AccessPoint::kCollaborationJoinTabGroup:
+      return "CollaborationJoinTabGroup";
+    default:
+      return std::string_view();
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:SigninFunnelAccessPoints)
+
 }  // namespace
 
 std::optional<AccessPoint> AccessPointFromInt(int value) {
@@ -1103,5 +1125,20 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
   base::UmaHistogramEnumeration(histogram, access_point);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+void LogSigninFunnelEvent(AccessPoint access_point, SigninFunnelEvent event) {
+  std::string_view access_point_name =
+      GetSigninFunnelAccessPointName(access_point);
+  // The funnel is only supported for the access points that can show the
+  // fullscreen sign-in. New callers must add their access point to
+  // `GetSigninFunnelAccessPointName()` and to the histogram variants.
+  // TODO(crbug.com/512772292): In the long run, log these events for all access
+  // points.
+  CHECK(!access_point_name.empty())
+      << "Unsupported access point: " << static_cast<int>(access_point);
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.SigninFunnel.", access_point_name}), event);
+}
 
 }  // namespace signin_metrics

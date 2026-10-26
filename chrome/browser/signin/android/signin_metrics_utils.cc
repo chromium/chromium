@@ -63,4 +63,18 @@ static void JNI_SigninMetricsUtils_RecordCrossDeviceInitialState(
       static_cast<signin_metrics::CrossDeviceInitialState>(state));
 }
 
+static void JNI_SigninMetricsUtils_LogSigninFunnelEvent(JNIEnv* env,
+                                                        int32_t access_point,
+                                                        int32_t event) {
+  CHECK_GE(access_point, 0);
+  CHECK_LE(access_point,
+           static_cast<int>(signin_metrics::AccessPoint::kMaxValue));
+  CHECK_GE(event, 0);
+  CHECK_LE(event,
+           static_cast<int>(signin_metrics::SigninFunnelEvent::kMaxValue));
+  signin_metrics::LogSigninFunnelEvent(
+      static_cast<signin_metrics::AccessPoint>(access_point),
+      static_cast<signin_metrics::SigninFunnelEvent>(event));
+}
+
 DEFINE_JNI(SigninMetricsUtils)

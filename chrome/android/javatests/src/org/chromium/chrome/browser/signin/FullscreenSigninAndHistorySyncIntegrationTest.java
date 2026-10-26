@@ -86,6 +86,7 @@ import org.chromium.components.policy.test.annotations.Policies.Item;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
@@ -209,6 +210,51 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninFunnelHistogram_promoShownWithAccount() {
+        HistogramWatcher signinFunnelWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninFunnel.FullscreenSigninPromo",
+                        SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT);
+
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        signinFunnelWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288677
+    public void testSigninFunnelHistogram_promoShownRecordedAgainOnBackFromHistorySync() {
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
+        HistogramWatcher signinFunnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Signin.SigninFunnel.FullscreenSigninPromo",
+                                SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT,
+                                /* times= */ 2)
+                        .build();
+
+        launchActivity();
+
+        // Sign in from the fullscreen sign-in promo.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_continue_button)).perform(scrollTo(), click());
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+        mSigninTestRule.waitForSignin(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        // Go back from the history sync screen to the fullscreen sign-in promo.
+        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
+        Espresso.pressBack();
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+
+        signinFunnelWatcher.assertExpected();
     }
 
     @Test
@@ -379,7 +425,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     public void testHistorySyncSuppressed_historySyncRequired() {
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
         mHistoryOptInMode = HistorySyncConfig.OptInMode.REQUIRED;
-        mSigninAccessPoint = SigninAccessPoint.RECENT_TABS;
+        mSigninAccessPoint = SigninAccessPoint.DEEP_LINK_DEFAULT;
 
         launchActivity();
 
@@ -1019,7 +1065,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
     public void testFullscreenSigninWithPreferredAccount_otherAccessPoint_defaultSubtitle() {
-        mSigninAccessPoint = SigninAccessPoint.POST_DEVICE_RESTORE_SIGNIN_PROMO;
+        mSigninAccessPoint = SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP;
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
         AccountPreviewPreference preference =
                 new AccountPreviewPreference(

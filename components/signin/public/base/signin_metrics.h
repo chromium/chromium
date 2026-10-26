@@ -664,6 +664,20 @@ enum class SyncButtonsType : int {
   kMaxValue = kHistorySyncEqualWeightedFromCapability,
 };
 
+// Event within the sign-in funnel flow.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
+// LINT.IfChange(SigninFunnelEvent)
+enum class SigninFunnelEvent {
+  kPromoShownWithAccount = 0,
+  kPromoShownNoAccount = 1,
+  kMaxValue = kPromoShownNoAccount,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninFunnelEvent)
+
 #if BUILDFLAG(IS_IOS)
 // The reason an alert dialog is shown when the user is about to sign out.
 enum class SignoutDataLossAlertReason : int {
@@ -748,6 +762,11 @@ void LogSignInStarted(AccessPoint access_point,
 
 // Logs that sign in was offered when the user is in SigninPending state.
 void LogSigninPendingOffered(AccessPoint access_point);
+
+// Logs an event reached in the sign-in funnel for a given access point.
+// `access_point` must be one of the access points supported by the funnel (the
+// ones that can show the fullscreen sign-in), otherwise this CHECKs.
+void LogSigninFunnelEvent(AccessPoint access_point, SigninFunnelEvent event);
 
 #if BUILDFLAG(IS_IOS)
 // Records the account type when the user signs in.

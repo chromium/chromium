@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/metrics/profile_metrics_service.h"
@@ -363,6 +364,29 @@ TEST(LogSignInStarted, RecordWithProfileContext) {
     EXPECT_EQ(4,
               histogram_tester.GetTotalCountForPrefix("Signin.SignIn.Started"));
   }
+}
+
+TEST(LogSigninFunnelEventTest, RecordsHistogramForSupportedAccessPoint) {
+  base::HistogramTester histogram_tester;
+
+  LogSigninFunnelEvent(AccessPoint::kStartPage,
+                       SigninFunnelEvent::kPromoShownWithAccount);
+  LogSigninFunnelEvent(AccessPoint::kFullscreenSigninPromo,
+                       SigninFunnelEvent::kPromoShownNoAccount);
+
+  histogram_tester.ExpectUniqueSample("Signin.SigninFunnel.StartPage",
+                                      SigninFunnelEvent::kPromoShownWithAccount,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninFunnel.FullscreenSigninPromo",
+      SigninFunnelEvent::kPromoShownNoAccount,
+      /*expected_bucket_count=*/1);
+  EXPECT_EQ(2, histogram_tester.GetTotalCountForPrefix("Signin.SigninFunnel."));
+}
+
+TEST(LogSigninFunnelEventTest, ChecksForUnsupportedAccessPoint) {
+  EXPECT_CHECK_DEATH(LogSigninFunnelEvent(
+      AccessPoint::kSettings, SigninFunnelEvent::kPromoShownWithAccount));
 }
 
 }  // namespace

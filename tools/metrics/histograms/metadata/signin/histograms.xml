@@ -169,6 +169,19 @@ chromium-metrics-reviews@google.com.
       summary="Using the default account, in the sign-in promo."/>
 </variants>
 
+<!-- LINT.IfChange(SigninFunnelAccessPoints) -->
+
+<variants name="SigninFunnelAccessPoints">
+  <variant name="CollaborationJoinTabGroup"
+      summary="Collaboration join tab group"/>
+  <variant name="DeepLinkDefault" summary="Deep link"/>
+  <variant name="ForcedSignin" summary="Forced sign-in"/>
+  <variant name="FullscreenSigninPromo" summary="Fullscreen sign-in promo"/>
+  <variant name="StartPage" summary="Start page (FRE)"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.cc:GetSigninFunnelAccessPointName) -->
+
 <!-- LINT.IfChange(SigninPromoAccessPoint) -->
 
 <variants name="SigninPromoAccessPoint">
@@ -4203,6 +4216,24 @@ OAuth Multilogin call. -->
     This histogram records the signin access point which was used when the
     signin disabled notification was shown. Recorded on Android only.
   </summary>
+</histogram>
+
+<histogram name="Signin.SigninFunnel.{AccessPoint}" enum="SigninFunnelEvent"
+    expires_after="2027-05-20">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records events reached in the sign-in funnel originating from {AccessPoint}.
+    Recorded whenever a corresponding step in the sign-in flow is reached (e.g.
+    when a sign-in promo UI is shown to the user with or without an account).
+
+    A step can be recorded multiple times within the same flow. For example, the
+    promo shown events are recorded every time the sign-in promo is shown,
+    including when the user navigates back to it (e.g. from the history sync
+    screen) or when the promo UI is recreated (e.g. after a configuration change
+    on Android).
+  </summary>
+  <token key="AccessPoint" variants="SigninFunnelAccessPoints"/>
 </histogram>
 
 <histogram name="Signin.SigninManager.SetPrimaryAccountSigninInStage"
