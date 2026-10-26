@@ -80,7 +80,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -617,7 +616,7 @@ void HTMLVideoElement::OnVisibilityRatioReport(double ratio) {
 }
 
 void HTMLVideoElement::ResetCache(TimerBase*) {
-  snapshot_provider_.reset();
+  snapshot_pool_.reset();
   cached_draw_info_.reset();
 }
 
@@ -970,16 +969,12 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       cached_draw_info_ &&
       required_provider_info.Matches(cached_draw_info_.value());
   if (!cached_info_matches_required_info) {
-    snapshot_provider_.reset();
+    snapshot_pool_.reset();
 
     if (is_accelerated) {
-      snapshot_provider_ = CanvasNon2DResourceProvider::Create(
-          required_provider_info.size, required_provider_info.format,
-          required_provider_info.alpha_type, required_provider_info.color_space,
-          required_provider_info.hdr_metadata,
-          SharedGpuContext::ContextProviderWrapper(),
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-      if (!snapshot_provider_) {
+      snapshot_pool_ =
+          VideoFrameAcceleratedSnapshotPool::Create(required_provider_info);
+      if (!snapshot_pool_) {
         return nullptr;
       }
     }
@@ -990,9 +985,9 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
                                      FROM_HERE);
 
   scoped_refptr<StaticBitmapImage> image;
-  if (snapshot_provider_) {
+  if (snapshot_pool_) {
     image = CreateAcceleratedImageFromVideoFrame(
-        std::move(media_video_frame), snapshot_provider_.get(), video_renderer,
+        std::move(media_video_frame), snapshot_pool_.get(), video_renderer,
         orientation_behavior, color_space_interpretation);
   } else {
     image = CreateUnacceleratedImageFromVideoFrame(
