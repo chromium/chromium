@@ -1795,15 +1795,13 @@ WebGLRenderingContextBase::GetResourceForPushFrame(
     Host()->DiscardResources();
   }
 
-  scoped_refptr<CanvasResource> resource =
+  scoped_refptr<ExportedCanvasResource> resource =
       CopyRenderingResultsFromDrawingBufferToResource(kBackBuffer);
   if (resource) {
     should_call_push_frame = true;
   }
   MarkLayerComposited();
-  return resource
-             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
-             : nullptr;
+  return resource;
 }
 
 void WebGLRenderingContextBase::Dispose() {
@@ -2218,11 +2216,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                     : nullptr;
   }
 
-  auto resource =
-      CopyRenderingResultsFromDrawingBufferToResource(source_buffer);
-  return resource
-             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
-             : nullptr;
+  return CopyRenderingResultsFromDrawingBufferToResource(source_buffer);
 }
 
 CanvasNon2DResourceProvider*
@@ -2293,7 +2287,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   return resource_provider_.get();
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<ExportedCanvasResource>
 WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
     SourceDrawingBuffer source_buffer) {
   TRACE_EVENT0("blink",
@@ -2348,7 +2342,9 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
 
   // We successfully painted the contents to the resource provider.
   must_paint_to_canvas_ = false;
-  return resource;
+  return resource
+             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
+             : nullptr;
 }
 
 bool WebGLRenderingContextBase::

@@ -1973,7 +1973,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // Attempts to copy the most recent rendering results from the drawing buffer
   // into a CanvasResource. Returns the resource if the copy succeeded;
   // otherwise returns nullptr.
-  scoped_refptr<CanvasResource> CopyRenderingResultsFromDrawingBufferToResource(
+  scoped_refptr<ExportedCanvasResource>
+  CopyRenderingResultsFromDrawingBufferToResource(
       SourceDrawingBuffer source_buffer);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
