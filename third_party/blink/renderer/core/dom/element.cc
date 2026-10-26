@@ -8490,7 +8490,8 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
     DetachAttrNodeFromElementWithValue(attr_node, value_being_removed);
   }
 
-  // WillModifyAttribute() may pause in the debugger and allow script to mutate
+  // WillModifyAttribute() may run script (e.g. by pausing in the debugger or
+  // lazily initializing a WindowProxy during UpdateName()) and mutate
   // attributes, invalidating `index`.
   if (index >= mutable_attributes.size() ||
       mutable_attributes[index].GetName() != name) {
@@ -8519,7 +8520,15 @@ void Element::AppendAttributeInternal(const QualifiedName& name,
   }
   attribute_or_class_bloom_ |= FilterForAttribute(name);
   UpdateSubtreeBloomFilterAfterInsert();
-  EnsureUniqueElementData().Attributes().Append(name, value);
+  // WillModifyAttribute() may run script (e.g. by pausing in the debugger or
+  // lazily initializing a WindowProxy during UpdateName()) and add the
+  // attribute re-entrantly before we append it here.
+  if (wtf_size_t index = FindAttributeIndex(name); index != kNotFound)
+      [[unlikely]] {
+    EnsureUniqueElementData().Attributes().at(index).SetValue(value);
+  } else {
+    EnsureUniqueElementData().Attributes().Append(name, value);
+  }
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     DidAddAttribute(name, value);
@@ -12495,13 +12504,13 @@ void Element::DidMoveToNewDocument(Document& old_document) {
     // this element's attributes, we shouldn't make UniqueElementData, and this
     // element should point to the shareable one.
 
-    if (const AtomicString& id_attr = GetIdAttribute()) {
+    if (AtomicString id_attr = GetIdAttribute()) {
       if (!id_attr.ContainsNoAsciiUpper()) {
         EnsureUniqueElementData();
         SetIdAttribute(id_attr);
       }
     }
-    if (const AtomicString& class_attr = GetClassAttribute()) {
+    if (AtomicString class_attr = GetClassAttribute()) {
       if (!class_attr.ContainsNoAsciiUpper()) {
         EnsureUniqueElementData();
         // Going through setAttribute() to synchronize the attribute is only
@@ -14132,8 +14141,9 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
     }
     MutableAttributeCollection mutable_attributes =
         EnsureUniqueElementData().Attributes();
-    // WillModifyAttribute() may pause in the debugger and allow script to
-    // mutate attributes, invalidating `index`.
+    // WillModifyAttribute() may run script (e.g. by pausing in the debugger or
+    // lazily initializing a WindowProxy during UpdateName()) and mutate
+    // attributes, invalidating `index`.
     if (index >= mutable_attributes.size() ||
         mutable_attributes[index].GetName() != existing_attribute_name) {
       index = mutable_attributes.FindIndex(existing_attribute_name);
