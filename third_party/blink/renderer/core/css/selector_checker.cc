@@ -2657,6 +2657,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       if (ImpactsSubject(context)) {
         result.SetFlag(MatchFlag::kAffectedByHover);
+      } else {
+        result.SetFlag(MatchFlag::kAffectedByNonSubjectHoverSelector);
       }
       if (!ShouldMatchHoverOrActive(context)) {
         return false;

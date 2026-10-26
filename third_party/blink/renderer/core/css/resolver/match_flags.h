@@ -35,6 +35,8 @@ enum class MatchFlag {
   // Set when matching :hover outside the rightmost compound or in nested
   // complex selectors. Will cancel out a kPrecomputedHoverMatch.
   kCancelPrecomputedHoverMatch = 1 << 6,
+  // Matched :hover, not in subject.
+  kAffectedByNonSubjectHoverSelector = 1 << 7,
 };
 
 using MatchFlags = uint8_t;

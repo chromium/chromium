@@ -1523,7 +1523,8 @@ const ComputedStyle* StyleResolver::ResolveStyle(
 
   PropagateStyleBuilderFlags(state);
 
-  if (!cascade.GetMatchResult().MayPrecomputeHover()) {
+  if (state.HasAffectedByHoverAncestor() ||
+      !cascade.GetMatchResult().MayPrecomputeHover()) {
     return state.TakeStyle();
   }
 
@@ -2088,6 +2089,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
   }
   if (match_result.HasFlag(MatchFlag::kAffectedByHover)) {
     builder.SetAffectedByHover();
+  }
+  if (match_result.HasFlag(MatchFlag::kAffectedByNonSubjectHoverSelector)) {
+    builder.SetAffectedByNonSubjectHoverSelector();
   }
   if (match_result.HasFlag(MatchFlag::kAffectedByActive)) {
     builder.SetAffectedByActive();

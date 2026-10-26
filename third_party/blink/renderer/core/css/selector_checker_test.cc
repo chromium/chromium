@@ -265,6 +265,9 @@ constexpr MatchFlags FocusWithin() {
 constexpr MatchFlags Hover() {
   return static_cast<MatchFlags>(MatchFlag::kAffectedByHover);
 }
+constexpr MatchFlags HoverSelector() {
+  return static_cast<MatchFlags>(MatchFlag::kAffectedByNonSubjectHoverSelector);
+}
 
 MatchFlagsTestData result_flags_test_data[] = {
     // clang-format off
@@ -282,9 +285,9 @@ MatchFlagsTestData result_flags_test_data[] = {
     { ":active *", 0 },
     { ":-webkit-drag *", 0 },
     { ":focus-within *", 0 },
-    { ":hover *", 0 },
-    { ":is(:hover) *", 0 },
-    { ":not(:hover) *", 0 },
+    { ":hover *", HoverSelector() },
+    { ":is(:hover) *", HoverSelector() },
+    { ":not(:hover) *", HoverSelector() },
 
     // Within pseudo-classes:
     { ":is(:active, :hover)", Active() | Hover() },
@@ -396,7 +399,7 @@ TEST_F(ImpactTest, HoverSubjectOnly) {
 
 TEST_F(ImpactTest, HoverNonSubjectOnly) {
   MatchFlags flags = Match("#inner:hover", Inner(), Impact::kNonSubject);
-  EXPECT_EQ(0u, flags);
+  EXPECT_EQ(HoverSelector(), flags);
   EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByHover());
   EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByHover());
   EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByHover());
@@ -412,7 +415,7 @@ TEST_F(ImpactTest, HoverBoth) {
 
 TEST_F(ImpactTest, HoverDescendantCombinatorSubject) {
   MatchFlags flags = Match(":hover #inner", Inner(), Impact::kSubject);
-  EXPECT_EQ(0u, flags);
+  EXPECT_EQ(HoverSelector(), flags);
   EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByHover());
   EXPECT_TRUE(Middle().ChildrenOrSiblingsAffectedByHover());
   EXPECT_TRUE(Outer().ChildrenOrSiblingsAffectedByHover());

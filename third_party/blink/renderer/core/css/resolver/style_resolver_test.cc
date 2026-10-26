@@ -4993,4 +4993,66 @@ TEST_F(StyleResolverTest, PrecomputeHover) {
   EXPECT_TRUE(t9_hover);
 }
 
+TEST_F(StyleResolverTest, PrecomputeHoverAncestor) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #outer-affected:hover { color: purple; }
+      :hover > #outer-affected-descendant { color: purple; }
+      :hover + #outer-affected-sibling { color: purple; }
+      #foo:hover + #outer-not-affected { color: purple; }
+      .precomp:hover { color: color-mix(pink, currentColor); }
+    </style>
+    <div>
+      <div id="outer-affected">
+        <div>
+          <div class="precomp"></div>
+        </div>
+      </div>
+      <div>
+        <div id="outer-affected-descendant">
+          <div>
+            <div class="precomp"></div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+      <div id="outer-affected-sibling">
+        <div>
+          <div class="precomp"></div>
+        </div>
+      </div>
+      <div id="outer-not-affected">
+        <div>
+          <div class="precomp"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* outer_affected = GetDocument().querySelector(
+      AtomicString("#outer-affected .precomp"), ASSERT_NO_EXCEPTION);
+  Element* outer_affected_descendant = GetDocument().querySelector(
+      AtomicString("#outer-affected-descendant .precomp"), ASSERT_NO_EXCEPTION);
+  Element* outer_affected_sibling = GetDocument().querySelector(
+      AtomicString("#outer-affected-sibling .precomp"), ASSERT_NO_EXCEPTION);
+  Element* outer_not_affected = GetDocument().querySelector(
+      AtomicString("#outer-not-affected .precomp"), ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(outer_affected->ComputedStyleRef().GetCachedPseudoElementStyle(
+      kPseudoIdPrecomputedHover));
+  EXPECT_FALSE(
+      outer_affected_descendant->ComputedStyleRef().GetCachedPseudoElementStyle(
+          kPseudoIdPrecomputedHover));
+  // The sibling :hover case should not block precomputation, but we don't
+  // separate between different combinators when tracking non-subject :hover
+  // selectors
+  EXPECT_FALSE(
+      outer_affected_sibling->ComputedStyleRef().GetCachedPseudoElementStyle(
+          kPseudoIdPrecomputedHover));
+  EXPECT_TRUE(
+      outer_not_affected->ComputedStyleRef().GetCachedPseudoElementStyle(
+          kPseudoIdPrecomputedHover));
+}
+
 }  // namespace blink

@@ -138,6 +138,15 @@
       reset_on_new_style: true,
       custom_compare: true,
     },
+    // Whether this style is affected by matching non-subject :hover selectors.
+    {
+      name: "AffectedByNonSubjectHoverSelector",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+      reset_on_new_style: true,
+      custom_compare: true,
+    },
     // A property references a variable that needs to be resolved
     {
       name: "HasVariableReference",

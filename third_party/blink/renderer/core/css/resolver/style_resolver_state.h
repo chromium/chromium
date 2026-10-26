@@ -165,6 +165,11 @@ class CORE_EXPORT StyleResolverState {
     return parent_style_ && parent_style_->IsInOverscrollContainer();
   }
 
+  bool HasAffectedByHoverAncestor() const {
+    return style_recalc_context_ &&
+           style_recalc_context_->has_hover_affected_ancestor;
+  }
+
   void SetLayoutParentStyle(const ComputedStyle*);
   const ComputedStyle* LayoutParentStyle() const {
     return layout_parent_style_;

@@ -129,6 +129,8 @@ class CORE_EXPORT StyleRecalcContext {
   // and may still track overscroll areas. Only such children need
   // OverscrollAreaTracker::UpdateOverscrollArea().
   bool is_overscroll_container_child = false;
+  // Set to true if there is an ancestor element which is affected by :hover.
+  bool has_hover_affected_ancestor = false;
 };
 
 }  // namespace blink
