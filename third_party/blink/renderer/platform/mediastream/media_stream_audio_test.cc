@@ -15,11 +15,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -630,6 +632,74 @@ TEST_F(
   EXPECT_FALSE(
       audio_source_1->HasSameInterlockingProperties(audio_source_2.get()));
 #endif
+}
+
+namespace {
+
+class GarbageCollectingSourceObserver final
+    : public GarbageCollected<GarbageCollectingSourceObserver>,
+      public MediaStreamSource::Observer {
+ public:
+  explicit GarbageCollectingSourceObserver(base::OnceClosure on_state_changed)
+      : on_state_changed_(std::move(on_state_changed)) {}
+
+  void SourceChangedState() override {
+    if (on_state_changed_) {
+      std::move(on_state_changed_).Run();
+    }
+  }
+  void SourceChangedCaptureConfiguration() override {}
+  void SourceChangedCaptureHandle() override {}
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SourceChangedZoomLevel(int) override {}
+#endif
+
+  void Trace(Visitor* visitor) const override {
+    MediaStreamSource::Observer::Trace(visitor);
+  }
+
+ private:
+  base::OnceClosure on_state_changed_;
+};
+
+}  // namespace
+
+// Regression test for https://crbug.com/576215540: verifies that
+// MediaStreamAudioTrack::StopAndNotify() does not UAF if stopping the source
+// synchronously triggers garbage collection of the owning
+// MediaStreamComponentImpl and destroys the MediaStreamAudioTrack.
+TEST_F(MediaStreamAudioTest,
+       StopAndNotifyComponentGarbageCollectedOnSourceStop) {
+  ASSERT_TRUE(source());
+  EXPECT_TRUE(source()->ConnectToInitializedTrack(audio_component_));
+  MediaStreamAudioTrack* raw_track = track();
+  ASSERT_TRUE(raw_track);
+  base::WeakPtr<MediaStreamAudioTrack> weak_track = raw_track->GetWeakPtr();
+  ASSERT_TRUE(weak_track);
+
+  FakeMediaStreamAudioSink sink;
+  raw_track->AddSink(&sink);
+  EXPECT_FALSE(sink.was_ended());
+
+  bool observer_called = false;
+  Persistent<GarbageCollectingSourceObserver> observer =
+      MakeGarbageCollected<GarbageCollectingSourceObserver>(
+          base::BindLambdaForTesting([&]() {
+            observer_called = true;
+            audio_component_ = nullptr;
+            WebHeap::CollectAllGarbageForTesting();
+            EXPECT_FALSE(weak_track);
+          }));
+  audio_source_->AddObserver(observer.Get());
+
+  bool notify_callback_called = false;
+  raw_track->StopAndNotify(
+      base::BindLambdaForTesting([&]() { notify_callback_called = true; }));
+
+  EXPECT_TRUE(observer_called);
+  EXPECT_TRUE(notify_callback_called);
+  EXPECT_TRUE(sink.was_ended());
+  EXPECT_FALSE(weak_track);
 }
 
 }  // namespace blink
