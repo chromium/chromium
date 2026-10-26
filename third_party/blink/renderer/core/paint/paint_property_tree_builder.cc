@@ -2680,10 +2680,12 @@ static void UpdateFilterEffect(
     }
     PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
 #if DCHECK_IS_ON()
-    // We should have already updated the reference box.
-    auto reference_box = layer->FilterReferenceBox();
-    layer->UpdateFilterReferenceBox();
-    DCHECK_EQ(reference_box, layer->FilterReferenceBox());
+    if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
+      // We should have already updated the reference box.
+      auto reference_box = layer->FilterReferenceBox();
+      layer->UpdateFilterReferenceBox();
+      DCHECK_EQ(reference_box, layer->FilterReferenceBox());
+    }
 #endif
     layer->UpdateCompositorFilterOperationsForFilter(filter_info.operations);
     filter_info.output_bounds = filter_info.operations.MapRect(
@@ -4847,6 +4849,12 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
     object_.GetMutableForPainting()
         .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(false);
+    if ((!pre_paint_info_ || pre_paint_info_->is_last_for_node) &&
+        object_.NeedsPaintPropertyUpdate() && object_.HasLayer()) {
+      To<LayoutBoxModelObject>(object_)
+          .Layer()
+          ->ClearFilterAndBackdropFilterOnEffectNodeDirty();
+    }
   }
 }
 

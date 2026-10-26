@@ -2577,7 +2577,7 @@ FilterOperations PaintLayer::FilterOperationsIncludingReflection() const {
 }
 
 void PaintLayer::UpdateCompositorFilterOperationsForFilter(
-    CompositorFilterOperations& operations) {
+    CompositorFilterOperations& operations) const {
   auto filter = FilterOperationsIncludingReflection();
   gfx::RectF reference_box = FilterReferenceBox();
 
@@ -2598,16 +2598,14 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
                           style.UsedColorScheme(),
                           GetLayoutObject().IsInCanvasSubtree())
           .BuildFilterOperations(filter);
-  filter_on_effect_node_dirty_ = false;
 }
 
 void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
     CompositorFilterOperations& operations,
-    SkPath& backdrop_filter_bounds) {
+    SkPath& backdrop_filter_bounds) const {
   const auto& style = GetLayoutObject().Style();
   if (style.BackdropFilter().IsEmpty()) {
     operations.Clear();
-    backdrop_filter_on_effect_node_dirty_ = false;
     return;
   }
 
@@ -2646,7 +2644,6 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
   // Note that |operations| may be empty here, if the |filter_operations| list
   // contains only invalid filters (e.g. invalid reference filters). See
   // https://crbug.com/983157 for details.
-  backdrop_filter_on_effect_node_dirty_ = false;
 }
 
 PaintLayerResourceInfo& PaintLayer::EnsureResourceInfo() {
