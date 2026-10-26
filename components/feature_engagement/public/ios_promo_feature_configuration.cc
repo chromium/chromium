@@ -273,17 +273,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         "post_default_abandonment_promo_trigger", Comparator(EQUAL, 0),
         /*window=*/kMaxWindowPeriod, /*storage=*/kMaxStoragePeriod);
     return config;
-  } else if (kIPHiOSPromoAccountSwitchingFeature.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = kNoRestrictions;
-    config.used =
-        EventConfig("account_switching_promo_used", kAlwaysTrue, /*window=*/0,
-                    /*storage=*/kMaxStoragePeriod);
-    config.trigger = EventConfig("account_switching_promo_trigger", kAlwaysTrue,
-                                 /*window=*/0, /*storage=*/kMaxStoragePeriod);
-    return config;
   } else if (kIPHiOSPromoSigninFullscreenFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
@@ -652,6 +641,60 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                               kMaxStoragePeriod, kMaxStoragePeriod);
     config.trigger = EventConfig("ios_backend_promo_trigger", kAlwaysTrue,
                                  kMaxStoragePeriod, kMaxStoragePeriod);
+    return config;
+  } else if (kIPHiOSPromoAccountSwitchingFeature.name == feature->name) {
+    // Configured in `GetCustomConfig` rather than `GetStandardPromoConfig`
+    // because standard promos enforce an unconditional 30-day cooldown after
+    // every trigger, whereas this promo has a 1-day cooldown only (and 7-day
+    // cooldown when ignored and a 28-day cooldown when accepted or explicitly
+    // dismissed).
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+
+    // Guard spacing against other fullscreen promos via
+    // `kiOSFullscreenPromosGroup`.
+    config.groups.push_back(kiOSFullscreenPromosGroup.name);
+    // If the promo is displayed once, it must not be displayed a second time
+    // the same day.
+    config.trigger = EventConfig("account_switching_promo_trigger",
+                                 Comparator(EQUAL, 0), 1, kMaxStoragePeriod);
+    // The IPH wants to highlight the switch option in the promo itself. So
+    // there is no limitation related to this action, as they would be redundant
+    // with other limitations.
+    config.used = EventConfig("account_switching_promo_used", kAlwaysTrue, 0,
+                              kMaxStoragePeriod);
+
+    // 28-day grace period after signing into or switching to the primary
+    // account.
+    config.event_configs.insert(
+        EventConfig(events::kIOSAccountSwitchingPrimaryAccountChanged,
+                    Comparator(EQUAL, 0), 28, kMaxStoragePeriod));
+
+    // 7-day cooldown after ignoring the promo without explicit action, and a
+    // permanent global cap of 5 ignores.
+    config.event_configs.insert(
+        EventConfig(events::kIOSAccountSwitchingPromoIgnored,
+                    Comparator(EQUAL, 0), 7, kMaxStoragePeriod));
+    // The promo is shown at most five times.
+    config.event_configs.insert(EventConfig(
+        events::kIOSAccountSwitchingPromoIgnored, Comparator(LESS_THAN, 5),
+        kMaxStoragePeriod, kMaxStoragePeriod));
+
+    // 28-day global cooldown after explicitly dismissing the promo ("Not now")
+    // across any account pair.
+    // Note: Dynamic per-(primary_gaia, target_gaia) pair rules (2 explicit
+    // dismissals per pair and permanent reverse-switch suppression) are
+    // evaluated by `AccountSwitchingPromoSceneAgent` via
+    // `signin::CanShowAccountSwitchingPromo` before `PromosManagerSceneAgent`
+    // runs. When a pair is suppressed, the scene agent calls
+    // `PromosManager::DeregisterPromo(Promo::AccountSwitching)`, ensuring
+    // `PromosManager` never queries `Tracker::ShouldTriggerHelpUI` for an
+    // account-pair-suppressed promo.
+    config.event_configs.insert(
+        EventConfig(events::kIOSAccountSwitchingPromoExplicitlyDismissed,
+                    Comparator(EQUAL, 0), 28, kMaxStoragePeriod));
     return config;
   } else if (kIPHiOSPromoSettingsCardDefaultBrowserFeature.name ==
              feature->name) {
