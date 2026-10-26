@@ -45,6 +45,7 @@ import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Tracks the foreground session state for the Chrome activities. */
 @NullMarked
@@ -184,7 +185,7 @@ public class ChromeActivitySessionTracker {
                 TraceEvent.scoped(
                         "ChromeActivitySessionTracker.handlePerProfileForegroundSessionStart")) {
             PasswordEchoSettingHandlerFactory.getForProfile(profile).updatePasswordEchoState();
-            FontSizePrefs.getInstance(profile).setFontScaleFactor();
+            FontSizePrefs.setFontScaleFactor(UserPrefs.get(profile));
             DeviceAccessibilitySettingsHandler.getInstance(profile).updateFontWeightAdjustment();
             updateAcceptLanguages(profile);
             SafetyHubFetchServiceFactory.getForProfile(profile).onForegroundSessionStart();

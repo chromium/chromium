@@ -23,7 +23,6 @@ source_set("android") {
     ":accessibility_jni_headers",
     "//base",
     "//components/prefs",
-    "//components/user_prefs",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
   ]

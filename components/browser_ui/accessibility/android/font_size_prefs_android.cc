@@ -4,53 +4,23 @@
 
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 
-#include <memory>
-
-#include "base/functional/bind.h"
+#include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/android/browser_context_handle.h"
-#include "content/public/browser/browser_context.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/accessibility/android/accessibility_jni_headers/FontSizePrefs_jni.h"
 
 namespace browser_ui {
 
-using base::android::JavaRef;
-
 namespace prefs {
 const char kWebKitFontScaleFactor[] = "webkit.webprefs.font_scale_factor";
 }  // namespace prefs
 
-FontSizePrefsAndroid::FontSizePrefsAndroid(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const JavaRef<jobject>& jbrowser_context_handle)
-    : pref_service_(user_prefs::UserPrefs::Get(
-          content::BrowserContextFromJavaHandle(jbrowser_context_handle))) {
-  java_ref_.Reset(env, obj);
-}
-
-FontSizePrefsAndroid::~FontSizePrefsAndroid() = default;
-
-void FontSizePrefsAndroid::SetFontScaleFactor(JNIEnv* env,
-                                              float font_scale_factor) {
-  pref_service_->SetDouble(prefs::kWebKitFontScaleFactor,
-                           static_cast<double>(font_scale_factor));
-}
-
-void FontSizePrefsAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_FontSizePrefs_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& jbrowser_context_handle) {
-  FontSizePrefsAndroid* font_size_prefs_android =
-      new FontSizePrefsAndroid(env, obj, jbrowser_context_handle);
-  return reinterpret_cast<intptr_t>(font_size_prefs_android);
+static void JNI_FontSizePrefs_SetFontScaleFactor(JNIEnv* env,
+                                                 PrefService* pref_service,
+                                                 float font_scale_factor) {
+  pref_service->SetDouble(prefs::kWebKitFontScaleFactor,
+                          static_cast<double>(font_scale_factor));
 }
 
 }  // namespace browser_ui

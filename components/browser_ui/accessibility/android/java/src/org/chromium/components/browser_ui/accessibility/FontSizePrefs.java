@@ -4,19 +4,17 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import android.annotation.SuppressLint;
-
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.components.prefs.PrefService;
 
 /**
- * Singleton class for user settings related to font sizes. This class manages the "font scale
+ * Static helpers for user settings related to font sizes. This class manages the "font scale
  * factor" setting. The font scale factor is equal to the OS-level Android "Settings > Accessibility
  * > Display size and text > Font size" setting. This value was previously boosted using the user's
  * Chrome text scaling setting, but that setting has been removed with the release of Accessibility
@@ -28,45 +26,21 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 @JNINamespace("browser_ui")
 @NullMarked
 public class FontSizePrefs {
-
-    @SuppressLint("StaticFieldLeak")
-    private static @Nullable FontSizePrefs sFontSizePrefs;
-
-    private final long mFontSizePrefsAndroidPtr;
-
-    private FontSizePrefs(BrowserContextHandle browserContextHandle) {
-        mFontSizePrefsAndroidPtr = FontSizePrefsJni.get().init(this, browserContextHandle);
-    }
-
-    /** Returns the singleton FontSizePrefs, constructing it if it doesn't already exist. */
-    public static FontSizePrefs getInstance(BrowserContextHandle browserContextHandle) {
-        ThreadUtils.assertOnUiThread();
-        if (sFontSizePrefs == null) {
-            sFontSizePrefs = new FontSizePrefs(browserContextHandle);
-        }
-        return sFontSizePrefs;
-    }
-
-    /** Destroys the instance of FontSizePrefs if there is one. */
-    public static void destroyInstance() {
-        if (sFontSizePrefs == null) {
-            return;
-        }
-
-        FontSizePrefsJni.get().destroy(sFontSizePrefs.mFontSizePrefsAndroidPtr);
-        sFontSizePrefs = null;
-    }
+    private FontSizePrefs() {}
 
     /**
-     * Updates the fontScaleFactor based on the system-wide font scale.
+     * Updates the font scale factor stored in `prefService` based on the system-wide font scale.
      *
      * <p>This should be called during application start-up and whenever the system font size
      * changes.
+     *
+     * @param prefService The profile-scoped {@link PrefService} to write the font scale factor to.
      */
-    public void setFontScaleFactor() {
+    public static void setFontScaleFactor(PrefService prefService) {
+        ThreadUtils.assertOnUiThread();
         FontSizePrefsJni.get()
                 .setFontScaleFactor(
-                        mFontSizePrefsAndroidPtr,
+                        prefService,
                         ContextUtils.getApplicationContext()
                                 .getResources()
                                 .getConfiguration()
@@ -75,10 +49,7 @@ public class FontSizePrefs {
 
     @NativeMethods
     interface Natives {
-        long init(FontSizePrefs self, BrowserContextHandle browserContextHandle);
-
-        void destroy(long nativeFontSizePrefsAndroid);
-
-        void setFontScaleFactor(long nativeFontSizePrefsAndroid, float fontScaleFactor);
+        void setFontScaleFactor(
+                @JniType("PrefService*") PrefService prefService, float fontScaleFactor);
     }
 }
