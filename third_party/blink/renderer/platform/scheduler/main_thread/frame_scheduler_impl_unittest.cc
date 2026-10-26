@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
@@ -1021,10 +1020,7 @@ INSTANTIATE_TEST_SUITE_P(
     AllTimerTaskTypes,
     FrameSchedulerImplStopInBackgroundDisabledTest,
     testing::Values(TaskType::kJavascriptTimerDelayedLowNesting,
-                    TaskType::kJavascriptTimerDelayedHighNesting),
-    [](const testing::TestParamInfo<TaskType>& info) {
-      return TaskTypeNames::TaskTypeToString(info.param).value;
-    });
+                    TaskType::kJavascriptTimerDelayedHighNesting));
 
 TEST_F(FrameSchedulerImplTest, FreezeForegroundOnlyTasks) {
   int counter = 0;
@@ -1628,8 +1624,7 @@ TEST_F(FrameSchedulerImplTest, ThrottledTaskTypes) {
 
   for (TaskType task_type : kAllFrameTaskTypes) {
     SCOPED_TRACE(testing::Message()
-                 << "TaskType is "
-                 << TaskTypeNames::TaskTypeToString(task_type).value);
+                 << "TaskType is " << static_cast<int>(task_type));
     switch (task_type) {
       case TaskType::kIdleTask:
       case TaskType::kInternalContentCapture:
@@ -2984,10 +2979,7 @@ INSTANTIATE_TEST_SUITE_P(
             /* is_intensive_throttling_expected=*/true},
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kWebSchedulingPostedTask,
-            /* is_intensive_throttling_expected=*/true}),
-    [](const testing::TestParamInfo<IntensiveWakeUpThrottlingTestParam>& info) {
-      return TaskTypeNames::TaskTypeToString(info.param.task_type).value;
-    });
+            /* is_intensive_throttling_expected=*/true}));
 
 TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
        PolicyForceEnable) {
