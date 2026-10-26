@@ -1,0 +1,78 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/rust/cargo_crate.gni")
+import("//third_party/icu/config.gni")
+import("sources.gni")
+
+declare_args() {
+  # Overrides the platform data directory used by //third_party/rust/icu4x_data
+  # (e.g. "common", "chromeos", "android", "ios", "cast", "chromecast_video",
+  # "flutter", "flutter_desktop"). When empty, mirrors
+  # //third_party/icu/BUILD.gn. Allows downstream builds like
+  # `cast`/`flutter_desktop`/`chromecast_video` to select data, and helps for
+  # local data verification.
+  icu4x_override_data_dir = ""
+}
+
+if (icu4x_override_data_dir != "") {
+  _icu4x_data_platform = icu4x_override_data_dir
+} else if (is_android) {
+  _icu4x_data_platform = "android"
+} else if (is_ios && !use_blink) {
+  _icu4x_data_platform = "ios"
+} else if (is_chromeos) {
+  _icu4x_data_platform = "chromeos"
+} else if (current_cpu == "wasm") {
+  _icu4x_data_platform = "flutter"
+} else if (icu_is_in_fuchsia && icu_fuchsia_override_data_dir != "") {
+  _icu4x_data_platform = icu_fuchsia_override_data_dir
+} else {
+  _icu4x_data_platform = "common"
+}
+
+if (_icu4x_data_platform == "android") {
+  _icu4x_data_inputs = icu4x_data_android_inputs
+} else if (_icu4x_data_platform == "ios") {
+  _icu4x_data_inputs = icu4x_data_ios_inputs
+} else if (_icu4x_data_platform == "chromeos") {
+  _icu4x_data_inputs = icu4x_data_chromeos_inputs
+} else if (_icu4x_data_platform == "cast") {
+  _icu4x_data_inputs = icu4x_data_cast_inputs
+} else if (_icu4x_data_platform == "chromecast_video") {
+  _icu4x_data_inputs = icu4x_data_chromecast_video_inputs
+} else if (_icu4x_data_platform == "flutter") {
+  _icu4x_data_inputs = icu4x_data_flutter_inputs
+} else if (_icu4x_data_platform == "flutter_desktop") {
+  _icu4x_data_inputs = icu4x_data_flutter_desktop_inputs
+} else {
+  _icu4x_data_inputs = icu4x_data_common_inputs
+}
+
+cargo_crate("lib") {
+  crate_name = "icu4x_data"
+  crate_type = "rlib"
+  crate_root = "src/lib.rs"
+  sources = [ "src/lib.rs" ]
+  inputs = _icu4x_data_inputs
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "The Chromium Authors"
+  cargo_pkg_name = "icu4x_data"
+  cargo_pkg_description = "Pre-built ICU4X baked data for Chromium"
+  cargo_pkg_version = "2.4.0"
+
+  allow_unsafe = false
+  rustflags = [ "--cfg=icu4x_data_platform_${_icu4x_data_platform}" ]
+
+  visibility = [ "//third_party/rust/*" ]
+
+  _configs_to_remove = [
+    "//build/config/coverage:default_coverage",
+    "//build/config/compiler:chromium_code",
+  ]
+  library_configs -= _configs_to_remove
+}
