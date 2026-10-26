@@ -1,0 +1,15 @@
+upstream {
+  commit: "9e6842258a9f962e1e06c97bc965c0bb697be775"
+  artifacts {
+    git {
+      repository: "https://android.googlesource.com/platform/system/core"
+      commit: "9e6842258a9f962e1e06c97bc965c0bb697be775"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

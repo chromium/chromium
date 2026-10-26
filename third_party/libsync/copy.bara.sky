@@ -1,0 +1,17 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = [
+        "libsync/NOTICE",
+        "libsync/include/android/sync.h",
+        "libsync/include/ndk/sync.h",
+        "libsync/sw_sync.h",
+        "libsync/sync.c",
+    ],
+    transformations = [
+        core.move("src/libsync", "src"),
+        # Upstream include/sync/sync.h is a symlink to ../android/sync.h,
+        # and Crowbar fails on symlinks.
+        core.copy("src/include/android/sync.h", "src/include/sync/sync.h"),
+    ],
+)
