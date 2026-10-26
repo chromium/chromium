@@ -1036,16 +1036,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-  // Added 10/2025.
-  [defaults removeObjectForKey:@"TimestampTriggerCriteriaExperimentStarted"];
-  [defaults removeObjectForKey:@"AllTimestampsAppLaunchColdStart"];
-  [defaults removeObjectForKey:@"AllTimestampsAppLaunchWarmStart"];
-  [defaults removeObjectForKey:@"AllTimestampsAppLaunchIndirectStart"];
-  [defaults removeObjectForKey:@"AutofillUseCount"];
-  [defaults removeObjectForKey:@"SpecialTabUseCount"];
-  [defaults removeObjectForKey:@"OmniboxUseCount"];
-  [defaults removeObjectForKey:@"BookmarkUseCount"];
-
   // Added 03/2026
   [defaults removeObjectForKey:@"fre_timestamp_migration_done"];
   [defaults removeObjectForKey:@"promo_interest_event_migration_done"];
