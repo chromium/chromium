@@ -8,6 +8,15 @@
 
 #import "ios/web_view/shell/shell_risk_data_loader.h"
 
+// A structure to hold the title and message strings used to present an
+// autofill-related progress dialog (e.g., for card verification).
+// This struct is used as the return type for methods that dynamically determine
+// the appropriate user-facing text for various progress states.
+typedef struct {
+  NSString* title;
+  NSString* message;
+} AutofillDialogText;
+
 @interface ShellAutofillDelegate ()
 
 // Autofill controller.
@@ -22,15 +31,6 @@
 // Returns an action for a suggestion.
 - (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion
                               atIndex:(NSInteger)index;
-
-// A structure to hold the title and message strings used to present an
-// autofill-related progress dialog (e.g., for card verification).
-// This struct is used as the return type for methods that dynamically determine
-// the appropriate user-facing text for various progress states.
-typedef struct {
-  NSString* title;
-  NSString* message;
-} AutofillDialogText;
 
 // Returns an array contaning the appropriate title and message for the given
 // `CWVAutofillProgressDialogType`
