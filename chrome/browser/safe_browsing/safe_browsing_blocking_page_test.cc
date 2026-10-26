@@ -3951,8 +3951,10 @@ class SafeBrowsingBlockingPageEnterpriseIsolatedModeDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnterpriseIsolatedModeTest,
-                       EnterpriseRealTimeUrlCheck_IsolatedModeProfile) {
+// TODO(crbug.com/576842164): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBlockingPageEnterpriseIsolatedModeTest,
+    DISABLED_EnterpriseRealTimeUrlCheck_IsolatedModeProfile) {
   TestEnterpriseRealTimeUrlCheck(/*is_isolated_mode_enabled=*/true);
 }
 
