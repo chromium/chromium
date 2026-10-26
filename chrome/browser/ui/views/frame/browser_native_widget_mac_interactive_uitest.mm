@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -744,8 +745,10 @@ class BrowserNativeWidgetMacDeferInputContextTestBase
     : public InProcessBrowserTest {
  protected:
   explicit BrowserNativeWidgetMacDeferInputContextTestBase(bool enabled) {
-    feature_list_.InitWithFeatureState(
-        features::kMacDeferInputContextUntilFirstPaint, enabled);
+    feature_list_.InitWithFeatureStates(
+        {{features::kMacDeferInputContextUntilFirstPaint, enabled},
+         {features::kWebUILocationBar, false},
+         {features::kWebUIToolbar, false}});
   }
 
   // Creates a browser window with one tab showing `url`. The window is not
