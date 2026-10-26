@@ -94,6 +94,9 @@ class ContentSettingImageModel {
   void Update(content::WebContents* contents);
 
   // Creates the model for the bubble that will be attached to this image.
+  // Returns nullptr if the state backing the image is gone (e.g. cleared after
+  // the image was shown); callers must not show a bubble and should refresh
+  // the image instead.
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModel(
       ContentSettingBubbleModel::Delegate* delegate,
       content::WebContents* web_contents);

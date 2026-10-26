@@ -1260,6 +1260,17 @@ std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingMediaImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
     content::Page& page) {
+  // The mic/camera state may have been cleared after the indicator was shown
+  // (e.g. Safety Hub auto-revoked permission and stopped capture while the
+  // indicator was dismissing). The bubble requires non-empty state (see
+  // ContentSettingMediaStreamBubbleModel's constructor), so return nullptr and
+  // let the caller dismiss the stale indicator.
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForPage(page);
+  if (!content_settings ||
+      content_settings->GetMicrophoneCameraState().empty()) {
+    return nullptr;
+  }
   return std::make_unique<ContentSettingMediaStreamBubbleModel>(delegate, page);
 }
 

@@ -251,6 +251,11 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
       model->CreateBubbleModel(
           setting_view_delegate_->GetContentSettingBubbleModelDelegate(),
           web_contents);
+  if (!bubble_model) {
+    // The state backing the icon is gone, so there is nothing to display. Not
+    // an error.
+    return std::monostate();
+  }
 
   // Create and show the bubble contents.
   BrowserWindowInterface* browser =

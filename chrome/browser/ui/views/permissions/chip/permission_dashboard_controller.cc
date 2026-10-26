@@ -508,13 +508,20 @@ void PermissionDashboardController::HideIndicators() {
 void PermissionDashboardController::ShowBubble() {
   content::WebContents* web_contents = location_bar_->GetWebContents();
   if (web_contents && !page_info_bubble_suppressor_.IsShowing()) {
+    std::unique_ptr<ContentSettingBubbleModel> bubble_model =
+        content_setting_image_model_->CreateBubbleModel(
+            content_setting_image_delegate_
+                ->GetContentSettingBubbleModelDelegate(),
+            web_contents);
+    if (!bubble_model) {
+      // The state backing the indicator is gone; dismiss the stale indicator
+      // rather than showing an empty bubble.
+      HideIndicators();
+      return;
+    }
     ContentSettingBubbleContents* bubble_view_ =
         new ContentSettingBubbleContents(
-            content_setting_image_model_->CreateBubbleModel(
-                content_setting_image_delegate_
-                    ->GetContentSettingBubbleModelDelegate(),
-                web_contents),
-            web_contents,
+            std::move(bubble_model), web_contents,
             permission_dashboard_->GetIndicatorChip()->GetAnchor(),
             views::BubbleBorder::TOP_LEFT);
     HighlightIndicatorChip(*bubble_view_, *location_bar_);

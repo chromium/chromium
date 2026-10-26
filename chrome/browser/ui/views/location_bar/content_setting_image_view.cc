@@ -288,11 +288,19 @@ bool ContentSettingImageView::ShowBubbleImpl() {
   content::WebContents* web_contents =
       delegate_->GetContentSettingWebContents();
   if (web_contents && !bubble_view_) {
+    std::unique_ptr<ContentSettingBubbleModel> bubble_model =
+        content_setting_image_model_->CreateBubbleModel(
+            delegate_->GetContentSettingBubbleModelDelegate(), web_contents);
+    if (!bubble_model) {
+      // The state backing this icon is gone; refresh to hide the icon rather
+      // than showing an empty bubble.
+      UnpauseAnimation();
+      Update();
+      return false;
+    }
     views::View* const anchor = parent();
     bubble_view_ = new ContentSettingBubbleContents(
-        content_setting_image_model_->CreateBubbleModel(
-            delegate_->GetContentSettingBubbleModelDelegate(), web_contents),
-        web_contents, views::BubbleAnchor(anchor),
+        std::move(bubble_model), web_contents, views::BubbleAnchor(anchor),
         views::BubbleBorder::TOP_RIGHT);
     bubble_view_->SetHighlightedElement(
         content_setting_image_model_->GetElementIdentifier());
