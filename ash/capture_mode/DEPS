@@ -1,6 +1,4 @@
 include_rules = [
-  "+cc/trees/layer_tree_frame_sink.h",
-  "+cc/trees/layer_tree_frame_sink_client.h",
   "+chromeos/ash/grit/ash_resources.h",
   "+chromeos/ash/services/recording/public/mojom",
   "+chromeos/ash/services/recording/recording_service_test_api.h",
@@ -10,7 +8,6 @@ include_rules = [
   "+gpu/command_buffer/common/context_result.h",
   "+gpu/command_buffer/common/shared_image_capabilities.h",
   "+gpu/ipc/common/surface_handle.h",
-  "+gpu/ipc/client/client_shared_image_interface.h",
   "+services/video_capture/public",
   "+services/viz/privileged/mojom/compositing",
 ]

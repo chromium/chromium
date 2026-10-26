@@ -147,7 +147,7 @@ CameraPreviewView::~CameraPreviewView() {
 void CameraPreviewView::Initialize() {
   CHECK(GetWidget()) << "The view should have been added to a widget first.";
 
-  camera_video_renderer_.Initialize();
+  camera_video_renderer_.Init(camera_video_renderer_.host_window());
 
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
   CaptureModeController::Get()->MaybeUpdateVcPanel();

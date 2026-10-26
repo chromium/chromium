@@ -27,6 +27,7 @@
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/frame_sink/frame_sink_holder.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -1674,7 +1675,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
   // The resize button should fade out and become invisible in
   // `kResizeButtonShowDuration` after removing focus from it.
   base::OneShotTimer* hide_timer =
-      camera_preview_view->resize_button_hide_timer_for_test();
+      camera_preview_view->resize_button_hide_timer_for_testing();
   EXPECT_FALSE(resize_button->has_focus());
   EXPECT_TRUE(hide_timer->IsRunning());
   EXPECT_EQ(hide_timer->GetCurrentDelay(),
@@ -1696,7 +1697,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
 
   // The resize button should keep visible when it is focused, even trigger
   // `resize_button_hide_timer_` to refresh its visibility.
-  hide_timer = camera_preview_view->resize_button_hide_timer_for_test();
+  hide_timer = camera_preview_view->resize_button_hide_timer_for_testing();
   EXPECT_TRUE(hide_timer->IsRunning());
   EXPECT_TRUE(resize_button->GetVisible());
   hide_timer->FireNow();
@@ -1710,7 +1711,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
 
   // The resize button should fade out and become invisible again in
   // `kResizeButtonShowDuration` after removing focus from it.
-  hide_timer = camera_preview_view->resize_button_hide_timer_for_test();
+  hide_timer = camera_preview_view->resize_button_hide_timer_for_testing();
   EXPECT_FALSE(resize_button->has_focus());
   EXPECT_TRUE(hide_timer->IsRunning());
   EXPECT_EQ(hide_timer->GetCurrentDelay(),
@@ -3674,7 +3675,7 @@ TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnMouseEvents) {
   event_generator->MoveMouseTo(outside_point);
 
   base::OneShotTimer* timer = camera_controller->camera_preview_view()
-                                  ->resize_button_hide_timer_for_test();
+                                  ->resize_button_hide_timer_for_testing();
   EXPECT_TRUE(timer->IsRunning());
   EXPECT_EQ(timer->GetCurrentDelay(), capture_mode::kResizeButtonShowDuration);
 
@@ -3710,7 +3711,7 @@ TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnTapEvents) {
   event_generator->GestureTapAt(default_preview_bounds.CenterPoint());
   EXPECT_TRUE(resize_button->GetVisible());
   base::OneShotTimer* timer = camera_controller->camera_preview_view()
-                                  ->resize_button_hide_timer_for_test();
+                                  ->resize_button_hide_timer_for_testing();
   EXPECT_TRUE(timer->IsRunning());
   EXPECT_EQ(timer->GetCurrentDelay(), capture_mode::kResizeButtonShowDuration);
 
@@ -4078,7 +4079,7 @@ TEST_P(CaptureModeCameraPreviewTest,
     outside_point.Offset(-1, -1);
     event_generator->MoveMouseTo(outside_point);
     base::OneShotTimer* timer = camera_controller->camera_preview_view()
-                                    ->resize_button_hide_timer_for_test();
+                                    ->resize_button_hide_timer_for_testing();
     timer->FireNow();
     EXPECT_EQ(resize_button->GetVisible(),
               switch_access_enabled ? true : false);
@@ -4139,7 +4140,7 @@ TEST_P(CaptureModeCameraPreviewTest,
     EXPECT_TRUE(resize_button->GetVisible());
 
     base::OneShotTimer* timer = camera_controller->camera_preview_view()
-                                    ->resize_button_hide_timer_for_test();
+                                    ->resize_button_hide_timer_for_testing();
     if (timer->IsRunning())
       timer->FireNow();
 
@@ -4727,6 +4728,28 @@ TEST_P(CaptureModeCameraFramesTest, CameraFatalErrors) {
   // Now wait for the camera to be re-added again.
   CameraDevicesChangeWaiter().Wait();
   EXPECT_TRUE(camera_controller->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+}
+
+TEST_P(CaptureModeCameraFramesTest, RecoverFromFrameSinkLoss) {
+  CaptureModeTestApi().StartForFullscreen(/*for_video=*/true);
+  auto* camera_controller = GetCameraController();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+
+  auto* renderer = camera_controller->camera_preview_view()
+                       ->camera_video_renderer_for_testing();
+  auto* holder = renderer->frame_sink_holder_for_testing();
+
+  base::WeakPtr<FrameSinkHolder> weak_holder = holder->GetWeakPtr();
+  holder->DidLoseLayerTreeFrameSink();
+
+  // The old FrameSinkHolder should be destroyed, and a new one should be
+  // created.
+  EXPECT_FALSE(weak_holder);
+  EXPECT_TRUE(renderer->frame_sink_holder_for_testing());
+
+  // Video frames should continue to render successfully after recovery.
   WaitForAndVerifyRenderedVideoFrame();
 }
 

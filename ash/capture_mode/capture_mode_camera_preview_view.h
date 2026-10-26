@@ -132,8 +132,12 @@ class CameraPreviewView
   void OnAccessibilityStatusChanged() override;
   void OnAccessibilityControllerShutdown() override;
 
-  base::OneShotTimer* resize_button_hide_timer_for_test() {
+  base::OneShotTimer* resize_button_hide_timer_for_testing() {
     return &resize_button_hide_timer_;
+  }
+
+  CameraVideoFrameRenderer* camera_video_renderer_for_testing() {
+    return &camera_video_renderer_;
   }
 
  private:
