@@ -86,8 +86,7 @@ TEST_F(DeviceSharingManagerImplTest, ShareThenClear) {
 
 TEST_F(DeviceSharingManagerImplTest, SharingWhenDisabled) {
   // Disable sharing. Expect the handoff manager shares nothing.
-  sync_preferences::TestingPrefServiceSyncable* prefs =
-      profile_->GetTestingPrefService();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kIosHandoffToOtherDevices, false);
   sharing_manager_->UpdateActiveUrl(browser_.get(), test_url_1_);
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
@@ -99,8 +98,7 @@ TEST_F(DeviceSharingManagerImplTest, SharingThenDisabled) {
   EXPECT_NSEQ(ActiveHandoffUrl(), test_nsurl_1_);
 
   // Disable, expaect URL is no longer shared.
-  sync_preferences::TestingPrefServiceSyncable* prefs =
-      profile_->GetTestingPrefService();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kIosHandoffToOtherDevices, false);
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 

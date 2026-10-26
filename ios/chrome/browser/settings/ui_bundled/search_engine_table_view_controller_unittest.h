@@ -13,8 +13,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -104,7 +104,7 @@ class SearchEngineTableViewControllerTest
   std::unique_ptr<TestProfileIOS> profile_;
   base::HistogramTester histogram_tester_;
   raw_ptr<TemplateURLService> template_url_service_;  // weak
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   const std::vector<SearchEngineTest> prepopulated_search_engine_;
   const std::vector<SearchEngineTest> custom_search_engine_;
 };

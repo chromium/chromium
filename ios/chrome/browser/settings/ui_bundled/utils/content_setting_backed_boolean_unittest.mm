@@ -48,10 +48,6 @@ class ContentSettingBackedBooleanTest : public PlatformTest {
         .get();
   }
 
-  sync_preferences::TestingPrefServiceSyncable* PrefService() {
-    return profile_->GetTestingPrefService();
-  }
-
   ContentSettingBackedBoolean* GetObservableBoolean() {
     return observable_boolean_;
   }

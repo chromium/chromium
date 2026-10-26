@@ -142,7 +142,7 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
 
   // Enables the file download connector by setting the appropriate pref.
   void EnableConnector() {
-    profile_->GetTestingPrefService()->Set(
+    profile_->GetPrefs()->Set(
         AnalysisConnectorPref(AnalysisConnector::FILE_DOWNLOADED),
         *base::JSONReader::Read(kWildcardAnalysisSettingsPref,
                                 base::JSON_PARSE_RFC));

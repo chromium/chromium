@@ -115,7 +115,7 @@ class ToolbarMediatorTest : public PlatformTest,
     gemini_service_ptr_ = std::make_unique<GeminiServiceImpl>(
         profile_.get(), auth_service_,
         IdentityManagerFactory::GetForProfile(profile_.get()),
-        profile_->GetTestingPrefService(),
+        profile_->GetPrefs(),
         OptimizationGuideServiceFactory::GetForProfile(profile_.get()));
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -152,7 +152,7 @@ class ToolbarMediatorTest : public PlatformTest,
                         webStateList:browser_->GetWebStateList()
                        actionFactory:action_factory_
                              profile:profile_.get()
-                         prefService:profile_->GetTestingPrefService()
+                         prefService:profile_->GetPrefs()
                 fullscreenController:TestFullscreenController::FromBrowser(
                                          browser_.get())
               fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
@@ -634,7 +634,7 @@ TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                            profile:profile_.get()
-                       prefService:profile_->GetTestingPrefService()
+                       prefService:profile_->GetPrefs()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
             fullscreenBrowserAgent:nil
@@ -673,7 +673,7 @@ TEST_P(ToolbarMediatorTest, TestHidePromo) {
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                            profile:profile_.get()
-                       prefService:profile_->GetTestingPrefService()
+                       prefService:profile_->GetPrefs()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
             fullscreenBrowserAgent:nil
@@ -773,7 +773,7 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTappedInIncognito) {
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                            profile:profile_.get()
-                       prefService:profile_->GetTestingPrefService()
+                       prefService:profile_->GetPrefs()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
             fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
@@ -814,7 +814,7 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                            profile:profile_.get()
-                       prefService:profile_->GetTestingPrefService()
+                       prefService:profile_->GetPrefs()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
             fullscreenBrowserAgent:nil
@@ -876,7 +876,7 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoEnabled) {
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                            profile:profile_.get()
-                       prefService:profile_->GetTestingPrefService()
+                       prefService:profile_->GetPrefs()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
             fullscreenBrowserAgent:nil

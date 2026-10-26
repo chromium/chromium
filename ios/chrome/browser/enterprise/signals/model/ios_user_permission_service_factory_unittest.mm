@@ -86,7 +86,7 @@ TEST_F(IOSUserPermissionServiceFactoryTest, CanCollectSignals_ManagedProfile) {
 // Tests that setting the permanent consent pref grants signal collection.
 TEST_F(IOSUserPermissionServiceFactoryTest, CanCollectSignals_ConsentPref) {
   CreateProfile(/*is_managed_user=*/false);
-  profile_->GetTestingPrefService()->SetBoolean(
+  profile_->GetPrefs()->SetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
 
   device_signals::UserPermissionService* service =

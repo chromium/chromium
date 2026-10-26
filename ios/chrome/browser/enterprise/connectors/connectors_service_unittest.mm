@@ -116,12 +116,12 @@ class ConnectorsServiceTest : public PlatformTest {
         scoped_refptr<base::SequencedTaskRunner>(),
         network::TestNetworkConnectionTracker::CreateGetter());
 
-    profile()->GetTestingPrefService()->Set(
+    profile()->GetPrefs()->Set(
         AnalysisConnectorPref(connector()),
         *base::JSONReader::Read(kWildcardAnalysisSettingsPref,
                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-    profile()->GetTestingPrefService()->SetInteger(
-        AnalysisConnectorScopePref(connector()), policy::POLICY_SCOPE_MACHINE);
+    profile()->GetPrefs()->SetInteger(AnalysisConnectorScopePref(connector()),
+                                      policy::POLICY_SCOPE_MACHINE);
 
     GetApplicationContext()
         ->GetBrowserPolicyConnector()
@@ -463,7 +463,7 @@ TEST_F(ConnectorsServiceTest, ExemptURL_BlobAndFilesystem) {
 
   // Test against a specific pattern policy to validate the correct inner URL is
   // used.
-  profile()->GetTestingPrefService()->Set(
+  profile()->GetPrefs()->Set(
       AnalysisConnectorPref(connector()),
       *base::JSONReader::Read(R"([
         {

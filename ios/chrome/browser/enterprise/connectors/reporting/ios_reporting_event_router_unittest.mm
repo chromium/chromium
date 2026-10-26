@@ -126,7 +126,7 @@ class IOSReportingEventRouterTest : public PlatformTest {
 
 // Tests that the event reporting is not enabled for a given event.
 TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
-  test::SetOnSecurityEventReporting(profile_->GetTestingPrefService(),
+  test::SetOnSecurityEventReporting(profile_->GetPrefs(),
                                     /*enabled=*/false,
                                     /*enabled_event_names=*/{},
                                     /*enabled_opt_in_events=*/{});
@@ -137,7 +137,7 @@ TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
 // Tests that the event reporting is enabled for a given event.
 TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsTrue) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordReuseEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -173,7 +173,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEvent) {
 // Tests that no matchting Url pattern for login events reporting.
 TEST_F(IOSReportingEventRouterTest, TestOnLoginEventNoMatchingUrlPattern) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"notexample.com"}}});
 
@@ -188,7 +188,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEventNoMatchingUrlPattern) {
 // Tests that the login event reports the user name as expected.
 TEST_F(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
@@ -214,7 +214,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
 // Tests that the login events on federated login are reported as expected.
 TEST_F(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
@@ -244,7 +244,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
 // Tests that the password breaching events are reported as expected.
 TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreach) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyPasswordBreachEvent, {"*"}}});
 
@@ -280,7 +280,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreach) {
 // Tests that the password breaching events with no matching url pattern.
 TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/
       {{kKeyPasswordBreachEvent, {"notexample.com"}}});
@@ -300,7 +300,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
 TEST_F(IOSReportingEventRouterTest,
        TestOnPasswordBreachPartiallyMatchingUrlPatterns) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/
       {{kKeyPasswordBreachEvent, {"secondexample.com"}}});
@@ -336,7 +336,7 @@ TEST_F(IOSReportingEventRouterTest,
 TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -382,7 +382,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
 TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -428,7 +428,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
 TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -477,7 +477,7 @@ TEST_F(IOSReportingEventRouterTest,
        TestOnUrlFilteringInterstitial_WatermarkAudit) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -518,7 +518,7 @@ TEST_F(IOSReportingEventRouterTest,
 TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -553,7 +553,7 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
 TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -588,7 +588,7 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
 TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
@@ -621,7 +621,7 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
 
 TEST_F(IOSReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
   test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
+      profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeySensitiveDataEvent},
       /*enabled_opt_in_events=*/{});
 

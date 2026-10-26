@@ -54,7 +54,7 @@ void SearchEngineTableViewControllerTest::SetUp() {
                             ios::HistoryServiceFactory::GetDefaultFactory());
   profile_ = std::move(builder).Build();
   // Override the country checks to simulate being in Belgium.
-  pref_service_ = profile_->GetTestingPrefService();
+  pref_service_ = profile_->GetPrefs();
   DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
   template_url_service_ =
       ios::TemplateURLServiceFactory::GetForProfile(profile_.get());

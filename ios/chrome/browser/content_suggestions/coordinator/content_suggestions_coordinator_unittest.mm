@@ -166,8 +166,8 @@ TEST_F(ContentSuggestionsCoordinatorTest, TestLogEphemeralCardVisibility) {
                                                   kPriceTrackingPromo];
   [coordinator_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                kPriceTrackingPromo];
-  EXPECT_EQ(1, profile_->GetTestingPrefService()->GetInteger(
-                   kPriceTrackingPromoCounterPref));
+  EXPECT_EQ(1,
+            profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
   histogram_tester.ExpectUniqueSample(
       "IOS.MagicStack.Module.TopImpression",
       ContentSuggestionsModuleType::kPriceTrackingPromo, 1);
@@ -185,7 +185,7 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing, 1);
-  EXPECT_TRUE(profile_->GetTestingPrefService()->GetBoolean(
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       "ephemeral_pref_interacted."
       "enhanced_safe_browsing_ephemeral_module_interacted"));
   EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
@@ -207,20 +207,20 @@ TEST_F(ContentSuggestionsCoordinatorTest,
 
   [coordinator_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                kPriceTrackingPromo];
-  EXPECT_EQ(0, profile_->GetTestingPrefService()->GetInteger(
-                   kPriceTrackingPromoCounterPref));
+  EXPECT_EQ(0,
+            profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
 
   // Dismissing the overlay without navigating away from the NTP should log the
   // deferred ephemeral card visibility once.
   is_ntp_bypassed = NO;
   [coordinator_ logDeferredEphemeralCardVisibilityIfNeeded];
-  EXPECT_EQ(1, profile_->GetTestingPrefService()->GetInteger(
-                   kPriceTrackingPromoCounterPref));
+  EXPECT_EQ(1,
+            profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
 
   // Subsequent calls should not duplicate the impression.
   [coordinator_ logDeferredEphemeralCardVisibilityIfNeeded];
-  EXPECT_EQ(1, profile_->GetTestingPrefService()->GetInteger(
-                   kPriceTrackingPromoCounterPref));
+  EXPECT_EQ(1,
+            profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
 }
 
 // Tests that a deferred ephemeral card impression is cleared and not logged if
@@ -241,15 +241,15 @@ TEST_F(ContentSuggestionsCoordinatorTest,
 
   [coordinator_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                kPriceTrackingPromo];
-  EXPECT_EQ(0, profile_->GetTestingPrefService()->GetInteger(
-                   kPriceTrackingPromoCounterPref));
+  EXPECT_EQ(0,
+            profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
 
   // Simulate navigating away from the NTP before the overlay is dismissed.
   coordinator_.webState = nullptr;
   is_ntp_bypassed = NO;
   [coordinator_ logDeferredEphemeralCardVisibilityIfNeeded];
-  EXPECT_EQ(0, profile_->GetTestingPrefService()->GetInteger(
-                   kPriceTrackingPromoCounterPref));
+  EXPECT_EQ(0,
+            profile_->GetPrefs()->GetInteger(kPriceTrackingPromoCounterPref));
 }
 
 // Tests that calling `-didSelectNTPThemePhotoPicker` and
@@ -268,7 +268,7 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kNTPTheme, 1);
-  EXPECT_TRUE(profile_->GetTestingPrefService()->GetBoolean(
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       "ephemeral_pref_interacted.ntp_theme_ephemeral_module_interacted"));
 
   OCMExpect([coordinator_.NTPActionsDelegate tipsOpened]);

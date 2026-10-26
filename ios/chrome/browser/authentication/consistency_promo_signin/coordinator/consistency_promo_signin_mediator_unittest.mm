@@ -75,9 +75,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  sync_preferences::TestingPrefServiceSyncable* GetPrefService() {
-    return profile_->GetTestingPrefService();
-  }
+  PrefService* GetPrefService() { return profile_->GetPrefs(); }
 
   FakeSystemIdentityManager* GetSystemIdentityManager() {
     return FakeSystemIdentityManager::FromSystemIdentityManager(

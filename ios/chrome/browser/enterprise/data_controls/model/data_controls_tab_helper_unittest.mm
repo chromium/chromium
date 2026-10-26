@@ -155,7 +155,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetCopyFromOsClipboardBlockRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                           "sources": {
                             "os_clipboard": true
                           },
@@ -167,7 +167,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetCopyAllowRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "sources": {
                           "urls": ["allow.com"]
                         },
@@ -179,7 +179,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetCopyWarnRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "sources": {
                           "urls": ["warn.com"]
                         },
@@ -191,7 +191,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetCopyReportRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "sources": {
                           "urls": ["report.com"]
                         },
@@ -203,7 +203,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteBlockRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "destinations": {
                           "urls": ["block.com"]
                         },
@@ -215,7 +215,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteAllowRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "destinations": {
                           "urls": ["allow.com"]
                         },
@@ -227,7 +227,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteBlockForSourceRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "and": [
                               {
                                 "destinations": {
@@ -252,7 +252,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteAllowForSourceRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                           "and": [
                                 {
                                   "destinations": {
@@ -276,7 +276,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteWarnRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "destinations": {
                           "urls": ["warn.com"]
                         },
@@ -288,7 +288,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteBlockFromIncognitoRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "and": [
                           {
                             "destinations": {
@@ -311,7 +311,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteBlockFromOtherProfileRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "and": [
                           {
                             "destinations": {
@@ -334,7 +334,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteBlockFromOSClipboardRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                         "and": [
                           {
                             "destinations": {
@@ -357,7 +357,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetPasteBlockToOSClipboardRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(profile_->GetPrefs(), {R"({
                           "and": [
                             {
                               "sources": {
@@ -379,8 +379,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetBulkDataEntryRule(PrefService* prefs = nullptr) {
-    PrefService* pref_service =
-        prefs ? prefs : profile_->GetTestingPrefService();
+    PrefService* pref_service = prefs ? prefs : profile_->GetPrefs();
     pref_service->Set(
         enterprise_connectors::AnalysisConnectorPref(
             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY),
@@ -400,8 +399,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   void SetAuditOnlyBulkDataEntryRule(PrefService* prefs = nullptr) {
-    PrefService* pref_service =
-        prefs ? prefs : profile_->GetTestingPrefService();
+    PrefService* pref_service = prefs ? prefs : profile_->GetPrefs();
     pref_service->Set(
         enterprise_connectors::AnalysisConnectorPref(
             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY),
@@ -1407,7 +1405,7 @@ TEST_F(DataControlsTabHelperTest,
       base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                               BuildIdentityManagerForTests));
   std::unique_ptr<TestProfileIOS> custom_profile = std::move(builder).Build();
-  SetBulkDataEntryRule(custom_profile->GetTestingPrefService());
+  SetBulkDataEntryRule(custom_profile->GetPrefs());
 
   auto custom_web_state = std::make_unique<web::FakeWebState>();
   custom_web_state->SetBrowserState(custom_profile.get());

@@ -103,7 +103,7 @@ TEST_F(IOSRulesServiceTest, NoRuleSet) {
 TEST_F(IOSRulesServiceTest, SourceURL) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                         "name": "block",
                         "rule_id": "1234",
                         "sources": {
@@ -134,7 +134,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                         "name": "warn",
                         "rule_id": "1234",
                         "sources": {
@@ -166,7 +166,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                               "name": "allow",
                               "rule_id": "1234",
                               "sources": {
@@ -176,7 +176,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                                 {"class": "CLIPBOARD", "level": "ALLOW"}
                               ]
                             })",
-                                                                 R"({
+                                                    R"({
                               "name": "warn",
                               "rule_id": "5678",
                               "sources": {
@@ -208,7 +208,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
 TEST_F(IOSRulesServiceTest, DestinationURL) {
   {
     // Restriction level is set as "BLOCK".
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                               "name": "block",
                               "rule_id": "1234",
                               "destinations": {
@@ -237,7 +237,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
 
   {
     // Restriction level is set as "WARN".
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                               "name": "warn",
                               "rule_id": "1234",
                               "destinations": {
@@ -267,7 +267,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                              "name": "allow",
                              "rule_id": "1234",
                              "destinations": {
@@ -277,7 +277,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
                                {"class": "CLIPBOARD", "level": "ALLOW"}
                              ]
                            })",
-                                                                 R"({
+                                                    R"({
                              "name": "warn",
                              "rule_id": "5678",
                              "destinations": {
@@ -308,7 +308,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
 TEST_F(IOSRulesServiceTest, SourceIncognito) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                   "name": "block",
                                   "rule_id": "1234",
                                   "sources": {
@@ -347,7 +347,7 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                     "name": "warn",
                                     "rule_id": "1234",
                                     "sources": {
@@ -387,7 +387,7 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                               "name": "allow",
                               "rule_id": "1234",
                               "sources": {
@@ -397,7 +397,7 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                 {"class": "CLIPBOARD", "level": "ALLOW"}
                               ]
                             })",
-                                                                 R"({
+                                                    R"({
                               "name": "warn",
                               "rule_id": "5678",
                               "sources": {
@@ -438,7 +438,7 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
 TEST_F(IOSRulesServiceTest, DestinationIncognito) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                       "name": "block",
                                       "rule_id": "1234",
                                       "destinations": {
@@ -471,7 +471,7 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                         "name": "warn",
                                         "rule_id": "1234",
                                         "destinations": {
@@ -505,7 +505,7 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                   "name": "allow",
                                   "rule_id": "1234",
                                   "destinations": {
@@ -515,7 +515,7 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
                                     {"class": "CLIPBOARD", "level": "ALLOW"}
                                   ]
                                 })",
-                                                                 R"({
+                                                    R"({
                                   "name": "warn",
                                   "rule_id": "5678",
                                   "destinations": {
@@ -550,7 +550,7 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
 TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                             "name": "block",
                             "rule_id": "1234",
                             "sources": {
@@ -580,7 +580,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                "name": "warn",
                                "rule_id": "1234",
                                "sources": {
@@ -612,7 +612,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                      "name": "allow",
                                      "rule_id": "1234",
                                      "sources": {
@@ -622,7 +622,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
                                        {"class": "CLIPBOARD", "level": "ALLOW"}
                                      ]
                                    })",
-                                                                 R"({
+                                                    R"({
                                      "name": "warn",
                                      "rule_id": "5678",
                                      "sources": {
@@ -653,7 +653,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
 TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                             "name": "block",
                             "rule_id": "1234",
                             "destinations": {
@@ -683,7 +683,7 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                "name": "warn",
                                "rule_id": "1234",
                                "destinations": {
@@ -715,7 +715,7 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetPrefs(), {R"({
                                      "name": "allow",
                                      "rule_id": "1234",
                                      "destinations": {
@@ -725,7 +725,7 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
                                        {"class": "CLIPBOARD", "level": "ALLOW"}
                                      ]
                                    })",
-                                                                 R"({
+                                                    R"({
                                      "name": "warn",
                                      "rule_id": "5678",
                                      "destinations": {
