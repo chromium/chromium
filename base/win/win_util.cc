@@ -1040,11 +1040,12 @@ void EnableHighDPISupport() {
 
   // Fall back to per-monitor DPI for older versions of Win10.
   PROCESS_DPI_AWARENESS process_dpi_awareness = PROCESS_PER_MONITOR_DPI_AWARE;
-  if (!::SetProcessDpiAwareness(process_dpi_awareness)) {
+  HRESULT result = ::SetProcessDpiAwareness(process_dpi_awareness);
+  if (FAILED(result)) {
     // For windows versions where SetProcessDpiAwareness fails, try its
     // predecessor.
-    BOOL result = ::SetProcessDPIAware();
-    DCHECK(result) << "SetProcessDPIAware failed.";
+    BOOL is_dpi_aware = ::SetProcessDPIAware();
+    DCHECK(is_dpi_aware) << "SetProcessDPIAware failed.";
   }
 }
 
