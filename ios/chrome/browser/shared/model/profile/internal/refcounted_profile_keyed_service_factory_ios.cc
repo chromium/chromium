@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/shared/model/profile/internal/refcounted_profile_keyed_service_factory_ios.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h"
 #include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_utils.h"
@@ -14,18 +15,33 @@
 
 namespace {
 
-// Wraps `testing_factory` as a RefcountedKeyedServiceFactory::TestingFactory.
-base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
-    RefcountedKeyedServiceTestingFactoryIOS testing_factory) {
+// Converts a `testing_factory` into a KeyedServiceTestingFactoryIOS.
+RefcountedKeyedServiceTestingFactoryIOSByRef IntoByRef(
+    RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory) {
   if (!testing_factory) {
     return {};
   }
 
   return base::BindOnce(
-      [](RefcountedKeyedServiceTestingFactoryIOS testing_factory,
+      [](RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory,
+         ProfileIOS& profile) {
+        return std::move(testing_factory).Run(&profile);
+      },
+      std::move(testing_factory));
+}
+
+// Wraps `testing_factory` as a RefcountedKeyedServiceFactory::TestingFactory.
+base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
+    RefcountedKeyedServiceTestingFactoryIOSByRef testing_factory) {
+  if (!testing_factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](RefcountedKeyedServiceTestingFactoryIOSByRef testing_factory,
          void* context) -> scoped_refptr<RefcountedKeyedService> {
         return std::move(testing_factory)
-            .Run(static_cast<ProfileIOS*>(context));
+            .Run(CHECK_DEREF(static_cast<ProfileIOS*>(context)));
       },
       std::move(testing_factory));
 }
@@ -34,11 +50,20 @@ base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
 
 void RefcountedProfileKeyedServiceFactoryIOS::SetTestingFactory(
     PassKey pass_key,
-    ProfileIOS* profile,
+    ProfileIOS& profile,
     TestingFactory testing_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RefcountedKeyedServiceFactory::SetTestingFactory(
-      profile, WrapFactory(std::move(testing_factory)));
+      &profile, WrapFactory(IntoByRef(std::move(testing_factory))));
+}
+
+void RefcountedProfileKeyedServiceFactoryIOS::SetTestingFactory(
+    PassKey pass_key,
+    ProfileIOS& profile,
+    TestingFactoryByRef testing_factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RefcountedKeyedServiceFactory::SetTestingFactory(
+      &profile, WrapFactory(std::move(testing_factory)));
 }
 
 void RefcountedProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
