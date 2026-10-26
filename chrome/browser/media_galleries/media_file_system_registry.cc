@@ -276,7 +276,9 @@ class ExtensionGalleriesHost {
       CleanUp();
     }
 
-    CHECK_EQ(pref_id_map_.size(), result.size(), base::NotFatalUntil::M161);
+    // TODO(crbug.com/577159311): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(pref_id_map_.size(), result.size());
     std::move(callback).Run(result);
   }
 
