@@ -107,7 +107,9 @@ public class WideDisplayPadding {
         ((PreferenceFragmentCompat) fragment).setDivider(null);
 
         CustomDividerFragment customDividerFragment =
-                fragment instanceof CustomDividerFragment ? (CustomDividerFragment) fragment : null;
+                (fragment instanceof CustomDividerFragment dividerFragment)
+                        ? dividerFragment
+                        : null;
 
         PaddedItemDecorationWithDivider itemDecoration =
                 getPaddedItemDecorationWithDivider(

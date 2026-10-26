@@ -419,13 +419,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     @Override
     public void onDisplayPreferenceDialog(Preference preference) {
-        if (!(preference instanceof AutofillProfileEditorPreference)) {
+        if (!(preference instanceof AutofillProfileEditorPreference editorPreference)) {
             super.onDisplayPreferenceDialog(preference);
             return;
         }
-
-        AutofillProfileEditorPreference editorPreference =
-                (AutofillProfileEditorPreference) preference;
 
         AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
         if (autofillAddress == null) {

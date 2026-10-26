@@ -119,9 +119,8 @@ public class ContextualSearchUma {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof StateChangeKey)) return false;
             if (obj == this) return true;
-            StateChangeKey other = (StateChangeKey) obj;
+            if (!(obj instanceof StateChangeKey other)) return false;
             return mState == other.mState && mReason == other.mReason;
         }
 
