@@ -645,8 +645,5 @@ use_checked_span = !(is_asan || is_ubsan || is_tsan || is_msan) &&
 # primarily gated on build support for BackupRefPtr). Therefore, this
 # build toggle is necessarily defined as a subset of BackupRefPtr build
 # support.
-#
-# TODO(crbug.com/568703257): on iOS, this feature correlates with
-# failures in `base_unittests` and in `SmokeTestCase.*` (EarlGrey).
 checked_span_has_metadata_support =
-    use_checked_span && enable_backup_ref_ptr_support && !is_ios
+    use_checked_span && enable_backup_ref_ptr_support
