@@ -908,8 +908,9 @@ class GlicInstanceCoordinatorPrintingTest
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
 };
 
+// TODO(crbug.com/577322236): Flaky crash in PrintBackendServiceManager.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorPrintingTest,
-                       PrintAfterReloadDoesNotCrash) {
+                       DISABLED_PrintAfterReloadDoesNotCrash) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
 
