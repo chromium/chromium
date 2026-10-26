@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/os_signals_collector_test_base.h"
@@ -30,6 +31,17 @@ using testing::StrictMock;
 
 namespace device_signals {
 
+namespace {
+
+constexpr char kCollectionSuccessHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success";
+constexpr char kCollectionFailureHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Failure";
+constexpr char kOsSignalsSuccessLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success.OsSignals.Latency";
+
+}  // namespace
+
 class DesktopOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
  protected:
   void SetUp() override {
@@ -39,6 +51,22 @@ class DesktopOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
         mock_browser_cloud_policy_manager_.get());
   }
 
+  // Verifies that exactly one successful OS signals collection was recorded.
+  void ExpectCollectionSuccessLogged() {
+    histogram_tester_.ExpectUniqueSample(kCollectionSuccessHistogram,
+                                         SignalName::kOsSignals, 1);
+    histogram_tester_.ExpectTotalCount(kOsSignalsSuccessLatencyHistogram, 1);
+    histogram_tester_.ExpectTotalCount(kCollectionFailureHistogram, 0);
+  }
+
+  // Verifies that no OS signals collection outcome was recorded.
+  void ExpectNoCollectionOutcomeLogged() {
+    histogram_tester_.ExpectTotalCount(kCollectionSuccessHistogram, 0);
+    histogram_tester_.ExpectTotalCount(kOsSignalsSuccessLatencyHistogram, 0);
+    histogram_tester_.ExpectTotalCount(kCollectionFailureHistogram, 0);
+  }
+
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<DesktopOsSignalsCollector> signal_collector_;
 };
 
@@ -72,6 +100,7 @@ TEST_F(DesktopOsSignalsCollectorTest, GetSignal_Success) {
   ASSERT_TRUE(response.os_signals_response);
   CheckSignalsCollected(response.os_signals_response.value(),
                         /*can_collect_pii=*/true, policy::GetDeviceName());
+  ExpectCollectionSuccessLogged();
 }
 
 // Tests that an unsupported signal is marked as unsupported.
@@ -88,6 +117,7 @@ TEST_F(DesktopOsSignalsCollectorTest, GetOsSignal_Unsupported) {
   ASSERT_TRUE(response.top_level_error.has_value());
   EXPECT_EQ(response.top_level_error.value(),
             SignalCollectionError::kUnsupported);
+  ExpectNoCollectionOutcomeLogged();
 }
 
 // Tests that signal collection is still complete even when consent is missing.
@@ -107,6 +137,7 @@ TEST_F(DesktopOsSignalsCollectorTest, GetSignal_MissingConsent) {
   ASSERT_TRUE(response.os_signals_response);
   CheckSignalsCollected(response.os_signals_response.value(),
                         /*can_collect_pii=*/false, policy::GetDeviceName());
+  ExpectCollectionSuccessLogged();
 }
 
 // Tests that signal collection is halted if permission is not sufficient.
@@ -122,6 +153,7 @@ TEST_F(DesktopOsSignalsCollectorTest, GetSignal_MissingUser) {
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_FALSE(response.os_signals_response);
+  ExpectNoCollectionOutcomeLogged();
 }
 
 }  // namespace device_signals

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/device_signals/core/browser/android/os_security_info_provider.h"
 #include "components/device_signals/core/browser/browser_utils.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -89,6 +90,7 @@ void AndroidSignalsCollector::GetOsSignals(
     return;
   }
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   OsSignalsResponse signal_response;
 
   if (permission == UserPermission::kGranted) {
@@ -111,6 +113,12 @@ void AndroidSignalsCollector::GetOsSignals(
                                                    : SettingValue::DISABLED;
 
   response.os_signals_response = std::move(signal_response);
+
+  // OS signals collection has no failure path once the permission check has
+  // passed, so the outcome is always recorded as a success.
+  LogSignalCollectionSucceeded(SignalName::kOsSignals, start_time,
+                               /*signal_collection_size=*/std::nullopt);
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(done_closure));
 }
@@ -172,6 +180,13 @@ void AndroidSignalsCollector::OnHasPotentiallyHarmfulApps(
   LogSafetyNetMetrics(result, num_of_apps, start_time);
 
   response.verify_apps_signals_response = std::move(verify_apps_response);
+
+  // A SafetyNet failure is captured by the HarmfulApps.Result histogram above
+  // and still yields a (partial) response, so it is not considered a signal
+  // collection failure.
+  LogSignalCollectionSucceeded(SignalName::kVerifyApps, start_time,
+                               /*signal_collection_size=*/std::nullopt);
+
   std::move(done_closure).Run();
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "components/device_signals/core/browser/base_signals_collector.h"
 
 namespace policy {
@@ -35,6 +36,7 @@ class DesktopOsSignalsCollector : public BaseSignalsCollector {
                     base::OnceClosure done_closure);
 
   void OnHardwareInfoRetrieved(
+      base::TimeTicks start_time,
       UserPermission permission,
       const SignalsAggregationRequest& request,
       SignalsAggregationResponse& response,

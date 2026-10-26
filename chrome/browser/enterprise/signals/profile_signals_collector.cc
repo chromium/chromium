@@ -8,12 +8,14 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/device_signals/core/browser/browser_utils.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/platform_utils.h"
@@ -76,6 +78,7 @@ void ProfileSignalsCollector::GetProfileSignals(
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   ProfileSignalsResponse signal_response;
   signal_response.built_in_dns_client_enabled =
       GetBuiltInDnsClientEnabled(g_browser_process->local_state());
@@ -116,6 +119,11 @@ void ProfileSignalsCollector::GetProfileSignals(
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
   response.profile_signals_response = std::move(signal_response);
+
+  // Profile signals collection has no failure path once the permission check
+  // has passed, so the outcome is always recorded as a success.
+  LogSignalCollectionSucceeded(SignalName::kBrowserContextSignals, start_time,
+                               /*signal_collection_size=*/std::nullopt);
 
   // All signals are fetched synchronously for now, so we can run the closure
   // immediately. Once async signals are added, `done_closure` should be moved

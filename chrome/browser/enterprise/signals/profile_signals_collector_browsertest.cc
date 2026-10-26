@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -35,6 +36,14 @@ namespace {
 
 constexpr char kFakeUserEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kFakeProfileId[] = "SomeProfileId";
+
+constexpr char kCollectionSuccessHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success";
+constexpr char kCollectionFailureHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Failure";
+constexpr char kBrowserContextSignalsSuccessLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success.BrowserContextSignals."
+    "Latency";
 
 std::unique_ptr<KeyedService> CreateProfileIdService(
     content::BrowserContext* context) {
@@ -85,7 +94,26 @@ class ProfileSignalsCollectorTest : public PlatformBrowserTest {
     EXPECT_EQ(response.is_isolated_mode, expected_is_isolated_mode);
   }
 
+  // Verifies that exactly one successful browser context signals collection
+  // was recorded.
+  void ExpectCollectionSuccessLogged() {
+    histogram_tester_.ExpectUniqueSample(kCollectionSuccessHistogram,
+                                         SignalName::kBrowserContextSignals, 1);
+    histogram_tester_.ExpectTotalCount(
+        kBrowserContextSignalsSuccessLatencyHistogram, 1);
+    histogram_tester_.ExpectTotalCount(kCollectionFailureHistogram, 0);
+  }
+
+  // Verifies that no browser context signals collection outcome was recorded.
+  void ExpectNoCollectionOutcomeLogged() {
+    histogram_tester_.ExpectTotalCount(kCollectionSuccessHistogram, 0);
+    histogram_tester_.ExpectTotalCount(
+        kBrowserContextSignalsSuccessLatencyHistogram, 0);
+    histogram_tester_.ExpectTotalCount(kCollectionFailureHistogram, 0);
+  }
+
   Profile* profile() { return chrome_test_utils::GetProfile(this); }
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<ProfileSignalsCollector> signal_collector_ = nullptr;
 };
 
@@ -120,6 +148,7 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_Success) {
   ASSERT_TRUE(response.profile_signals_response);
   CheckSignalsCollected(response.profile_signals_response.value(),
                         /*expected_is_isolated_mode=*/false);
+  ExpectCollectionSuccessLogged();
 }
 
 // Tests that an unsupported signal is marked as unsupported.
@@ -135,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
   ASSERT_TRUE(response.top_level_error.has_value());
   EXPECT_EQ(response.top_level_error.value(),
             SignalCollectionError::kUnsupported);
+  ExpectNoCollectionOutcomeLogged();
 }
 
 // Tests that signal collection is halted if permission is not sufficient.
@@ -148,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_MissingUser) {
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_FALSE(response.profile_signals_response);
+  ExpectNoCollectionOutcomeLogged();
 }
 
 class ProfileSignalsCollectorIsolatedModeTest
@@ -195,6 +226,7 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorIsolatedModeTest,
   ASSERT_TRUE(response.profile_signals_response);
   CheckSignalsCollected(response.profile_signals_response.value(),
                         /*expected_is_isolated_mode=*/true);
+  ExpectCollectionSuccessLogged();
 }
 
 }  // namespace device_signals

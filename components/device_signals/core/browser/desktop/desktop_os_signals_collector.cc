@@ -11,7 +11,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "components/device_signals/core/browser/browser_utils.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -54,12 +56,18 @@ std::unique_ptr<OsSignalsResponse> AddAsyncOsSignals(
 }
 
 void OnSignalsCollected(
+    base::TimeTicks start_time,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure,
     std::unique_ptr<OsSignalsResponse> os_signals_response) {
   if (os_signals_response) {
     response.os_signals_response = std::move(*os_signals_response);
   }
+
+  // OS signals collection has no failure path once the permission check has
+  // passed, so the outcome is always recorded as a success.
+  LogSignalCollectionSucceeded(SignalName::kOsSignals, start_time,
+                               /*signal_collection_size=*/std::nullopt);
 
   std::move(done_closure).Run();
 }
@@ -88,6 +96,7 @@ void DesktopOsSignalsCollector::GetOsSignals(
     return;
   }
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   auto signal_response = std::make_unique<OsSignalsResponse>();
   signal_response->operating_system = policy::GetOSPlatform();
   signal_response->os_version = device_signals::GetOsVersion();
@@ -114,11 +123,12 @@ void DesktopOsSignalsCollector::GetOsSignals(
 
   base::SysInfo::GetHardwareInfo(base::BindOnce(
       &DesktopOsSignalsCollector::OnHardwareInfoRetrieved,
-      weak_factory_.GetWeakPtr(), permission, request, std::ref(response),
-      std::move(signal_response), std::move(done_closure)));
+      weak_factory_.GetWeakPtr(), start_time, permission, request,
+      std::ref(response), std::move(signal_response), std::move(done_closure)));
 }
 
 void DesktopOsSignalsCollector::OnHardwareInfoRetrieved(
+    base::TimeTicks start_time,
     UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
@@ -130,8 +140,9 @@ void DesktopOsSignalsCollector::OnHardwareInfoRetrieved(
 
   auto add_async_os_signals_callback = base::BindOnce(
       &AddAsyncOsSignals, permission, request, std::move(os_signals_response));
-  auto on_signals_collected_callback = base::BindOnce(
-      &OnSignalsCollected, std::ref(response), std::move(done_closure));
+  auto on_signals_collected_callback =
+      base::BindOnce(&OnSignalsCollected, start_time, std::ref(response),
+                     std::move(done_closure));
 
 #if BUILDFLAG(IS_WIN)
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
