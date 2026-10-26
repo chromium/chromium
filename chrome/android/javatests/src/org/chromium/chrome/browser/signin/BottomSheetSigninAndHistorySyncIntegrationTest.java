@@ -610,10 +610,11 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/428281174): Re-enable when activity recreation issue on Android 16+ is fixed.
+    // TODO(crbug.com/527131198): Re-enable when AccountPickerBottomSheetMediator no longer leaks
+    // the destroyed activity after the base activity is recreated.
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428281174")
+            message = "crbug.com/527131198")
     @RequiresRestart(
             "Recreates base activity which is not yet supported in Public Transit batching"
                     + " (crbug.com/406324209)")
