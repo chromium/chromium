@@ -10,6 +10,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
@@ -36,9 +38,11 @@
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -108,6 +112,7 @@ class AssistantAIMUIStateProvider
   ComposeboxInputPlateCoordinator* _inputPlateCoordinator;
   ComposeboxDebuggerCoordinator* _debuggerCoordinator;
   ComposeboxModeHolder* _modeHolder;
+  AlertCoordinator* _tabSharingConsentAlertCoordinator;
   std::unique_ptr<AssistantAIMUIStateProvider> _uiStateProvider;
   AssistantContainerDetent _currentDetent;
   BOOL _isHiding;
@@ -257,6 +262,8 @@ class AssistantAIMUIStateProvider
   [_metricsRecorder recordSessionEnded];
   _metricsRecorder = nil;
 
+  [self stopTabSharingConsentAlert];
+
   CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
   if (agent) {
     agent->SetUIStateProvider(nullptr);
@@ -325,6 +332,7 @@ class AssistantAIMUIStateProvider
     }
   } else {
     _isHiding = YES;
+    [self stopTabSharingConsentAlert];
     [self dismissAssistantContainerAnimated:YES completion:nil];
     [_activityReporter reportInactive];
     [_metricsRecorder recordVisibilityChanged:NO];
@@ -383,6 +391,14 @@ class AssistantAIMUIStateProvider
   }
 }
 
+- (void)assistantAIMViewControllerDidShowKeyboard:
+    (AssistantAIMViewController*)viewController {
+  if (!GetFirstResponderSubview(_viewController.view)) {
+    return;
+  }
+  [self showTabSharingConsentAlertIfNeeded];
+}
+
 - (void)assistantAIMViewControllerDidHideKeyboard:
     (AssistantAIMViewController*)viewController {
 }
@@ -435,6 +451,83 @@ class AssistantAIMUIStateProvider
   return IsIPhoneLandscapeLayout(_viewController.traitCollection)
              ? AssistantContainerDetent::kLarge
              : AssistantContainerDetent::kMedium;
+}
+
+// Returns whether the tab sharing consent alert should be presented.
+- (BOOL)shouldShowTabSharingConsentAlert {
+  if (_tabSharingConsentAlertCoordinator || !self.browser) {
+    return NO;
+  }
+  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
+  return prefs && !prefs->GetBoolean(prefs::kCobrowseTabSharingConsentAccepted);
+}
+
+// Presents the tab sharing consent alert if the user has not yet accepted it.
+- (void)showTabSharingConsentAlertIfNeeded {
+  if (![self shouldShowTabSharingConsentAlert]) {
+    return;
+  }
+  NSString* title = l10n_util::GetNSString(
+      IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_SHORT_TITLE);
+  NSString* message = l10n_util::GetNSString(
+      IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION);
+  _tabSharingConsentAlertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+
+  __weak __typeof(self) weakSelf = self;
+  [_tabSharingConsentAlertCoordinator
+      addItemWithTitle:
+          l10n_util::GetNSString(
+              IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON)
+                action:^{
+                  [weakSelf didAcceptTabSharingConsent];
+                }
+                 style:UIAlertActionStyleDefault
+             preferred:YES
+               enabled:YES];
+  [_tabSharingConsentAlertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_LEARN_MORE)
+                action:^{
+                  [weakSelf didTapTabSharingConsentLearnMore];
+                }
+                 style:UIAlertActionStyleDefault];
+  [_tabSharingConsentAlertCoordinator start];
+}
+
+// Stops and clears `_tabSharingConsentAlertCoordinator`.
+- (void)stopTabSharingConsentAlert {
+  [_tabSharingConsentAlertCoordinator stop];
+  _tabSharingConsentAlertCoordinator = nil;
+}
+
+// Persists that the user accepted the tab sharing consent alert.
+- (void)didAcceptTabSharingConsent {
+  if (self.browser) {
+    PrefService* prefs = self.browser->GetProfile()->GetPrefs();
+    if (prefs) {
+      prefs->SetBoolean(prefs::kCobrowseTabSharingConsentAccepted, true);
+    }
+  }
+  [self stopTabSharingConsentAlert];
+}
+
+// Handles the "Learn more" action from the tab sharing consent alert by
+// collapsing the container and opening the help page in a new tab.
+- (void)didTapTabSharingConsentLearnMore {
+  [self stopTabSharingConsentAlert];
+  if (!self.browser) {
+    return;
+  }
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+  UrlLoadParams params =
+      UrlLoadParams::InNewTab(GURL(kAssistantAIMHelpCenterURL));
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 // Creates the WebState displayed in the sheet, with its tab helpers attached.

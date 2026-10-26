@@ -9,6 +9,8 @@
 #import <vector>
 
 #import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
@@ -17,9 +19,12 @@
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -31,6 +36,10 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -40,10 +49,14 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 
 @interface AssistantAIMCoordinator (Testing)
 - (std::unique_ptr<web::WebState>)createWebState;
+- (void)didAcceptTabSharingConsent;
+- (void)didTapTabSharingConsentLearnMore;
 @end
 
 // Fake command handler for testing `AssistantContainerCommands` methods,
@@ -359,5 +372,150 @@ TEST_F(AssistantAIMCoordinatorTest,
   EXPECT_EQ(AssistantContainerDetent::kLarge,
             fake_container_handler.lastAnimatedDetent.value());
 
+  [mock_view_controller stopMocking];
+}
+
+// Tests that the tab sharing consent alert is presented with the expected
+// title, message, and actions when the keyboard is shown while a view inside
+// `_viewController` is the first responder and the consent pref is false.
+TEST_F(AssistantAIMCoordinatorTest,
+       TabSharingConsentAlert_PresentedWhenKeyboardShownWithFirstResponder) {
+  id mock_view = OCMClassMock([UIView class]);
+  OCMStub([mock_view isFirstResponder]).andReturn(YES);
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  OCMStub([mock_view_controller view]).andReturn(mock_view);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  PrefService* prefs = profile_->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kCobrowseTabSharingConsentAccepted));
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidShowKeyboard:mock_view_controller];
+
+  AlertCoordinator* alert_coordinator =
+      [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"];
+  ASSERT_NE(nil, alert_coordinator);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_SHORT_TITLE),
+              alert_coordinator.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION),
+              alert_coordinator.message);
+  ASSERT_EQ(2u, alert_coordinator.alertController.actions.count);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON),
+              alert_coordinator.alertController.actions[0].title);
+  EXPECT_EQ(alert_coordinator.alertController.actions[0],
+            alert_coordinator.alertController.preferredAction);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_LEARN_MORE),
+              alert_coordinator.alertController.actions[1].title);
+
+  [mock_view stopMocking];
+  [mock_view_controller stopMocking];
+}
+
+// Tests that the tab sharing consent alert is not presented when the keyboard
+// is shown if no view inside `_viewController` is the first responder.
+TEST_F(AssistantAIMCoordinatorTest,
+       TabSharingConsentAlert_NotPresentedWhenNoFirstResponderInView) {
+  id mock_view = OCMClassMock([UIView class]);
+  OCMStub([mock_view isFirstResponder]).andReturn(NO);
+  OCMStub([mock_view subviews]).andReturn(@[]);
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  OCMStub([mock_view_controller view]).andReturn(mock_view);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidShowKeyboard:mock_view_controller];
+
+  AlertCoordinator* alert_coordinator =
+      [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"];
+  EXPECT_EQ(nil, alert_coordinator);
+
+  [mock_view stopMocking];
+  [mock_view_controller stopMocking];
+}
+
+// Tests that accepting the tab sharing consent alert sets the
+// `prefs::kCobrowseTabSharingConsentAccepted` pref, dismisses the alert, and
+// prevents the alert from showing on subsequent keyboard notifications.
+TEST_F(AssistantAIMCoordinatorTest,
+       TabSharingConsentAlert_AcceptSetsPrefAndPreventsSubsequentAlert) {
+  id mock_view = OCMClassMock([UIView class]);
+  OCMStub([mock_view isFirstResponder]).andReturn(YES);
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  OCMStub([mock_view_controller view]).andReturn(mock_view);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidShowKeyboard:mock_view_controller];
+  ASSERT_NE(nil,
+            [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"]);
+
+  [coordinator_ didAcceptTabSharingConsent];
+
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kCobrowseTabSharingConsentAccepted));
+  EXPECT_EQ(nil,
+            [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"]);
+
+  // Subsequent keyboard notifications should not present the alert again.
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidShowKeyboard:mock_view_controller];
+  EXPECT_EQ(nil,
+            [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"]);
+
+  [mock_view stopMocking];
+  [mock_view_controller stopMocking];
+}
+
+// Tests that tapping "Learn More" on the tab sharing consent alert stops the
+// alert, collapses the container to the minimized detent, opens the help center
+// URL in a new tab, leaves the consent pref unset, and allows the alert to be
+// presented again on next keyboard show.
+TEST_F(AssistantAIMCoordinatorTest,
+       TabSharingConsentAlert_LearnMoreMinimizesAndOpensHelpInNewTab) {
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  id mock_view = OCMClassMock([UIView class]);
+  OCMStub([mock_view isFirstResponder]).andReturn(YES);
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  OCMStub([mock_view_controller view]).andReturn(mock_view);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidShowKeyboard:mock_view_controller];
+  ASSERT_NE(nil,
+            [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"]);
+
+  [coordinator_ didTapTabSharingConsentLearnMore];
+
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kCobrowseTabSharingConsentAccepted));
+  EXPECT_EQ(nil,
+            [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"]);
+  ASSERT_TRUE(fake_container_handler.lastAnimatedDetent.has_value());
+  EXPECT_EQ(AssistantContainerDetent::kMinimized,
+            fake_container_handler.lastAnimatedDetent.value());
+  EXPECT_EQ(GURL(kAssistantAIMHelpCenterURL),
+            url_loader->last_params.web_params.url);
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
+            url_loader->last_params.disposition);
+
+  // Showing the keyboard again should re-present the consent alert.
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidShowKeyboard:mock_view_controller];
+  EXPECT_NE(nil,
+            [coordinator_ valueForKey:@"tabSharingConsentAlertCoordinator"]);
+
+  [mock_view stopMocking];
   [mock_view_controller stopMocking];
 }

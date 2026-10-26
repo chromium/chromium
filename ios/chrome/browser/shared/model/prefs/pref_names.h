@@ -49,6 +49,11 @@ inline constexpr char kBwgSessionMap[] = "ios.bwg.session_map";
 inline constexpr char kCobrowseSessionActiveMap[] =
     "ios.cobrowse.session_active_map";
 
+// Boolean indicating whether the user has accepted the tab sharing consent
+// alert in the AI Mode Cobrowse assistant.
+inline constexpr char kCobrowseTabSharingConsentAccepted[] =
+    "ios.cobrowse.tab_sharing_consent_accepted";
+
 // Number of times the "BWG" settings "new" IPH badge has been shown.
 // This is set to INT_MAX when the user visites the "BWG" settings page.
 inline constexpr char kBWGSettingsNewBadgeShownCount[] =

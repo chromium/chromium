@@ -519,6 +519,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   contextual_search::ContextualSearchService::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
   registry->RegisterDictionaryPref(prefs::kCobrowseSessionActiveMap);
+  registry->RegisterBooleanPref(prefs::kCobrowseTabSharingConsentAccepted,
+                                false);
   cross_device::RegisterProfilePrefs(registry);
   CrossPlatformPromosService::RegisterProfilePrefs(registry);
   data_controls::RegisterProfilePrefs(registry);

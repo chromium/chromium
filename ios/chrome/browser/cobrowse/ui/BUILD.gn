@@ -86,6 +86,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
     "//ios/chrome/browser/scene/ui:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/browser/start_surface/ui_bundled:test_utils",
