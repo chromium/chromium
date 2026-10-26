@@ -680,7 +680,7 @@ class DenseSet {
   }
 
   // Erases the element |*it| and returns an iterator to its successor.
-  iterator erase(const_iterator it) {
+  constexpr iterator erase(const_iterator it) {
     DCHECK(it.owner_ == this);
     DCHECK(bitset_.get_bit(it.index_));
     bitset_.unset_bit(it.index_);
@@ -689,7 +689,7 @@ class DenseSet {
   }
 
   // Erases the elements [first,last) and returns |last|.
-  iterator erase(const_iterator first, const_iterator last) {
+  constexpr iterator erase(const_iterator first, const_iterator last) {
     DCHECK(first.owner_ == this && last.owner_ == this);
     while (first != last) {
       bitset_.unset_bit(first.index_);
@@ -732,14 +732,14 @@ class DenseSet {
   }
 
   // Returns an iterator to the first element not less than the |x|, or end().
-  const_iterator lower_bound(T x) const {
+  constexpr const_iterator lower_bound(T x) const {
     const_iterator it(this, value_to_index(x));
     it.SkipForward();
     return it;
   }
 
   // Returns an iterator to the first element greater than |x|, or end().
-  const_iterator upper_bound(T x) const {
+  constexpr const_iterator upper_bound(T x) const {
     const_iterator it(this, value_to_index(x) + 1);
     it.SkipForward();
     return it;
