@@ -819,7 +819,9 @@ ArcAuthService::CreateArcBackgroundAuthCodeFetcher(
     bool initial_signin) {
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(core_account_id);
-  CHECK(!account_info.IsEmpty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/576420395): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!account_info.IsEmpty());
   auto fetcher = std::make_unique<ArcBackgroundAuthCodeFetcher>(
       &local_state_.get(), url_loader_factory_,
       CHECK_DEREF(ash::AnnotatedAccountId::Get(profile_.get())),
