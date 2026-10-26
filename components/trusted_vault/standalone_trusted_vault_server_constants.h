@@ -29,7 +29,7 @@ inline constexpr char kQueryParameterAlternateOutputKey[] = "alt";
 inline constexpr char kQueryParameterAlternateOutputProto[] = "proto";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();
-GURL GetGetSecurityDomainMembersURL(
+GURL GetListSecurityDomainMembersURL(
     const GURL& server_url,
     const std::set<SecurityDomainId>& security_domain_filter,
     const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
@@ -45,7 +45,7 @@ GURL GetRotateSharedKeyURL(const GURL& server_url,
                            SecurityDomainId security_domain);
 
 // Computes full URL, including alternate proto param.
-GURL GetGetSecurityDomainMembersURLForTesting(
+GURL GetFullListSecurityDomainMembersURLForTesting(
     const std::optional<std::string>& next_page_token,
     const GURL& server_url,
     const std::set<SecurityDomainId>& security_domain_filter,

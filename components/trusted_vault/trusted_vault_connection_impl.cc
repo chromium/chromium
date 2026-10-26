@@ -848,7 +848,7 @@ TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
         recovery_factor_filter,
     DownloadAuthenticationFactorsRegistrationStateCallback callback,
     base::RepeatingClosure keep_alive_callback) {
-  GURL request_url = GetGetSecurityDomainMembersURL(
+  GURL request_url = GetListSecurityDomainMembersURL(
       trusted_vault_service_url_, {security_domain}, recovery_factor_filter);
 
   return std::make_unique<

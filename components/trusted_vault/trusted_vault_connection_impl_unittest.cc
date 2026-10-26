@@ -301,7 +301,7 @@ class TrustedVaultConnectionImplTest
     // Allow request to reach |test_url_loader_factory_|.
     base::RunLoop().RunUntilIdle();
 
-    GURL request_url = GetGetSecurityDomainMembersURLForTesting(
+    GURL request_url = GetFullListSecurityDomainMembersURLForTesting(
         next_page_token, kTestURL, security_domain_filter,
         recovery_factor_filter);
 
@@ -949,7 +949,8 @@ TEST_P(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
                                       /*response_content=*/std::string());
 }
 
-TEST_P(TrustedVaultConnectionImplTest, ShouldSendGetSecurityDomainsRequest) {
+TEST_P(TrustedVaultConnectionImplTest,
+       ShouldSendGetSecurityDomainMemberRequest) {
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(), security_domain(),

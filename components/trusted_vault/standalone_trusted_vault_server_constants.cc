@@ -18,7 +18,7 @@ std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
 }
 
-GURL GetGetSecurityDomainMembersURL(
+GURL GetListSecurityDomainMembersURL(
     const GURL& server_url,
     const std::set<SecurityDomainId>& security_domain_filter,
     const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
@@ -77,14 +77,14 @@ GURL GetRotateSharedKeyURL(const GURL& server_url,
               ":rotateSharedKey");
 }
 
-GURL GetGetSecurityDomainMembersURLForTesting(
+GURL GetFullListSecurityDomainMembersURLForTesting(
     const std::optional<std::string>& next_page_token,
     const GURL& server_url,
     const std::set<SecurityDomainId>& security_domain_filter,
     const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
         member_filter) {
-  GURL url = GetGetSecurityDomainMembersURL(server_url, security_domain_filter,
-                                            member_filter);
+  GURL url = GetListSecurityDomainMembersURL(server_url, security_domain_filter,
+                                             member_filter);
   if (next_page_token) {
     url = net::AppendQueryParameter(url, "page_token", *next_page_token);
   }

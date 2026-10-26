@@ -47,6 +47,35 @@ TEST(StandaloneTrustedVaultServerConstantsTest,
 }
 
 TEST(StandaloneTrustedVaultServerConstantsTest,
+     ShouldGetListSecurityDomainMembersURL) {
+  const GURL kTestUrl("https://example.com/v1/");
+  EXPECT_THAT(
+      GetListSecurityDomainMembersURL(
+          kTestUrl, {SecurityDomainId::kChromeSync},
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE})
+          .spec(),
+      Eq("https://example.com/v1/users/me/members/?view=3"
+         "&include_security_domains=users%2Fme%2Fsecuritydomains%2Fchromesync"
+         "&include_member_types=1"));
+}
+
+TEST(StandaloneTrustedVaultServerConstantsTest,
+     ShouldGetFullListSecurityDomainMembersURLForTesting) {
+  const GURL kTestUrl("https://example.com/v1/");
+  EXPECT_THAT(
+      GetFullListSecurityDomainMembersURLForTesting(
+          /*next_page_token=*/"token123", kTestUrl,
+          {SecurityDomainId::kChromeSync},
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE})
+          .spec(),
+      Eq("https://example.com/v1/users/me/members/?view=3"
+         "&include_security_domains=users%2Fme%2Fsecuritydomains%2Fchromesync"
+         "&include_member_types=1"
+         "&page_token=token123"
+         "&alt=proto"));
+}
+
+TEST(StandaloneTrustedVaultServerConstantsTest,
      ShouldGetDownloadGaiaPasswordPublicKeyURL) {
   const GURL kTestUrl("https://example.com/v1/");
   EXPECT_THAT(
