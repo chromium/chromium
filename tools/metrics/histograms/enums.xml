@@ -25328,6 +25328,20 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/private_ai/status_code.h:StatusCode) -->
 
+<!-- LINT.IfChange(PrivateAiTlsHandshakeStatus) -->
+
+<enum name="PrivateAiTlsHandshakeStatus">
+  <summary>
+    Outcome of a Private AI TLS handshake attempt, as reported by the Oak
+    session service.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Certificate verification failed"/>
+  <int value="2" label="Protocol error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/private_ai/tls_secure_channel_impl.h:TlsHandshakeStatus) -->
+
 <enum name="ProcessType2">
   <summary>
     The value for type comes from the ProcessType enum in

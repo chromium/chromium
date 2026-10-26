@@ -79,6 +79,8 @@ source_set("private_ai") {
     "tls_certificate_downloader.h",
     "tls_certificate_repository.cc",
     "tls_certificate_repository.h",
+    "tls_secure_channel_impl.cc",
+    "tls_secure_channel_impl.h",
     "tls_websocket_client.cc",
     "tls_websocket_client.h",
     "transport.h",
@@ -166,6 +168,7 @@ source_set("unit_tests") {
     "secure_session_async_impl_unittest.cc",
     "tls_certificate_downloader_unittest.cc",
     "tls_certificate_repository_unittest.cc",
+    "tls_secure_channel_impl_unittest.cc",
     "tls_websocket_client_unittest.cc",
     "websocket_client_unittest.cc",
   ]

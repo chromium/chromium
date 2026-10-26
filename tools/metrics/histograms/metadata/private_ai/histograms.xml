@@ -483,6 +483,37 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivateAi.Tls.HandshakeLatency.{Result}" units="ms"
+    expires_after="2027-04-01">
+  <owner>georgeseb@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <summary>
+    Time from creating a Private AI TLS secure channel until its TLS 1.3 session
+    is established ({Result} = Success) or the channel fails before being
+    established ({Result} = Failure). Includes fetching and verifying the TCA
+    root certificate. Recorded once per channel.
+  </summary>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="PrivateAi.Tls.HandshakeStatus"
+    enum="PrivateAiTlsHandshakeStatus" expires_after="2027-04-01">
+  <owner>georgeseb@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <summary>
+    Outcome of each Private AI TLS handshake attempt, as reported by the Oak
+    session service. Recorded once per attempt; a certificate refresh followed
+    by a retry counts as a second attempt.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
