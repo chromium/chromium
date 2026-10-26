@@ -24,6 +24,7 @@ pub(crate) mod ffi {
         include!("content/public/common/child_process_id.h");
         include!("content/browser/process_lock.h");
         include!("content/browser/process_lock_shim.h");
+        include!("content/browser/security/cpsp/child_process_security_policy_shim.h");
         include!("content/browser/site_instance_impl.h");
         include!("url/origin.rs.h");
 
@@ -73,6 +74,10 @@ pub(crate) mod ffi {
         #[namespace = "content::rust::process_lock"]
         #[cxx_name = "SetIsUsed"]
         fn set_is_used(lock: Pin<&mut CppProcessLock>);
+
+        #[cfg(IS_CHROMEOS)]
+        #[cxx_name = "NormalizeExternalFileUrl"]
+        fn normalize_external_file_url(url: &GURL) -> UniquePtr<GURL>;
     }
 
     extern "Rust" {
@@ -91,6 +96,11 @@ pub(crate) mod ffi {
 
         fn grant_commit_scheme(child_id: ChildProcessId, scheme: &str);
         fn grant_request_scheme(child_id: ChildProcessId, scheme: &str);
+
+        #[cfg(IS_CHROMEOS)]
+        fn grant_request_of_external_file_url(child_id: ChildProcessId, url: &GURL);
+        #[cfg(IS_CHROMEOS)]
+        fn grant_commit_of_external_file_url(child_id: ChildProcessId, url: &GURL);
 
         fn grant_web_ui_bindings(child_id: ChildProcessId);
         fn has_web_ui_bindings(child_id: ChildProcessId) -> bool;
@@ -188,6 +198,30 @@ fn grant_request_scheme(child_id: ChildProcessId, scheme: &str) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     if let Some(state) = cpsp.process_states.get_mut(&child_id) {
         state.grant_request_scheme(scheme);
+    }
+}
+
+#[cfg(IS_CHROMEOS)]
+fn grant_request_of_external_file_url(child_id: ChildProcessId, url: &ffi::GURL) {
+    if !url.is_valid() {
+        return;
+    }
+
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_mut(&child_id) {
+        state.grant_request_of_external_file_url(url);
+    }
+}
+
+#[cfg(IS_CHROMEOS)]
+fn grant_commit_of_external_file_url(child_id: ChildProcessId, url: &ffi::GURL) {
+    if !url.is_valid() {
+        return;
+    }
+
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_mut(&child_id) {
+        state.grant_commit_of_external_file_url(url);
     }
 }
 
@@ -438,6 +472,17 @@ pub(crate) struct ProcessState {
     /// to avoid dealing with hash functions for url::Origin. The ordering is
     /// based on the C++ url::Origin comparison operators.
     origin_map: BTreeMap<UniquePtr<ffi::Origin>, CommitRequestPolicy>,
+    /// The set of specific externalfile: URLs the child process is permitted to
+    /// request or commit.
+    ///
+    /// Stored as a BTreeSet rather than a HashSet (which the C++ version uses)
+    /// to avoid dealing with hash functions for GURL. The ordering and equality
+    /// are based on GURL::possibly_invalid_spec(), matching the C++ GURL
+    /// comparison operators.
+    #[cfg(IS_CHROMEOS)]
+    request_externalfile_set: BTreeSet<UniquePtr<ffi::GURL>>,
+    #[cfg(IS_CHROMEOS)]
+    commit_externalfile_set: BTreeSet<UniquePtr<ffi::GURL>>,
     /// Whether a child process can host WebUI pages with bindings.
     has_web_ui_bindings: bool,
     /// The set of origins in Android WebView and <webview> tags that are
@@ -461,6 +506,10 @@ impl ProcessState {
             process_lock: StatefulProcessLock::default(),
             scheme_map: HashMap::new(),
             origin_map: BTreeMap::new(),
+            #[cfg(IS_CHROMEOS)]
+            request_externalfile_set: BTreeSet::new(),
+            #[cfg(IS_CHROMEOS)]
+            commit_externalfile_set: BTreeSet::new(),
             has_web_ui_bindings: false,
             webview_origin_exemption_set: BTreeSet::new(),
             midi_permission: MidiPermission::CannotSendMidi,
@@ -584,6 +633,25 @@ impl MutableProcessState {
         // permission. Use `or_insert()` to avoid downgrading an existing
         // `CommitAndRequest` permission.
         self.0.scheme_map.entry(scheme.to_string()).or_insert(CommitRequestPolicy::RequestOnly);
+    }
+
+    #[cfg(IS_CHROMEOS)]
+    fn grant_request_of_external_file_url(&mut self, url: &ffi::GURL) {
+        // TODO(crbug.com/40226863): Use Crubit to access `kExternalFileScheme`
+        // instead of a string literal (as CXX does not support C++ constants).
+        assert!(url.scheme_is("externalfile"));
+        self.0.request_externalfile_set.insert(ffi::normalize_external_file_url(url));
+    }
+
+    #[cfg(IS_CHROMEOS)]
+    fn grant_commit_of_external_file_url(&mut self, url: &ffi::GURL) {
+        // TODO(crbug.com/40226863): Use Crubit to access `kExternalFileScheme`
+        // instead of a string literal (as CXX does not support C++ constants).
+        assert!(url.scheme_is("externalfile"));
+        self.0.commit_externalfile_set.insert(ffi::normalize_external_file_url(url));
+
+        // Commit access automatically implies request access.
+        self.0.request_externalfile_set.insert(ffi::normalize_external_file_url(url));
     }
 
     fn grant_web_ui_bindings(&mut self) {

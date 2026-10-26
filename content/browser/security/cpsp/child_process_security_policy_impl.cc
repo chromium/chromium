@@ -1554,6 +1554,21 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOfSpecificFile(
 void ChildProcessSecurityPolicyImpl::GrantRequestOfExternalFileUrl(
     ChildProcessId child_id,
     const GURL& url) {
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    rust::child_process_security_policy::grant_request_of_external_file_url(
+        child_id, url);
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since ProcessState::CanRequestURL has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  GrantRequestOfExternalFileUrl_Cpp(child_id, url);
+}
+
+void ChildProcessSecurityPolicyImpl::GrantRequestOfExternalFileUrl_Cpp(
+    ChildProcessId child_id,
+    const GURL& url) {
   if (!url.is_valid()) {
     return;
   }
@@ -1568,6 +1583,22 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOfExternalFileUrl(
 }
 
 void ChildProcessSecurityPolicyImpl::GrantCommitOfExternalFileUrl(
+    ChildProcessId child_id,
+    const GURL& url) {
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    rust::child_process_security_policy::grant_commit_of_external_file_url(
+        child_id, url);
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since ProcessState::CanCommitURL and
+  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
+  // they are supported in Rust, this should be combined into a
+  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  GrantCommitOfExternalFileUrl_Cpp(child_id, url);
+}
+
+void ChildProcessSecurityPolicyImpl::GrantCommitOfExternalFileUrl_Cpp(
     ChildProcessId child_id,
     const GURL& url) {
   if (!url.is_valid()) {

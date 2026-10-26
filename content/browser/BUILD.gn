@@ -59,6 +59,15 @@ rust_static_library("browser_id_types") {
   deps = [ "//third_party/rust/cxx/v1:lib" ]
 }
 
+# Exposes `#[cfg(IS_CHROMEOS)]` to Rust and CXX bridge code in CPSP, since
+# ChromeOS and Linux share the same Rust target triple in Chromium builds.
+# TODO(https://crbug.com/576881289): Figure out a better way to do this.
+buildflag_header("is_chromeos_buildflags") {
+  header = "is_chromeos_buildflags.h"
+  flags = [ "IS_CHROMEOS=$is_chromeos" ]
+  visibility = [ ":*" ]
+}
+
 rust_static_library("child_process_security_policy_impl") {
   # allow_unsafe is needed for FFI that underpins the `cxx` crate. While this
   # allows allow_unsafe for the entire crate, the Rust code also implements
@@ -77,7 +86,10 @@ rust_static_library("child_process_security_policy_impl") {
     "security/cpsp/process_state.rs",
   ]
   visibility = [ ":browser" ]
-  configs += [ "//content:content_implementation" ]
+  configs += [
+    ":is_chromeos_buildflags_rust_cfg",
+    "//content:content_implementation",
+  ]
   deps = [
     ":browser_id_types",
     "//base:feature",

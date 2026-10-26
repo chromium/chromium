@@ -558,10 +558,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Grants the child process the capability to request a specific external file
   // URL, but not all URLs of the same scheme.
   void GrantRequestOfExternalFileUrl(ChildProcessId child_id, const GURL& url);
+  void GrantRequestOfExternalFileUrl_Cpp(ChildProcessId child_id,
+                                         const GURL& url);
 
   // Grants the child process the capability to commit a specific externalfile
   // URL.
   void GrantCommitOfExternalFileUrl(ChildProcessId child_id, const GURL& url);
+  void GrantCommitOfExternalFileUrl_Cpp(ChildProcessId child_id,
+                                        const GURL& url);
 #endif
 
   // Revokes all permissions granted to the given file.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "build/build_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -38,6 +39,12 @@ std::unique_ptr<GURL> RemoveTrailingDotFromUrlIfNecessary(const GURL& site_url);
 // Rust.
 std::unique_ptr<url::Origin> CreateOriginWithDefaultPortIfNecessary(
     const url::Origin& origin);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Strips the query and ref components from `url` and returns the resulting URL
+// as a heap-allocated object for Rust.
+std::unique_ptr<GURL> NormalizeExternalFileUrl(const GURL& url);
+#endif
 
 }  // namespace content::rust::child_process_security_policy
 
