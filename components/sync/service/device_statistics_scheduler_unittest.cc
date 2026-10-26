@@ -6,12 +6,14 @@
 
 #include "base/functional/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_libc_timezone_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/device_statistics_request.h"
 #include "components/sync/service/device_statistics_tracker.h"
 #include "components/sync/test/fake_device_statistics_request.h"
@@ -53,6 +55,24 @@ class DeviceStatisticsSchedulerTest
   base::flat_map<GaiaId, base::WeakPtr<FakeDeviceStatisticsRequest>>
       fake_requests_;
 };
+
+TEST_F(DeviceStatisticsSchedulerTest, DoesNotStartTrackerIfFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSyncRecordDeviceStatisticsMetrics);
+
+  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  DeviceStatisticsScheduler scheduler(/*delegate=*/this, &pref_service_,
+                                      identity_test_env_.identity_manager(),
+                                      GURL("https://example.com/"));
+
+  // Give the scheduler a chance to start the tracker.
+  task_environment_.FastForwardBy(DeviceStatisticsScheduler::kStartupDelay);
+
+  EXPECT_TRUE(fake_requests_.empty());
+}
 
 TEST_F(DeviceStatisticsSchedulerTest, DoesNotStartTrackerIfPrefIsRecent) {
   identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",

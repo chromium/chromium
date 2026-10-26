@@ -221,6 +221,9 @@ BASE_DECLARE_FEATURE(kDeviceTabVisibilitySettings);
 BASE_DECLARE_FEATURE(kCrossDeviceTabsInAppMenu);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// If enabled, tracks metrics about the user's storage of data on other devices.
+BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetrics);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
