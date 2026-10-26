@@ -5538,7 +5538,7 @@
     {
       // https://crbug.com/567626030
       name: "ReplaceCompositionActualInsertedLength",
-      status: "stable",
+      status: "test",
     },
     {
       // Kill switch for painting non-SVG replaced normal-flow stacking
