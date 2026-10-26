@@ -29,15 +29,18 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.PictureInPictureParams;
+import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Size;
 import android.view.ContextThemeWrapper;
+import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -124,8 +127,10 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link CompositorViewHolder}. */
@@ -176,6 +181,18 @@ public class CompositorViewHolderUnitTest {
         @Override
         public boolean post(Runnable action) {
             return new Handler(Looper.getMainLooper()).post(action);
+        }
+    }
+
+    // Subclass needed to return mock DragAndDropPermissions.
+    public static class DropTestActivity extends Activity {
+        final List<DragAndDropPermissions> mPermissions = new ArrayList<>();
+
+        @Override
+        public DragAndDropPermissions requestDragAndDropPermissions(DragEvent event) {
+            DragAndDropPermissions permissions = mock(DragAndDropPermissions.class);
+            mPermissions.add(permissions);
+            return permissions;
         }
     }
 
@@ -2056,6 +2073,61 @@ public class CompositorViewHolderUnitTest {
 
         mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_ENDED));
         verifyDragEndNotForwarded(mContentView);
+    }
+
+    @Test
+    public void testDropPermissions_heldUntilShutDown() {
+        DropTestActivity activity = Robolectric.buildActivity(DropTestActivity.class).get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mCompositorViewHolder.onContentChanged();
+        verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+
+        // Drop multiple files, then start another drag and drop another file.
+        ClipData clipData =
+                new ClipData(
+                        "files",
+                        new String[] {"image/png"},
+                        new ClipData.Item(Uri.parse("content://media/image1.png")));
+        clipData.addItem(new ClipData.Item(Uri.parse("content://media/image2.png")));
+        dispatchDrop(clipData);
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        dispatchDrop(
+                new ClipData(
+                        "file",
+                        new String[] {"image/png"},
+                        new ClipData.Item(Uri.parse("content://media/image3.png"))));
+        assertEquals(2, activity.mPermissions.size());
+
+        // Loading other URLs and switching tabs keeps permissions.
+        tabObserver.onPageLoadStarted(mTab, new GURL("https://www.example.com/"));
+        Tab newTab = mTabModelSelector.addMockTab();
+        ContentView newContentView =
+                ContentView.createContentView(mActivity, /* webContents= */ null);
+        when(newTab.getWebContents()).thenReturn(mock(WebContents.class));
+        when(newTab.getContentView()).thenReturn(newContentView);
+        when(newTab.getView()).thenReturn(newContentView);
+        mTabModelSelector.getModel(false).setIndex(1, TabSelectionType.FROM_USER);
+        mCompositorViewHolder.onContentChanged();
+        for (DragAndDropPermissions permissions : activity.mPermissions) {
+            verify(permissions, never()).release();
+        }
+
+        // Shutting down releases all permissions.
+        mCompositorViewHolder.shutDown();
+        for (DragAndDropPermissions permissions : activity.mPermissions) {
+            verify(permissions).release();
+        }
+    }
+
+    private void dispatchDrop(ClipData clipData) {
+        mCompositorViewHolder.dispatchDragEvent(
+                DragEventBuilder.newBuilder()
+                        .setAction(DragEvent.ACTION_DROP)
+                        .setClipData(clipData)
+                        .build());
     }
 
     private static DragEvent createDragEvent(int action) {

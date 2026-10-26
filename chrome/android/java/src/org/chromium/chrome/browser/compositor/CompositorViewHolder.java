@@ -22,7 +22,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -122,7 +121,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.util.MotionEventUtils;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -302,12 +300,10 @@ public class CompositorViewHolder extends FrameLayout
 
     private @Nullable ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
-    // Permissions are requested on a drop event, and are released when another drag starts
-    // (drag-started event) or when the current page navigates to a new URL or the tab changes.
-    private @Nullable DragAndDropPermissions mDragAndDropPermissions;
-    // The URI when a drop contains a single URI. If the tab changes and is loading this URI, we do
-    // not clear the permissions.
-    private @Nullable Uri mDropUri;
+    // Permissions for content URIs from drop events. Permissions are held until this view is
+    // shut down (when the activity is destroyed) so that tabs opened from a drop can load and
+    // reload the dropped URIs. Android also revokes them when the activity is destroyed.
+    private final List<DragAndDropPermissions> mDragAndDropPermissions = new ArrayList<>();
 
     private final EventOffsetHandler mEventOffsetHandler =
             new EventOffsetHandler(
@@ -361,11 +357,6 @@ public class CompositorViewHolder extends FrameLayout
                 @Override
                 public void onContentChanged(Tab tab) {
                     CompositorViewHolder.this.onContentChanged();
-                }
-
-                @Override
-                public void onPageLoadStarted(Tab tab, GURL url) {
-                    CompositorViewHolder.this.releaseDragAndDropPermissions();
                 }
 
                 @Override
@@ -843,6 +834,7 @@ public class CompositorViewHolder extends FrameLayout
         }
 
         setTab(null);
+        releaseDragAndDropPermissions();
         if (mApplicationBottomInsetSupplier != null) {
             assert mOnViewportInsetsChanged != null;
             mApplicationBottomInsetSupplier.getSupplier().removeObserver(mOnViewportInsetsChanged);
@@ -1030,13 +1022,10 @@ public class CompositorViewHolder extends FrameLayout
     public boolean dispatchDragEvent(DragEvent e) {
         mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
         if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            releaseDragAndDropPermissions();
             trackDragSource();
         } else if (e.getAction() == DragEvent.ACTION_DROP) {
-            mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
-            if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
-                mDropUri = e.getClipData().getItemAt(0).getUri();
-            }
+            DragAndDropPermissions permissions = mActivity.requestDragAndDropPermissions(e);
+            if (permissions != null) mDragAndDropPermissions.add(permissions);
         }
         boolean ret = super.dispatchDragEvent(e);
         if (e.getAction() == DragEvent.ACTION_DRAG_ENDED) {
@@ -2229,13 +2218,6 @@ public class CompositorViewHolder extends FrameLayout
         } else {
             mOnscreenContentProvider.onWebContentsChanged(assumeNonNull(getWebContents()));
         }
-
-        // Clear drop permissions when tab changes unless this is a new tab loading from the drop.
-        if (mDropUri == null
-                || tab == null
-                || !tab.getUrl().getSpec().equals(mDropUri.toString())) {
-            releaseDragAndDropPermissions();
-        }
     }
 
     private void updateViewStateListener(@Nullable ContentView newContentView) {
@@ -2718,11 +2700,10 @@ public class CompositorViewHolder extends FrameLayout
 
     /** Release any DragAndDropPermissions currently held. */
     private void releaseDragAndDropPermissions() {
-        if (mDragAndDropPermissions != null) {
-            mDragAndDropPermissions.release();
-            mDragAndDropPermissions = null;
+        for (DragAndDropPermissions permissions : mDragAndDropPermissions) {
+            permissions.release();
         }
-        mDropUri = null;
+        mDragAndDropPermissions.clear();
     }
 
     public void setContentViewScrollingStateForTesting(boolean scrolling) {
