@@ -15,28 +15,17 @@
 
 namespace net {
 
-CertVerifyResult::CertVerifyResult() {
-  Reset();
-}
-
-CertVerifyResult::CertVerifyResult(const CertVerifyResult& other) {
-  *this = other;
-}
-
+CertVerifyResult::CertVerifyResult() = default;
+CertVerifyResult::CertVerifyResult(const CertVerifyResult& other) = default;
+CertVerifyResult& CertVerifyResult::operator=(const CertVerifyResult& other) =
+    default;
+CertVerifyResult::CertVerifyResult(CertVerifyResult&& other) = default;
+CertVerifyResult& CertVerifyResult::operator=(CertVerifyResult&& other) =
+    default;
 CertVerifyResult::~CertVerifyResult() = default;
 
 void CertVerifyResult::Reset() {
-  verified_cert = nullptr;
-  cert_status = 0;
-  is_issued_by_known_root = false;
-
-  public_key_hashes.clear();
-  ocsp_result = bssl::OCSPVerifyResult();
-
-  scts.clear();
-  policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
-  ct_requirement_status = ct::CTRequirementsStatus::CT_NOT_REQUIRED;
+  *this = CertVerifyResult();
 }
 
 base::DictValue CertVerifyResult::NetLogParams(int net_error) const {
