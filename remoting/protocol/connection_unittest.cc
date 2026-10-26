@@ -127,12 +127,13 @@ class TestScreenCapturer : public webrtc::DesktopCapturer {
 };
 
 static const int kAudioSampleRate = AudioPacket::SAMPLING_RATE_48000;
-static const int kAudioPacketDurationMs = 50;
-static constexpr int kSamplesPerAudioPacket =
-    kAudioSampleRate * kAudioPacketDurationMs /
-    base::Time::kMillisecondsPerSecond;
-static constexpr base::TimeDelta kAudioPacketDuration =
-    base::Milliseconds(kAudioPacketDurationMs);
+static constexpr int kAudioFrameDurationMs = 10;
+static constexpr int kSamplesPerAudioFrame = kAudioSampleRate *
+                                             kAudioFrameDurationMs /
+                                             base::Time::kMillisecondsPerSecond;
+static constexpr base::TimeDelta kAudioFrameDuration =
+    base::Milliseconds(kAudioFrameDurationMs);
+static constexpr base::TimeDelta kAudioPacketDuration = base::Milliseconds(20);
 
 static const int kAudioChannels = 2;
 
@@ -147,6 +148,10 @@ class TestAudioSource : public AudioSource {
   // AudioSource interface.
   bool Start(const PacketCapturedCallback& callback) override {
     callback_ = callback;
+    // Start one packet interval in the past so the first timer tick (after SDP
+    // audio negotiation finishes) populates at least 40 ms in NetEq before
+    // WebrtcAudioModule's 30 ms poll pulls from the buffer.
+    last_send_time_ = base::TimeTicks::Now() - kAudioPacketDuration;
     timer_.Start(FROM_HERE, kAudioPacketDuration,
                  base::BindRepeating(&TestAudioSource::GenerateAudioSamples,
                                      base::Unretained(this)));
@@ -163,18 +168,28 @@ class TestAudioSource : public AudioSource {
   }
 
   void GenerateAudioSamples() {
-    std::vector<int16_t> data(kSamplesPerAudioPacket * kAudioChannels);
-    for (int i = 0; i < kSamplesPerAudioPacket; ++i) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeDelta elapsed = now - last_send_time_;
+    int frames_to_generate =
+        static_cast<int>(elapsed.IntDiv(kAudioFrameDuration));
+    if (frames_to_generate <= 0) {
+      return;
+    }
+    last_send_time_ += frames_to_generate * kAudioFrameDuration;
+    int samples_to_generate = frames_to_generate * kSamplesPerAudioFrame;
+
+    std::vector<int16_t> data(samples_to_generate * kAudioChannels);
+    for (int i = 0; i < samples_to_generate; ++i) {
       data[i * kAudioChannels] = GetSampleValue(
           position_samples_ + i, kTestAudioSignalFrequencyLeftHz);
       data[i * kAudioChannels + 1] = GetSampleValue(
           position_samples_ + i, kTestAudioSignalFrequencyRightHz);
     }
-    position_samples_ += kSamplesPerAudioPacket;
+    position_samples_ += samples_to_generate;
 
     std::unique_ptr<AudioPacket> packet(new AudioPacket());
     packet->add_data(reinterpret_cast<char*>(&(data[0])),
-                     kSamplesPerAudioPacket * kAudioChannels * sizeof(int16_t));
+                     samples_to_generate * kAudioChannels * sizeof(int16_t));
     packet->set_encoding(AudioPacket::ENCODING_RAW);
     packet->set_sampling_rate(AudioPacket::SAMPLING_RATE_48000);
     packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);
@@ -184,6 +199,7 @@ class TestAudioSource : public AudioSource {
 
   PacketCapturedCallback callback_;
   base::RepeatingTimer timer_;
+  base::TimeTicks last_send_time_;
   int position_samples_ = 0;
 };
 
@@ -199,6 +215,17 @@ class FakeAudioPlayer : public AudioStub {
     EXPECT_EQ(packet->encoding(), AudioPacket::ENCODING_RAW);
     EXPECT_EQ(packet->sampling_rate(), AudioPacket::SAMPLING_RATE_48000);
     EXPECT_EQ(packet->bytes_per_sample(), AudioPacket::BYTES_PER_SAMPLE_2);
+
+    // WebRTC's NetEq defaults to 1 channel (mono) and generates 1-channel
+    // silence frames when polled before the first stereo Opus RTP packet is
+    // received and decoded. Ignore these pre-stream mono silence packets.
+    if (data_.empty() && packet->channels() == AudioPacket::CHANNELS_MONO) {
+      if (done) {
+        std::move(done).Run();
+      }
+      return;
+    }
+
     EXPECT_EQ(packet->channels(), AudioPacket::CHANNELS_STEREO);
 
     data_.insert(data_.end(), packet->data(0).begin(), packet->data(0).end());
@@ -207,7 +234,7 @@ class FakeAudioPlayer : public AudioStub {
       run_loop_->Quit();
     }
 
-    if (!done.is_null()) {
+    if (done) {
       std::move(done).Run();
     }
   }
@@ -623,9 +650,7 @@ TEST_F(ConnectionTest, VideoStats) {
   EXPECT_LE(stats.client_stats.time_rendered, finish_time);
 }
 
-// Slow/fails on Linux ASan/TSan (crbug.com/1045344) and flaky on multiple
-// platforms (Mac: crbug.com/1237376, Windows crbug.com/1503680).
-TEST_F(ConnectionTest, DISABLED_Audio) {
+TEST_F(ConnectionTest, Audio) {
   Connect();
 
   std::unique_ptr<AudioStream> audio_stream =
