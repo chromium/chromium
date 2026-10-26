@@ -8,10 +8,14 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -85,6 +89,24 @@ std::wstring GetLocalizedString(unsigned int base_message_id,
   SCOPED_CRASH_KEY_STRING32("l10_util", "lang", dbg_lang);
   base::debug::DumpWithoutCrashing();
   return std::wstring();
+}
+
+LanguageInfo GetLanguageInfo(const std::wstring& lang) {
+  const base::i18n::LanguageSelector selector(
+      lang.empty() ? GetPreferredLanguage() : lang, kLanguageOffsetPairs);
+  // `LanguageTag` canonicalizes aliases such as `iw` to `he`. Keep the embedded
+  // key for resource lookup/direction and the canonical tag for HTML.
+  const auto mapping =
+      std::ranges::find(kLanguageOffsetPairs, selector.offset(),
+                        [](const auto& entry) { return entry.second; });
+  CHECK(mapping != std::ranges::end(kLanguageOffsetPairs));
+  const std::wstring translation(mapping->first);
+  // Keep this list in sync when adding embedded RTL translations.
+  static constexpr std::wstring_view kRtlTranslations[] = {L"ar", L"fa", L"iw",
+                                                           L"ur"};
+  return {translation,
+          std::string(selector.selected_translation().tag_string()),
+          std::ranges::contains(kRtlTranslations, translation)};
 }
 
 std::wstring GetLocalizedStringF(unsigned int base_message_id,

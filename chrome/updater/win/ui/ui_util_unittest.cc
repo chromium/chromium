@@ -22,10 +22,113 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/win_util.h"
+#include "chrome/updater/app/app_install_progress.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace updater::ui {
+
+TEST(UiUtilTest, GetBundleCompletionCode) {
+  {
+    for (CompletionCodes completion_code :
+         {CompletionCodes::COMPLETION_CODE_ERROR,
+          CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
+      ObserverCompletionInfo info;
+      info.completion_code = completion_code;
+      EXPECT_EQ(GetBundleCompletionCode(info), completion_code);
+    }
+  }
+  {
+    ObserverCompletionInfo info;
+    EXPECT_EQ(GetBundleCompletionCode(info),
+              CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY);
+  }
+  {
+    for (CompletionCodes completion_code :
+         {CompletionCodes::COMPLETION_CODE_SUCCESS,
+          CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY,
+          CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS,
+          CompletionCodes::COMPLETION_CODE_REBOOT,
+          CompletionCodes::COMPLETION_CODE_RESTART_BROWSER,
+          CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS_NOTICE_ONLY,
+          CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY,
+          CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY,
+          CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND,
+          CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
+      ObserverCompletionInfo info;
+      AppCompletionInfo app_info;
+      app_info.completion_code = completion_code;
+      info.apps_info.push_back(app_info);
+      EXPECT_EQ(GetBundleCompletionCode(info), completion_code);
+    }
+  }
+  {
+    ObserverCompletionInfo info;
+
+    for (CompletionCodes code : {CompletionCodes::COMPLETION_CODE_SUCCESS,
+                                 CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY,
+                                 CompletionCodes::COMPLETION_CODE_REBOOT}) {
+      AppCompletionInfo app_info;
+      app_info.completion_code = code;
+      info.apps_info.push_back(app_info);
+    }
+    EXPECT_EQ(GetBundleCompletionCode(info),
+              CompletionCodes::COMPLETION_CODE_REBOOT);
+  }
+}
+
+TEST(UiUtilTest, BundleCompletionPreservesTopLevelOverrides) {
+  ObserverCompletionInfo info;
+  info.apps_info.emplace_back();
+  for (CompletionCodes code :
+       {CompletionCodes::COMPLETION_CODE_ERROR,
+        CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
+    info.completion_code = code;
+    EXPECT_EQ(GetBundleCompletionCode(info), code);
+  }
+}
+
+TEST(UiUtilTest, BundleCompletionUsesApplicationError) {
+  ObserverCompletionInfo info;
+  info.apps_info.emplace_back();
+  info.apps_info.back().completion_code =
+      CompletionCodes::COMPLETION_CODE_SUCCESS;
+  info.apps_info.emplace_back();
+  info.apps_info.back().completion_code =
+      CompletionCodes::COMPLETION_CODE_ERROR;
+  EXPECT_EQ(GetBundleCompletionCode(info),
+            CompletionCodes::COMPLETION_CODE_ERROR);
+}
+
+TEST(UiUtilTest, GetBundleCompletionErrorMessages) {
+  ObserverCompletionInfo info;
+  EXPECT_TRUE(GetBundleCompletionErrorMessages(info).empty());
+  info.completion_text = u"Bundle failure";
+  EXPECT_EQ(GetBundleCompletionErrorMessages(info), L"Bundle failure");
+  info.apps_info.emplace_back();
+  EXPECT_EQ(GetBundleCompletionErrorMessages(info), L"Bundle failure");
+  info.apps_info.back().completion_message = u"First application failure";
+  EXPECT_EQ(GetBundleCompletionErrorMessages(info),
+            L"First application failure");
+  info.apps_info.emplace_back();
+  info.apps_info.emplace_back();
+  info.apps_info.back().completion_message = u"Second application failure";
+  EXPECT_EQ(GetBundleCompletionErrorMessages(info),
+            L"First application failure\nSecond application failure");
+}
+
+TEST(UiUtilTest, CompletionMessagesPreserveLineEndings) {
+  ObserverCompletionInfo info;
+  info.completion_text = u"Bundle failure\r\nMore detail\nLast line";
+  EXPECT_EQ(GetBundleCompletionErrorMessages(info),
+            L"Bundle failure\r\nMore detail\nLast line");
+  info.apps_info.emplace_back();
+  info.apps_info.back().completion_message = u"First failure\r\nMore detail";
+  info.apps_info.emplace_back();
+  info.apps_info.back().completion_message = u"Second failure\r\n";
+  EXPECT_EQ(GetBundleCompletionErrorMessages(info),
+            L"First failure\r\nMore detail\nSecond failure\r\n");
+}
 
 TEST(UiUtilTest, IsColorDark) {
   // Pure black and white.

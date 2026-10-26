@@ -84,7 +84,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, ClickedButton);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnInstallStopped);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, MaybeCloseWindow);
-  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, GetBundleCompletionCode);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, DeterminePostInstallUrls);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnCheckingForUpdate);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnWaitingToDownload);
@@ -127,11 +126,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
     STATE_COMPLETE_REBOOT,
     STATE_END,
   };
-
-  static CompletionCodes GetBundleCompletionCode(
-      const ObserverCompletionInfo& info);
-  static std::wstring GetBundleCompletionErrorMessages(
-      const ObserverCompletionInfo& info);
 
   // Overrides for AppInstallProgress.
   // These functions are called on the thread which owns this window.

@@ -22,6 +22,18 @@ std::wstring GetPreferredLanguage();
 std::wstring GetLocalizedString(unsigned int base_message_id,
                                 std::wstring lang = GetPreferredLanguage());
 
+// The resolved embedded translation and its HTML language/direction metadata.
+struct LanguageInfo {
+  std::wstring translation;
+  std::string language;
+  bool is_rtl = false;
+};
+
+// Resolves `lang` using the same embedded translations as
+// `GetLocalizedString()`. An empty language uses the user's preferred UI
+// language.
+LanguageInfo GetLanguageInfo(const std::wstring& lang = GetPreferredLanguage());
+
 // Returns a formatted version of the localized string in which there is only
 // one replacement.
 std::wstring GetLocalizedStringF(

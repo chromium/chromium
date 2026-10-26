@@ -925,46 +925,6 @@ void ProgressWnd::DeterminePostInstallUrls(const ObserverCompletionInfo& info) {
   CHECK(!post_install_urls_.empty());
 }
 
-CompletionCodes ProgressWnd::GetBundleCompletionCode(
-    const ObserverCompletionInfo& info) {
-  if (info.completion_code == CompletionCodes::COMPLETION_CODE_ERROR ||
-      info.completion_code ==
-          CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL) {
-    return info.completion_code;
-  }
-
-  CHECK_EQ(info.completion_code, CompletionCodes::COMPLETION_CODE_SUCCESS);
-
-  return info.apps_info.empty()
-             ? kCompletionCodesActionPriority[0]
-             : std::ranges::max_element(
-                   info.apps_info,
-                   [](const auto& app_info1, const auto& app_info2) {
-                     return GetPriority(app_info1.completion_code) <
-                            GetPriority(app_info2.completion_code);
-                   })
-                   ->completion_code;
-}
-
-std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
-    const ObserverCompletionInfo& info) {
-  // Combine non-empty app installation completion messages. App-specific
-  // installation error message usually gives more details than the generic one.
-  std::vector<std::u16string> completion_texts;
-  for (const AppCompletionInfo& app_info : info.apps_info) {
-    if (!app_info.completion_message.empty()) {
-      completion_texts.push_back(app_info.completion_message);
-    }
-  }
-
-  // Or fallback to the default bundle failure message if nothing is available.
-  if (completion_texts.empty() && !info.completion_text.empty()) {
-    completion_texts.push_back(info.completion_text);
-  }
-
-  return base::UTF16ToWide(base::JoinString(completion_texts, u"\n"));
-}
-
 void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

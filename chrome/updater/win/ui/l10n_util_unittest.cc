@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
@@ -29,6 +30,53 @@ TEST(UpdaterL10NUtilTest, GetLocalizedStrings) {
   for (int id : kUpdaterStringIds) {
     ASSERT_FALSE(GetLocalizedString(id).empty());
   }
+}
+
+TEST(UpdaterL10NUtilTest, LanguageInfoUsesResolvedTranslation) {
+  for (const wchar_t* language :
+       {L"en-US", L"hi", L"ar", L"he", L"zz-ZZ", L""}) {
+    SCOPED_TRACE(base::WideToUTF8(language));
+    const LanguageInfo info = GetLanguageInfo(language);
+    EXPECT_FALSE(info.translation.empty());
+    EXPECT_FALSE(info.language.empty());
+    for (int id : kUpdaterStringIds) {
+      EXPECT_EQ(GetLocalizedString(id, language),
+                GetLocalizedString(id, info.translation));
+    }
+  }
+}
+
+TEST(UpdaterL10NUtilTest, LanguageInfoDefaultsToPreferredLanguage) {
+  const LanguageInfo defaults = GetLanguageInfo();
+  const LanguageInfo preferred = GetLanguageInfo(GetPreferredLanguage());
+  const LanguageInfo empty = GetLanguageInfo(L"");
+  EXPECT_EQ(defaults.translation, preferred.translation);
+  EXPECT_EQ(defaults.translation, empty.translation);
+  EXPECT_EQ(defaults.language, preferred.language);
+  EXPECT_EQ(defaults.language, empty.language);
+  EXPECT_EQ(defaults.is_rtl, preferred.is_rtl);
+  EXPECT_EQ(defaults.is_rtl, empty.is_rtl);
+}
+
+TEST(UpdaterL10NUtilTest, LanguageInfoDirection) {
+  for (const wchar_t* language : {L"ar", L"fa", L"iw", L"he", L"ur"}) {
+    SCOPED_TRACE(base::WideToUTF8(language));
+    EXPECT_TRUE(GetLanguageInfo(language).is_rtl);
+  }
+  for (const wchar_t* language : {L"hi", L"en-US"}) {
+    SCOPED_TRACE(base::WideToUTF8(language));
+    EXPECT_FALSE(GetLanguageInfo(language).is_rtl);
+  }
+}
+
+TEST(UpdaterL10NUtilTest, LanguageInfoHtmlTags) {
+  EXPECT_EQ(GetLanguageInfo(L"iw").language, "he");
+  EXPECT_EQ(GetLanguageInfo(L"he").translation,
+            GetLanguageInfo(L"iw").translation);
+  EXPECT_EQ(GetLanguageInfo(L"en-us").language, "en-US");
+  EXPECT_EQ(GetLanguageInfo(L"pt-br").language, "pt-BR");
+  EXPECT_EQ(GetLanguageInfo(L"sr-latn").language, "sr-Latn");
+  EXPECT_EQ(GetLanguageInfo(L"es-419").language, "es-419");
 }
 
 TEST(UpdaterL10NUtilTest, GetLocalizedStringsFormatted) {

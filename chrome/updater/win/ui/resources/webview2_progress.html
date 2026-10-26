@@ -2,14 +2,13 @@
 <!-- Copyright 2026 The Chromium Authors
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<!-- TODO(crbug.com/409590312): Localize the page's language and direction
-     attributes and user-visible text. -->
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromium Updater</title>
+    <title></title>
     <style>
+        body[hidden] { display: none; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #ffffff;
@@ -30,9 +29,14 @@
             text-align: center;
         }
         #status-text {
+            white-space: pre-line;
             margin-bottom: 20px;
             font-size: 16px;
             font-weight: 500;
+        }
+        #app-name {
+            margin-block-end: 20px;
+            overflow-wrap: anywhere;
         }
         .progress-bar-container {
             width: 100%;
@@ -63,53 +67,68 @@
         }
         .marquee { animation: marquee 2s infinite linear;
           width: 30% !important; }
-        @keyframes marquee { from { margin-left: -30%; } to
-          { margin-left: 100%; } }
+        @keyframes marquee { from { margin-inline-start: -30%; } to
+          { margin-inline-start: 100%; } }
     </style>
 </head>
-<body>
+<body hidden>
 
     <div class="container">
-        <div id="status-text">Initializing...</div>
+        <div id="status-text" role="status"></div>
+
+        <div id="app-name" hidden></div>
 
         <div class="progress-bar-container">
-            <div id="progress-bar" class="progress-bar-fill"></div>
+            <div id="progress-bar" class="progress-bar-fill" role="progressbar"
+                 aria-valuemin="0" aria-valuemax="100"></div>
         </div>
 
-        <button id="cancel-btn">Cancel</button>
+        <button id="cancel-btn"></button>
     </div>
 
     <script>
-        // Let the C++ backend know the DOM is ready and functions are exposed.
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage("ui_ready");
+        const statusText = document.getElementById('status-text');
+        const cancelButton = document.getElementById('cancel-btn');
+        const bar = document.getElementById('progress-bar');
+        const appNameText = document.getElementById('app-name');
+        let cancelingText = '';
+
+        // The host sends localized text and metadata. The page owns layout and
+        // rendering, and never interprets installer states or resource IDs.
+        window.updateUI = ({statusText: text, title, language, textDirection,
+                            cancelText, cancelingText: canceling, progress,
+                            isMarquee, complete, appName}) => {
+            document.documentElement.lang = language;
+            document.documentElement.dir = textDirection;
+            document.title = title;
+            statusText.textContent = text;
+            cancelButton.textContent = cancelText;
+            cancelingText = canceling;
+            const position = Number.isFinite(progress) ?
+                Math.max(0, Math.min(100, progress)) : 0;
+            bar.style.width = position + '%';
+            bar.classList.toggle('marquee', isMarquee);
+            bar.setAttribute('aria-label', text);
+            if (isMarquee) {
+                bar.removeAttribute('aria-valuenow');
             } else {
-                console.warn("WebView2 API not found!");
+                bar.setAttribute('aria-valuenow', String(position));
             }
-        });
-
-        // Handle the cancel button click.
-        document.getElementById('cancel-btn').addEventListener('click', () => {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage("cancel_installation");
-
-                document.getElementById('status-text').innerText =
-                    "Cancelling...";
-                document.getElementById('cancel-btn').disabled = true;
-            }
-        });
-
-        // C++ `ExecuteScript` can call the below functions.
-        window.updateUI = (status, pos, isMarquee) => {
-            document.getElementById('status-text').innerText = status;
-            const bar = document.getElementById('progress-bar');
-            bar.style.width = pos + '%';
-            if (isMarquee) bar.classList.add('marquee');
-            else bar.classList.remove('marquee');
-            if (pos >= 100)
-                document.getElementById('cancel-btn').style.display = 'none';
+            cancelButton.hidden = complete;
+            appNameText.textContent = appName || '';
+            appNameText.hidden = !appName || complete;
+            document.body.hidden = false;
         };
+
+        cancelButton.addEventListener('click', () => {
+            statusText.textContent = cancelingText;
+            cancelButton.disabled = true;
+            window.chrome?.webview?.postMessage('cancel_installation');
+        });
+
+        // Keep the page hidden until the host replays its latest progress,
+        // including the labels and language metadata.
+        window.chrome?.webview?.postMessage('ui_ready');
     </script>
 </body>
 </html>

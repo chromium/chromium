@@ -223,55 +223,6 @@ TEST_F(ProgressWndTest, MaybeCloseWindow) {
   progress_wnd->DestroyWindow();
 }
 
-TEST_F(ProgressWndTest, GetBundleCompletionCode) {
-  {
-    for (CompletionCodes completion_code :
-         {CompletionCodes::COMPLETION_CODE_ERROR,
-          CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
-      ObserverCompletionInfo info;
-      info.completion_code = completion_code;
-      EXPECT_EQ(ProgressWnd::GetBundleCompletionCode(info), completion_code);
-    }
-  }
-  {
-    ObserverCompletionInfo info;
-    EXPECT_EQ(ProgressWnd::GetBundleCompletionCode(info),
-              CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY);
-  }
-  {
-    for (CompletionCodes completion_code :
-         {CompletionCodes::COMPLETION_CODE_SUCCESS,
-          CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY,
-          CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS,
-          CompletionCodes::COMPLETION_CODE_REBOOT,
-          CompletionCodes::COMPLETION_CODE_RESTART_BROWSER,
-          CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS_NOTICE_ONLY,
-          CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY,
-          CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY,
-          CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND,
-          CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL}) {
-      ObserverCompletionInfo info;
-      AppCompletionInfo app_info;
-      app_info.completion_code = completion_code;
-      info.apps_info.push_back(app_info);
-      EXPECT_EQ(ProgressWnd::GetBundleCompletionCode(info), completion_code);
-    }
-  }
-  {
-    ObserverCompletionInfo info;
-
-    for (CompletionCodes code : {CompletionCodes::COMPLETION_CODE_SUCCESS,
-                                 CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY,
-                                 CompletionCodes::COMPLETION_CODE_REBOOT}) {
-      AppCompletionInfo app_info;
-      app_info.completion_code = code;
-      info.apps_info.push_back(app_info);
-    }
-    EXPECT_EQ(ProgressWnd::GetBundleCompletionCode(info),
-              CompletionCodes::COMPLETION_CODE_REBOOT);
-  }
-}
-
 TEST_F(ProgressWndTest, DeterminePostInstallUrls) {
   for (CompletionCodes code :
        {CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS,

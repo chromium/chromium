@@ -19,7 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -28,8 +28,11 @@
 #include "base/win/current_module.h"
 #include "base/win/resource_util.h"
 #include "base/win/scoped_co_mem.h"
+#include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/util/path_util.h"
+#include "chrome/updater/util/util.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/ui_util.h"
@@ -39,7 +42,8 @@
 
 namespace updater::ui {
 
-WebView2ProgressWnd::WebView2ProgressWnd() {
+WebView2ProgressWnd::WebView2ProgressWnd()
+    : language_info_(GetLanguageInfo(base::UTF8ToWide(GetTagLanguage()))) {
   set_window_style(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX |
                    WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
   set_initial_class_style(CS_HREDRAW | CS_VREDRAW);
@@ -54,23 +58,21 @@ void WebView2ProgressWnd::SetEventSink(ProgressWndEvents* events) {
 
 // static
 base::expected<std::wstring, HRESULT> WebView2ProgressWnd::LoadProgressPage() {
-  // The page is maintained independently and embedded in the executable.
-  void* html_data = nullptr;
-  size_t html_size = 0;
+  void* data = nullptr;
+  size_t size = 0;
   if (!base::win::GetResourceFromModule(CURRENT_MODULE(),
                                         IDR_WEBVIEW2_PROGRESS_HTML, RT_HTML,
-                                        &html_data, &html_size) ||
-      html_size == 0) {
-    LOG(ERROR) << "Failed to load the WebView2 progress page.";
+                                        &data, &size) ||
+      !size) {
+    LOG(ERROR) << "WebView2 embedded progress page is missing or empty";
     return base::unexpected(HRESULT_FROM_WIN32(ERROR_RESOURCE_DATA_NOT_FOUND));
   }
-  std::wstring html_content;
-  if (!base::UTF8ToWide(static_cast<const char*>(html_data), html_size,
-                        &html_content)) {
-    LOG(ERROR) << "The WebView2 progress page is not valid UTF-8.";
+  std::wstring page;
+  if (!base::UTF8ToWide(static_cast<const char*>(data), size, &page)) {
+    LOG(ERROR) << "Invalid UTF-8 in WebView2 progress page";
     return base::unexpected(HRESULT_FROM_WIN32(ERROR_NO_UNICODE_TRANSLATION));
   }
-  return html_content;
+  return page;
 }
 
 HRESULT WebView2ProgressWnd::Initialize() {
@@ -81,7 +83,7 @@ HRESULT WebView2ProgressWnd::Initialize() {
     return CO_E_NOTINITIALIZED;
   }
 
-  auto page = LoadProgressPage();
+  base::expected<std::wstring, HRESULT> page = LoadProgressPage();
   if (!page.has_value()) {
     return page.error();
   }
@@ -132,33 +134,68 @@ void WebView2ProgressWnd::Show() {
   // `Init` is fatal if the window can't be created, so `hwnd()` is valid.
   Init(nullptr, bounds);
 
-  ::SetWindowTextW(hwnd(), L"Google Installer");
+  ::SetWindowTextW(
+      hwnd(), GetInstallerDisplayName(bundle_name_, language_info_.translation)
+                  .c_str());
 
   // Show and paint the window.
   ::ShowWindow(hwnd(), SW_SHOW);
   ::UpdateWindow(hwnd());
 }
 
-void WebView2ProgressWnd::UpdateUI(const std::string& status_text,
-                                   int progress_pos,
-                                   bool is_marquee) {
-  if (!is_webview_ready_ || !browser_) {
+base::DictValue WebView2ProgressWnd::GetUIUpdateForTesting() const {
+  return GetUIUpdate();
+}
+
+base::DictValue WebView2ProgressWnd::GetUIUpdate() const {
+  std::string status_text =
+      state_.complete && !state_.completion_text.empty()
+          ? state_.completion_text
+          : base::WideToUTF8(GetLocalizedString(state_.message_id,
+                                                language_info_.translation));
+  // Normalize every displayed status, including success and error summaries,
+  // without changing the text received by the native progress window.
+  base::ReplaceSubstringsAfterOffset(&status_text, 0, "\r\n", "\n");
+  base::DictValue update;
+  update.Set("statusText", std::move(status_text));
+  update.Set("title", base::WideToUTF8(GetInstallerDisplayName(
+                          bundle_name_, language_info_.translation)));
+  update.Set("language", language_info_.language);
+  update.Set("textDirection", language_info_.is_rtl ? "rtl" : "ltr");
+  update.Set("cancelText",
+             base::WideToUTF8(GetLocalizedString(IDS_CANCEL_INSTALLATION_BASE,
+                                                 language_info_.translation)));
+  update.Set("cancelingText",
+             base::WideToUTF8(GetLocalizedString(IDS_CANCELING_BASE,
+                                                 language_info_.translation)));
+  update.Set("progress", state_.progress_pos);
+  update.Set("isMarquee", state_.is_marquee);
+  update.Set("complete", state_.complete);
+  update.Set("appName", base::UTF16ToUTF8(state_.app_name));
+  return update;
+}
+
+void WebView2ProgressWnd::SetState(ProgressState state) {
+  state_ = std::move(state);
+  PushStateToPage();
+}
+
+void WebView2ProgressWnd::PushStateToPage() {
+  if (!is_webview_ready_ || !browser_ || superseded_) {
     return;
   }
 
-  std::optional<std::string> json_status = base::WriteJson(status_text);
-  if (!json_status) {
-    LOG(ERROR) << "Failed to encode status text to JSON.";
+  const std::optional<std::string> json = base::WriteJson(GetUIUpdate());
+  if (!json) {
+    LOG(ERROR) << "Could not serialize a WebView2 progress update";
     return;
   }
-
-  browser_->ExecuteScript(base::UTF8ToWide(base::StrCat(
-      {"updateUI(", *json_status, ", ", base::NumberToString(progress_pos),
-       ", ", (is_marquee ? "true" : "false"), ")"})));
+  browser_->ExecuteScript(
+      base::UTF8ToWide(base::StrCat({"updateUI(", *json, ")"})));
 }
 
 void WebView2ProgressWnd::OnCheckingForUpdate() {
-  UpdateUI("Checking for updates...", 0, true);
+  SetState({.message_id = IDS_WAITING_TO_CONNECT_BASE});
 }
 
 void WebView2ProgressWnd::OnDownloading(
@@ -166,8 +203,12 @@ void WebView2ProgressWnd::OnDownloading(
     const std::u16string& app_name,
     const std::optional<base::TimeDelta> time_remaining,
     int pos) {
-  UpdateUI(base::StrCat({"Downloading ", base::UTF16ToUTF8(app_name), "..."}),
-           pos, pos <= 0);
+  SetState({.message_id = time_remaining && time_remaining->InSeconds() == 0
+                              ? IDS_DOWNLOADING_COMPLETED_BASE
+                              : IDS_DOWNLOADING_BASE,
+            .progress_pos = pos,
+            .is_marquee = pos <= 0,
+            .app_name = app_name});
 }
 
 void WebView2ProgressWnd::OnInstalling(
@@ -175,26 +216,45 @@ void WebView2ProgressWnd::OnInstalling(
     const std::u16string& app_name,
     const std::optional<base::TimeDelta> time_remaining,
     int pos) {
-  UpdateUI(base::StrCat({"Installing ", base::UTF16ToUTF8(app_name), "..."}),
-           pos, pos <= 0);
+  SetState({.message_id = IDS_INSTALLING_BASE,
+            .progress_pos = pos,
+            .is_marquee = pos <= 0,
+            .app_name = app_name});
 }
 
 void WebView2ProgressWnd::OnComplete(
     const ObserverCompletionInfo& observer_info) {
-  std::string message = base::UTF16ToUTF8(observer_info.completion_text);
-  UpdateUI(message, 100, false);
+  const bool success =
+      IsCompletionCodeSuccess(GetBundleCompletionCode(observer_info));
+  // Reuse the native UI's selection of detailed, already localized errors.
+  const std::string message =
+      success
+          ? base::UTF16ToUTF8(observer_info.completion_text)
+          : base::WideToUTF8(GetBundleCompletionErrorMessages(observer_info));
+  SetState({.message_id = success ? IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE
+                                  : IDS_INSTALL_UPDATER_FAILED_BASE,
+            .progress_pos = 100,
+            .is_marquee = false,
+            .complete = true,
+            .completion_text = message});
 }
 
 void WebView2ProgressWnd::OnUpdateAvailable(const std::string&,
                                             const std::u16string&,
                                             const base::Version&) {}
 void WebView2ProgressWnd::OnWaitingToDownload(const std::string&,
-                                              const std::u16string&) {}
+                                              const std::u16string& app_name) {
+  // Unlike the native window's blank waiting label, keep a localized
+  // connection status visible alongside indeterminate progress.
+  SetState({.message_id = IDS_WAITING_TO_CONNECT_BASE, .app_name = app_name});
+}
 void WebView2ProgressWnd::OnWaitingRetryDownload(const std::string&,
                                                  const std::u16string&,
                                                  base::Time) {}
 void WebView2ProgressWnd::OnWaitingToInstall(const std::string&,
-                                             const std::u16string&) {}
+                                             const std::u16string& app_name) {
+  SetState({.message_id = IDS_WAITING_TO_INSTALL_BASE, .app_name = app_name});
+}
 void WebView2ProgressWnd::OnPause() {}
 
 LRESULT WebView2ProgressWnd::OnCreate(UINT, WPARAM, LPARAM) {
@@ -245,6 +305,9 @@ void WebView2ProgressWnd::OnWebViewCreationFailed(HRESULT result) {
 }
 
 void WebView2ProgressWnd::OnWebViewCreated(HRESULT result) {
+  if (superseded_) {
+    return;
+  }
   if (FAILED(result)) {
     OnWebViewCreationFailed(result);
     return;
@@ -259,10 +322,12 @@ void WebView2ProgressWnd::OnWebViewCreated(HRESULT result) {
     OnWebViewCreationFailed(hr);
     return;
   }
-  is_webview_ready_ = true;
 }
 
 void WebView2ProgressWnd::OnWebMessageReceived(const std::wstring& message) {
+  if (superseded_) {
+    return;
+  }
   // Handle messages from javascript.
   if (message == L"cancel_installation") {
     VLOG(2) << "User clicked cancel in the HTML UI.";
@@ -272,7 +337,8 @@ void WebView2ProgressWnd::OnWebMessageReceived(const std::wstring& message) {
     ::PostMessage(hwnd(), WM_CLOSE, 0, 0);
   } else if (message == L"ui_ready") {
     VLOG(2) << "HTML UI DOM is loaded and ready.";
-    UpdateUI("Initializing...", 0, true);
+    is_webview_ready_ = true;
+    PushStateToPage();
   } else {
     LOG(FATAL) << "Unrecognized web message: " << message;
   }

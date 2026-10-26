@@ -18,7 +18,21 @@
 #include "base/bits.h"
 #include "base/win/scoped_gdi_object.h"
 
+namespace updater {
+enum class CompletionCodes;
+struct ObserverCompletionInfo;
+}  // namespace updater
+
 namespace updater::ui {
+
+// Preserves top-level errors and finished-before-cancel results; otherwise
+// selects the highest-priority per-application completion code.
+CompletionCodes GetBundleCompletionCode(const ObserverCompletionInfo& info);
+
+// Joins non-empty per-application completion messages, falling back to the
+// bundle completion text when no application supplies a message.
+std::wstring GetBundleCompletionErrorMessages(
+    const ObserverCompletionInfo& info);
 
 // Finds all the primary windows owned by the given process. A primary window is
 // a top-level, has a system menu, and it is visible.
