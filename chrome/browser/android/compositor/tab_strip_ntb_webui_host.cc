@@ -72,9 +72,8 @@ bool IsActivatingInputEvent(const blink::WebInputEvent& event) {
 
 }  // namespace
 
-// TODO(crbug.com/498763314): Enable the event bridge when it supports
-// lazily-restored Android tabs without WebContents. The NTB does not observe
-// tab strip events.
+// The NTB does not observe tab strip events, so it uses an injector without an
+// EventBridge.
 TabStripNtbWebUiHost::TabStripNtbWebUiHost(
     TabModel* tab_model,
     base::TimeTicks activity_creation_time,
@@ -83,10 +82,9 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
       activity_creation_time_(activity_creation_time),
       java_coordinator_(java_coordinator),
       service_(std::make_unique<tabs_api::TabStripServiceImpl>(
-          std::make_unique<tabs_api::AndroidTabStripApiInjector>(
+          tabs_api::AndroidTabStripApiInjector::CreateWithoutEventBridge(
               tab_model,
-              TabModel::TabLaunchType::FROM_CHROME_UI,
-              /*enable_event_bridge=*/false))) {
+              TabModel::TabLaunchType::FROM_CHROME_UI))) {
   TabModelList::AddObserver(this);
   const GURL url(chrome::kChromeUITabStripNtbURL);
   web_contents_ = CreateWebContents(tab_model->GetProfile(), url);

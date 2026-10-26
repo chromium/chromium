@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 
-#include "base/notreached.h"
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_browser_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_model_event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
@@ -25,23 +27,34 @@ class NoOpEventBridge : public EventBridge {
 
 }  // namespace
 
+// static
+std::unique_ptr<AndroidTabStripApiInjector>
+AndroidTabStripApiInjector::CreateWithoutEventBridge(
+    TabModel* model,
+    TabModel::TabLaunchType launch_type) {
+  return base::WrapUnique(new AndroidTabStripApiInjector(
+      model, launch_type, std::make_unique<NoOpEventBridge>()));
+}
+
+AndroidTabStripApiInjector::AndroidTabStripApiInjector(
+    TabModel* model,
+    TabModel::TabLaunchType launch_type)
+    : AndroidTabStripApiInjector(model, launch_type, nullptr) {
+  event_bridge_ = std::make_unique<AndroidTabModelEventBridge>(
+      model, *tab_model_adapter_, *translation_adapter_);
+}
+
 AndroidTabStripApiInjector::AndroidTabStripApiInjector(
     TabModel* model,
     TabModel::TabLaunchType launch_type,
-    bool enable_event_bridge)
+    std::unique_ptr<EventBridge> event_bridge)
     : browser_adapter_(
           std::make_unique<AndroidBrowserAdapterImpl>(model, launch_type)),
       tab_model_adapter_(std::make_unique<AndroidTabStripModelAdapter>(model)),
       translation_adapter_(
           std::make_unique<AndroidTranslationAdapter>(model,
-                                                      *tab_model_adapter_)) {
-  if (enable_event_bridge) {
-    event_bridge_ = std::make_unique<AndroidTabModelEventBridge>(
-        model, *tab_model_adapter_, *translation_adapter_);
-  } else {
-    event_bridge_ = std::make_unique<NoOpEventBridge>();
-  }
-}
+                                                      *tab_model_adapter_)),
+      event_bridge_(std::move(event_bridge)) {}
 
 AndroidTabStripApiInjector::~AndroidTabStripApiInjector() = default;
 

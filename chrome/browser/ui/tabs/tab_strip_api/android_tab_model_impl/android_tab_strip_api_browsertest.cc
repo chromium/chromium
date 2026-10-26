@@ -34,8 +34,7 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
     model_ = &testing::GetTabModel(GetProfile());
     auto android_injector =
         std::make_unique<tabs_api::AndroidTabStripApiInjector>(
-            model_, TabModel::TabLaunchType::FROM_CHROME_UI,
-            /*enable_event_bridge=*/true);
+            model_, TabModel::TabLaunchType::FROM_CHROME_UI);
     service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
         std::move(android_injector));
   }

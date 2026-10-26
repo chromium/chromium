@@ -25,13 +25,20 @@ class AndroidTranslationAdapter;
 
 class AndroidTabStripApiInjector : public PlatformAdaptersProvider {
  public:
-  // TODO(crbug.com/498763314): AndroidTabModelEventBridge assumes every tab has
-  // a loaded WebContents, which fails on Android when background tabs are
-  // lazily restored. Callers that don't observe tab strip events can set
-  // `enable_event_bridge` to false. Remove the parameter once the bug is fixed.
   AndroidTabStripApiInjector(TabModel* model,
-                             TabModel::TabLaunchType launch_type,
-                             bool enable_event_bridge);
+                             TabModel::TabLaunchType launch_type);
+
+  // Creates an injector with a no-op EventBridge for callers that do not
+  // observe tab strip events. Kept separate from the main constructor rather
+  // than gated by a runtime boolean so the linker can dead-strip
+  // AndroidTabModelEventBridge when unused.
+  // TODO(crbug.com/498763314): AndroidTabModelEventBridge also assumes every
+  // tab has a loaded WebContents, which fails on Android when background tabs
+  // are lazily restored.
+  static std::unique_ptr<AndroidTabStripApiInjector> CreateWithoutEventBridge(
+      TabModel* model,
+      TabModel::TabLaunchType launch_type);
+
   AndroidTabStripApiInjector(const AndroidTabStripApiInjector&&) = delete;
   AndroidTabStripApiInjector operator=(const AndroidTabStripApiInjector&) =
       delete;
@@ -43,6 +50,9 @@ class AndroidTabStripApiInjector : public PlatformAdaptersProvider {
   EventBridge& event_bridge() override;
 
  private:
+  AndroidTabStripApiInjector(TabModel* model,
+                             TabModel::TabLaunchType launch_type,
+                             std::unique_ptr<EventBridge> event_bridge);
   std::unique_ptr<AndroidBrowserAdapterImpl> browser_adapter_;
   std::unique_ptr<AndroidTabStripModelAdapter> tab_model_adapter_;
   std::unique_ptr<AndroidTranslationAdapter> translation_adapter_;
