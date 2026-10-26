@@ -497,14 +497,16 @@ bool GraphiteSharedContext::InsertRecordingImpl(
   // TODO(433845560): Check the kAddCommandsFailed failures.
   if (insert_status ==
       skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed) {
-    // For kAsyncShaderCompilesFailed, we should also clear the disk shader
-    // cache in case the error was due to a corrupted cached shader blob.
-    GpuProcessShmCount::ScopedIncrement use_shader_cache(
-        use_shader_cache_shm_count_);
-    static crash_reporter::CrashKeyString<4096> insert_error_key(
-        "graphite-insert-error");
-    insert_error_key.Set(insert_status.message());
-    CHECK(simulating_insert_failure);
+    if (!IsContextLost()) {
+      // For kAsyncShaderCompilesFailed, we should also clear the disk shader
+      // cache in case the error was due to a corrupted cached shader blob.
+      GpuProcessShmCount::ScopedIncrement use_shader_cache(
+          use_shader_cache_shm_count_);
+      static crash_reporter::CrashKeyString<4096> insert_error_key(
+          "graphite-insert-error");
+      insert_error_key.Set(insert_status.message());
+      CHECK(simulating_insert_failure);
+    }
   } else if (insert_status ==
              skgpu::graphite::InsertStatus::kOutOfOrderRecording) {
     if (delegate_) {
@@ -519,7 +521,8 @@ bool GraphiteSharedContext::InsertRecordingImpl(
   // All other failure modes are recoverable in the sense that future recordings
   // will be rendered correctly, so merely return a boolean here so that callers
   // can log the error.
-  return insert_status == skgpu::graphite::InsertStatus::kSuccess;
+  return insert_status == skgpu::graphite::InsertStatus::kSuccess &&
+         !IsContextLost();
 }
 
 void GraphiteSharedContext::submit(skgpu::graphite::SubmitInfo submit_info) {

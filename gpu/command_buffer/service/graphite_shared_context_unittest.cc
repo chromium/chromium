@@ -212,11 +212,56 @@ TEST_P(GraphiteSharedContextTest, AsyncShaderCompilesFailed) {
   skgpu::graphite::InsertRecordingInfo info = {};
   info.fRecording = recording.get();
 
+  EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(false));
   EXPECT_CALL(use_shader_cache_shm_count_, Increment()).Times(1);
   EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(1);
 
   graphite_shared_context_->set_simulated_insert_status(
       skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed);
+  EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
+}
+
+TEST_P(GraphiteSharedContextTest, AsyncShaderCompilesFailedContextLost) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  auto surface1 = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface1->getCanvas()->clear(SK_ColorRED);
+
+  auto surface2 = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface2->getCanvas()->drawImage(surface1->makeTemporaryImage(), 0, 0);
+
+  auto recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+
+  EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(true));
+  EXPECT_CALL(use_shader_cache_shm_count_, Increment()).Times(0);
+  EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(0);
+
+  graphite_shared_context_->set_simulated_insert_status(
+      skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed);
+  EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
+}
+
+TEST_P(GraphiteSharedContextTest, InsertRecordingContextLost) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  auto surface = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface->getCanvas()->clear(SK_ColorRED);
+
+  auto recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+
+  EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(true));
   EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
 }
 
