@@ -152,7 +152,9 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
   CHECK_EQ(type, syncer::ARC_PACKAGE, base::NotFatalUntil::M160);
   CHECK(!sync_processor_.get(), base::NotFatalUntil::M160);
   CHECK(!IsArcAppSyncFlowDisabled(), base::NotFatalUntil::M160);
-  CHECK(prefs_->package_list_initial_refreshed(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/576223429): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(prefs_->package_list_initial_refreshed());
 
   sync_processor_ = std::move(sync_processor);
   metrics_helper_.SetTimeSyncStarted();
