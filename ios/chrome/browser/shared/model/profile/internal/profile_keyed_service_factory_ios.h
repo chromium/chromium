@@ -109,8 +109,13 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   virtual void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Creates a new instance of the service for `profile`.
+  // TODO(crbug.com/576182342): Remove overloads and make pure virtual
+  // once all sub-classes have been converted to override the overload
+  // accepting a ProfileIOS& instead of a ProfileIOS*.
   virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const = 0;
+      ProfileIOS& profile) const;
+  virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      ProfileIOS* profile) const;
 
   // The main public interface for declaring dependencies between services
   // created by factories.

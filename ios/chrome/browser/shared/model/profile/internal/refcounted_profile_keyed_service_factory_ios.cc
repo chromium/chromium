@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/notreached.h"
 #include "ios/chrome/browser/shared/model/profile/internal/profile_dependency_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h"
 #include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_utils.h"
@@ -122,7 +123,24 @@ scoped_refptr<RefcountedKeyedService>
 RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
     void* context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BuildServiceInstanceFor(static_cast<ProfileIOS*>(context));
+  return BuildServiceInstanceFor(
+      CHECK_DEREF(static_cast<ProfileIOS*>(context)));
+}
+
+// TODO(crbug.com/576182342): Remove those two implementation once all
+// sub-classes have been converted to override the overload accepting
+// a ProfileIOS& instead of a ProfileIOS*.
+scoped_refptr<RefcountedKeyedService>
+RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
+    ProfileIOS& profile) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return BuildServiceInstanceFor(&profile);
+}
+
+scoped_refptr<RefcountedKeyedService>
+RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
+    ProfileIOS* profile) const {
+  NOTREACHED();
 }
 
 RefcountedProfileKeyedServiceFactoryIOS::
