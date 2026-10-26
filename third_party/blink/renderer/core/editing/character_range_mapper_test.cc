@@ -301,7 +301,7 @@ TEST_F(CharacterRangeMapperTest, RangeInShadowDom) {
   const EphemeralRangeInFlatTree selection_range_in_flat_tree =
       ConvertToSelectionInFlatTree(selection).ComputeRange();
 
-  Node* shadow_element = GetDocument().getElementById(AtomicString("shadow1"));
+  Node* shadow_element = GetElementById("shadow1");
   const EphemeralRange scope_in_dom_tree =
       EphemeralRange::RangeOfContents(*shadow_element);
   const EphemeralRangeInFlatTree scope_in_flat_tree =
@@ -340,7 +340,7 @@ TEST_F(CharacterRangeMapperTest, RangeInShadowDomAndScopeInLightDom) {
   const EphemeralRangeInFlatTree selection_range_in_flat_tree =
       ConvertToSelectionInFlatTree(selection).ComputeRange();
 
-  Node* host = GetDocument().getElementById(AtomicString("host"));
+  Node* host = GetElementById("host");
   const EphemeralRange scope_in_dom_tree =
       EphemeralRange::RangeOfContents(*host);
   const EphemeralRangeInFlatTree scope_in_flat_tree =

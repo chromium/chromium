@@ -18,7 +18,7 @@ class InsertTextCommandTest : public EditingTestBase {};
 // http://crbug.com/714311
 TEST_F(InsertTextCommandTest, WithTypingStyle) {
   SetBodyContent("<div contenteditable=true><option id=sample></option></div>");
-  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* const sample = GetElementById("sample");
   Selection().SetSelection(
       SelectionInDomTree::Builder().Collapse(Position(sample, 0)).Build(),
       SetSelectionOptions());

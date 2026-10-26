@@ -42,10 +42,7 @@ TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
   Selection().SetSelection(
       SelectionInDomTree::Builder()
           .SetBaseAndExtent(Position(GetDocument().documentElement(), 1),
-                            Position(GetDocument()
-                                         .getElementById(AtomicString("va"))
-                                         ->firstChild(),
-                                     2))
+                            Position(GetElementById("va")->firstChild(), 2))
           .Build(),
       SetSelectionOptions());
 

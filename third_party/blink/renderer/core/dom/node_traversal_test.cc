@@ -303,7 +303,7 @@ TEST_F(NodeTraversalTest, AncestorsOf) {
         </div>
       </div>)");
 
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* parent = NodeTraversal::Parent(*child); parent;
@@ -326,7 +326,7 @@ TEST_F(NodeTraversalTest, InclusiveAncestorsOf) {
         </div>
       </div>)");
 
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* parent = child; parent; parent = NodeTraversal::Parent(*parent)) {

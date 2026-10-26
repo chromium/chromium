@@ -346,7 +346,7 @@ TEST_P(CaretDisplayItemClientTest, EnsureInvalidatePreviousLayoutBlock) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
   UpdateAllLifecyclePhasesForCaretTest();
-  auto* p1 = GetDocument().getElementById(AtomicString("p1"));
+  auto* p1 = GetElementById("p1");
   auto* p1_block = To<LayoutBlock>(p1->GetLayoutObject());
 
   // Set caret into p1.
@@ -366,7 +366,7 @@ TEST_P(CaretDisplayItemClientTest, EnsureInvalidatePreviousLayoutBlock) {
   GetDocument().documentElement()->setScrollTop(1000000000);
   UpdateAllLifecyclePhasesForCaretTest();
 
-  auto* p3 = GetDocument().getElementById(AtomicString("p3"));
+  auto* p3 = GetElementById("p3");
   // Set caret into p3. Should set PreviousCaretLayoutBlock to p1.
   Selection().SetSelection(
       SelectionInDomTree::Builder().Collapse(Position(p3, 0)).Build(),
@@ -448,8 +448,8 @@ TEST_P(CaretDisplayItemClientTest, CompositingChange) {
 
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
-  auto* container = GetDocument().getElementById(AtomicString("container"));
-  auto* editor = GetDocument().getElementById(AtomicString("editor"));
+  auto* container = GetElementById("container");
+  auto* editor = GetElementById("editor");
   auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
   Selection().SetSelection(
       SelectionInDomTree::Builder().Collapse(Position(editor, 0)).Build(),
@@ -488,14 +488,14 @@ TEST_P(CaretDisplayItemClientTest, PlainTextRTLCaretPosition) {
       "<div id='regular' dir='rtl'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>"
       "<div id='plaintext'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>");
 
-  auto* regular = GetDocument().getElementById(AtomicString("regular"));
+  auto* regular = GetElementById("regular");
   auto* regular_text_node = regular->firstChild();
   const Position& regular_position =
       Position::FirstPositionInNode(*regular_text_node);
   const PhysicalRect regular_caret_rect = ComputeCaretRect(
       PositionWithAffinity(regular_position), CaretShape::kBar);
 
-  auto* plaintext = GetDocument().getElementById(AtomicString("plaintext"));
+  auto* plaintext = GetElementById("plaintext");
   auto* plaintext_text_node = plaintext->firstChild();
   const Position& plaintext_position =
       Position::FirstPositionInNode(*plaintext_text_node);
@@ -526,7 +526,7 @@ TEST_P(CaretDisplayItemClientTest, MAYBE_InsertSpaceToWhiteSpacePreWrapRTL) {
       "<div id='editor' contentEditable='true' "
       "dir='rtl'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>");
 
-  auto* editor = GetDocument().getElementById(AtomicString("editor"));
+  auto* editor = GetElementById("editor");
   auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
   auto* text_node = editor->firstChild();
   const Position& position = Position::LastPositionInNode(*text_node);
@@ -582,7 +582,7 @@ TEST_P(CaretDisplayItemClientTest, InsertSpaceToWhiteSpacePreWrap) {
       "</style>"
       "<div id='editor' contentEditable='true'>XXXXX</div>");
 
-  auto* editor = GetDocument().getElementById(AtomicString("editor"));
+  auto* editor = GetElementById("editor");
   auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
   auto* text_node = editor->firstChild();
   const Position position = Position::LastPositionInNode(*text_node);

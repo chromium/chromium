@@ -92,11 +92,10 @@ TEST_F(EditingStyleTest, mergeInlineStyleOfElement) {
       "<span id=s2 style='float:var(--C)'>2</span>");
   UpdateAllLifecyclePhasesForTest();
 
-  EditingStyle* editing_style = MakeGarbageCollected<EditingStyle>(
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("s2"))));
+  EditingStyle* editing_style =
+      MakeGarbageCollected<EditingStyle>(To<HTMLElement>(GetElementById("s2")));
   editing_style->MergeInlineStyleOfElement(
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("s1"))),
-      EditingStyle::kOverrideValues);
+      To<HTMLElement>(GetElementById("s1")), EditingStyle::kOverrideValues);
 
   EXPECT_FALSE(editing_style->Style()->HasProperty(CSSPropertyID::kFloat))
       << "Don't merge a property with unresolved value";

@@ -20,7 +20,7 @@ TEST_F(TextTest, SetDataToChangeFirstLetterTextNode) {
       "<style>pre::first-letter {color:red;}</style><pre "
       "id=sample>a<span>b</span></pre>");
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   auto* text = To<Text>(sample->firstChild());
   text->setData(" ");
   UpdateAllLifecyclePhasesForTest();
@@ -61,7 +61,7 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_CannotHaveChildren) {
   SetBodyContent("<img id=image>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* img = GetDocument().getElementById(AtomicString("image"));
+  Element* img = GetElementById("image");
   ASSERT_TRUE(img);
 
   LayoutObject* img_layout = img->GetLayoutObject();
@@ -82,7 +82,7 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_EditingText) {
   SetBodyContent("<span id=parent></span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* parent = GetElementById("parent");
   ASSERT_TRUE(parent);
 
   LayoutObject* parent_layout = parent->GetLayoutObject();
@@ -109,7 +109,7 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_Empty) {
   SetBodyContent("<span id=parent></span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* parent = GetElementById("parent");
   ASSERT_TRUE(parent);
 
   LayoutObject* parent_layout = parent->GetLayoutObject();
@@ -131,20 +131,13 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_Whitespace) {
       "<span id=inline></span>Nospace<br id=br>");
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutObject* block =
-      GetDocument().getElementById(AtomicString("block"))->GetLayoutObject();
-  LayoutObject* in_line =
-      GetDocument().getElementById(AtomicString("inline"))->GetLayoutObject();
-  LayoutObject* space_at_end = GetDocument()
-                                   .getElementById(AtomicString("block"))
-                                   ->nextSibling()
-                                   ->GetLayoutObject();
-  LayoutObject* no_space = GetDocument()
-                               .getElementById(AtomicString("inline"))
-                               ->nextSibling()
-                               ->GetLayoutObject();
-  LayoutObject* br =
-      GetDocument().getElementById(AtomicString("br"))->GetLayoutObject();
+  LayoutObject* block = GetElementById("block")->GetLayoutObject();
+  LayoutObject* in_line = GetElementById("inline")->GetLayoutObject();
+  LayoutObject* space_at_end =
+      GetElementById("block")->nextSibling()->GetLayoutObject();
+  LayoutObject* no_space =
+      GetElementById("inline")->nextSibling()->GetLayoutObject();
+  LayoutObject* br = GetElementById("br")->GetLayoutObject();
   ASSERT_TRUE(block);
   ASSERT_TRUE(in_line);
   ASSERT_TRUE(space_at_end);
@@ -206,21 +199,21 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_PreserveNewLine) {
   Text* text = Text::Create(GetDocument(), " ");
   Node::AttachContext context;
 
-  Element* pre = GetDocument().getElementById(AtomicString("pre"));
+  Element* pre = GetElementById("pre");
   ASSERT_TRUE(pre);
   context.parent = pre->GetLayoutObject();
   ASSERT_TRUE(context.parent);
   const ComputedStyle& pre_style = context.parent->Style();
   EXPECT_TRUE(text->TextLayoutObjectIsNeeded(context, pre_style));
 
-  Element* pre_line = GetDocument().getElementById(AtomicString("pre-line"));
+  Element* pre_line = GetElementById("pre-line");
   ASSERT_TRUE(pre_line);
   context.parent = pre_line->GetLayoutObject();
   ASSERT_TRUE(context.parent);
   const ComputedStyle& pre_line_style = context.parent->Style();
   EXPECT_TRUE(text->TextLayoutObjectIsNeeded(context, pre_line_style));
 
-  Element* pre_wrap = GetDocument().getElementById(AtomicString("pre-wrap"));
+  Element* pre_wrap = GetElementById("pre-wrap");
   ASSERT_TRUE(pre_wrap);
   context.parent = pre_wrap->GetLayoutObject();
   ASSERT_TRUE(context.parent);

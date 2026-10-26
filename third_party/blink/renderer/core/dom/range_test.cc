@@ -48,9 +48,9 @@ TEST_F(RangeTest, IntersectsNode) {
       "<span id='s2'>s2</span>"
       "</div>");
   Element* const div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* const s0 = GetDocument().getElementById(AtomicString("s0"));
-  Element* const s1 = GetDocument().getElementById(AtomicString("s1"));
-  Element* const s2 = GetDocument().getElementById(AtomicString("s2"));
+  Element* const s0 = GetElementById("s0");
+  Element* const s1 = GetElementById("s1");
+  Element* const s2 = GetElementById("s2");
   Range& range = *Range::Create(GetDocument());
 
   // Range encloses s0
@@ -215,8 +215,8 @@ TEST_F(RangeTest, NotMarkedValidByIrrelevantTextInsert) {
       "<div><span id=span1>foo</span>bar<span id=span2>baz</span></div>");
 
   Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* span1 = GetDocument().getElementById(AtomicString("span1"));
-  Element* span2 = GetDocument().getElementById(AtomicString("span2"));
+  Element* span1 = GetElementById("span1");
+  Element* span2 = GetElementById("span2");
   auto* text = To<Text>(div->childNodes()->item(1));
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), span2, 0, div, 3);
@@ -237,8 +237,8 @@ TEST_F(RangeTest, NotMarkedValidByIrrelevantTextRemove) {
       "<div><span id=span1>foofoo</span>bar<span id=span2>baz</span></div>");
 
   Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* span1 = GetDocument().getElementById(AtomicString("span1"));
-  Element* span2 = GetDocument().getElementById(AtomicString("span2"));
+  Element* span1 = GetElementById("span1");
+  Element* span2 = GetElementById("span2");
   auto* text = To<Text>(div->childNodes()->item(1));
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), span2, 0, div, 3);
@@ -363,9 +363,8 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {
   )HTML");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  Element* const expected =
-      GetDocument().getElementById(AtomicString("expected"));
-  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* const expected = GetElementById("expected");
+  Element* const sample = GetElementById("sample");
 
   const Vector<gfx::QuadF> expected_quads =
       GetBorderAndTextQuads(Position(expected, 0), Position(expected, 2));
@@ -409,9 +408,8 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterThree) {
   )HTML");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  Element* const expected =
-      GetDocument().getElementById(AtomicString("expected"));
-  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* const expected = GetElementById("expected");
+  Element* const sample = GetElementById("sample");
 
   const Vector<gfx::QuadF> expected_quads =
       GetBorderAndTextQuads(Position(expected, 0), Position(expected, 2));
@@ -471,9 +469,8 @@ TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
   )HTML");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  Element* const expected =
-      GetDocument().getElementById(AtomicString("expected"));
-  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* const expected = GetElementById("expected");
+  Element* const sample = GetElementById("sample");
 
   const Vector<gfx::QuadF> expected_quads =
       GetBorderAndTextQuads(Position(expected, 0), Position(expected, 2));

@@ -58,7 +58,7 @@ class NodeTest : public EditingTestBase {
   //      |    + div class="test"
   Node* InitializeUserAgentShadowTree(Element* test_node) {
     SetBodyContent("<div id=\"root\"></div>");
-    Element* root = GetDocument().getElementById(AtomicString("root"));
+    Element* root = GetElementById("root");
     ShadowRoot& first_shadow = root->CreateUserAgentShadowRoot();
 
     first_shadow.AppendChild(test_node);
@@ -75,8 +75,8 @@ TEST_F(NodeTest, canStartSelection) {
   const char* body_content =
       "<a id=one href='http://www.msn.com'>one</a><b id=two>two</b>";
   SetBodyContent(body_content);
-  Node* one = GetDocument().getElementById(AtomicString("one"));
-  Node* two = GetDocument().getElementById(AtomicString("two"));
+  Node* one = GetElementById("one");
+  Node* two = GetElementById("two");
 
   EXPECT_FALSE(one->CanStartSelection());
   EXPECT_FALSE(one->firstChild()->CanStartSelection());
@@ -89,7 +89,7 @@ TEST_F(NodeTest, canStartSelectionWithShadowDOM) {
   const char* shadow_content = "<a href='http://www.msn.com'><slot></slot></a>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  Node* one = GetDocument().getElementById(AtomicString("one"));
+  Node* one = GetElementById("one");
 
   EXPECT_FALSE(one->CanStartSelection());
   EXPECT_FALSE(one->firstChild()->CanStartSelection());
@@ -98,7 +98,7 @@ TEST_F(NodeTest, canStartSelectionWithShadowDOM) {
 TEST_F(NodeTest, customElementState) {
   const char* body_content = "<div id=div></div>";
   SetBodyContent(body_content);
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   EXPECT_EQ(CustomElementState::kUncustomized, div->GetCustomElementState());
   EXPECT_TRUE(div->IsDefined());
 
@@ -122,7 +122,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_TextRoot) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_InlineRoot) {
   SetBodyContent("<span id=root>Text <span></span></span>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -131,7 +131,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_InlineRoot) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_BlockRoot) {
   SetBodyContent("<div id=root>Text <span></span></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -140,7 +140,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_BlockRoot) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_FloatRoot) {
   SetBodyContent("<div id=root style='float:left'><span></span></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_FALSE(previous_in_flow);
@@ -148,7 +148,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_FloatRoot) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_AbsoluteRoot) {
   SetBodyContent("<div id=root style='position:absolute'><span></span></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_FALSE(previous_in_flow);
@@ -156,7 +156,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_AbsoluteRoot) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_Text) {
   SetBodyContent("<div id=root style='display:contents'>Text</div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -165,7 +165,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_Text) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_Inline) {
   SetBodyContent("<div id=root style='display:contents'><span></span></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -174,7 +174,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_Inline) {
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_Block) {
   SetBodyContent("<div id=root style='display:contents'><div></div></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -188,7 +188,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_Float) {
       "  .float { float:left }"
       "</style>"
       "<div id=root><div class=float></div></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_FALSE(previous_in_flow);
@@ -201,7 +201,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_AbsolutePositioned) {
       "  .abs { position:absolute }"
       "</style>"
       "<div id=root><div class=abs></div></div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_FALSE(previous_in_flow);
@@ -216,8 +216,8 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_SkipAbsolute) {
       "<div id=root>"
       "<div class=abs></div><span id=inline></span><div class=abs></div>"
       "</div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* span = GetDocument().getElementById(AtomicString("inline"));
+  Element* root = GetElementById("root");
+  Element* span = GetElementById("inline");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -235,8 +235,8 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_SkipFloats) {
       "<span id=inline></span>"
       "<div class=float></div>"
       "</div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* span = GetDocument().getElementById(AtomicString("inline"));
+  Element* root = GetElementById("root");
+  Element* span = GetElementById("inline");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -252,8 +252,8 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_InsideDisplayContents) {
       "<div id=root>"
       "<span></span><div class=contents><span id=inline></span></div>"
       "</div>");
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* span = GetDocument().getElementById(AtomicString("inline"));
+  Element* root = GetElementById("root");
+  Element* span = GetElementById("inline");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -263,15 +263,13 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_InsideDisplayContents) {
 TEST_F(NodeTest, AttachContext_PreviousInFlow_Slotted) {
   SetBodyContent("<div id=host><span id=inline></span></div>");
   ShadowRoot& shadow_root =
-      GetDocument()
-          .getElementById(AtomicString("host"))
-          ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+      GetElementById("host")->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(
       "<div id=root style='display:contents'><span></span><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
 
   Element* root = shadow_root.getElementById(AtomicString("root"));
-  Element* span = GetDocument().getElementById(AtomicString("inline"));
+  Element* span = GetElementById("inline");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
   EXPECT_TRUE(previous_in_flow);
@@ -317,21 +315,18 @@ TEST_F(NodeTest, appendChildCommentNoStyleRecalc) {
 
 TEST_F(NodeTest, MutationOutsideFlatTreeStyleDirty) {
   SetBodyContent("<div id=host><span id=nonslotted></span></div>");
-  GetDocument()
-      .getElementById(AtomicString("host"))
-      ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  GetElementById("host")->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
-  GetDocument()
-      .getElementById(AtomicString("nonslotted"))
+  GetElementById("nonslotted")
       ->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
 TEST_F(NodeTest, SkipStyleDirtyHostChild) {
   SetBodyContent("<div id=host><span></span></div>");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(
@@ -348,15 +343,15 @@ TEST_F(NodeTest, SkipStyleDirtyHostChild) {
 
 TEST_F(NodeTest, ContainsChild) {
   SetBodyContent("<div id=a><div id=b></div></div>");
-  Element* a = GetDocument().getElementById(AtomicString("a"));
-  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
   EXPECT_TRUE(a->contains(b));
 }
 
 TEST_F(NodeTest, ContainsNoSibling) {
   SetBodyContent("<div id=a></div><div id=b></div>");
-  Element* a = GetDocument().getElementById(AtomicString("a"));
-  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
   EXPECT_FALSE(a->contains(b));
 }
 
@@ -364,7 +359,7 @@ TEST_F(NodeTest, ContainsPseudo) {
   SetBodyContent(
       "<style>#a::before{content:'aaa';}</style>"
       "<div id=a></div>");
-  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* a = GetElementById("a");
   PseudoElement* pseudo = a->GetPseudoElement(kPseudoIdBefore);
   ASSERT_TRUE(pseudo);
   EXPECT_TRUE(a->contains(pseudo));
@@ -372,7 +367,7 @@ TEST_F(NodeTest, ContainsPseudo) {
 
 TEST_F(NodeTest, SkipForceReattachDisplayNone) {
   SetBodyContent("<div id=host><span style='display:none'></span></div>");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot name='target'></slot>");
@@ -391,7 +386,7 @@ TEST_F(NodeTest, SkipForceReattachDisplayNone) {
 
 TEST_F(NodeTest, UpdateChildDirtyAncestorsOnSlotAssignment) {
   SetBodyContent("<div id=host><span></span></div>");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(
@@ -417,7 +412,7 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
   SetBodyContent(R"HTML(
     <div id="host"><span style="display:contents"></span></div>
   )HTML");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot></slot>");
@@ -449,7 +444,7 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
   SetBodyContent(R"HTML(
     <div id="host"><span style="display:contents"></span></div>
   )HTML");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes("<div><slot></slot></div>");
@@ -483,7 +478,7 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
 TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
   SetBodyContent("<div id=host><span></span></div>");
 
-  auto* host = GetDocument().getElementById(AtomicString("host"));
+  auto* host = GetElementById("host");
   auto* span = To<Element>(host->firstChild());
 
   ShadowRoot& shadow_root =
@@ -530,7 +525,7 @@ TEST_F(NodeTest, ReassignStyleDirtyElementIntoSlotOutsideFlatTree) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* slotted = GetDocument().getElementById(AtomicString("slotted"));
+  Element* slotted = GetElementById("slotted");
 
   // Starts with #slotted in the flat tree as a child of the s1 slot.
   EXPECT_TRUE(slotted->GetComputedStyle());
@@ -569,10 +564,9 @@ TEST_F(NodeTest, FlatTreeParentForChildDirty) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
-  Element* slotted = GetDocument().getElementById(AtomicString("slotted"));
-  Element* not_slotted =
-      GetDocument().getElementById(AtomicString("not_slotted"));
+  Element* host = GetElementById("host");
+  Element* slotted = GetElementById("slotted");
+  Element* not_slotted = GetElementById("not_slotted");
 
   ShadowRoot* shadow_root = host->GetShadowRoot();
   Element* slot1 = shadow_root->getElementById(AtomicString("slot1"));
@@ -600,8 +594,8 @@ TEST_F(NodeTest, moveBefore_DetachAfterSlotReassignment) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
-  Element* span = GetDocument().getElementById(AtomicString("span"));
+  Element* host = GetElementById("host");
+  Element* span = GetElementById("span");
 
   host->moveBefore(span, nullptr, ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(span->GetComputedStyle());
@@ -623,8 +617,8 @@ TEST_F(NodeTest, moveBefore_PreserveComputedStyleBetweenTrees) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
-  Element* span = GetDocument().getElementById(AtomicString("span"));
+  Element* host = GetElementById("host");
+  Element* span = GetElementById("span");
 
   const ComputedStyle* old_computed_style = span->GetComputedStyle();
 
@@ -649,7 +643,7 @@ TEST_F(NodeTest, ToStringDisallowedAssignmentRecalc) {
     </div>
   )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("element"));
+  Element* element = GetElementById("element");
   element->setAttribute(html_names::kSlotAttr, AtomicString("slot"));
 
   SlotAssignmentRecalcForbiddenScope forbidden_scope(GetDocument());
@@ -679,9 +673,9 @@ TEST_F(NodeTest, PseudoAwareSiblingTraversalAllPseudos) {
     <li id=host2 class=host><span id="child2">child2</span></li>
   )HTML");
 
-  Element* host1 = GetDocument().getElementById(AtomicString("host1"));
+  Element* host1 = GetElementById("host1");
   ASSERT_TRUE(host1);
-  Element* host2 = GetDocument().getElementById(AtomicString("host2"));
+  Element* host2 = GetElementById("host2");
   ASSERT_TRUE(host2);
   UpdateAllLifecyclePhasesForTest();
 

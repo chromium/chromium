@@ -2115,7 +2115,7 @@ TEST_F(ElementTest, TrackPasswordTrackingElementRectCSSHeuristic) {
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id=test>abc</div>");
-  auto* div = To<Element>(GetDocument().getElementById(AtomicString("test")));
+  auto* div = To<Element>(GetElementById("test"));
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(div->GetTrackedElementSubRect(tracking_feature));
 
@@ -2267,8 +2267,7 @@ TEST_F(ElementTest, DelegatesFocusWasLastFocusFromUserGesture) {
 
 TEST_F(ElementTest, FreezeHoverForOpenPopup) {
   SetBodyContent("<select id=owner><option>One</option></select>");
-  auto* owner = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("owner")));
+  auto* owner = To<HTMLSelectElement>(GetElementById("owner"));
   ASSERT_NE(owner, nullptr);
 
   GetDocument().UpdateHoverActiveState(/*is_active=*/false,
@@ -2294,8 +2293,7 @@ TEST_F(ElementTest, FreezeHoverForOpenPopup) {
 // must be preserved rather than cleared by the re-sync.
 TEST_F(ElementTest, FreezeHoverForOpenPopupKeepsHoverWhenStillHovered) {
   SetBodyContent("<input id=owner type=color>");
-  auto* owner = To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("owner")));
+  auto* owner = To<HTMLFormControlElement>(GetElementById("owner"));
   ASSERT_NE(owner, nullptr);
 
   GetDocument().UpdateHoverActiveState(/*is_active=*/false,
@@ -2308,8 +2306,7 @@ TEST_F(ElementTest, FreezeHoverForOpenPopupKeepsHoverWhenStillHovered) {
 TEST_F(ElementTest,
        FreezeHoverForOpenPopupKeepsHoverWhenStillHoveredDateInput) {
   SetBodyContent("<input id=owner type=date>");
-  auto* owner = To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("owner")));
+  auto* owner = To<HTMLFormControlElement>(GetElementById("owner"));
   ASSERT_NE(owner, nullptr);
 
   GetDocument().UpdateHoverActiveState(/*is_active=*/false,

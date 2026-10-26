@@ -18,9 +18,9 @@ TEST_F(EditingStrategyTest, caretMaxOffset) {
   const char* shadow_content = "<slot name=#two></slot><slot name=#one></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  Node* host = GetDocument().getElementById(AtomicString("host"));
-  Node* one = GetDocument().getElementById(AtomicString("one"));
-  Node* two = GetDocument().getElementById(AtomicString("two"));
+  Node* host = GetElementById("host");
+  Node* one = GetElementById("one");
+  Node* two = GetElementById("two");
 
   EXPECT_EQ(4, EditingStrategy::CaretMaxOffset(*host));
   EXPECT_EQ(1, EditingStrategy::CaretMaxOffset(*one));
@@ -40,9 +40,9 @@ TEST_F(EditingStrategyTest, CaretMaxOffsetWithFirstLetter) {
       "<div id='b'>   b</div>"
       "<div id='c'>cde</div>");
 
-  Node* a = GetDocument().getElementById(AtomicString("a"));
-  Node* b = GetDocument().getElementById(AtomicString("b"));
-  Node* c = GetDocument().getElementById(AtomicString("c"));
+  Node* a = GetElementById("a");
+  Node* b = GetElementById("b");
+  Node* c = GetElementById("c");
 
   EXPECT_EQ(1, EditingStrategy::CaretMaxOffset(*a->firstChild()));
   EXPECT_EQ(4, EditingStrategy::CaretMaxOffset(*b->firstChild()));

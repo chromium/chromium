@@ -80,9 +80,8 @@ TEST_F(ScrollMarkerPseudoElementTest, InertOriginatingNonInertGroup) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  PseudoElement* scroll_marker = GetDocument()
-                                     .getElementById(AtomicString("marker"))
-                                     ->GetPseudoElement(kPseudoIdScrollMarker);
+  PseudoElement* scroll_marker =
+      GetElementById("marker")->GetPseudoElement(kPseudoIdScrollMarker);
   EXPECT_FALSE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
@@ -106,9 +105,8 @@ TEST_F(ScrollMarkerPseudoElementTest, InertScrollMarkerNonInertGroup) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  PseudoElement* scroll_marker = GetDocument()
-                                     .getElementById(AtomicString("marker"))
-                                     ->GetPseudoElement(kPseudoIdScrollMarker);
+  PseudoElement* scroll_marker =
+      GetElementById("marker")->GetPseudoElement(kPseudoIdScrollMarker);
   EXPECT_TRUE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
@@ -132,9 +130,8 @@ TEST_F(ScrollMarkerPseudoElementTest, InertScroller) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  PseudoElement* scroll_marker = GetDocument()
-                                     .getElementById(AtomicString("marker"))
-                                     ->GetPseudoElement(kPseudoIdScrollMarker);
+  PseudoElement* scroll_marker =
+      GetElementById("marker")->GetPseudoElement(kPseudoIdScrollMarker);
   EXPECT_TRUE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
@@ -160,9 +157,8 @@ TEST_F(ScrollMarkerPseudoElementTest, InertScrollMarkerGroupNonInertMarker) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  PseudoElement* scroll_marker = GetDocument()
-                                     .getElementById(AtomicString("marker"))
-                                     ->GetPseudoElement(kPseudoIdScrollMarker);
+  PseudoElement* scroll_marker =
+      GetElementById("marker")->GetPseudoElement(kPseudoIdScrollMarker);
   EXPECT_TRUE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
