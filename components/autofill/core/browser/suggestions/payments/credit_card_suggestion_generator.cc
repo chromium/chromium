@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -191,10 +192,12 @@ bool IsSaveAndFillEnabled() {
 std::vector<CreditCard> FetchCreditCardOrCvcFieldSuggestionDataSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
+    const AutofillField& trigger_autofill_field,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     CreditCardSuggestionSummary& summary) {
+  const FieldType trigger_field_type =
+      trigger_autofill_field.Type().GetCreditCardType();
   // Early return if CVC suggestions are triggered but the client does not
   // support CVC saving (e.g., for iOS WebView). This avoids unnecessary
   // processing, which would ultimately result in an empty suggestion list
@@ -213,8 +216,12 @@ std::vector<CreditCard> FetchCreditCardOrCvcFieldSuggestionDataSync(
 
   const bool allow_payment_swapping =
       // TODO(crbug.com/393114125): Change to use
-      // `AutofillField::field_modifiers_`.
+      // `AutofillField::field_modifiers_` (checking `last_modifier() ==
+      // FieldModifier::kAutofill` alongside `filling_product()`, since
+      // `filling_product()` remains `kCreditCard` after user edits or when
+      // cleared by a nameless card swap).
       trigger_field.is_autofilled_according_to_renderer() &&
+      trigger_autofill_field.filling_product() == FillingProduct::kCreditCard &&
       IsPaymentsFieldSwappingEnabled();
 
   bool suppress_disused_cards =
@@ -659,8 +666,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
 
     const std::vector<CreditCard> cards_to_suggest =
         FetchCreditCardOrCvcFieldSuggestionDataSync(
-            client, trigger_field,
-            trigger_autofill_field->Type().GetCreditCardType(),
+            client, trigger_field, *trigger_autofill_field,
             four_digit_combinations_in_dom_.get(),
             autofilled_last_four_digits_in_form_for_filtering, summary);
 

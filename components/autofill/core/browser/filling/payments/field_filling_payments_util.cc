@@ -561,8 +561,8 @@ bool WillFillCreditCardNumberOrCvc(
                FormFiller::GetFillingSkipReasonsForField(
                    *field, trigger_field,
                    FormFiller::RefillOptions::NotRefill(), type_count,
-                   /*blocked_fields=*/{}, trigger_source,
-                   ac_unrecognized_behavior)
+                   /*blocked_fields=*/{}, FillingProduct::kCreditCard,
+                   trigger_source, ac_unrecognized_behavior)
                    .empty();
       };
 

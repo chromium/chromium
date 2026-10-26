@@ -190,13 +190,23 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
 
 bool AllowPaymentSwapping(const AutofillField& trigger_field,
                           const AutofillField& field,
-                          bool is_refill) {
+                          bool is_refill,
+                          FillingProduct filling_product) {
   auto has_relevant_cc_field_type = [](const AutofillField& field) {
     const FieldType field_type = field.Type().GetCreditCardType();
     return field_type != UNKNOWN_TYPE &&
            field_type != CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
   };
+  // Check both that `field` was previously filled by `kCreditCard` and that the
+  // active fill operation is `kCreditCard`. Checking
+  // `has_relevant_cc_field_type()` alone is not sufficient because
+  // `AutofillType` can hold union types across products (e.g. a
+  // `CREDIT_CARD_NAME_*` type combined with a `NAME_*` or `AutofillAi` entity
+  // attribute type), so a non-card fill triggered on a dual-typed field could
+  // otherwise swap or clear a field previously filled by `kCreditCard`.
   return field.last_modifier() == FieldModifier::kAutofill &&
+         field.filling_product() == FillingProduct::kCreditCard &&
+         filling_product == FillingProduct::kCreditCard &&
          has_relevant_cc_field_type(trigger_field) &&
          has_relevant_cc_field_type(field) && !is_refill &&
          IsPaymentsFieldSwappingEnabled();
@@ -506,6 +516,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     const RefillOptions& refill_options,
     base::flat_map<FieldType, size_t>& type_count,
     const base::flat_set<FieldGlobalId>& blocked_fields,
+    FillingProduct filling_product,
     AutofillTriggerSource trigger_source,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
@@ -563,7 +574,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
              !field.value().empty() && !is_trigger_field &&
              !refill_options.is_refill() &&
              !AllowPaymentSwapping(trigger_field, field,
-                                   refill_options.is_refill()),
+                                   refill_options.is_refill(), filling_product),
          FieldFillingSkipReason::kAlreadyAutofilled);
 
   AutofillType autofill_type = field.Type();
@@ -638,7 +649,7 @@ FormFiller::GetFieldFillingSkipReasons(
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
         GetFillingSkipReasonsForField(
             *field, trigger_field, refill_options, type_count, blocked_fields,
-            trigger_source, GetAcUnrecognizedBehavior(client));
+            filling_product, trigger_source, GetAcUnrecognizedBehavior(client));
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
@@ -865,8 +876,9 @@ void FormFiller::FillOrPreviewForm(
                     GetFieldFillingData(
                         *field, augmented_filling_payload, forced_fill_values,
                         action_persistence,
-                        AllowPaymentSwapping(trigger_field, *field,
-                                             refill_options.is_refill()),
+                        AllowPaymentSwapping(
+                            trigger_field, *field, refill_options.is_refill(),
+                            augmented_filling_payload.filling_product()),
                         &failure_to_fill)) {
               return Pair(field->global_id(), std::move(*filling_content));
             }
@@ -897,10 +909,11 @@ void FormFiller::FillOrPreviewForm(
         expected_content = filling_content.at(field->global_id());
     CHECK(expected_content.has_value());
 
-    FillField(expected_content.value(), result_field, action_persistence,
-              trigger_source,
-              AllowPaymentSwapping(trigger_field, *field,
-                                   refill_options.is_refill()));
+    FillField(
+        expected_content.value(), result_field, action_persistence,
+        trigger_source,
+        AllowPaymentSwapping(trigger_field, *field, refill_options.is_refill(),
+                             augmented_filling_payload.filling_product()));
     filled_field_types.emplace(field->global_id(),
                                expected_content->filling_type);
   }

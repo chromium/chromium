@@ -3229,4 +3229,203 @@ TEST_F(FormFillerTest, UndoOtp_Preview) {
   EXPECT_FALSE(form_structure->field(0)->autofilled_type());
 }
 
+// Tests credit card swapping across cardholder name transitions when
+// `kAutofillPaymentsFieldSwapping` is enabled:
+// a) card with name -> card with name (overwrites name and card details)
+// b) card with name -> card without name (clears name and updates card details)
+// c) card without name -> card with name (fills name and updates card details)
+TEST_F(FormFillerTest, PaymentsSwappingCardNameTransitions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  CreditCard card_with_name_1;
+  test::SetCreditCardInfo(&card_with_name_1, "Elvis Presley",
+                          "4234 5678 9012 3456", "04", "2999", "1");
+
+  CreditCard card_with_name_2;
+  test::SetCreditCardInfo(&card_with_name_2, "Jane Smith",
+                          "5412 7512 3412 3456", "06", "2998", "1");
+
+  CreditCard nameless_card;
+  test::SetCreditCardInfo(&nameless_card, "", "3782 822463 10005", "08", "2997",
+                          "1");
+
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  // Initial fill with `card_with_name_1`.
+  form = AutofillForm(form, form.fields()[1], &card_with_name_1);
+  EXPECT_THAT(form.fields()[0], AutofilledWith(u"Elvis Presley"));
+  EXPECT_THAT(form.fields()[1], AutofilledWith(u"4234567890123456"));
+  EXPECT_THAT(form.fields()[2], AutofilledWith(u"04"));
+  EXPECT_THAT(form.fields()[3], AutofilledWith(u"2999"));
+
+  // a) Card with name -> card with name.
+  form = AutofillForm(form, form.fields()[1], &card_with_name_2);
+  EXPECT_THAT(form.fields()[0], AutofilledWith(u"Jane Smith"));
+  EXPECT_THAT(form.fields()[1], AutofilledWith(u"5412751234123456"));
+  EXPECT_THAT(form.fields()[2], AutofilledWith(u"06"));
+  EXPECT_THAT(form.fields()[3], AutofilledWith(u"2998"));
+  EXPECT_EQ(form_structure->field(0)->last_modifier(),
+            FieldModifier::kAutofill);
+  EXPECT_EQ(form_structure->field(0)->filling_product(),
+            FillingProduct::kCreditCard);
+
+  // b) Card with name -> card without name.
+  form = AutofillForm(form, form.fields()[1], &nameless_card);
+  EXPECT_EQ(form.fields()[0].value(), u"");
+  EXPECT_FALSE(form.fields()[0].is_autofilled_according_to_renderer());
+  EXPECT_THAT(form.fields()[1], AutofilledWith(u"378282246310005"));
+  EXPECT_THAT(form.fields()[2], AutofilledWith(u"08"));
+  EXPECT_THAT(form.fields()[3], AutofilledWith(u"2997"));
+  EXPECT_NE(form_structure->field(0)->last_modifier(),
+            FieldModifier::kAutofill);
+
+  // c) Card without name -> card with name.
+  form = AutofillForm(form, form.fields()[1], &card_with_name_1);
+  EXPECT_THAT(form.fields()[0], AutofilledWith(u"Elvis Presley"));
+  EXPECT_THAT(form.fields()[1], AutofilledWith(u"4234567890123456"));
+  EXPECT_THAT(form.fields()[2], AutofilledWith(u"04"));
+  EXPECT_THAT(form.fields()[3], AutofilledWith(u"2999"));
+  EXPECT_EQ(form_structure->field(0)->last_modifier(),
+            FieldModifier::kAutofill);
+  EXPECT_EQ(form_structure->field(0)->filling_product(),
+            FillingProduct::kCreditCard);
+}
+
+// Tests that payment swapping does not overwrite or clear fields that were
+// previously autofilled by `FillingProduct::kAddress` or
+// `FillingProduct::kAutocomplete` rather than `FillingProduct::kCreditCard`
+// across all cardholder name transitions:
+// a) card with name -> card with name
+// b) card with name -> card without name
+// c) card without name -> card with name
+TEST_F(FormFillerTest,
+       PaymentsSwappingDoesNotOverwriteAddressOrAutocompleteFilledField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  CreditCard card_with_name_1;
+  test::SetCreditCardInfo(&card_with_name_1, "Elvis Presley",
+                          "4234 5678 9012 3456", "04", "2999", "1");
+
+  CreditCard card_with_name_2;
+  test::SetCreditCardInfo(&card_with_name_2, "Jane Smith",
+                          "5412 7512 3412 3456", "06", "2998", "1");
+
+  CreditCard nameless_card;
+  test::SetCreditCardInfo(&nameless_card, "", "3782 822463 10005", "08", "2997",
+                          "1");
+
+  for (FillingProduct prior_product :
+       {FillingProduct::kAddress, FillingProduct::kAutocomplete}) {
+    FormData form = test::CreateTestCreditCardFormData(
+        /*is_https=*/true, /*use_month_type=*/false);
+    test_api(form).field(0).set_value(u"John Doe");
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+    FormsSeen({form});
+
+    FormStructure* form_structure = GetFormStructure(form);
+    ASSERT_TRUE(form_structure);
+    form_structure->field(0)->AddFieldModifier(FieldModifier::kAutofill);
+    form_structure->field(0)->set_filling_product(prior_product);
+
+    // Initial credit card fill with `card_with_name_1` must not overwrite the
+    // `prior_product` name field.
+    form = AutofillForm(form, form.fields()[1], &card_with_name_1);
+    EXPECT_THAT(form.fields()[0], AutofilledWith(u"John Doe"));
+    EXPECT_THAT(form.fields()[1], AutofilledWith(u"4234567890123456"));
+    EXPECT_EQ(form_structure->field(0)->filling_product(), prior_product);
+
+    // a) Card with name -> card with name: `field(0)` stays "John Doe", while
+    // card details swap to `card_with_name_2`.
+    form = AutofillForm(form, form.fields()[1], &card_with_name_2);
+    EXPECT_THAT(form.fields()[0], AutofilledWith(u"John Doe"));
+    EXPECT_THAT(form.fields()[1], AutofilledWith(u"5412751234123456"));
+    EXPECT_EQ(form_structure->field(0)->filling_product(), prior_product);
+
+    // b) Card with name -> card without name: `field(0)` is not cleared, while
+    // card details swap to `nameless_card`.
+    form = AutofillForm(form, form.fields()[1], &nameless_card);
+    EXPECT_THAT(form.fields()[0], AutofilledWith(u"John Doe"));
+    EXPECT_THAT(form.fields()[1], AutofilledWith(u"378282246310005"));
+    EXPECT_EQ(form_structure->field(0)->filling_product(), prior_product);
+
+    // c) Card without name -> card with name: `field(0)` is not overwritten,
+    // while card details swap back to `card_with_name_1`.
+    form = AutofillForm(form, form.fields()[1], &card_with_name_1);
+    EXPECT_THAT(form.fields()[0], AutofilledWith(u"John Doe"));
+    EXPECT_THAT(form.fields()[1], AutofilledWith(u"4234567890123456"));
+    EXPECT_EQ(form_structure->field(0)->filling_product(), prior_product);
+  }
+}
+
+// Tests that a non-credit-card fill operation (e.g. `FillingProduct::kAddress`)
+// on fields with union `AutofillType`s (holding both a `NAME_*` type and a
+// `CREDIT_CARD_NAME_*` type) does not trigger payment swapping on non-trigger
+// fields that were previously filled by `FillingProduct::kCreditCard`.
+TEST_F(FormFillerTest,
+       PaymentsSwappingDoesNotTriggerForNonCreditCardFillOnUnionTypeFields) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NAME_FIRST,
+                   .autocomplete_attribute = "cc-given-name"},
+                  {.role = CREDIT_CARD_NAME_LAST,
+                   .autocomplete_attribute = "cc-family-name"}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  form_structure->field(0)->SetTypeTo(
+      AutofillType(FieldTypeSet{NAME_FIRST, CREDIT_CARD_NAME_FIRST}),
+      AutofillPredictionSource::kHeuristics);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(FieldTypeSet{NAME_LAST, CREDIT_CARD_NAME_LAST}),
+      AutofillPredictionSource::kHeuristics);
+
+  CreditCard credit_card = test::GetCreditCard();
+  form = AutofillForm(form, form.fields()[0], &credit_card);
+  ASSERT_THAT(form.fields()[0], AutofilledWith(credit_card.GetInfo(
+                                    CREDIT_CARD_NAME_FIRST, kAppLocale)));
+  ASSERT_THAT(form.fields()[1], AutofilledWith(credit_card.GetInfo(
+                                    CREDIT_CARD_NAME_LAST, kAppLocale)));
+  ASSERT_EQ(form_structure->field(1)->filling_product(),
+            FillingProduct::kCreditCard);
+
+  // Trigger an address fill on `field(0)` with a full profile. `field(0)` (the
+  // trigger field) is overwritten, but `field(1)` must not be swapped or
+  // overwritten by the address fill even though both fields have
+  // `CREDIT_CARD_NAME_*` types and `field(1)` was filled by
+  // `FillingProduct::kCreditCard`.
+  AutofillProfile profile = test::GetFullProfile();
+  form = AutofillForm(form, form.fields()[0], &profile);
+  EXPECT_THAT(form.fields()[0],
+              AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
+  EXPECT_THAT(form.fields()[1], AutofilledWith(credit_card.GetInfo(
+                                    CREDIT_CARD_NAME_LAST, kAppLocale)));
+  EXPECT_EQ(form_structure->field(1)->filling_product(),
+            FillingProduct::kCreditCard);
+
+  // Also verify that an address profile with an empty last name does not clear
+  // `field(1)` via payment swapping.
+  AutofillProfile profile_without_last_name = test::GetFullProfile();
+  profile_without_last_name.ClearFields({NAME_LAST});
+  form = AutofillForm(form, form.fields()[0], &profile_without_last_name);
+  EXPECT_THAT(form.fields()[0],
+              AutofilledWith(
+                  profile_without_last_name.GetInfo(NAME_FIRST, kAppLocale)));
+  EXPECT_THAT(form.fields()[1], AutofilledWith(credit_card.GetInfo(
+                                    CREDIT_CARD_NAME_LAST, kAppLocale)));
+  EXPECT_EQ(form_structure->field(1)->filling_product(),
+            FillingProduct::kCreditCard);
+}
+
 }  // namespace autofill

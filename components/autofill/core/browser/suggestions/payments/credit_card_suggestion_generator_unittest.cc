@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -6822,6 +6823,58 @@ TEST_F(CreditCardSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[suggestions.size() - 2].type,
             SuggestionType::kSeparator);
   EXPECT_EQ(suggestions.back().type, SuggestionType::kManageCreditCard);
+}
+
+// Tests that payment swapping does not bypass prefix/non-empty filtering on a
+// field that was autofilled by `FillingProduct::kAddress`.
+TEST_F(CreditCardSuggestionGeneratorTest,
+       PaymentsSwappingDoesNotTriggerOnAddressAutofilledField) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillPaymentsFieldSwapping};
+
+  CreditCard other_name_card;
+  test::SetCreditCardInfo(&other_name_card, /*name_on_card=*/"Elvis Presley",
+                          /*card_number=*/"4111111111111111",
+                          /*expiration_month=*/"05",
+                          /*expiration_year=*/"2999",
+                          /*billing_address_id=*/"");
+  payments_data().AddCreditCard(other_name_card);
+
+  FormBundle form_bundle = GetFormWithTypes(
+      {.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                   .value = u"John Doe",
+                   .is_autofilled_according_to_renderer = true},
+                  {.role = CREDIT_CARD_NUMBER}}});
+  form_bundle.trigger_autofill_field->AddFieldModifier(
+      FieldModifier::kAutofill);
+
+  for (FillingProduct non_card_product :
+       {FillingProduct::kAddress, FillingProduct::kAutocomplete,
+        FillingProduct::kNone}) {
+    form_bundle.trigger_autofill_field->set_filling_product(non_card_product);
+    std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+        form_bundle.form, *form_bundle.form_structure,
+        form_bundle.trigger_field, *form_bundle.trigger_autofill_field,
+        autofill_client(),
+        /*four_digit_combinations_in_dom=*/{},
+        /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+        credit_card_form_event_logger(),
+        AutofillMetrics::PaymentsSigninState::kUnknown,
+        /*exclude_virtual_cards=*/false);
+    EXPECT_TRUE(suggestions.empty());
+  }
+
+  form_bundle.trigger_autofill_field->set_filling_product(
+      FillingProduct::kCreditCard);
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+  EXPECT_FALSE(suggestions.empty());
 }
 
 }  // namespace

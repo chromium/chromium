@@ -130,6 +130,7 @@ class FormFiller {
       const RefillOptions& refill_options,
       base::flat_map<FieldType, size_t>& type_count,
       const base::flat_set<FieldGlobalId>& blocked_fields,
+      FillingProduct filling_product,
       AutofillTriggerSource trigger_source,
       AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
