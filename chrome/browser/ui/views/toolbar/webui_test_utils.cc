@@ -105,7 +105,7 @@ constexpr char kClickExtensionButtonScript[] = R"(
         .querySelectorAll('webui-toolbar-extension');
     const el = Array.from(extensionElements)
         .find(el => el.state.id === '%s');
-    const btn = el.shadowRoot.querySelector('cr-button');
+    const btn = el.shadowRoot.querySelector('toolbar-chip-button');
     %s
   })();
 )";

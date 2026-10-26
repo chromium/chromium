@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_button/cr_button.js';
+import './toolbar_chip_button.js';
 import '/shared/icon_from_table.js';
 
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -18,6 +17,7 @@ import {getCss} from './extension.css.js';
 import {getHtml} from './extension.html.js';
 import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
+import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 const initialState: ExtensionActionInfo = {
   id: '',
@@ -38,7 +38,7 @@ const ExtensionElementBase = OverflowableToolbarActionMixin(
 
 export interface ExtensionElement {
   $: {
-    button: CrButtonElement,
+    button: ToolbarChipButtonElement,
   };
 }
 

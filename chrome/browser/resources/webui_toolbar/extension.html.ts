@@ -8,15 +8,17 @@ import type {ExtensionElement} from './extension.js';
 
 export function getHtml(this: ExtensionElement) {
   return html`<!--_html_template_start_-->
-<cr-button id="button" class="iph-visual-target" type="button" tabindex="-1"
-    ?is-menu-open="${this.trackedHighlighted}" title="${this.state.tooltip}"
-    aria-label="${this.state.accessibleName || this.state.tooltip}"
-    aria-haspopup="menu" draggable="${this.isDraggable()}"
+<toolbar-chip-button id="button"
+    class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
+    ?is-menu-open="${this.trackedHighlighted}" .tooltip="${this.state.tooltip}"
+    .ariaLabel="${this.state.accessibleName || this.state.tooltip}"
+    .ariaHasPopup="${'menu'}" draggable="${this.isDraggable()}"
     @dragstart="${this.onDragstart}" @dragend="${this.onDragend}"
     @keydown="${this.onKeydown}"
     @pointerdown="${this.highlightTracker.onPointerdown}"
     @click="${this.onClick_}" @contextmenu="${this.onContextmenu_}">
-  <icon-from-table .iconHandle="${this.state.icon}"></icon-from-table>
-</cr-button>
+  <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}">
+  </icon-from-table>
+</toolbar-chip-button>
 <!--_html_template_end_-->`;
 }

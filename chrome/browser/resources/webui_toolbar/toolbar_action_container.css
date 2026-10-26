@@ -97,6 +97,7 @@
 pinned-toolbar-action,
 webui-toolbar-extension,
 toolbar-divider {
+  interpolate-size: allow-keywords;
   transition: width 300ms var(--fast-out-slow-in-3-cubic-bezier),
               margin-inline-end 300ms var(--fast-out-slow-in-3-cubic-bezier),
               margin-inline-start 300ms var(--fast-out-slow-in-3-cubic-bezier),

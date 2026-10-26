@@ -2945,7 +2945,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
                  "document.querySelector('toolbar-app').shadowRoot"
                  ".querySelector('#extensions').shadowRoot"
                  ".querySelector('webui-toolbar-extension[data-key=\"\"]')"
-                 ".shadowRoot.querySelector('cr-button')"
+                 ".shadowRoot.querySelector('toolbar-chip-button')"
                  ".hasAttribute('is-menu-open')")
           .ExtractBool();
     }));

@@ -129,10 +129,10 @@ suite('Extensions', function() {
     firstAction.focus();
     assertEquals(
         firstAction.shadowRoot.activeElement,
-        firstAction.shadowRoot.querySelector('cr-button'));
+        firstAction.shadowRoot.querySelector('toolbar-chip-button'));
 
     // Trigger keyboard reorder (Ctrl+ArrowRight)
-    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
     button.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'ArrowRight',
       ctrlKey: true,
@@ -186,7 +186,7 @@ suite('Extensions', function() {
         'action-1', newSecondAction.state.id);  // Verify it is indeed Action 1
     assertEquals(
         newSecondAction.shadowRoot.activeElement,
-        newSecondAction.shadowRoot.querySelector('cr-button'));
+        newSecondAction.shadowRoot.querySelector('toolbar-chip-button'));
   });
 
   test('Cross-window dragover identifies action from broadcast', () => {
@@ -573,7 +573,7 @@ suite('Extensions', function() {
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
     assertTrue(firstAction.isDraggable());
-    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
     assertEquals('true', button.getAttribute('draggable'));
   });
 
@@ -581,7 +581,7 @@ suite('Extensions', function() {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
-    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
 
     const dragStartEvent = new DragEvent('dragstart', {
       bubbles: true,
@@ -674,7 +674,8 @@ suite('Extensions', function() {
         const actionElements =
             container.shadowRoot.querySelectorAll('webui-toolbar-extension');
         const firstAction = actionElements[0]!;
-        const button = firstAction.shadowRoot.querySelector('cr-button')!;
+        const button =
+            firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
 
         // 1. Start drag
         const dragStartEvent = new DragEvent('dragstart', {
@@ -819,7 +820,7 @@ suite('Extensions', function() {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
-    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
 
     // 1. Start drag
     const dragStartEvent = new DragEvent('dragstart', {
@@ -893,7 +894,8 @@ suite('Extensions', function() {
         const actionElements =
             container.shadowRoot.querySelectorAll('webui-toolbar-extension');
         const firstAction = actionElements[0]!;
-        const button = firstAction.shadowRoot.querySelector('cr-button')!;
+        const button =
+            firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
 
         // 1. Start drag
         const dragStartEvent = new DragEvent('dragstart', {
@@ -981,7 +983,7 @@ suite('Extensions', function() {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
-    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
 
     // 1. Start drag
     const dragStartEvent = new DragEvent('dragstart', {
@@ -1065,7 +1067,7 @@ suite('Extensions', function() {
     // Verify it returns false for isDraggable
     assertTrue(!menuButton.isDraggable());
 
-    const button = menuButton.shadowRoot.querySelector('cr-button')!;
+    const button = menuButton.shadowRoot.querySelector('toolbar-chip-button')!;
     assertEquals('false', button.getAttribute('draggable'));
 
     // Try to trigger dragstart
@@ -1247,7 +1249,7 @@ suite('Extensions', function() {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
-    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
 
     const dispatchMouseClick = () => {
       button.dispatchEvent(new PointerEvent(
@@ -1294,8 +1296,9 @@ suite('Extensions', function() {
     assertEquals(3, actionElements.length);
 
     for (const element of actionElements) {
-      const button = element.shadowRoot.querySelector('cr-button')!;
-      assertEquals('menu', button.getAttribute('aria-haspopup'));
+      const button = element.shadowRoot.querySelector('toolbar-chip-button')!;
+      assertEquals('menu', button.ariaHasPopup);
+      assertEquals('menu', button.$.button.getAttribute('aria-haspopup'));
     }
   });
 

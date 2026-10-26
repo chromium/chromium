@@ -13,7 +13,12 @@
  * stacking order, since otherwise its border will paint over our focus ring,
  * and that looks bad.
 */
-cr-button:focus-within {
+toolbar-chip-button:focus-within {
   position: relative;
   z-index: 1;
+}
+
+:host {
+  interpolate-size: allow-keywords;
+  width: auto;
 }
