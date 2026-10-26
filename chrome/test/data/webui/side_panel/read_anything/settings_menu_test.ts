@@ -292,6 +292,34 @@ suite('SettingsMenuElement', () => {
         await whenFired;
       });
 
+  test(
+      'escape or back arrow inside cr-dialog does not close submenu',
+      async () => {
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        const menuItems =
+            Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
+        const targetItem =
+            menuItems.find(item => item.id === SettingsOption.FONT);
+        assertTrue(!!targetItem);
+        targetItem.click();
+        await microtasksFinished();
+
+        let closeSubmenuFired = false;
+        settingsMenu.addEventListener(
+            ToolbarEvent.CLOSE_SUBMENU_REQUESTED,
+            () => closeSubmenuFired = true);
+
+        const crDialog = document.createElement('cr-dialog');
+        document.body.appendChild(crDialog);
+
+        keyDownOn(crDialog, 0, undefined, 'Escape');
+        keyDownOn(crDialog, 0, undefined, 'ArrowLeft');
+        await microtasksFinished();
+
+        assertFalse(closeSubmenuFired);
+        crDialog.remove();
+      });
+
   test('closing the menu prevents open timer to be fired', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =

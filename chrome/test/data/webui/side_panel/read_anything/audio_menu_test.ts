@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {AudioMenuElement, VoiceSelectionDialogElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AccentMenuElement, AudioMenuElement, VoiceSelectionDialogElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {getVoiceNatureNaming, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -89,33 +89,44 @@ suite('AudioMenuElement', () => {
     assertFalse(audioMenu.$.menu.$.lazyMenu.get().open);
   });
 
-  test('opens and closes accent menu', async () => {
+  test('opens and closes accent menu and restores focus', async () => {
     createAudioMenu();
+    stubAnimationFrame();
+    audioMenu.open(document.body);
+    await microtasksFinished();
     assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
 
-    audioMenu.$.menu.dispatchEvent(new CustomEvent('open-accent-menu'));
+    const buttons = getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+    const accentButton = buttons[1]!;
+    accentButton.click();
     await microtasksFinished();
 
-    const accentMenu = audioMenu.shadowRoot.querySelector('accent-menu');
+    const accentMenu =
+        audioMenu.shadowRoot.querySelector<AccentMenuElement>('accent-menu');
     assertTrue(!!accentMenu);
 
-    accentMenu.dispatchEvent(new CustomEvent('close'));
+    accentMenu.$.accentMenu.close();
     await microtasksFinished();
 
     assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
+    assertEquals(accentButton, audioMenu.$.menu.shadowRoot.activeElement);
   });
 
   test(
       'opens and closes voice selection dialog from audio menu action item',
       async () => {
         createAudioMenu();
+        stubAnimationFrame();
+        audioMenu.open(document.body);
+        await microtasksFinished();
         assertFalse(
             !!audioMenu.shadowRoot.querySelector('voice-selection-dialog'));
 
+        const buttons = getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+        const voiceButton = buttons[0]!;
         const whenOpenFired =
             eventToPromise(ToolbarEvent.VOICE_MENU_OPEN, audioMenu);
-        audioMenu.$.menu.dispatchEvent(
-            new CustomEvent('open-voice-selection-dialog'));
+        voiceButton.click();
         await whenOpenFired;
         await microtasksFinished();
 
@@ -126,12 +137,13 @@ suite('AudioMenuElement', () => {
 
         const whenCloseFired =
             eventToPromise(ToolbarEvent.VOICE_MENU_CLOSE, audioMenu);
-        dialog.dispatchEvent(new CustomEvent('close'));
+        dialog.$.voiceSelectionDialog.close();
         await whenCloseFired;
         await microtasksFinished();
 
         assertFalse(
             !!audioMenu.shadowRoot.querySelector('voice-selection-dialog'));
+        assertEquals(voiceButton, audioMenu.$.menu.shadowRoot.activeElement);
       });
 
   test(
