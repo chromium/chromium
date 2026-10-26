@@ -310,9 +310,8 @@ TEST_F(ErrorPageTest, GoBackFromErrorPageAndForwardToErrorPage) {
 // Sucessfully loads the page, then loads the URL which fails to load, then
 // sucessfully goes back to the first page and goes forward to error page.
 // Back-forward navigations are renderer-initiated.
-// TODO(crbug.com/41404136): Re-enable this test.
 TEST_F(ErrorPageTest,
-       DISABLED_RendererInitiatedGoBackFromErrorPageAndForwardToErrorPage) {
+       RendererInitiatedGoBackFromErrorPageAndForwardToErrorPage) {
   // First page loads sucessfully.
   test::LoadUrl(web_state(), server_.GetURL("/echo"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "Echo"));
@@ -330,7 +329,7 @@ TEST_F(ErrorPageTest,
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
   ASSERT_TRUE(security_state_info());
   ASSERT_TRUE(security_state_info()->visible_ssl_status);
-  EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
+  EXPECT_EQ(SECURITY_STYLE_UNAUTHENTICATED,
             security_state_info()->visible_ssl_status->security_style);
 }
 
