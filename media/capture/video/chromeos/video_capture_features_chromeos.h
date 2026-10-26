@@ -18,13 +18,6 @@ CAPTURE_EXPORT extern const char kAutoFramingOverride[];
 inline constexpr char kAutoFramingForceEnabled[] = "force-enabled";
 inline constexpr char kAutoFramingForceDisabled[] = "force-disabled";
 
-CAPTURE_EXPORT extern const char kFaceRetouchOverride[];
-inline constexpr char kFaceRetouchForceEnabledWithRelighting[] =
-    "force-enabled-with-relighting";
-inline constexpr char kFaceRetouchForceEnabledWithoutRelighting[] =
-    "force-enabled-without-relighting";
-inline constexpr char kFaceRetouchForceDisabled[] = "force-disabled";
-
 }  // namespace switches
 
 namespace features {

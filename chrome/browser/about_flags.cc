@@ -2926,15 +2926,6 @@ const FeatureEntry::Choice kAutoFramingOverrideChoices[] = {
     {"Force disabled", media::switches::kAutoFramingOverride,
      media::switches::kAutoFramingForceDisabled}};
 
-const FeatureEntry::Choice kFaceRetouchOverrideChoices[] = {
-    {"Default", "", ""},
-    {"Enabled with relighting", media::switches::kFaceRetouchOverride,
-     media::switches::kFaceRetouchForceEnabledWithRelighting},
-    {"Enabled without relighting", media::switches::kFaceRetouchOverride,
-     media::switches::kFaceRetouchForceEnabledWithoutRelighting},
-    {"Disabled", media::switches::kFaceRetouchOverride,
-     media::switches::kFaceRetouchForceDisabled}};
-
 const FeatureEntry::Choice kCrostiniContainerChoices[] = {
     {"Default", "", ""},
     {"Buster", crostini::kCrostiniContainerFlag, "buster"},
@@ -6723,9 +6714,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"auto-framing-override", flag_descriptions::kAutoFramingOverrideName,
      flag_descriptions::kAutoFramingOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kAutoFramingOverrideChoices)},
-    {"face-retouch-override", flag_descriptions::kFaceRetouchOverrideName,
-     flag_descriptions::kFaceRetouchOverrideDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kFaceRetouchOverrideChoices)},
     {"crostini-gpu-support", flag_descriptions::kCrostiniGpuSupportName,
      flag_descriptions::kCrostiniGpuSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrostiniGpuSupport)},

@@ -5089,14 +5089,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "face-retouch-override",
-    "owners": [
-      "okuji@chromium.org",
-      "chromeos-camera-eng@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "facilitated-payments-enable-a2a-payment",
     "owners": [
       "tushartushar@google.com",

@@ -7735,12 +7735,6 @@ inline constexpr char kFastPairDebugMetadataDescription[] =
     "advertisements, allowing notifications to pop up for debug-mode only "
     "devices.";
 
-inline constexpr char kFaceRetouchOverrideName[] =
-    "Enable face retouch using the relighting button in the VC panel";
-inline constexpr char kFaceRetouchOverrideDescription[] =
-    "Enables or disables the face retouch feature using the relighting button "
-    "in the VC panel.";
-
 inline constexpr char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 inline constexpr char kUseHDRTransferFunctionDescription[] =

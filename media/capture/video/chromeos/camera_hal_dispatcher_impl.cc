@@ -46,27 +46,6 @@ const base::FilePath::CharType kForceEnableEffectsPath[] =
     "/run/camera/force_enable_effects";
 const base::FilePath::CharType kForceDisableEffectsPath[] =
     "/run/camera/force_disable_effects";
-const base::FilePath::CharType kEnableRetouchWithRelightPath[] =
-    "/run/camera/enable_retouch_with_relight";
-const base::FilePath::CharType kEnableOnlyRetouchPath[] =
-    "/run/camera/enable_only_retouch";
-
-void CreateFile(const std::vector<std::string>& paths,
-                const std::vector<bool>& should_create) {
-  CHECK(paths.size() == should_create.size());
-  for (size_t i = 0; i < paths.size(); ++i) {
-    base::FilePath path(paths[i]);
-    if (should_create[i]) {
-      if (!base::PathExists(path)) {
-        base::File file(
-            path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-        file.Close();
-      }
-    } else if (!base::DeleteFile(path)) {
-      LOG(WARNING) << "CameraHalDispatcherImpl Error: can't  delete " << path;
-    }
-  }
-}
 
 void CreateEnableDisableFile(const std::string& enable_path,
                              const std::string& disable_path,
@@ -307,20 +286,6 @@ bool CameraHalDispatcherImpl::Start() {
       kForceEnableEffectsPath, kForceDisableEffectsPath,
       /*should_enable=*/ash::features::IsVideoConferenceEnabled(),
       /*should_remove_both=*/false);
-
-  std::string face_retouch_override =
-      command_line->GetSwitchValueASCII(switches::kFaceRetouchOverride);
-  CreateFile(
-      {
-          kEnableOnlyRetouchPath,
-          kEnableRetouchWithRelightPath,
-      },
-      {
-          face_retouch_override ==
-              switches::kFaceRetouchForceEnabledWithoutRelighting,
-          face_retouch_override ==
-              switches::kFaceRetouchForceEnabledWithRelighting,
-      });
 
   base::WaitableEvent started;
   // It's important we generate tokens before creating the socket, because
