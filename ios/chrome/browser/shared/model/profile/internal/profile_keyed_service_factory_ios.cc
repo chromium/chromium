@@ -48,10 +48,10 @@ void ProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
 }
 
 KeyedService* ProfileKeyedServiceFactoryIOS::GetServiceForProfile(
-    ProfileIOS* profile,
+    ProfileIOS& profile,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetServiceForContext(profile, create);
+  return GetServiceForContext(&profile, create);
 }
 
 void ProfileKeyedServiceFactoryIOS::DependsOn(

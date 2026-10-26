@@ -94,6 +94,16 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
   static scoped_refptr<Service> GetForProfile(ProfileIOS* profile)
     requires(sizeof...(AccessTraits) == 0)
   {
+    if (!profile) {
+      return nullptr;
+    }
+
+    return GetForProfile(*profile);
+  }
+
+  static scoped_refptr<Service> GetForProfile(ProfileIOS& profile)
+    requires(sizeof...(AccessTraits) == 0)
+  {
     return GetInstance()->template GetServiceForProfileAs<Service>(
         profile,
         /*create=*/true);
@@ -113,8 +123,19 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
                                               ServiceAccessType access_type)
     requires(sizeof...(AccessTraits) != 0)
   {
+    if (!profile) {
+      return nullptr;
+    }
+
+    return GetForProfile(*profile, access_type);
+  }
+
+  static scoped_refptr<Service> GetForProfile(ProfileIOS& profile,
+                                              ServiceAccessType access_type)
+    requires(sizeof...(AccessTraits) != 0)
+  {
     if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
-      if (!profile || ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
+      if (ServiceAccessChecker<AccessTraits...>::Reject(profile)) {
         return nullptr;
       }
     }
@@ -127,6 +148,16 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
   // Returns the instance of `Service` associated with `profile` or null
   // if no value is cached by the factory.
   static scoped_refptr<Service> GetForProfileIfExists(ProfileIOS* profile)
+    requires(sizeof...(AccessTraits) == 0)
+  {
+    if (!profile) {
+      return nullptr;
+    }
+
+    return GetForProfileIfExists(*profile);
+  }
+
+  static scoped_refptr<Service> GetForProfileIfExists(ProfileIOS& profile)
     requires(sizeof...(AccessTraits) == 0)
   {
     return GetInstance()->template GetServiceForProfileAs<Service>(
@@ -147,8 +178,20 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
       ServiceAccessType access_type)
     requires(sizeof...(AccessTraits) != 0)
   {
+    if (!profile) {
+      return nullptr;
+    }
+
+    return GetForProfileIfExists(*profile, access_type);
+  }
+
+  static scoped_refptr<Service> GetForProfileIfExists(
+      ProfileIOS& profile,
+      ServiceAccessType access_type)
+    requires(sizeof...(AccessTraits) != 0)
+  {
     if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
-      if (!profile || ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
+      if (ServiceAccessChecker<AccessTraits...>::Reject(profile)) {
         return nullptr;
       }
     }

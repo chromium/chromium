@@ -98,7 +98,7 @@ class RefcountedProfileKeyedServiceFactoryIOS
   // sub-class T of KeyedService.
   template <typename T>
     requires std::convertible_to<T*, RefcountedKeyedService*>
-  scoped_refptr<T> GetServiceForProfileAs(ProfileIOS* profile, bool create) {
+  scoped_refptr<T> GetServiceForProfileAs(ProfileIOS& profile, bool create) {
     return base::WrapRefCounted(
         static_cast<T*>(GetServiceForProfile(profile, create).get()));
   }
@@ -130,7 +130,7 @@ class RefcountedProfileKeyedServiceFactoryIOS
   // `create` is true, the service will be create using
   // BuildServiceInstanceFor() if it doesn't already exists.
   scoped_refptr<RefcountedKeyedService> GetServiceForProfile(
-      ProfileIOS* profile,
+      ProfileIOS& profile,
       bool create);
 
   // The template constructor has to be in the header but it delegates to this

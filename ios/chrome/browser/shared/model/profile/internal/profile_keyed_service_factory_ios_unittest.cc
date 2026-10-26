@@ -36,11 +36,11 @@ class DummyServiceFactory final : public ProfileKeyedServiceFactoryIOS {
       : ProfileKeyedServiceFactoryIOS("DummyService",
                                       std::forward<Traits>(traits)...) {}
 
-  DummyService* GetForProfile(ProfileIOS* profile) {
+  DummyService* GetForProfile(ProfileIOS& profile) {
     return GetServiceForProfileAs<DummyService>(profile, true);
   }
 
-  DummyService* GetForProfileIfExists(ProfileIOS* profile) {
+  DummyService* GetForProfileIfExists(ProfileIOS& profile) {
     return GetServiceForProfileAs<DummyService>(profile, false);
   }
 
@@ -112,10 +112,10 @@ class ProfileKeyedServiceFactoryIOSTest : public testing::TestWithParam<Param> {
 
   DummyServiceFactory& factory() { return dummy_service_factory_; }
 
-  ProfileIOS* GetRegularProfile() { return test_profile_.get(); }
+  ProfileIOS& GetRegularProfile() { return *test_profile_; }
 
-  ProfileIOS* GetOffTheRecordProfile() {
-    return test_profile_->GetOffTheRecordProfile();
+  ProfileIOS& GetOffTheRecordProfile() {
+    return *test_profile_->GetOffTheRecordProfile();
   }
 
  private:
@@ -150,7 +150,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that ProfileKeyedServiceFactoryIOS behaves correctly for regular
 // profiles.
 TEST_P(ProfileKeyedServiceFactoryIOSTest, RegularProfile) {
-  ProfileIOS* profile = GetRegularProfile();
+  ProfileIOS& profile = GetRegularProfile();
 
   // If the service should not be created during testing, check it is not
   // created and then terminate the test successfully.
@@ -182,7 +182,7 @@ TEST_P(ProfileKeyedServiceFactoryIOSTest, RegularProfile) {
 // Tests that ProfileKeyedServiceFactoryIOS behaves correctly for off-the-record
 // profiles.
 TEST_P(ProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
-  ProfileIOS* otr_profile = GetOffTheRecordProfile();
+  ProfileIOS& otr_profile = GetOffTheRecordProfile();
 
   // If the service should not be created during testing, check it is not
   // created and then terminate the test successfully.

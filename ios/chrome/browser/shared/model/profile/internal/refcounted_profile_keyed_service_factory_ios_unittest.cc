@@ -43,11 +43,11 @@ class DummyServiceFactory final
             "DummyService",
             std::forward<Traits>(traits)...) {}
 
-  scoped_refptr<DummyService> GetForProfile(ProfileIOS* profile) {
+  scoped_refptr<DummyService> GetForProfile(ProfileIOS& profile) {
     return GetServiceForProfileAs<DummyService>(profile, true);
   }
 
-  scoped_refptr<DummyService> GetForProfileIfExists(ProfileIOS* profile) {
+  scoped_refptr<DummyService> GetForProfileIfExists(ProfileIOS& profile) {
     return GetServiceForProfileAs<DummyService>(profile, false);
   }
 
@@ -120,10 +120,10 @@ class RefcountedProfileKeyedServiceFactoryIOSTest
 
   DummyServiceFactory& factory() { return dummy_service_factory_; }
 
-  ProfileIOS* GetRegularProfile() { return test_profile_.get(); }
+  ProfileIOS& GetRegularProfile() { return *test_profile_; }
 
-  ProfileIOS* GetOffTheRecordProfile() {
-    return test_profile_->GetOffTheRecordProfile();
+  ProfileIOS& GetOffTheRecordProfile() {
+    return *test_profile_->GetOffTheRecordProfile();
   }
 
  private:
@@ -158,7 +158,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that RefcountedProfileKeyedServiceFactoryIOS behaves correctly for
 // regular profiles.
 TEST_P(RefcountedProfileKeyedServiceFactoryIOSTest, RegularProfile) {
-  ProfileIOS* profile = GetRegularProfile();
+  ProfileIOS& profile = GetRegularProfile();
 
   // If the service should not be created during testing, check it is not
   // created and then terminate the test successfully.
@@ -190,7 +190,7 @@ TEST_P(RefcountedProfileKeyedServiceFactoryIOSTest, RegularProfile) {
 // Tests that RefcountedProfileKeyedServiceFactoryIOS behaves correctly for
 // off-the-record profiles.
 TEST_P(RefcountedProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
-  ProfileIOS* otr_profile = GetOffTheRecordProfile();
+  ProfileIOS& otr_profile = GetOffTheRecordProfile();
 
   // If the service should not be created during testing, check it is not
   // created and then terminate the test successfully.

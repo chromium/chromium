@@ -94,7 +94,7 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // sub-class T of KeyedService.
   template <typename T>
     requires std::convertible_to<T*, KeyedService*>
-  T* GetServiceForProfileAs(ProfileIOS* profile, bool create) {
+  T* GetServiceForProfileAs(ProfileIOS& profile, bool create) {
     return static_cast<T*>(GetServiceForProfile(profile, create));
   }
 
@@ -124,7 +124,7 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // with incognito and testing profiles according to constructor traits. If
   // `create` is true, the service will be create using
   // BuildServiceInstanceFor() if it doesn't already exists.
-  KeyedService* GetServiceForProfile(ProfileIOS* profile, bool create);
+  KeyedService* GetServiceForProfile(ProfileIOS& profile, bool create);
 
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line

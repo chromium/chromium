@@ -293,8 +293,11 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
 syncer::SyncServiceImpl*
 SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
     ProfileIOS* profile) {
+  if (!profile) {
+    return nullptr;
+  }
   return GetInstance()->GetServiceForProfileAs<syncer::SyncServiceImpl>(
-      profile, /*create*/ true);
+      *profile, /*create*/ true);
 }
 
 // static
