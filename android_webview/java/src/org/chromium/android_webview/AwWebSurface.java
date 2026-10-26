@@ -76,6 +76,10 @@ public class AwWebSurface {
             mAwContents.setWebSurface(null);
             mAwContents.setInvalidateListener(null);
             mAwContents.getSettings().setForceFullscreenUnsupported(false);
+            AwDisplayCutoutController cutoutController = mAwContents.getDisplayCutoutController();
+            if (cutoutController != null) {
+                cutoutController.setInsetViewportBelowWindow(true);
+            }
             WebContents webContents = mAwContents.getWebContents();
             if (webContents != null) {
                 AwWebSurfaceJni.get().setForWebContents(webContents, null);
@@ -86,6 +90,13 @@ public class AwWebSurface {
             mAwContents.setWebSurface(this);
             mAwContents.setInvalidateListener(mEventListener::onInvalidate);
             mAwContents.getSettings().setForceFullscreenUnsupported(true);
+            // Don't shrink the page's viewport when the surface extends off the bottom of the
+            // screen (e.g. inside a LazyColumn), so the page hits its bottom edge and overscrolls
+            // to let the parent scroll the surface into view.
+            AwDisplayCutoutController cutoutController = mAwContents.getDisplayCutoutController();
+            if (cutoutController != null) {
+                cutoutController.setInsetViewportBelowWindow(false);
+            }
             mAwContents.setOverScrollMode(View.OVER_SCROLL_NEVER);
             onWebContentsChanged();
             if (mWidth > 0 && mHeight > 0) {

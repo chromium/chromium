@@ -111,6 +111,9 @@ public class AwDisplayCutoutController {
     // position.
     private int mVisualViewportBottomInset;
 
+    // Whether to inset the visual viewport when the container view extends below the window.
+    private boolean mInsetViewportBelowWindow = true;
+
     /**
      * Constructor for AwDisplayCutoutController.
      *
@@ -239,6 +242,17 @@ public class AwDisplayCutoutController {
         return mVisualViewportBottomInset;
     }
 
+    /**
+     * Sets whether to inset the visual viewport when the container view extends below the bottom of
+     * the window.
+     */
+    void setInsetViewportBelowWindow(boolean insetViewportBelowWindow) {
+        if (mInsetViewportBelowWindow == insetViewportBelowWindow) return;
+        mInsetViewportBelowWindow = insetViewportBelowWindow;
+        recalculateBottomImeInset();
+        mDelegate.bottomImeInsetChanged();
+    }
+
     @VisibleForTesting
     public void recalculateBottomImeInset() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R || !mContainerView.isAttachedToWindow()) {
@@ -264,6 +278,11 @@ public class AwDisplayCutoutController {
                         pos[1],
                         pos[0] + mContainerView.getWidth(),
                         pos[1] + mContainerView.getHeight());
+
+        if (!mInsetViewportBelowWindow && viewRectInWindow.bottom > windowBounds.height()) {
+            mVisualViewportBottomInset = 0;
+            return;
+        }
 
         // This is the positive difference between the bottom of the WebView and the top of the IME.
         // For cases where the bottom of the WebView is higher than the top of the IME, return 0.

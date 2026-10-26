@@ -4258,7 +4258,6 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().getRenderProcess(mNativeAwContents);
     }
 
-    @VisibleForTesting
     @Nullable
     public AwDisplayCutoutController getDisplayCutoutController() {
         return mDisplayCutoutController;

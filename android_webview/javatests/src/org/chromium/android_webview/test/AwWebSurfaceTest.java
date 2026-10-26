@@ -11,9 +11,12 @@ import static org.junit.Assert.assertTrue;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,6 +28,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.AwWebContent;
 import org.chromium.android_webview.AwWebSurface;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
@@ -34,6 +38,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.net.test.util.TestWebServer;
 
 /** Tests for {@link AwWebSurface}. */
@@ -317,6 +322,45 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                 "true",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, "document.fullscreenEnabled"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    public void testNoViewportInsetBelowWindowWhileBound() {
+        AwViewAndroidDelegate viewAndroidDelegate = mAwContents.getViewAndroidDelegateForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Make the container view extend below the window, as it does for a tall
+                    // WebSurface in a scroll container. ScrollView measures its child with an
+                    // unspecified height, so fix the container view's height inside a FrameLayout.
+                    mActivityTestRule.getActivity().removeAllViews();
+                    int width = mActivityTestRule.getActivity().getRootLayoutWidth();
+                    FrameLayout content = new FrameLayout(mActivityTestRule.getActivity());
+                    content.addView(mContainerView, new FrameLayout.LayoutParams(width, 6000));
+                    ScrollView scrollView = new ScrollView(mActivityTestRule.getActivity());
+                    scrollView.addView(content, new FrameLayout.LayoutParams(width, 6000));
+                    mActivityTestRule.getActivity().addView(scrollView);
+                });
+        // Without a WebSurface, the part below the window is inset like the IME. Recalculate on
+        // each poll, since the view only gets its new size on a later layout pass.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mAwContents.getDisplayCutoutController().recalculateBottomImeInset();
+                    return viewAndroidDelegate.getViewportInsetBottom() > 0;
+                });
+
+        AwWebSurface surface = new AwWebSurface(new TestEventListener());
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
+        CriteriaHelper.pollUiThread(
+                () -> viewAndroidDelegate.getViewportInsetBottom() == 0,
+                "The part of the WebSurface below the window was inset.");
+
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(null));
+        CriteriaHelper.pollUiThread(
+                () -> viewAndroidDelegate.getViewportInsetBottom() > 0,
+                "The inset wasn't restored after unbinding the WebSurface.");
     }
 
     @Test
