@@ -47,16 +47,19 @@ should use Google naming. Be sure to use the base namespace.
         are good choices. While they have poor asymptotic behavior on writes, on
         a write-once container this performance is no worse than the standard
         library tree containers and so they are strictly better in terms of
-        overhead.
+        runtime memory overhead. When populating a write-once `base::flat_map`
+        or `base::flat_set`, prefer constructing it in bulk from a `std::vector`
+        rather than inserting elements one-by-one in a loop (which both incurs
+        O(n^2) shifts and inlines vector reallocation and shifting code).
     2.  If the map is always very small, then `base::flat_map` and
         `base::flat_set` are again good choices, even if the map is being
         written to multiple times. While mutations are O(n) this cost is
         negligible for very small values of n compared to the cost of doing a
         malloc on every mutation.
-    3.  If the map is written multiple times and is large then then `std::map`
+    3.  If the map is written multiple times and is large then `std::map`
         and `std::set` are the best choices.
     4.  If you require pointer stability (on either the key or value) then
-        `std::map` and `std::set` are the also the best choices.
+        `std::map` and `std::set` are also the best choices.
 
 When using `base::flat_map` and `base::flat_set` there are also fixed versions
 of these that are backed by a `std::array` instead of a `std::vector` and which
@@ -67,7 +70,7 @@ particularly if you're looking for a structure that can be used as a
 compile-time lookup table.
 
 Note that this advice never suggests the use of `std::unordered_map` and
-`std::unordered_set`. These containers provides similar features to the Abseil
+`std::unordered_set`. These containers provide similar features to the Abseil
 flat hash containers but with worse performance. They should only be used if
 absolutely required for compatibility with third-party code.
 
@@ -77,6 +80,35 @@ types do provide good performance for cases where you need a sorted container
 they have been found to introduce a very large code size penalty when using them
 in Chromium. Until this problem can be resolved they should not be used in
 Chromium code.
+
+### Code size considerations
+
+While `absl::flat_hash_map`, `absl::flat_hash_set`, `base::flat_map`, and
+`base::flat_set` reduce heap allocations and per-item runtime memory overhead
+compared to `std::map` and `std::set`, they often generate significantly more
+machine code (`.text`):
+
+*   `std::map` and `std::set` manipulate out-of-line node pointers, which
+    compiles to small code that deduplicates well across types via linker
+    Identical Code Folding (ICF).
+*   Each unique `absl::flat_hash_map` or `absl::flat_hash_set` specialization
+    instantiates type-specific SwissTable probing, insertion, erasure, and
+    rehashing templates (often ~1–2 KB on ARM32 `-Os` and ~3–6 KB on ARM64
+    `-O2`).
+*   `base::flat_map` and `base::flat_set` inline binary search and contiguous
+    `std::vector` element-shifting and reallocation logic at single-element
+    mutation sites (`operator[]`, `insert`, `emplace`, `erase`). This code size
+    cost is amplified when keys or values have non-trivial move assignment (such
+    as `std::variant` or multi-field structs) or when elements are inserted
+    one-by-one in a loop instead of bulk-constructed from a `std::vector`.
+
+In cold code paths where a container holds only a few elements and is neither a
+CPU hot spot nor instantiated in large numbers in memory, `std::map` and
+`std::set` are often preferable to avoid adding several kilobytes of permanent
+binary size in exchange for saving a few dozen bytes of heap allocation (see
+[//docs/speed/binary_size/optimization_advice.md](../../docs/speed/binary_size/optimization_advice.md#Optimizing-Code)).
+Avoid mechanically replacing `std::map` or `std::set` in non-performance-critical
+code if it regresses binary size.
 
 ### Map and set implementation details
 
