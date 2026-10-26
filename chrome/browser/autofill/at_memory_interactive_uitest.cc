@@ -87,7 +87,6 @@ class AtMemoryInteractiveUiTest : public AutofillUiTest,
                               features::kAutofillAtMemory,
                               features::kAutofillAtMemoryDoubleCtrl,
                               features::kAutofillAtMemoryTriggerShortcut,
-                              features::kAutofillAtMemoryTriggerString,
                               features::debug::kAtMemorySkipEnablementChecks},
         /*disabled_features=*/{});
   }
