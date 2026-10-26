@@ -439,6 +439,7 @@ void LensQueryFlowRouter::SendRegionSearch(
     std::optional<SkBitmap> region_bytes_to_send = region_bytes;
     lens::mojom::CenterRotatedBoxPtr region_to_send =
         region ? region->Clone() : nullptr;
+    lens::mojom::CenterRotatedBoxPtr viewport_region;
 
     if (context_upload_mode_ == ContextUploadMode::kSelectedRegionOnly) {
       // For region-only uploads, the selected region must be cropped out of the
@@ -458,6 +459,10 @@ void LensQueryFlowRouter::SendRegionSearch(
                                     region_bitmap, GURL(), std::nullopt,
                                     base::span<const PageContent>(),
                                     lens::MimeType::kImage, std::nullopt));
+      // Save the viewport region before overwriting region_to_send, so that
+      // the OCR text response can be mapped back to the viewport coordinate
+      // space.
+      viewport_region = region ? region->Clone() : nullptr;
       // Set the region bounds to indicate that the selected region is the
       // entirety of the context image.
       region_bytes_to_send = region_bitmap;
@@ -470,7 +475,8 @@ void LensQueryFlowRouter::SendRegionSearch(
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         std::move(region_to_send), std::move(region_bytes_to_send),
         /*query_text=*/std::nullopt, lens_selection_type,
-        additional_search_query_params, query_start_time, invocation_source));
+        additional_search_query_params, query_start_time, invocation_source,
+        std::move(viewport_region)));
     return;
   }
 
@@ -625,11 +631,44 @@ void LensQueryFlowRouter::HandleInteractionResponse(
     // TODO(crbug.com/469836056): Verify that this is the correct resized bitmap
     // to be using to generate the text once the interaction response returns
     // text.
-    lens_search_controller_->HandleInteractionResponse(
-        lens::CreateTextMojomFromInteractionResponse(
-            interaction_response, zoomed_crop,
-            gfx::Size(GetViewportScreenshot().width(),
-                      GetViewportScreenshot().height())));
+    lens::mojom::TextPtr text = lens::CreateTextMojomFromInteractionResponse(
+        interaction_response, zoomed_crop,
+        gfx::Size(GetViewportScreenshot().width(),
+                  GetViewportScreenshot().height()));
+
+    // In region-only mode, the interaction request was evaluated on the cropped
+    // region alone, so the returned text coordinates are normalized relative to
+    // the crop [0, 1]. CreateTextMojomFromInteractionResponse scales the size
+    // and center point by the crop width and height, but does not translate by
+    // the crop origin in the viewport. Translate the coordinates into viewport
+    // space.
+    if (image_crop.has_value() && image_crop->has_zoomed_crop() &&
+        image_crop->zoomed_crop().has_crop() &&
+        image_crop->zoomed_crop().crop().has_center_x() &&
+        image_crop->zoomed_crop().crop().has_center_y() &&
+        context_upload_mode_ == ContextUploadMode::kSelectedRegionOnly &&
+        text && text->text_layout) {
+      const auto& crop = image_crop->zoomed_crop().crop();
+      const float origin_x = crop.center_x() - crop.width() / 2.0f;
+      const float origin_y = crop.center_y() - crop.height() / 2.0f;
+      auto remap_geometry = [&](const lens::mojom::GeometryPtr& geometry) {
+        if (geometry && geometry->bounding_box) {
+          auto& box = geometry->bounding_box->box;
+          box.set_origin(gfx::PointF(origin_x + box.x(), origin_y + box.y()));
+        }
+      };
+      for (const auto& paragraph : text->text_layout->paragraphs) {
+        remap_geometry(paragraph->geometry);
+        for (const auto& line : paragraph->lines) {
+          remap_geometry(line->geometry);
+          for (const auto& word : line->words) {
+            remap_geometry(word->geometry);
+          }
+        }
+      }
+    }
+
+    lens_search_controller_->HandleInteractionResponse(std::move(text));
   }
 }
 
@@ -1082,7 +1121,8 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     base::Time query_start_time,
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    lens::mojom::CenterRotatedBoxPtr viewport_region) {
   auto request_info = std::make_unique<CreateSearchUrlRequestInfo>();
   request_info->search_url_type = SearchUrlType::kStandard;
   if (query_text.has_value()) {
@@ -1132,9 +1172,16 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
   if (region) {
     auto client_logs =
         base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+    // When viewport_region is present (e.g. kSelectedRegionOnly mode), the
+    // region box has been normalized relative to region_bytes (the cropped
+    // region bitmap). Use region_bytes as the base image so that the computed
+    // zoom factor remains 1.0 rather than scaling relative to the full
+    // viewport.
+    const SkBitmap& base_image = (viewport_region && region_bytes.has_value())
+                                     ? *region_bytes
+                                     : GetViewportScreenshot();
     auto image_crop_and_bitmap = lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-        GetViewportScreenshot(), region->Clone(), region_bytes,
-        std::move(client_logs));
+        base_image, region->Clone(), region_bytes, std::move(client_logs));
     if (image_crop_and_bitmap) {
       lens_search_controller_->HandleThumbnailCreated(
           image_crop_and_bitmap->image_crop.image().image_content(),
@@ -1142,9 +1189,37 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
       request_info->image_crop = std::move(image_crop_and_bitmap->image_crop);
     }
   }
-  request_info->interaction_response_callback =
-      base::BindOnce(&LensQueryFlowRouter::HandleInteractionResponse,
-                     weak_factory_.GetWeakPtr(), request_info->image_crop);
+  // Determine the crop box to associate with the interaction response. When
+  // viewport_region is present, the server request was evaluated on the
+  // cropped context image, but any returned OCR text and objects need to be
+  // remapped to the full viewport overlay coordinate frame.
+  std::optional<lens::ImageCrop> response_image_crop;
+  if (viewport_region) {
+    lens::ImageCrop crop_for_response;
+    auto* mutable_zoomed_crop = crop_for_response.mutable_zoomed_crop();
+    mutable_zoomed_crop->set_parent_width(GetViewportScreenshot().width());
+    mutable_zoomed_crop->set_parent_height(GetViewportScreenshot().height());
+    const float zoom = (request_info->image_crop &&
+                        request_info->image_crop->has_zoomed_crop())
+                           ? request_info->image_crop->zoomed_crop().zoom()
+                           : 1.0f;
+    mutable_zoomed_crop->set_zoom(zoom);
+    mutable_zoomed_crop->mutable_crop()->set_center_x(viewport_region->box.x());
+    mutable_zoomed_crop->mutable_crop()->set_center_y(viewport_region->box.y());
+    mutable_zoomed_crop->mutable_crop()->set_width(
+        viewport_region->box.width());
+    mutable_zoomed_crop->mutable_crop()->set_height(
+        viewport_region->box.height());
+    mutable_zoomed_crop->mutable_crop()->set_coordinate_type(
+        lens::CoordinateType::NORMALIZED);
+    response_image_crop = std::move(crop_for_response);
+  } else {
+    response_image_crop = request_info->image_crop;
+  }
+
+  request_info->interaction_response_callback = base::BindOnce(
+      &LensQueryFlowRouter::HandleInteractionResponse,
+      weak_factory_.GetWeakPtr(), std::move(response_image_crop));
   return request_info;
 }
 

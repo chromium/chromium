@@ -213,7 +213,12 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   selectAndTranslateWords(startIndex: number, endIndex: number) {
-    if (this.regionTextResponse) {
+    if (startIndex < 0 || endIndex < 0) {
+      return;
+    }
+
+    if (this.regionTextResponse &&
+        this.regionTextResponse.receivedWords.length > 0) {
       this.hasActionedText = true;
       translateWords(
           this.getRegionText(), this.regionTextResponse.contentLanguage, 0,
@@ -221,18 +226,19 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
       return;
     }
 
-    assert(this.fullTextResponse);
     if (this.translateTimeout.timeoutElapsedOrCleared) {
-      this.hasActionedText = true;
-      // This layer does not support selection of text. So just translate the
-      // words.
-      translateWords(
-          this.getRegionTextFromFullImage(startIndex, endIndex),
-          this.fullTextResponse.contentLanguage, startIndex, endIndex,
-          this.browserProxy);
-      this.highlightedLines =
-          createHighlightedLines(this.fullTextResponse, startIndex, endIndex);
-      this.hideHighlightedLines = false;
+      if (this.fullTextResponse) {
+        this.hasActionedText = true;
+        // This layer does not support selection of text. So just translate the
+        // words.
+        translateWords(
+            this.getRegionTextFromFullImage(startIndex, endIndex),
+            this.fullTextResponse.contentLanguage, startIndex, endIndex,
+            this.browserProxy);
+        this.highlightedLines =
+            createHighlightedLines(this.fullTextResponse, startIndex, endIndex);
+        this.hideHighlightedLines = false;
+      }
       return;
     }
 
@@ -271,8 +277,12 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   private detectTextInRegion(box: CenterRotatedBox) {
-    // If we are still waiting for the text, hide the context menu.
-    if (!this.textReceivedTimeout.timeoutElapsedOrCleared) {
+    const hasRegionText = Boolean(
+        this.regionTextResponse &&
+        this.regionTextResponse.receivedWords.length > 0);
+    // If we are still waiting for text and don't yet have region text, hide the
+    // context menu.
+    if (!hasRegionText && !this.textReceivedTimeout.timeoutElapsedOrCleared) {
       this.fire('hide-selected-region-context-menu');
       return;
     }
@@ -283,28 +293,21 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // Only ever show the region context menu once per region selection. All
     // other times it should only update the context menu.
     this.shouldShowContextMenuIfDetectsText = false;
-    // If there is region text in the interaction response,
-    if (this.regionTextResponse) {
-      if (this.regionTextResponse.receivedWords.length > 0) {
-        this.fire(showOrUpdateEventName, {
-          box,
-          selectionStartIndex: 0,
-          selectionEndIndex: this.regionTextResponse.receivedWords.length - 1,
-          text: this.getRegionText(),
-        });
-        return;
-      }
-
-      // Do not show the detected text context menu items if there was no text
-      // found in the region.
+    // Prefer using words from the interaction response's region text if
+    // available.
+    if (this.regionTextResponse &&
+        this.regionTextResponse.receivedWords.length > 0) {
       this.fire(showOrUpdateEventName, {
         box,
-        selectionStartIndex: -1,
-        selectionEndIndex: -1,
+        selectionStartIndex: 0,
+        selectionEndIndex: this.regionTextResponse.receivedWords.length - 1,
+        text: this.getRegionText(),
       });
       return;
     }
 
+    // Otherwise, fall back to checking for words within the region from the
+    // full page text response.
     if (this.fullTextResponse &&
         this.fullTextResponse.receivedWords.length > 0) {
       const selection = findWordsInRegion(
@@ -388,14 +391,23 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // of the text are not correct. So use the full text response to create the
     // highlighted lines. This is because of how the geometry of the injected
     // image is calculated and sent to Lens. See crbug.com/422555788.
+    // If the full text response is not available (such as in region-only mode),
+    // fall back to rendering the highlighted lines from the region text
+    // response.
     if (isInjectedImage && this.selectedRegion && this.fullTextResponse) {
       this.tryRenderInjectedImageHighlights();
-    } else if (!isInjectedImage) {
+    } else if (!isInjectedImage || !this.fullTextResponse) {
       this.highlightedLines = createHighlightedLines(
           this.regionTextResponse, 0,
           this.regionTextResponse.receivedWords.length - 1);
     }
     this.hideHighlightedLines = false;
+
+    if (this.regionTextResponse.receivedWords.length > 0) {
+      this.textReceivedTimeout.timeoutElapsedOrCleared = true;
+      clearTimeout(this.textReceivedTimeout.timeoutId);
+      this.textReceivedTimeout.timeoutId = -1;
+    }
 
     // Used to notify the post selection renderer so that, if a region has
     // already been selected, text in the region can be detected.
@@ -476,7 +488,8 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     }
     this.hasActionedText = true;
 
-    if (this.regionTextResponse) {
+    if (this.regionTextResponse &&
+        this.regionTextResponse.receivedWords.length > 0) {
       callback(/*textStartIndex=*/ 0,
                this.regionTextResponse.receivedWords.length - 1,
                this.getRegionText());

@@ -348,12 +348,9 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
 
 void LensOverlayController::SendRegionText(lens::mojom::TextPtr text,
                                            bool is_injected_image) {
-  if (IsSelectedRegionOnlyMode()) {
-    // Suppress text overlays in region-only mode. Bounding box coordinates
-    // returned for the cropped region payload do not map to the full viewport
-    // overlay coordinate frame.
-    return;
-  }
+  // In region-only mode, bounding box coordinates returned for the cropped
+  // region are mapped back to the full viewport overlay coordinate frame by
+  // LensQueryFlowRouter / LensOverlayProtoConverter before reaching here.
   if (!page_) {
     return;
   }
@@ -968,11 +965,13 @@ void LensOverlayController::IssueLensRequest(
 
   // On the initial query of the non-blocking image context menu search flow,
   // the injected image will be sent in place of the screenshot, so set the
-  // region to the entire area. The initial query is identified by selection
-  // type INJECTED_IMAGE; subsequent queries will have a different selection
-  // type.
+  // region to the entire area for legacy query controllers. When routing to
+  // Contextual Tasks (or in region-only query router flow), the router expects
+  // the actual viewport region so it can remap the response coordinates back to
+  // the viewport.
   lens::mojom::CenterRotatedBoxPtr server_region = region.Clone();
-  if (lens::features::
+  if (!lens_search_controller_->should_route_to_contextual_tasks() &&
+      lens::features::
           IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
       invocation_source_ ==
           lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
@@ -1939,6 +1938,36 @@ void LensOverlayController::HandleInteractionURLResponse(
 void LensOverlayController::HandleInteractionResponse(
     lens::mojom::TextPtr text) {
   const bool is_injected_image = lens_selection_type_ == lens::INJECTED_IMAGE;
+  if (is_injected_image && IsSelectedRegionOnlyMode() &&
+      !lens_search_controller_->should_route_to_contextual_tasks() &&
+      initialization_data_ && initialization_data_->selected_region_ && text &&
+      text->text_layout) {
+    // When routing through the legacy query controller in region-only mode,
+    // the text coordinates returned by the server are normalized to [0, 1] of
+    // the cropped injected image. Remap them to the image's viewport bounding
+    // box.
+    const auto& viewport_box = initialization_data_->selected_region_->box;
+    const float origin_x = viewport_box.x() - viewport_box.width() / 2.0f;
+    const float origin_y = viewport_box.y() - viewport_box.height() / 2.0f;
+    auto remap_geometry = [&](const lens::mojom::GeometryPtr& geometry) {
+      if (geometry && geometry->bounding_box) {
+        auto& box = geometry->bounding_box->box;
+        box.set_origin(gfx::PointF(origin_x + box.x() * viewport_box.width(),
+                                   origin_y + box.y() * viewport_box.height()));
+        box.set_size(gfx::SizeF(box.width() * viewport_box.width(),
+                                box.height() * viewport_box.height()));
+      }
+    };
+    for (const auto& paragraph : text->text_layout->paragraphs) {
+      remap_geometry(paragraph->geometry);
+      for (const auto& line : paragraph->lines) {
+        remap_geometry(line->geometry);
+        for (const auto& word : line->words) {
+          remap_geometry(word->geometry);
+        }
+      }
+    }
+  }
   SendRegionText(std::move(text), is_injected_image);
 }
 

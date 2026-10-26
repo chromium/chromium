@@ -286,7 +286,12 @@ class LensQueryFlowRouter
       lens::MimeType primary_content_type,
       std::optional<uint32_t> pdf_current_page);
 
-  // Creates the search url request info from an interaction.
+  // Creates the search url request info from an interaction. If
+  // `viewport_region` is provided (e.g. in `kSelectedRegionOnly` mode),
+  // `region` represents the crop within the context image, while
+  // `viewport_region` represents the region in the full viewport coordinate
+  // frame used to remap interaction response objects/text back to the overlay
+  // viewport.
   std::unique_ptr<CreateSearchUrlRequestInfo>
   CreateSearchUrlRequestInfoFromInteraction(
       lens::mojom::CenterRotatedBoxPtr region,
@@ -295,7 +300,8 @@ class LensQueryFlowRouter
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       base::Time query_start_time,
-      lens::LensOverlayInvocationSource invocation_source);
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::mojom::CenterRotatedBoxPtr viewport_region = nullptr);
 
   // Called when QueryContextualizer completes contextualization.
   void OnContextualizedComplete(
