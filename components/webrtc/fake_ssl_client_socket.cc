@@ -9,11 +9,10 @@
 
 #include <array>
 #include <cstdlib>
-#include <cstring>
 #include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -32,7 +31,7 @@ namespace {
 // This is a SSL v2 CLIENT_HELLO message.
 // TODO(juberti): Should this have a session id? The response doesn't have a
 // certificate, so the hello should have a session id.
-static const uint8_t kSslClientHello[] = {
+static const auto kSslClientHello = std::to_array<uint8_t>({
     0x80, 0x46,                                            // msg len
     0x01,                                                  // CLIENT_HELLO
     0x03, 0x01,                                            // SSL 3.1
@@ -46,7 +45,7 @@ static const uint8_t kSslClientHello[] = {
     0x00, 0x00, 0x62, 0x00, 0x00, 0x03, 0x00, 0x00, 0x06,  //
     0x1f, 0x17, 0x0c, 0xa6, 0x2f, 0x00, 0x78, 0xfc,        // challenge
     0x46, 0x55, 0x2e, 0xb1, 0x83, 0x39, 0xf1, 0xea         //
-};
+});
 
 // This is a TLSv1 SERVER_HELLO message.
 static const auto kSslServerHello = std::to_array<uint8_t>({
@@ -101,8 +100,7 @@ FakeSSLClientSocket::FakeSSLClientSocket(
       write_buf_(NewDrainableIOBufferWithSize(std::size(kSslClientHello))),
       read_buf_(NewDrainableIOBufferWithSize(std::size(kSslServerHello))) {
   CHECK(transport_socket_.get());
-  UNSAFE_TODO(std::memcpy(write_buf_->data(), kSslClientHello,
-                          std::size(kSslClientHello)));
+  write_buf_->span().copy_from(kSslClientHello);
 }
 
 FakeSSLClientSocket::~FakeSSLClientSocket() = default;
@@ -305,11 +303,10 @@ net::Error FakeSSLClientSocket::ProcessVerifyServerHelloDone(size_t read) {
   if (read == 0U) {
     return net::ERR_UNEXPECTED;
   }
-  const uint8_t* expected_data_start =
-      &kSslServerHello[std::size(kSslServerHello) -
-                       read_buf_->BytesRemaining()];
-  if (UNSAFE_TODO(std::memcmp(expected_data_start, read_buf_->data(), read)) !=
-      0) {
+  auto expected =
+      base::span(kSslServerHello)
+          .subspan(kSslServerHello.size() - read_buf_->BytesRemaining(), read);
+  if (expected != read_buf_->span().first(read)) {
     return net::ERR_UNEXPECTED;
   }
   if (read < static_cast<size_t>(read_buf_->BytesRemaining())) {
