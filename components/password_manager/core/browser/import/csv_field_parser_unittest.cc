@@ -5,14 +5,19 @@
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 
 #include <array>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/test/gmock_expected_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
+
+using ::base::test::ValueIs;
+using ::testing::Optional;
 
 TEST(CSVFieldParser, Positive) {
   struct TestCase {
@@ -48,11 +53,9 @@ TEST(CSVFieldParser, Positive) {
     CSVFieldParser field_parser(test_case.input);
 
     for (const std::string& field : test_case.expected_fields) {
-      ASSERT_TRUE(field_parser.HasMoreFields());
-      std::string_view parsed;
-      EXPECT_TRUE(field_parser.NextField(&parsed));
-      EXPECT_EQ(field, parsed);
+      EXPECT_THAT(field_parser.NextField(), Optional(ValueIs(field)));
     }
+    EXPECT_EQ(field_parser.NextField(), std::nullopt);
   }
 }
 
@@ -74,13 +77,12 @@ TEST(CSVFieldParser, Negative) {
     SCOPED_TRACE(test_case.name);
     CSVFieldParser field_parser(test_case.input);
 
-    std::string_view parsed;
     for (size_t i = 0; i < test_case.index_of_first_failure; ++i) {
-      ASSERT_TRUE(field_parser.HasMoreFields());
-      EXPECT_TRUE(field_parser.NextField(&parsed));
+      EXPECT_THAT(field_parser.NextField(), Optional(ValueIs(testing::_)));
     }
-    ASSERT_TRUE(field_parser.HasMoreFields());
-    EXPECT_FALSE(field_parser.NextField(&parsed));
+    ASSERT_THAT(field_parser.NextField(),
+                Optional(base::test::ErrorIs(testing::_)));
+    EXPECT_EQ(field_parser.NextField(), std::nullopt);
   }
 }
 

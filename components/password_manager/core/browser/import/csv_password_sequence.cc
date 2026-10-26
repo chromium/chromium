@@ -88,21 +88,20 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
 
   // Construct ColumnMap.
   std::string_view first = ConsumeCSVLine(&data_rows_);
-  size_t col_index = 0;
 
   constexpr size_t kMaxPriority = 101;
   // Mapping "note column index" -> "header name priority".
   size_t note_column_index, note_column_priority = kMaxPriority;
 
-  for (CSVFieldParser parser(first); parser.HasMoreFields(); ++col_index) {
-    std::string_view raw_name;
-    if (!parser.NextField(&raw_name)) {
+  CSVFieldParser parser(first);
+  for (size_t col_index = 0; auto raw_name = parser.NextField(); ++col_index) {
+    if (!raw_name->has_value()) {
       result_ = CSVPassword::Status::kSyntaxError;
       return;
     }
 
-    std::string name =
-        base::ToLowerASCII(base::TrimWhitespaceASCII(raw_name, base::TRIM_ALL));
+    std::string name = base::ToLowerASCII(
+        base::TrimWhitespaceASCII(**raw_name, base::TRIM_ALL));
     if (const CSVPassword::Label* label = NameToLabel(name)) {
       // If there are multiple columns matching one of the accepted "note" field
       // names, the one with the lowest priority should be used.

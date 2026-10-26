@@ -6,119 +6,62 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string_view>
+#include <utility>
 
-#include "base/check.h"
-#include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/types/expected.h"
 
 namespace password_manager {
 
-CSVFieldParser::CSVFieldParser(std::string_view row) : row_(row) {}
+CSVFieldParser::CSVFieldParser(std::string_view row) : rest_(row) {}
 
 CSVFieldParser::~CSVFieldParser() = default;
 
-bool CSVFieldParser::NextField(std::string_view* field_contents) {
-  DCHECK(HasMoreFields());
+std::optional<base::expected<std::string_view, CSVFieldParser::SyntaxError>>
+CSVFieldParser::NextField() {
+  std::optional<std::string_view> row = std::exchange(rest_, std::nullopt);
+  if (!row.has_value()) {
+    return std::nullopt;
+  }
+
   if (fields_returned_ >= kMaxFields) {
-    return false;
+    return base::unexpected(SyntaxError());
   }
+  ++fields_returned_;
 
-  if (state_ != State::kInit) {
-    state_ = State::kError;
-    return false;
-  }
-
-  const size_t start = position_;
-  do {
-    UpdateState();
-  } while (state_ != State::kInit && state_ != State::kError);
-
-  if (state_ != State::kError) {
-    DCHECK_GT(position_, start);  // There must have been at least the ','.
-    *field_contents = row_.substr(start, position_ - start - 1);
-
-    if (field_contents->starts_with('"')) {
-      DCHECK(field_contents->ends_with('"')) << *field_contents;
-      DCHECK_GE(field_contents->size(), 2u);
-      field_contents->remove_prefix(1);
-      field_contents->remove_suffix(1);
+  if (!row->starts_with('"')) {
+    size_t comma = row->find(',');
+    if (comma == std::string_view::npos) {
+      return *row;
     }
-    ++fields_returned_;
-    return true;
-  }
-  return false;
-}
-
-char CSVFieldParser::ConsumeChar() {
-  DCHECK_LE(position_, row_.size());
-  // The default character to return once all from |row_| are consumed and
-  // |position_| == |row_.size()|.
-  char ret = ',';
-  if (position_ < row_.size()) {
-    ret = row_[position_];
-  }
-  ++position_;
-  return ret;
-}
-
-void CSVFieldParser::UpdateState() {
-  if (position_ > row_.size()) {
-    // If in state |kInit| then the program attempts to read one field too many.
-    DCHECK_NE(state_, State::kInit);
-    // Otherwise a quotation mark was not matched before the end of input.
-    state_ = State::kError;
-    return;
+    rest_ = row->substr(comma + 1);
+    return row->substr(0, comma);
   }
 
-  char read = ConsumeChar();
-  switch (state_) {
-    case State::kInit:
-      switch (read) {
-        case ',':
-          break;
-        case '"':
-          state_ = State::kQuoted;
-          break;
-        default:
-          state_ = State::kPlain;
-          break;
+  std::string_view quoted = row->substr(1);
+  bool in_quotes = true;
+  for (size_t i = 0; i < quoted.size(); ++i) {
+    char read = quoted[i];
+    if (in_quotes) {
+      if (read == '"') {
+        in_quotes = false;
       }
+    } else if (read == ',') {
+      rest_ = quoted.substr(i + 1);
+      quoted = quoted.substr(0, i);
       break;
-    case State::kPlain:
-      switch (read) {
-        case ',':
-          state_ = State::kInit;
-          break;
-        default:
-          break;
-      }
-      break;
-    case State::kQuoted:
-      switch (read) {
-        case '"':
-          state_ = State::kAfter;
-          break;
-        default:
-          break;
-      }
-      break;
-    case State::kAfter:
-      switch (read) {
-        case ',':
-          state_ = State::kInit;
-          break;
-        case '"':
-          state_ = State::kQuoted;
-          break;
-        default:
-          state_ = State::kError;
-          break;
-      }
-      break;
-    case State::kError:
-      NOTREACHED();
+    } else if (read == '"') {
+      in_quotes = true;
+    } else {
+      return base::unexpected(SyntaxError());
+    }
   }
+
+  if (in_quotes) {
+    return base::unexpected(SyntaxError());
+  }
+  return quoted.substr(0, quoted.size() - 1);
 }
 
 }  // namespace password_manager

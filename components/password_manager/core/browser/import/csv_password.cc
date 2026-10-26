@@ -59,38 +59,36 @@ CSVPassword::CSVPassword(const ColumnMap& map, std::string_view row) {
     return;
   }
 
-  size_t field_idx = 0;
   CSVFieldParser parser(row);
   status_ = Status::kOK;
 
-  while (parser.HasMoreFields()) {
-    std::string_view field;
-    if (!parser.NextField(&field)) {
+  for (size_t field_idx = 0; auto field = parser.NextField(); ++field_idx) {
+    if (!field->has_value()) {
       status_ = Status::kSyntaxError;
       return;
     }
-    auto meaning_it = map.find(field_idx++);
+    auto meaning_it = map.find(field_idx);
     if (meaning_it == map.end()) {
       continue;
     }
     switch (meaning_it->second) {
       case Label::kOrigin: {
-        GURL gurl = GURL(field);
+        GURL gurl = GURL(**field);
         if (!gurl.is_valid()) {
-          url_ = base::unexpected(UnescapeCSVField(field));
+          url_ = base::unexpected(UnescapeCSVField(**field));
         } else {
           url_ = std::move(gurl);
         }
         break;
       }
       case Label::kUsername:
-        username_ = UnescapeCSVField(field);
+        username_ = UnescapeCSVField(**field);
         break;
       case Label::kPassword:
-        password_ = UnescapeCSVField(field);
+        password_ = UnescapeCSVField(**field);
         break;
       case Label::kNote:
-        note_ = UnescapeCSVField(field);
+        note_ = UnescapeCSVField(**field);
         break;
     }
   }
