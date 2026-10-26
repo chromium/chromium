@@ -844,6 +844,7 @@ class AuditorTest(unittest.TestCase):
     test_data/test_sample_annotations.cc"""
     expected = [
       "ok_annotation",
+      "ok_annotation_pa_api",
       "ok_annotation_legacy_api",
       "ok_annotation_only_owner",
       "syntax_error_annotation",
@@ -856,6 +857,7 @@ class AuditorTest(unittest.TestCase):
       "missing_email_not_safe_listed",
       "invalid_userdata_not_safe_listed",
       "invalid_api_service_name",
+      "invalid_api_service_name_subdomain",
       "invalid_legacy_api_url_googleapis",
       "invalid_legacy_api_url_format",
     ]
@@ -876,6 +878,18 @@ class AuditorTest(unittest.TestCase):
   def test_result_ok(self) -> None:
     errors = self.auditor.parse_extractor_output(
       [self.sample_annotations["ok_annotation"]]
+    )
+    errors.extend(
+      self.auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
+    )
+
+    # Assert that correct annotation has been extracted and is OK (no errors).
+    self.assertFalse(errors)
+    self.assertTrue(self.auditor.extracted_annotations)
+
+  def test_result_ok_pa_api(self) -> None:
+    errors = self.auditor.parse_extractor_output(
+      [self.sample_annotations["ok_annotation_pa_api"]]
     )
     errors.extend(
       self.auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
@@ -998,6 +1012,51 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
     self.assertEqual(ErrorType.INVALID_API_SERVICE_NAME, errors[0].type)
+
+  def test_invalid_api_service_name_subdomain(self) -> None:
+    """Annotation traffic_semantics::api_service_name uses a subdomain other
+    than 'pa' or 'corp'. Annotation Check returns INVALID_API_SERVICE_NAME
+    error."""
+    self.auditor.parse_extractor_output(
+      [self.sample_annotations["invalid_api_service_name_subdomain"]]
+    )
+    self.assertTrue(self.auditor.extracted_annotations)
+    errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
+    self.assertTrue(errors)
+    self.assertEqual(ErrorType.INVALID_API_SERVICE_NAME, errors[0].type)
+
+  def test_check_api_service_name_format(self) -> None:
+    """Tests Annotation.check_api_service_name_format() directly on valid and
+    invalid inputs."""
+    valid_names = [
+      "",
+      "foobar.googleapis.com",
+      "foobar.pa.googleapis.com",
+      "remotedesktop.corp.googleapis.com",
+      "foo-bar_1.pa.googleapis.com",
+      "pa.googleapis.com",
+    ]
+    for name in valid_names:
+      annotation = self.create_annotation_sample()
+      annotation.proto.semantics.api_service_name = name
+      self.assertEqual([], annotation.check_api_service_name_format(), name)
+
+    invalid_names = [
+      "googleapis.com",
+      ".pa.googleapis.com",
+      "foobar.other.googleapis.com",
+      "foobar.PA.googleapis.com",
+      "foo.bar.pa.googleapis.com",
+      "foobar.pa.pa.googleapis.com",
+      "https://foobar.pa.googleapis.com",
+      "foobar.pa.googleapis.com/v1",
+    ]
+    for name in invalid_names:
+      annotation = self.create_annotation_sample()
+      annotation.proto.semantics.api_service_name = name
+      errors = annotation.check_api_service_name_format()
+      self.assertEqual(1, len(errors), name)
+      self.assertEqual(ErrorType.INVALID_API_SERVICE_NAME, errors[0].type)
 
   def test_invalid_legacy_api_url_googleapis(self) -> None:
     """Annotation traffic_semantics::legacy_api_url uses a googleapis.com

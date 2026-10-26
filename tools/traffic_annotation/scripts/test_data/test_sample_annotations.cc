@@ -307,3 +307,80 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "Not implemented, considered not useful. This request is part of "
     "the policy fetcher itself."
   })");
+
+// An OK annotation with a .pa.googleapis.com api_service_name
+net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("ok_annotation_pa_api", R"(
+  semantics {
+    sender: "Cloud Policy"
+    description:
+    "Used to fetch policy for extensions, policy-controlled wallpaper, "
+    "and custom terms of service."
+    trigger:
+    "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
+    last_reviewed: "2023-07-25"
+    data:
+    "This request does not send any data. It loads external resources "
+    "by a unique URL provided by the admin."
+    destination: GOOGLE_OWNED_SERVICE
+    api_service_name: "foobar.pa.googleapis.com"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+    "This feature cannot be controlled by Chrome settings, but users "
+    "can sign out of Chrome to disable it."
+    policy_exception_justification:
+    "Not implemented, considered not useful. This request is part of "
+    "the policy fetcher itself."
+  })");
+
+// An annotation with a disallowed subdomain in api_service_name
+net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("invalid_api_service_name_subdomain",
+                                        R"(
+  semantics {
+    sender: "Cloud Policy"
+    description:
+    "Used to fetch policy for extensions, policy-controlled wallpaper, "
+    "and custom terms of service."
+    trigger:
+    "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
+    last_reviewed: "2023-07-25"
+    data:
+    "This request does not send any data. It loads external resources "
+    "by a unique URL provided by the admin."
+    destination: GOOGLE_OWNED_SERVICE
+    api_service_name: "foobar.other.googleapis.com"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+    "This feature cannot be controlled by Chrome settings, but users "
+    "can sign out of Chrome to disable it."
+    policy_exception_justification:
+    "Not implemented, considered not useful. This request is part of "
+    "the policy fetcher itself."
+  })");

@@ -64,7 +64,7 @@ class ErrorType(Enum):
   INVALID_DATE_FORMAT = auto()
   # Header file should not contain network traffic annotations definition.
   HEADER_ANNOTATION = auto()
-  # API service name should be servicename.googleapis.com
+  # API service name should be servicename[.(pa|corp)].googleapis.com
   INVALID_API_SERVICE_NAME = auto()
   # Legacy API URL is invalid or uses a googleapis.com subdomain.
   INVALID_LEGACY_API_URL = auto()
@@ -303,7 +303,9 @@ class AuditorError:
       assert self._details
       return (
         "Invalid value of api_service_name: '{}' in annotation at {}:{}. "
-        "Should be in the format servicename.googleapis.com.".format(
+        "Should be in the format servicename.googleapis.com, "
+        "servicename.pa.googleapis.com, or "
+        "servicename.corp.googleapis.com.".format(
           self._details[0], self.file_path, self.line
         )
       )

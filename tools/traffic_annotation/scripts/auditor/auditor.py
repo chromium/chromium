@@ -673,10 +673,11 @@ class Annotation:
 
   def check_api_service_name_format(self) -> List[AuditorError]:
     """If api_service_name field is populated and does not match
-    servicename.googleapis.com, then return INVALID_API_SERVICE_NAME error."""
+    servicename[.(pa|corp)].googleapis.com, return INVALID_API_SERVICE_NAME
+    error."""
     api_service_name = self.proto.semantics.api_service_name
-    if api_service_name and not re.match(
-      r"^[a-zA-Z0-9_-]+\.googleapis\.com$", api_service_name
+    if api_service_name and not re.fullmatch(
+      r"[a-zA-Z0-9_-]+(\.(pa|corp))?\.googleapis\.com", api_service_name
     ):
       return [
         AuditorError(
