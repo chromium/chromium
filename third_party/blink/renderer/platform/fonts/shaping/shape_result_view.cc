@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 #include <algorithm>
-#include <iterator>
 #include <numeric>
 #include <ranges>
 
+#include "base/types/to_address.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -52,25 +52,23 @@ wtf_size_t ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
   offset += offset_;
   const base::span<const HarfBuzzRunGlyphData> glyphs =
       range_.NonCompactGlyphs();
-  const auto is_safe = [offset](const HarfBuzzRunGlyphData& glyph) {
-    return glyph.IsSafeToBreakBefore() && glyph.character_index <= offset;
+  const auto find_safe_break = [offset, this](const auto& range) -> wtf_size_t {
+    for (const auto& glyph : range) {
+      if (glyph.IsSafeToBreakBefore() && glyph.character_index <= offset) {
+        return glyph.character_index - offset_;
+      }
+    }
+
+    // Next safe break is at the start of the run.
+    return 0;
   };
   if (GetRunInfo()->IsLtr()) {
-    const auto rbegin = glyphs.rbegin();
-    const auto rend = glyphs.rend();
-    const auto glyph = std::find_if(rbegin, rend, is_safe);
-    if (glyph != rend) {
-      return glyph->character_index - offset_;
-    }
-  } else {
-    const auto glyph = std::find_if(glyphs.begin(), glyphs.end(), is_safe);
-    if (glyph != glyphs.end()) {
-      return glyph->character_index - offset_;
-    }
+    // Avoid reverse-iterator checks within this validated, read-only range.
+    const auto range =
+        std::ranges::subrange(glyphs.data(), base::to_address(glyphs.end()));
+    return find_safe_break(std::views::reverse(range));
   }
-
-  // Next safe break is at the start of the run.
-  return 0;
+  return find_safe_break(glyphs);
 }
 
 GlyphDataRange ShapeResultView::RunInfoPart::FindGlyphDataRange(

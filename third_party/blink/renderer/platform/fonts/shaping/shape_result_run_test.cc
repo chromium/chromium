@@ -110,6 +110,19 @@ ShapeResultRun* CreateTestShapeResultRun(
 
 class ShapeResultRunTest : public testing::Test {
  protected:
+  ShapeResultRun* CreateClusteredRun(hb_direction_t direction) {
+    constexpr std::array<unsigned, 8> kClusters = {0, 0, 3, 3, 3, 6, 9, 9};
+    ShapeResultRun* run =
+        CreateTestShapeResultRun(kClusters.size(), 12, nullptr, direction);
+    for (wtf_size_t i = 0; i < kClusters.size(); ++i) {
+      HarfBuzzRunGlyphData& glyph = run->glyph_data_.MutableGlyphAt(i);
+      glyph = HarfBuzzRunGlyphData(
+          i, kClusters[run->IsRtl() ? kClusters.size() - i - 1 : i],
+          SafeToBreak::kSafe, TextRunLayoutUnit(1));
+    }
+    return run;
+  }
+
   ShapeResultRun* CreateConstantAdvanceRun(
       wtf_size_t num_glyphs,
       wtf_size_t num_characters,
@@ -162,6 +175,46 @@ class ShapeResultRunTest : public testing::Test {
     return run;
   }
 };
+
+TEST_F(ShapeResultRunTest, NonCompactNestedGlyphRanges) {
+  for (hb_direction_t direction : {HB_DIRECTION_LTR, HB_DIRECTION_RTL}) {
+    SCOPED_TRACE(direction);
+    ShapeResultRun* run = CreateClusteredRun(direction);
+    for (const auto& [outer_start, outer_end] :
+         {std::pair(0u, 12u), std::pair(1u, 10u), std::pair(2u, 3u),
+          std::pair(4u, 5u), std::pair(10u, 12u), std::pair(12u, 12u)}) {
+      SCOPED_TRACE(testing::Message() << outer_start << ", " << outer_end);
+      const GlyphDataRange outer =
+          run->FindGlyphDataRange(outer_start, outer_end);
+      const auto glyphs = outer.NonCompactGlyphs();
+      for (wtf_size_t start = 0; start <= 14; ++start) {
+        for (wtf_size_t end = 0; end <= 14; ++end) {
+          SCOPED_TRACE(testing::Message() << start << ", " << end);
+          const auto CharacterIndex = [&](wtf_size_t i) {
+            return glyphs[run->IsRtl() ? glyphs.size() - i - 1 : i]
+                .character_index;
+          };
+          wtf_size_t first = 0;
+          while (first < glyphs.size() && CharacterIndex(first) < start) {
+            ++first;
+          }
+          wtf_size_t last = first;
+          while (last < glyphs.size() && CharacterIndex(last) < end) {
+            ++last;
+          }
+          const auto expected = glyphs.subspan(
+              run->IsRtl() ? glyphs.size() - last : first, last - first);
+          const GlyphDataRange actual =
+              outer.FindGlyphDataRange(run->IsRtl(), start, end);
+          EXPECT_EQ(run, actual.GetRun());
+          EXPECT_EQ(expected.size(), actual.size());
+          EXPECT_EQ(expected.data(), actual.NonCompactGlyphs().data());
+          EXPECT_EQ(expected, actual.NonCompactGlyphs());
+        }
+      }
+    }
+  }
+}
 
 TEST_F(ShapeResultRunTest, CompactHitTestingUsesFixedPointPositions) {
   constexpr unsigned kNumGlyphs = 32768;

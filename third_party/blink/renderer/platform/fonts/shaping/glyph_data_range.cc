@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 
+#include <algorithm>
+
+#include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -93,45 +96,39 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
                                      end_character_index);
   }
 
-  const auto comparer = [](const HarfBuzzRunGlyphData& glyph_data,
-                           wtf_size_t index) {
-    return glyph_data.character_index < index;
-  };
   const base::span<const HarfBuzzRunGlyphData> glyphs = NonCompactGlyphs();
-  const auto range_begin = glyphs.begin();
-  const auto range_end = glyphs.end();
+  // Use pointers to avoid per-step iterator checks in the standard algorithms.
+  // The span validates the range, and the predicates cannot invalidate it.
+  const auto* range_begin = glyphs.data();
+  const auto* range_end = base::to_address(glyphs.end());
   if (!is_rtl) {
-    const auto start_glyph = std::lower_bound(range_begin, range_end,
-                                              start_character_index, comparer);
-    if (start_glyph == range_end) [[unlikely]] {
-      // No glyph matches; an empty range that still keeps the run.
-      return GlyphDataRange(run_.Get(), index_ + size_, 0);
-    }
-    const auto end_glyph =
+    const auto comparer = [](const HarfBuzzRunGlyphData& glyph,
+                             wtf_size_t character_index) {
+      return glyph.character_index < character_index;
+    };
+    const auto* start_glyph = std::lower_bound(range_begin, range_end,
+                                               start_character_index, comparer);
+    const auto* end_glyph =
         std::lower_bound(start_glyph, range_end, end_character_index, comparer);
-    const wtf_size_t start_index = CheckedDistance(range_begin, start_glyph);
-    return GlyphDataRange(run_.Get(), index_ + start_index,
+    return GlyphDataRange(run_.Get(),
+                          index_ + CheckedDistance(range_begin, start_glyph),
                           CheckedDistance(start_glyph, end_glyph));
   }
 
-  // RTL needs to use reverse iterators because there maybe multiple glyphs
-  // for a character, and we want to find the first one in the logical order.
-  const auto rbegin = std::make_reverse_iterator(range_end);
-  const auto rend = std::make_reverse_iterator(range_begin);
-  const auto start_glyph_it =
-      std::lower_bound(rbegin, rend, start_character_index, comparer);
-  if (start_glyph_it == rend) [[unlikely]] {
-    // No glyph matches; an empty range that still keeps the run.
-    return GlyphDataRange(run_.Get(), index_, 0);
-  }
-  const auto end_glyph_it =
-      std::lower_bound(start_glyph_it, rend, end_character_index, comparer);
-  // reverse_iterator::base() is one past the referenced element, which gives
-  // the inclusive begin and exclusive end in forward order.
-  const auto start_glyph = end_glyph_it.base();
-  const auto end_glyph = start_glyph_it.base();
-  const wtf_size_t start_index = CheckedDistance(range_begin, start_glyph);
-  return GlyphDataRange(run_.Get(), index_ + start_index,
+  // RTL clusters descend in physical order. Search their boundaries directly
+  // without reverse-iterator bookkeeping.
+  const auto* end_glyph = std::partition_point(
+      range_begin, range_end,
+      [start_character_index](const HarfBuzzRunGlyphData& glyph) {
+        return glyph.character_index >= start_character_index;
+      });
+  const auto* start_glyph = std::partition_point(
+      range_begin, end_glyph,
+      [end_character_index](const HarfBuzzRunGlyphData& glyph) {
+        return glyph.character_index >= end_character_index;
+      });
+  return GlyphDataRange(run_.Get(),
+                        index_ + CheckedDistance(range_begin, start_glyph),
                         CheckedDistance(start_glyph, end_glyph));
 }
 

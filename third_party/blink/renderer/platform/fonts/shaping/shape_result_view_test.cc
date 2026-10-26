@@ -236,6 +236,47 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
   } while (--offset > start_offset);
 }
 
+TEST_F(ShapeResultViewTest, NonCompactPartialViewsMatchSubRanges) {
+  ScopedMonospaceGlyphCompactionForTest disable_compaction(false);
+  FontDescription::VariantLigatures ligatures(
+      FontDescription::kEnabledLigaturesState);
+  Font* font = test::CreateTestFont(
+      AtomicString("roboto"),
+      test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
+      12.5f, &ligatures);
+  const String text("office affinity");
+  for (TextDirection direction : {TextDirection::kLtr, TextDirection::kRtl}) {
+    SCOPED_TRACE(direction);
+    for (float letter_spacing : {0.0f, -5.0f, -20.0f}) {
+      SCOPED_TRACE(letter_spacing);
+      HarfBuzzShaper shaper(text);
+      ShapeResult* result = shaper.Shape(font, direction);
+      ShapeResultSpacing spacing(text);
+      FontDescription spacing_font_description;
+      spacing_font_description.SetLetterSpacing(Length::Fixed(letter_spacing));
+      if (spacing.SetSpacing(spacing_font_description)) {
+        result->ApplySpacing(spacing);
+      }
+      const auto* outer = ShapeResultView::Create(result, 1, text.length() - 1);
+      for (wtf_size_t start = 2; start < text.length() - 2; ++start) {
+        for (wtf_size_t end = start + 1; end < text.length() - 1; ++end) {
+          SCOPED_TRACE(testing::Message() << start << ", " << end);
+          const auto* view = ShapeResultView::Create(outer, start, end);
+          const auto* expected = result->SubRange(start, end);
+          EXPECT_EQ(expected->Width(), view->Width());
+          expected->EnsurePositionData();
+          // Views retain empty runs, unlike copied subranges.
+          EXPECT_EQ(end, view->PreviousSafeToBreakOffset(end));
+          for (wtf_size_t offset = start; offset < end; ++offset) {
+            EXPECT_EQ(expected->CachedPreviousSafeToBreakOffset(offset),
+                      view->PreviousSafeToBreakOffset(offset));
+          }
+        }
+      }
+    }
+  }
+}
+
 TEST_F(ShapeResultViewTest, CreateShapeResultMonospaceMaterialized) {
   Font* font = test::CreateTestFont(
       AtomicString("Noto Mono"),
@@ -744,6 +785,9 @@ TEST_F(ShapeResultViewTest, EmptyGlyphRangePreservesRun) {
   // results rather than dereferencing a null run. The ink bounds are empty
   // because there are no glyphs.
   EXPECT_TRUE(view->ComputeInkBounds().IsEmpty());
+  EXPECT_EQ(view->PreviousSafeToBreakOffset(1), 1u);
+  EXPECT_EQ(view->PreviousSafeToBreakOffset(2), 1u);
+  EXPECT_EQ(view->PreviousSafeToBreakOffset(3), 3u);
 
   const ShapeResult* sub_result = view->CreateShapeResult();
   EXPECT_EQ(sub_result->NumCharacters(), 2u);
