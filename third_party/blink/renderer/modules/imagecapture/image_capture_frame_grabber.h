@@ -14,8 +14,8 @@
 #include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -25,6 +25,7 @@ namespace blink {
 
 class ImageBitmap;
 class MediaStreamComponent;
+class VideoFrameAcceleratedSnapshotPool;
 
 // This class grabs Video Frames from a given Media Stream Video Track, binding
 // a method of an ephemeral SingleShotFrameHandler every time grabFrame() is
@@ -63,7 +64,7 @@ class ImageCaptureFrameGrabber final
   TaskHandle timeout_task_handle_;
 
   media::PaintCanvasVideoRenderer video_renderer_;
-  std::unique_ptr<CanvasNon2DResourceProvider> snapshot_provider_;
+  std::unique_ptr<VideoFrameAcceleratedSnapshotPool> snapshot_pool_;
   std::optional<CanvasSnapshotInfo> cached_draw_info_;
 
   THREAD_CHECKER(thread_checker_);
