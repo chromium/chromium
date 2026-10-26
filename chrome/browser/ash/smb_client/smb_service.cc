@@ -239,8 +239,10 @@ void SmbService::OnSmbfsRemoveSavedCredentialsDone(const std::string& mount_id,
 }
 
 SmbFsShare* SmbService::GetSmbFsShareForPath(const base::FilePath& path) {
-  CHECK(!path.empty(), base::NotFatalUntil::M160);
-  CHECK(path.IsAbsolute(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/577749850): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!path.empty());
+  DCHECK(path.IsAbsolute());
 
   for (const auto& entry : smbfs_shares_) {
     const base::FilePath mount_path = entry.second->mount_path();
