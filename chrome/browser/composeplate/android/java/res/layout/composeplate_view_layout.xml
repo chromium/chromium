@@ -82,7 +82,7 @@ found in the LICENSE file.
             android:layout_marginStart="@dimen/composeplate_view_button_margin"
             android:singleLine="true"
             android:visibility="gone"
-            android:text="@string/omnibox_navattach_gallery"
+            android:text="@string/add"
             android:textAppearance="@style/TextAppearance.ComposeplateTextMediumDarkOnSurface" />
     </LinearLayout>
 

@@ -1168,15 +1168,12 @@ public class NewTabPageCoordinatorUnitTest {
         View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
         assertEquals(View.VISIBLE, optionalButton.getVisibility());
 
-        // The Create image strings aren't applied, so the layout's default gallery strings are
-        // kept.
+        // The Create image strings aren't applied, so the layout's default strings are kept.
         assertEquals(
                 mActivity.getString(R.string.ntp_action_chip_gallery_accessibility),
                 optionalButton.getContentDescription());
         TextView optionalButtonText = mNewTabPageLayout.findViewById(R.id.optional_button_text);
-        assertEquals(
-                mActivity.getString(R.string.omnibox_navattach_gallery),
-                optionalButtonText.getText().toString());
+        assertEquals(mActivity.getString(R.string.add), optionalButtonText.getText().toString());
 
         // Clicking doesn't enter image generation mode.
         optionalButton.performClick();
