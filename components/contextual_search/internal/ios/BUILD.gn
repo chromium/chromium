@@ -16,6 +16,7 @@ source_set("ios") {
     "//base",
     "//components/contextual_search:public",
     "//components/lens",
+    "//google_apis",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/gfx",
   ]
