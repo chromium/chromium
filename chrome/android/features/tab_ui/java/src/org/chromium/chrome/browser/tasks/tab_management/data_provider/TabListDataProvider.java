@@ -188,8 +188,7 @@ public abstract class TabListDataProvider {
         int index = indexOfTabId(tabId);
         if (index == TabList.INVALID_TAB_INDEX) return;
 
-        TabListItem removedItem = mItems.remove(index);
-        notifyObservers(obs -> obs.onItemsRemoved(List.of(removedItem)));
+        removeItemAt(index);
     }
 
     /**
@@ -347,6 +346,19 @@ public abstract class TabListDataProvider {
     protected void updateItemAt(int index, TabListItem updatedItem, @PayloadType int payload) {
         mItems.set(index, updatedItem);
         notifyObservers(obs -> obs.onItemUpdated(updatedItem, payload));
+    }
+
+    /**
+     * Removes the {@link TabListItem} at {@code index} from {@link #mItems} and notifies observers
+     * via {@link TabListDataObserver#onItemsRemoved}.
+     *
+     * @param index The index in {@link #mItems} to remove.
+     * @return The removed {@link TabListItem}.
+     */
+    protected TabListItem removeItemAt(int index) {
+        TabListItem removedItem = mItems.remove(index);
+        notifyObservers(obs -> obs.onItemsRemoved(List.of(removedItem)));
+        return removedItem;
     }
 
     /**

@@ -12,11 +12,15 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * {@link TabListDataProvider} implementation that projects a {@link TabModel} into a sequence of
@@ -26,6 +30,7 @@ import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDat
 @NullMarked
 public class GroupedTabListDataProvider extends TabListDataProvider {
     private final boolean mSupportsGroupExpansion;
+    private final Set<Token> mRemovingTabGroupIds = new HashSet<>();
 
     /**
      * Constructs a new {@link GroupedTabListDataProvider}.
@@ -73,6 +78,17 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                     }
 
                     @Override
+                    public void tabClosureUndone(Tab tab) {
+                        syncTabOrGroup(tab);
+                        notifyTabClosureUndone(tab);
+                    }
+
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        notifyTabClosureCommitted(tab);
+                    }
+
+                    @Override
                     public void restoreCompleted() {
                         requestDataReset();
                     }
@@ -80,7 +96,20 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
 
         // TODO(crbug.com/562590772): Wire incremental TabModelObserver and TabGroupObserver
         // callbacks for tab/group additions, removals, merges, moves, collapse, and selection.
-        TabGroupObserver tabGroupObserver = new TabGroupObserver() {};
+        TabGroupObserver tabGroupObserver =
+                new TabGroupObserver() {
+                    @Override
+                    public void onTabGroupRemoving(Token tabGroupId) {
+                        mRemovingTabGroupIds.add(tabGroupId);
+                    }
+
+                    @Override
+                    public void didRemoveTabGroup(
+                            Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
+                        mRemovingTabGroupIds.remove(oldTabGroupId);
+                        removeGroupItem(oldTabGroupId);
+                    }
+                };
 
         initObservers(tabModelObserver, tabGroupObserver);
     }
@@ -88,6 +117,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     @Override
     protected void rebuildItems() {
         mItems.clear();
+        mRemovingTabGroupIds.clear();
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
@@ -166,9 +196,13 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
 
     private void updateGroupItemAt(int index, Token tabGroupId, @PayloadType int payload) {
         TabModel model = getTabModelIfTabStateInitialized();
-        // Skip updating if the last tab was removed and the group no longer exists in TabModel
+        // Skip updating if the group is being removed or no longer exists in TabModel
         // (didRemoveTabGroup will remove the group card next).
-        if (model == null || !model.containsTabGroup(tabGroupId)) return;
+        if (model == null
+                || !model.containsTabGroup(tabGroupId)
+                || mRemovingTabGroupIds.contains(tabGroupId)) {
+            return;
+        }
 
         TabGroupItem oldItem = (TabGroupItem) mItems.get(index);
         TabGroupItem updatedItem =
@@ -183,6 +217,19 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                 tabGroupId,
                 isGroupSelected(selectedTab, tabGroupId),
                 isGroupCollapsed(model, tabGroupId));
+    }
+
+    /**
+     * Removes the {@link TabGroupItem} for {@code tabGroupId} from {@link #mItems} and notifies
+     * observers via {@link TabListDataObserver#onItemsRemoved}.
+     *
+     * @param tabGroupId The ID of the tab group to remove.
+     */
+    private void removeGroupItem(Token tabGroupId) {
+        int index = indexOfTabGroupId(tabGroupId);
+        if (index == TabList.INVALID_TAB_INDEX) return;
+
+        removeItemAt(index);
     }
 
     private boolean isGroupCollapsed(TabModel model, Token tabGroupId) {

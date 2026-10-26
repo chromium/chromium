@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 
@@ -375,7 +376,7 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     @Test
     public void testCloseTab_NestedMode_Expanded_RemovesChildRowAndUpdatesHeader() {
         groupTabs(TAB_GROUP_ID, mTab1, mTab2);
-        mCollapsed.put(TAB_GROUP_ID, false);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
         setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
 
         closeTab(mTab2);
@@ -429,6 +430,169 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
         assertItems(
                 group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
                 item(TAB3_ID));
+    }
+
+    @Test
+    public void testDidRemoveTabGroup_GroupedMode_RemovesGroupCard() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1);
+
+        closeTab(mTab1);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+
+        verify(mObserver)
+                .onItemsRemoved(
+                        List.of(
+                                group(
+                                        TAB_GROUP_ID,
+                                        /* isSelected= */ false,
+                                        /* isCollapsed= */ true)));
+        assertItems();
+    }
+
+    @Test
+    public void testDidRemoveTabGroup_NestedMode_RemovesGroupHeader() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1);
+
+        closeTab(mTab1);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+
+        verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID)));
+        verify(mObserver)
+                .onItemsRemoved(
+                        List.of(
+                                group(
+                                        TAB_GROUP_ID,
+                                        /* isSelected= */ false,
+                                        /* isCollapsed= */ false)));
+        assertItems();
+    }
+
+    @Test
+    public void testDidRemoveTabGroup_UnknownGroup_NoOps() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1);
+
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
+    @Test
+    public void testOnTabGroupRemoving_SuppressesIntermediateGroupUpdates() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        removingTabGroup(TAB_GROUP_ID);
+
+        // Closing the first tab in a group being removed suppresses the intermediate
+        // GROUP_MEMBERSHIP update.
+        closeTab(mTab1);
+        verifyNoInteractions(mObserver);
+
+        // Closing the second tab also suppresses the update.
+        closeTab(mTab2);
+        verifyNoInteractions(mObserver);
+
+        // didRemoveTabGroup removes the group card and clears the removing state.
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+        verify(mObserver)
+                .onItemsRemoved(
+                        List.of(
+                                group(
+                                        TAB_GROUP_ID,
+                                        /* isSelected= */ false,
+                                        /* isCollapsed= */ true)));
+        assertItems();
+    }
+
+    @Test
+    public void testTabClosureUndone_StandaloneTab() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2, mTab3);
+        closeTab(mTab2);
+        clearInvocations(mObserver);
+
+        undoCloseTab(mTab2, /* modelIndex= */ 1);
+
+        verify(mObserver).onItemsInserted(List.of(item(TAB2_ID)), item(TAB1_ID));
+        verify(mObserver).onTabClosureUndone(TAB2_ID);
+        assertItems(item(TAB1_ID), item(TAB2_ID), item(TAB3_ID));
+    }
+
+    @Test
+    public void testTabClosureUndone_GroupedMode_RestoresGroupCard() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1);
+        closeTab(mTab1);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+        clearInvocations(mObserver);
+
+        undoCloseTab(mTab1, /* modelIndex= */ 0);
+
+        verify(mObserver)
+                .onItemsInserted(
+                        List.of(
+                                group(
+                                        TAB_GROUP_ID,
+                                        /* isSelected= */ false,
+                                        /* isCollapsed= */ true)),
+                        /* after= */ null);
+        verify(mObserver).onTabClosureUndone(TAB1_ID);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testTabClosureUndone_GroupedMode_ExistingGroup_UpdatesGroupMembership() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+        closeTab(mTab2);
+        clearInvocations(mObserver);
+
+        undoCloseTab(mTab2, /* modelIndex= */ 1);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.GROUP_MEMBERSHIP);
+        verify(mObserver).onTabClosureUndone(TAB2_ID);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testTabClosureUndone_NestedMode_Expanded_RestoresChildRowAndUpdatesHeader() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+        closeTab(mTab2);
+        clearInvocations(mObserver);
+
+        undoCloseTab(mTab2, /* modelIndex= */ 1);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                        PayloadType.GROUP_MEMBERSHIP);
+        verify(mObserver).onItemsInserted(List.of(item(TAB2_ID)), item(TAB1_ID));
+        verify(mObserver).onTabClosureUndone(TAB2_ID);
+        assertItems(
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                item(TAB1_ID),
+                item(TAB2_ID));
+    }
+
+    @Test
+    public void testTabClosureCommitted_ForwardsWithoutItemChanges() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+        closeTab(mTab2);
+        clearInvocations(mObserver);
+
+        commitCloseTab(mTab2);
+
+        verify(mObserver).onTabClosureCommitted(TAB2_ID);
+        verifyNoMoreInteractions(mObserver);
+        assertItems(item(TAB1_ID));
     }
 
     // ============================================================================================

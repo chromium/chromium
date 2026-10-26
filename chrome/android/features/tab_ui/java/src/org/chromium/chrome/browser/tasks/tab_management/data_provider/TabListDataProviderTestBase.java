@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -179,9 +180,21 @@ abstract class TabListDataProviderTestBase {
         mTabModelObserver.didRemoveTabForClosure(tab);
     }
 
+    void removingTabGroup(Token tabGroupId) {
+        mTabGroupObserver.onTabGroupRemoving(tabGroupId);
+    }
+
+    void removeTabGroup(Token tabGroupId, @DidRemoveTabGroupReason int reason) {
+        mTabGroupObserver.didRemoveTabGroup(tabGroupId, reason);
+    }
+
     void undoCloseTab(Tab tab, int modelIndex) {
         mModelTabs.add(modelIndex, tab);
         mTabModelObserver.tabClosureUndone(tab);
+    }
+
+    void commitCloseTab(Tab tab) {
+        mTabModelObserver.tabClosureCommitted(tab);
     }
 
     void selectTab(Tab tab, @TabId int prevSelectedTabId) {
