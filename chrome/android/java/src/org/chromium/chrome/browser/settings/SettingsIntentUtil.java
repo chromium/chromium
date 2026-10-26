@@ -13,12 +13,17 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -161,6 +166,23 @@ public class SettingsIntentUtil {
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity != null) {
+            // Forward EXTRA_WINDOW_ID when navigating to a sub-page from an existing
+            // SettingsActivity; otherwise query TabWindowManager for the launching browser
+            // window's ID (ChromeTabbedActivity cannot be imported here due to DEPS).
+            @WindowId
+            int windowId =
+                    activity instanceof SettingsActivity
+                            ? IntentUtils.safeGetIntExtra(
+                                    activity.getIntent(),
+                                    IntentHandler.EXTRA_WINDOW_ID,
+                                    TabWindowManager.INVALID_WINDOW_ID)
+                            : TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+            if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
+                intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
+            }
         }
         if (fragmentName != null) {
             intent.putExtra(EXTRA_SHOW_FRAGMENT, fragmentName);

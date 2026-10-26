@@ -580,6 +580,7 @@ found in the LICENSE file.
 
     <!-- On startup settings. -->
     <dimen name="on_startup_page_item_vertical_padding">8dp</dimen>
-    <dimen name="on_startup_action_buttons_padding_top">8dp</dimen>
+    <dimen name="on_startup_action_buttons_vertical_padding">8dp</dimen>
+    <dimen name="on_startup_action_buttons_spacing">24dp</dimen>
     <dimen name="on_startup_url_dialog_padding_bottom">8dp</dimen>
 </resources>

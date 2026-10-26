@@ -67,6 +67,7 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
     private @Nullable LinearLayout mStartupPagesSection;
     private @Nullable LinearLayout mStartupPagesContainer;
     private @Nullable ButtonCompat mAddNewPageButton;
+    private @Nullable ButtonCompat mUseCurrentPagesButton;
     private @SessionStartupPref int mStartupType = SessionStartupPref.LAST;
     private List<String> mStartupUrls = new ArrayList<>();
     private @Nullable OnStartupTypeChangeListener mOnStartupTypeChangeListener;
@@ -96,6 +97,15 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
                     v -> {
                         if (mItemActionListener != null) {
                             mItemActionListener.onAddNewStartupPage();
+                        }
+                    });
+        }
+        mUseCurrentPagesButton = (ButtonCompat) holder.findViewById(R.id.use_current_pages_button);
+        if (mUseCurrentPagesButton != null) {
+            mUseCurrentPagesButton.setOnClickListener(
+                    v -> {
+                        if (mItemActionListener != null) {
+                            mItemActionListener.onUseCurrentPages();
                         }
                     });
         }
@@ -324,6 +334,10 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
         return mAddNewPageButton;
     }
 
+    /* package */ @Nullable ButtonCompat getUseCurrentPagesButtonForTesting() {
+        return mUseCurrentPagesButton;
+    }
+
     /* package */ interface OnStartupTypeChangeListener {
         void onStartupTypeChanged(@SessionStartupPref int startupType);
     }
@@ -334,6 +348,8 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
         void onEditStartupPage(int index, String url);
 
         void onRemoveStartupPage(int index, String url);
+
+        void onUseCurrentPages();
     }
 
     /* package */ interface FaviconLoader {

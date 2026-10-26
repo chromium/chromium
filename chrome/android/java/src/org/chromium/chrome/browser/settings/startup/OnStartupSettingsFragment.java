@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings.startup;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -14,12 +15,14 @@ import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
@@ -29,9 +32,12 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -112,6 +118,11 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                                     urls.remove(matchedIndex);
                                 }
                                 TabbedStartupCoordinator.setSessionStartupUrls(prefService, urls);
+                            }
+
+                            @Override
+                            public void onUseCurrentPages() {
+                                useCurrentPages(prefService);
                             }
                         },
                         this::loadFaviconForUrl,
@@ -210,6 +221,41 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
             return;
         }
         TabbedStartupCoordinator.setSessionStartupUrls(prefService, urls);
+    }
+
+    private void useCurrentPages(PrefService prefService) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        @WindowId
+        int windowId =
+                IntentUtils.safeGetIntExtra(
+                        activity.getIntent(),
+                        IntentHandler.EXTRA_WINDOW_ID,
+                        TabWindowManager.INVALID_WINDOW_ID);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            windowId = tabWindowManager.getIdForWindow(activity);
+        }
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return;
+        }
+        TabModelSelector selector = tabWindowManager.getTabModelSelectorById(windowId);
+        if (selector == null) {
+            return;
+        }
+        TabModel normalModel = selector.getModel(/* incognito= */ false);
+        List<String> currentUrls = new ArrayList<>();
+        for (int i = 0; i < normalModel.getCount(); i++) {
+            Tab tab = normalModel.getTabAt(i);
+            if (tab == null) continue;
+            GURL gurl = tab.getUrl();
+            if (UrlUtilities.isHttpOrHttps(gurl)) {
+                currentUrls.add(gurl.getSpec());
+            }
+        }
+        TabbedStartupCoordinator.setSessionStartupUrls(prefService, currentUrls);
     }
 
     private void loadTitleForUrl(String url, Callback<String> callback) {

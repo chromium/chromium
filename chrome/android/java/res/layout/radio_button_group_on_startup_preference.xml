@@ -74,14 +74,23 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:orientation="horizontal"
-                android:paddingTop="@dimen/on_startup_action_buttons_padding_top">
+                android:paddingTop="@dimen/on_startup_action_buttons_vertical_padding"
+                android:paddingBottom="@dimen/on_startup_action_buttons_vertical_padding">
 
                 <org.chromium.ui.widget.ButtonCompat
                     android:id="@+id/add_new_page_button"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/on_startup_action_buttons_spacing"
                     android:text="@string/on_startup_add_new_page" />
+
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/use_current_pages_button"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/on_startup_use_current_pages" />
 
             </LinearLayout>
 
