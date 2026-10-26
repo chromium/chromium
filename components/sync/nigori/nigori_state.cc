@@ -220,9 +220,6 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
     proto.add_encrypted_types_specifics_field_number(
         GetSpecificsFieldNumberFromDataType(data_type));
   }
-  // TODO(crbug.com/41462727): we currently store keystore keys in proto only to
-  // allow rollback of USS Nigori. We should remove them few milestones after
-  // USS migration completed.
   for (const std::string& keystore_key :
        keystore_keys_cryptographer->keystore_keys()) {
     proto.add_keystore_key(keystore_key);
