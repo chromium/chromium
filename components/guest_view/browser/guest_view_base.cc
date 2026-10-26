@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using content::WebContents;
 
@@ -760,7 +761,7 @@ void GuestViewBase::GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) {
 }
 
 content::GuestPageHolder* GuestViewBase::GuestCreateNewWindow(
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const GURL& url,
     const std::string& main_frame_name,
     content::RenderFrameHost* opener,

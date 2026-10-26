@@ -13,7 +13,8 @@ include_rules = [
   "+third_party/blink/public/common/permissions/permission_utils.h",
   "+third_party/blink/public/mojom/mediastream/media_stream.mojom.h",
   "+third_party/blink/public/mojom/page/draggable_region.mojom-forward.h",
-  "+third_party/blink/public/mojom/window_features/window_features.mojom.h"
+  "+third_party/blink/public/mojom/window_features/window_features.mojom.h",
+  "+ui/base/mojom/window_open_disposition.mojom.h",
 ]
 
 specific_include_rules = {

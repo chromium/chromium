@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -191,21 +192,21 @@ ParseOriginCheckParams(const base::DictValue& create_params) {
 }
 
 std::string WindowOpenDispositionToString(
-    WindowOpenDisposition window_open_disposition) {
+    ui::mojom::WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
-    case WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
       return "ignore";
-    case WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
       return "save_to_disk";
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       return "current_tab";
-    case WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
       return "new_background_tab";
-    case WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
       return "new_foreground_tab";
-    case WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
       return "new_window";
-    case WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
       return "new_popup";
     default:
       NOTREACHED() << "Unknown Window Open Disposition";
@@ -355,7 +356,7 @@ content::WebContents* SlimWebViewGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespaceHandle* session_storage_namespace) {
