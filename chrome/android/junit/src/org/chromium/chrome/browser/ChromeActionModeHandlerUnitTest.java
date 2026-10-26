@@ -11,9 +11,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ResolveInfo;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -39,7 +39,6 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -215,22 +214,29 @@ public class ChromeActionModeHandlerUnitTest {
         List<String> browserPackageNames = new ArrayList<>();
         List<String> launcherPackageNames = new ArrayList<>();
         List<String> otherPackageNames = new ArrayList<>();
-        List<ResolveInfo> browsersList = new ArrayList<>();
-        List<ResolveInfo> launchersList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             browserPackageNames.add("foo " + i);
-            browsersList.add(createResolveInfo(browserPackageNames.get(i)));
             launcherPackageNames.add("bar " + i);
-            launchersList.add(createResolveInfo(launcherPackageNames.get(i)));
             otherPackageNames.add("baz " + i);
         }
 
-        // Mock intent for querying web browsers.
-        packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, browsersList);
+        // Install web browsers. The browser query uses MATCH_DEFAULT_ONLY, so the filter needs
+        // CATEGORY_DEFAULT.
+        IntentFilter browserFilter = new IntentFilter(Intent.ACTION_VIEW);
+        browserFilter.addCategory(Intent.CATEGORY_BROWSABLE);
+        browserFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        browserFilter.addDataScheme("http");
+        for (String packageName : browserPackageNames) {
+            addActivityWithIntentFilter(packageManager, packageName, browserFilter);
+        }
 
-        // Mock intent for querying home launchers.
-        packageManager.addResolveInfoForIntent(
-                PackageManagerUtils.getQueryInstalledHomeLaunchersIntent(), launchersList);
+        // Install home launchers.
+        IntentFilter launcherFilter = new IntentFilter(Intent.ACTION_MAIN);
+        launcherFilter.addCategory(Intent.CATEGORY_HOME);
+        launcherFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        for (String packageName : launcherPackageNames) {
+            addActivityWithIntentFilter(packageManager, packageName, launcherFilter);
+        }
 
         RoboMenu menu = new RoboMenu(RuntimeEnvironment.getApplication());
 
@@ -488,12 +494,11 @@ public class ChromeActionModeHandlerUnitTest {
         return view;
     }
 
-    private ResolveInfo createResolveInfo(String packageName) {
-        ResolveInfo resolveInfo = new ResolveInfo();
-        ActivityInfo activityInfo = new ActivityInfo();
-        activityInfo.packageName = packageName;
-        resolveInfo.activityInfo = activityInfo;
-        return resolveInfo;
+    private void addActivityWithIntentFilter(
+            ShadowPackageManager packageManager, String packageName, IntentFilter filter) {
+        ComponentName activity = new ComponentName(packageName, "MainActivity");
+        packageManager.addActivityIfNotPresent(activity);
+        packageManager.addIntentFilterForActivity(activity, filter);
     }
 
     private void addMenuItem(Menu menu, int order, String packageName) {

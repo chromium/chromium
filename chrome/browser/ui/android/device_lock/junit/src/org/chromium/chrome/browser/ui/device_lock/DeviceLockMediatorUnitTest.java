@@ -27,12 +27,11 @@ import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DE
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.ResolveInfo;
 import android.view.View;
 
 import org.junit.Before;
@@ -46,6 +45,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowContextImpl;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -184,18 +184,15 @@ public class DeviceLockMediatorUnitTest {
     @Test
     public void
             testDeviceLockMediator_deviceLockCreationIntentSupported_deviceSupportsPINIntentIsTrue() {
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.isDefault = true;
+        ComponentName component = new ComponentName("example.package", "ExamplePackage");
+        ShadowPackageManager shadowPackageManager = shadowOf(mActivity.getPackageManager());
+        shadowPackageManager.addActivityIfNotPresent(component);
+        IntentFilter filter =
+                new IntentFilter(DeviceLockUtils.createDeviceLockDirectlyIntent().getAction());
+        // Intent#resolveActivity() only matches activities in CATEGORY_DEFAULT.
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        shadowPackageManager.addIntentFilterForActivity(component, filter);
 
-        ApplicationInfo applicationInfo = new ApplicationInfo();
-        applicationInfo.packageName = "example.package";
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.applicationInfo = applicationInfo;
-        resolveInfo.activityInfo.name = "ExamplePackage";
-
-        shadowOf(mActivity.getPackageManager())
-                .addResolveInfoForIntent(
-                        DeviceLockUtils.createDeviceLockDirectlyIntent(), resolveInfo);
         DeviceLockMediator deviceLockMediator =
                 new DeviceLockMediator(
                         mDelegate,

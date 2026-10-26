@@ -15,10 +15,10 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -179,13 +179,15 @@ public class NotificationPermissionUpdaterTest {
 
     /** "Installs" the given package to handle intents for that origin. */
     private void installBrowsableIntentHandler(Origin origin, String packageName) {
-        Intent intent = new Intent();
-        intent.setPackage(packageName);
-        intent.setData(origin.uri());
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        ComponentName activity = new ComponentName(packageName, "FakeActivity");
+        mShadowPackageManager.addActivityIfNotPresent(activity);
 
-        mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        filter.addDataScheme(origin.uri().getScheme());
+        filter.addDataAuthority(origin.uri().getHost(), null);
+        mShadowPackageManager.addIntentFilterForActivity(activity, filter);
     }
 
     /** "Installs" a Trusted Web Activity Service for the origin. */

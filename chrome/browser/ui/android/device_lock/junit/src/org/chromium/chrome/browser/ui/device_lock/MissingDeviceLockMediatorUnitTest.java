@@ -16,10 +16,9 @@ import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProper
 
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.ResolveInfo;
+import android.content.IntentFilter;
 import android.provider.Settings;
 
 import org.junit.Before;
@@ -27,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -48,17 +48,13 @@ public class MissingDeviceLockMediatorUnitTest {
     @Test
     public void
             testMissingDeviceLockMediator_deviceLockCreationIntentSupported_deviceSupportsPINIntentIsTrue() {
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.isDefault = true;
-
-        ApplicationInfo applicationInfo = new ApplicationInfo();
-        applicationInfo.packageName = "example.package";
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.applicationInfo = applicationInfo;
-        resolveInfo.activityInfo.name = "ExamplePackage";
-        shadowOf(mActivity.getPackageManager())
-                .addResolveInfoForIntent(
-                        new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD), resolveInfo);
+        ComponentName component = new ComponentName("example.package", "ExamplePackage");
+        ShadowPackageManager shadowPackageManager = shadowOf(mActivity.getPackageManager());
+        shadowPackageManager.addActivityIfNotPresent(component);
+        IntentFilter filter = new IntentFilter(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
+        // Intent#resolveActivity() only matches activities in CATEGORY_DEFAULT.
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        shadowPackageManager.addIntentFilterForActivity(component, filter);
 
         MissingDeviceLockMediator missingDeviceLockMediator =
                 new MissingDeviceLockMediator((wipeAllData) -> {}, mActivity);

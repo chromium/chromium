@@ -11,10 +11,10 @@ import static org.mockito.Mockito.verify;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import org.junit.After;
@@ -99,6 +99,28 @@ public class NotificationManagerTest {
         return createTapIntent(GUID, URL, null);
     }
 
+    /** Installs com.example.app with an activity that handles https://www.example.com/app links. */
+    private static void addSpecializedHandler(@Nullable String appLabel) {
+        ShadowPackageManager shadowPackageManager =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
+
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = "com.example.app";
+        activityInfo.name = "com.example.app.MainActivity";
+        activityInfo.nonLocalizedLabel = appLabel;
+        shadowPackageManager.addOrUpdateActivity(activityInfo);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme("https");
+        filter.addDataAuthority("www.example.com", null);
+        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        // NotificationManager resolves the activity with MATCH_DEFAULT_ONLY.
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        shadowPackageManager.addIntentFilterForActivity(
+                new ComponentName(activityInfo.packageName, activityInfo.name), filter);
+    }
+
     @Test
     public void testNotificationTap() {
         Intent intent = createTapIntent();
@@ -139,24 +161,7 @@ public class NotificationManagerTest {
                 new NotificationSharedPrefManager.ActiveNotification(1, guid));
 
         // Register a specialized handler.
-        ShadowPackageManager shadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
+        addSpecializedHandler(/* appLabel= */ null);
 
         NotificationManager.handleIntent(intent);
 
@@ -189,24 +194,7 @@ public class NotificationManagerTest {
                 new NotificationSharedPrefManager.ActiveNotification(1, guid));
 
         // Register a specialized handler.
-        ShadowPackageManager shadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
+        addSpecializedHandler(/* appLabel= */ null);
 
         NotificationManager.handleIntent(intent);
 
@@ -235,24 +223,7 @@ public class NotificationManagerTest {
         Uri uri = Uri.parse(url);
 
         // Register a specialized handler.
-        ShadowPackageManager shadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, uri);
-        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
+        addSpecializedHandler(/* appLabel= */ null);
 
         Assert.assertNotNull(NotificationManager.getMatchingNativeAppResolveInfo(uri));
         Assert.assertTrue(NotificationManager.canOpenInNativeApp(uri));
@@ -450,25 +421,7 @@ public class NotificationManagerTest {
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowNotification_OpensInNativeApp_ContextTextContainsAppName() {
         String url = "https://www.example.com/app/path";
-        ShadowPackageManager shadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.nonLocalizedLabel = "Example App";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
+        addSpecializedHandler("Example App");
 
         boolean shown =
                 NotificationManager.showNotification(

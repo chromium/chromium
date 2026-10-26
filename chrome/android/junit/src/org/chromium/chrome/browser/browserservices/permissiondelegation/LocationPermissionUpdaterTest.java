@@ -14,10 +14,10 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import org.junit.Before;
@@ -191,13 +191,16 @@ public class LocationPermissionUpdaterTest {
 
     /** "Installs" the given package to handle intents for that scope. */
     private void installBrowsableIntentHandler(String scope, String packageName) {
-        Intent intent = new Intent();
-        intent.setPackage(packageName);
-        intent.setData(Uri.parse(scope));
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        ComponentName activity = new ComponentName(packageName, "FakeActivity");
+        mShadowPackageManager.addActivityIfNotPresent(activity);
 
-        mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
+        Uri scopeUri = Uri.parse(scope);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        filter.addDataScheme(scopeUri.getScheme());
+        filter.addDataAuthority(scopeUri.getHost(), null);
+        mShadowPackageManager.addIntentFilterForActivity(activity, filter);
     }
 
     /** "Installs" a Trusted Web Activity Service for the scope. */

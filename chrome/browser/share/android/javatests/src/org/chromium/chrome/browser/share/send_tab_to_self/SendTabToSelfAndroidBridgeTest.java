@@ -13,13 +13,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -47,6 +46,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
@@ -163,6 +163,32 @@ public class SendTabToSelfAndroidBridgeTest {
     @After
     public void tearDown() {
         DeviceInfo.resetIsDesktopForTesting();
+    }
+
+    /**
+     * Installs com.example.app with an activity that handles https://www.example.com/app links.
+     * Install any custom PackageInfo for com.example.app before calling this, since installing a
+     * package replaces its activities.
+     */
+    private static void addSpecializedHandler(@Nullable String appLabel) {
+        ShadowPackageManager shadowPackageManager =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
+
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = "com.example.app";
+        activityInfo.name = "com.example.app.MainActivity";
+        activityInfo.nonLocalizedLabel = appLabel;
+        shadowPackageManager.addOrUpdateActivity(activityInfo);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme("https");
+        filter.addDataAuthority("www.example.com", null);
+        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        // NotificationManager resolves the activity with MATCH_DEFAULT_ONLY.
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        shadowPackageManager.addIntentFilterForActivity(
+                new ComponentName(activityInfo.packageName, activityInfo.name), filter);
     }
 
     @Test
@@ -986,25 +1012,7 @@ public class SendTabToSelfAndroidBridgeTest {
         String url = "https://www.example.com/app/path";
 
         // Register a specialized handler.
-        ShadowPackageManager shadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.nonLocalizedLabel = "Example App";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
+        addSpecializedHandler("Example App");
 
         // Mock Activity elements.
         LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
@@ -1075,33 +1083,14 @@ public class SendTabToSelfAndroidBridgeTest {
         ShadowPackageManager shadowPackageManager =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
 
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent1 = new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
-        queryIntent1.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent1, resolveInfo);
-
-        Intent queryIntent2 = new Intent(Intent.ACTION_VIEW, Uri.parse(url2));
-        queryIntent2.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent2, resolveInfo);
-
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.packageName = "com.example.app";
         packageInfo.applicationInfo = new ApplicationInfo();
         packageInfo.applicationInfo.packageName = "com.example.app";
         packageInfo.applicationInfo.nonLocalizedLabel = "Example App";
         packageInfo.applicationInfo.icon = android.R.drawable.sym_def_app_icon;
-        shadowPackageManager.addPackage(packageInfo);
+        shadowPackageManager.installPackage(packageInfo);
+        addSpecializedHandler(/* appLabel= */ null);
 
         // Mock Activity elements.
         LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
@@ -1261,29 +1250,14 @@ public class SendTabToSelfAndroidBridgeTest {
         ShadowPackageManager shadowPackageManager =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
 
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme("https");
-        filter.addDataAuthority("www.example.com", null);
-        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = "com.example.app";
-        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
-        resolveInfo.filter = filter;
-
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
-
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.packageName = "com.example.app";
         packageInfo.applicationInfo = new ApplicationInfo();
         packageInfo.applicationInfo.packageName = "com.example.app";
         packageInfo.applicationInfo.nonLocalizedLabel = "Example App";
         packageInfo.applicationInfo.icon = android.R.drawable.sym_def_app_icon;
-        shadowPackageManager.addPackage(packageInfo);
+        shadowPackageManager.installPackage(packageInfo);
+        addSpecializedHandler(/* appLabel= */ null);
 
         Tab tab = mock(Tab.class);
         when(tab.getUrl()).thenReturn(new GURL(url));

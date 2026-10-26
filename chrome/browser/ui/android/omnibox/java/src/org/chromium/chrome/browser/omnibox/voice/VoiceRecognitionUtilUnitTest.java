@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.omnibox.voice;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.content.Intent;
-import android.content.pm.ResolveInfo;
+import android.content.ComponentName;
+import android.content.IntentFilter;
 import android.speech.RecognizerIntent;
 
 import org.junit.After;
@@ -25,6 +25,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class VoiceRecognitionUtilUnitTest {
     private static final String RECOGNITION_PACKAGE_NAME = "com.some.package";
+    private static final ComponentName RECOGNITION_ACTIVITY =
+            new ComponentName(RECOGNITION_PACKAGE_NAME, "com.some.package.RecognitionActivity");
     private ShadowPackageManager mShadowPackageManager;
 
     @Before
@@ -39,13 +41,13 @@ public class VoiceRecognitionUtilUnitTest {
     }
 
     private void setSpeechRecognitionIntentHandlerAvailable(boolean isAvailable) {
-        var intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         if (isAvailable) {
-            var info = new ResolveInfo();
-            info.resolvePackageName = RECOGNITION_PACKAGE_NAME;
-            mShadowPackageManager.addResolveInfoForIntent(intent, info);
+            mShadowPackageManager.addActivityIfNotPresent(RECOGNITION_ACTIVITY);
+            mShadowPackageManager.addIntentFilterForActivity(
+                    RECOGNITION_ACTIVITY,
+                    new IntentFilter(RecognizerIntent.ACTION_RECOGNIZE_SPEECH));
         } else {
-            mShadowPackageManager.removeResolveInfosForIntent(intent, RECOGNITION_PACKAGE_NAME);
+            mShadowPackageManager.removeActivity(RECOGNITION_ACTIVITY);
         }
     }
 

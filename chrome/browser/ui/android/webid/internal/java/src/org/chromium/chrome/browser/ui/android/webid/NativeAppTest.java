@@ -20,8 +20,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import org.junit.Before;
@@ -129,34 +127,30 @@ public class NativeAppTest {
     }
 
     /**
-     * Registers an app whose activity handles CONTINUE_URL but does not declare a MIME type. Uses
-     * an IntentFilter (rather than addResolveInfoForIntent(), which matches regardless of the
-     * queried MIME type) so that queries with a MIME type correctly do not match.
+     * Registers an app whose activity handles CONTINUE_URL but does not declare a MIME type, so
+     * queries with a MIME type correctly do not match.
      */
     private void registerFakeApp(String packageName) {
-        ComponentName component = new ComponentName(packageName, packageName + ".LoginActivity");
-        mShadowPackageManager.addActivityIfNotPresent(component);
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
-        Uri uri = Uri.parse(CONTINUE_URL.getSpec());
-        filter.addDataScheme(uri.getScheme());
-        filter.addDataAuthority(uri.getHost(), null);
-        mShadowPackageManager.addIntentFilterForActivity(component, filter);
+        registerFakeApp(packageName, /* mimeType= */ null, CONTINUE_URL);
     }
 
     private void registerFakeApp(String packageName, String mimeType) {
         registerFakeApp(packageName, mimeType, CONTINUE_URL);
     }
 
+    /** Registers an app whose activity handles {@code url}, declaring {@code mimeType} if set. */
     private void registerFakeApp(String packageName, String mimeType, GURL url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setDataAndType(Uri.parse(url.getSpec()), mimeType);
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = packageName;
-        resolveInfo.activityInfo.name = packageName + ".LoginActivity";
-        mShadowPackageManager.addResolveInfoForIntent(intent, resolveInfo);
+        ComponentName component = new ComponentName(packageName, packageName + ".LoginActivity");
+        mShadowPackageManager.addActivityIfNotPresent(component);
+        IntentFilter filter =
+                mimeType == null
+                        ? new IntentFilter(Intent.ACTION_VIEW)
+                        : IntentFilter.create(Intent.ACTION_VIEW, mimeType);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        Uri uri = Uri.parse(url.getSpec());
+        filter.addDataScheme(uri.getScheme());
+        filter.addDataAuthority(uri.getHost(), null);
+        mShadowPackageManager.addIntentFilterForActivity(component, filter);
     }
 
     /**
@@ -353,14 +347,15 @@ public class NativeAppTest {
     }
 
     private void registerFakeAppForDelegatedFlow(String packageName, GURL configUrl) {
-        Intent intent = new Intent(AccountSelectionCoordinator.ACTION_ACTIVE_MODE_VIEW);
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setData(Uri.parse(configUrl.getSpec()));
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = packageName;
-        resolveInfo.activityInfo.name = packageName + ".DelegatedFlowActivity";
-        mShadowPackageManager.addResolveInfoForIntent(intent, resolveInfo);
+        ComponentName component =
+                new ComponentName(packageName, packageName + ".DelegatedFlowActivity");
+        mShadowPackageManager.addActivityIfNotPresent(component);
+        IntentFilter filter = new IntentFilter(AccountSelectionCoordinator.ACTION_ACTIVE_MODE_VIEW);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        Uri uri = Uri.parse(configUrl.getSpec());
+        filter.addDataScheme(uri.getScheme());
+        filter.addDataAuthority(uri.getHost(), null);
+        mShadowPackageManager.addIntentFilterForActivity(component, filter);
     }
 
     private NativeAppRequestOptions createTestRequestOptions(GURL configUrl) {

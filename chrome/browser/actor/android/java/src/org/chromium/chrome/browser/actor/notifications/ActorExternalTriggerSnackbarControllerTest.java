@@ -17,9 +17,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ResolveInfo;
+import android.content.IntentFilter;
 import android.net.Uri;
 
 import org.junit.Before;
@@ -255,16 +255,15 @@ public class ActorExternalTriggerSnackbarControllerTest {
 
     @Test
     public void testOnAction_startsGeminiActivity_usesLaunchIntentWhenInstalled() {
-        Intent mockLaunchIntent = new Intent(Intent.ACTION_MAIN);
-        mockLaunchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        mockLaunchIntent.setPackage(ActorExternalTriggerSnackbarController.BARD_PACKAGE_NAME);
-
-        ResolveInfo info = new ResolveInfo();
-        info.activityInfo = new ActivityInfo();
-        info.activityInfo.packageName = ActorExternalTriggerSnackbarController.BARD_PACKAGE_NAME;
-        info.activityInfo.name = "BardActivity";
+        // Install the Gemini app with a launcher activity.
+        ComponentName bardActivity =
+                new ComponentName(
+                        ActorExternalTriggerSnackbarController.BARD_PACKAGE_NAME, "BardActivity");
+        Shadows.shadowOf(mActivity.getPackageManager()).addActivityIfNotPresent(bardActivity);
+        IntentFilter launcherFilter = new IntentFilter(Intent.ACTION_MAIN);
+        launcherFilter.addCategory(Intent.CATEGORY_LAUNCHER);
         Shadows.shadowOf(mActivity.getPackageManager())
-                .addResolveInfoForIntent(mockLaunchIntent, info);
+                .addIntentFilterForActivity(bardActivity, launcherFilter);
 
         mController.onAction(null);
 

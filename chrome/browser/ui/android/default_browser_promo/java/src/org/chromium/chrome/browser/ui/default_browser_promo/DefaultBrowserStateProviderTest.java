@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 
@@ -20,9 +23,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.util.ChromePackageNameVariant;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Unit test for {@link DefaultBrowserStateProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,34 +62,45 @@ public class DefaultBrowserStateProviderTest {
 
     @Test
     public void testIsChromePreStableInstalled() {
-        List<ResolveInfo> infoList = new ArrayList<>();
         ShadowPackageManager packageManager =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         // Setting android_manifest in the junit_binary build rule causes the current package to
         // appear in the PackageManager.
         packageManager.deletePackage(RuntimeEnvironment.getApplication().getPackageName());
 
-        infoList.add(createResolveInfo(ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME, 1));
-        packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, infoList);
+        addBrowser(packageManager, ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME);
         Assert.assertFalse(
                 "Chrome stable should not be counted as a pre-stable channel",
                 mProvider.isChromePreStableInstalled());
 
-        infoList.add(createResolveInfo("com.android.chrome.123", 1));
-        packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, infoList);
+        addBrowser(packageManager, "com.android.chrome.123");
         Assert.assertFalse(
                 "A random package should not be counted as a pre-stable channel",
                 mProvider.isChromePreStableInstalled());
 
         for (String name : ChromePackageNameVariant.CHROME_PACKAGE_NAMES) {
             if (name.equals(ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME)) continue;
-            List<ResolveInfo> list = new ArrayList<>(infoList);
-            list.add(createResolveInfo(name, 1));
-            packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, list);
+            ComponentName browser = addBrowser(packageManager, name);
             Assert.assertTrue(
                     name + " should be considered as a pre-stable channel",
                     mProvider.isChromePreStableInstalled());
+            // Remove it again so that each channel is checked on its own.
+            packageManager.removeActivity(browser);
         }
+    }
+
+    /** Adds an activity that handles {@link PackageManagerUtils#BROWSER_INTENT}. */
+    private static ComponentName addBrowser(
+            ShadowPackageManager packageManager, String packageName) {
+        ComponentName browser = new ComponentName(packageName, packageName + ".BrowserActivity");
+        packageManager.addActivityIfNotPresent(browser);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        // PackageManagerUtils#queryAllWebBrowsersInfo() passes MATCH_DEFAULT_ONLY.
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        filter.addDataScheme("http");
+        packageManager.addIntentFilterForActivity(browser, filter);
+        return browser;
     }
 
     private ResolveInfo createResolveInfo(String packageName, int match) {
