@@ -379,10 +379,15 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="EnterpriseSignals">
+  <variant name="Agent" summary="agent"/>
   <variant name="AntiVirus" summary="antivirus"/>
+  <variant name="BrowserContextSignals" summary="browser context"/>
+  <variant name="Certificates" summary="client certificates"/>
   <variant name="FileSystemInfo" summary="file system information"/>
   <variant name="Hotfixes" summary="hotfixes"/>
+  <variant name="OsSignals" summary="operating system"/>
   <variant name="SystemSettings" summary="system settings"/>
+  <variant name="VerifyApps" summary="verify apps"/>
 </variants>
 
 <variants name="FileUploadEvent">
@@ -1741,7 +1746,13 @@ chromium-metrics-reviews@google.com.
     response. Recorded only when the collection request was successful and the
     signal value represents a collection.
   </summary>
-  <token key="Signal" variants="EnterpriseSignals"/>
+  <token key="Signal">
+    <variant name="AntiVirus" summary="antivirus"/>
+    <variant name="Certificates" summary="client certificates"/>
+    <variant name="FileSystemInfo" summary="file system information"/>
+    <variant name="Hotfixes" summary="hotfixes"/>
+    <variant name="SystemSettings" summary="system settings"/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.TotalLatency" units="ms"
