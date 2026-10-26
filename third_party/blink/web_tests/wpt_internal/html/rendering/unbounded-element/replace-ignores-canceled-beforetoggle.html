@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:arthursonzogni@chromium.org">
+<link rel="help" href="https://crbug.com/567605448">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<div id="first" unbounded></div>
+<div id="second" unbounded></div>
+
+<script>
+promise_test(async t => {
+  const first = document.querySelector('#first');
+  const second = document.querySelector('#second');
+
+  await test_driver.bless("show first");
+  await first.showUnboundedElement();
+  assert_true(first.matches(':unbounded'));
+
+  // Try to keep the first element open. This also cancels the light dismiss
+  // caused by the click from test_driver.bless() below.
+  first.addEventListener('beforetoggle', e => e.preventDefault());
+
+  await test_driver.bless("show second");
+  await second.showUnboundedElement();
+
+  assert_false(first.matches(':unbounded'),
+               'The first element should be dismissed.');
+  assert_true(second.matches(':unbounded'),
+              'The second element should be active.');
+}, 'Showing a second unbounded element dismisses the first one, even if ' +
+   'the first one cancels beforetoggle.');
+</script>
