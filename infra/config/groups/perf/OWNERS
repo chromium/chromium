@@ -1,11 +1,30 @@
+# When updating owners, consider updating all of these:
+# Chromium
+# https://chromium.googlesource.com/chromium/src/+/main/infra/config/groups/perf/OWNERS
+# Internal chromium
+# https://chrome-internal.googlesource.com/chrome/src-internal/+/main/infra/config/groups/perf/OWNERS
+# Infra
+# https://chromium.googlesource.com/infra/infra/+/main/chromeperf/OWNERS
+# Internal infra
+# https://chrome-internal.googlesource.com/infra/infra_internal/+/main/infra/config/subprojects/CHROMEPERF_OWNERS
+# Build
+# https://chromium.googlesource.com/chromium/tools/build/+/main/recipes/recipe_modules/perf_dashboard/OWNERS
+# Internal build
+# https://chrome-internal.googlesource.com/chrome/tools/build/+/main/recipes/recipes/perf/OWNERS
+# Config
+# https://chrome-internal.googlesource.com/infradata/config/+/main/infra/config/groups/perf/OWNERS
+
+# Browser Perf Infra team
 ammedina@google.com
 carlosbarrera@google.com
 davidsegovia@google.com
-faridzad@google.com
 ggj@google.com
 gmarcoesau@google.com
-jeffyoon@google.com
-johnchen@chromium.org
 jrtm@google.com
 migueloruiz@google.com
+
+# Emeritus
+faridzad@google.com
+jeffyoon@google.com
+johnchen@chromium.org
 wenbinzhang@google.com
