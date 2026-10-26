@@ -373,8 +373,8 @@ void RealTimeUrlLookupServiceBase::SendSampledRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline) &&
-      net::NetworkChangeNotifier::IsOffline()) {
+  if (net::NetworkChangeNotifier::IsOffline() &&
+      base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline)) {
     return;
   }
 
@@ -458,8 +458,9 @@ void RealTimeUrlLookupServiceBase::StartMaybeCachedLookup(
   }
 
   if (IsInBackoffMode() || !CanPerformFullURLLookup() ||
-      (base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline) &&
-       net::NetworkChangeNotifier::IsOffline())) {
+      (net::NetworkChangeNotifier::IsOffline() &&
+       base::FeatureList::IsEnabled(
+           kSafeBrowsingSkipRealTimeLookupIfOffline))) {
     callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(response_callback),
                                   /* is_rt_lookup_successful */ false,
@@ -583,8 +584,8 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
       ("SafeBrowsing.RT.Network.Result" + report_type_suffix).c_str(),
       net_error, response_code);
   // TODO(b/568906444): cleanup metric once root cause determined
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline) &&
-      net::NetworkChangeNotifier::IsOffline()) {
+  if (net::NetworkChangeNotifier::IsOffline() &&
+      !base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline)) {
     RecordHttpResponseOrErrorCode("SafeBrowsing.RT.Network.Result.Offline",
                                   net_error, response_code);
   }
