@@ -127,7 +127,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
 
   proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_factory_start");
-  downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
+  downstream.mutable_start_task();
 
   handler->OnMessage(browser_actuator::transport::PayloadType::kActuation,
                      downstream.SerializeAsString());
@@ -177,7 +177,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_enabled_start");
-  downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
+  downstream.mutable_start_task();
   session->OnMessage(browser_actuator::transport::PayloadType::kActuation,
                      downstream.SerializeAsString());
   EXPECT_EQ(actor_keyed_service_->GetActiveTasks().size(), 1u);

@@ -50,6 +50,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(StoppedReason) -->
 
 <variants name="StoppedReason">
+  <variant name="AbortedByPolicy" summary="Aborted by policy."/>
   <variant name="Cancelled" summary="Stopped by user."/>
   <variant name="ChromeFailure"
       summary="Some error in chrome caused the task to stop."/>

@@ -44,6 +44,8 @@ std::string_view ToString(ActorTask::StoppedReason stopped_reason) {
       return "UserNavigatedAway";
     case ActorTask::StoppedReason::kTimeout:
       return "Timeout";
+    case ActorTask::StoppedReason::kAbortedByPolicy:
+      return "AbortedByPolicy";
   }
   NOTREACHED();
 }

@@ -754,6 +754,8 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                 return "UserNavigatedAway";
             case StoppedReason.TIMEOUT:
                 return "Timeout";
+            case StoppedReason.ABORTED_BY_POLICY:
+                return "AbortedByPolicy";
             default:
                 return "";
         }

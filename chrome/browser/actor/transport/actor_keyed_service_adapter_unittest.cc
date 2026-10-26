@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_enterprise_policy_checker.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,7 +18,9 @@
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
@@ -33,6 +36,14 @@ class ActorKeyedServiceAdapterTest : public testing::Test {
   ~ActorKeyedServiceAdapterTest() override = default;
 
   void TearDown() override { actor_service_->Shutdown(); }
+
+  std::unique_ptr<tabs::MockTabInterface> CreateMockTab() {
+    auto mock_tab = std::make_unique<tabs::MockTabInterface>();
+    ON_CALL(*mock_tab, GetProfile)
+        .WillByDefault(testing::Return(profile_.get()));
+    actor_service_->GetSurfaceRegistry().OnTabCreated(*mock_tab);
+    return mock_tab;
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -51,12 +62,57 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskCreatesBrowserActuatorTask) {
   const auto& [task_id, response] = future.Get();
   EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
   EXPECT_TRUE(task_id);
+  EXPECT_TRUE(response.bound_surfaces().empty());
 
   ActorTask* task = actor_service_->GetTask(task_id);
   ASSERT_TRUE(task);
   EXPECT_EQ(task->source_info().type, TaskSourceInfo::Client::kBrowserActuator);
   EXPECT_FALSE(task->source_info().id.has_value());
   EXPECT_EQ(&task->policy_checker(), &enterprise_policy_checker_);
+}
+
+TEST_F(ActorKeyedServiceAdapterTest, StartTaskPopulatesTitleAndBoundSurfaces) {
+  std::unique_ptr<tabs::MockTabInterface> mock_tab = CreateMockTab();
+  const int32_t tab_id = mock_tab->GetHandle().raw_value();
+
+  proto::StartTaskRequest request;
+  request.set_task_title("Book flight");
+  proto::TargetSurface* surface = request.add_target_surfaces();
+  surface->set_tab_id(tab_id);
+  surface->set_execution_mode(proto::TargetSurface::HEADED);
+
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+  adapter_.StartTask(request, future.GetCallback());
+
+  const auto& [task_id, response] = future.Get();
+  EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
+  ASSERT_EQ(response.bound_surfaces_size(), 1);
+  EXPECT_EQ(response.bound_surfaces(0).tab_id(), tab_id);
+  EXPECT_EQ(response.bound_surfaces(0).execution_mode(),
+            proto::TargetSurface::HEADED);
+
+  ActorTask* task = actor_service_->GetTask(task_id);
+  ASSERT_TRUE(task);
+  EXPECT_EQ(task->title(), "Book flight");
+  EXPECT_TRUE(task->HasTab(mock_tab->GetHandle()));
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskReturnsTargetTabNotFoundForUnknownTab) {
+  proto::StartTaskRequest request;
+  proto::TargetSurface* surface = request.add_target_surfaces();
+  surface->set_tab_id(9999);
+  surface->set_execution_mode(proto::TargetSurface::HEADED);
+
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+  adapter_.StartTask(request, future.GetCallback());
+
+  const auto& [task_id, response] = future.Get();
+  EXPECT_FALSE(task_id);
+  EXPECT_EQ(response.status(),
+            proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
+  EXPECT_TRUE(response.bound_surfaces().empty());
+  EXPECT_EQ(actor_service_->GetActiveTasksCount(), 0u);
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StopTaskStopsExistingTaskAndReturnsTrue) {
@@ -66,11 +122,61 @@ TEST_F(ActorKeyedServiceAdapterTest, StopTaskStopsExistingTaskAndReturnsTrue) {
   TaskId task_id = std::get<0>(start_future.Get());
   ASSERT_TRUE(actor_service_->GetTask(task_id));
 
+  ActorTask::State observed_final_state = ActorTask::State::kCreated;
+  base::CallbackListSubscription subscription =
+      actor_service_->AddTaskStateChangedCallback(base::BindRepeating(
+          [](ActorTask::State* out_state, ActorTask& task) {
+            *out_state = task.GetState();
+          },
+          &observed_final_state));
+
+  proto::StopTaskRequest stop_request;
+  stop_request.set_reason(proto::StopTaskRequest::TASK_COMPLETED);
   base::test::TestFuture<bool> stop_future;
-  adapter_.StopTask(task_id, proto::StopTaskRequest(),
-                    stop_future.GetCallback());
+  adapter_.StopTask(task_id, stop_request, stop_future.GetCallback());
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(actor_service_->GetTask(task_id));
+  EXPECT_EQ(observed_final_state, ActorTask::State::kFinished);
+}
+
+TEST_F(ActorKeyedServiceAdapterTest, StopTaskMapsStoppedReasonsToTaskStates) {
+  const struct {
+    proto::StopTaskRequest::Reason proto_reason;
+    ActorTask::StoppedReason expected_stopped_reason;
+    ActorTask::State expected_state;
+  } kTestCases[] = {
+      {proto::StopTaskRequest::USER_CANCELLED,
+       ActorTask::StoppedReason::kStoppedByUser, ActorTask::State::kCancelled},
+      {proto::StopTaskRequest::TIMEOUT, ActorTask::StoppedReason::kTimeout,
+       ActorTask::State::kCancelled},
+      {proto::StopTaskRequest::POLICY_ABORT,
+       ActorTask::StoppedReason::kAbortedByPolicy, ActorTask::State::kFailed},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+    adapter_.StartTask(proto::StartTaskRequest(), start_future.GetCallback());
+    TaskId task_id = std::get<0>(start_future.Get());
+
+    std::optional<ActorTask::StoppedReason> observed_stopped_reason;
+    ActorTask::State observed_final_state = ActorTask::State::kCreated;
+    base::CallbackListSubscription subscription =
+        actor_service_->AddTaskStateChangedCallback(base::BindRepeating(
+            [](std::optional<ActorTask::StoppedReason>* out_reason,
+               ActorTask::State* out_state, ActorTask& task) {
+              *out_reason = task.stopped_reason();
+              *out_state = task.GetState();
+            },
+            &observed_stopped_reason, &observed_final_state));
+
+    proto::StopTaskRequest stop_request;
+    stop_request.set_reason(test_case.proto_reason);
+    base::test::TestFuture<bool> stop_future;
+    adapter_.StopTask(task_id, stop_request, stop_future.GetCallback());
+    EXPECT_TRUE(stop_future.Get());
+    EXPECT_EQ(observed_stopped_reason, test_case.expected_stopped_reason);
+    EXPECT_EQ(observed_final_state, test_case.expected_state);
+  }
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StopTaskReturnsFalseForUnknownTask) {

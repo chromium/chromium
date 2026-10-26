@@ -1117,6 +1117,7 @@ ActorTask::State ActorTask::GetTaskStateFromStoppedReason(
       break;
     case StoppedReason::kModelError:
     case StoppedReason::kChromeFailure:
+    case StoppedReason::kAbortedByPolicy:
       final_state = State::kFailed;
       break;
   }

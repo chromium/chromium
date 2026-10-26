@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,8 +22,28 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
+namespace {
+
+ActorTask::StoppedReason ToStoppedReason(
+    proto::StopTaskRequest::Reason reason) {
+  switch (reason) {
+    case proto::StopTaskRequest::USER_CANCELLED:
+      return ActorTask::StoppedReason::kStoppedByUser;
+    case proto::StopTaskRequest::TIMEOUT:
+      return ActorTask::StoppedReason::kTimeout;
+    case proto::StopTaskRequest::POLICY_ABORT:
+      return ActorTask::StoppedReason::kAbortedByPolicy;
+    case proto::StopTaskRequest::REASON_UNSPECIFIED:
+    case proto::StopTaskRequest::TASK_COMPLETED:
+    default:
+      return ActorTask::StoppedReason::kTaskComplete;
+  }
+}
+
+}  // namespace
 
 ActorKeyedServiceAdapter::ActorKeyedServiceAdapter(
     ActorKeyedService* actor_service,
@@ -38,6 +59,29 @@ ActorKeyedServiceAdapter::~ActorKeyedServiceAdapter() = default;
 void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
                                          StartTaskCallback callback) {
   auto options = webui::mojom::TaskOptions::New();
+  if (!request.task_title().empty()) {
+    options->title = request.task_title();
+  }
+
+  proto::StartTaskResponse response;
+  // TODO(crbug.com/576384635): Support binding multiple initial target surfaces
+  // and failing task creation on unbindable tabs in ActorKeyedService.
+  if (!request.target_surfaces().empty()) {
+    const proto::TargetSurface& surface = request.target_surfaces(0);
+    if (!surface.has_tab_id() || surface.tab_id() <= 0 ||
+        !actor_service_->GetSurfaceRegistry().GetForTab(
+            tabs::TabHandle(surface.tab_id()))) {
+      response.set_status(
+          proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
+      std::move(callback).Run(TaskId(), std::move(response));
+      return;
+    }
+    options->actuation_tab_id = surface.tab_id();
+    proto::StartTaskResponse::BoundSurface* bound_surface =
+        response.add_bound_surfaces();
+    bound_surface->set_tab_id(surface.tab_id());
+    bound_surface->set_execution_mode(surface.execution_mode());
+  }
 
   TaskId task_id = actor_service_->CreateTaskWithOptions(
       TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator,
@@ -46,8 +90,6 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
       weak_ptr_factory_.GetWeakPtr(),
       ui::ActorUiStateManager::Get(actor_service_->GetProfile()));
 
-  // TODO(crbug.com/571106281): Bind target_surfaces on StartTask.
-  proto::StartTaskResponse response;
   response.set_status(proto::StartTaskResponse::STATUS_OK);
   std::move(callback).Run(task_id, std::move(response));
 }
@@ -60,9 +102,7 @@ void ActorKeyedServiceAdapter::StopTask(TaskId task_id,
     return;
   }
 
-  // TODO(crbug.com/571106281): Update StoppedReason to one provided by the
-  // downstream message.
-  actor_service_->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
+  actor_service_->StopTask(task_id, ToStoppedReason(request.reason()));
   std::move(callback).Run(true);
 }
 
