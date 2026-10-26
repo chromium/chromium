@@ -8,8 +8,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,10 @@ import java.util.List;
 /** The class to observe address changes in 'settings/Autofill and payment'. */
 @NullMarked
 public class SettingsAutofillAndPaymentsObserver {
-    private static final List<Observer> sObservers = new ArrayList<>();
-    private static @Nullable SettingsAutofillAndPaymentsObserver
-            sSettingsAutofillAndPaymentsObserver;
+    private static final ProfileKeyedMap<SettingsAutofillAndPaymentsObserver> sProfileMap =
+            new ProfileKeyedMap<>((observer) -> observer.mObservers.clear());
+
+    private final List<Observer> mObservers = new ArrayList<>();
 
     /** The interface to observe address and card changes in 'settings/Autofill and payment'. */
     public interface Observer {
@@ -38,14 +40,15 @@ public class SettingsAutofillAndPaymentsObserver {
         void onAddressDeleted(String guid);
     }
 
-    /** Gets an instance of this class. */
-    public static SettingsAutofillAndPaymentsObserver getInstance() {
+    /**
+     * Gets the {@link SettingsAutofillAndPaymentsObserver} associated with the given {@link
+     * Profile}.
+     */
+    public static SettingsAutofillAndPaymentsObserver getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
 
-        if (sSettingsAutofillAndPaymentsObserver == null) {
-            sSettingsAutofillAndPaymentsObserver = new SettingsAutofillAndPaymentsObserver();
-        }
-        return sSettingsAutofillAndPaymentsObserver;
+        return sProfileMap.getForProfile(
+                profile, unused -> new SettingsAutofillAndPaymentsObserver());
     }
 
     // Avoid accident instantiation.
@@ -57,7 +60,7 @@ public class SettingsAutofillAndPaymentsObserver {
      * @param observer The observer to register.
      */
     public void registerObserver(Observer observer) {
-        sObservers.add(observer);
+        mObservers.add(observer);
     }
 
     /**
@@ -66,7 +69,7 @@ public class SettingsAutofillAndPaymentsObserver {
      * @param observer The observer to remove.
      */
     public void unregisterObserver(Observer observer) {
-        sObservers.remove(observer);
+        mObservers.remove(observer);
     }
 
     /**
@@ -75,7 +78,7 @@ public class SettingsAutofillAndPaymentsObserver {
      * @param address The given address.
      */
     public void notifyOnAddressUpdated(AutofillAddress address) {
-        for (Observer observer : sObservers) {
+        for (Observer observer : mObservers) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, () -> observer.onAddressUpdated(address));
         }
     }
@@ -86,7 +89,7 @@ public class SettingsAutofillAndPaymentsObserver {
      * @param guid The given address guid.
      */
     public void notifyOnAddressDeleted(String guid) {
-        for (Observer observer : sObservers) {
+        for (Observer observer : mObservers) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, () -> observer.onAddressDeleted(guid));
         }
     }

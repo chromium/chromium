@@ -76,7 +76,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     PersonalDataManagerFactory.getForProfile(getProfile())
                             .setProfile(address.getProfile());
                     recordAddressEditDone();
-                    SettingsAutofillAndPaymentsObserver.getInstance()
+                    SettingsAutofillAndPaymentsObserver.getForProfile(getProfile())
                             .notifyOnAddressUpdated(address);
                     if (sObserverForTest != null) {
                         sObserverForTest.onEditorReadyToEdit();
@@ -98,7 +98,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         return;
                     }
                     PersonalDataManagerFactory.getForProfile(getProfile()).deleteProfile(guid);
-                    SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
+                    SettingsAutofillAndPaymentsObserver.getForProfile(getProfile())
+                            .notifyOnAddressDeleted(guid);
                     if (sObserverForTest != null) {
                         sObserverForTest.onEditorReadyToEdit();
                     }

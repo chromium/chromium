@@ -144,6 +144,7 @@ public class PaymentUiService
     private @MonotonicNonNull SectionInformation mUiShippingOptions;
     private final Delegate mDelegate;
     private final WebContents mWebContents;
+    private final Profile mProfile;
     private final String mTopLevelOriginFormattedForDisplay;
     private final String mMerchantName;
     private final Map<String, CurrencyFormatter> mCurrencyFormatterMap;
@@ -331,11 +332,11 @@ public class PaymentUiService
         mDelegate = delegate;
         mParams = params;
 
+        mProfile = Profile.fromWebContents(webContents);
         // Do not persist changes on disk in OffTheRecord mode.
         mAddressEditor =
                 new AddressEditor(
-                        PersonalDataManagerFactory.getForProfile(
-                                Profile.fromWebContents(webContents)),
+                        PersonalDataManagerFactory.getForProfile(mProfile),
                         /* saveToDisk= */ !isOffTheRecord);
         mJourneyLogger = journeyLogger;
         mWebContents = webContents;
@@ -437,7 +438,7 @@ public class PaymentUiService
 
         updateAppModifiedTotals();
 
-        SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(this);
+        SettingsAutofillAndPaymentsObserver.getForProfile(mProfile).registerObserver(this);
     }
 
     /**
@@ -1649,7 +1650,7 @@ public class PaymentUiService
             mPaymentMethodsSection = null;
         }
 
-        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(this);
+        SettingsAutofillAndPaymentsObserver.getForProfile(mProfile).unregisterObserver(this);
 
         removeLeavingTabObservers();
         destroyCurrencyFormatters();
