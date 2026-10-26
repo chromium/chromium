@@ -2307,9 +2307,12 @@ void XRSession::OnFrame(double timestamp,
       }
     }
 
-    // If baseLayer is used, bind the shared image with its layer ID.
-    layer_shared_image_manager_.SetSharedImages(render_state_->baseLayer(),
-                                                std::move(shared_images));
+    // If baseLayer is used or LayerManager is not available, bind the shared
+    // image with the first layer's ID.
+    layer_shared_image_manager_.SetSharedImages(
+        LayerManager() ? render_state_->baseLayer()
+                       : render_state_->GetFirstLayer(),
+        std::move(shared_images));
 
     // Dispatch the "redraw" event for layers that should be updated.
     if (layers_enabled_) {
