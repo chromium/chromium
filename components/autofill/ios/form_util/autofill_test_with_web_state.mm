@@ -57,8 +57,7 @@ namespace autofill::test {
 NSString* GetAutofillTestPlaceholders(const AutofillPlaceholderConfig& config) {
   return [NSString
       stringWithFormat:
-          @"var gCrWebPlaceholderAutofillAcrossIframesThrottling = %s;"
-           "var gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels = %s;"
+          @"var gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels = %s;"
            "var gCrWebPlaceholderAutofillSupportDateInput = %s;"
            "var gCrWebPlaceholderAutofillAllowDefaultPreventedSubmission = %s;"
            "var gCrWebPlaceholderAutofillDedupeFormSubmission = %s;"
@@ -67,7 +66,6 @@ NSString* GetAutofillTestPlaceholders(const AutofillPlaceholderConfig& config) {
            "var gCrWebPlaceholderAutofillCountFormSubmissionInRenderer = %s;"
            "var gCrWebPlaceholderAutofillTrackPasswordFieldsIos = %s;"
            "var gCrWebPlaceholderAutofillIgnoreTabIndexForFocusability = %s;",
-          config.autofill_across_iframes_throttling ? "true" : "false",
           config.autofill_disallow_more_hyphen_like_labels ? "true" : "false",
           config.autofill_support_date_input ? "true" : "false",
           config.autofill_allow_default_prevented_submission ? "true" : "false",

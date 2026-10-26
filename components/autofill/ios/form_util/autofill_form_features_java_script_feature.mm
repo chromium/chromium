@@ -17,11 +17,6 @@ const char kFeaturesScriptName[] = "autofill_form_features";
 web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
 GetReplacements() {
   return @{
-    @"gCrWebPlaceholderAutofillAcrossIframesThrottling" :
-            base::FeatureList::IsEnabled(
-                autofill::features::kAutofillAcrossIframesIosThrottling)
-        ? @"true"
-        : @"false",
     @"gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels" :
             base::FeatureList::IsEnabled(
                 autofill::features::kAutofillDisallowMoreHyphenLikeLabels)

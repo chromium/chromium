@@ -265,7 +265,7 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
     // Set up the frame in a retry loop until the utils functions are injected.
     const timeoutFn = () => {
         if (typeof __gCrWeb != 'undefined' &&
-            typeof __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('isAutofillAcrossIframesThrottlingEnabled') == 'function') {
+            __gCrWeb.hasRegisteredApi('autofill_form_features')) {
           window.parent?.postMessage({type: 'frame-ready'}, '*');
           // Done.
           return;

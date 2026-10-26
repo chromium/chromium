@@ -116,9 +116,7 @@ export function webFormElementToFormData(
 
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
-  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
-      autofillFormFeaturesApi.getFunction(
-          'isAutofillAcrossIframesThrottlingEnabled')()) {
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES) {
     iframeElements = [];
   }
 
@@ -446,9 +444,7 @@ export function unownedFormElementsAndFieldSetsToFormData(
 
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
-  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
-      autofillFormFeaturesApi.getFunction(
-          'isAutofillAcrossIframesThrottlingEnabled')()) {
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES) {
     iframeElements = [];
   }
 

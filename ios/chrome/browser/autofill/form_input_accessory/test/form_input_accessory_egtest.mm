@@ -379,10 +379,6 @@ void SlowlyTypeText(NSString* text) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiReauthRequired);
   }
-  if ([self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAcrossIframesIosThrottling);
-  }
   if ([self isRunningTest:@selector(testAddressHomeAndWorkIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature.name;

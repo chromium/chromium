@@ -22,19 +22,15 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "build/buildflag.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/form_forest.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -140,27 +136,10 @@ bool AutofillDriverRouter::IsSafeToFill(
 // TriggerFormExtractionExcept(source).
 void AutofillDriverRouter::TriggerFormExtractionExcept(
     AutofillDriver& exception) {
-#if BUILDFLAG(IS_IOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAcrossIframesIosTriggerFormExtraction)) {
-    return;
-  }
-#endif
-  // TODO(crbug.com/384874225): Cleanup that instrumentation once the feature is
-  // launched on iOS.
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Autofill.DriverRouter.TriggerFormExtractionExcept.Duration");
-  size_t frame_count = form_forest_.frame_datas().size();
-  base::UmaHistogramCounts10000(
-      "Autofill.DriverRouter.TriggerFormExtractionExcept.FrameCount",
-      frame_count);
-  SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_extract_total", frame_count);
   base::flat_set<AutofillDriver*> already_triggered;
   ForEachFrame(form_forest_, [&](AutofillDriver& driver_ref) {
     AutofillDriver* driver = &driver_ref;
     do {
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_extract_so_far",
-                              already_triggered.size());
       if (driver == &exception) {
         continue;
       }

@@ -439,9 +439,7 @@ function extractNewForms(restrictUnownedFieldsToFormlessCheckout) {
 
   // Returns true if the child frames can be extracted.
   const canExtractChildFrames = () =>
-      numFramesSeen <= fill_constants.MAX_EXTRACTABLE_FRAMES ||
-      !autofillFormFeaturesApi.getFunction(
-          'isAutofillAcrossIframesThrottlingEnabled')();
+      numFramesSeen <= fill_constants.MAX_EXTRACTABLE_FRAMES;
 
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */
@@ -482,8 +480,8 @@ function extractNewForms(restrictUnownedFieldsToFormlessCheckout) {
   }
 
   // Look for more extractable fields outside of forms.
-  const unownedForm = extractUnownedFields(
-      restrictUnownedFieldsToFormlessCheckout, canExtractChildFrames());
+  const unownedForm =
+      extractUnownedFields(restrictUnownedFieldsToFormlessCheckout);
 
   if (unownedForm) {
     numFramesSeen += (unownedForm.child_frames ?? []).length;

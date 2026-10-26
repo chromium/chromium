@@ -17,7 +17,6 @@ namespace autofill::test {
 inline constexpr int kTrackFormMutationsDelayInMs = 10;
 
 struct AutofillPlaceholderConfig {
-  bool autofill_across_iframes_throttling = true;
   bool autofill_disallow_more_hyphen_like_labels = false;
   bool autofill_support_date_input = false;
   bool autofill_allow_default_prevented_submission = true;
