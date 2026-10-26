@@ -86,6 +86,11 @@ class MEDIA_EXPORT AudioManager {
   // AudioManager instance must not be deleted if shutdown failed.
   virtual bool Shutdown();
 
+  // Asynchronously closes all cached idle output streams on the audio thread
+  // so physical streams can be torn down before Shutdown() blocks on stopping
+  // the audio thread.
+  virtual void CloseIdleStreams() {}
+
   // Log callback used for sending log messages from a stream to the object
   // that manages the stream.
   using LogCallback = base::RepeatingCallback<void(const std::string&)>;

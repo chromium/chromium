@@ -939,4 +939,22 @@ TEST_F(AudioOutputResamplerTest, PropagatesGlitchInfo) {
   run_loop.Run();
 }
 
+TEST_F(AudioOutputResamplerTest, CloseAllIdleStreamsImmediately) {
+  InitDispatcher(base::Seconds(10));
+  MockAudioOutputStream stream(&manager_, resampler_params_);
+
+  EXPECT_CALL(manager(), MakeAudioOutputStream(_, _, _))
+      .WillOnce(Return(&stream));
+  EXPECT_CALL(stream, Open()).WillOnce(Return(true));
+
+  AudioOutputProxy* proxy = resampler_->CreateStreamProxy();
+  EXPECT_TRUE(proxy->Open());
+  proxy->Close();
+  Mock::VerifyAndClearExpectations(&stream);
+
+  EXPECT_CALL(stream, Close()).Times(1);
+  resampler_->CloseAllIdleStreams();
+  Mock::VerifyAndClearExpectations(&stream);
+}
+
 }  // namespace media

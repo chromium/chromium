@@ -284,6 +284,20 @@ AudioManagerBase::~AudioManagerBase() {
   CHECK(input_streams_.empty());
 }
 
+void AudioManagerBase::CloseIdleStreams() {
+  if (GetTaskRunner()->BelongsToCurrentThread()) {
+    CloseAllIdleStreamsOnAudioThread();
+    return;
+  }
+  // AudioManagerBase outlives `audio_thread_` (stopped in
+  // AudioManager::Shutdown() before ~AudioManagerBase()), so base::Unretained
+  // is safe.
+  GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AudioManagerBase::CloseAllIdleStreamsOnAudioThread,
+                     base::Unretained(this)));
+}
+
 void AudioManagerBase::LogAudioManagerStartup() {
   GetDeviceLogHelper()->LogMessage("AMB::LogAudioManagerStartup",
                                    "AudioManager starts.");
@@ -734,6 +748,15 @@ void AudioManagerBase::ShutdownOnAudioThread() {
 
   // Close all output streams.
   output_dispatchers_.clear();
+}
+
+void AudioManagerBase::CloseAllIdleStreamsOnAudioThread() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  for (auto& params : output_dispatchers_) {
+    if (params->dispatcher) {
+      params->dispatcher->CloseAllIdleStreams();
+    }
+  }
 }
 
 void AudioManagerBase::AddOutputDeviceChangeListener(

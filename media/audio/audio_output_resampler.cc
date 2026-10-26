@@ -469,6 +469,13 @@ void AudioOutputResampler::FlushStream(AudioOutputProxy* stream_proxy) {
   dispatcher_->FlushStream(stream_proxy);
 }
 
+void AudioOutputResampler::CloseAllIdleStreams() {
+  DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
+  if (dispatcher_) {
+    dispatcher_->CloseAllIdleStreams();
+  }
+}
+
 void AudioOutputResampler::StopStreamInternal(
     const CallbackMap::value_type& item) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());

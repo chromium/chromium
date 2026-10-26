@@ -134,9 +134,14 @@ void AudioOutputDispatcherImpl::CloseStream(AudioOutputProxy* stream_proxy) {
   close_timer_.Reset();
 }
 
-// There is nothing to flush since the phsyical stream is removed during
+// There is nothing to flush since the physical stream is removed during
 // StopStream().
 void AudioOutputDispatcherImpl::FlushStream(AudioOutputProxy* stream_proxy) {}
+
+void AudioOutputDispatcherImpl::CloseAllIdleStreams() {
+  DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
+  CloseIdleStreams(0);
+}
 
 void AudioOutputDispatcherImpl::OnDeviceChange() {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
@@ -177,11 +182,6 @@ bool AudioOutputDispatcherImpl::CreateAndOpenStream() {
 
   idle_streams_.push_back(stream);
   return true;
-}
-
-void AudioOutputDispatcherImpl::CloseAllIdleStreams() {
-  DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-  CloseIdleStreams(0);
 }
 
 void AudioOutputDispatcherImpl::CloseIdleStreams(size_t keep_alive) {

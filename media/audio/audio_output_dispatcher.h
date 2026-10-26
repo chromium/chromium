@@ -66,6 +66,9 @@ class MEDIA_EXPORT AudioOutputDispatcher {
   // called when a stream is stopped.
   virtual void FlushStream(AudioOutputProxy* stream_proxy) = 0;
 
+  // Closes all cached idle physical output streams immediately.
+  virtual void CloseAllIdleStreams() = 0;
+
  protected:
   AudioManager* audio_manager() const { return audio_manager_; }
 

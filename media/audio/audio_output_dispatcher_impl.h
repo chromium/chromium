@@ -56,15 +56,13 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl
   void StreamVolumeSet(AudioOutputProxy* stream_proxy, double volume) override;
   void CloseStream(AudioOutputProxy* stream_proxy) override;
   void FlushStream(AudioOutputProxy* stream_proxy) override;
+  void CloseAllIdleStreams() override;
 
   // AudioDeviceListener implementation.
   void OnDeviceChange() override;
 
   // Returns true if there are any open AudioOutputProxy objects.
   bool HasOutputProxies() const;
-
-  // Closes all |idle_streams_|.
-  void CloseAllIdleStreams();
 
  private:
   // Creates a new physical output stream, opens it and pushes to
