@@ -795,7 +795,9 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
 }
 
 void MediaSessionImpl::Seek(base::TimeDelta seek_time) {
-  CHECK(!seek_time.is_zero(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/577759362): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!seek_time.is_zero());
 
   if (seek_time.is_positive()) {
     // If the site has registered an action handler for seek forward then we
