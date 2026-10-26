@@ -431,6 +431,7 @@ TEST(SequenceCheckerTest, LockAndSequence) {
 
   // Check sequencing without holding the lock.
   EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
+  EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
 
   ThreadPool::PostTask(BindLambdaForTesting([&] {
     // Check sequencing while holding the lock. This is not valid because

@@ -44,6 +44,9 @@ SequenceCheckerImpl::SequenceCheckerImpl(SequenceCheckerImpl&& other) {
 
   bound_at_ = std::move(other.bound_at_);
   sequence_token_ = other.sequence_token_;
+  fast_sequence_token_.store(
+      other.fast_sequence_token_.load(std::memory_order_relaxed),
+      std::memory_order_relaxed);
 #if DCHECK_IS_ON()
   locks_ = std::move(other.locks_);
 #endif  // DCHECK_IS_ON()
@@ -55,6 +58,8 @@ SequenceCheckerImpl::SequenceCheckerImpl(SequenceCheckerImpl&& other) {
   DCHECK(other.locks_.empty());
 #endif  // DCHECK_IS_ON()
   other.sequence_token_ = internal::SequenceToken();
+  other.fast_sequence_token_.store(internal::SequenceToken(),
+                                   std::memory_order_relaxed);
   other.thread_ref_ = PlatformThreadRef();
 }
 
@@ -66,6 +71,9 @@ SequenceCheckerImpl& SequenceCheckerImpl::operator=(
 
   TS_UNCHECKED_READ(bound_at_) = std::move(TS_UNCHECKED_READ(other.bound_at_));
   TS_UNCHECKED_READ(sequence_token_) = TS_UNCHECKED_READ(other.sequence_token_);
+  fast_sequence_token_.store(
+      other.fast_sequence_token_.load(std::memory_order_relaxed),
+      std::memory_order_relaxed);
 #if DCHECK_IS_ON()
   TS_UNCHECKED_READ(locks_) = std::move(TS_UNCHECKED_READ(other.locks_));
 #endif  // DCHECK_IS_ON()
@@ -77,6 +85,8 @@ SequenceCheckerImpl& SequenceCheckerImpl::operator=(
   DCHECK(TS_UNCHECKED_READ(other.locks_).empty());
 #endif  // DCHECK_IS_ON()
   TS_UNCHECKED_READ(other.sequence_token_) = internal::SequenceToken();
+  other.fast_sequence_token_.store(internal::SequenceToken(),
+                                   std::memory_order_relaxed);
   TS_UNCHECKED_READ(other.thread_ref_) = PlatformThreadRef();
 
   return *this;
@@ -84,13 +94,22 @@ SequenceCheckerImpl& SequenceCheckerImpl::operator=(
 
 bool SequenceCheckerImpl::CalledOnValidSequence(
     std::unique_ptr<debug::StackTrace>* out_bound_at) const {
+  const internal::SequenceToken current_sequence_token =
+      internal::SequenceToken::GetForCurrentThread();
+  // `memory_order_relaxed` is sufficient because the fast path does not read
+  // any other state published by the binding thread (callers on the same
+  // sequence are already synchronized by the sequence itself), and any call
+  // that misses the fast path acquires `lock_`.
+  if (fast_sequence_token_.load(std::memory_order_relaxed) ==
+      current_sequence_token) [[likely]] {
+    return true;
+  }
+
   AutoLock auto_lock(lock_);
   EnsureAssigned();
   CHECK(!thread_ref_.is_null());
 
   // Valid if current sequence is the bound sequence.
-  const internal::SequenceToken current_sequence_token =
-      internal::SequenceToken::GetForCurrentThread();
   bool is_valid = (sequence_token_ == current_sequence_token);
 
   // Valid if holding a bound lock.
@@ -161,6 +180,8 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
     sequence_token_ = internal::SequenceToken();
   }
 
+  UpdateFastSequenceToken();
+
   return true;
 }
 
@@ -172,6 +193,7 @@ void SequenceCheckerImpl::DetachFromSequence() {
   locks_.clear();
 #endif  // DCHECK_IS_ON()
   thread_ref_ = PlatformThreadRef();
+  UpdateFastSequenceToken();
 }
 
 void SequenceCheckerImpl::EnsureAssigned() const {
@@ -201,6 +223,17 @@ void SequenceCheckerImpl::EnsureAssigned() const {
   DCHECK(sequence_token_.IsValid());
   thread_ref_ = PlatformThread::CurrentRef();
   DCHECK(!thread_ref_.is_null());
+  UpdateFastSequenceToken();
+}
+
+void SequenceCheckerImpl::UpdateFastSequenceToken() const {
+#if DCHECK_IS_ON()
+  const internal::SequenceToken token =
+      locks_.empty() ? sequence_token_ : internal::SequenceToken();
+#else
+  const internal::SequenceToken token = sequence_token_;
+#endif
+  fast_sequence_token_.store(token, std::memory_order_relaxed);
 }
 
 }  // namespace base

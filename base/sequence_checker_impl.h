@@ -5,6 +5,7 @@
 #ifndef BASE_SEQUENCE_CHECKER_IMPL_H_
 #define BASE_SEQUENCE_CHECKER_IMPL_H_
 
+#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -67,6 +68,7 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
 
  private:
   void EnsureAssigned() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void UpdateFastSequenceToken() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Members are mutable so that `CalledOnValidSequence()` can set them.
 
@@ -77,6 +79,11 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
 
   // Sequence to which this is bound.
   mutable internal::SequenceToken sequence_token_ GUARDED_BY(lock_);
+
+  // Fast-path sequence token. Set to `sequence_token_` when bound with no
+  // tracked locks (`locks_.empty()`), or an invalid `SequenceToken()`
+  // otherwise.
+  mutable std::atomic<internal::SequenceToken> fast_sequence_token_;
 
 #if DCHECK_IS_ON()
   // Locks to which this is bound.
