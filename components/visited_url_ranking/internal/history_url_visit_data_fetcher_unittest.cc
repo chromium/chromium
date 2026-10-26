@@ -112,10 +112,10 @@ struct HistoryScenario {
   size_t expected_same_time_group_visit_count = 0;
 };
 
-base::Time GetStartOfDay(base::Time time) {
+base::Time GetNoonOfDay(base::Time time) {
   base::Time::Exploded time_exploded;
   time.LocalExplode(&time_exploded);
-  time_exploded.hour = 0;
+  time_exploded.hour = 12;
   time_exploded.minute = 0;
   time_exploded.second = 0;
   time_exploded.millisecond = 0;
@@ -128,8 +128,7 @@ base::Time GetStartOfDay(base::Time time) {
 }
 
 const HistoryScenario SampleScenario_OverlappingTimeGroup() {
-  base::Time today_mid_of_day =
-      GetStartOfDay(base::Time::Now()) + base::Hours(12);
+  base::Time today_mid_of_day = GetNoonOfDay(base::Time::Now());
   std::vector<base::Time> timestamps;
   timestamps.push_back(today_mid_of_day + base::Hours(1));
   timestamps.push_back(today_mid_of_day + base::Hours(2));
@@ -138,8 +137,7 @@ const HistoryScenario SampleScenario_OverlappingTimeGroup() {
 }
 
 const HistoryScenario SampleScenario_NonOverlappingTimeGroup() {
-  base::Time today_mid_of_day =
-      GetStartOfDay(base::Time::Now()) + base::Hours(12);
+  base::Time today_mid_of_day = GetNoonOfDay(base::Time::Now());
 
   // The current day is split into four time groups of 6 hours each. The third
   // group starts at exactly 12 PM, thus, the following two timestamps will
@@ -509,9 +507,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SampleScenario_OverlappingTimeGroup(),
                       SampleScenario_NonOverlappingTimeGroup()));
 
-// TODO(crbug.com/377113308): Fix and re-enable the test.
-TEST_P(HistoryURLVisitDataFetcherDataTest,
-       DISABLED_FetchURLVisitData_AggregateCounts) {
+TEST_P(HistoryURLVisitDataFetcherDataTest, FetchURLVisitData_AggregateCounts) {
   const auto scenario = GetParam();
   clock_.SetNow(scenario.current_time);
   SetHistoryServiceExpectations(GetSampleAnnotatedVisitsForScenario(scenario));
