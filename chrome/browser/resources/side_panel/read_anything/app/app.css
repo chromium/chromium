@@ -110,6 +110,17 @@
   padding-bottom: var(--sp-card-block-padding);
 }
 
+/* While waiting for translation, keep the content laid out at full size so it
+   can be translated, but take it out of flow (so the loading screen occupies
+   its place) and hide it. Uses visibility rather than display:none so the
+   content still has layout. */
+#appFlexParent #containerParent.awaiting-translation {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  visibility: hidden;
+}
+
 /* Provides vertical and horizontal scrolling */
 #appFlexParent #containerScroller {
   align-items: safe center;

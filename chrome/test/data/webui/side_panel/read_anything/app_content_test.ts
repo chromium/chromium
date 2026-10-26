@@ -103,6 +103,98 @@ suite('AppContent', () => {
     assertStringContains(emptyState.imagePath, emptyPath);
   });
 
+  suite('awaiting translation', () => {
+    const spinner = 'throbber';
+
+    function getEmptyStateContainer(): HTMLElement {
+      return app.shadowRoot.querySelector<HTMLElement>(
+          '#empty-state-container')!;
+    }
+
+    function assertContentHiddenForTranslation() {
+      const containerParent = app.$.containerParent;
+      assertTrue(containerParent.classList.contains('awaiting-translation'));
+      assertTrue(containerParent.hasAttribute('inert'));
+      // The content keeps its layout so it can be translated.
+      assertFalse(containerParent.hidden);
+      assertFalse(getEmptyStateContainer().hidden);
+      assertStringContains(emptyState.imagePath, spinner);
+      assertStringContains(emptyState.darkImagePath, spinner);
+      assertEquals(ContentType.LOADING, contentController.getState().type);
+    }
+
+    function assertContentShown() {
+      const containerParent = app.$.containerParent;
+      assertFalse(containerParent.classList.contains('awaiting-translation'));
+      assertFalse(containerParent.hasAttribute('inert'));
+      assertFalse(containerParent.hidden);
+      assertTrue(getEmptyStateContainer().hidden);
+      assertEquals(ContentType.HAS_CONTENT, contentController.getState().type);
+    }
+
+    test('hides content behind loading screen while awaiting', async () => {
+      contentController.setState(ContentType.HAS_CONTENT);
+      await microtasksFinished();
+      assertContentShown();
+
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      await microtasksFinished();
+
+      assertContentHiddenForTranslation();
+    });
+
+    test('shows content once translation is done', async () => {
+      contentController.setState(ContentType.HAS_CONTENT);
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      await microtasksFinished();
+      assertContentHiddenForTranslation();
+
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(false);
+      await microtasksFinished();
+
+      assertContentShown();
+    });
+
+    test('content drawn while awaiting stays hidden', async () => {
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      app.showLoading();
+      await microtasksFinished();
+      // With no content yet, the regular loading state is shown.
+      assertTrue(app.$.containerParent.hidden);
+      assertFalse(getEmptyStateContainer().hidden);
+      assertStringContains(emptyState.imagePath, spinner);
+
+      contentController.setState(ContentType.HAS_CONTENT);
+      await microtasksFinished();
+
+      assertContentHiddenForTranslation();
+    });
+
+    test('does not hide empty state when not awaiting', async () => {
+      contentController.setState(ContentType.NO_CONTENT);
+      await microtasksFinished();
+
+      assertFalse(
+          app.$.containerParent.classList.contains('awaiting-translation'));
+      assertStringContains(emptyState.imagePath, 'empty_state.svg');
+    });
+
+    test('read aloud is not playable while awaiting', async () => {
+      contentBrowserProxy.requiresDistillationVal = false;
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.isReadAloudPlayable);
+
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      await microtasksFinished();
+      assertFalse(app.$.toolbar.isReadAloudPlayable);
+
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(false);
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.isReadAloudPlayable);
+    });
+  });
+
   suite('updateContent', () => {
     test('playable if done with distillation', async () => {
       contentBrowserProxy.requiresDistillationVal = false;

@@ -4,8 +4,8 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ContentController, ContentListener, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ContentListener, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -57,6 +57,94 @@ suite('ContentController', () => {
       },
     };
     contentController.addListener(listener);
+  });
+
+  suite('awaiting translation', () => {
+    function setAwaiting(awaiting: boolean) {
+      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(awaiting);
+    }
+
+    test('content drawn while awaiting stays loading', () => {
+      setAwaiting(true);
+      contentController.setState(ContentType.LOADING);
+      receivedContentStateChange = false;
+
+      contentController.setState(ContentType.HAS_CONTENT);
+
+      // The state stays LOADING, but listeners are notified so the content
+      // can be drawn behind the loading screen.
+      assertEquals(ContentType.LOADING, contentController.getState().type);
+      assertTrue(contentController.isHidingContentForTranslation());
+      assertFalse(contentController.hasContent());
+      assertTrue(receivedContentStateChange);
+    });
+
+    test('shows hidden content once no longer awaiting', () => {
+      setAwaiting(true);
+      contentController.setState(ContentType.HAS_CONTENT);
+      receivedContentStateChange = false;
+
+      setAwaiting(false);
+
+      assertEquals(ContentType.HAS_CONTENT, contentController.getState().type);
+      assertFalse(contentController.isHidingContentForTranslation());
+      assertTrue(contentController.hasContent());
+      assertTrue(receivedContentStateChange);
+    });
+
+    test('hides already shown content when awaiting starts', () => {
+      contentController.setState(ContentType.HAS_CONTENT);
+      receivedContentStateChange = false;
+
+      setAwaiting(true);
+
+      assertEquals(ContentType.LOADING, contentController.getState().type);
+      assertTrue(contentController.isHidingContentForTranslation());
+      assertTrue(receivedContentStateChange);
+    });
+
+    test('empty state while awaiting drops hidden content', () => {
+      setAwaiting(true);
+      contentController.setState(ContentType.HAS_CONTENT);
+
+      contentController.setEmpty();
+      assertTrue(contentController.isEmpty());
+      assertFalse(contentController.isHidingContentForTranslation());
+
+      // Nothing to show once the translation finishes.
+      receivedContentStateChange = false;
+      setAwaiting(false);
+      assertTrue(contentController.isEmpty());
+      assertFalse(receivedContentStateChange);
+    });
+
+    test('no longer awaiting without hidden content does nothing', () => {
+      setAwaiting(true);
+      contentController.setState(ContentType.LOADING);
+      receivedContentStateChange = false;
+
+      setAwaiting(false);
+
+      assertEquals(ContentType.LOADING, contentController.getState().type);
+      assertFalse(receivedContentStateChange);
+    });
+
+    test('not awaiting shows content immediately', () => {
+      contentController.setState(ContentType.HAS_CONTENT);
+
+      assertEquals(ContentType.HAS_CONTENT, contentController.getState().type);
+      assertFalse(contentController.isHidingContentForTranslation());
+    });
+
+    test('reads initial awaiting state on construction', () => {
+      visualBrowserProxy.awaitingTranslation = true;
+      const controller = new ContentController();
+
+      controller.setState(ContentType.HAS_CONTENT);
+
+      assertEquals(ContentType.LOADING, controller.getState().type);
+      assertTrue(controller.isHidingContentForTranslation());
+    });
   });
 
   suite('setEmpty', () => {

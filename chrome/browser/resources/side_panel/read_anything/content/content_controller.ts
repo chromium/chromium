@@ -202,6 +202,14 @@ export class ContentController {
   private currentState_: ContentState = CONTENT_STATES[ContentType.NO_CONTENT];
   private previousRootId_?: number;
 
+  // Whether the browser is waiting for the content to be translated. While
+  // true, content is drawn (so it can be translated) but the state stays
+  // LOADING so it's kept behind the loading screen.
+  private isAwaitingTranslation_: boolean = false;
+  // Whether content was drawn while awaiting translation, so the transition
+  // to HAS_CONTENT was deferred until the translation is shown or fails.
+  private isHidingContentForTranslation_: boolean = false;
+
   // Holds the text nodes extracted from the current rendered distillation.
   // This array ensures that we can link a DOM node back to its AXTree
   // mapping for text selection via its index in this array.
@@ -213,18 +221,58 @@ export class ContentController {
     this.contentBrowserProxy_.onNodeWillBeDeleted.addListener(
         this.onNodeWillBeDeleted.bind(this));
     this.contentBrowserProxy_.showEmpty.addListener(this.setEmpty.bind(this));
+    this.visualBrowserProxy_.onAwaitingTranslationChanged.addListener(
+        this.setAwaitingTranslation_.bind(this));
+    // The browser may have signaled before this listener was registered.
+    this.isAwaitingTranslation_ =
+        this.visualBrowserProxy_.isAwaitingTranslation();
   }
 
   getState(): ContentState {
     return this.currentState_;
   }
 
+  // Whether content has been drawn but is kept behind the loading screen until
+  // its translation is shown or fails. The state is LOADING while this is true.
+  isHidingContentForTranslation(): boolean {
+    return this.isHidingContentForTranslation_;
+  }
+
   setState(type: ContentType) {
-    if (type === this.currentState_.type) {
+    if (type === ContentType.HAS_CONTENT && this.isAwaitingTranslation_) {
+      // Keep the state matching what's shown: the content is drawn so it can
+      // be translated, but stays behind the loading screen until then.
+      this.applyState_(ContentType.LOADING, /*hideForTranslation=*/ true);
+    } else {
+      this.applyState_(type, /*hideForTranslation=*/ false);
+    }
+  }
+
+  private applyState_(type: ContentType, hideForTranslation: boolean) {
+    // Listeners are also notified when only `hideForTranslation` changes, so
+    // that content hidden behind the loading screen is still drawn.
+    const changed = type !== this.currentState_.type ||
+        hideForTranslation !== this.isHidingContentForTranslation_;
+    this.isHidingContentForTranslation_ = hideForTranslation;
+    if (!changed) {
       return;
     }
     this.currentState_ = CONTENT_STATES[type];
     this.listeners_.forEach(l => l.onContentStateChange());
+  }
+
+  private setAwaitingTranslation_(awaiting: boolean) {
+    if (awaiting === this.isAwaitingTranslation_) {
+      return;
+    }
+    this.isAwaitingTranslation_ = awaiting;
+    if (awaiting && this.hasContent()) {
+      // Content that's already shown goes back behind the loading screen.
+      this.applyState_(ContentType.LOADING, /*hideForTranslation=*/ true);
+    } else if (!awaiting && this.isHidingContentForTranslation_) {
+      // Whether the translation is shown or failed, the content is now shown.
+      this.applyState_(ContentType.HAS_CONTENT, /*hideForTranslation=*/ false);
+    }
   }
 
   hasContent(): boolean {

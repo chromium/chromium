@@ -73,8 +73,11 @@ export function getHtml(this: AppElement) {
         class="notranslate" id="toolbar">
     </read-anything-toolbar>
   </div>
-  <div id="containerParent" class="sp-card"
-      ?hidden="${!this.computeHasContent()}">
+  <div id="containerParent"
+      class="sp-card ${
+          this.isHidingContentForTranslation_ ? 'awaiting-translation' : ''}"
+      ?hidden="${!this.computeIsContentDrawn_()}"
+      ?inert="${this.isHidingContentForTranslation_}">
     <div id="containerScroller" class="sp-scroller"
         @scroll="${this.onContainerScroll_}"
         @scrollend="${this.onContainerScrollend_}"

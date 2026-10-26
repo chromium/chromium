@@ -108,6 +108,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       lineFocusMovement_: {type: Number},
       hasValidSelection_: {type: Boolean},
       isReadAnythingPinned_: {type: Boolean},
+      isHidingContentForTranslation_: {type: Boolean},
     };
   }
 
@@ -121,6 +122,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor hasValidSelection_: boolean = false;
   protected accessor isReadAnythingPinned_: boolean = false;
   protected isReadAnythingImprovedUiEnabled_: boolean = false;
+
+  // Mirrors ContentController.isHidingContentForTranslation(): content is
+  // drawn (so it can be translated) but kept behind the loading screen, and
+  // `contentState_` is LOADING, until the translation is shown or fails.
+  protected accessor isHidingContentForTranslation_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
   // the play / pause buttons normally. Otherwise, we should disable the
@@ -202,7 +208,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
+    // Assigned directly rather than through syncContentState_() so TypeScript
+    // sees the definite assignment.
     this.contentState_ = this.contentController_.getState();
+    this.isHidingContentForTranslation_ =
+        this.contentController_.isHidingContentForTranslation();
     this.isReadAnythingImprovedUiEnabled_ =
         this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled();
   }
@@ -305,7 +315,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
         this.languageChanged.bind(this));
     this.audioBrowserProxy_.setPlayOnOpen.addListener(
         this.setPlayOnOpen.bind(this));
-
   }
 
   override disconnectedCallback() {
@@ -332,6 +341,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.playOnOpen_ = playOnOpen;
       this.requestUpdate();
     }
+  }
+
+  private syncContentState_() {
+    this.contentState_ = this.contentController_.getState();
+    this.isHidingContentForTranslation_ =
+        this.contentController_.isHidingContentForTranslation();
   }
 
   private onWindowResize_() {
@@ -442,7 +457,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // no content to content or from content to no content (e.g. on pages
     // with no text outside of image captions), so recompute if there's
     // distillable content each time Images are toggled.
-    if (!this.computeHasContent()) {
+    if (!this.computeIsContentDrawn_()) {
       this.updateContent();
     } else {
       this.onImagesVisibilityChanged_();
@@ -599,7 +614,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   /////////////////////// end LineFocusListener methods ////////////////////////
 
   onContentStateChange(): void {
-    this.contentState_ = this.contentController_.getState();
+    this.syncContentState_();
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       const lineFocusTypeForStyling =
           (this.contentState_.type === ContentType.HAS_CONTENT) ?
@@ -906,6 +921,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected computeHasContent(): boolean {
     return this.contentState_.type === ContentType.HAS_CONTENT;
+  }
+
+  // Whether content has been drawn, either shown or kept behind the loading
+  // screen until its translation is shown or fails. The drawn content must
+  // keep its layout in the latter case so it can be translated.
+  protected computeIsContentDrawn_(): boolean {
+    return this.computeHasContent() || this.isHidingContentForTranslation_;
   }
 
   protected computeIsReadAloudPlayable(): boolean {

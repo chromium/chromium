@@ -17,6 +17,7 @@ export interface OriginalPageMetrics {
 export interface VisualBrowserProxy {
   onPinStateReceived: ChromeEvent<(pinState: boolean) => void>;
   onPresentationStateReceived: ChromeEvent<(presentationState: number) => void>;
+  onAwaitingTranslationChanged: ChromeEvent<(awaiting: boolean) => void>;
   restoreSettingsFromPrefs: ChromeEvent<() => void>;
 
   getInSidePanelPresentationState(): number;
@@ -30,6 +31,7 @@ export interface VisualBrowserProxy {
   isImagesEnabled(): boolean;
   isLinksEnabled(): boolean;
   isPdf(): boolean;
+  isAwaitingTranslation(): boolean;
   shouldShowUi(): boolean;
 
   getMaxLineWidth(): number;
@@ -105,6 +107,8 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
   onPinStateReceived = new EventForwarder<(pinState: boolean) => void>();
   onPresentationStateReceived =
       new EventForwarder<(presentationState: number) => void>();
+  onAwaitingTranslationChanged =
+      new EventForwarder<(awaiting: boolean) => void>();
   restoreSettingsFromPrefs = new EventForwarder<() => void>();
 
   constructor() {
@@ -116,6 +120,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
         (presentationState: number) => {
           this.onPresentationStateReceived.forward(presentationState);
         };
+
+    chrome.readingMode.onAwaitingTranslationChanged = (awaiting: boolean) => {
+      this.onAwaitingTranslationChanged.forward(awaiting);
+    };
 
     chrome.readingMode.restoreSettingsFromPrefs = () => {
       this.restoreSettingsFromPrefs.forward();
@@ -153,6 +161,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   isPdf(): boolean {
     return chrome.readingMode.isPdf;
+  }
+
+  isAwaitingTranslation(): boolean {
+    return chrome.readingMode.isAwaitingTranslation;
   }
 
   getMaxLineWidth(): number {
