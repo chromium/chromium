@@ -50,7 +50,6 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
@@ -101,7 +100,6 @@ GlicE2ETest::GlicE2ETest(
                  additional_enabled_features.end());
 
   std::vector<base::test::FeatureRef> disabled = {
-      syncer::kReplaceSyncPromosWithSignInPromos,
       // Don't disable glic based on country/locale.
       features::kGlicCountryFiltering,
       features::kGlicLocaleFiltering,

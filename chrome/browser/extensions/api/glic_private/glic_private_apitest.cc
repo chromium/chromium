@@ -42,7 +42,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
-#include "components/sync/base/features.h"
 #endif
 
 namespace extensions {
@@ -60,7 +59,6 @@ class GlicPrivateApiTest : public GlicPrivateApiTestBase {
          {features::kGlicActorPolicyControlExemption, {}}
 #if BUILDFLAG(IS_CHROMEOS)
          ,
-         {syncer::kReplaceSyncPromosWithSignInPromos, {}},
          {chromeos::features::kFeatureManagementGlic, {}}
 #endif
         },

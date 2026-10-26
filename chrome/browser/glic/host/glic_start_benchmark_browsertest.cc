@@ -38,7 +38,6 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
-#include "components/sync/base/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
@@ -341,7 +340,6 @@ class GlicInitializationBenchmark
     if (IsProdMode()) {
       // Use real Gaia sign-in with the OTA rather than fake IdentityManager.
       glic_test_environment().SetForceSigninAndModelExecutionCapability(false);
-      disabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
 
     feature_list_.InitWithFeatures(enabled, disabled);

@@ -73,7 +73,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
-#include "components/sync/base/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace glic::test {
@@ -146,7 +145,6 @@ class InteractiveGlicTestMixin : public T {
          // it.
          {features::kGlicLiveMode, {}},
 #if BUILDFLAG(IS_CHROMEOS)
-         {syncer::kReplaceSyncPromosWithSignInPromos, {}},
          { chromeos::features::kFeatureManagementGlic,
            {} }
 #endif  // BUILDFLAG(IS_CHROMEOS)

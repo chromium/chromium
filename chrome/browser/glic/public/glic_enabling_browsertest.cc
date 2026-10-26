@@ -44,7 +44,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
-#include "components/sync/base/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::test::FeatureRef;
@@ -64,7 +63,6 @@ class GlicEnablingTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
 #if BUILDFLAG(IS_CHROMEOS)
-            syncer::kReplaceSyncPromosWithSignInPromos,
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
