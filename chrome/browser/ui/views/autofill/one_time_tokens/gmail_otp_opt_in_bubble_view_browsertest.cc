@@ -13,6 +13,7 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -68,8 +69,10 @@ class GmailOtpOptInBubbleViewBrowsertest
           ->GetWidget()
           ->CloseNow();
       EXPECT_FALSE(controller->IsShowingBubble());
-      EXPECT_FALSE(BrowserElements::From(browser())->GetElement(
-          kPageActionGmailOtpOptInElementId));
+      EXPECT_TRUE(base::test::RunUntil([this]() {
+        return !BrowserElements::From(browser())->GetElement(
+            kPageActionGmailOtpOptInElementId);
+      }));
     }
   }
 
@@ -99,8 +102,10 @@ class GmailOtpOptInBubbleViewBrowsertest
       return false;
     }
 
-    if (!BrowserElements::From(browser())->GetElement(
-            kPageActionGmailOtpOptInElementId)) {
+    if (!base::test::RunUntil([this]() {
+          return BrowserElements::From(browser())->GetElement(
+                     kPageActionGmailOtpOptInElementId) != nullptr;
+        })) {
       return false;
     }
 
