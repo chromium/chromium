@@ -533,4 +533,30 @@ TEST_F(WebAudioSourceProviderImplTest, PauseForwardsReasonToSink) {
   EXPECT_CALL(*mock_sink_, Stop());
   wasp_impl_->Stop();
 }
+
+TEST_F(WebAudioSourceProviderImplTest, ProvideInputAfterClientCleared) {
+  SetClient(this, /*expect_format=*/false);
+  EXPECT_CALL(*this, SetFormat(params_.channels(), params_.sample_rate()));
+  wasp_impl_->Initialize(params_, &fake_callback_);
+  base::RunLoop().RunUntilIdle();
+
+  wasp_impl_->Start();
+  wasp_impl_->Play();
+
+  // Disconnect the client while `state_` is still `kPlaying` (e.g. during
+  // media element teardown before player shutdown completes).
+  wasp_impl_->SetClient(nullptr);
+
+  auto bus = media::AudioBus::Create(params_);
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, 1.0f);
+  }
+  std::vector<base::span<float>> audio_data = GetChannelSpans(bus.get());
+
+  auto zero_bus = media::AudioBus::Create(params_);
+  zero_bus->Zero();
+
+  wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
+  EXPECT_TRUE(CompareBusses(bus.get(), zero_bus.get()));
+}
 }  // namespace blink

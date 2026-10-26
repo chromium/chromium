@@ -8,10 +8,14 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
+#include "media/base/audio_renderer_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
+#include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
@@ -24,6 +28,8 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -49,6 +55,26 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
   size_t AudioHardwareBufferSize() override { return 128; }
 };
 
+class ConstantAudioRenderCallback
+    : public media::AudioRendererSink::RenderCallback {
+ public:
+  int Render(base::TimeDelta delay,
+             base::TimeTicks delay_timestamp,
+             const media::AudioGlitchInfo& glitch_info,
+             media::AudioBus* dest) override {
+    for (auto channel : dest->AllChannels()) {
+      std::ranges::fill(channel, 0.5f);
+    }
+    return dest->frames();
+  }
+  void OnRenderError() override {}
+};
+
+class StubWebAudioSourceProviderClient : public WebAudioSourceProviderClient {
+ public:
+  void SetFormat(uint32_t number_of_channels, float sample_rate) override {}
+};
+
 constexpr unsigned kInitialNumberOfChannels = 2;
 constexpr float kInitialSampleRate = 44100.0f;
 constexpr unsigned kNewNumberOfChannels = 1;
@@ -69,8 +95,26 @@ class MediaElementAudioSourceNodeTest : public testing::Test {
                                                 ASSERT_NO_EXCEPTION);
   }
 
+  scoped_refptr<WebAudioSourceProviderImpl> CreatePlayingProvider(
+      unsigned channels,
+      float sample_rate) {
+    auto provider =
+        base::MakeRefCounted<WebAudioSourceProviderImpl>(nullptr, nullptr);
+    provider->SetClient(&provider_client_);
+    provider->Initialize(
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LINEAR,
+                               media::ChannelLayoutConfig::Guess(channels),
+                               static_cast<int>(sample_rate), 128),
+        &render_callback_);
+    provider->Start();
+    provider->Play();
+    return provider;
+  }
+
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<AudioContextTestPlatform> platform_;
+  ConstantAudioRenderCallback render_callback_;
+  StubWebAudioSourceProviderClient provider_client_;
   std::unique_ptr<DummyPageHolder> page_;
   Persistent<AudioContext> context_;
   Persistent<HTMLAudioElement> media_element_;
@@ -85,8 +129,21 @@ TEST_F(MediaElementAudioSourceNodeTest, OnCurrentSrcChangedClearsCachedFormat) {
   EXPECT_EQ(handler.SourceNumberOfChannelsForTesting(), 0u);
   EXPECT_FALSE(handler.IsOriginTaintedForTesting());
 
+  // Passing (0, 0) on a freshly initialized handler must still be treated as
+  // an invalid format and clear any attached provider.
+  handler.SetAudioSourceProviderForTesting(
+      base::MakeRefCounted<WebAudioSourceProviderImpl>(nullptr, nullptr));
+  ASSERT_TRUE(handler.HasAudioSourceProviderForTesting());
+  node_->SetFormat(0, 0.0f);
+  EXPECT_FALSE(handler.HasAudioSourceProviderForTesting());
+  EXPECT_DOUBLE_EQ(handler.SourceSampleRateForTesting(), 0.0);
+  EXPECT_EQ(handler.SourceNumberOfChannelsForTesting(), 0u);
+
   // Set initial format as if a 2-channel 44.1kHz audio source was loaded.
+  handler.SetAudioSourceProviderForTesting(
+      base::MakeRefCounted<WebAudioSourceProviderImpl>(nullptr, nullptr));
   node_->SetFormat(kInitialNumberOfChannels, kInitialSampleRate);
+  EXPECT_TRUE(handler.HasAudioSourceProviderForTesting());
   EXPECT_DOUBLE_EQ(handler.SourceSampleRateForTesting(), kInitialSampleRate);
   EXPECT_EQ(handler.SourceNumberOfChannelsForTesting(),
             kInitialNumberOfChannels);
@@ -95,6 +152,7 @@ TEST_F(MediaElementAudioSourceNodeTest, OnCurrentSrcChangedClearsCachedFormat) {
   // Triggering source change should clear cached format and default to tainted
   // until SetFormat() validates the new source.
   node_->OnCurrentSrcChanged(KURL("https://example.com/new-source.wav"));
+  EXPECT_FALSE(handler.HasAudioSourceProviderForTesting());
   EXPECT_DOUBLE_EQ(handler.SourceSampleRateForTesting(), 0.0);
   EXPECT_EQ(handler.SourceNumberOfChannelsForTesting(), 0u);
   EXPECT_TRUE(handler.IsOriginTaintedForTesting());
@@ -126,10 +184,19 @@ TEST_F(MediaElementAudioSourceNodeTest, OnCurrentSrcChangedClearsCachedFormat) {
           CrossThreadUnretained(&handler)));
 
   // Set new format for the new source.
+  handler.SetAudioSourceProviderForTesting(
+      base::MakeRefCounted<WebAudioSourceProviderImpl>(nullptr, nullptr));
   node_->SetFormat(kNewNumberOfChannels, kNewSampleRate);
+  EXPECT_TRUE(handler.HasAudioSourceProviderForTesting());
   EXPECT_DOUBLE_EQ(handler.SourceSampleRateForTesting(), kNewSampleRate);
   EXPECT_EQ(handler.SourceNumberOfChannelsForTesting(), kNewNumberOfChannels);
   EXPECT_FALSE(handler.IsOriginTaintedForTesting());
+
+  // An invalid format must reset both cached format and provider.
+  node_->SetFormat(0, kNewSampleRate);
+  EXPECT_FALSE(handler.HasAudioSourceProviderForTesting());
+  EXPECT_DOUBLE_EQ(handler.SourceSampleRateForTesting(), 0.0);
+  EXPECT_EQ(handler.SourceNumberOfChannelsForTesting(), 0u);
 }
 
 TEST_F(MediaElementAudioSourceNodeTest, WouldTaintOriginWithoutPlayer) {
@@ -169,6 +236,91 @@ TEST_F(MediaElementAudioSourceNodeTest, HasPendingActivity) {
   EXPECT_FALSE(media_element_->paused());
   node_->disconnect();
   EXPECT_FALSE(node_->HasPendingActivity());
+}
+
+TEST_F(MediaElementAudioSourceNodeTest,
+       ProcessAndResamplerAfterMediaElementCollected) {
+  scoped_refptr<MediaElementAudioSourceHandler> handler =
+      &node_->GetMediaElementAudioSourceHandler();
+
+  // Attach an active playing WebAudioSourceProviderImpl and configure a
+  // resampled format (48kHz source on a 44.1kHz context) so
+  // multi_channel_resampler_ actively pulls non-zero frames before GC.
+  scoped_refptr<WebAudioSourceProviderImpl> provider =
+      CreatePlayingProvider(kInitialNumberOfChannels, kNewSampleRate);
+  handler->SetAudioSourceProviderForTesting(provider);
+  node_->SetFormat(kInitialNumberOfChannels, kNewSampleRate);
+  ASSERT_TRUE(handler->HasAudioSourceProviderForTesting());
+
+  FakeAudioThread audio_thread(ThreadType::kRealtimeAudioWorkletThread);
+  audio_thread.RunOnAudioThreadWithContext(
+      context_.Get(),
+      CrossThreadBindOnce(
+          [](MediaElementAudioSourceHandler* handler) {
+            AudioBus* output_bus = handler->Output(0).Bus();
+            ASSERT_TRUE(output_bus);
+            output_bus->Zero();
+            handler->Process(128);
+            for (unsigned ch = 0; ch < output_bus->NumberOfChannels(); ++ch) {
+              EXPECT_TRUE(std::ranges::any_of(
+                  output_bus->Channel(ch)->Span(),
+                  [](float sample) { return sample > 0.0f; }));
+            }
+
+            output_bus->Zero();
+            handler->ProvideResamplerInputForTesting(0, output_bus);
+            for (unsigned ch = 0; ch < output_bus->NumberOfChannels(); ++ch) {
+              for (float sample : output_bus->Channel(ch)->Span()) {
+                EXPECT_FLOAT_EQ(sample, 0.5f);
+              }
+            }
+          },
+          CrossThreadUnretained(handler.get())));
+
+  // Drop strong references to the node and media element and run GC while the
+  // handler remains alive (e.g. as an in-flight/orphan audio handler).
+  node_ = nullptr;
+  media_element_ = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(handler->HasAudioSourceProviderForTesting());
+  EXPECT_TRUE(handler->WouldTaintOriginForTesting());
+
+  // SetFormat() after Dispose() must be a safe no-op and leave cached format
+  // values unchanged.
+  handler->SetFormat(kNewNumberOfChannels, kInitialSampleRate);
+  EXPECT_EQ(handler->SourceNumberOfChannelsForTesting(),
+            kInitialNumberOfChannels);
+  EXPECT_DOUBLE_EQ(handler->SourceSampleRateForTesting(), kNewSampleRate);
+
+  // Both Process() and ProvideResamplerInput() must safely output silence when
+  // the audio source provider has been cleared during Dispose().
+  audio_thread.RunOnAudioThreadWithContext(
+      context_.Get(),
+      CrossThreadBindOnce(
+          [](MediaElementAudioSourceHandler* handler) {
+            AudioBus* output_bus = handler->Output(0).Bus();
+            ASSERT_TRUE(output_bus);
+            auto expect_silence = [&](auto render_fn) {
+              for (unsigned ch = 0; ch < output_bus->NumberOfChannels(); ++ch) {
+                std::ranges::fill(output_bus->Channel(ch)->MutableSpan(), 1.0f);
+              }
+              render_fn();
+              for (unsigned ch = 0; ch < output_bus->NumberOfChannels(); ++ch) {
+                for (float sample : output_bus->Channel(ch)->Span()) {
+                  EXPECT_EQ(sample, 0.0f);
+                }
+              }
+            };
+
+            expect_silence([&]() { handler->Process(128); });
+            expect_silence([&]() {
+              handler->ProvideResamplerInputForTesting(0, output_bus);
+            });
+          },
+          CrossThreadUnretained(handler.get())));
+
+  provider->Stop();
+  provider->SetClient(nullptr);
 }
 
 }  // namespace blink

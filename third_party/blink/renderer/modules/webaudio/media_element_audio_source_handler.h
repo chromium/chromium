@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 
 namespace blink {
 
@@ -24,6 +23,7 @@ class AudioContext;
 class HTMLMediaElement;
 class KURL;
 class MediaElementAudioSourceOptions;
+class WebAudioSourceProviderImpl;
 
 class MODULES_EXPORT MediaElementAudioSourceHandler final
     : public AudioHandler {
@@ -33,9 +33,8 @@ class MODULES_EXPORT MediaElementAudioSourceHandler final
       HTMLMediaElement&);
   ~MediaElementAudioSourceHandler() override;
 
-  CrossThreadPersistent<HTMLMediaElement> MediaElement() const;
-
   // AudioHandler
+  void Dispose() override;
   void Process(uint32_t frames_to_process) override;
 
   // AudioNode
@@ -53,6 +52,11 @@ class MODULES_EXPORT MediaElementAudioSourceHandler final
   double SourceSampleRateForTesting();
   bool IsOriginTaintedForTesting();
   bool WouldTaintOriginForTesting();
+  bool HasAudioSourceProviderForTesting();
+  void SetAudioSourceProviderForTesting(
+      scoped_refptr<WebAudioSourceProviderImpl> provider);
+  void ProvideResamplerInputForTesting(int resampler_frame_delay,
+                                       AudioBus* dest);
 
   // For thread safety analysis only.  Does not actually return mu.
   base::Lock* GetProcessLock() LOCK_RETURNED(process_lock_) { NOTREACHED(); }
@@ -64,6 +68,8 @@ class MODULES_EXPORT MediaElementAudioSourceHandler final
   // As an audio source, we will never propagate silence.
   bool PropagatesSilence() const override { return false; }
 
+  HTMLMediaElement* GetMediaElement();
+
   // Returns true if the origin of the media element is tainted so that the
   // audio should be muted when playing through WebAudio.
   bool WouldTaintOrigin();
@@ -72,18 +78,18 @@ class MODULES_EXPORT MediaElementAudioSourceHandler final
   // zeroes.
   void PrintCorsMessage(const String& message);
 
-  // Provide input to the resampler (if used).
-  void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
+  // Pulls rendered audio frames from `audio_source_provider_` into `bus`.
+  void ProvideInput(AudioBus* bus, int frames_to_process)
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
-  // The HTMLMediaElement is held alive by MediaElementAudioSourceNode which is
-  // an AudioNode. AudioNode uses pre-finalizers to dispose the handler, so
-  // holding a weak reference is ok here and will not interfer with garbage
-  // collection.
-  //
-  // It is accessed by both audio and main thread. TODO: we really should
-  // try to minimize or avoid the audio thread touching this element.
-  CrossThreadWeakPersistent<HTMLMediaElement> media_element_;
+  // Provide input to the resampler (if used).
+  void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest)
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
+
   base::Lock process_lock_;
+
+  scoped_refptr<WebAudioSourceProviderImpl> audio_source_provider_
+      GUARDED_BY(process_lock_);
 
   unsigned source_number_of_channels_ GUARDED_BY(process_lock_) = 0;
   double source_sample_rate_ GUARDED_BY(process_lock_) = 0;

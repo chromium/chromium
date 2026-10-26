@@ -204,14 +204,12 @@ void WebAudioSourceProviderImpl::ProvideInput(
 
   // Use a try lock to avoid contention in the real-time audio thread.
   base::AutoTryLock auto_try_lock(sink_lock_);
-  if (!auto_try_lock.is_acquired() || state_ != kPlaying) {
-    // Provide silence if we failed to acquire the lock or the source is not
-    // running.
+  if (!auto_try_lock.is_acquired() || state_ != kPlaying || !client_) {
+    // Provide silence if we failed to acquire the lock, the source is not
+    // running, or the client has been disconnected.
     bus_wrapper_->Zero();
     return;
   }
-
-  DCHECK(client_);
 
   // It may be the case that the given |audio_data| doesn't have the same number
   // of channels as we were expecting, due to a race condition. In that case,
