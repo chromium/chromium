@@ -138,6 +138,9 @@ ImageContextImpl::ImageContextImpl(const gpu::Mailbox& mailbox,
       is_for_render_pass_(true) {}
 
 ImageContextImpl::~ImageContextImpl() {
+  // Destroy the SkImage before `representation_` as it's a view of the
+  // representation.
+  clear_image();
   DeleteFallbackTextures();
 }
 
@@ -428,8 +431,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   representation_scoped_read_access_ =
       representation_->BeginScopedReadAccess(begin_semaphores, end_semaphores);
   if (!representation_scoped_read_access_) {
-    clear_image();
-    representation_ = nullptr;
     DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                    "begin read access failed..";
     return false;

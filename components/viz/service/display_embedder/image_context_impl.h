@@ -123,7 +123,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   const bool is_for_render_pass_ = false;
   const bool raw_draw_if_possible_ = false;
 
-  // Fallback in case we cannot produce a |representation_|.
+  // Fallback in case we cannot produce or access `representation_`.
   raw_ptr<gpu::SharedContextState> fallback_context_state_ = nullptr;
   std::vector<GrBackendTexture> fallback_textures_;
   // Fallback textures used for fulfilling Graphite promise images. Owned by the
