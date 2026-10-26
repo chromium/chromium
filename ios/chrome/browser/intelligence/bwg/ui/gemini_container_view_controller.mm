@@ -71,10 +71,6 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
                         name:UIKeyboardWillShowNotification
                       object:nil];
 
-  // Prevent double-padding/extra spacing at the bottom when the keyboard
-  // is hidden.
-  self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
-
   _geminiContentView = [[UIView alloc] init];
   _geminiContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_geminiContentView];
@@ -90,7 +86,7 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
       constraintEqualToAnchor:self.view.trailingAnchor
                      constant:-initialPadding];
   _contentViewBottomConstraint = [_geminiContentView.bottomAnchor
-      constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+      constraintEqualToAnchor:self.view.bottomAnchor
                      constant:-initialPadding];
   [NSLayoutConstraint activateConstraints:@[
     _contentViewTopConstraint,
@@ -257,15 +253,8 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   _worklogViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   _worklogViewController.view.hidden = YES;
   [self.view addSubview:_worklogViewController.view];
-  AddSameConstraintsToSidesWithInsets(
-      _worklogViewController.view, self.view,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
-      kWorklogContainerInsets);
-  [NSLayoutConstraint activateConstraints:@[
-    [_worklogViewController.view.bottomAnchor
-        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
-                       constant:-kWorklogContainerInsets.bottom]
-  ]];
+  AddSameConstraintsWithInsets(_worklogViewController.view, self.view,
+                               kWorklogContainerInsets);
   [_worklogViewController didMoveToParentViewController:self];
 }
 
