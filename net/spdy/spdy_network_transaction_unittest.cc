@@ -6881,6 +6881,45 @@ TEST_P(SpdyNetworkTransactionTest, 100Continue) {
   EXPECT_EQ("hello!", out.response_data);
 }
 
+// When the connection is closed after a 103 Early Hints response, but before
+// the final response, the request should fail rather than succeed with a made
+// up response. Other 1xx responses are dropped by SpdyStream, so aren't passed
+// to the HttpNetworkTransaction, and don't need testing here.
+TEST_P(SpdyNetworkTransactionTest, EarlyHintsThenConnectionClosed) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, LOWEST));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  quiche::HttpHeaderBlock informational_headers;
+  informational_headers[spdy::kHttp2StatusHeader] = "103";
+  informational_headers["link"] = "</style.css>; rel=preload; as=style";
+  spdy::SpdySerializedFrame informational_response(
+      spdy_util_.ConstructSpdyReply(1, std::move(informational_headers)));
+  MockRead reads[] = {
+      CreateMockRead(informational_response, 1), MockRead(ASYNC, 0, 2)  // EOF
+  };
+
+  SequencedSocketData data(reads, writes);
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+  helper.RunPreTestSetup();
+  helper.AddData(&data);
+
+  int early_hints_received = 0;
+  helper.trans()->SetEarlyResponseHeadersCallback(base::BindLambdaForTesting(
+      [&](scoped_refptr<const HttpResponseHeaders> headers) {
+        EXPECT_EQ(HTTP_EARLY_HINTS, headers->response_code());
+        ++early_hints_received;
+      }));
+
+  helper.StartDefaultTest();
+  EXPECT_THAT(helper.output().rv, IsError(ERR_IO_PENDING));
+  helper.FinishDefaultTestWithoutVerification();
+  EXPECT_THAT(helper.output().rv, IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_FALSE(helper.trans()->GetResponseInfo()->headers);
+  EXPECT_EQ(1, early_hints_received);
+  helper.VerifyDataConsumed();
+}
+
 // "A server can send a complete response prior to the client sending an entire
 // request if the response does not depend on any portion of the request that
 // has not been sent and received."  (RFC7540 Section 8.1)

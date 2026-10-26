@@ -523,6 +523,18 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
   void KeepAliveConnectionResendRequestTest(const MockWrite* write_failure,
                                             const MockRead* read_failure);
 
+  // Sends a request over a reused keep-alive socket, which receives
+  // `informational_response` followed by the connection being closed. The
+  // request should fail with ERR_CONNECTION_CLOSED and not be retried.
+  // `expected_early_hints_calls` is the number of times the early response
+  // headers callback is expected to be invoked.
+  //
+  // Note that `informational_response` may contain multiple sequential sets of
+  // informational response headers.
+  void KeepAliveConnectionInformationalResponseThenCloseTest(
+      std::string_view informational_response,
+      int expected_early_hints_calls);
+
   // Either |write_failure| specifies a write failure or |read_failure|
   // specifies a read failure when using a reused socket.  In either case, the
   // failure should cause the network transaction to resend the request, and the
@@ -2148,9 +2160,11 @@ TEST_P(HttpNetworkTransactionTest, MeasuresTimeToFirst100ResponseForSpdy) {
   Check100ResponseTiming(true /* use_spdy */);
 }
 
-TEST_P(HttpNetworkTransactionTest, Incomplete100ThenEOF) {
+// Truncated response headers are accepted over HTTP (but not HTTPS). See the
+// HttpStreamParser.TruncatedHeaders test for more truncation cases.
+TEST_P(HttpNetworkTransactionTest, Incomplete200ThenEOF) {
   HttpRequestInfo request;
-  request.method = "POST";
+  request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -2159,7 +2173,7 @@ TEST_P(HttpNetworkTransactionTest, Incomplete100ThenEOF) {
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
   MockRead data_reads[] = {
-      MockRead(SYNCHRONOUS, "HTTP/1.0 100 Continue\r\n"),
+      MockRead(SYNCHRONOUS, "HTTP/1.0 200 OK\r\n"),
       MockRead(ASYNC, 0),
   };
   StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
@@ -2172,6 +2186,9 @@ TEST_P(HttpNetworkTransactionTest, Incomplete100ThenEOF) {
 
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(trans.GetResponseInfo()->headers);
+  EXPECT_EQ("HTTP/1.0 200 OK",
+            trans.GetResponseInfo()->headers->GetStatusLine());
 
   std::string response_data;
   rv = ReadTransaction(&trans, &response_data);
@@ -2288,6 +2305,74 @@ void HttpNetworkTransactionTestBase::KeepAliveConnectionResendRequestTest(
     EXPECT_THAT(rv, IsOk());
     EXPECT_EQ(kExpectedResponseData[i], response_data);
   }
+}
+
+void HttpNetworkTransactionTestBase::
+    KeepAliveConnectionInformationalResponseThenCloseTest(
+        std::string_view informational_response,
+        int expected_early_hints_calls) {
+  // Early Hints are only passed to the consumer on HTTP/1.1 when this feature
+  // is enabled.
+  base::test::ScopedFeatureList feature_list(
+      features::kEnableEarlyHintsOnHttp11);
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.foo.com/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data1_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.foo.com\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.foo.com\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+  MockRead data1_reads[] = {
+      // Response to the first request.
+      MockRead("HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
+      MockRead("hello"),
+      // Response to the second request: An informational response, followed
+      // by the connection being closed before a final response is received.
+      MockRead(informational_response),
+      MockRead(ASYNC, OK),
+  };
+  StaticSocketDataProvider data1(data1_reads, data1_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  // First request should succeed and return the socket in the socket pool.
+  {
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+    TestCompletionCallback callback;
+    EXPECT_THAT(callback.GetResult(trans.Start(&request, callback.callback(),
+                                               NetLogWithSource())),
+                IsOk());
+    std::string response_data;
+    EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+    EXPECT_EQ("hello", response_data);
+  }
+  EXPECT_EQ(1, GetIdleSocketCountInTransportSocketPool(session.get()));
+
+  // Second request, which reuses the socket, and should fail.
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+  int early_hints_received = 0;
+  trans.SetEarlyResponseHeadersCallback(base::BindLambdaForTesting(
+      [&](scoped_refptr<const HttpResponseHeaders> headers) {
+        EXPECT_EQ(HTTP_EARLY_HINTS, headers->response_code());
+        ++early_hints_received;
+      }));
+  TestCompletionCallback callback;
+  EXPECT_THAT(callback.GetResult(trans.Start(&request, callback.callback(),
+                                             NetLogWithSource())),
+              IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_FALSE(trans.GetResponseInfo()->headers);
+  EXPECT_EQ(expected_early_hints_calls, early_hints_received);
+
+  EXPECT_TRUE(data1.AllReadDataConsumed());
+  EXPECT_TRUE(data1.AllWriteDataConsumed());
 }
 
 void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
@@ -2574,6 +2659,61 @@ TEST_P(HttpNetworkTransactionTest, KeepAlive408) {
                         "Content-Length: 6\r\n\r\n"
                         "Pickle");
   KeepAliveConnectionResendRequestTest(nullptr, &read_failure);
+}
+
+// When a reused keep-alive connection is closed after receiving a 100 Continue
+// response, but before the final response, the request should fail rather
+// than succeed with a made up response, and should not be retried.
+TEST_P(HttpNetworkTransactionTest, KeepAliveConnection100ThenClose) {
+  KeepAliveConnectionInformationalResponseThenCloseTest(
+      "HTTP/1.1 100 Continue\r\n\r\n", /*expected_early_hints_calls=*/0);
+}
+
+// Same as above, but with a 103 Early Hints response, which takes a different
+// code path.
+TEST_P(HttpNetworkTransactionTest, KeepAliveConnection103ThenClose) {
+  KeepAliveConnectionInformationalResponseThenCloseTest(
+      "HTTP/1.1 103 Early Hints\r\n"
+      "Link: </style.css>; rel=preload; as=style\r\n\r\n",
+      /*expected_early_hints_calls=*/1);
+}
+
+// Same as above, but receives multiple informational responses.
+TEST_P(HttpNetworkTransactionTest, KeepAliveConnectionMultiple1xxThenClose) {
+  KeepAliveConnectionInformationalResponseThenCloseTest(
+      "HTTP/1.1 100 Continue\r\n\r\n"
+      "HTTP/1.1 103 Early Hints\r\n\r\n"
+      "HTTP/1.1 102 Processing\r\n\r\n",
+      /*expected_early_hints_calls=*/1);
+}
+
+// When a new connection is closed after receiving an informational response,
+// but before the final response, the request should fail, and no headers
+// should be exposed. Unlike the reused socket case, HttpStreamParser returns
+// ERR_EMPTY_RESPONSE here, which was never converted into success, but the
+// placeholder response headers used to be exposed to the consumer.
+TEST_P(HttpNetworkTransactionTest, NewConnection1xxThenClose) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.foo.com/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 100 Continue\r\n\r\n"),
+      MockRead(ASYNC, OK),
+  };
+  StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(callback.GetResult(trans.Start(&request, callback.callback(),
+                                             NetLogWithSource())),
+              IsError(ERR_EMPTY_RESPONSE));
+  EXPECT_FALSE(trans.GetResponseInfo()->headers);
 }
 
 TEST_P(HttpNetworkTransactionTest, PreconnectErrorNotConnectedOnWrite) {

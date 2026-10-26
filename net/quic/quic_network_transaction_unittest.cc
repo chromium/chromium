@@ -3476,6 +3476,88 @@ TEST_P(QuicNetworkTransactionTest,
   ASSERT_TRUE(http_data.AllReadDataConsumed());
 }
 
+// Same as above, but the server sends a 103 Early Hints response before the
+// protocol error. Since the server has already started responding (and the
+// early hints have been passed to the consumer), the request should fail
+// rather than being retried over TCP.
+TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterEarlyHintsNotRetried) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
+  context_.params()->idle_connection_timeout = base::Seconds(5);
+
+  MockQuicData quic_data(version_);
+  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  int packet_num = 1;
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
+          GetRequestHeaders("GET", "https", "/")));
+  client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+
+  // 103 Early Hints response.
+  quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
+                               1, GetNthClientInitiatedBidirectionalStreamId(0),
+                               false, GetResponseHeaders("103")));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+
+  // Peer sending data from an non-existing stream causes this end to raise
+  // error and close connection.
+  quic_data.AddRead(ASYNC,
+                    ConstructServerRstPacket(
+                        2, GetNthClientInitiatedBidirectionalStreamId(47),
+                        quic::QUIC_STREAM_LAST_ERROR));
+  std::string quic_error_details = "Data for nonexistent stream";
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckAndConnectionClosePacket(
+          packet_num++, 2, 1, quic::QUIC_HTTP_STREAM_WRONG_DIRECTION,
+          quic_error_details, quic::IETF_STOP_SENDING));
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  host_resolver_.set_synchronous_mode(true);
+  host_resolver_.rules()->AddIPLiteralRule("mail.example.org", "192.168.0.1",
+                                           "");
+
+  CreateSession();
+
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
+  int early_hints_received = 0;
+  trans.SetEarlyResponseHeadersCallback(base::BindLambdaForTesting(
+      [&](scoped_refptr<const HttpResponseHeaders> headers) {
+        EXPECT_EQ(HTTP_EARLY_HINTS, headers->response_code());
+        ++early_hints_received;
+      }));
+  TestCompletionCallback callback;
+  int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Pump the message loop to get the request started.
+  base::RunLoop().RunUntilIdle();
+  // Explicitly confirm the handshake.
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+
+  // Deliver the 103 response.
+  quic_data.Resume();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, early_hints_received);
+  EXPECT_FALSE(callback.have_result());
+
+  // Trigger the protocol error.
+  quic_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
+  EXPECT_FALSE(trans.GetResponseInfo()->headers);
+  EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+  EXPECT_EQ(1, early_hints_received);
+}
+
 // Much like above test, but verifies that NetworkAnonymizationKey is respected.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBrokenWithNetworkIsolationKey) {

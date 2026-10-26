@@ -301,6 +301,14 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Gets the response headers from the HttpStream.
   HttpResponseHeaders* GetResponseHeaders() const;
 
+  // Returns true if any response, including an informational (1xx) one which
+  // may no longer be included in `response_.headers`, has been received for the
+  // current request. Used to decide whether a network error may be retried,
+  // since once the server has sent a response, the error is unlikely to be the
+  // result of a race with the server timing out an idle socket without having
+  // ever seen the request.
+  bool HasReceivedResponse() const;
+
   // Called when the socket is unexpectedly closed.  Returns true if the request
   // should be resent in case of a socket reuse/close race.
   bool ShouldResendRequest() const;
@@ -449,6 +457,13 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // True if we've validated the headers that the stream parser has returned.
   bool headers_valid_ = false;
+
+  // True if an informational (1xx) response was received for the current
+  // request. `response_.headers` is cleared after 1xx responses, so that a
+  // connection close before the final response isn't treated as success. This
+  // is used to continue treating such requests as having received a response
+  // for the purposes of retry logic. See HasReceivedResponse().
+  bool received_informational_response_ = false;
 
   // True if we can send the request over early data.
   bool can_send_early_data_ = false;
