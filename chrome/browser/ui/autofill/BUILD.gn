@@ -627,6 +627,7 @@ if (!is_android) {
     sources = [
       "address_bubbles_controller_browsertest.cc",
       "autofill_ai/autofill_ai_import_data_controller_impl_browsertest.cc",
+      "autofill_ai/entity_suppression_browsertest.cc",
       "autofill_context_menu_manager_browsertest.cc",
       "delete_address_profile_dialog_controller_impl_browsertest.cc",
       "email_verifier/email_verified_toast_menu_model_browsertest.cc",

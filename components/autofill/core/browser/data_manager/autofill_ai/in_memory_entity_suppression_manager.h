@@ -20,7 +20,8 @@ class EntityInstance;
 // In-memory implementation of EntitySuppressionManager for testing, UI
 // prototyping, and initial feature integration.
 //
-// DEPRECATED: Use `CreateTestEntitySuppressionManager()` instead.
+// DEPRECATED: Use `EntitySuppressionManagerImpl` with
+// `CreateTestEntitySuppressionSyncBridge()` instead.
 // TODO(crbug.com/501036619): Remove.
 class InMemoryEntitySuppressionManager : public EntitySuppressionManager {
  public:

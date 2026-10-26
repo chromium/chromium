@@ -34,6 +34,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
@@ -105,7 +106,9 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_test_util.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
@@ -2737,14 +2740,23 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        EntitySuppressionsClearedOnAutofillRemoval) {
   base::test::ScopedFeatureList feature_list{
       autofill::features::kAutofillAmbientAutofillSuppression};
+  std::unique_ptr<autofill::EntitySuppressionSyncBridge> bridge =
+      autofill::CreateTestEntitySuppressionSyncBridge();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
   auto* suppression_manager = static_cast<autofill::EntitySuppressionManager*>(
       autofill::EntitySuppressionManagerFactory::GetInstance()
           ->SetTestingFactoryAndUse(
               GetProfile(),
-              base::BindOnce([](content::BrowserContext*)
-                                 -> std::unique_ptr<KeyedService> {
-                return autofill::CreateTestEntitySuppressionManager();
-              })));
+              base::BindOnce(
+                  [](std::unique_ptr<autofill::EntitySuppressionSyncBridge>
+                         bridge,
+                     content::BrowserContext*)
+                      -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        autofill::EntitySuppressionManagerImpl>(
+                        std::move(bridge));
+                  },
+                  std::move(bridge))));
 
   // Suppress one entity two hours ago and one now.
   const autofill::EntityInstance old_entity =
