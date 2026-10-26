@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/dictation/text_field_filter.h"
 
+#include "content/public/browser/render_frame_host.h"
+
 namespace dictation {
 
 TextFieldSize GetTextFieldSize(
@@ -28,6 +30,11 @@ TextFieldSize GetTextFieldSize(
       }
       return TextFieldSize::kSmall;
   }
+}
+
+TextFieldSize GetFocusedElementTextFieldSize(content::RenderFrameHost& rfh) {
+  return GetTextFieldSize(rfh.GetFocusedEditableLevel(),
+                          rfh.GetFocusedElementTextInputType());
 }
 
 }  // namespace dictation

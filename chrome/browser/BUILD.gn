@@ -4379,6 +4379,7 @@ source_set("browser") {
       "//chrome/browser/ui/views/context_hub:memory_bank_impl",
       "//chrome/browser/ui/views/desktop_capture",
       "//chrome/browser/ui/views/desktop_capture:impl",
+      "//chrome/browser/ui/views/dictation:iph_controller_impl",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/exclusive_access",
       "//chrome/browser/ui/views/exclusive_access:impl",

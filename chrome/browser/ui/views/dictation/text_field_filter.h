@@ -10,6 +10,10 @@
 #include "content/public/browser/editable_level.h"
 #include "ui/base/ime/text_input_type.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace dictation {
 
 // The size of a text field, i.e. how much text users usually write in it.
@@ -30,6 +34,9 @@ enum class TextFieldSize {
 TextFieldSize GetTextFieldSize(
     content::EditableLevel editable_level,
     std::optional<ui::TextInputType> text_input_type);
+
+// Returns the size of the element focused in `rfh`.
+TextFieldSize GetFocusedElementTextFieldSize(content::RenderFrameHost& rfh);
 
 }  // namespace dictation
 

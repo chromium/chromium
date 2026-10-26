@@ -207,6 +207,10 @@ namespace customize_chrome {
 class SidePanelController;
 }  // namespace customize_chrome
 
+namespace dictation {
+class DictationIphController;
+}  // namespace dictation
+
 namespace download {
 class DownloadNavigationObserver;
 }  // namespace download
@@ -829,6 +833,8 @@ class TabFeatures {
 
   std::unique_ptr<back_to_opener::BackToOpenerController>
       back_to_opener_controller_;
+
+  std::unique_ptr<dictation::DictationIphController> dictation_iph_controller_;
 
   std::unique_ptr<skills::SkillsUiTabControllerInterface>
       skills_ui_tab_controller_;

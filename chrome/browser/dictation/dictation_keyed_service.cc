@@ -25,9 +25,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -279,6 +281,15 @@ void DictationKeyedService::StartSession(tabs::TabInterface& tab,
   if (std::optional<DictationUrlCategory> url_category =
           GetUrlCategoryFromTargetId(target_details.target_id)) {
     RecordDictationSessionUrlCategory(*url_category);
+  }
+
+  // The user has found dictation, so the dictation IPH shouldn't show again.
+  if (auto* const user_education =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              tab.GetContents())) {
+    user_education->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHDictationFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
   session_.emplace(*this, tab);

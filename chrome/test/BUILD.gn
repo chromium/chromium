@@ -3953,6 +3953,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/accessibility:interactive_ui_tests",
       "//chrome/browser/ui/views/autofill/payments:interactive_ui_tests",
       "//chrome/browser/ui/views/contextual_tasks:interactive_ui_tests",
+      "//chrome/browser/ui/views/dictation:interactive_ui_tests",
       "//chrome/browser/ui/views/download:interactive_ui_tests",
       "//chrome/browser/ui/views/extensions:interactive_ui_tests",
       "//chrome/browser/ui/views/file_system_access:interactive_ui_tests",
