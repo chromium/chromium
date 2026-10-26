@@ -4,9 +4,11 @@
 
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 
+#include <algorithm>
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -191,7 +193,8 @@ void EmitErrorReport(wgpu::ErrorType error_type, std::string_view message) {
 // NOTE: Update the toggles in GpuInfoCollector whenever a toggle is disabled
 // here.
 std::vector<const char*> GetDisabledToggles(
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& workarounds) {
   std::vector<const char*> disabled_toggles;
   for (const auto& toggle : gpu_preferences.disabled_dawn_features_list) {
     disabled_toggles.push_back(toggle.c_str());
@@ -209,6 +212,13 @@ std::vector<const char*> GetDisabledToggles(
   if (features::SkiaGraphiteDawnSkipValidation()) {
     disabled_toggles.push_back("enable_spirv_validation");
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (!features::SkiaGraphiteDawnD3D11DelayFlush() ||
+      workarounds.disable_graphite_d3d11_delay_flush) {
+    disabled_toggles.push_back("d3d11_delay_flush_to_gpu");
+  }
+#endif
 
   return disabled_toggles;
 }
@@ -588,7 +598,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
     }
 
     // This function is meant for delayed flush option.
-    if (!features::SkiaGraphiteDawnD3D11DelayFlush()) {
+    if (!use_d3d11_delay_flush_) {
       return;
     }
 
@@ -773,6 +783,9 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   std::string init_logging_msgs_;
   bool is_vulkan_swiftshader_adapter_ = false;
   bool registered_memory_dump_provider_ = false;
+#if BUILDFLAG(IS_WIN)
+  bool use_d3d11_delay_flush_ = false;
+#endif
 
   // If true, both GpuMain and CompositorGpuThread share the same
   // GraphiteSharedContext which is created lazily. If false,
@@ -870,7 +883,7 @@ bool DawnSharedContext::Initialize(
   std::vector<const char*> enabled_toggles =
       GetEnabledToggles(backend_type, force_fallback_adapter, gpu_preferences);
   std::vector<const char*> disabled_toggles =
-      GetDisabledToggles(gpu_preferences);
+      GetDisabledToggles(gpu_preferences, workarounds);
 
   wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();
@@ -1092,6 +1105,9 @@ bool DawnSharedContext::Initialize(
       backend_type == wgpu::BackendType::Vulkan && force_fallback_adapter;
 
 #if BUILDFLAG(IS_WIN)
+  use_d3d11_delay_flush_ =
+      std::ranges::contains(dawn::native::GetTogglesUsed(device_.Get()),
+                            std::string_view("d3d11_delay_flush_to_gpu"));
   if (auto d3d11_device = GetD3D11Device()) {
     static auto* crash_key = base::debug::AllocateCrashKeyString(
         "d3d11-debug-layer", base::debug::CrashKeySize::Size32);
