@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <variant>
@@ -23,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -303,8 +305,8 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
                 decider->IsIframeUrlAllowlistedForActor(origin.GetURL()));
       });
 
-  return it == form.fields().end() ? std::optional<FieldGlobalId>()
-                                   : (*it)->global_id();
+  return it == form.fields().end() ? std::nullopt
+                                   : std::optional((*it)->global_id());
 }
 
 // Generates credit card suggestions and the data needed for filling them.
@@ -645,18 +647,17 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       request.request_origin = origin;
       // TODO(crbug.com/502158215): Integrate form-splitting with section label.
       request.section_label = fill_request.section_label;
-      request.suggestions.reserve(
-          suggestion_data.suggestions_with_fill_data.size());
       sections_.emplace_back(suggestion_data.trigger_field_id,
                              fill_request.section_label,
                              fill_request.requested_data);
-      for (ActorSuggestionWithFillData& entry :
-           suggestion_data.suggestions_with_fill_data) {
-        entry.suggestion.id =
-            ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
-        fill_data_[entry.suggestion.id] = std::move(entry.filling_payload);
-        request.suggestions.emplace_back(std::move(entry.suggestion));
-      }
+      request.suggestions = base::ToVector(
+          suggestion_data.suggestions_with_fill_data,
+          [this](ActorSuggestionWithFillData& entry) {
+            entry.suggestion.id =
+                ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
+            fill_data_[entry.suggestion.id] = std::move(entry.filling_payload);
+            return std::move(entry.suggestion);
+          });
     }
   }
 
@@ -1106,8 +1107,8 @@ void ActorFormFillingServiceImpl::LogSkipReasonsToJournal(
               {"field_", base::ToString(field_id.renderer_id.value())}),
           base::JoinString(base::ToVector(reasons,
                                           [](FieldFillingSkipReason reason) {
-                                            return base::ToString(
-                                                static_cast<int>(reason));
+                                            return base::NumberToString(
+                                                std::to_underlying(reason));
                                           }),
                            ", "));
     }
