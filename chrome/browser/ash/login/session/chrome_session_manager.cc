@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -82,12 +83,13 @@ void RemoveObsoleteKioskCryptohomes() {
 }
 
 // Starts kiosk app launch and shows the splash screen.
-// `local_state`, `application_locale_storage`, and
+// `local_state`, `metrics_service`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive
 // LoginDisplayHostWebUI.
 // `shared_url_loader_factory` must be non-null.
 void StartKioskSession(
     PrefService* local_state,
+    ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
@@ -103,7 +105,7 @@ void StartKioskSession(
 
   // Manages its own lifetime. See ShutdownDisplayHost().
   auto* display_host = new LoginDisplayHostWebUI(
-      local_state, application_locale_storage,
+      local_state, metrics_service, application_locale_storage,
       std::move(shared_url_loader_factory), browser_policy_connector_ash);
   display_host->StartKiosk(app, is_auto_launch);
 
@@ -112,19 +114,20 @@ void StartKioskSession(
   SessionManagerClient::Get()->EmitLoginPromptVisible();
 }
 
-// `local_state`, `application_locale_storage`, and
+// `local_state`, `metrics_service`, `application_locale_storage`, and
 // `browser_policy_connector_ash` must be non-null and must outlive
 // LoginDisplayHostWebUI.
 // `shared_url_loader_factory` must be non-null.
 void StartAutoLaunchKioskSession(
     PrefService* local_state,
+    ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
-  StartKioskSession(local_state, application_locale_storage,
+  StartKioskSession(local_state, metrics_service, application_locale_storage,
                     std::move(shared_url_loader_factory),
                     browser_policy_connector_ash, app.value().id(),
                     /*is_auto_launch=*/true);
@@ -445,11 +448,13 @@ void ChromeSessionManager::OnUserManagerCreated(
 }
 
 void ChromeSessionManager::Initialize(
+    ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
+  CHECK(metrics_service);
   CHECK(application_locale_storage);
   CHECK(shared_url_loader_factory);
 
@@ -493,7 +498,8 @@ void ChromeSessionManager::Initialize(
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state_.get())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartAutoLaunchKioskSession(&local_state_.get(), application_locale_storage,
+    StartAutoLaunchKioskSession(&local_state_.get(), metrics_service,
+                                application_locale_storage,
                                 std::move(shared_url_loader_factory),
                                 &browser_policy_connector_ash_.get());
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {

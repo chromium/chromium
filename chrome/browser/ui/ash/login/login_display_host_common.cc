@@ -54,7 +54,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
@@ -230,11 +229,13 @@ CreateSecondDeviceAuthBroker() {
 
 LoginDisplayHostCommon::LoginDisplayHostCommon(
     PrefService* local_state,
+    ::metrics::MetricsService* metrics_service,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
+      metrics_service_(CHECK_DEREF(metrics_service)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
@@ -245,10 +246,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
           local_state,
           update_geolocation_usage_allowed)),
       wizard_context_(std::make_unique<WizardContext>()),
-      // TODO(crbug.com/404133029): Avoid using g_browser_process.
-      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>(
-          local_state,
-          g_browser_process->metrics_service())) {
+      oobe_metrics_helper_(
+          std::make_unique<OobeMetricsHelper>(local_state, metrics_service)) {
   CHECK(shared_url_loader_factory_);
 
   if (features::IsOobeCrosEventsEnabled()) {

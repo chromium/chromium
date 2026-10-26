@@ -29,6 +29,10 @@ class AccountId;
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -51,11 +55,12 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public SigninUI,
                                public ash::SessionTerminationManager::Observer {
  public:
-  // `local_state`, `application_locale_storage` and
+  // `local_state`, `metrics_service`, `application_locale_storage` and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   LoginDisplayHostCommon(
       PrefService* local_state,
+      ::metrics::MetricsService* metrics_service,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
@@ -149,6 +154,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void NotifyWizardCreated();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<::metrics::MetricsService> metrics_service_;
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;

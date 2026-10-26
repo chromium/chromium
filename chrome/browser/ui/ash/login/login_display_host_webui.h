@@ -39,6 +39,10 @@
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -70,11 +74,12 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public views::WidgetObserver,
                               public OobeUI::Observer {
  public:
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `metrics_service`, `application_locale_storage` and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   LoginDisplayHostWebUI(
       PrefService* local_state,
+      ::metrics::MetricsService* metrics_service,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);

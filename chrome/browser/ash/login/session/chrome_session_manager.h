@@ -22,6 +22,10 @@ namespace base {
 class CommandLine;
 }
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -61,9 +65,11 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   //   - Launches the auto launched kiosk app;
   //   - Resumes user sessions on crash-and-restart;
   //   - Starts a stub login session for dev or test;
-  // `application_locale_storage` must not be nullptr, and must be valid while
-  // main RunLoop is running. `shared_url_loader_factory` must not be nullptr.
+  // `metrics_service` and `application_locale_storage` must not be nullptr,
+  // and must be valid while main RunLoop is running.
+  // `shared_url_loader_factory` must not be nullptr.
   void Initialize(
+      ::metrics::MetricsService* metrics_service,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const base::CommandLine& parsed_command_line,
