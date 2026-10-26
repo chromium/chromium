@@ -754,22 +754,9 @@ void AwMetricsServiceClient::SetUpMetricsDir() {
     return;
   }
 
-  // To minimize metrics loss if we roll back this experiment, the migration is
-  // bidirectional - the feature flag is used to determine the direction, not
-  // whether to do it.
-  bool use_no_backup_files_dir = base::FeatureList::IsEnabled(
-      android_webview::features::kWebViewPersistentMetricsInNoBackupDir);
-  base::FilePath old_dir;
-  if (use_no_backup_files_dir) {
-    // Only try to create the no backup files directory if the flag is enabled,
-    // so that we don't unnecessarily create it when not doing the migration.
-    base::CreateDirectory(no_backup_files_dir);
-    metrics_dir_ = std::move(no_backup_files_dir);
-    old_dir = std::move(data_dir);
-  } else {
-    metrics_dir_ = std::move(data_dir);
-    old_dir = std::move(no_backup_files_dir);
-  }
+  base::FilePath old_dir = std::move(data_dir);
+  base::CreateDirectory(no_backup_files_dir);
+  metrics_dir_ = std::move(no_backup_files_dir);
 
   // On Android we can only persist metrics for the current session if a spare
   // file was pre-created by a previous session. If we don't have a spare file

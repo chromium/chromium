@@ -81,7 +81,6 @@ BASE_DECLARE_FEATURE(kWebViewNavigateDrainPrefetch);
 BASE_DECLARE_FEATURE(kWebViewNonBlockingCookieStoreHandoff);
 BASE_DECLARE_FEATURE(kWebViewNonembeddedLowEntropySourceKillSwitch);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);
-BASE_DECLARE_FEATURE(kWebViewPersistentMetricsInNoBackupDir);
 BASE_DECLARE_FEATURE(kWebViewPersistHttpServerProperties);
 BASE_DECLARE_FEATURE(kWebViewPrefetchAheadOfPrerender);
 BASE_DECLARE_FEATURE(kWebViewPrefetchNativeLibrary);

@@ -143,14 +143,8 @@ class AwMetricsServiceClientTest : public testing::Test {
     old_upload_dir_ = old_metrics_dir_.AppendASCII(kBrowserMetricsName);
     new_upload_dir_ = new_metrics_dir_.AppendASCII(kBrowserMetricsName);
 
-    if (base::FeatureList::IsEnabled(
-            features::kWebViewPersistentMetricsInNoBackupDir)) {
-      default_metrics_dir_ = new_metrics_dir_;
-      default_upload_dir_ = new_upload_dir_;
-    } else {
-      default_metrics_dir_ = old_metrics_dir_;
-      default_upload_dir_ = old_upload_dir_;
-    }
+    default_metrics_dir_ = new_metrics_dir_;
+    default_upload_dir_ = new_upload_dir_;
   }
 
   AwMetricsServiceClientTest(const AwMetricsServiceClientTest&) = delete;
@@ -471,10 +465,6 @@ TEST_F(AwMetricsServiceClientTest,
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NoSpareFile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::DeleteFile(old_spare_file_));
   ASSERT_TRUE(base::DeleteFile(new_spare_file_));
 
@@ -486,10 +476,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NoSpareFile) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_OldSpareFile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::WriteFile(old_spare_file_, ""));
   ASSERT_TRUE(base::DeleteFile(new_spare_file_));
 
@@ -501,10 +487,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_OldSpareFile) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NewSpareFile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::DeleteFile(old_spare_file_));
   ASSERT_TRUE(base::WriteFile(new_spare_file_, ""));
 
@@ -516,10 +498,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NewSpareFile) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_BothSpareFiles) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::WriteFile(old_spare_file_, ""));
   ASSERT_TRUE(base::WriteFile(new_spare_file_, ""));
 
@@ -531,10 +509,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_BothSpareFiles) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NoUploadDir) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::DeletePathRecursively(old_upload_dir_));
   ASSERT_TRUE(base::DeletePathRecursively(new_upload_dir_));
 
@@ -549,10 +523,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NoUploadDir) {
 
 TEST_F(AwMetricsServiceClientTest,
        TestMetricsDirMigration_OldUploadDirNonEmpty) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::CreateDirectory(old_upload_dir_));
   ASSERT_TRUE(base::WriteFile(old_upload_dir_.AppendASCII(kTestFilename), ""));
   ASSERT_TRUE(base::DeletePathRecursively(new_upload_dir_));
@@ -567,10 +537,6 @@ TEST_F(AwMetricsServiceClientTest,
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_OldUploadDirEmpty) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::DeletePathRecursively(old_upload_dir_));
   ASSERT_TRUE(base::CreateDirectory(old_upload_dir_));
   ASSERT_TRUE(base::DeletePathRecursively(new_upload_dir_));
@@ -585,10 +551,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_OldUploadDirEmpty) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NewUploadDir) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::DeletePathRecursively(old_upload_dir_));
   ASSERT_TRUE(base::CreateDirectory(new_upload_dir_));
   ASSERT_TRUE(base::WriteFile(new_upload_dir_.AppendASCII(kTestFilename), ""));
@@ -603,10 +565,6 @@ TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_NewUploadDir) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestMetricsDirMigration_BothUploadDirs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebViewPersistentMetricsInNoBackupDir);
-
   ASSERT_TRUE(base::CreateDirectory(old_upload_dir_));
   ASSERT_TRUE(base::WriteFile(old_upload_dir_.AppendASCII(kTestFilename), ""));
   ASSERT_TRUE(base::CreateDirectory(new_upload_dir_));

@@ -1156,9 +1156,6 @@ public final class ProductionSupportedFlagList {
                 "If true, ignore memory pressure for all network isolation partitions in the Quic"
                         + " session cache."),
         Flag.baseFeature(
-                "WebViewPersistentMetricsInNoBackupDir",
-                "Migrate the persistent metrics file to the nobackupfiles directory."),
-        Flag.baseFeature(
                 "ConnectionKeepAliveForHttp2",
                 "When enabled, WebView#preconnect will use a ConnectionKeepAliveConfig for"
                     + " NetworkContext::PreconnectSocket in HTTP2, and will be informed when the"
