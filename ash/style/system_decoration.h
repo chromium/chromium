@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/decoration/highlight_border_value.h"
@@ -26,6 +27,10 @@ class ColorProvider;
 class ColorProviderSource;
 class Decoration;
 class Layer;
+
+namespace decoration {
+class ShadowWithHighlightBorder;
+}  // namespace decoration
 }  // namespace ui
 
 namespace views {
@@ -52,6 +57,9 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
     kHighlightBorder,
   };
 
+  SystemDecoration(const SystemDecoration&) = delete;
+  SystemDecoration& operator=(const SystemDecoration&) = delete;
+
   ~SystemDecoration() override;
 
   // Creates a system decoration on a nine-patch layer with an optional drop
@@ -61,12 +69,12 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
       std::optional<ShadowType> shadow_type,
       HighlightBorderMode border_mode = HighlightBorderMode::kNone);
 
-  // Creates a system decoration backed by `views::ViewDecoration` for `view`
-  // with an optional drop shadow and/or highlight border. Its layer is added to
-  // `view`'s region layers and its content bounds automatically track `view`'s
-  // layer bounds. Cannot be used when the decoration's content bounds do not
-  // equal the view bounds (e.g., `AppListFolderView` has a clip rect whose
-  // bounds should be the content bounds; use `Create()` instead).
+  // Creates a system decoration for `view` with an optional drop shadow and/or
+  // highlight border. Its layer is added to `view`'s region layers and its
+  // content bounds automatically track `view`'s layer bounds. Cannot be used
+  // when the decoration's content bounds do not equal the view bounds (e.g.,
+  // `AppListFolderView` has a clip rect whose bounds should be the content
+  // bounds; use `Create()` instead).
   static std::unique_ptr<SystemDecoration> CreateForView(
       views::View* view,
       std::optional<ShadowType> shadow_type,
@@ -101,7 +109,7 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
   void SetRoundedCornerRadius(int corner_radius);
   void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners);
 
-  const gfx::Rect& GetContentBounds();
+  const gfx::Rect& GetContentBounds() const;
 
   // Return the layer of the decoration. The layer is commonly used for setting
   // layer hierarchy, visibility, and transformation.
@@ -120,18 +128,21 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
   GetHighlightBorderValueForTesting() const;
 
  protected:
-  virtual ui::Decoration* decoration() = 0;
-  virtual const ui::Decoration* decoration() const = 0;
+  SystemDecoration();
 
-  virtual void ApplyHighlightBorder(SkColor highlight_color,
-                                    SkColor border_color) = 0;
-  virtual void ApplyClearHighlightBorder() = 0;
+  // Invoked after a highlight border is added or removed (not on color
+  // changes). Subclasses use this to restack `GetLayer()`.
+  virtual void OnHighlightBorderChanged() {}
 
  private:
+  void ApplyHighlightBorder(SkColor highlight_color, SkColor border_color);
+
   // Update shadow and highlight border colors.
   void UpdateShadowColors(const ui::ColorProvider* color_provider);
   void UpdateHighlightBorder();
 
+  std::unique_ptr<ui::Decoration> decoration_;
+  raw_ptr<ui::decoration::ShadowWithHighlightBorder> source_;
   bool has_highlight_border_ = false;
 };
 

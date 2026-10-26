@@ -22,7 +22,7 @@ namespace {
 
 // Different types of SystemDecoration implementations.
 enum class SystemDecorationType {
-  kDecoration,        // Instance of standard `SystemDecorationImpl`.
+  kDecoration,        // Instance of standard `SystemDecoration`.
   kViewDecoration,    // Instance of `SystemViewDecoration`.
   kWindowDecoration,  // Instance of `SystemWindowDecoration`.
 };
@@ -394,6 +394,51 @@ TEST_F(SystemDecorationTest, DeferHighlightBorderUntilColorProviderObserved) {
   EXPECT_EQ(widget->GetColorProvider()->GetColor(
                 ui::kColorCrosSystemHighlightBorder1),
             border_value->border_color());
+}
+
+// Tests that destroying a SystemViewDecoration removes its layer from the
+// view's layer regions.
+TEST_F(SystemDecorationTest, ViewDecorationDestruction) {
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       /*delegate=*/nullptr,
+                       /*container_id=*/desks_util::GetActiveDeskContainerId(),
+                       /*bounds=*/gfx::Rect(100, 100, 320, 200));
+  views::View* contents_view = widget->GetContentsView();
+  contents_view->SetPaintToLayer();
+
+  auto decoration = SystemDecoration::CreateForView(
+      contents_view, SystemDecoration::ShadowType::kElevation4);
+  EXPECT_EQ(contents_view->GetLayersInOrder().size(), 2u);
+
+  decoration.reset();
+  EXPECT_EQ(contents_view->GetLayersInOrder().size(), 1u);
+  EXPECT_EQ(contents_view->GetLayersInOrder()[0], contents_view->layer());
+}
+
+// Tests that destroying the view before the decoration detaches the
+// decoration's layer and does not crash on subsequent decoration destruction.
+TEST_F(SystemDecorationTest, ViewDecorationViewDeletion) {
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       /*delegate=*/nullptr,
+                       /*container_id=*/desks_util::GetActiveDeskContainerId(),
+                       /*bounds=*/gfx::Rect(100, 100, 320, 200));
+  views::View* contents_view = widget->GetContentsView();
+  auto* child_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  child_view->SetPaintToLayer();
+
+  auto decoration = SystemDecoration::CreateForView(
+      child_view, SystemDecoration::ShadowType::kElevation4);
+  EXPECT_EQ(child_view->GetLayersInOrder().size(), 2u);
+
+  // Deleting child_view invokes OnViewIsDeleting() on the decoration.
+  contents_view->RemoveChildViewT(child_view);
+  EXPECT_EQ(decoration->GetLayer()->parent(), nullptr);
+
+  // Resetting the decoration afterwards should be safe and clean.
+  decoration.reset();
 }
 
 }  // namespace ash

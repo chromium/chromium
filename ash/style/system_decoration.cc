@@ -10,6 +10,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/style/style_util.h"
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
@@ -23,38 +24,12 @@
 #include "ui/decoration/shadow_with_highlight_border.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
-#include "ui/views/view_decoration.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
-
-ui::decoration::Shadow* GetShadow(ui::Decoration* decoration) {
-  return decoration
-             ? decoration
-                   ->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>()
-                   ->shadow()
-             : nullptr;
-}
-
-const ui::decoration::Shadow* GetShadow(const ui::Decoration* decoration) {
-  return decoration
-             ? decoration
-                   ->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>()
-                   ->shadow()
-             : nullptr;
-}
-
-const ui::decoration::HighlightBorder* GetHighlightBorder(
-    const ui::Decoration* decoration) {
-  return decoration
-             ? decoration
-                   ->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>()
-                   ->highlight_border()
-             : nullptr;
-}
 
 ui::ColorId GetHighlightColorId(views::HighlightBorder::Type type) {
   switch (type) {
@@ -74,63 +49,21 @@ ui::ColorId GetBorderColorId(views::HighlightBorder::Type type) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// SystemDecorationImpl:
-
-// An implementation of `SystemDecoration`. It directly owns a
-// `ShadowWithHighlightBorder` `ui::Decoration`.
-class SystemDecorationImpl : public SystemDecoration {
- public:
-  SystemDecorationImpl()
-      : decoration_(ui::Decoration::CreateShadowWithHighlightBorder()),
-        source_(
-            decoration_
-                ->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>()) {}
-
-  SystemDecorationImpl(const SystemDecorationImpl&) = delete;
-  SystemDecorationImpl& operator=(const SystemDecorationImpl&) = delete;
-
-  ~SystemDecorationImpl() override = default;
-
- protected:
-  // SystemDecoration:
-  ui::Decoration* decoration() override { return decoration_.get(); }
-  const ui::Decoration* decoration() const override {
-    return decoration_.get();
-  }
-
-  void ApplyHighlightBorder(SkColor highlight_color,
-                            SkColor border_color) override {
-    if (auto* existing_border = source_->highlight_border()) {
-      existing_border->SetColors(highlight_color, border_color);
-      return;
-    }
-    source_->SetHighlightBorder(
-        std::make_unique<ui::decoration::HighlightBorder>(
-            highlight_color, border_color, views::kHighlightBorderThickness));
-  }
-
-  void ApplyClearHighlightBorder() override {
-    source_->SetHighlightBorder(nullptr);
-  }
-
- private:
-  std::unique_ptr<ui::Decoration> decoration_;
-  raw_ptr<ui::decoration::ShadowWithHighlightBorder> source_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // SystemViewDecoration:
 
-// An implementation of `SystemDecoration` based on `views::ViewDecoration`.
-// The decoration layer is added to the view's region layers and adjusts its
-// content bounds with the view's bounds. Do not manually set the content
-// bounds.
+// An extension of `SystemDecoration` for a `views::View`. The decoration layer
+// is added to the view's region layers and adjusts its content bounds with the
+// view's bounds. Do not manually set the content bounds.
 class SystemViewDecoration : public SystemDecoration,
                              public views::ViewObserver {
  public:
-  explicit SystemViewDecoration(views::View* view) : view_decoration_(view) {
-    view_observation_.Observe(view);
-    if (auto* widget = view->GetWidget()) {
+  explicit SystemViewDecoration(views::View* view) : view_(view) {
+    if (!view_->layer()) {
+      view_->SetPaintToLayer();
+    }
+    MoveLayerToRegion(views::LayerRegion::kBelow);
+    view_observation_.Observe(view_);
+    if (auto* widget = view_->GetWidget()) {
       ObserveColorProviderSource(widget);
     }
   }
@@ -138,36 +71,44 @@ class SystemViewDecoration : public SystemDecoration,
   SystemViewDecoration(const SystemViewDecoration&) = delete;
   SystemViewDecoration& operator=(const SystemViewDecoration&) = delete;
 
-  ~SystemViewDecoration() override = default;
+  // Detach the decoration layer from `view_`'s regions before the base class
+  // destroys it.
+  ~SystemViewDecoration() override {
+    if (view_) {
+      OnViewIsDeleting(view_);
+    }
+  }
 
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override {
     ObserveColorProviderSource(observed_view->GetWidget());
   }
+  void OnViewLayerBoundsSet(views::View* observed_view) override {
+    SetContentBounds(observed_view->layer()->bounds());
+  }
   void OnViewIsDeleting(views::View* observed_view) override {
     view_observation_.Reset();
+    view_->RemoveLayerFromRegions(GetLayer());
+    view_ = nullptr;
+  }
+
+ protected:
+  // SystemDecoration:
+  void OnHighlightBorderChanged() override {
+    if (view_) {
+      MoveLayerToRegion(HasHighlightBorder() ? views::LayerRegion::kAbove
+                                             : views::LayerRegion::kBelow);
+    }
   }
 
  private:
-  // SystemDecoration:
-  ui::Decoration* decoration() override {
-    return view_decoration_.decoration();
-  }
-  const ui::Decoration* decoration() const override {
-    return view_decoration_.decoration();
+  void MoveLayerToRegion(views::LayerRegion region) {
+    view_->RemoveLayerFromRegionsKeepInLayerTree(GetLayer());
+    view_->AddLayerToRegion(GetLayer(), region);
+    SetContentBounds(view_->layer()->bounds());
   }
 
-  void ApplyHighlightBorder(SkColor highlight_color,
-                            SkColor border_color) override {
-    view_decoration_.SetHighlightBorder(highlight_color, border_color,
-                                        views::kHighlightBorderThickness);
-  }
-
-  void ApplyClearHighlightBorder() override {
-    view_decoration_.ClearHighlightBorder();
-  }
-
-  views::ViewDecoration view_decoration_;
+  raw_ptr<views::View> view_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 };
@@ -175,10 +116,10 @@ class SystemViewDecoration : public SystemDecoration,
 ////////////////////////////////////////////////////////////////////////////////
 // SystemWindowDecoration:
 
-// An extension of `SystemDecorationImpl`. The decoration layer is added to a
-// window's layer and adjusts its content bounds with the window's bounds. Do
-// not manually set the content bounds.
-class SystemWindowDecoration : public SystemDecorationImpl,
+// An extension of `SystemDecoration` for an `aura::Window`. The decoration
+// layer is added to the window's layer and adjusts its content bounds with the
+// window's bounds. Do not manually set the content bounds.
+class SystemWindowDecoration : public SystemDecoration,
                                public aura::WindowObserver {
  public:
   explicit SystemWindowDecoration(aura::Window* window) : window_(window) {
@@ -218,20 +159,14 @@ class SystemWindowDecoration : public SystemDecorationImpl,
   }
 
  protected:
-  // SystemDecorationImpl:
-  void ApplyHighlightBorder(SkColor highlight_color,
-                            SkColor border_color) override {
-    const bool had_border = GetHighlightBorder(decoration()) != nullptr;
-    SystemDecorationImpl::ApplyHighlightBorder(highlight_color, border_color);
-    if (!had_border && window_) {
-      window_->layer()->StackAtTop(GetLayer());
+  // SystemDecoration:
+  void OnHighlightBorderChanged() override {
+    if (!window_) {
+      return;
     }
-  }
-
-  void ApplyClearHighlightBorder() override {
-    const bool had_border = GetHighlightBorder(decoration()) != nullptr;
-    SystemDecorationImpl::ApplyClearHighlightBorder();
-    if (had_border && window_) {
+    if (HasHighlightBorder()) {
+      window_->layer()->StackAtTop(GetLayer());
+    } else {
       window_->layer()->StackAtBottom(GetLayer());
     }
   }
@@ -256,13 +191,18 @@ void ConfigureDecoration(
 
 }  // namespace
 
+SystemDecoration::SystemDecoration()
+    : decoration_(ui::Decoration::CreateShadowWithHighlightBorder()),
+      source_(decoration_
+                  ->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>()) {}
+
 SystemDecoration::~SystemDecoration() = default;
 
 // static
 std::unique_ptr<SystemDecoration> SystemDecoration::Create(
     std::optional<ShadowType> shadow_type,
     HighlightBorderMode border_mode) {
-  auto decoration = std::make_unique<SystemDecorationImpl>();
+  auto decoration = base::WrapUnique(new SystemDecoration());
   ConfigureDecoration(decoration.get(), shadow_type, border_mode);
   return decoration;
 }
@@ -273,7 +213,7 @@ std::unique_ptr<SystemDecoration> SystemDecoration::CreateForView(
     std::optional<ShadowType> shadow_type,
     HighlightBorderMode border_mode) {
   DCHECK(view);
-  auto decoration = std::make_unique<SystemViewDecoration>(view);
+  auto decoration = base::WrapUnique(new SystemViewDecoration(view));
   ConfigureDecoration(decoration.get(), shadow_type, border_mode);
   return decoration;
 }
@@ -284,7 +224,7 @@ std::unique_ptr<SystemDecoration> SystemDecoration::CreateForWindow(
     std::optional<ShadowType> shadow_type,
     HighlightBorderMode border_mode) {
   DCHECK(window);
-  auto decoration = std::make_unique<SystemWindowDecoration>(window);
+  auto decoration = base::WrapUnique(new SystemWindowDecoration(window));
   ConfigureDecoration(decoration.get(), shadow_type, border_mode);
   return decoration;
 }
@@ -302,20 +242,15 @@ int SystemDecoration::GetElevationFromType(ShadowType type) {
 }
 
 void SystemDecoration::SetShadow(ShadowType type) {
-  if (!decoration()) {
-    return;
-  }
-  auto* source =
-      decoration()->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>();
   const int elevation = GetElevationFromType(type);
-  if (auto* existing_shadow = source->shadow()) {
+  if (auto* existing_shadow = source_->shadow()) {
     existing_shadow->SetElevation(elevation);
     return;
   }
   const ui::ColorProvider* color_provider =
       GetColorProviderSource() ? GetColorProviderSource()->GetColorProvider()
                                : nullptr;
-  source->SetShadow(std::make_unique<ui::decoration::Shadow>(
+  source_->SetShadow(std::make_unique<ui::decoration::Shadow>(
       elevation, ui::decoration::Shadow::Style::kChromeOSSystemUI,
       color_provider
           ? StyleUtil::CreateShadowElevationToColorsMap(color_provider)
@@ -324,20 +259,20 @@ void SystemDecoration::SetShadow(ShadowType type) {
 }
 
 void SystemDecoration::ClearShadow() {
-  if (decoration()) {
-    decoration()
-        ->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>()
-        ->SetShadow(nullptr);
-    UpdateHighlightBorder();
-  }
+  source_->SetShadow(nullptr);
+  UpdateHighlightBorder();
 }
 
 bool SystemDecoration::HasShadow() const {
-  return GetShadow(decoration()) != nullptr;
+  return source_->shadow() != nullptr;
 }
 
 void SystemDecoration::SetHighlightBorder() {
+  if (has_highlight_border_) {
+    return;
+  }
   has_highlight_border_ = true;
+  OnHighlightBorderChanged();
   UpdateHighlightBorder();
 }
 
@@ -346,7 +281,8 @@ void SystemDecoration::ClearHighlightBorder() {
     return;
   }
   has_highlight_border_ = false;
-  ApplyClearHighlightBorder();
+  source_->SetHighlightBorder(nullptr);
+  OnHighlightBorderChanged();
 }
 
 bool SystemDecoration::HasHighlightBorder() const {
@@ -354,9 +290,7 @@ bool SystemDecoration::HasHighlightBorder() const {
 }
 
 void SystemDecoration::SetContentBounds(const gfx::Rect& bounds) {
-  if (decoration()) {
-    decoration()->SetContentBounds(bounds);
-  }
+  decoration_->SetContentBounds(bounds);
 }
 
 void SystemDecoration::SetRoundedCornerRadius(int corner_radius) {
@@ -365,17 +299,15 @@ void SystemDecoration::SetRoundedCornerRadius(int corner_radius) {
 
 void SystemDecoration::SetRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {
-  if (decoration()) {
-    decoration()->SetRoundedCorners(rounded_corners);
-  }
+  decoration_->SetRoundedCorners(rounded_corners);
 }
 
-const gfx::Rect& SystemDecoration::GetContentBounds() {
-  return decoration()->content_bounds();
+const gfx::Rect& SystemDecoration::GetContentBounds() const {
+  return decoration_->content_bounds();
 }
 
 ui::Layer* SystemDecoration::GetLayer() {
-  return decoration() ? decoration()->layer() : nullptr;
+  return decoration_->layer();
 }
 
 void SystemDecoration::ObserveColorProviderSource(
@@ -391,35 +323,46 @@ void SystemDecoration::OnColorProviderChanged() {
 }
 
 const gfx::ShadowValues SystemDecoration::GetShadowValuesForTesting() const {
-  const auto* shadow = GetShadow(decoration());
+  const auto* shadow = source_->shadow();
   if (!shadow) {
     return gfx::ShadowValues();
   }
   return shadow
-      ->GetSpec(decoration()->content_bounds(), decoration()->rounded_corners())
+      ->GetSpec(decoration_->content_bounds(), decoration_->rounded_corners())
       .value_or(gfx::ShadowValues());
 }
 
 std::optional<ui::decoration::HighlightBorderValue>
 SystemDecoration::GetHighlightBorderValueForTesting() const {
-  const auto* border = GetHighlightBorder(decoration());
+  const auto* border = source_->highlight_border();
   if (!border) {
     return std::nullopt;
   }
-  return border->GetSpec(decoration()->content_bounds(),
-                         decoration()->rounded_corners());
+  return border->GetSpec(decoration_->content_bounds(),
+                         decoration_->rounded_corners());
+}
+
+void SystemDecoration::ApplyHighlightBorder(SkColor highlight_color,
+                                            SkColor border_color) {
+  if (auto* existing_border = source_->highlight_border()) {
+    existing_border->SetColors(highlight_color, border_color);
+    return;
+  }
+  source_->SetHighlightBorder(std::make_unique<ui::decoration::HighlightBorder>(
+      highlight_color, border_color, views::kHighlightBorderThickness));
+  OnHighlightBorderChanged();
 }
 
 void SystemDecoration::UpdateShadowColors(
     const ui::ColorProvider* color_provider) {
-  if (auto* shadow = GetShadow(decoration())) {
+  if (auto* shadow = source_->shadow()) {
     shadow->SetColorMap(
         StyleUtil::CreateShadowElevationToColorsMap(color_provider));
   }
 }
 
 void SystemDecoration::UpdateHighlightBorder() {
-  if (!has_highlight_border_ || !decoration()) {
+  if (!has_highlight_border_ || !source_) {
     return;
   }
   auto* color_provider_source = GetColorProviderSource();
