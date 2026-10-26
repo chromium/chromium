@@ -152,6 +152,13 @@ void BluetoothAdvertisementFloss::Stop(SuccessCallback success_callback,
     return;
   }
 
+  if (!FlossDBusManager::IsInitialized() ||
+      !FlossDBusManager::Get()->HasActiveAdapter()) {
+    adv_id_ = kInvalidAdvId;
+    std::move(success_callback).Run();
+    return;
+  }
+
   FlossDBusManager::Get()->GetAdvertiserClient()->StopAdvertisingSet(
       adv_id_,
       base::BindOnce(&BluetoothAdvertisementFloss::OnStopSuccess,

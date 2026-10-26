@@ -179,6 +179,30 @@ TEST_F(FlossDBusManagerTest, AdapterOffCallImmediately) {
   SwitchAdapterOffTest();
 }
 
+TEST_F(FlossDBusManagerTest,
+       AdapterOffClearsClientsAndLazilyRecreatesOnAccess) {
+  SwitchAdapterOnTest();
+  ASSERT_NE(FlossDBusManager::Get()->GetAdapterClient(), nullptr);
+
+  SwitchAdapterOffTest();
+  EXPECT_FALSE(FlossDBusManager::Get()->HasActiveAdapter());
+
+  // Accessing client getters while no adapter is active should lazily return
+  // non-null uninitialized clients rather than nullptr.
+  FlossAdapterClient* lazy_adapter_client =
+      FlossDBusManager::Get()->GetAdapterClient();
+  EXPECT_NE(lazy_adapter_client, nullptr);
+  EXPECT_NE(FlossDBusManager::Get()->GetGattManagerClient(), nullptr);
+  EXPECT_NE(FlossDBusManager::Get()->GetAdvertiserClient(), nullptr);
+  EXPECT_NE(FlossDBusManager::Get()->GetLEScanClient(), nullptr);
+  EXPECT_NE(FlossDBusManager::Get()->GetSocketManager(), nullptr);
+
+  // Switching the adapter back on should preserve and initialize the lazily
+  // created client.
+  SwitchAdapterOnTest();
+  EXPECT_EQ(FlossDBusManager::Get()->GetAdapterClient(), lazy_adapter_client);
+}
+
 // Make sure callback is called correctly after an adapter power cycle.
 TEST_F(FlossDBusManagerTest, RestartAdapterClientPresent) {
   SwitchAdapterOnTest();

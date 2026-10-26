@@ -717,7 +717,8 @@ BluetoothDeviceFloss::BluetoothDeviceFloss(
 }
 
 BluetoothDeviceFloss::~BluetoothDeviceFloss() {
-  if (floss::FlossDBusManager::IsInitialized()) {
+  if (FlossDBusManager::IsInitialized() &&
+      FlossDBusManager::Get()->HasActiveAdapter()) {
     FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
   }
 }

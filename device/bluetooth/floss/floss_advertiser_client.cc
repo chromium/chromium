@@ -187,11 +187,11 @@ FlossAdvertiserClient::~FlossAdvertiserClient() {
         .Run(device::BluetoothAdvertisement::ERROR_STARTING_ADVERTISEMENT);
   }
   set_advertising_params_callbacks_.clear();
-  CallAdvertisingMethod<bool>(
-      base::BindOnce(&FlossAdvertiserClient::CompleteUnregisterCallback,
-                     weak_ptr_factory_.GetWeakPtr()),
-      advertiser::kUnregisterCallback, callback_id_);
   if (bus_) {
+    CallAdvertisingMethod<bool>(
+        base::BindOnce(&FlossAdvertiserClient::CompleteUnregisterCallback,
+                       weak_ptr_factory_.GetWeakPtr()),
+        advertiser::kUnregisterCallback, callback_id_);
     exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kAdvertisingSetCallbackPath));
   }

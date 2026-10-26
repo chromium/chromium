@@ -60,38 +60,24 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
 
   FlossManagerClient* manager_client() { return manager_client_.get(); }
 
-  FlossAdapterClient* adapter_client() { return adapter_client_.get(); }
-
-  FlossGattManagerClient* gatt_manager_client() {
-    return gatt_manager_client_.get();
-  }
-
-  FlossSocketManager* socket_manager() { return socket_manager_.get(); }
-
-  FlossLEScanClient* lescan_client() { return lescan_client_.get(); }
-
-  FlossLoggingClient* logging_client() { return logging_client_.get(); }
-
-  FlossAdvertiserClient* advertiser_client() {
-    return advertiser_client_.get();
-  }
+  FlossAdapterClient* GetAdapterClient();
+  FlossGattManagerClient* GetGattManagerClient();
+  FlossSocketManager* GetSocketManager();
+  FlossLEScanClient* GetLEScanClient();
+  FlossLoggingClient* GetLoggingClient();
+  FlossAdvertiserClient* GetAdvertiserClient();
 #if BUILDFLAG(IS_CHROMEOS)
-  FlossAdminClient* admin_client() { return admin_client_.get(); }
+  FlossAdminClient* GetAdminClient();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  FlossBatteryManagerClient* battery_manager_client() {
-    return battery_manager_client_.get();
-  }
-
-  FlossBluetoothTelephonyClient* bluetooth_telephony_client() {
-    return bluetooth_telephony_client_.get();
-  }
+  FlossBatteryManagerClient* GetBatteryManagerClient();
+  FlossBluetoothTelephonyClient* GetBluetoothTelephonyClient();
 
  private:
   friend FlossDBusManagerSetter;
   friend FlossDBusManager;
 
   void ResetAdapterClients();
+  void ClearAdapterClients();
 
   bool use_stubs_;
   std::unique_ptr<FlossManagerClient> manager_client_;

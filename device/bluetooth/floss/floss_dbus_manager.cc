@@ -473,11 +473,11 @@ bool FlossDBusManager::AreClientsReady() const {
 }
 
 FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
-  return client_bundle_->adapter_client();
+  return client_bundle_->GetAdapterClient();
 }
 
 FlossGattManagerClient* FlossDBusManager::GetGattManagerClient() {
-  return client_bundle_->gatt_manager_client();
+  return client_bundle_->GetGattManagerClient();
 }
 
 FlossManagerClient* FlossDBusManager::GetManagerClient() {
@@ -485,32 +485,32 @@ FlossManagerClient* FlossDBusManager::GetManagerClient() {
 }
 
 FlossSocketManager* FlossDBusManager::GetSocketManager() {
-  return client_bundle_->socket_manager();
+  return client_bundle_->GetSocketManager();
 }
 
 FlossLEScanClient* FlossDBusManager::GetLEScanClient() {
-  return client_bundle_->lescan_client();
+  return client_bundle_->GetLEScanClient();
 }
 
 FlossAdvertiserClient* FlossDBusManager::GetAdvertiserClient() {
-  return client_bundle_->advertiser_client();
+  return client_bundle_->GetAdvertiserClient();
 }
 
 FlossBatteryManagerClient* FlossDBusManager::GetBatteryManagerClient() {
-  return client_bundle_->battery_manager_client();
+  return client_bundle_->GetBatteryManagerClient();
 }
 
 FlossBluetoothTelephonyClient* FlossDBusManager::GetBluetoothTelephonyClient() {
-  return client_bundle_->bluetooth_telephony_client();
+  return client_bundle_->GetBluetoothTelephonyClient();
 }
 
 FlossLoggingClient* FlossDBusManager::GetLoggingClient() {
-  return client_bundle_->logging_client();
+  return client_bundle_->GetLoggingClient();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 FlossAdminClient* FlossDBusManager::GetAdminClient() {
-  return client_bundle_->admin_client();
+  return client_bundle_->GetAdminClient();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -522,9 +522,14 @@ void FlossDBusManager::InitializeAdapterClients(int adapter,
     return;
   }
 
-  // Clean up active adapter clients
+  // Clean up active adapter clients. Avoid eagerly constructing a new set of
+  // D-Bus clients when switching to kInvalidAdapter (such as during shutdown).
   if (active_adapter_ != kInvalidAdapter) {
-    client_bundle_->ResetAdapterClients();
+    if (adapter == kInvalidAdapter) {
+      client_bundle_->ClearAdapterClients();
+    } else {
+      client_bundle_->ResetAdapterClients();
+    }
   }
 
   // Set current adapter. If it's kInvalidAdapter, this doesn't need to do any
@@ -629,10 +634,91 @@ FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
     manager_client_ = std::make_unique<FakeFlossManagerClient>();
   }
 
-  ResetAdapterClients();
+  if (use_stubs) {
+    ResetAdapterClients();
+  }
 }
 
 FlossClientBundle::~FlossClientBundle() = default;
+
+FlossAdapterClient* FlossClientBundle::GetAdapterClient() {
+  if (!adapter_client_) {
+    adapter_client_ = use_stubs_ ? std::make_unique<FakeFlossAdapterClient>()
+                                 : FlossAdapterClient::Create();
+  }
+  return adapter_client_.get();
+}
+
+FlossGattManagerClient* FlossClientBundle::GetGattManagerClient() {
+  if (!gatt_manager_client_) {
+    gatt_manager_client_ = use_stubs_
+                               ? std::make_unique<FakeFlossGattManagerClient>()
+                               : FlossGattManagerClient::Create();
+  }
+  return gatt_manager_client_.get();
+}
+
+FlossSocketManager* FlossClientBundle::GetSocketManager() {
+  if (!socket_manager_) {
+    socket_manager_ = use_stubs_ ? std::make_unique<FakeFlossSocketManager>()
+                                 : FlossSocketManager::Create();
+  }
+  return socket_manager_.get();
+}
+
+FlossLEScanClient* FlossClientBundle::GetLEScanClient() {
+  if (!lescan_client_) {
+    lescan_client_ = use_stubs_ ? std::make_unique<FakeFlossLEScanClient>()
+                                : FlossLEScanClient::Create();
+  }
+  return lescan_client_.get();
+}
+
+FlossLoggingClient* FlossClientBundle::GetLoggingClient() {
+  if (!logging_client_) {
+    logging_client_ = use_stubs_ ? std::make_unique<FakeFlossLoggingClient>()
+                                 : FlossLoggingClient::Create();
+  }
+  return logging_client_.get();
+}
+
+FlossAdvertiserClient* FlossClientBundle::GetAdvertiserClient() {
+  if (!advertiser_client_) {
+    advertiser_client_ = use_stubs_
+                             ? std::make_unique<FakeFlossAdvertiserClient>()
+                             : FlossAdvertiserClient::Create();
+  }
+  return advertiser_client_.get();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+FlossAdminClient* FlossClientBundle::GetAdminClient() {
+  if (!admin_client_) {
+    admin_client_ = use_stubs_ ? std::make_unique<FakeFlossAdminClient>()
+                               : FlossAdminClient::Create();
+  }
+  return admin_client_.get();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+FlossBatteryManagerClient* FlossClientBundle::GetBatteryManagerClient() {
+  if (!battery_manager_client_) {
+    battery_manager_client_ =
+        use_stubs_ ? std::make_unique<FakeFlossBatteryManagerClient>()
+                   : FlossBatteryManagerClient::Create();
+  }
+  return battery_manager_client_.get();
+}
+
+FlossBluetoothTelephonyClient*
+FlossClientBundle::GetBluetoothTelephonyClient() {
+  if (!bluetooth_telephony_client_) {
+    bluetooth_telephony_client_ =
+        use_stubs_ ? std::make_unique<FakeFlossBluetoothTelephonyClient>()
+                   : FlossBluetoothTelephonyClient::Create();
+  }
+  return bluetooth_telephony_client_.get();
+}
 
 void FlossClientBundle::ResetAdapterClients() {
 #if defined(USE_REAL_DBUS_CLIENTS)
@@ -640,32 +726,33 @@ void FlossClientBundle::ResetAdapterClients() {
     LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
   }
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
-  if (!use_stubs_) {
-    adapter_client_ = FlossAdapterClient::Create();
-    gatt_manager_client_ = FlossGattManagerClient::Create();
-    socket_manager_ = FlossSocketManager::Create();
-    lescan_client_ = FlossLEScanClient::Create();
-    advertiser_client_ = FlossAdvertiserClient::Create();
-    battery_manager_client_ = FlossBatteryManagerClient::Create();
-    bluetooth_telephony_client_ = FlossBluetoothTelephonyClient::Create();
-    logging_client_ = FlossLoggingClient::Create();
+  ClearAdapterClients();
+  // Request each client so they are eagerly initialized.
+  GetAdapterClient();
+  GetGattManagerClient();
+  GetSocketManager();
+  GetLEScanClient();
+  GetAdvertiserClient();
+  GetBatteryManagerClient();
+  GetBluetoothTelephonyClient();
+  GetLoggingClient();
 #if BUILDFLAG(IS_CHROMEOS)
-    admin_client_ = FlossAdminClient::Create();
+  GetAdminClient();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  } else {
-    adapter_client_ = std::make_unique<FakeFlossAdapterClient>();
-    gatt_manager_client_ = std::make_unique<FakeFlossGattManagerClient>();
-    socket_manager_ = std::make_unique<FakeFlossSocketManager>();
-    lescan_client_ = std::make_unique<FakeFlossLEScanClient>();
-    advertiser_client_ = std::make_unique<FakeFlossAdvertiserClient>();
-    battery_manager_client_ = std::make_unique<FakeFlossBatteryManagerClient>();
-    bluetooth_telephony_client_ =
-        std::make_unique<FakeFlossBluetoothTelephonyClient>();
-    logging_client_ = std::make_unique<FakeFlossLoggingClient>();
+}
+
+void FlossClientBundle::ClearAdapterClients() {
+  adapter_client_.reset();
+  gatt_manager_client_.reset();
+  socket_manager_.reset();
+  lescan_client_.reset();
+  advertiser_client_.reset();
+  battery_manager_client_.reset();
+  bluetooth_telephony_client_.reset();
+  logging_client_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
-    admin_client_ = std::make_unique<FakeFlossAdminClient>();
+  admin_client_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  }
 }
 
 }  // namespace floss

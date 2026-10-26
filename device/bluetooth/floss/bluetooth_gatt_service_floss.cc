@@ -30,7 +30,8 @@ BluetoothGattServiceFloss::BluetoothGattServiceFloss(
 }
 
 BluetoothGattServiceFloss::~BluetoothGattServiceFloss() {
-  if (floss::FlossDBusManager::IsInitialized()) {
+  if (FlossDBusManager::IsInitialized() &&
+      FlossDBusManager::Get()->HasActiveAdapter()) {
     FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
     FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
   }
