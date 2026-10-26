@@ -25,9 +25,9 @@ struct GridItemPlacementData {
   GridItemPlacementData(
       LogicalOffset offset,
       bool has_descendant_that_depends_on_percentage_block_size,
-      std::optional<LogicalOffset> relative_offset = std::nullopt)
+      std::optional<PhysicalBoxStrut> relative_insets = std::nullopt)
       : offset(offset),
-        relative_offset(relative_offset),
+        relative_insets(relative_insets),
         has_descendant_that_depends_on_percentage_block_size(
             has_descendant_that_depends_on_percentage_block_size) {}
 
@@ -35,7 +35,7 @@ struct GridItemPlacementData {
   // Grid computes this because percentage offsets resolve against the grid
   // area. Other layout modes leave it unset so the fragment builder computes
   // relative positioning normally when the result is added.
-  std::optional<LogicalOffset> relative_offset;
+  std::optional<PhysicalBoxStrut> relative_insets;
   bool has_descendant_that_depends_on_percentage_block_size;
 };
 

@@ -355,15 +355,15 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // fragment and its relative offset to the builder, but also keeping track of
   // out-of-flow positioned descendants, propagating fragmentainer breaks, and
   // more. In some cases, such as grid, the relative offset may need to be
-  // computed ahead of time. If so, a |relative_offset| will be passed
+  // computed ahead of time. If so, a |relative_insets| will be passed
   // in. Otherwise, the relative offset will be calculated as normal.
   // |inline_container| is passed when adding an OOF that is contained by a
   // non-atomic inline.
   void AddResult(
       const LayoutResult&,
       const LogicalOffset,
-      std::optional<const BoxStrut> margins,
-      std::optional<LogicalOffset> relative_offset = std::nullopt,
+      std::optional<BoxStrut> margins,
+      std::optional<PhysicalBoxStrut> relative_insets = std::nullopt,
       const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
   // AddResult() with the default margin computation.
   void AddResult(const LayoutResult& child_layout_result,
@@ -377,7 +377,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
       const LogicalOffset&,
       const MarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
-      std::optional<LogicalOffset> relative_offset = std::nullopt,
+      std::optional<PhysicalBoxStrut> relative_insets = std::nullopt,
       const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
 
   // Manually add a break token to the builder. Note that we're assuming that

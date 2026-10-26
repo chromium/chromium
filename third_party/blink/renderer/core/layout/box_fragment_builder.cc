@@ -180,8 +180,8 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
 void BoxFragmentBuilder::AddResult(
     const LayoutResult& child_layout_result,
     const LogicalOffset offset,
-    std::optional<const BoxStrut> margins,
-    std::optional<LogicalOffset> relative_offset,
+    std::optional<BoxStrut> margins,
+    std::optional<PhysicalBoxStrut> relative_insets,
     const OofInlineContainer<LogicalOffset>* inline_container) {
   const auto& fragment = child_layout_result.GetPhysicalFragment();
 
@@ -214,7 +214,7 @@ void BoxFragmentBuilder::AddResult(
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
   AddChild(fragment, offset, &end_margin_strut,
-           child_layout_result.IsSelfCollapsing(), relative_offset,
+           child_layout_result.IsSelfCollapsing(), relative_insets,
            inline_container);
   if (margins) {
     const auto& box_fragment = To<PhysicalBoxFragment>(fragment);
@@ -244,16 +244,16 @@ void BoxFragmentBuilder::AddChild(
     const LogicalOffset& child_offset,
     const MarginStrut* margin_strut,
     bool is_self_collapsing,
-    std::optional<LogicalOffset> relative_offset,
+    std::optional<PhysicalBoxStrut> relative_insets,
     const OofInlineContainer<LogicalOffset>* inline_container) {
 #if DCHECK_IS_ON()
-  needs_inflow_bounds_explicitly_set_ = !!relative_offset;
+  needs_inflow_bounds_explicitly_set_ = relative_insets.has_value();
   needs_may_have_descendant_above_block_start_explicitly_set_ =
-      !!relative_offset;
+      relative_insets.has_value();
 #endif
 
-  if (!relative_offset) {
-    relative_offset = LogicalOffset();
+  if (!relative_insets) {
+    relative_insets = PhysicalBoxStrut();
     if (box_type_ != PhysicalFragment::BoxType::kInlineBox) {
       if (child.IsLineBox()) {
         if (child.MayHaveDescendantAboveBlockStart()) [[unlikely]] {
@@ -263,7 +263,7 @@ void BoxFragmentBuilder::AddChild(
         // Apply the relative position offset.
         const auto& box_child = To<PhysicalBoxFragment>(child);
         if (box_child.Style().GetPosition() == EPosition::kRelative) {
-          relative_offset = ComputeRelativeOffsetForBoxFragment(
+          relative_insets = ComputeRelativeInsetsForBoxFragment(
               box_child, GetWritingDirection(), child_available_size_);
         }
 
@@ -369,10 +369,11 @@ void BoxFragmentBuilder::AddChild(
     }
   }
 
-  DCHECK(relative_offset);
-  PropagateFromFragment(child, child_offset, *relative_offset,
-                        inline_container);
-  AddChildInternal(&child, child_offset + *relative_offset);
+  DCHECK(relative_insets);
+  const LogicalOffset relative_offset =
+      relative_insets->ConvertToLogical(GetWritingDirection()).StartOffset();
+  PropagateFromFragment(child, child_offset, relative_offset, inline_container);
+  AddChildInternal(&child, child_offset + relative_offset);
 }
 
 void BoxFragmentBuilder::AddBreakToken(const BreakToken* token,

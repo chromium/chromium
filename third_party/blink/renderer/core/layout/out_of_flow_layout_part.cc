@@ -1174,7 +1174,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
         container_builder_.GetWritingDirection());
     container_builder_.AddResult(
         *result, result->OutOfFlowPositionedOffset(), margins,
-        /* relative_offset */ std::nullopt, &candidate.InlineContainerInfo());
+        /* relative_insets */ std::nullopt, &candidate.InlineContainerInfo());
     container_builder_.SetHasOutOfFlowFragmentChild(true);
     if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
       container_builder_.PropagateTallestUnbreakableBlockSize(

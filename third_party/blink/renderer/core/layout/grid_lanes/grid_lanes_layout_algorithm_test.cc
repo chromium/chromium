@@ -3336,7 +3336,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateGridLanesBreakTokenData) {
             (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
 
   // Grid-lanes leaves relative positioning to the fragment builder.
-  EXPECT_FALSE(grid_lanes[0]->item_data[0]->PlacementData().relative_offset);
+  EXPECT_FALSE(grid_lanes[0]->item_data[0]->PlacementData().relative_insets);
 
   // Every entry represents the start of its single-lane item.
   EXPECT_TRUE(grid_lanes[0]->item_data[0]->is_item_start);

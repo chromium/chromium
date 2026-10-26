@@ -1633,12 +1633,12 @@ void GridLayoutAlgorithm::PlaceGridItems(
             grid_item.Alignment(kForRows), grid_item.IsOverflowSafe(kForRows)));
 
     // Grid is special in that %-based offsets resolve against the grid-area.
-    // Determine the relative offset here (instead of in the builder). This is
+    // Determine the relative insets here (instead of in the builder). This is
     // safe as grid *also* has special inflow-bounds logic (otherwise this
     // wouldn't work).
-    LogicalOffset relative_offset = LogicalOffset();
+    PhysicalBoxStrut relative_insets;
     if (item_style.GetPosition() == EPosition::kRelative) {
-      relative_offset += ComputeRelativeOffsetForBoxFragment(
+      relative_insets = ComputeRelativeInsetsForBoxFragment(
           physical_fragment, container_writing_direction,
           containing_grid_area.size);
     }
@@ -1650,10 +1650,10 @@ void GridLayoutAlgorithm::PlaceGridItems(
       out_grid_items_placement_data->emplace_back(
           containing_grid_area.offset,
           result->HasDescendantThatDependsOnPercentageBlockSize(),
-          relative_offset);
+          relative_insets);
     } else {
       container_builder_.AddResult(*result, containing_grid_area.offset,
-                                   margins, relative_offset);
+                                   margins, relative_insets);
       baseline_accumulator.Accumulate(grid_item, fragment,
                                       containing_grid_area.offset.block_offset);
     }
@@ -1710,14 +1710,14 @@ struct ResultAndOffsets {
  public:
   ResultAndOffsets(const LayoutResult* result,
                    LogicalOffset offset,
-                   std::optional<LogicalOffset> relative_offset)
-      : result(result), offset(offset), relative_offset(relative_offset) {}
+                   std::optional<PhysicalBoxStrut> relative_insets)
+      : result(result), offset(offset), relative_insets(relative_insets) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 
   Member<const LayoutResult> result;
   LogicalOffset offset;
-  std::optional<LogicalOffset> relative_offset;
+  std::optional<PhysicalBoxStrut> relative_insets;
 };
 
 void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
@@ -1913,7 +1913,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           result,
           LogicalOffset(item_placement_data.offset.inline_offset,
                         child_block_offset),
-          item_placement_data.relative_offset);
+          item_placement_data.relative_insets);
 
       const LogicalBoxFragment fragment(
           container_writing_direction,
@@ -2311,7 +2311,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   for (auto& result_and_offset : result_and_offsets) {
     container_builder_.AddResult(
         *result_and_offset.result, result_and_offset.offset,
-        /* margins */ std::nullopt, result_and_offset.relative_offset);
+        /* margins */ std::nullopt, result_and_offset.relative_insets);
   }
 
   // Propagate the baselines.

@@ -328,11 +328,11 @@ void SimplifiedLayoutAlgorithm::AddChildFragment(
                            previous_physical_container_size_)
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
   // Any relative offset will have already been applied, avoid re-adding one.
-  std::optional<LogicalOffset> relative_offset = LogicalOffset();
+  std::optional<PhysicalBoxStrut> relative_insets = PhysicalBoxStrut();
 
   // Add the new fragment to the builder.
   container_builder_.AddChild(new_fragment, child_offset, margin_strut,
-                              is_self_collapsing, relative_offset);
+                              is_self_collapsing, relative_insets);
 }
 
 }  // namespace blink

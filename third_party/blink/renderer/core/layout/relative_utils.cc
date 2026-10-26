@@ -68,7 +68,7 @@ PhysicalBoxStrut ComputeRelativeInsets(
   return PhysicalBoxStrut(*top, *right, *bottom, *left);
 }
 
-LogicalOffset ComputeRelativeOffsetForBoxFragment(
+PhysicalBoxStrut ComputeRelativeInsetsForBoxFragment(
     const PhysicalBoxFragment& fragment,
     WritingDirectionMode container_writing_direction,
     const LogicalSize& available_size) {
@@ -76,9 +76,7 @@ LogicalOffset ComputeRelativeOffsetForBoxFragment(
   DCHECK_EQ(child_style.GetPosition(), EPosition::kRelative);
 
   return ComputeRelativeInsets(child_style, container_writing_direction,
-                               available_size)
-      .ConvertToLogical(container_writing_direction)
-      .StartOffset();
+                               available_size);
 }
 
 LogicalOffset ComputeRelativeOffsetForInline(const ConstraintSpace& space,

@@ -24,7 +24,7 @@ ComputeRelativeInsets(const ComputedStyle& child_style,
                       WritingDirectionMode container_writing_direction,
                       const LogicalSize& available_size);
 
-CORE_EXPORT LogicalOffset ComputeRelativeOffsetForBoxFragment(
+CORE_EXPORT PhysicalBoxStrut ComputeRelativeInsetsForBoxFragment(
     const PhysicalBoxFragment& fragment,
     WritingDirectionMode container_writing_direction,
     const LogicalSize& available_size);
