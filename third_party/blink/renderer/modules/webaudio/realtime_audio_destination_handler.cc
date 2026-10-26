@@ -279,13 +279,14 @@ void RealtimeAudioDestinationHandler::Render(
       // given `destination_bus` buffer.
       destination_bus->CopyFrom(*rendered_bus);
     }
+
+    // Processes "automatic" nodes that are not connected to anything. This can
+    // be done after copying because it does not affect the rendered result.
+    context->GetDeferredTaskHandler().ProcessAutomaticPullNodes(
+        number_of_frames);
   } else {
     destination_bus->Zero();
   }
-
-  // Processes "automatic" nodes that are not connected to anything. This can
-  // be done after copying because it does not affect the rendered result.
-  context->GetDeferredTaskHandler().ProcessAutomaticPullNodes(number_of_frames);
 
   context->HandlePostRenderTasks();
 
@@ -478,7 +479,10 @@ void RealtimeAudioDestinationHandler::StopPlatformDestination() {
   // for a while. (It may take a bit of time for the destination to stop.)
   DisablePullingAudioGraph();
 
-  if (platform_destination_->IsPlaying()) {
+  // `AudioDestination::Stop()` is a no-op when already stopped, and transitions
+  // both `kRunning` and `kPaused` destinations to `kStopped` so a subsequent
+  // lifecycle `Resume()` cannot restart a stopped destination.
+  if (platform_destination_) {
     platform_destination_->Stop();
   }
 }
