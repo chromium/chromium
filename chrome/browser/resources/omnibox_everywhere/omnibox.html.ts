@@ -15,7 +15,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         @dragleave="${this.dragAndDropHandler.handleDragLeave}"
         @drop="${this.dragAndDropHandler.handleDrop}">
       <search-animated-glow
-        .animationState="${this.animationState}"
+        .animationState="${this.computeGlowAnimationState_()}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
         part="animated-glow">
       </search-animated-glow>

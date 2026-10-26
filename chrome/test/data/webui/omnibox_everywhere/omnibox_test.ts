@@ -544,6 +544,88 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertFalse(testOmnibox.$.input.allowFilePaste);
       });
 
+  function dispatchFileDragEvent(target: HTMLElement, type: string): DragEvent {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(new File(['foo'], 'foo.png', {type: 'image/png'}));
+    const event = new DragEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      dataTransfer,
+    });
+    target.dispatchEvent(event);
+    return event;
+  }
+
+  function getAnimatedGlow(element: OmniboxEverywhereOmniboxElement):
+      SearchAnimatedGlowElement {
+    const glow = element.shadowRoot.querySelector('search-animated-glow');
+    assertTrue(!!glow);
+    return glow;
+  }
+
+  test('drag glow is hidden when AI Mode is unavailable at load', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({isFuseboxEnabled: false});
+    const testOmnibox = document.createElement('omnibox-everywhere-omnibox');
+    document.body.appendChild(testOmnibox);
+    await microtasksFinished();
+
+    const inputWrapper = testOmnibox.$.inputWrapper;
+    const dragEnter = dispatchFileDragEvent(inputWrapper, 'dragenter');
+    const dragOver = dispatchFileDragEvent(inputWrapper, 'dragover');
+    await microtasksFinished();
+
+    assertTrue(dragEnter.defaultPrevented);
+    assertTrue(dragOver.defaultPrevented);
+    assertEquals(
+        GlowAnimationState.NONE, getAnimatedGlow(testOmnibox).animationState);
+
+    // The drop must still be handled so that it can't navigate the page.
+    const drop = dispatchFileDragEvent(inputWrapper, 'drop');
+    await microtasksFinished();
+
+    assertTrue(drop.defaultPrevented);
+    assertEquals(
+        GlowAnimationState.NONE, getAnimatedGlow(testOmnibox).animationState);
+  });
+
+  test('glow keeps non-drag states when AI Mode is unavailable', async () => {
+    testProxy.page.updateAimPopupEligibility(false);
+    await microtasksFinished();
+
+    const voiceBtn =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#voiceSearchButton');
+    assertTrue(!!voiceBtn);
+    const whenOpenVoiceSearch = eventToPromise('open-voice-search', omnibox);
+    voiceBtn.click();
+    await whenOpenVoiceSearch;
+    await microtasksFinished();
+
+    assertEquals(
+        GlowAnimationState.LISTENING, getAnimatedGlow(omnibox).animationState);
+  });
+
+  test(
+      'drag glow clears when AI Mode becomes unavailable mid-drag',
+      async () => {
+        const inputWrapper = omnibox.$.inputWrapper;
+        const glow = getAnimatedGlow(omnibox);
+
+        dispatchFileDragEvent(inputWrapper, 'dragenter');
+        await microtasksFinished();
+        assertEquals(GlowAnimationState.DRAGGING, glow.animationState);
+
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+        assertEquals(GlowAnimationState.NONE, glow.animationState);
+
+        const drop = dispatchFileDragEvent(inputWrapper, 'drop');
+        await microtasksFinished();
+        assertTrue(drop.defaultPrevented);
+        assertEquals(GlowAnimationState.NONE, glow.animationState);
+      });
+
   test('dropdownIsVisible preserves bottomControls', async () => {
     const bottomControls =
         omnibox.shadowRoot.querySelector<HTMLElement>('#bottomControls');

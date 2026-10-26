@@ -537,6 +537,18 @@ export class OmniboxEverywhereOmniboxElement extends
     return this.fileContextEnabled_ && this.isFuseboxEnabled;
   }
 
+  // The drag-and-drop handler stays enabled when AI Mode is unavailable, so it
+  // keeps calling preventDefault() on drops and a drop can't navigate this
+  // WebContents to the file. Hide its glow in that case, since the drop does
+  // nothing.
+  protected computeGlowAnimationState_(): GlowAnimationState {
+    if (this.animationState === GlowAnimationState.DRAGGING &&
+        !this.canAddFileContext_()) {
+      return GlowAnimationState.NONE;
+    }
+    return this.animationState;
+  }
+
   protected processFiles_(
       files: FileList|null,
       contextAdditionMethod: ComposeboxContextAddedMethod) {
