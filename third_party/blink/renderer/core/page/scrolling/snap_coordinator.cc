@@ -345,8 +345,17 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
     const auto* multicol_box = DynamicTo<LayoutBox>(
         column_pseudo.UltimateOriginatingElement().GetLayoutObject());
     DCHECK(multicol_box->IsFragmentationContextRoot());
+    PhysicalRect column_rect = column_pseudo.ColumnRect();
+    // `column_rect` is in `multicol_box`'s coordinates. If `multicol_box` is a
+    // scroll container, mapping starts at it, so its scroll origin is not
+    // applied (see LayoutObject::OffsetFromScrollableContainer()). Apply it
+    // here so that the rect is consistent with other snap areas.
+    if (multicol_box->IsScrollContainer()) {
+      column_rect.Move(
+          PhysicalOffset(multicol_box->GetScrollableArea()->ScrollOrigin()));
+    }
     quads.push_back(multicol_box->LocalRectToAncestorQuad(
-        column_pseudo.ColumnRect(), &snap_container, mapping_mode));
+        column_rect, &snap_container, mapping_mode));
   }
 
   PhysicalRect area_rect;
