@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/check_deref.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -113,8 +114,8 @@ void InternalsUIHandler::OnDumpAddresses(const base::ListValue& args) {
 }
 
 void InternalsUIHandler::StartSubscription() {
-  LogRouter* log_router =
-      get_log_router_function_.Run(ProfileIOS::FromWebUIIOS(web_ui()));
+  LogRouter* log_router = get_log_router_function_.Run(
+      CHECK_DEREF(ProfileIOS::FromWebUIIOS(web_ui())));
   if (!log_router) {
     return;
   }
@@ -128,8 +129,8 @@ void InternalsUIHandler::EndSubscription() {
     return;
   }
   registered_with_log_router_ = false;
-  LogRouter* log_router =
-      get_log_router_function_.Run(ProfileIOS::FromWebUIIOS(web_ui()));
+  LogRouter* log_router = get_log_router_function_.Run(
+      CHECK_DEREF(ProfileIOS::FromWebUIIOS(web_ui())));
   if (log_router) {
     log_router->UnregisterReceiver(this);
   }

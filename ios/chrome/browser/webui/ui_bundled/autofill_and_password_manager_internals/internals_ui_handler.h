@@ -31,7 +31,7 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
 class InternalsUIHandler : public web::WebUIIOSMessageHandler,
                            public LogReceiver {
  public:
-  using GetLogRouterFunction = base::RepeatingCallback<LogRouter*(ProfileIOS*)>;
+  using GetLogRouterFunction = base::RepeatingCallback<LogRouter*(ProfileIOS&)>;
 
   explicit InternalsUIHandler(std::string call_on_load,
                               GetLogRouterFunction get_log_router_function);

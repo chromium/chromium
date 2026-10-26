@@ -11,7 +11,15 @@
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 
-using autofill::LogRouter;
+namespace {
+
+// Helper to disambiguate the call to GetForProfile(...).
+// TODO(crbug.com/576182342): delete when GetForProfile(...) has no overload.
+autofill::LogRouter* GetAutofillLogRouter(ProfileIOS& profile) {
+  return autofill::AutofillLogRouterFactory::GetForProfile(&profile);
+}
+
+}  // anonymous namespace
 
 AutofillInternalsUIIOS::AutofillInternalsUIIOS(web::WebUIIOS* web_ui,
                                                const std::string& host)
@@ -20,8 +28,7 @@ AutofillInternalsUIIOS::AutofillInternalsUIIOS(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource::Add(profile, autofill::CreateInternalsHTMLSource(
                                             kChromeUIAutofillInternalsHost));
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
-      "setup-autofill-internals",
-      base::BindRepeating(&autofill::AutofillLogRouterFactory::GetForProfile)));
+      "setup-autofill-internals", base::BindRepeating(&GetAutofillLogRouter)));
 }
 
 AutofillInternalsUIIOS::~AutofillInternalsUIIOS() = default;

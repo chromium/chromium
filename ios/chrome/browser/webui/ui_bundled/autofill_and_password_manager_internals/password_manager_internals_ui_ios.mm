@@ -11,7 +11,15 @@
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 
-using autofill::LogRouter;
+namespace {
+
+// Helper to disambiguate the call to GetForProfile(...).
+// TODO(crbug.com/576182342): delete when GetForProfile(...) has no overload.
+autofill::LogRouter* GetPasswordManagerLogRouter(ProfileIOS& profile) {
+  return ios::PasswordManagerLogRouterFactory::GetForProfile(&profile);
+}
+
+}  // anonymous namespace
 
 PasswordManagerInternalsUIIOS::PasswordManagerInternalsUIIOS(
     web::WebUIIOS* web_ui,
@@ -23,8 +31,7 @@ PasswordManagerInternalsUIIOS::PasswordManagerInternalsUIIOS(
                                    kChromeUIPasswordManagerInternalsHost));
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
       "setup-password-manager-internals",
-      base::BindRepeating(
-          &ios::PasswordManagerLogRouterFactory::GetForProfile)));
+      base::BindRepeating(&GetPasswordManagerLogRouter)));
 }
 
 PasswordManagerInternalsUIIOS::~PasswordManagerInternalsUIIOS() = default;
