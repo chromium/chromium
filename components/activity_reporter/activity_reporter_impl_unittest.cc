@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
@@ -17,7 +19,9 @@
 #include "components/activity_reporter/activity_reporter_for_testing.h"
 #include "components/activity_reporter/constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/activity_data_service.h"
 #include "components/update_client/network.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,6 +81,17 @@ class MockUpdateClient : public update_client::UpdateClient {
  private:
   ~MockUpdateClient() override = default;
 };
+
+std::unique_ptr<ActivityReporter> CreateReporterForPrefs(
+    PrefService* pref_service) {
+  return CreateActivityReporter(
+      base::BindRepeating([](PrefService* prefs) { return prefs; },
+                          pref_service),
+      nullptr,
+      base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
+      base::BindRepeating([] { return std::string("TEST"); }),
+      base::DoNothing(), false);
+}
 
 }  // namespace
 
@@ -145,6 +160,74 @@ TEST_F(ActivityReporterImplTest, ReportActive_ComponentData) {
                          }));
           });
   activity_reporter_->ReportActive();
+}
+
+TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateUnknown) {
+  TestingPrefServiceSimple pref_service;
+  update_client::RegisterPrefs(pref_service.registry());
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ActivityReporter> reporter =
+      CreateReporterForPrefs(&pref_service);
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kUnknown, 1);
+}
+
+TEST_F(ActivityReporterImplTest,
+       InitialDateLastActiveStateFirstTimeUnpersisted) {
+  TestingPrefServiceSimple pref_service;
+  update_client::RegisterPrefs(pref_service.registry());
+  std::unique_ptr<update_client::PersistedData> persisted_data =
+      update_client::CreatePersistedData(
+          base::BindRepeating([](PrefService* prefs) { return prefs; },
+                              &pref_service),
+          nullptr);
+  persisted_data->SetDateLastActive(std::string(kChromeActivityId),
+                                    update_client::kDateFirstTime);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ActivityReporter> reporter =
+      CreateReporterForPrefs(&pref_service);
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kFirstTimeUnpersisted, 1);
+}
+
+TEST_F(ActivityReporterImplTest, InitialDateLastActiveStatePersisted) {
+  TestingPrefServiceSimple pref_service;
+  update_client::RegisterPrefs(pref_service.registry());
+  std::unique_ptr<update_client::PersistedData> persisted_data =
+      update_client::CreatePersistedData(
+          base::BindRepeating([](PrefService* prefs) { return prefs; },
+                              &pref_service),
+          nullptr);
+  persisted_data->SetDateLastActive(std::string(kChromeActivityId), 7100);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ActivityReporter> reporter =
+      CreateReporterForPrefs(&pref_service);
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kPersisted, 1);
+}
+
+TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateInvalid) {
+  TestingPrefServiceSimple pref_service;
+  update_client::RegisterPrefs(pref_service.registry());
+  std::unique_ptr<update_client::PersistedData> persisted_data =
+      update_client::CreatePersistedData(
+          base::BindRepeating([](PrefService* prefs) { return prefs; },
+                              &pref_service),
+          nullptr);
+  persisted_data->SetDateLastActive(std::string(kChromeActivityId), -3);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ActivityReporter> reporter =
+      CreateReporterForPrefs(&pref_service);
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kInvalid, 1);
 }
 
 }  // namespace activity_reporter
