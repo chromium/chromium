@@ -96,7 +96,7 @@ class BlobFlattenerTest : public testing::Test {
 
   const ShareableBlobDataItem& GetItemInBlob(const std::string& uuid,
                                              size_t index) {
-    const BlobEntry* entry = registry().GetEntry(uuid);
+    scoped_refptr<const BlobEntry> entry = registry().GetEntry(uuid);
     EXPECT_TRUE(entry);
     return *entry->items()[index];
   }

@@ -23,35 +23,35 @@ BlobStorageRegistry::~BlobStorageRegistry() {
   // So it shouldn't matter.
 }
 
-BlobEntry* BlobStorageRegistry::CreateEntry(
+scoped_refptr<BlobEntry> BlobStorageRegistry::CreateEntry(
     const std::string& uuid,
     const std::string& content_type,
     const std::string& content_disposition) {
-  DCHECK(!blob_map_.contains(uuid));
-  std::unique_ptr<BlobEntry> entry =
-      std::make_unique<BlobEntry>(content_type, content_disposition);
-  BlobEntry* entry_ptr = entry.get();
-  blob_map_[uuid] = std::move(entry);
-  return entry_ptr;
+  auto entry = base::MakeRefCounted<BlobEntry>(content_type, content_disposition);
+  auto [_, inserted] = blob_map_.insert(std::make_pair(uuid, entry));
+  CHECK(inserted);
+  return entry;
 }
 
-bool BlobStorageRegistry::DeleteEntry(const std::string& uuid) {
-  return blob_map_.erase(uuid) == 1;
+void BlobStorageRegistry::ReleaseEntry(const std::string& uuid) {
+  blob_map_.erase(uuid);
 }
 
 bool BlobStorageRegistry::HasEntry(const std::string& uuid) const {
   return blob_map_.contains(uuid);
 }
 
-BlobEntry* BlobStorageRegistry::GetEntry(const std::string& uuid) {
+scoped_refptr<BlobEntry> BlobStorageRegistry::GetEntry(
+    const std::string& uuid) {
   auto found = blob_map_.find(uuid);
   if (found == blob_map_.end()) {
     return nullptr;
   }
-  return found->second.get();
+  return found->second;
 }
 
-const BlobEntry* BlobStorageRegistry::GetEntry(const std::string& uuid) const {
+scoped_refptr<const BlobEntry> BlobStorageRegistry::GetEntry(
+    const std::string& uuid) const {
   return const_cast<BlobStorageRegistry*>(this)->GetEntry(uuid);
 }
 
