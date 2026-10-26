@@ -405,8 +405,7 @@ const char kSecondURLText[] = "You've arrived";
 
 #pragma mark - Multiwindow
 
-// TODO(crbug.com/40240588): Re-enable this test.
-- (void)DISABLED_testMultiWindowURLLoading {
+- (void)testMultiWindowURLLoading {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -433,6 +432,18 @@ const char kSecondURLText[] = "You've arrived";
   // Closes first window and renumbers second window as first.
   [ChromeEarlGrey closeWindowWithNumber:0];
   [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  GREYCondition* windowCountCheck = [GREYCondition
+      conditionWithName:@"Waiting for extra windows to disconnect"
+                  block:^{
+                    return [ChromeEarlGrey windowCount] == 1;
+                  }];
+  GREYAssertTrue(
+      [windowCountCheck
+          waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()
+             pollInterval:base::test::ios::kSpinDelaySeconds.InSecondsF()],
+      @"Window did not disconnect");
+
   [ChromeEarlGrey changeWindowWithNumber:1 toNewNumber:0];
   [ChromeEarlGrey waitForWebStateContainingText:kSecondURLText
                              inWindowWithNumber:0];
