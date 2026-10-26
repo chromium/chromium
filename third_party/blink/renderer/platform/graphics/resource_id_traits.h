@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "components/viz/common/resources/resource_id.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 

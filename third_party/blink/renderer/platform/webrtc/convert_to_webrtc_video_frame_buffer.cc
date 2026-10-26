@@ -26,15 +26,6 @@
 #include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
-namespace blink {
-
-// Template specializations of [1], needed to be able to pass WTF callbacks
-// that have VideoTrackAdapterSettings or gfx::Size parameters across threads.
-//
-// [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
-
-}  // namespace blink
-
 namespace {
 
 class I420FrameAdapter : public webrtc::I420BufferInterface {

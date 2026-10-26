@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
 

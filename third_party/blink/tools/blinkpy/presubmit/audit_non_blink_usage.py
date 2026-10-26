@@ -2357,7 +2357,7 @@ _CONFIG = [
         ],
         # base::RefCounted and base::RefCountedThreadSafe are prohibited in
         # platform/ as defined above, but wtf/ needs them to define their WTF
-        # subclasses and CrossThreadCopier.
+        # subclasses.
         'allowed': ['base::RefCounted', 'base::RefCountedThreadSafe'],
     },
     {

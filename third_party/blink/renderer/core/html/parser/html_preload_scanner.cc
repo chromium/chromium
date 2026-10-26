@@ -86,8 +86,6 @@
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
@@ -679,12 +677,13 @@ class TokenPreloadScanner::StartTagScanner {
       ProcessLinkAttribute(attribute_name, attribute_value);
     } else if (Match(tag_impl_, html_names::kInputTag)) {
       ProcessInputAttribute(attribute_name, attribute_value);
-    } else if (Match(tag_impl_, html_names::kSourceTag))
+    } else if (Match(tag_impl_, html_names::kSourceTag)) {
       ProcessSourceAttribute(attribute_name, attribute_value);
-    else if (Match(tag_impl_, html_names::kVideoTag))
+    } else if (Match(tag_impl_, html_names::kVideoTag)) {
       ProcessVideoAttribute(attribute_name, attribute_value);
-    else if (Match(tag_impl_, html_names::kStyleTag))
+    } else if (Match(tag_impl_, html_names::kStyleTag)) {
       ProcessStyleAttribute(attribute_name, attribute_value);
+    }
   }
 
   bool IsLazyLoadImageDeferable(

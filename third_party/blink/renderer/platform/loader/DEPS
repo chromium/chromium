@@ -20,7 +20,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/bindings/script_forbidden_scope.h",
     "+third_party/blink/renderer/platform/bindings/trace_wrapper_member.h",
     "+third_party/blink/renderer/platform/blob/blob_data.h",
-    "+third_party/blink/renderer/platform/wtf/cross_thread_copier.h",
     "+third_party/blink/renderer/platform/wtf/cross_thread_functional.h",
     "+third_party/blink/renderer/platform/crypto.h",
     "+third_party/blink/renderer/platform/exported",

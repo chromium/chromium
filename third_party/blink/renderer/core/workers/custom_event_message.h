@@ -8,7 +8,6 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
