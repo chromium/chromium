@@ -2836,27 +2836,19 @@ IN_PROC_BROWSER_TEST_F(WebUIAvatarButtonBrowserTest, AvatarButtonIPHPromo) {
             toolbar_ui_api::mojom::AvatarToolbarButtonState::kNormal);
   EXPECT_TRUE(delegate->GetState().avatar_control_state->text.empty());
 
-  // Trigger IPH promo.
+  // Trigger IPH promo when in kNormal state; the greeting should not be shown.
   avatar_button->NotifyIPHPromoChanged(true);
-
-  // Wait until the state updates to kShowIdentityName and text is populated.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return delegate->GetState().avatar_control_state->state ==
-               toolbar_ui_api::mojom::AvatarToolbarButtonState::
-                   kShowIdentityName &&
-           !delegate->GetState().avatar_control_state->text.empty();
-  }));
+  EXPECT_TRUE(avatar_button->IsShowingIPHPromo());
+  EXPECT_EQ(delegate->GetState().avatar_control_state->state,
+            toolbar_ui_api::mojom::AvatarToolbarButtonState::kNormal);
+  EXPECT_TRUE(delegate->GetState().avatar_control_state->text.empty());
 
   // Trigger IPH promo hide.
   avatar_button->NotifyIPHPromoChanged(false);
-  avatar_button->ClearActiveStateForTesting();
-
-  // Wait until it goes back to kNormal and text is empty.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return delegate->GetState().avatar_control_state->state ==
-               toolbar_ui_api::mojom::AvatarToolbarButtonState::kNormal &&
-           delegate->GetState().avatar_control_state->text.empty();
-  }));
+  EXPECT_FALSE(avatar_button->IsShowingIPHPromo());
+  EXPECT_EQ(delegate->GetState().avatar_control_state->state,
+            toolbar_ui_api::mojom::AvatarToolbarButtonState::kNormal);
+  EXPECT_TRUE(delegate->GetState().avatar_control_state->text.empty());
 }
 
 struct ButtonVisibilityToggleTestParam {

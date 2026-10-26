@@ -798,6 +798,10 @@ class ShowIdentityNameStateProvider : public StateProvider,
     }
 
     has_in_product_help_promo_ = has_promo;
+    if (!IsActive()) {
+      return;
+    }
+
     // Trigger a new animation, even if the IPH is being removed. This keeps the
     // pill open a little more and avoids jankiness caused by the two animations
     // (IPH and identity pill) happening concurrently.
@@ -996,7 +1000,7 @@ class PromoStateProviderCoordinator
 
     // Collapse the promo state on any button state change to ensure that promo
     // timers are stopped and promo state is cleaned up when higher-priority
-    // states (such as `kShowIdentityName` triggered by IPH) become active.
+    // states become active.
     Collapse();
     if (!old_state.has_value()) {
       return;

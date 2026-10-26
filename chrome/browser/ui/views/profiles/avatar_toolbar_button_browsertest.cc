@@ -745,6 +745,19 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
+  void SetHasInProductHelpPromo(bool has_promo) {
+    AvatarToolbarButtonInterface* avatar =
+        GetAvatarToolbarButtonInterface(GetBrowser());
+    ASSERT_NE(avatar, nullptr);
+    if (features::IsWebUIAvatarButtonEnabled()) {
+      static_cast<WebUIAvatarToolbarButton*>(avatar)->NotifyIPHPromoChanged(
+          has_promo);
+    } else {
+      static_cast<AvatarToolbarButton*>(avatar)->SetProperty(
+          user_education::kHasInProductHelpPromoKey, has_promo);
+    }
+  }
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   BatchUploadServiceTestHelper& batch_upload_test_helper() {
     return batch_upload_test_helper_;
@@ -1102,6 +1115,16 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
   ASSERT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringFUTF16(
       IDS_AVATAR_BUTTON_GREETING, test_given_name())));
+
+  // Showing and hiding an IPH while the greeting is shown keeps the greeting
+  // active.
+  SetHasInProductHelpPromo(true);
+  EXPECT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringFUTF16(
+      IDS_AVATAR_BUTTON_GREETING, test_given_name())));
+  SetHasInProductHelpPromo(false);
+  EXPECT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringFUTF16(
+      IDS_AVATAR_BUTTON_GREETING, test_given_name())));
+
   avatar->ClearActiveStateForTesting();
 
   ASSERT_TRUE(avatar_accessor.WaitForText(
@@ -1109,6 +1132,13 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   avatar->ClearActiveStateForTesting();
 
   // Once the greeting and promo are not shown anymore, we expect no text.
+  EXPECT_TRUE(avatar_accessor.WaitForText(u""));
+
+  // Showing an IPH mid-session after the greeting has finished should not
+  // trigger the greeting again.
+  SetHasInProductHelpPromo(true);
+  EXPECT_TRUE(avatar_accessor.WaitForText(u""));
+  SetHasInProductHelpPromo(false);
   EXPECT_TRUE(avatar_accessor.WaitForText(u""));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
@@ -2186,23 +2216,6 @@ class MAYBE_AvatarToolbarButtonPromoClickBrowserTest
     button->AcceleratorPressed(ui::Accelerator());
   }
 
-  void SetHasInProductHelpPromo(bool has_promo) {
-    AvatarToolbarButtonInterface* avatar =
-        GetAvatarToolbarButtonInterface(browser());
-    ASSERT_NE(avatar, nullptr);
-    if (features::IsWebUIAvatarButtonEnabled()) {
-      static_cast<WebUIAvatarToolbarButton*>(avatar)->NotifyIPHPromoChanged(
-          has_promo);
-    } else {
-      // Setting `kHasInProductHelpPromoKey` triggers
-      // `NotifyIPHPromoChanged(true)`. In the buggy code, this transitions to
-      // `kShowIdentityName` while `collapse_timer_` is still running, which
-      // triggers CHECK(!collapse_timer_.IsRunning()) and crashes.
-      static_cast<AvatarToolbarButton*>(avatar)->SetProperty(
-          user_education::kHasInProductHelpPromoKey, has_promo);
-    }
-  }
-
   StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate_;
 
  private:
@@ -2438,15 +2451,13 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   EXPECT_TRUE(avatar_accessor2.WaitForText(std::u16string()));
 }
 
-// Regression test for crbug.com/532899594.
+// Regression test for crbug.com/532899594 and crbug.com/577043574.
 // Tests the scenario where a promo is showing in the avatar button with its
 // auto-collapse timer actively running, and an In-Product Help (IPH) promo
 // bubble is displayed attached to the avatar button.
-// This sets `kHasInProductHelpPromoKey` on the avatar button, which triggers
-// `ShowIdentityNameStateProvider::OnIPHPromoChanged(true)` and transitions
-// the button to `kShowIdentityName`.
-// This verifies that preemption by `kShowIdentityName` while the promo timer
-// is running does not hit invariant assertions or crash.
+// Since the greeting (`kShowIdentityName`) has already finished, showing an IPH
+// promo mid-session should not re-trigger `kShowIdentityName` or preempt the
+// active avatar promo.
 TEST_WITH_SIGNED_IN_FROM_PRE(
     IN_PROC_BROWSER_TEST_P,
     MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
@@ -2467,13 +2478,13 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   // Simulate an IPH promo bubble attaching to the avatar button.
   SetHasInProductHelpPromo(true);
 
-  // The greeting/identity text should now be shown for the IPH without
-  // crashing.
-  EXPECT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringFUTF16(
-      IDS_AVATAR_BUTTON_GREETING, test_given_name())));
+  // The greeting should not be re-triggered mid-session; the promo remains
+  // shown without crashing.
+  EXPECT_TRUE(avatar_accessor.WaitForText(GetExpectedPromoText()));
 
   // Simulating the IPH promo bubble closing.
   SetHasInProductHelpPromo(false);
+  EXPECT_TRUE(avatar_accessor.WaitForText(GetExpectedPromoText()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2529,6 +2540,32 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AvatarToolbarButtonSignedOutPromoBrowserTest,
   ASSERT_FALSE(
       browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+}
+
+// Regression test for crbug.com/577043574.
+IN_PROC_BROWSER_TEST_F(MAYBE_AvatarToolbarButtonSignedOutPromoBrowserTest,
+                       IPHPromoMidSessionDoesNotTriggerGreetingOrPromo) {
+  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+  EXPECT_TRUE(avatar_accessor.WaitForText(
+      l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO)));
+
+  // User signs in.
+  SigninWithImage(test_email(), test_given_name());
+  EXPECT_TRUE(avatar_accessor.WaitForText(
+      l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS)));
+
+  // User signs out.
+  Signout();
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+
+  // Showing an IPH promo mid-session should not trigger the greeting.
+  SetHasInProductHelpPromo(true);
+  EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+
+  // Closing the IPH promo should also not trigger the greeting or a subsequent
+  // sign-in promo.
+  SetHasInProductHelpPromo(false);
   EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
 }
 
