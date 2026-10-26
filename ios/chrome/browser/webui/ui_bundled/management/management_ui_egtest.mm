@@ -10,13 +10,16 @@
 #import "base/check.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/browser/enterprise_switches.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
+#import "components/enterprise/net/core/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_types.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/test/analysis_connectors_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -36,6 +39,9 @@ constexpr std::string_view kEnrollmentToken = "fake-enrollment-token";
 
 // DOM element IDs on `chrome://management`.
 constexpr std::string_view kConnectorsSectionId = "connectors-info";
+constexpr std::string_view kSecureGatewaySectionId = "secure-gateway-section";
+constexpr std::string_view kThreatProtectionMoreButtonId =
+    "threat-protection-more";
 constexpr std::string_view kSecurityEventSectionId = "security-event-section";
 constexpr std::string_view kPageVisitEventSectionId =
     "page-visit-event-section";
@@ -66,12 +72,17 @@ std::string GetExpectedEventDescription(int event_description_id) {
 }
 
 // Verifies that `visible_section_id` is visible with the expected title and
-// description.
+// description after expanding the connectors section.
 void VerifyVisibleEventSection(std::string_view visible_section_id,
                                int expected_title_id,
                                int expected_description_id) {
   [ChromeEarlGrey waitForWebStateContainingElement:VisibleElementSelector(
                                                        kConnectorsSectionId)];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:VisibleElementSelector(
+                                           kThreatProtectionMoreButtonId)];
+  [ChromeEarlGrey tapWebStateElementWithID:base::SysUTF8ToNSString(
+                                               kThreatProtectionMoreButtonId)];
   [ChromeEarlGrey waitForWebStateContainingElement:VisibleElementSelector(
                                                        visible_section_id)];
 
@@ -96,13 +107,22 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
 
 #pragma mark - ChromeTestCase
 
+// TODO(crbug.com/577136777): Simplify the setup for the test cases here.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.additional_args.push_back(base::StrCat(
-      {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
-  config.additional_args.push_back(
-      base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName, "</key><string>",
-                    kEnrollmentToken, "</string></dict>"}));
+
+  if ([self isRunningTest:@selector(testSecureGatewaySection)]) {
+    config.features_enabled.push_back(
+        enterprise_net::kEnableDynamicRouteFetching);
+    config.additional_args.push_back(
+        base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
+  } else {
+    config.additional_args.push_back(base::StrCat(
+        {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+    config.additional_args.push_back(
+        base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
+                      "</key><string>", kEnrollmentToken, "</string></dict>"}));
+  }
 
   if ([self isRunningTest:@selector(testSecurityEventSection)]) {
     _reportingEnvironment =
@@ -128,6 +148,7 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
   [AnalysisConnectorsAppInterface clearBrowserDMToken];
   [AnalysisConnectorsAppInterface clearDownloadProtectionRules];
   [AnalysisConnectorsAppInterface clearBulkDataEntryRules];
+  [PolicyAppInterface clearPolicies];
   [ChromeEarlGrey clearUserPrefWithName:enterprise_connectors::
                                             kEnterpriseRealTimeUrlCheckMode];
   [ChromeEarlGrey clearUserPrefWithName:enterprise_connectors::
@@ -137,6 +158,29 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
 }
 
 #pragma mark - Tests
+
+// Tests that management page displays the Secure Gateway title and
+// description when `ProxyProvisioningDomains` is configured.
+- (void)testSecureGatewaySection {
+  [PolicyAppInterface
+      mergeCloudUserPolicyValue:@"[{\"pvd_id\": \"example.com\"}]"
+                         forKey:@"ProxyProvisioningDomains"];
+
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+
+  [ChromeEarlGrey waitForWebStateContainingElement:VisibleElementSelector(
+                                                       kConnectorsSectionId)];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:VisibleElementSelector(
+                                           kSecureGatewaySectionId)];
+
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_MANAGEMENT_SECURE_GATEWAY_TITLE)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(IDS_MANAGEMENT_SECURE_GATEWAY_DISCLOSURE)];
+}
 
 // Tests that management page displays the Security event title and
 // description when `OnSecurityEventEnterpriseConnector` is enabled.

@@ -11,6 +11,7 @@
 #import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/net/core/utils.h"
 #import "components/grit/management_resources.h"
 #import "components/grit/management_resources_map.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -292,6 +293,16 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
                              IDS_MANAGEMENT_THREAT_PROTECTION);
   source->AddString("connectorsDescription",
                     GetConnectorsSectionDescription(connectors_service));
+  source->AddLocalizedString("threatProtectionMore",
+                             IDS_MANAGEMENT_THREAT_PROTECTION_MORE);
+
+  source->AddBoolean(
+      "secureGatewayDisclosureEnabled",
+      enterprise_net::IsSecureGatewayEnabled(profile->GetPrefs()));
+  source->AddLocalizedString("secureGatewayTitle",
+                             IDS_MANAGEMENT_SECURE_GATEWAY_TITLE);
+  source->AddLocalizedString("secureGatewayDisclosure",
+                             IDS_MANAGEMENT_SECURE_GATEWAY_DISCLOSURE);
 
   source->AddBoolean("pageVisitEventEnabled",
                      IsPageVisitEventEnabled(connectors_service));

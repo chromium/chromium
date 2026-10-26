@@ -92,6 +92,43 @@ a {
   margin-bottom: 28px;
 }
 
+#threat-protection-more {
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: 1.3em;
+  font-weight: 590;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  margin-top: 24px;
+  padding: 0;
+  text-align: start;
+  width: 100%;
+}
+
+#threat-protection-more.hidden {
+  display: none;
+}
+
+#threat-protection-more .expand-icon {
+  background-color: var(--heading-color);
+  flex-shrink: 0;
+  height: 24px;
+  margin-inline-start: 8px;
+  mask-image: url(chrome://resources/images/icon_expand_less.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  width: 24px;
+}
+
+#threat-protection-more[aria-expanded='true'] .expand-icon {
+  transform: rotate(180deg);
+}
+
 .event-section {
   margin-bottom: 24px;
   margin-top: 24px;
@@ -157,6 +194,7 @@ a {
     font-size: 1.33em;
   }
 
+  #threat-protection-more,
   .event-title {
     font-size: 1em;
   }

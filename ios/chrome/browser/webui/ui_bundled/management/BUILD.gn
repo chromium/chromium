@@ -12,6 +12,7 @@ source_set("management") {
     "//components/device_signals/core/browser",
     "//components/enterprise",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/net/core",
     "//components/policy/core/common",
     "//components/policy/proto",
     "//components/prefs",
@@ -39,11 +40,14 @@ source_set("eg2_tests") {
   sources = [ "management_ui_egtest.mm" ]
   deps = [
     "//base",
+    "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:test_support",
+    "//components/enterprise/net/core",
     "//components/policy/core/common:common_constants",
     "//components/strings",
     "//ios/chrome/browser/enterprise/connectors/analysis/test:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/enterprise/analysis:features",

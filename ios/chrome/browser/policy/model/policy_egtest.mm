@@ -736,6 +736,12 @@ const char kTestPageText[] = "pony";
           l10n_util::GetStringFUTF8(
               IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY, u"example.com")];
 
+  // Tap the button to show more info.
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:VisibleElementSelector(
+                                           @"threat-protection-more")];
+  [ChromeEarlGrey tapWebStateElementWithID:@"threat-protection-more"];
+
   // Validate that the Connectors section is visible.
   GREYAssertTrue(
       [ChromeEarlGrey
