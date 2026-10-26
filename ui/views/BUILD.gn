@@ -1048,7 +1048,6 @@ component("views") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {

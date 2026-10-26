@@ -755,7 +755,6 @@ absl_source_set("btree") {
     "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/types:compare",
   ]
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 absl_source_set("btree_test_common") {
@@ -867,7 +866,6 @@ absl_source_set("chunked_queue") {
     "//third_party/abseil-cpp/absl/base:iterator_traits_internal",
     "//third_party/abseil-cpp/absl/cleanup",
   ]
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 absl_test("chunked_queue_test") {

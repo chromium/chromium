@@ -158,7 +158,6 @@ source_set("sync_file_system") {
     "//third_party/leveldatabase",
     "//url",
   ]
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("test_support") {

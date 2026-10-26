@@ -70,7 +70,6 @@ source_set("default_browser") {
   } else {
     sources += [ "default_browser_monitor_stub.cc" ]
   }
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 if (is_win) {
@@ -82,7 +81,6 @@ if (is_win) {
       "//chrome/browser:shell_integration",
     ]
     deps = [ "//chrome/installer/util:with_no_strings" ]
-    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
   }
 }
 

@@ -59,7 +59,6 @@ source_set("internal_structs") {
     "//remoting/base:errors",
     "//remoting/base:session_policies",
   ]
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("internal_stubs") {

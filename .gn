@@ -4,6 +4,7 @@
 
 import("//build/circular_includes_bedrock.gni")
 import("//build/circular_includes_untriaged.gni")
+import("//build/strict_deps_failures.gni")
 import("//build/dotfile_settings.gni")
 import("//third_party/angle/dotfile_settings.gni")
 

@@ -260,7 +260,6 @@ component("chromium_sqlite3") {
   }
 
   deps = [ "//third_party/icu" ]
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 # Similar to component("chromium_sqlite") above, but uses the developer tools
@@ -340,7 +339,6 @@ source_set("dev_sqlite3") {
   }
 
   deps = [ "//third_party/icu" ]
-  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 config("sqlite_export") {

@@ -23,7 +23,6 @@ if (use_system_harfbuzz) {
 
   component("harfbuzz") {
     public_configs = [ ":harfbuzz_from_pkgconfig" ]
-    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
   }
 } else {
   import("//build/rust/cargo_crate.gni")
@@ -39,7 +38,6 @@ if (use_system_harfbuzz) {
       "no-doc-comments",
     ]
     configs = [ ":harfbuzz_config" ]
-    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
   }
 
   cargo_crate("harfbuzz_rust") {
@@ -578,7 +576,6 @@ if (use_system_harfbuzz) {
       public += [ "src/src/hb-glib.h" ]
       sources += [ "src/src/hb-glib.cc" ]
     }
-    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
   }
 }
 

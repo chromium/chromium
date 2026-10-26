@@ -185,7 +185,6 @@ if (!is_android) {
         "//pdf/mojom",
       ]
     }
-    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
     deps = [ "//components/input" ]
   }
 
