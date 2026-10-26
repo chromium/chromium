@@ -1622,9 +1622,32 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
       SetupHarnessAndChildWithContent("/surface_embed/inner_page.html");
   AttachChildToEmbed(child_contents.get());
 
-  // Replace child page contents with a select element.
-  EXPECT_TRUE(content::ExecJs(child_contents.get(), R"(
+  // Wait for the embedder's initial visual properties and visibility to
+  // propagate to the child WebContents so that a delayed update does not reset
+  // visibility or resize the child widget while the popup is opening.
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* child_view = child_contents->GetRenderWidgetHostView();
+    return child_contents->GetVisibility() == content::Visibility::VISIBLE &&
+           child_view &&
+           child_view->GetViewBounds().size() == gfx::Size(100, 100) &&
+           !connector->GetLocalFrameSizeInPixelsForTesting().IsEmpty();
+  }));
+
+  // Replace child page contents with a select element and wait for layout and
+  // viewport intersection in the child renderer before calling showPicker().
+  ASSERT_TRUE(content::ExecJs(child_contents.get(), R"(
     document.body.innerHTML = "<select><option>option1</option></select>";
+    new Promise(resolve => {
+      const observer = new IntersectionObserver(entries => {
+        if (entries[0].intersectionRatio > 0 && window.innerWidth > 0) {
+          observer.disconnect();
+          resolve();
+        }
+      });
+      observer.observe(document.querySelector('select'));
+    });
   )"));
 
   // Ensure visibility and activation of the child WebContents.
@@ -1796,14 +1819,27 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                          embedded_handle->id().ToString())));
 
   // 5. Verify that the child WebContents has page focus after attaching to the
-  // already focused <embed>.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
+  // already focused <embed>. First wait for browser-side attachment and focus
+  // updates, and flush the RenderWidgetHosts so that the transient
+  // SetPageFocus(false) followed by SetPageFocus(true) on the embedder have
+  // both been queued on the renderer before polling document.hasFocus().
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return child_contents->GetSurfaceEmbedConnector() != nullptr &&
            content::GetFocusedWebContents(web_contents()) ==
                child_contents.get() &&
            web_contents()->GetFocusedFrame() ==
-               child_contents->GetPrimaryMainFrame() &&
-           content::EvalJs(web_contents(), "document.activeElement.id") ==
+               child_contents->GetPrimaryMainFrame();
+  }));
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->FlushForTesting();
+  child_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->FlushForTesting();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(), "document.activeElement.id") ==
                "my_embed" &&
            content::EvalJs(web_contents(), "document.hasFocus()")
                .ExtractBool() &&
