@@ -1589,10 +1589,7 @@ source_set("constrained_web_dialog_delegate_views") {
 source_set("session_crashed_bubble_view") {
   public = [ "session_crashed_bubble_view.h" ]
   sources = [ "session_crashed_bubble_view.cc" ]
-  public_deps = [
-    "//chrome/browser/ui:session_crashed_bubble",
-    "//ui/views",
-  ]
+  public_deps = [ "//ui/views" ]
   deps = [
     ":layout_provider",
     "//base",
@@ -1603,6 +1600,7 @@ source_set("session_crashed_bubble_view") {
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:bubble_anchor_util",
+    "//chrome/browser/ui:session_crashed_bubble",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/toolbar",

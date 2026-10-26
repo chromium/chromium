@@ -633,7 +633,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
     } else {
       // If 'browser' is not null, show the crash bubble in the current browser
       // instance.
-      SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
+      ShowSessionCrashedBubbleIfNotOffTheRecordProfile(
           browser, /*skip_tab_checking=*/true);
       ProfileLaunchObserver::AddLaunched(profile());
     }

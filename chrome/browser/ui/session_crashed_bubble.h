@@ -7,26 +7,13 @@
 
 class BrowserWindowInterface;
 
-// Base class for a session restore request bubble, to be displayed when the
-// previous session has crashed. It also presents an option to enable metrics
-// reporting, if it not enabled already.
-class SessionCrashedBubble {
- public:
-  // Shows the session crashed bubble if the current profile is neither an
-  // Incognito nor a Guest profile. It also offers the option to enable metrics
-  // reporting if it's not already enabled.
-  // Note: It is the caller's responsibility to determine if the previous
-  // session ended with a crash.
-  static void ShowIfNotOffTheRecordProfile(BrowserWindowInterface* browser,
-                                           bool skip_tab_checking);
-
-  SessionCrashedBubble(const SessionCrashedBubble&) = delete;
-  SessionCrashedBubble& operator=(const SessionCrashedBubble&) = delete;
-
-  virtual ~SessionCrashedBubble() = default;
-
- protected:
-  SessionCrashedBubble() = default;
-};
+// Shows the session crashed bubble if the current profile is neither an
+// Incognito nor a Guest profile. It also offers the option to enable metrics
+// reporting if it's not already enabled.
+// Note: It is the caller's responsibility to determine if the previous
+// session ended with a crash.
+void ShowSessionCrashedBubbleIfNotOffTheRecordProfile(
+    BrowserWindowInterface* browser,
+    bool skip_tab_checking);
 
 #endif  // CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_

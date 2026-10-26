@@ -218,7 +218,7 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
       !is_web_app && HasPendingUncleanExit(browser->GetProfile());
   base::UmaHistogramBoolean("Startup.CrashBubbleShown", should_display_bubble);
   if (should_display_bubble) {
-    SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
+    ShowSessionCrashedBubbleIfNotOffTheRecordProfile(
         browser,
         /*skip_tab_checking=*/false);
   }
