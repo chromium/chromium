@@ -200,8 +200,7 @@ class SVGAnimatedPropertyCommon : public SVGAnimatedPropertyBase {
   bool IsAnimating() const override { return current_value_ != base_value_; }
 
   void SetAnimatedValue(SVGPropertyBase* value) override {
-    DCHECK(!value || value->GetType() == Property::ClassType());
-    current_value_ = value ? static_cast<Property*>(value) : BaseValue();
+    current_value_ = value ? To<Property>(value) : BaseValue();
   }
 
   void Trace(Visitor* visitor) const override {
