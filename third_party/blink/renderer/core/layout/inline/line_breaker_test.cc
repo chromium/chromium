@@ -925,16 +925,13 @@ TEST_F(LineBreakerTest, SplitTextIntoSegementsCrash) {
             text_results_indices.push_back(i);
           }
         }
-        EXPECT_EQ(4u, text_results_indices.size());
+        ASSERT_EQ(3u, text_results_indices.size());
         EXPECT_EQ(
             1u,
             line_info.Results()[text_results_indices[0]].Length());  // U+0343
-        EXPECT_EQ(
-            1u,
-            line_info.Results()[text_results_indices[1]].Length());  // U+2585
+        EXPECT_EQ(3u, line_info.Results()[text_results_indices[1]]
+                          .Length());  // U+2585 U+0343 U+2585
         EXPECT_EQ(2u, line_info.Results()[text_results_indices[2]]
-                          .Length());  // U+0343 U+2585
-        EXPECT_EQ(2u, line_info.Results()[text_results_indices[3]]
                           .Length());  // U+0343 U+2585
       });
 }

@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_positioning_element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink {
 
@@ -212,6 +214,17 @@ bool HasUpdated(const SvgCharacterData& data) {
          data.HasRotate() || data.anchored_chunk;
 }
 
+// Returns the sum of two values, either of which may be unset.
+float AccumulateValue(float pending, float value) {
+  if (SvgCharacterData::IsEmptyValue(pending)) {
+    return value;
+  }
+  if (SvgCharacterData::IsEmptyValue(value)) {
+    return pending;
+  }
+  return pending + value;
+}
+
 bool HasValidTextLength(const LayoutObject& layout_object) {
   if (auto* element =
           DynamicTo<SVGTextContentElement>(layout_object.GetNode())) {
@@ -246,6 +259,10 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
   LayoutAttributesStack attr_stack;
   HeapVector<SVGTextLengthContext> text_length_stack;
   unsigned addressable_index = 0;
+  // dx and dy values of code points that extend the previous typographic
+  // character, waiting for the next typographic character.
+  float pending_dx = SvgCharacterData::EmptyValue();
+  float pending_dy = SvgCharacterData::EmptyValue();
   bool is_first_char = true;
   bool in_text_path = false;
   std::optional<unsigned> text_path_start;
@@ -309,6 +326,23 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
     for (unsigned i = 0; i < item.Length();) {
       SvgCharacterData data;
 
+      // A code point that extends the previous typographic character, such
+      // as a combining mark, is the "middle" of that character: it still
+      // consumes a value of every positioning list, but x and y are dropped
+      // and dx and dy are accumulated into the next typographic character.
+      // SAFETY: The loop condition keeps `i` within `item_string`, and `i`
+      // always moves to the next code point boundary.
+      const UChar32 code_point = UNSAFE_BUFFERS(item_string.CodePointAt(i));
+      if (RuntimeEnabledFeatures::SvgTextPositioningGraphemeClustersEnabled() &&
+          addressable_index != 0u && unicode::IsGraphemeExtended(code_point)) {
+        pending_dx = AccumulateValue(pending_dx, attr_stack.Dx());
+        pending_dy = AccumulateValue(pending_dy, attr_stack.Dy());
+        ++addressable_index;
+        attr_stack.Advance();
+        i = item_string.NextCodePointOffset(i);
+        continue;
+      }
+
       // 2.2. Set the "anchored chunk" flag of result[index] to true.
       // 1.6.1.1. If i < new_check_count, then set the "anchored chunk" flag
       // of result[index + j] to true. Else set the flag to false.
@@ -371,10 +405,12 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
       }
 
       // 1.6.1.6. If i < length of dx, then set resolve_dx[index + j] to dx[i].
-      data.dx = attr_stack.Dx();
+      data.dx = AccumulateValue(pending_dx, attr_stack.Dx());
+      pending_dx = SvgCharacterData::EmptyValue();
 
       // 1.6.1.7. If i < length of dy, then set resolve_dy[index + j] to dy[i].
-      data.dy = attr_stack.Dy();
+      data.dy = AccumulateValue(pending_dy, attr_stack.Dy());
+      pending_dy = SvgCharacterData::EmptyValue();
 
       // 1.6.1.8. If i < length of rotate, then set the angle value of
       // result[index + j] to rotate[i]. Otherwise, if rotate is not empty,

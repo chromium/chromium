@@ -6646,6 +6646,13 @@
       status: "stable",
     },
     {
+      // Kill switch for treating a code point that extends the previous
+      // typographic character as non-addressable when consuming x/y/dx/dy/
+      // rotate lists. crbug.com/41007184
+      name: "SvgTextPositioningGraphemeClusters",
+      status: "stable",
+    },
+    {
       name: "SvgUseNestedResourceDocuments",
       status: "stable",
     },
