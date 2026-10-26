@@ -54,6 +54,7 @@ constexpr char kFullAddressFormPage[] = "/full_address_form.html";
 
 // Ids of fields in the form.
 constexpr char kFormElementName[] = "form_name";
+constexpr char kFormElementZip[] = "form_zip";
 constexpr char kFormElementEmail[] = "form_email";
 constexpr char kFormElementSubmit[] = "submit_profile";
 
@@ -368,34 +369,60 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
 }
 
-// Focuses on the name field and initiates autofill on the form with the saved
-// profile.
-- (void)focusOnNameAndAutofill {
+// Autofills the form of the already loaded `kProfileForm` page with the saved
+// profile:
+// 1. Asserts that exactly one profile is saved, so that it is the profile that
+//    is suggested and filled.
+// 2. Scrolls the name field into view with JavaScript (a no-op here, as it is
+//    visible at the top of the freshly loaded page), taps it, retrying if the
+//    tap doesn't reach it, and checks that it got the focus. Then waits for the
+//    autofill suggestion and taps it.
+// 3. Waits until the field with ID `lastFilledElementID` is filled.
+//    `autofill.fillForm` fills the fields one after the other, 50ms apart, in
+//    the order of the form, so `lastFilledElementID` must be the last field of
+//    the form for which the saved profile has a value. Otherwise, the form may
+//    still be partially filled when this method returns.
+// 4. Blurs the focused element, if any, with JavaScript to make sure that the
+//    keyboard is dismissed (Chrome closes it once a suggestion is selected,
+//    but it may still be up depending on the iOS version), and waits for the
+//    keyboard to disappear, so that the web view layout is stable for
+//    subsequent coordinate-based taps.
+- (void)focusOnNameAndAutofillUntilElementIsFilled:
+    (const char*)lastFilledElementID {
   // Ensure there is a saved local profile.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"There should a saved local profile.");
 
-  // Tap on a field to trigger form activity.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
-
-  // Wait for the keyboard to appear.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // Tap on a field to trigger form activity. A single `TapWebElementWithId`
+  // tap can miss the field (see `-scrollToAndTapWebElementWithID:`), so use
+  // that method, which also scrolls the field into view with JavaScript (a
+  // no-op for the name field, at the top of the page), retries the tap, and
+  // verifies that the field got the focus.
+  [self scrollToAndTapWebElementWithID:kFormElementName];
 
   // Wait for suggestions as it may take some time because of form fetch
-  // throttling or other delays.
+  // throttling or other delays. Don't wait for the keyboard: the keyboard
+  // accessory view, which shows the suggestions, can be displayed while the
+  // software keyboard stays hidden, and `-waitForKeyboardToAppear` then times
+  // out. Use the 10s timeout of `-waitForKeyboardToAppear` rather than the 4s
+  // default of `-waitForMatcher:`, as this wait now also covers the appearance
+  // of the keyboard accessory view.
+  id<GREYMatcher> suggestionMatcher =
+      chrome_test_util::AutofillSuggestionViewMatcher();
   [ChromeEarlGrey
-      waitForMatcher:chrome_test_util::AutofillSuggestionViewMatcher()];
+      waitForUIElementToAppearWithMatcher:suggestionMatcher
+                                  timeout:base::test::ios::
+                                              kWaitForActionTimeout];
 
   // Tap on the suggestion.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          AutofillSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:suggestionMatcher]
       performAction:grey_tap()];
 
-  // Verify Web Content was filled.
+  // Verify Web Content was filled. Wait for the last filled field rather than
+  // for the name field, which is filled first (see step 3 above).
   NSString* javaScriptCondition = [NSString
       stringWithFormat:@"document.getElementById('%s').value.length > 0",
-                       kFormElementName];
+                       lastFilledElementID];
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 
   // Settle the keyboard so the web view layout is stable before any subsequent
@@ -453,8 +480,9 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
   // Load the form.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
-  // Autofill the form.
-  [self focusOnNameAndAutofill];
+  // Autofill the form. The saved profile has no email, so the zip is the last
+  // filled field.
+  [self focusOnNameAndAutofillUntilElementIsFilled:kFormElementZip];
 
   // Tap on email field.
   [self scrollToAndTapWebElementWithID:kFormElementEmail];
@@ -599,8 +627,7 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 
 // Ensures that if a local profile is filled in a form and submitted, the user
 // is asked for a migration prompt and the profile is moved to the Account.
-// TODO(crbug.com/520302619): Flaky on waterfall.
-- (void)FLAKY_testUserData_MigrationToAccount {
+- (void)testUserData_MigrationToAccount {
   [AutofillAppInterface clearProfilesStore];
 
   // Store one local address.
@@ -612,7 +639,9 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
-  [self focusOnNameAndAutofill];
+  // Autofill the form. The saved profile has an email, and the email is the
+  // last field of the form.
+  [self focusOnNameAndAutofillUntilElementIsFilled:kFormElementEmail];
 
   // Submit the form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
