@@ -1626,10 +1626,14 @@ export class OmniboxPopupSearchboxElement extends
     if (!this.userInputInProgress_) {
       // Clear permanent URL text and transition to user input mode with empty
       // text.
+      this.fullUrlShown_ = false;
       this.$.input.setInputText('');
       this.userInputInProgress_ = true;
       this.hasUserInput_ = false;
       this.lastInputText_ = '';
+      this.lastInputSelection_ = {start: 0, end: 0};
+      this.textfieldModel_.setInitialText('', {start: 0, end: 0});
+      this.updateEditHistoryState_();
     } else {
       // Preserve existing user draft text and select all of it.
       this.getInputElement().select();

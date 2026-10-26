@@ -3201,6 +3201,74 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('google.com', keyword);
  });
 
+ test('FocusSearch_UndoRevertsToEmptyNotFullUrl', async () => {
+   testProxy.page.setAvailableKeywordModels(
+       [{
+         type: KeywordType.kChip,
+         keyword: 'google.com',
+         displayText: 'Search Google',
+         iconPath: '',
+         placeholder: 'Search Google',
+       }],
+       'google.com');
+   await microtasksFinished();
+
+   const permanentText = 'example.com';
+   const fullUrl = 'https://www.example.com/';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: permanentText,
+     fullUrl: fullUrl,
+     permanentDisplayText: permanentText,
+     selection: {start: 0, end: fullUrl.length},
+     userInputInProgress: false,
+     isFocused: true,
+     showFullUrl: true,
+     matchesUpdate: MatchesUpdate.kQueryZps,
+   }));
+   await microtasksFinished();
+
+   callbackRouter.focusSearchWithDefaultSearchEngineKeywordMode();
+   await microtasksFinished();
+
+   const inputEl = searchbox.getInputElement().inputElement;
+   assertEquals('', inputEl.value);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+
+   // Type 'hello' in keyword mode.
+   inputEl.value = 'hello';
+   inputEl.setSelectionRange(5, 5);
+   inputEl.dispatchEvent(
+       new InputEvent('input', {bubbles: true, composed: true}));
+   await microtasksFinished();
+   assertEquals('hello', inputEl.value);
+
+   // Undo should revert to empty input (''), not the full URL.
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'z',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals('', inputEl.value);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+
+   // Further undo should be a no-op and keep empty input ('').
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'z',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals('', inputEl.value);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+ });
+
  test('FocusSearch_SelectsDraftTextWhenUserInputInProgress', async () => {
    testProxy.page.setAvailableKeywordModels(
        [{
