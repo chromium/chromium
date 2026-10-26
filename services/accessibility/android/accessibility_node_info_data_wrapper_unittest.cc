@@ -880,6 +880,30 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, data.role);
 }
 
+TEST_F(AccessibilityNodeInfoDataWrapperTest, CheckedTextViewRole) {
+  AXNodeInfoData node;
+  node.id = 1;
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
+
+  // CheckedTextView maps to staticText by class name, even without text.
+  SetProperty(node, AXStringProperty::CLASS_NAME,
+              "android.widget.CheckedTextView");
+
+  ui::AXNodeData data = CallSerialize(wrapper);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, data.role);
+
+  // It stays staticText when it has children.
+  SetProperty(node, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
+  AXNodeInfoData child;
+  child.id = 2;
+  AccessibilityNodeInfoDataWrapper child_wrapper(tree_source(), &child);
+  SetIdToWrapper(&child_wrapper);
+  SetParentId(child.id, node.id);
+
+  data = CallSerialize(wrapper);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, data.role);
+}
+
 TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
   AXNodeInfoData node;
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
