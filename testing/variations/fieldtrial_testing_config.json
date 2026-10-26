@@ -9123,6 +9123,28 @@
             ]
         }
     ],
+    "GwpAsanMallocSmartSampling": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SmartSamplingRateMultiplier": "8"
+                    },
+                    "enable_features": [
+                        "GwpAsanMallocSmartSampling"
+                    ]
+                }
+            ]
+        }
+    ],
     "HandleMdmErrorsForDasherAccounts": [
         {
             "platforms": [
