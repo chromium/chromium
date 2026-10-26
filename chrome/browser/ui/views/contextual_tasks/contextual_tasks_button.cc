@@ -72,6 +72,7 @@ const int kCircleShadowInset = 0;
 // is 34.
 const int kPillShapeShadowInset = 1;
 
+const int kGLogoCircularShapeIconSize = 16;
 const int kGLogoPillShapeIconSize = 15;
 
 // The flat edge's top corner radius is needed to avoid the toolbar upper
@@ -815,10 +816,9 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
                                                     : kGLogoPillShapeIconSize);
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!use_active_indicator &&
-      (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
-       contextual_tasks::kShowEntryPoint.Get() ==
-           contextual_tasks::EntryPointOption::kToolbarEphemeralBranded)) {
+  if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
+      contextual_tasks::kShowEntryPoint.Get() ==
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     return ui::ImageModel::FromImageSkia(
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_GOOGLE_G_GRADIENT_16_ALT));
@@ -833,7 +833,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
 #endif
   return ui::ImageModel::FromVectorIcon(
       contextual_tasks_icon, icon_color_id,
-      GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
+      GetShape() == EphemeralButtonShape::kCircle ? kGLogoCircularShapeIconSize
                                                   : kGLogoPillShapeIconSize);
 }
 
