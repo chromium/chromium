@@ -44,6 +44,10 @@
             "_bug_id": "crbug.com/1245351"
           },
           {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
+          },
+          {
             "match": "android.webkit.cts.WebViewTest#testLoadUrl",
             "_bug_id": "crbug.com/1450170"
           }
@@ -119,6 +123,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
           }
         ]
       },
@@ -245,6 +253,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
           }
         ]
       },
@@ -398,6 +410,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
           }
         ]
       },
@@ -537,6 +553,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
           }
         ]
       },
@@ -676,6 +696,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
           },
           {
             "match": "android.webkit.cts.WebViewRenderProcessClientTest#testWebViewRenderProcessClientWithExecutor",
@@ -827,6 +851,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
+            "_bug_id": "crbug.com/536681083"
           },
           {
             "match": "android.webkit.cts.WebViewRenderProcessClientTest#testWebViewRenderProcessClientWithExecutor",
