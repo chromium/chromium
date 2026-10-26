@@ -65,8 +65,8 @@ class SidePanelWebUIView : public views::WebView,
   std::unique_ptr<
       performance_manager::PageLiveStateDecorator::ScopedWithheldFromView>
       withheld_from_view_;
-  std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
