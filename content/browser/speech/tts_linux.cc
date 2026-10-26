@@ -42,9 +42,11 @@ using PlatformVoices = std::map<std::string, SPDChromeVoice>;
 
 constexpr int kInvalidUtteranceId = -1;
 constexpr int kInvalidMessageUid = -1;
+constexpr char kDefaultSpeechDispatcherLibrary[] = "libspeechd.so.2";
 
 std::string& SpeechDispatcherLibraryPath() {
-  static base::NoDestructor<std::string> library_path("libspeechd.so.2");
+  static base::NoDestructor<std::string> library_path(
+      kDefaultSpeechDispatcherLibrary);
   return *library_path;
 }
 
@@ -264,6 +266,16 @@ void TtsPlatformImplBackgroundWorker::Shutdown() {
 }
 
 bool TtsPlatformImplBackgroundWorker::InitializeSpeechd() {
+#if defined(MEMORY_SANITIZER)
+  // Speech Dispatcher is not built in //third_party/instrumented_libs, so
+  // loading the default system library under MSan dlopens the uninstrumented
+  // host libspeechd.so.2, which triggers false-positive MSan errors when it
+  // calls into instrumented GLib. Allow loading only when tests override the
+  // library path with an instrumented fake library.
+  if (library_path_ == kDefaultSpeechDispatcherLibrary) {
+    return false;
+  }
+#endif
   return libspeechd_loader_.Load(library_path_);
 }
 
