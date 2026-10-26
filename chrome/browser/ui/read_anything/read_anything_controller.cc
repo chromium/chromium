@@ -545,6 +545,11 @@ void ReadAnythingController::CloseSidePanelUI(ReadAnythingCloseReason reason) {
     bool suppress_animations = reason != ReadAnythingCloseReason::kClosedByUser;
     side_panel_ui->Close(hide_reason, suppress_animations);
   }
+
+  // If the side panel closed, OnSidePanelWillHide() already reported the
+  // reason. If it didn't (e.g. it's still loading, or the tab is in the
+  // background), don't report the reason for a later, unrelated close.
+  pending_side_panel_close_reason_.reset();
 }
 
 void ReadAnythingController::OnSidePanelWillHide(
