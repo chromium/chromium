@@ -175,6 +175,13 @@ constexpr std::string_view kServiceWorkerScript = R"(
   self.addEventListener('message', (event) => {
     if (event.data === 'keep-alive') {
       event.waitUntil(new Promise(() => {}));
+    } else if (event.data === 'keep-alive-and-claim') {
+      event.waitUntil((async () => {
+        while (true) {
+          await self.clients.claim();
+          await new Promise((r) => setTimeout(r, 50));
+        }
+      })());
     }
   });
   self.addEventListener("fetch", (event) => {
@@ -1711,6 +1718,9 @@ class UpdateInstallPageProcessObserver {
         return;
       }
 
+      EXPECT_EQ(web_contents()->IsPrivileged(),
+                base::FeatureList::IsEnabled(
+                    kIsolatedWebAppIsolateInstallPageProcess));
       content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
       owner_->observed_update_install_page_process_ids_.push_back(
           rfh->GetProcess()->GetDeprecatedID());
@@ -1743,12 +1753,13 @@ class IsolatedWebAppUpdateProcessIsolationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Regression test for b/574788166:
+// Regression test for b/574788166 and b/576136358:
 // When an IWA window is closed to apply a pending update while its Service
-// Worker keeps the renderer process alive, the hidden `PrepareInstallInfoJob`
-// install page must not reuse the app's existing renderer process when
-// `kIsolatedWebAppIsolateInstallPageProcess` is enabled (and reuses it when
-// disabled).
+// Worker keeps the renderer process alive and polls `clients.claim()`, the
+// hidden `PrepareInstallInfoJob` install page must not reuse the app's existing
+// renderer process or be claimed/controlled by the Service Worker when
+// `kIsolatedWebAppIsolateInstallPageProcess` is enabled (and reuses the process
+// when disabled).
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdateProcessIsolationBrowserTest,
                        ApplyUpdateDoesNotReuseServiceWorkerProcess) {
   profile()->GetPrefs()->SetList(
@@ -1775,13 +1786,18 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdateProcessIsolationBrowserTest,
 
   // Park an unsettled `waitUntil()` promise in the Service Worker so it keeps
   // `worker_ref_count_ > 0` on the app's `RenderProcessHost` after the window
-  // closes.
-  ASSERT_TRUE(content::ExecJs(app_frame, R"(
-    (async () => {
-      const reg = await navigator.serviceWorker.ready;
-      reg.active.postMessage('keep-alive');
-    })();
-  )"));
+  // closes. When isolation is enabled, also poll `clients.claim()` to verify
+  // that the hidden install page cannot be claimed by the Service Worker (whose
+  // fetch handler responds with 404).
+  ASSERT_TRUE(content::ExecJs(
+      app_frame,
+      content::JsReplace(R"(
+        (async () => {
+          const reg = await navigator.serviceWorker.ready;
+          reg.active.postMessage($1);
+        })();
+      )",
+                         GetParam() ? "keep-alive-and-claim" : "keep-alive")));
 
   const int app_process_id = app_frame->GetProcess()->GetDeprecatedID();
   UpdateInstallPageProcessObserver process_observer;
@@ -1833,6 +1849,17 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdateProcessIsolationBrowserTest,
     EXPECT_EQ(process_observer.observed_update_install_page_process_ids()[1],
               app_process_id);
   }
+
+  EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
+              test::IwaIs(Eq("app-7.0.6"),
+                          test::IsolationDataIs(
+                              Property("variant",
+                                       &IsolatedWebAppStorageLocation::variant,
+                                       VariantWith<IwaStorageOwnedBundle>(_)),
+                              Eq(*IwaVersion::Create("7.0.6")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -76,8 +76,17 @@ PrepareInstallInfoJob::PrepareInstallInfoJob(
       url_info_(std::move(url_info)),
       data_retriever_(std::move(data_retriever)) {
   profile_observation_.Observe(&profile);
-  web_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(&profile));
+  content::WebContents::CreateParams create_params(&profile);
+  if (base::FeatureList::IsEnabled(kIsolatedWebAppIsolateInstallPageProcess)) {
+    // Prevent any service worker (such as a root-scoped worker in the IWA's
+    // StoragePartition calling `clients.claim()`) from controlling the hidden
+    // install page and intercepting its manifest or icon subresource fetches.
+    content::WebContents::PrivilegedParams privileged_params;
+    privileged_params.disallow_service_worker_control = true;
+    privileged_params.disallow_shared_workers = true;
+    create_params.privileged_params = privileged_params;
+  }
+  web_contents_ = content::WebContents::Create(create_params);
   webapps::InstallableManager::CreateForWebContents(web_contents_.get());
 }
 
