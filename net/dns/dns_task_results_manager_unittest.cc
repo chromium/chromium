@@ -433,7 +433,10 @@ TEST_F(DnsTaskResultsManagerTest, MetadataFirst) {
                                 kMetadata1),
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
                                 ElementsAre(MakeIPEndPoint("2001:db8::1", 443)),
-                                kMetadata2)));
+                                kMetadata2),
+          ExpectServiceEndpoint(
+              ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+              ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 }
 
 TEST_F(DnsTaskResultsManagerTest, MetadataDifferentTargetName) {
@@ -489,7 +492,9 @@ TEST_F(DnsTaskResultsManagerTest, MetadataAfterIPv6) {
                                 kMetadata1),
           ExpectServiceEndpoint(IsEmpty(),
                                 ElementsAre(MakeIPEndPoint("2001:db8::1", 443)),
-                                kMetadata2)));
+                                kMetadata2),
+          ExpectServiceEndpoint(
+              IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 }
 
 TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
@@ -523,7 +528,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
                                 IsEmpty(), kMetadata1),
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
-                                IsEmpty(), kMetadata2)));
+                                IsEmpty(), kMetadata2),
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty())));
 }
 
 TEST_F(DnsTaskResultsManagerTest, MetadataAfterIpv6Timeout) {
@@ -558,7 +565,9 @@ TEST_F(DnsTaskResultsManagerTest, MetadataAfterIpv6Timeout) {
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
                                 IsEmpty(), kMetadata1),
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
-                                IsEmpty(), kMetadata2)));
+                                IsEmpty(), kMetadata2),
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty())));
 }
 
 TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6TimedoutAfterMetadata) {
@@ -663,6 +672,9 @@ TEST_F(DnsTaskResultsManagerTest, EndpointOrdering) {
                       WithPort(kSvcbHost1IPv6s, 443), kSvcbHost1Metadata1),
       ServiceEndpoint(WithPort(kSvcbHost1IPv4s, 443),
                       WithPort(kSvcbHost1IPv6s, 443), kSvcbHost1Metadata2),
+      ServiceEndpoint(WithPort(kSvcbHost1IPv4s, 443),
+                      WithPort(kSvcbHost1IPv6s, 443),
+                      ConnectionEndpointMetadata()),
       ServiceEndpoint(WithPort(kSvcbHost2IPv4s, 443),
                       WithPort(kSvcbHost2IPv6s, 443),
                       ConnectionEndpointMetadata()),
@@ -797,9 +809,12 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsSupersededByRealResponses) {
 
   EXPECT_THAT(
       manager->GetCurrentEndpoints(),
-      ElementsAre(ExpectServiceEndpoint(
-          ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
-          ElementsAre(MakeIPEndPoint("2001:db8::1", 443)), kMetadata1)));
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+                                ElementsAre(MakeIPEndPoint("2001:db8::1", 443)),
+                                kMetadata1),
+          ExpectServiceEndpoint(
+              IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 
   // A is responded. IPv4 hints should be superseded by real addresses.
   std::unique_ptr<HostResolverInternalResult> result3 = CreateDataResult(
@@ -808,9 +823,13 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsSupersededByRealResponses) {
 
   EXPECT_THAT(
       manager->GetCurrentEndpoints(),
-      ElementsAre(ExpectServiceEndpoint(
-          ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
-          ElementsAre(MakeIPEndPoint("2001:db8::1", 443)), kMetadata1)));
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                ElementsAre(MakeIPEndPoint("2001:db8::1", 443)),
+                                kMetadata1),
+          ExpectServiceEndpoint(
+              ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+              ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 }
 
 TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6NoData) {
@@ -896,10 +915,13 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv4OnlyThenIPv4Response) {
   FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
                 base::Milliseconds(1));
 
-  EXPECT_THAT(manager->GetCurrentEndpoints(),
-              ElementsAre(ExpectServiceEndpoint(
-                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty(),
-                  kMetadata1)));
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty(), kMetadata1),
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty())));
 }
 
 TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6WhileResolutionDelay) {
@@ -925,9 +947,12 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6WhileResolutionDelay) {
   ASSERT_FALSE(manager->IsResolutionDelayTimerRunningForTest());
   EXPECT_THAT(
       manager->GetCurrentEndpoints(),
-      ElementsAre(ExpectServiceEndpoint(
-          ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
-          ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata1)));
+      ElementsAre(
+          ExpectServiceEndpoint(
+              ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+              ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata1),
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty())));
   EXPECT_EQ(delegate()->update_count(), 1u);
 
   // The resolution delay passed. No extra notification should happen.
@@ -944,9 +969,13 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6WhileResolutionDelay) {
   ASSERT_FALSE(manager->IsResolutionDelayTimerRunningForTest());
   EXPECT_THAT(
       manager->GetCurrentEndpoints(),
-      ElementsAre(ExpectServiceEndpoint(
-          ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
-          ElementsAre(MakeIPEndPoint("2001:db8::1", 443)), kMetadata1)));
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                ElementsAre(MakeIPEndPoint("2001:db8::1", 443)),
+                                kMetadata1),
+          ExpectServiceEndpoint(
+              ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+              ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 }
 
 TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv4FlushedOnANoData) {
@@ -1217,10 +1246,18 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsNetLogProvenance) {
   ASSERT_EQ(entries.size(), 2u);
   endpoints = entries[1].params.FindList("endpoints");
   ASSERT_TRUE(endpoints);
-  ASSERT_EQ(endpoints->size(), 1u);
+  ASSERT_EQ(endpoints->size(), 2u);
   EXPECT_EQ((*endpoints)[0].GetDict().FindBool("ipv4_endpoints_from_hints"),
             true);
   EXPECT_FALSE((*endpoints)[0]
+                   .GetDict()
+                   .FindBool("ipv6_endpoints_from_hints")
+                   .has_value());
+  EXPECT_FALSE((*endpoints)[1]
+                   .GetDict()
+                   .FindBool("ipv4_endpoints_from_hints")
+                   .has_value());
+  EXPECT_FALSE((*endpoints)[1]
                    .GetDict()
                    .FindBool("ipv6_endpoints_from_hints")
                    .has_value());
@@ -1284,10 +1321,13 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsIgnoredAfterFamilyComplete) {
       CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
   manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result3.get()});
 
-  EXPECT_THAT(manager->GetCurrentEndpoints(),
-              ElementsAre(ExpectServiceEndpoint(
-                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty(),
-                  kMetadata1)));
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty(), kMetadata1),
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty())));
 }
 
 }  // namespace net

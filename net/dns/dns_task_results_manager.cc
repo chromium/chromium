@@ -396,41 +396,42 @@ void DnsTaskResultsManager::UpdateEndpoints() {
       continue;
     }
 
-    if (per_domain_result->metadatas.empty()) {
+    for (const auto& [priority, metadata] : per_domain_result->metadatas) {
       ServiceEndpoint endpoint;
       endpoint.ipv4_endpoints = ipv4_endpoints;
       endpoint.ipv6_endpoints = ipv6_endpoints;
+      // TODO(crbug.com/41493696): Just adding per-domain metadata does not
+      // work properly when the target name of HTTPS is an alias, e.g:
+      //   example.com.     60 IN CNAME svc.example.com.
+      //   svc.example.com. 60 IN AAAA  2001:db8::1
+      //   svc.example.com. 60 IN HTTPS 1 example.com alpn="h2"
+      // In this case, svc.example.com should have metadata with alpn="h2" but
+      // the current logic doesn't do that. To handle it correctly we need to
+      // go though an alias tree for the domain name.
+      endpoint.metadata = metadata;
       new_endpoints.push_back(
           {std::move(endpoint), ipv4_from_hints, ipv6_from_hints});
-    } else {
-      for (const auto& [priority, metadata] : per_domain_result->metadatas) {
-        ServiceEndpoint endpoint;
-        endpoint.ipv4_endpoints = ipv4_endpoints;
-        endpoint.ipv6_endpoints = ipv6_endpoints;
-        // TODO(crbug.com/41493696): Just adding per-domain metadata does not
-        // work properly when the target name of HTTPS is an alias, e.g:
-        //   example.com.     60 IN CNAME svc.example.com.
-        //   svc.example.com. 60 IN AAAA  2001:db8::1
-        //   svc.example.com. 60 IN HTTPS 1 example.com alpn="h2"
-        // In this case, svc.example.com should have metadata with alpn="h2" but
-        // the current logic doesn't do that. To handle it correctly we need to
-        // go though an alias tree for the domain name.
-        endpoint.metadata = metadata;
-        new_endpoints.push_back(
-            {std::move(endpoint), ipv4_from_hints, ipv6_from_hints});
-      }
+    }
+
+    // Append non-SVCB endpoints for fallback. Ignore hint endpoints since they
+    // are part of SVCB/HTTPS records.
+    // See https://datatracker.ietf.org/doc/html/rfc9460#section-3-8 and
+    // HostCache::Entry::ConvertToServiceEndpoints().
+    if (!per_domain_result->ipv4_endpoints.empty() ||
+        !per_domain_result->ipv6_endpoints.empty()) {
+      ServiceEndpoint non_alternative_endpoint;
+      non_alternative_endpoint.ipv4_endpoints =
+          per_domain_result->ipv4_endpoints;
+      non_alternative_endpoint.ipv6_endpoints =
+          per_domain_result->ipv6_endpoints;
+      new_endpoints.push_back({std::move(non_alternative_endpoint),
+                               /*ipv4_from_hints=*/false,
+                               /*ipv6_from_hints=*/false});
     }
   }
 
-  // TODO(crbug.com/41493696): Determine how to handle non-SVCB connection
-  // fallback. See https://datatracker.ietf.org/doc/html/rfc9460#section-3-8
-  // HostCache::Entry::GetEndpoints() appends a final non-alternative endpoint
-  // at the end to ensure that the connection layer can fall back to non-SVCB
-  // connection. For ServiceEndpoint request API, the current plan is to handle
-  // non-SVCB connection fallback in the connection layer. The approach might
-  // not work when Chrome tries to support HTTPS follow-up queries and aliases.
-
-  // Stable sort preserves metadata priorities.
+  // Stable sort preserves metadata priorities and places endpoints with
+  // metadata before non-SVCB fallback endpoints.
   std::ranges::stable_sort(new_endpoints, CompareServiceEndpoint,
                            &EndpointAndProvenance::endpoint);
   const bool had_endpoints = !current_endpoints_.empty();
