@@ -177,3 +177,9 @@ void DrivePickerUntrustedHostUI::OnShowErrorDialog() {
     delegate_->OnShowErrorDialog();
   }
 }
+
+void DrivePickerUntrustedHostUI::OnHideErrorDialog() {
+  if (delegate_) {
+    delegate_->OnHideErrorDialog();
+  }
+}

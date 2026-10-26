@@ -340,6 +340,12 @@ void DrivePickerHostUI::OnShowErrorDialog() {
   }
 }
 
+void DrivePickerHostUI::OnHideErrorDialog() {
+  if (delegate_) {
+    delegate_->OnTransitionToConsent();
+  }
+}
+
 void DrivePickerHostUI::HandlePrivacyFlowResult(
     const identity_consent::PrivacyFlowResult& result) {
   VLOG(1)

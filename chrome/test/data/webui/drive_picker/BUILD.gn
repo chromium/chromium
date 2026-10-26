@@ -19,6 +19,9 @@ build_webui_tests("build") {
     "chrome://drive-picker-host/untrusted/sanitizer.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/drive_picker_host/tsc/untrusted/sanitizer.d.ts",
             target_gen_dir),
+    "chrome-untrusted://drive-picker-host/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
     "chrome-untrusted://drive-picker-host/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/drive_picker_host/untrusted/tsc/*",
             target_gen_dir),

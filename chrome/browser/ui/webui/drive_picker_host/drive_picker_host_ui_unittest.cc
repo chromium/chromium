@@ -24,7 +24,9 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,6 +89,13 @@ class MockResultHandler
  private:
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler> receiver_{
       this};
+};
+
+class MockDrivePickerHostUIDelegate : public DrivePickerHostUI::Delegate {
+ public:
+  MOCK_METHOD(void, OnTransitionToPicker, (), (override));
+  MOCK_METHOD(void, OnTransitionToError, (), (override));
+  MOCK_METHOD(void, OnTransitionToConsent, (), (override));
 };
 
 }  // namespace
@@ -694,4 +703,40 @@ TEST_F(DrivePickerHostUITest,
 
   mock_bridge.Disconnect();
   disconnect_run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUITest,
+       ErrorDialogShowThenHide_TransitionsToErrorThenConsent) {
+  testing::StrictMock<MockDrivePickerHostUIDelegate> delegate;
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+  controller.set_delegate(&delegate);
+
+  content::TestWebUI untrusted_web_ui;
+  untrusted_web_ui.set_web_contents(web_contents());
+  DrivePickerUntrustedHostUI untrusted_controller(&untrusted_web_ui);
+  untrusted_controller.SetDelegate(controller.GetWeakPtr());
+
+  // Call the untrusted page handler the way the untrusted page does.
+  mojo::PendingReceiver<drive_picker_host_untrusted::mojom::Page> page;
+  mojo::Remote<drive_picker_host_untrusted::mojom::PageHandler> page_handler;
+  untrusted_controller.CreatePageHandler(
+      page.InitWithNewPipeAndPassRemote(),
+      page_handler.BindNewPipeAndPassReceiver());
+
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(delegate, OnTransitionToError());
+    EXPECT_CALL(delegate, OnTransitionToConsent());
+  }
+  page_handler->OnShowErrorDialog();
+  page_handler->OnHideErrorDialog();
+  page_handler.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Once the view clears the delegate, a late call does nothing.
+  controller.set_delegate(nullptr);
+  page_handler->OnHideErrorDialog();
+  page_handler.FlushForTesting();
 }

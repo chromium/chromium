@@ -23,6 +23,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -180,6 +181,46 @@ TEST_F(DrivePickerHostViewTest, EscapeAcceleratorClosesWidget) {
   view_ptr->AcceleratorPressed(escape_accelerator);
 
   EXPECT_TRUE(widget->IsClosed());
+}
+
+TEST_F(DrivePickerHostViewTest, OnTransitionToConsentRestoresConsentSize) {
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog);
+  const gfx::Size consent_preferred_size = view->GetPreferredSize();
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = GetContext();
+  widget->Init(std::move(params));
+  DrivePickerHostView* view_ptr = widget->SetContentsView(std::move(view));
+  widget->CenterWindow(consent_preferred_size);
+  const gfx::Size consent_widget_size =
+      widget->GetClientAreaBoundsInScreen().size();
+
+  view_ptr->OnTransitionToError();
+  const gfx::Size error_widget_size =
+      widget->GetClientAreaBoundsInScreen().size();
+  EXPECT_EQ(view_ptr->GetPreferredSize(), error_widget_size);
+  EXPECT_NE(consent_preferred_size, view_ptr->GetPreferredSize());
+  EXPECT_NE(consent_widget_size, error_widget_size);
+
+  // Retrying ConsentKit from the error screen resizes the dialog back to the
+  // consent size.
+  view_ptr->OnTransitionToConsent();
+  EXPECT_EQ(consent_preferred_size, view_ptr->GetPreferredSize());
+  EXPECT_EQ(consent_widget_size, widget->GetClientAreaBoundsInScreen().size());
+
+  // Once the picker is showing, a stray OnTransitionToConsent() must not
+  // shrink the dialog back to the consent size.
+  view_ptr->OnTransitionToPicker();
+  const gfx::Size picker_widget_size =
+      widget->GetClientAreaBoundsInScreen().size();
+  EXPECT_NE(consent_widget_size, picker_widget_size);
+  view_ptr->OnTransitionToConsent();
+  EXPECT_EQ(picker_widget_size, widget->GetClientAreaBoundsInScreen().size());
 }
 
 TEST_F(DrivePickerHostViewTest, OpenURLFromTab_ForwardsToBrowserWindow) {

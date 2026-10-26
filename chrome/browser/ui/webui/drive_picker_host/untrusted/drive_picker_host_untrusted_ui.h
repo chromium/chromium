@@ -51,6 +51,7 @@ class DrivePickerUntrustedHostUI
         mojo_base::ProtoWrapper result_wrapper) = 0;
     virtual void OnConsentKitError(const std::string& error_message) = 0;
     virtual void OnShowErrorDialog() = 0;
+    virtual void OnHideErrorDialog() = 0;
     virtual base::WeakPtr<Delegate> GetWeakPtr() = 0;
   };
 
@@ -93,6 +94,7 @@ class DrivePickerUntrustedHostUI
       mojo_base::ProtoWrapper result_wrapper) override;
   void OnConsentKitError(const std::string& error_message) override;
   void OnShowErrorDialog() override;
+  void OnHideErrorDialog() override;
 
  private:
   void OnPageDisconnected();

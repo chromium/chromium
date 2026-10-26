@@ -19,7 +19,7 @@ const CONSENT_KIT_ORIGIN = 'https://consent.google.com';
 const HANDSHAKE_MESSAGE = 'cpw';
 const IFRAME_MESSAGE_KEY = 'base64webEncodedIframeMessage';
 const PRIVACY_FLOW_RESULT_KEY = 'base64webEncodedPrivacyFlowResult';
-const HANDSHAKE_TIMEOUT_MS = 5000;
+export const HANDSHAKE_TIMEOUT_MS = 5000;
 
 const DrivePickerHostUntrustedAppElementBase = I18nMixinLit(CrLitElement);
 
@@ -49,6 +49,8 @@ export class DrivePickerHostUntrustedAppElement extends
   private listenerIds_: number[] = [];
   private handshakeTimeoutId_: number|null = null;
   private port_: MessagePort|null = null;
+  // The browser sizes the dialog for the error screen while this is true.
+  // Clearing it to show ConsentKit again must call onHideErrorDialog().
   protected accessor showErrorScreen_: boolean = false;
   private lastConsentKitUrl_: string = '';
 
@@ -141,6 +143,7 @@ export class DrivePickerHostUntrustedAppElement extends
 
   protected onTryAgainClick_() {
     this.showErrorScreen_ = false;
+    this.browserProxy_.handler.onHideErrorDialog();
     this.loadConsentKitUrl_(this.lastConsentKitUrl_);
   }
 

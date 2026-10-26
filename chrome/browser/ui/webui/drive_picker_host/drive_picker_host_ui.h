@@ -59,6 +59,9 @@ class DrivePickerHostUI
     virtual ~Delegate() = default;
     virtual void OnTransitionToPicker() = 0;
     virtual void OnTransitionToError() = 0;
+    // Called when the page leaves the error screen to show ConsentKit again.
+    // Not called for the initial consent display.
+    virtual void OnTransitionToConsent() = 0;
   };
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -98,6 +101,7 @@ class DrivePickerHostUI
       mojo_base::ProtoWrapper result_wrapper) override;
   void OnConsentKitError(const std::string& error_message) override;
   void OnShowErrorDialog() override;
+  void OnHideErrorDialog() override;
   base::WeakPtr<DrivePickerUntrustedHostUI::Delegate> GetWeakPtr() override;
 
  private:

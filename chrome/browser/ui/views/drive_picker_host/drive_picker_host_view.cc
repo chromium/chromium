@@ -121,6 +121,19 @@ void DrivePickerHostView::OnTransitionToError() {
   }
 }
 
+void DrivePickerHostView::OnTransitionToConsent() {
+  if (current_ui_type_ !=
+      drive_picker_host::DrivePickerHostRequest::RequestType::kErrorDialog) {
+    return;
+  }
+  current_ui_type_ =
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog;
+  PreferredSizeChanged();
+  if (GetWidget()) {
+    GetWidget()->CenterWindow(GetPreferredSize());
+  }
+}
+
 void DrivePickerHostView::RequestFocus() {
   views::WebView* web_view =
       views::AsViewClass<views::WebView>(view_tracker_.view());
