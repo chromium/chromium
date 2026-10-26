@@ -2830,6 +2830,10 @@ are declared in tools/grit/grit_args.gni.
           desc="Download context menu: Always open the download using the default handler for the platform.">
             Always open with system viewer
           </message>
+          <message name="IDS_DOWNLOAD_MENU_OPEN_WITH"
+                   desc="Download context menu: Open the system dialog to choose an application to open the download with.">
+            Open &amp;with...
+          </message>
           <message name="IDS_DOWNLOAD_MENU_CANCEL"
                    desc="Download context menu: Cancel">
             &amp;Cancel
@@ -2897,6 +2901,10 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_DOWNLOAD_MENU_PLATFORM_OPEN_ALWAYS"
                    desc="In Title Case: Download context menu: Always open the download using the default handler for the platform.">
             Always Open With System Viewer
+          </message>
+          <message name="IDS_DOWNLOAD_MENU_OPEN_WITH"
+                   desc="In Title Case: Download context menu: Open the system dialog to choose an application to open the download with.">
+            Open &amp;With...
           </message>
           <message name="IDS_DOWNLOAD_MENU_CANCEL"
                    desc="In Title Case: Download context menu: Cancel">

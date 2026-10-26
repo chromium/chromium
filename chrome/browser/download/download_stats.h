@@ -198,7 +198,9 @@ enum class DownloadUiContextMenuAction {
   // kReviewEnabled = 34,
   // kReviewClicked = 35,
   kNotReached = 36,  // Should not be possible to hit
-  kMaxValue = kNotReached
+  kOpenWithEnabled = 37,
+  kOpenWithClicked = 38,
+  kMaxValue = kOpenWithClicked
 };
 
 DownloadUiContextMenuAction DownloadCommandToContextMenuAction(

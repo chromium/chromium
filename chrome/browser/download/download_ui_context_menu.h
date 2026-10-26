@@ -55,6 +55,7 @@ class DownloadUiContextMenu : public ui::SimpleMenuModel::Delegate {
   FRIEND_TEST_ALL_PREFIXES(DownloadUiContextMenuTest,
                            InvalidDownloadWontCrashContextMenu);
   FRIEND_TEST_ALL_PREFIXES(DownloadUiContextMenuTest, RecordCommandsEnabled);
+  FRIEND_TEST_ALL_PREFIXES(DownloadUiContextMenuTest, OpenWith);
 
   // Detaches self from |download_item_|. Called when the DownloadItem is
   // destroyed or when this object is being destroyed.

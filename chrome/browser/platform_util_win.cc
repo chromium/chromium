@@ -21,7 +21,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
@@ -118,6 +120,28 @@ void OpenExternalOnWorkerThread(const GURL& url) {
   }
 }
 
+void OpenFileWithDialogOnWorkerThread(const base::FilePath& full_path) {
+  // Skip showing the dialog during browser tests.
+  if (!platform_util::internal::AreShellOperationsAllowed()) {
+    return;
+  }
+
+  // Blocks until the user dismisses the "Open with" dialog.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  // Never consider the current scope as hung since the user can take unbounded
+  // time to choose an application.
+  base::HangWatcher::InvalidateActiveExpectations();
+
+  OPENASINFO open_as_info = {
+      .pcszFile = full_path.value().c_str(),
+      .pcszClass = nullptr,
+      .oaifInFlags = OAIF_EXEC,
+  };
+  SHOpenWithDialog(nullptr, &open_as_info);
+}
+
 }  // namespace
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
@@ -126,6 +150,19 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&ShowItemInFolderOnWorkerThread, full_path));
+}
+
+void OpenFileWithDialog(const base::FilePath& full_path) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // SHOpenWithDialog() is a shell UI API and must be called from a dedicated
+  // COM STA thread so an open picker does not stall shared shell operations.
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&OpenFileWithDialogOnWorkerThread, full_path));
 }
 
 namespace internal {

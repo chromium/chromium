@@ -172,6 +172,9 @@ std::u16string DownloadUiContextMenu::GetLabelForCommandId(
     case DownloadCommands::PLATFORM_OPEN:
       id = IDS_DOWNLOAD_MENU_PLATFORM_OPEN;
       break;
+    case DownloadCommands::OPEN_WITH:
+      id = IDS_DOWNLOAD_MENU_OPEN_WITH;
+      break;
     case DownloadCommands::CANCEL:
       id = IDS_DOWNLOAD_MENU_CANCEL;
       break;
@@ -306,6 +309,11 @@ ui::SimpleMenuModel* DownloadUiContextMenu::GetFinishedMenuModel(
       GetLabelForCommandId(DownloadCommands::PLATFORM_OPEN));
 
   if (is_download) {
+#if BUILDFLAG(IS_WIN)
+    finished_download_menu_model_->AddItem(
+        DownloadCommands::OPEN_WITH,
+        GetLabelForCommandId(DownloadCommands::OPEN_WITH));
+#endif
     AddAutoOpenToMenu(finished_download_menu_model_.get());
   }
   finished_download_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);

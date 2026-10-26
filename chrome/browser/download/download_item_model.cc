@@ -675,6 +675,13 @@ bool DownloadItemModel::IsCommandEnabled(
       return download_->CanOpenDownload() && !IsExtensionDownload();
     case DownloadCommands::PLATFORM_OPEN:
       return download_->CanOpenDownload() && !IsExtensionDownload();
+    case DownloadCommands::OPEN_WITH:
+#if BUILDFLAG(IS_WIN)
+      return download_->IsDone() && download_->CanShowInFolder() &&
+             !IsExtensionDownload();
+#else
+      return false;
+#endif
     case DownloadCommands::ALWAYS_OPEN_TYPE:
       // For temporary downloads, the target filename might be a temporary
       // filename. Don't base an "Always open" decision based on it. Also
@@ -742,6 +749,7 @@ bool DownloadItemModel::IsCommandChecked(
       return IsPaused();
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::PLATFORM_OPEN:
+    case DownloadCommands::OPEN_WITH:
     case DownloadCommands::CANCEL:
     case DownloadCommands::DISCARD:
     case DownloadCommands::KEEP:
@@ -853,6 +861,20 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       NOTREACHED();
 #endif
     }
+    case DownloadCommands::OPEN_WITH:
+#if BUILDFLAG(IS_WIN)
+      if (DownloadCoreService* download_core_service =
+              DownloadCoreServiceFactory::GetForBrowserContext(
+                  content::DownloadItemUtils::GetBrowserContext(download_))) {
+        if (ChromeDownloadManagerDelegate* delegate =
+                download_core_service->GetDownloadManagerDelegate()) {
+          delegate->OpenDownloadWithDialog(download_);
+        }
+      }
+      break;
+#else
+      NOTREACHED();
+#endif
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:

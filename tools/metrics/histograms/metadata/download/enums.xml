@@ -200,6 +200,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Blocked by supervised user URL filter"/>
 </enum>
 
+<!-- LINT.IfChange(DownloadCommand) -->
+
 <enum name="DownloadCommand">
   <int value="0" label="Show in folder"/>
   <int value="1" label="Open when complete"/>
@@ -222,7 +224,12 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Retry"/>
   <int value="19" label="Cancel deep scan"/>
   <int value="20" label="Bypass deep scanning and open"/>
+  <int value="21" label="Open with media app"/>
+  <int value="22" label="Edit with media app"/>
+  <int value="23" label="Open with"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/download_commands.h:DownloadCommand) -->
 
 <enum name="DownloadContentType">
   <int value="0" label="UNRECOGNIZED"/>
@@ -565,6 +572,8 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Review enabled (obsolete)"/>
   <int value="35" label="Review clicked (obsolete)"/>
   <int value="36" label="Should never be logged"/>
+  <int value="37" label="Open with enabled"/>
+  <int value="38" label="Open with clicked"/>
 </enum>
 
 <enum name="DownloadVideoType">

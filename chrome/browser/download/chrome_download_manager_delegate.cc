@@ -1423,6 +1423,26 @@ void ChromeDownloadManagerDelegate::OpenDownloadUsingPlatformHandler(
                           platform_util::OpenOperationCallback());
 }
 
+#if BUILDFLAG(IS_WIN)
+void ChromeDownloadManagerDelegate::OpenDownloadWithDialog(
+    DownloadItem* download) {
+  CHECK_EQ(DownloadItem::COMPLETE, download->GetState());
+  if (!download->CanShowInFolder()) {
+    return;
+  }
+  if (!IsMostRecentDownloadItemAtFilePath(download)) {
+    return;
+  }
+  MaybeSendDangerousDownloadOpenedReport(download,
+                                         /*show_download_in_folder=*/false);
+
+  base::FilePath platform_path(
+      GetPlatformDownloadPath(download, PLATFORM_CURRENT_PATH));
+  CHECK(!platform_path.empty());
+  platform_util::OpenFileWithDialog(platform_path);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   CHECK_EQ(DownloadItem::COMPLETE, download->GetState(),
            base::NotFatalUntil::M161);

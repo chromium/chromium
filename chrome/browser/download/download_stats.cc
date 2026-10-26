@@ -120,6 +120,9 @@ DownloadUiContextMenuAction DownloadCommandToContextMenuAction(
     case DownloadCommands::Command::PLATFORM_OPEN:
       return clicked ? DownloadUiContextMenuAction::kPlatformOpenClicked
                      : DownloadUiContextMenuAction::kPlatformOpenEnabled;
+    case DownloadCommands::Command::OPEN_WITH:
+      return clicked ? DownloadUiContextMenuAction::kOpenWithClicked
+                     : DownloadUiContextMenuAction::kOpenWithEnabled;
     case DownloadCommands::Command::CANCEL:
       return clicked ? DownloadUiContextMenuAction::kCancelClicked
                      : DownloadUiContextMenuAction::kCancelEnabled;

@@ -21,6 +21,7 @@ class DownloadCommands {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(DownloadCommand)
   enum Command {
     SHOW_IN_FOLDER = 0,  // Open a folder view window with the item selected.
     OPEN_WHEN_COMPLETE = 1,       // Open the download when it's finished.
@@ -47,9 +48,11 @@ class DownloadCommands {
     OPEN_WITH_MEDIA_APP = 21,  // Open file using the ChromeOS media app.
     EDIT_WITH_MEDIA_APP = 22,  // Open file using the ChromeOS media app with
                                // an editing hint.
+    OPEN_WITH = 23,  // Open the system "Open with" dialog. Windows only.
 
-    kMaxValue = EDIT_WITH_MEDIA_APP,  // Keep last.
+    kMaxValue = OPEN_WITH,  // Keep last.
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DownloadCommand)
 
   // |model| must outlive DownloadCommands.
   // TODO(shaktisahu): Investigate if model lifetime is shorter than |this|.

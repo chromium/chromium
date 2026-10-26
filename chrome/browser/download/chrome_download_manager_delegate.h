@@ -189,6 +189,11 @@ class ChromeDownloadManagerDelegate
   // browser if doing so is preferred.
   void OpenDownloadUsingPlatformHandler(download::DownloadItem* download);
 
+#if BUILDFLAG(IS_WIN)
+  // Shows the Windows "Open with" dialog for `download`.
+  void OpenDownloadWithDialog(download::DownloadItem* download);
+#endif
+
   DownloadPrefs* download_prefs() { return download_prefs_.get(); }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
