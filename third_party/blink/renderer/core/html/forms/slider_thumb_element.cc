@@ -33,6 +33,8 @@
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -49,6 +51,19 @@
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
+
+namespace {
+
+bool SelectionOverlapsNode(const FrameSelection& selection, const Node& node) {
+  const SelectionInDomTree& dom_selection = selection.GetSelectionInDomTree();
+  if (!dom_selection.IsRange()) {
+    return false;
+  }
+  return dom_selection.ComputeStartPosition() <= Position::AfterNode(node) &&
+         Position::BeforeNode(node) <= dom_selection.ComputeEndPosition();
+}
+
+}  // namespace
 
 SliderThumbElement::SliderThumbElement(Document& document)
     : HTMLDivElement(document), in_drag_mode_(false) {
@@ -160,6 +175,12 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
 
 void SliderThumbElement::StartDragging() {
   if (LocalFrame* frame = GetDocument().GetFrame()) {
+    // A press inside the selection arms a selection drag, which would
+    // swallow the slider drag.
+    const HTMLInputElement* input = HostInput();
+    if (input && SelectionOverlapsNode(frame->Selection(), *input)) {
+      frame->Selection().Clear();
+    }
     // Note that we get to here only we through mouse event path. The touch
     // events are implicitly captured to the starting element and will be
     // handled in handleTouchEvent function.
