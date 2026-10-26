@@ -53,7 +53,14 @@
 
 namespace policy {
 
+#if BUILDFLAG(IS_ANDROID)
+// Android browser tests spawn a full Activity and browser process per test
+// case; 8 chunks eliminate extra browser startups while keeping each chunk
+// fast.
+const size_t kNumChunks = 8;
+#else
 const size_t kNumChunks = 32;
+#endif
 
 namespace {
 
