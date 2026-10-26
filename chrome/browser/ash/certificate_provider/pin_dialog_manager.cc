@@ -173,8 +173,9 @@ void PinDialogManager::ExtensionUnloaded(const std::string& extension_id) {
 
 void PinDialogManager::AddPinDialogHost(
     SecurityTokenPinDialogHost* pin_dialog_host) {
-  CHECK(!std::ranges::contains(added_dialog_hosts_, pin_dialog_host),
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/576706178): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!std::ranges::contains(added_dialog_hosts_, pin_dialog_host));
   added_dialog_hosts_.push_back(pin_dialog_host);
 }
 
