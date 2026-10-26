@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_navigation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_enhanced_protection_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -32,8 +31,7 @@
 @interface PrivacySafeBrowsingCoordinator () <
     PrivacySafeBrowsingNavigationCommands,
     PrivacySafeBrowsingViewControllerPresentationDelegate,
-    SafeBrowsingEnhancedProtectionCoordinatorDelegate,
-    SafeBrowsingStandardProtectionCoordinatorDelegate>
+    SafeBrowsingEnhancedProtectionCoordinatorDelegate>
 
 // View controller presented by this coordinator.
 @property(nonatomic, strong) PrivacySafeBrowsingViewController* viewController;
@@ -44,9 +42,6 @@
 // Coordinator for Privacy Safe Browsing Enhanced Protection settings.
 @property(nonatomic, strong) SafeBrowsingEnhancedProtectionCoordinator*
     safeBrowsingEnhancedProtectionCoordinator;
-// Coordinator for Privacy Safe Browsing Standard Protection settings.
-@property(nonatomic, strong) SafeBrowsingStandardProtectionCoordinator*
-    safeBrowsingStandardProtectionCoordinator;
 
 @end
 
@@ -82,7 +77,6 @@
 
 - (void)stop {
   [self stopSafeBrowsingEnhancedProtectionCoordinator];
-  [self stopSafeBrowsingStandardProtectionCoordinator];
   [self.mediator disconnect];
   self.mediator = nil;
   [super stop];
@@ -117,22 +111,6 @@
                              browser:self.browser];
   self.safeBrowsingEnhancedProtectionCoordinator.delegate = self;
   [self.safeBrowsingEnhancedProtectionCoordinator start];
-}
-
-- (void)showSafeBrowsingStandardProtection {
-  // Asynchronized UI sequences can cause coordinators to exist when
-  // re-initializing a new coordinator. To ensure that the object is reset
-  // properly, we forcefully stop the coordinator so that we can properly
-  // initialize a new one.
-  if (self.safeBrowsingStandardProtectionCoordinator) {
-    [self stopSafeBrowsingStandardProtectionCoordinator];
-  }
-  self.safeBrowsingStandardProtectionCoordinator =
-      [[SafeBrowsingStandardProtectionCoordinator alloc]
-          initWithBaseNavigationController:self.baseNavigationController
-                                   browser:self.browser];
-  self.safeBrowsingStandardProtectionCoordinator.delegate = self;
-  [self.safeBrowsingStandardProtectionCoordinator start];
 }
 
 - (void)showSafeBrowsingNoProtectionPopUp:(TableViewItem*)item {
@@ -181,22 +159,6 @@
     (SafeBrowsingEnhancedProtectionCoordinator*)coordinator {
   DCHECK_EQ(self.safeBrowsingEnhancedProtectionCoordinator, coordinator);
   [self stopSafeBrowsingEnhancedProtectionCoordinator];
-}
-
-#pragma mark - SafeBrowsingStandardProtectionCoordinatorDelegate
-
-- (void)safeBrowsingStandardProtectionCoordinatorDidRemove:
-    (SafeBrowsingStandardProtectionCoordinator*)coordinator {
-  DCHECK_EQ(self.safeBrowsingStandardProtectionCoordinator, coordinator);
-  [self stopSafeBrowsingStandardProtectionCoordinator];
-}
-
-#pragma mark - Private
-
-- (void)stopSafeBrowsingStandardProtectionCoordinator {
-  [self.safeBrowsingStandardProtectionCoordinator stop];
-  self.safeBrowsingStandardProtectionCoordinator.delegate = nil;
-  self.safeBrowsingStandardProtectionCoordinator = nil;
 }
 
 #pragma mark - Private

@@ -88,14 +88,34 @@ TEST_F(PrivacySafeBrowsingMediatorTest, TurnOnEnhancedProtection) {
 }
 
 TEST_F(PrivacySafeBrowsingMediatorTest, TurnOnStandardProtection) {
+  id mock_handler =
+      OCMStrictProtocolMock(@protocol(PrivacySafeBrowsingNavigationCommands));
+  mediator_.handler = mock_handler;
+
+  // First switch to Enhanced Protection, then back to Standard Protection.
+  TableViewItem* enhanced_safe_browsing_item =
+      itemWithItemType(ItemTypeSafeBrowsingEnhancedProtection);
+  [mediator_ selectSettingItem:enhanced_safe_browsing_item];
+  EXPECT_FALSE([mediator_
+      shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingStandardProtection]);
+
   TableViewItem* standard_safe_browsing_item =
       itemWithItemType(ItemTypeSafeBrowsingStandardProtection);
   [mediator_ didSelectItem:standard_safe_browsing_item];
-  [mediator_ selectSettingItem:standard_safe_browsing_item];
   EXPECT_TRUE([mediator_
       shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingStandardProtection]);
   EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
               safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  // Tapping Standard Protection again when already selected should keep
+  // Standard Protection selected and not trigger any navigation command.
+  [mediator_ didSelectItem:standard_safe_browsing_item];
+  EXPECT_TRUE([mediator_
+      shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingStandardProtection]);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
 }
 
 TEST_F(PrivacySafeBrowsingMediatorTest, TurnOffSafeBrowsing) {

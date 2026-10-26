@@ -432,11 +432,6 @@ BASE_DECLARE_FEATURE_PARAM(
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun);
 
-// When enabled, the Password Leak detection toggle is moved out from under the
-// 'Standard protection' Safe Browsing option to the top-level 'Privacy and
-// security' page.
-BASE_DECLARE_FEATURE(kMovePasswordLeakDetectionToggleIos);
-
 // Enables the notice queue integration for the ESB notice.
 BASE_DECLARE_FEATURE(kNoticeQueueForEsb);
 

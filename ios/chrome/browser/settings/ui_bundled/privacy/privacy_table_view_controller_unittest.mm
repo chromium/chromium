@@ -21,7 +21,6 @@
 #import "components/handoff/pref_names_ios.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
@@ -77,8 +76,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 class PrivacyTableViewControllerTest
     : public LegacyChromeTableViewControllerTest,
-      public testing::WithParamInterface<
-          std::tuple<IncognitoModePrefs, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<IncognitoModePrefs, bool>> {
  protected:
   PrivacyTableViewControllerTest() {}
 
@@ -114,10 +112,7 @@ class PrivacyTableViewControllerTest
         std::make_unique<base::Value>(
             static_cast<int>(IncognitoModeAvailability())));
 
-    feature_list_.InitWithFeatureStates(
-        {{kIOSSoftLock, SoftLockEnabled()},
-         {safe_browsing::kMovePasswordLeakDetectionToggleIos,
-          PasswordLeakCheckMoveEnabled()}});
+    feature_list_.InitWithFeatureStates({{kIOSSoftLock, SoftLockEnabled()}});
   }
 
   void TearDown() override {
@@ -164,8 +159,6 @@ class PrivacyTableViewControllerTest
   }
 
   bool SoftLockEnabled() { return std::get<1>(GetParam()); }
-
-  bool PasswordLeakCheckMoveEnabled() { return std::get<2>(GetParam()); }
 
   bool HasUniversalOptOutItem() {
     TableViewModel* model = [controller() tableViewModel];
@@ -216,11 +209,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 7;
-  if (PasswordLeakCheckMoveEnabled()) {
-    expectedNumberOfSections += 1;
-  }
-  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
+  EXPECT_EQ(8, NumberOfSections());
 
   int currentSection = 0;
   // PrivacyContent section.
@@ -243,13 +232,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
                                     currentSection, 0);
 
   // Password leak check section.
-  if (PasswordLeakCheckMoveEnabled()) {
-    currentSection++;
-    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-    CheckSwitchCellStateAndTextWithId(
-        YES, IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE,
-        currentSection, 0);
-  }
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckSwitchCellStateAndTextWithId(
+      YES, IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE,
+      currentSection, 0);
 
   // WebServices section.
   currentSection++;
@@ -323,11 +310,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterSignedOut) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 7;
-  if (PasswordLeakCheckMoveEnabled()) {
-    expectedNumberOfSections += 1;
-  }
-  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
+  EXPECT_EQ(8, NumberOfSections());
 
   // Testing section index and text of the privacy footer.
   CheckSectionFooter(l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
@@ -642,6 +625,5 @@ INSTANTIATE_TEST_SUITE_P(
                          IncognitoModePrefs::kEnabled,
                          IncognitoModePrefs::kDisabled,
                          IncognitoModePrefs::kForced),
-                     /*softLockEnabled*/ testing::Bool(),
-                     /*passwordLeakCheckMoveEnabled*/ testing::Bool()));
+                     /*softLockEnabled*/ testing::Bool()));
 }  // namespace

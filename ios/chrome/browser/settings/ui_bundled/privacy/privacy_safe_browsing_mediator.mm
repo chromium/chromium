@@ -166,12 +166,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
         accessibilityIdentifier:kSettingsSafeBrowsingEnhancedProtectionCellId];
     [items addObject:safeBrowsingEnhancedProtectionItem];
 
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kMovePasswordLeakDetectionToggleIos) &&
-        base::FeatureList::IsEnabled(
-            safe_browsing::kExtendedReportingRemovePrefDependency)) {
+    if (self.enterpriseEnabled) {
       TableViewItem* safeBrowsingStandardProtectionItem = [self
-               detailIconItemType:ItemTypeSafeBrowsingStandardProtection
+               infoButtonItemType:ItemTypeSafeBrowsingStandardProtection
                           titleId:
                               IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
                        detailText:standardProtectionSummary
@@ -180,7 +177,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [items addObject:safeBrowsingStandardProtectionItem];
     } else {
       TableViewItem* safeBrowsingStandardProtectionItem = [self
-               infoButtonItemType:ItemTypeSafeBrowsingStandardProtection
+               detailIconItemType:ItemTypeSafeBrowsingStandardProtection
                           titleId:
                               IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
                        detailText:standardProtectionSummary
@@ -345,7 +342,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)shouldEnterprisePopOverDisplay:(ItemType)itemType {
   return self.enterpriseEnabled &&
          (![self shouldItemTypeHaveCheckmark:itemType] ||
-          itemType == ItemTypeSafeBrowsingNoProtection);
+          itemType == ItemTypeSafeBrowsingNoProtection ||
+          itemType == ItemTypeSafeBrowsingStandardProtection);
 }
 
 // Called when the user tap on an info button.
@@ -362,11 +360,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::RecordAction(base::UserMetricsAction(
           "SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked"));
       [self.handler showSafeBrowsingEnhancedProtection];
-      break;
-    case ItemTypeSafeBrowsingStandardProtection:
-      base::RecordAction(base::UserMetricsAction(
-          "SafeBrowsing.Settings.StandardProtectionExpandArrowClicked"));
-      [self.handler showSafeBrowsingStandardProtection];
       break;
     default:
       NOTREACHED();
@@ -393,16 +386,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  if (type == ItemTypeSafeBrowsingStandardProtection) {
-    if ([self shouldItemTypeHaveCheckmark:type]) {
-      base::RecordAction(base::UserMetricsAction(
-          "SafeBrowsing.Settings.StandardProtectionExpandArrowClicked"));
-      [self.handler showSafeBrowsingStandardProtection];
-    } else {
-      base::RecordAction(base::UserMetricsAction(
-          "SafeBrowsing.Settings.StandardProtectionClicked"));
-      [self selectSettingItem:item];
-    }
+  if (type == ItemTypeSafeBrowsingStandardProtection &&
+      ![self shouldItemTypeHaveCheckmark:type]) {
+    base::RecordAction(base::UserMetricsAction(
+        "SafeBrowsing.Settings.StandardProtectionClicked"));
+    [self selectSettingItem:item];
   }
 
   if (type == ItemTypeSafeBrowsingNoProtection &&

@@ -8,18 +8,10 @@ source_set("safe_browsing") {
     "safe_browsing_enhanced_protection_coordinator.mm",
     "safe_browsing_enhanced_protection_view_controller.h",
     "safe_browsing_enhanced_protection_view_controller.mm",
-    "safe_browsing_standard_protection_consumer.h",
-    "safe_browsing_standard_protection_coordinator.h",
-    "safe_browsing_standard_protection_coordinator.mm",
-    "safe_browsing_standard_protection_mediator.h",
-    "safe_browsing_standard_protection_mediator.mm",
-    "safe_browsing_standard_protection_view_controller.h",
-    "safe_browsing_standard_protection_view_controller.mm",
   ]
   deps = [
     ":safe_browsing_constants",
     "//build:branding_buildflags",
-    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

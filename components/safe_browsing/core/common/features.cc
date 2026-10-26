@@ -445,9 +445,6 @@ BASE_FEATURE_PARAM(bool,
                    &kMigrateToBlockV8OptimizerOnUnfamiliarSites,
                    false);
 
-BASE_FEATURE(kMovePasswordLeakDetectionToggleIos,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNoticeQueueForEsb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -24,7 +24,6 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
@@ -264,14 +263,11 @@ bool ShouldShowUniversalOptOutSettings(
                    prefName:prefs::kHttpsOnlyModeEnabled];
     [_HTTPSOnlyModePref setObserver:self];
 
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
-      _passwordLeakCheckPref = [[PrefBackedBoolean alloc]
-          initWithPrefService:prefService
-                     prefName:password_manager::prefs::
-                                  kPasswordLeakDetectionEnabled];
-      [_passwordLeakCheckPref setObserver:self];
-    }
+    _passwordLeakCheckPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:password_manager::prefs::
+                                kPasswordLeakDetectionEnabled];
+    [_passwordLeakCheckPref setObserver:self];
 
     _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
@@ -314,12 +310,9 @@ bool ShouldShowUniversalOptOutSettings(
   [_HTTPSOnlyModePref stop];
   _HTTPSOnlyModePref.observer = nil;
   _HTTPSOnlyModePref = nil;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
-    [_passwordLeakCheckPref stop];
-    _passwordLeakCheckPref.observer = nil;
-    _passwordLeakCheckPref = nil;
-  }
+  [_passwordLeakCheckPref stop];
+  _passwordLeakCheckPref.observer = nil;
+  _passwordLeakCheckPref = nil;
   [_incognitoInterstitialPref stop];
   _incognitoInterstitialPref.observer = nil;
   _incognitoInterstitialPref = nil;
@@ -355,12 +348,9 @@ bool ShouldShowUniversalOptOutSettings(
   [model addSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
   [model addItem:self.HTTPSOnlyModeItem
       toSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
-    [model addSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
-    [model addItem:self.passwordLeakCheckItem
-        toSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
+  [model addItem:self.passwordLeakCheckItem
+      toSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
 
   universal_optout::UniversalOptOutService* universalOptOutService =
       universal_optout::UniversalOptOutServiceFactory::GetForProfile(_profile);
@@ -821,11 +811,8 @@ bool ShouldShowUniversalOptOutSettings(
   self.HTTPSOnlyModeItem.on = self.HTTPSOnlyModePref.value;
   [self reconfigureCellsForItems:@[ self.HTTPSOnlyModeItem ]];
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
-    self.passwordLeakCheckItem.on = self.passwordLeakCheckPref.value;
-    [self reconfigureCellsForItems:@[ self.passwordLeakCheckItem ]];
-  }
+  self.passwordLeakCheckItem.on = self.passwordLeakCheckPref.value;
+  [self reconfigureCellsForItems:@[ self.passwordLeakCheckItem ]];
 
   self.incognitoInterstitialItem.on = self.incognitoInterstitialPref.value;
   [self reconfigureCellsForItems:@[ self.incognitoInterstitialItem ]];

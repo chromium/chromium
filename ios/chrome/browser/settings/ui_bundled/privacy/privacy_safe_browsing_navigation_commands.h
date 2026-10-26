@@ -12,9 +12,6 @@
 // Shows Safe Browsing Enhanced Protection screen.
 - (void)showSafeBrowsingEnhancedProtection;
 
-// Shows Safe Browsing Standard Protection screen.
-- (void)showSafeBrowsingStandardProtection;
-
 // Called when the Safe Browsing No Protection cell is selected
 // and triggers a pop up
 - (void)showSafeBrowsingNoProtectionPopUp:(TableViewItem*)item;
