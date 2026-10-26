@@ -1887,7 +1887,9 @@ BucketManager* StoragePartitionImpl::GetBucketManager() {
 
 GeneratedCodeCacheContext*
 StoragePartitionImpl::GetGeneratedCodeCacheContext() {
-  CHECK(initialized_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/577473808): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(initialized_);
   return generated_code_cache_context_.get();
 }
 
