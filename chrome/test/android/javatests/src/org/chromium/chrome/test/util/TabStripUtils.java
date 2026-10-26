@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 
 import java.util.concurrent.TimeUnit;
 
@@ -118,6 +119,27 @@ public class TabStripUtils {
                         })
                 .withTimeout(TimeUnit.SECONDS.toMillis(10))
                 .waitFor(new TabAddedCondition(/* numTabsBeingOpened= */ 1, () -> tabModel));
+    }
+
+    /**
+     * Clicks the close button of the tab strip tab with the given id and waits for the tab to start
+     * closing.
+     */
+    public static void closeTab(
+            Instrumentation instrumentation,
+            ChromeTabbedActivity activity,
+            boolean incognito,
+            int id) {
+        TabModel tabModel = activity.getTabModelSelector().getModel(incognito);
+        Triggers.runTo(
+                        () ->
+                                clickCompositorButton(
+                                        findStripLayoutTab(activity, incognito, id)
+                                                .getCloseButton(),
+                                        instrumentation,
+                                        activity))
+                .waitFor(new TabClosingCondition(() -> tabModel));
+        instrumentation.waitForIdleSync();
     }
 
     /**

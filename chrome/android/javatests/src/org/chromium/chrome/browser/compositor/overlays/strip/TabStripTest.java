@@ -1355,21 +1355,11 @@ public class TabStripTest {
      */
     protected void closeTab(final boolean incognito, final int id) {
         resetTabStripsOnUiThread();
-        ChromeTabUtils.closeTabWithAction(
+        TabStripUtils.closeTab(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        StripLayoutTab tab =
-                                TabStripUtils.findStripLayoutTab(
-                                        mActivityTestRule.getActivity(), incognito, id);
-                        TabStripUtils.clickCompositorButton(
-                                tab.getCloseButton(),
-                                InstrumentationRegistry.getInstrumentation(),
-                                mActivityTestRule.getActivity());
-                    }
-                });
+                incognito,
+                id);
     }
 
     /**

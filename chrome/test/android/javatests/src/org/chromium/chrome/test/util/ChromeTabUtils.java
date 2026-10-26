@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
 import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -505,79 +506,21 @@ public class ChromeTabUtils {
             final Instrumentation instrumentation,
             final ChromeActivity activity,
             @TabClosingSource int source) {
-        closeTabWithAction(
-                instrumentation,
-                activity,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        instrumentation.runOnMainSync(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        TabModel model = activity.getCurrentTabModel();
-                                        Tab tab = TabModelUtils.getCurrentTab(model);
-                                        if (tab == null) return;
-                                        model.getTabRemover()
-                                                .closeTabs(
-                                                        TabClosureParams.closeTab(tab)
-                                                                .allowUndo(false)
-                                                                .tabClosingSource(source)
-                                                                .build(),
-                                                        /* allowDialog= */ false);
-                                    }
-                                });
-                    }
-                });
-    }
-
-    /** Closes a tab with the given action and waits for a tab closure to be observed. */
-    public static void closeTabWithAction(
-            Instrumentation instrumentation, final ChromeActivity activity, Runnable action) {
-        final CallbackHelper closeCallback = new CallbackHelper();
-        final TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        closeCallback.notifyCalled();
-                    }
-
-                    @Override
-                    public void willCloseTabs(
-                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
-                        closeCallback.notifyCalled();
-                    }
-                };
-        instrumentation.runOnMainSync(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        TabModelSelector selector = activity.getTabModelSelector();
-                        for (TabModel tabModel : selector.getModels()) {
-                            tabModel.addObserver(observer);
-                        }
-                    }
-                });
-
-        action.run();
-
-        try {
-            closeCallback.waitForCallback(0);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Tab closed event was never received", e);
-        }
-        instrumentation.runOnMainSync(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        TabModelSelector selector = activity.getTabModelSelector();
-                        for (TabModel tabModel : selector.getModels()) {
-                            tabModel.removeObserver(observer);
-                        }
-                    }
-                });
+        TabModel model = ThreadUtils.runOnUiThreadBlocking(activity::getCurrentTabModel);
+        Triggers.runOnUiThreadTo(
+                        () -> {
+                            Tab tab = TabModelUtils.getCurrentTab(model);
+                            if (tab == null) return;
+                            model.getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tab)
+                                                    .allowUndo(false)
+                                                    .tabClosingSource(source)
+                                                    .build(),
+                                            /* allowDialog= */ false);
+                        })
+                .waitFor(new TabClosingCondition(() -> model));
         instrumentation.waitForIdleSync();
-        Log.d(TAG, "closeTabWithAction <<");
     }
 
     /** Close all tabs and waits for all tabs pending closure to be observed. */
