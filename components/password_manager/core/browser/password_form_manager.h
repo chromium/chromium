@@ -523,6 +523,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Time when stored credentials are received from the store. Used for metrics.
   base::TimeTicks received_stored_credentials_time_;
 
+  // Ensures that TimeBetweenStoreAndServer2 is recorded at most once during the
+  // lifetime of this form manager.
+  bool has_recorded_time_between_store_and_server_uma_ = false;
+
   PasswordFormPredictionWaiter async_predictions_waiter_;
 
   // Used to transform FormData into PasswordForms.

@@ -1040,6 +1040,114 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsWithinDelay) {
   form_manager_->ProcessServerPredictions(predictions);
 }
 
+TEST_P(PasswordFormManagerTest,
+       TimeBetweenStoreAndServerUmaRecordedOnlyOncePerManager) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(0), 1);
+
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
+  form_manager_->ProcessServerPredictions(predictions);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(0), 1);
+
+  // Fetching credentials again must not record another sample for this manager.
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(0), 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.TimeBetweenStoreAndServer",
+                                    0);
+}
+
+TEST_P(PasswordFormManagerTest,
+       TimeBetweenStoreAndServerUmaRecordsWhenPredictionsArrive) {
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TimeBetweenStoreAndServer2", 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
+  form_manager_->ProcessServerPredictions(predictions);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(100), 1);
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(100), 1);
+}
+
+TEST_P(PasswordFormManagerTest,
+       TimeBetweenStoreAndServerUmaWaitsForStoredCredentials) {
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
+  form_manager_->ProcessServerPredictions(predictions);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TimeBetweenStoreAndServer2", 0);
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(0), 1);
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(0), 1);
+}
+
+TEST_P(PasswordFormManagerTest,
+       TimeBetweenStoreAndServerUmaNotRecordedAgainForClone) {
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
+  form_manager_->ProcessServerPredictions(predictions);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(100), 1);
+
+  std::unique_ptr<PasswordFormManager> clone = form_manager_->Clone();
+  static_cast<FakeFormFetcher*>(clone->GetFormFetcher())
+      ->NotifyFetchCompleted();
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(100), 1);
+
+  std::unique_ptr<PasswordFormManager> second_clone = clone->Clone();
+  static_cast<FakeFormFetcher*>(second_clone->GetFormFetcher())
+      ->NotifyFetchCompleted();
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(100), 1);
+}
+
+TEST_P(PasswordFormManagerTest,
+       TimeBetweenStoreAndServerUmaRecordedForCloneIfNotYetRecorded) {
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TimeBetweenStoreAndServer2", 0);
+
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  std::unique_ptr<PasswordFormManager> clone = form_manager_->Clone();
+  static_cast<FakeFormFetcher*>(clone->GetFormFetcher())
+      ->NotifyFetchCompleted();
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.TimeBetweenStoreAndServer2", base::Milliseconds(0), 1);
+}
+
 // Tests that PasswordFormManager does not adopt server predictions if they
 // belong to a different driver.
 TEST_P(PasswordFormManagerTest, ServerPredictionsDriverIdMismatch) {

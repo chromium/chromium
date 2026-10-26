@@ -4116,14 +4116,15 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.TimeBetweenStoreAndServer" units="ms"
+<histogram name="PasswordManager.TimeBetweenStoreAndServer2" units="ms"
     expires_after="2027-03-07">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
     The time between receiving saved credentials from the password store and
-    predictions from the Autofill server. Recorded each time when predictions
-    for a form are received.
+    predictions from the Autofill server. Recorded at most once per password
+    form manager. Records zero if server predictions arrive before the stored
+    credentials, or if filling proceeds without waiting for server predictions.
   </summary>
 </histogram>
 

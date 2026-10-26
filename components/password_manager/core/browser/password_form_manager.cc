@@ -869,6 +869,9 @@ std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() const {
   // owning one needs to happen explicitly.
   result->owned_form_fetcher_ = std::move(fetcher);
 
+  result->has_recorded_time_between_store_and_server_uma_ =
+      has_recorded_time_between_store_and_server_uma_;
+
   // These data members all satisfy:
   //   (1) They could have been changed by |*this| between its construction and
   //       calling Clone().
@@ -1377,11 +1380,14 @@ void PasswordFormManager::RecordMetricOnReadonly(
 }
 
 void PasswordFormManager::ReportTimeBetweenStoreAndServerUMA() {
-  // TODO(crbug.com/525318107): Prevent multiple records of this metric.
-  if (!received_stored_credentials_time_.is_null()) {
-    UMA_HISTOGRAM_TIMES("PasswordManager.TimeBetweenStoreAndServer",
-                        TimeTicks::Now() - received_stored_credentials_time_);
+  if (received_stored_credentials_time_.is_null() ||
+      has_recorded_time_between_store_and_server_uma_) {
+    return;
   }
+
+  has_recorded_time_between_store_and_server_uma_ = true;
+  UMA_HISTOGRAM_TIMES("PasswordManager.TimeBetweenStoreAndServer2",
+                      TimeTicks::Now() - received_stored_credentials_time_);
 }
 
 void PasswordFormManager::FillHttpAuth() {
