@@ -417,6 +417,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSOneTimeDefaultBrowserNotificationFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiImageRemixFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSNewIAPromoFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSBottomOmniboxFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiExternalAppStoreEvent);
 
 // FET feature flag that enables AI Hub "New" badge.

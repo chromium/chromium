@@ -469,6 +469,9 @@ extern const char kDefaultBrowserPromoContextualGeminiUsed[];
 // Event fired when a Gemini session terminates or disappears.
 extern const char kGeminiSessionTerminated[];
 
+// Event fired when the omnibox is moved to the bottom position.
+extern const char kIOSBottomOmniboxUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

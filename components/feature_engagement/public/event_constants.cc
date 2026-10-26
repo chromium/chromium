@@ -237,6 +237,7 @@ const char kDefaultBrowserPromoOverflowMenuShortcutsUsed[] =
 const char kDefaultBrowserPromoContextualGeminiUsed[] =
     "default_browser_promo_contextual_gemini_used";
 const char kGeminiSessionTerminated[] = "gemini_session_terminated";
+const char kIOSBottomOmniboxUsed[] = "ios_bottom_omnibox_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

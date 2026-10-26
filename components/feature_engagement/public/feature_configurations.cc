@@ -3277,6 +3277,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSBottomOmniboxFeature.name == feature->name) {
+    // Show the in-product help if 1) it has never been triggered, and 2) user
+    // has not moved the omnibox to the bottom.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("ios_bottom_omnibox_triggered", Comparator(EQUAL, 0),
+                    /*window=*/kMaxStoragePeriod, /*storage=*/kMaxStoragePeriod);
+    config.used =
+        EventConfig(events::kIOSBottomOmniboxUsed, Comparator(EQUAL, 0),
+                    /*window=*/kMaxStoragePeriod, /*storage=*/kMaxStoragePeriod);
+    return config;
+  }
+
   if (kIPHiOSPinMostVisitedSiteFeature.name == feature->name) {
     // Show the in-product help if 1) it has never been triggered, and 2) user
     // has not pinned any site to the most visited tile.

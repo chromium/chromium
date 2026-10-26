@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -208,6 +209,21 @@ void TabBasedIPHBrowserAgent::OnModelReady() {
 
 #pragma mark - UrlLoadingObserver
 
+void TabBasedIPHBrowserAgent::TabDidPrerenderUrl(
+    const GURL& url,
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
+  ResetFeatureStatesAndRemoveIPHViews();
+  // Prerendered `WebState`s load while detached from `WebStateList` and are
+  // swapped in on omnibox navigation without firing new `WebStateObserver`
+  // callbacks if the load already completed, so observe `TabDidPrerenderUrl` in
+  // addition to `TabDidLoadUrl`.
+  if ((transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
+      !IsUrlNtp(url)) {
+    loaded_from_omnibox_ = true;
+  }
+}
+
 void TabBasedIPHBrowserAgent::TabDidLoadUrl(
     const GURL& url,
     ui::PageTransition transition_type,
@@ -219,6 +235,9 @@ void TabBasedIPHBrowserAgent::TabDidLoadUrl(
         transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR &&
         url != kChromeUINewTabURL) {
       NotifyMultiGestureRefreshEvent();
+    } else if ((transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
+               !IsUrlNtp(url)) {
+      loaded_from_omnibox_ = true;
     }
   }
 }
@@ -269,6 +288,7 @@ void TabBasedIPHBrowserAgent::DidStopLoading(web::WebState* web_state) {
   if (web_state->GetLoadingProgress() < 1) {
     multi_gesture_refresh_ = false;
     tapped_adjacent_tab_ = false;
+    loaded_from_omnibox_ = false;
   }
   // If the user taps the back/forward button when the current page is still
   // loading, it is expected that `DidStopLoading` would be called with
@@ -295,6 +315,8 @@ void TabBasedIPHBrowserAgent::PageLoaded(
     [HelpHandler()
         presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
     tapped_adjacent_tab_ = false;
+  } else {
+    AttemptBottomOmniboxIPH();
   }
 }
 
@@ -333,6 +355,7 @@ void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
   multi_gesture_refresh_ = false;
   back_forward_button_tapped_ = false;
   tapped_adjacent_tab_ = false;
+  loaded_from_omnibox_ = false;
   // Invocation of this method is usually caused by manually triggered changes
   // to the web state, which is a result of the user tapping the location bar or
   // toolbar, both outside of the gestural IPH.
@@ -372,6 +395,18 @@ void TabBasedIPHBrowserAgent::AttemptSendTabToSelfIPH() {
   }
 }
 
+void TabBasedIPHBrowserAgent::AttemptBottomOmniboxIPH() {
+  if (!loaded_from_omnibox_ || is_bvc_covered_) {
+    return;
+  }
+  loaded_from_omnibox_ = false;
+  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+  if (current_web_state && !IsUrlNtp(current_web_state->GetVisibleURL())) {
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kBottomOmnibox];
+  }
+}
+
 void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
     BrowserViewVisibilityState current_state,
     BrowserViewVisibilityState previous_state) {
@@ -390,6 +425,8 @@ void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
         [HelpHandler()
             presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
         tapped_adjacent_tab_ = false;
+      } else {
+        AttemptBottomOmniboxIPH();
       }
     }
     if (!send_tab_to_self_iph_attempted_) {
