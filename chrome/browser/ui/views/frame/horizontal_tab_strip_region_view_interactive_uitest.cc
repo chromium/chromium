@@ -9,6 +9,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -698,6 +699,77 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
             tabs::HorizontalTabStripScrollSource::kTouchpadOrMouseWheel,
             kExpectedCount);
       }));
+}
+
+// On Linux, scrolling over the tab strip navigates between tabs. Wheel events
+// should not directly scroll the ScrollView, as active tab changes handle
+// keeping the active tab in view.
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       WheelScrollChangesTabWithoutScrollingScrollView) {
+  if (!browser_defaults::kScrollEventChangesTab) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
+
+  AddTabsUntilScrollable(10);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  auto send_wheel_event = [this](int y_offset) {
+    return Do([this, y_offset]() {
+      BrowserView* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser());
+      views::View* const root_view = browser_view->GetWidget()->GetRootView();
+      views::ScrollView* const scroll_view =
+          tab_strip_view()->unpinned_tabs_scroll_view();
+      const gfx::Point scroll_view_center =
+          scroll_view->GetLocalBounds().CenterPoint();
+      const gfx::Point location = views::View::ConvertPointToTarget(
+          scroll_view, root_view, scroll_view_center);
+      const gfx::Point root_location =
+          views::View::ConvertPointToScreen(scroll_view, scroll_view_center);
+
+      ui::MouseWheelEvent wheel_event(gfx::Vector2d(0, y_offset), location,
+                                      root_location, base::TimeTicks::Now(),
+                                      /*flags=*/0, /*changed_button_flags=*/0);
+      root_view->OnMouseWheel(wheel_event);
+      views::test::RunScheduledLayout(browser_view);
+    });
+  };
+
+  auto active_tab_index = [this]() {
+    return browser()->GetTabStripModel()->active_index();
+  };
+
+  auto scroll_offset_x = [this]() {
+    return tab_strip_view()->unpinned_tabs_scroll_view()->GetVisibleRect().x();
+  };
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Check([this]() {
+        views::View* const root_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetWidget()
+                ->GetRootView();
+        views::ScrollView* const scroll_view =
+            tab_strip_view()->unpinned_tabs_scroll_view();
+        const gfx::Point location = views::View::ConvertPointToTarget(
+            scroll_view, root_view,
+            scroll_view->GetLocalBounds().CenterPoint());
+        return scroll_view->Contains(
+            root_view->GetEventHandlerForPoint(location));
+      }),
+      CheckResult(active_tab_index, 0), CheckResult(scroll_offset_x, 0),
+      // Scrolling less than the threshold should not change tabs or scroll.
+      send_wheel_event(-ui::MouseWheelEvent::kWheelDelta / 4),
+      CheckResult(active_tab_index, 0), CheckResult(scroll_offset_x, 0),
+      // Scrolling past the threshold switches to the next tab without
+      // scrolling the scroll view.
+      send_wheel_event(-ui::MouseWheelEvent::kWheelDelta / 4),
+      CheckResult(active_tab_index, 1), CheckResult(scroll_offset_x, 0),
+      // A full wheel scroll advances to the next tab without scrolling.
+      send_wheel_event(-ui::MouseWheelEvent::kWheelDelta),
+      CheckResult(active_tab_index, 2), CheckResult(scroll_offset_x, 0));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,

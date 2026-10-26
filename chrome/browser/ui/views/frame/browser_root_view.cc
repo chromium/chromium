@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -386,6 +387,11 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
                          event.time_stamp()));
         base::RecordAction(
             base::UserMetricsAction("ScrollToNavigate_PreviousTab"));
+        return true;
+      }
+      // When scrolling over the tab strip switches tabs, consume all wheel
+      // events so they do not also scroll the tab strip's scroll view.
+      if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
         return true;
       }
     }

@@ -549,6 +549,7 @@ if (!is_android) {
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
       "//chrome/browser:chained_back_navigation_tracker",
+      "//chrome/browser:defaults",
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
       "//chrome/browser/banners",
