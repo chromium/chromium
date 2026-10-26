@@ -1905,10 +1905,11 @@ void ArcSessionManager::OnWindowClosed() {
 
 void ArcSessionManager::OnRetryClicked() {
   CHECK(!g_ui_enabled || support_host_, base::NotFatalUntil::M160);
-  CHECK(!g_ui_enabled ||
-            support_host_->ui_page() == ArcSupportHost::UIPage::ERROR,
-        base::NotFatalUntil::M160);
-  CHECK(!requirement_checker_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/576133120): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!g_ui_enabled ||
+         support_host_->ui_page() == ArcSupportHost::UIPage::ERROR);
+  DCHECK(!requirement_checker_);
 
   UpdateOptInActionUMA(OptInActionType::RETRY);
 
