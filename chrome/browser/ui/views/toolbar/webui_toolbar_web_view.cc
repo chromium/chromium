@@ -686,6 +686,7 @@ void WebUIToolbarWebView::HandleContextMenu(
     const gfx::RectF& bounds_in_css_pixels,
     ui::mojom::MenuSourceType source,
     std::optional<uint32_t> show_menu_token) {
+  EnsureWidgetActive();
   gfx::Rect screen_rect =
       ConvertBoundsFromCssPixelsToScreenCoords(bounds_in_css_pixels);
 
@@ -783,6 +784,7 @@ void WebUIToolbarWebView::ShowOverflowMenu(
     ui::mojom::MenuSourceType source,
     toolbar_ui_api::mojom::ToolbarUIService::ShowOverflowMenuCallback
         callback) {
+  EnsureWidgetActive();
   overflow_button_.ShowOverflowMenu(
       controls, ConvertBoundsFromCssPixelsToScreenCoords(bounds_in_css_pixels),
       source, std::move(callback));
@@ -948,6 +950,7 @@ void WebUIToolbarWebView::ExecuteExtensionAction(
 void WebUIToolbarWebView::ShowExtensionContextMenu(
     const std::string& extension_id,
     ui::mojom::MenuSourceType source) {
+  EnsureWidgetActive();
   extensions_container_.ShowContextMenu(source, extension_id);
 }
 
@@ -1788,7 +1791,15 @@ void WebUIToolbarWebView::OnFocusRequested(
 }
 
 void WebUIToolbarWebView::OnInternalWebViewFocused() {
+  const bool had_pending_focus_request = pending_focus_request_.has_value();
   MaybeFlushPendingFocusRequest();
+  // Only notify `location_bar_` when `web_view_` gains focus outside of an
+  // explicit `OnFocusRequested()` flow or pre-menu widget activation (e.g. when
+  // `FocusManager` restores focus to `web_view_` on browser widget activation).
+  if (!had_pending_focus_request && !in_focus_request_ &&
+      !activating_for_menu_ && location_bar_) {
+    location_bar_->OnToolbarFocused();
+  }
 }
 
 void WebUIToolbarWebView::MaybeFlushPendingFocusRequest() {
@@ -1843,8 +1854,27 @@ void WebUIToolbarWebView::HandleOmniboxContextMenu(
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type,
     content::ContextMenuParams params) {
+  EnsureWidgetActive();
   if (location_bar_) {
     location_bar_->HandleContextMenu(GetWidget(), point, source_type, params);
+  }
+}
+
+void WebUIToolbarWebView::EnsureWidgetActive() {
+  // Opening a toolbar menu via a WebUI click occurs asynchronously after an IPC
+  // round-trip. If the Omnibox popup widget reclaimed activation in the
+  // meantime, ensure the browser widget is active before running the menu so
+  // subsequent focus changes within the browser widget (e.g. opening the Find
+  // bar from the menu) do not trigger a widget activation change that cancels
+  // the menu prematurely. Check `ShouldPaintAsActive()` so an inactive browser
+  // window in the background is not pulled to the front.
+  views::Widget* widget = GetWidget();
+  if (widget && !widget->IsActive() && widget->ShouldPaintAsActive()) {
+    // Suppress `location_bar_->OnToolbarFocused()` if `Activate()`
+    // synchronously restores focus to `web_view_`, so the omnibox popup does
+    // not reclaim activation before the menu opens.
+    base::AutoReset<bool> activating_for_menu(&activating_for_menu_, true);
+    widget->Activate();
   }
 }
 

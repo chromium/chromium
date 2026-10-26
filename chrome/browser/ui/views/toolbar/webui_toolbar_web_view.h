@@ -393,8 +393,11 @@ class WebUIToolbarWebView
                                 ui::mojom::MenuSourceType source_type,
                                 content::ContextMenuParams params);
 
+  void EnsureWidgetActive();
+
   // Called by the internal WebView when it gains views focus. Delivers a focus
-  // request that was waiting for views focus, if any.
+  // request that was waiting for views focus, if any, or notifies
+  // `location_bar_`.
   void OnInternalWebViewFocused();
 
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
@@ -736,6 +739,10 @@ class WebUIToolbarWebView
   std::optional<toolbar_ui_api::mojom::FocusRequestTarget>
       pending_focus_request_;
   bool in_focus_request_ = false;
+
+  // True while `EnsureWidgetActive()` is activating the browser widget prior to
+  // opening a menu.
+  bool activating_for_menu_ = false;
 
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
       focus_manager_observation_{this};

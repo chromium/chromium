@@ -2145,10 +2145,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        MAYBE_ClickTopChromeWithDraftPreservesCursorPosition) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(crbug.com/564919981): Clicking top chrome doesn't "
-                    "restore selection.";
-  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       ClearWebUIText(), InputWebUIText("example text"),
@@ -3182,10 +3178,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // passes or `views::FocusManager::AdvanceFocusIfNecessary()`.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        NewWindowOpensAndFocusesWebUIOmniboxOnNTP) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/567196577): Ensure this test works properly when "
-                    "WebUI toolbar is enabled.";
-  }
   RunTestSequence(
       WaitForBrowserActive(),
       // Instrument the initial tab 0, which starts on the NTP.

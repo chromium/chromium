@@ -68,6 +68,7 @@ class WebUILocationBar : public LocationBar,
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
   void SetFocusWithin(bool focused);
+  void OnToolbarFocused();
   void OnBlur();
 
   void HandleContextMenu(views::Widget* widget,
@@ -225,7 +226,8 @@ class WebUILocationBar : public LocationBar,
                               bool reload_prompt);
 
   void HandleFocusRequestForFullPopup(
-      toolbar_ui_api::mojom::FocusRequestTarget target);
+      toolbar_ui_api::mojom::FocusRequestTarget target,
+      bool was_focused);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;

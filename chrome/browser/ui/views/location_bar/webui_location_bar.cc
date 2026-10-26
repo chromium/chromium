@@ -81,6 +81,7 @@
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/button_drag_utils.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -239,10 +240,13 @@ void WebUILocationBar::PropagateFocusRequest(
     // ... well, almost immediately, since we may be in middle of activation
     // (see views::Widget::Activate()), so trying to activate the popup instead
     // can make things very unhappy.
+    const bool was_focused =
+        omnibox_controller_ && omnibox_controller_->edit_model()->has_focus();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebUILocationBar::HandleFocusRequestForFullPopup,
-                       focus_request_weak_ptr_factory_.GetWeakPtr(), target));
+                       focus_request_weak_ptr_factory_.GetWeakPtr(), target,
+                       was_focused));
   } else if (toolbar_delegate_) {
     toolbar_delegate_->OnFocusRequested(target);
     if (auto* web_view = toolbar_delegate_->GetInternalWebView();
@@ -298,6 +302,29 @@ void WebUILocationBar::SetFocusWithin(bool focused) {
   RefreshAiModePageAction();
 
   NotifyFocusChanged();
+}
+
+void WebUILocationBar::OnToolbarFocused() {
+  if (!omnibox_controller_ || !omnibox_popup_view_) {
+    return;
+  }
+  // Do not hand focus back to the popup while a Views menu is active (matching
+  // `OmniboxPopupFullPresenter::ShouldReceiveFocus()`), as `OnFocus()` would
+  // otherwise still update WebUI focus state and cancel pending context menus
+  // if browser widget activation restores focus to the toolbar WebView.
+  if (views::MenuController::GetActiveInstance()) {
+    return;
+  }
+  // When the browser window activates (e.g. clicking the tab strip), focus is
+  // restored to the toolbar WebView, which deactivates the popup widget. Hand
+  // focus back to the popup if the omnibox is still logically focused (an
+  // unfocused draft also keeps the popup in `kFull`, so check `has_focus()`
+  // too).
+  if (omnibox_controller_->edit_model()->has_focus() &&
+      omnibox_controller_->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull) {
+    OpenOmniboxIfFullPopup(/*query_zps=*/false);
+  }
 }
 
 void WebUILocationBar::OnBlur() {
@@ -909,7 +936,16 @@ void WebUILocationBar::OnPageInfoBubbleClosed(
 }
 
 void WebUILocationBar::HandleFocusRequestForFullPopup(
-    toolbar_ui_api::mojom::FocusRequestTarget target) {
+    toolbar_ui_api::mojom::FocusRequestTarget target,
+    bool was_focused) {
+  // If the omnibox had focus when the request was posted (e.g. from
+  // `BrowserView::RestoreFocus()` when reactivating the browser window) but was
+  // blurred before this task ran (e.g. by the click or focus change that
+  // triggered that activation), do not refocus it.
+  if (was_focused && !omnibox_controller_->edit_model()->has_focus()) {
+    return;
+  }
+
   // Of things handled here, only kLocationBar is not user-inititiated.
   const bool is_user_initiated =
       (target != toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);

@@ -1486,7 +1486,14 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, ClickLocationIcon) {
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
-      FocusWebContents(kWebUIToolbarId),
+      // In full mode, the location bar gets autofocused on startup, which
+      // opens the full popup and makes its widget active. Trying to focus the
+      // toolbar WebContents while that's going on can hang (e.g. on Mac), so
+      // move focus to the tab instead and wait for the popup to go away.
+      If([&]() { return mode() == Mode::kFull; },
+         Then(HandleAutofocus(), FocusTab(),
+              InAnyContext(WaitForHide(kClassicPopupWebViewId))),
+         Else(FocusWebContents(kWebUIToolbarId))),
       ExecuteJsAt(kWebUIToolbarId,
                   {"toolbar-app", "location-bar", "location-icon", "#button"},
                   "el => el.click()"),
