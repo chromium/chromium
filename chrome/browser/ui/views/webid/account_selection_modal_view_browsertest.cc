@@ -491,8 +491,9 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                               /*expect_idp=*/true, /*is_modal_dialog=*/true);
     ASSERT_EQ("Separator", accounts[accounts_index++]->GetClassName());
     EXPECT_EQ(accounts_index, 5u);
+    // The "Use a different account" button opens the IDP picker.
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   /*expect_add_account_button=*/false,
+                   /*expect_add_account_button=*/true,
                    /*expect_back_button=*/false);
   }
 
@@ -526,8 +527,9 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                               /*expect_idp=*/true, /*is_modal_dialog=*/true);
     ASSERT_EQ("Separator", accounts[accounts_index++]->GetClassName());
     EXPECT_EQ(accounts_index, 3u);
+    // The "Use a different account" button opens the IDP picker.
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   /*expect_add_account_button=*/false,
+                   /*expect_add_account_button=*/true,
                    /*expect_back_button=*/false);
   }
 

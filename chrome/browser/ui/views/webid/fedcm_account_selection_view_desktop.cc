@@ -324,14 +324,6 @@ bool FedCmAccountSelectionView::Show(
     }
   }
 
-  bool has_filtered_out_accounts = false;
-  for (const auto& account : accounts) {
-    if (account->is_filtered_out) {
-      has_filtered_out_accounts = true;
-      break;
-    }
-  }
-
   std::optional<std::u16string> idp_title =
       idp_list_.size() == 1u
           ? std::make_optional<std::u16string>(
@@ -371,6 +363,16 @@ bool FedCmAccountSelectionView::Show(
           !new_accounts_[0]->fields.empty();
 
       if (should_show_verifying_sheet) {
+        // The verifying sheet is shown over the account chooser, not the IDP
+        // picker: choosing an IDP is not the same as verifying a chosen
+        // account. After logging in from the IDP picker, `accounts_` includes
+        // the returning account, so show the account chooser first. The
+        // verifying sheet then shows its spinner on the "use other account"
+        // button, as it does after logging in from that button with one IDP.
+        if (state_ == State::IDP_PICKER) {
+          ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
+                                 /*show_back_button=*/false);
+        }
         state_ = State::VERIFYING;
         if (!NotifyDelegate([&]() {
               delegate_->OnAccountSelected(
@@ -424,8 +426,17 @@ bool FedCmAccountSelectionView::Show(
         state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
       }
     }
+  } else if (dialog_type_ == DialogType::MODAL && idp_list_.size() > 1u &&
+             std::ranges::all_of(accounts, &Account::is_filtered_out)) {
+    // With multiple IDPs and no account to choose from, the account chooser
+    // would be empty, so open the IDP picker directly. There is no account
+    // chooser to go back to.
+    state_ = State::IDP_PICKER;
+    account_selection_view_->ShowIdpPicker(idp_list_, rp_data_->rp_icon,
+                                           /*show_back_button=*/false);
   } else if (idp_list_.size() == 1u && accounts_or_mismatches_size == 1u) {
-    if (dialog_type_ == DialogType::BUBBLE && has_filtered_out_accounts) {
+    if (dialog_type_ == DialogType::BUBBLE &&
+        std::ranges::any_of(accounts, &Account::is_filtered_out)) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
       ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
@@ -918,6 +929,25 @@ void FedCmAccountSelectionView::OnIdpPickerRowClicked(
   OnLoginToIdP(idp_config_url, idp_login_url, event);
 }
 
+void FedCmAccountSelectionView::OnShowIdpPickerClicked(const ui::Event& event) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false) ||
+      is_occluded_by_pip_) {
+    return;
+  }
+
+  // The user left the account chooser to use a different account.
+  if (modal_account_chooser_state_) {
+    modal_account_chooser_state_ =
+        webid::AccountChooserResult::kUseOtherAccountButton;
+  }
+
+  state_ = State::IDP_PICKER;
+  account_selection_view_->ShowIdpPicker(idp_list_, rp_data_->rp_icon,
+                                         /*show_back_button=*/true);
+  UpdateDialogPosition();
+}
+
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(
           event, /*allow_key_events=*/false) ||
@@ -1164,6 +1194,9 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
     case State::MULTI_ACCOUNT_PICKER:
     case State::REQUEST_PERMISSION:
     case State::NEWLY_LOGGED_IN_ACCOUNT_PICKER:
+    // The IDP picker is part of account selection: closing the IDP login
+    // pop-up opened from it must not cancel the flow.
+    case State::IDP_PICKER:
       return webid::SheetType::kAccountSelection;
 
     case State::VERIFYING:
@@ -1341,13 +1374,14 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(
 bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
   // The IDP sign-in pop-up can be triggered either from the user triggering a
   // active flow with no accounts while the loading dialog is shown, the
-  // "Continue" button on the mismatch dialog or the "Add Account" button from
-  // an account picker.
+  // "Continue" button on the mismatch dialog, the "Add Account" button from
+  // an account picker or an IDP row on the IDP picker.
   return popup_window_ && (state_ == State::LOADING ||
                            state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
                            state_ == State::SINGLE_ACCOUNT_PICKER ||
                            state_ == State::MULTI_ACCOUNT_PICKER ||
-                           state_ == State::NEWLY_LOGGED_IN_ACCOUNT_PICKER);
+                           state_ == State::NEWLY_LOGGED_IN_ACCOUNT_PICKER ||
+                           state_ == State::IDP_PICKER);
 }
 
 void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {

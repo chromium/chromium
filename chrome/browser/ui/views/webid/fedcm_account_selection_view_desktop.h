@@ -239,6 +239,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Called when the user clicks on the 'Choose an account' button
   void OnChooseAnAccountClicked();
 
+  // Called when the user clicks the 'Use a different account' button on the
+  // multi-IDP modal account chooser. Shows the IDP picker.
+  void OnShowIdpPickerClicked(const ui::Event& event);
+
   // Public for testing.
   AccountSelectionViewBase* account_selection_view() {
     return account_selection_view_.get();
@@ -377,6 +381,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // User is prompted to grant permission for a specific account they have
     // with IDP to communicate with RP on the button flow modal.
     REQUEST_PERMISSION,
+
+    // User is shown the list of IDPs so that they can sign in to one of them.
+    // Only reachable on the modal with multiple IDPs.
+    IDP_PICKER,
 
     // Shown after the user has granted permission while the id token is being
     // fetched.

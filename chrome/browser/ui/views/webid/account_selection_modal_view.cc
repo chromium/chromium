@@ -539,10 +539,14 @@ void AccountSelectionModalView::ShowAccounts(
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
 
-  // TODO(crbug.com/552477973): Support add account for multiple IDPs in modal
-  // view.
-  if (!is_multi_idp_ && (idp_list[0]->idp_metadata.supports_add_account ||
-                         idp_list[0]->idp_metadata.has_filtered_out_account)) {
+  if (is_multi_idp_) {
+    // With multiple IDPs we cannot know which IDP the user wants to use, so the
+    // button opens the IDP picker instead of an IDP login pop-up.
+    use_other_account_callback = base::BindRepeating(
+        &AccountSelectionModalView::OnShowIdpPickerButtonClicked,
+        base::Unretained(this));
+  } else if (idp_list[0]->idp_metadata.supports_add_account ||
+             idp_list[0]->idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
         &AccountSelectionModalView::OnUseOtherAccountButtonClicked,
         base::Unretained(this), idp_list[0]->idp_metadata.config_url,
@@ -867,6 +871,17 @@ void AccountSelectionModalView::ShowIdpPicker(
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                /*use_other_account_callback=*/std::nullopt,
                                std::move(back_callback)));
+}
+
+void AccountSelectionModalView::OnShowIdpPickerButtonClicked(
+    const ui::Event& event) {
+  // Ignore clicks once the verifying sheet is showing, like
+  // OnUseOtherAccountButtonClicked() does.
+  if (verifying_focus_view_) {
+    return;
+  }
+
+  owner_->OnShowIdpPickerClicked(event);
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateIdpRows(

@@ -190,6 +190,10 @@ class AccountSelectionModalView : public views::BoxLayoutView,
                                       const GURL& idp_login_url,
                                       const ui::Event& event);
 
+  // Notifies the observer that the user wants to pick an IDP to use a different
+  // account from. Only used when there are multiple IDPs.
+  void OnShowIdpPickerButtonClicked(const ui::Event& event);
+
   // Returns a scrollable View containing one clickable row per IDP.
   std::unique_ptr<views::View> CreateIdpRows(
       const std::vector<IdentityProviderDataPtr>& idp_list);

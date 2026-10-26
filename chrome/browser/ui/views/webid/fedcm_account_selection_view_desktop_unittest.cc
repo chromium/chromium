@@ -104,6 +104,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
 
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override {
+    sheet_type_before_verifying_ = sheet_type_;
     sheet_type_ = SheetType::kVerifying;
     account_ids_ = {account->id};
     show_back_button_ = false;
@@ -145,6 +146,10 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     sheet_type_ = SheetType::kIdpPicker;
     account_ids_ = {};
     show_back_button_ = show_back_button;
+    idp_config_urls_ = {};
+    for (const auto& idp : idp_list) {
+      idp_config_urls_.push_back(idp->idp_metadata.config_url);
+    }
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
@@ -154,7 +159,10 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
 
   bool show_back_button_{false};
   std::optional<SheetType> sheet_type_{SheetType::kLoading};
+  // The sheet that the verifying sheet was shown over.
+  std::optional<SheetType> sheet_type_before_verifying_;
   std::vector<std::string> account_ids_;
+  std::vector<GURL> idp_config_urls_;
 };
 BEGIN_METADATA(TestAccountSelectionView)
 END_METADATA
@@ -177,6 +185,7 @@ constexpr char16_t kTopFrameEtldPlusOne[] = u"top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 constexpr char kConfigUrl[] = "https://idp-example.com/fedcm.json";
 constexpr char kLoginUrl[] = "https://idp-example.com/login";
+constexpr char kConfigUrl2[] = "https://idp2-example.com/fedcm.json";
 
 constexpr char kAccountId1[] = "account_id1";
 constexpr char kAccountId2[] = "account_id2";
@@ -2150,6 +2159,238 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleIdpFlowBackModal) {
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
+}
+
+// Tests that clicking the "Use a different account" button on the multi IDP
+// account chooser shows the IDP picker with every IDP.
+TEST_F(FedCmAccountSelectionViewDesktopTest, ShowIdpPickerModal) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  idp_data_->idp_metadata.config_url = GURL(kConfigUrl);
+  idp_data2->idp_metadata.config_url = GURL(kConfigUrl2);
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+
+  controller->OnShowIdpPickerClicked(CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_TRUE(controller->GetTestView()->show_back_button_);
+  EXPECT_THAT(controller->GetTestView()->idp_config_urls_,
+              testing::ElementsAre(GURL(kConfigUrl), GURL(kConfigUrl2)));
+}
+
+// Tests that clicking the back button on the IDP picker returns to the multi
+// IDP account chooser.
+TEST_F(FedCmAccountSelectionViewDesktopTest, IdpPickerBackButtonModal) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+  controller->OnShowIdpPickerClicked(CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+
+  controller->OnBackButtonClicked();
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(controller->GetTestView()->show_back_button_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+}
+
+// Tests that the "Use a different account" button on the multi IDP account
+// chooser honours the input event activation protector.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ShowIdpPickerRespectsInputProtector) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+
+  auto input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true))
+      .WillRepeatedly(testing::Return(false));
+  controller->SetInputEventActivationProtectorForTesting(
+      std::move(input_protector));
+
+  // The first click is ignored.
+  controller->OnShowIdpPickerClicked(CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+
+  controller->OnShowIdpPickerClicked(CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+}
+
+// Tests that with multiple IDPs and no accounts, the IDP picker is shown
+// directly, without a back button.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpPickerShownWhenNoAccountsModal) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  idp_data_->idp_metadata.config_url = GURL(kConfigUrl);
+  idp_data2->idp_metadata.config_url = GURL(kConfigUrl2);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, /*accounts=*/{},
+                            blink::mojom::RpMode::kActive);
+
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(controller->GetTestView()->show_back_button_);
+  EXPECT_THAT(controller->GetTestView()->idp_config_urls_,
+              testing::ElementsAre(GURL(kConfigUrl), GURL(kConfigUrl2)));
+}
+
+// Tests that with multiple IDPs and only filtered out accounts, the IDP picker
+// is shown directly, since none of the accounts can be chosen.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpPickerShownWhenAllAccountsFilteredOutModal) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  IdentityRequestAccountPtr account = CreateAccount(
+      idp_data_, LoginState::kSignUp, LoginState::kSignUp, kAccountId1);
+  account->is_filtered_out = true;
+  accounts_ = {account};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(controller->GetTestView()->show_back_button_);
+}
+
+// Tests that with multiple IDPs, filtered out accounts are shown in the account
+// chooser alongside the accounts that can be chosen.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       FilteredOutAccountsShownInAccountChooserModal) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  IdentityRequestAccountPtr filtered_account = CreateAccount(
+      idp_data_, LoginState::kSignUp, LoginState::kSignUp, kAccountId1);
+  filtered_account->is_filtered_out = true;
+  accounts_ = {CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2),
+               filtered_account};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2, kAccountId1));
+}
+
+// Tests that closing the IDP login pop-up opened from the IDP picker does not
+// cancel the flow.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpPickerPopupClosedDoesNotCancelFlow) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+  controller->OnShowIdpPickerClicked(CreateMouseEvent());
+
+  // Emulate the user clicking an IDP row.
+  OpenLoginToIdpPopup(controller.get());
+  EXPECT_FALSE(controller->GetPopupWindow()->user_close_cancels_flow_);
+
+  // Emulate the user closing the pop-up window.
+  controller->GetPopupWindowForTesting()->WebContentsDestroyed();
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+}
+
+// Tests that logging in to a returning account from the IDP picker, opened from
+// the account chooser, shows the verifying sheet over the account chooser
+// rather than over the IDP picker.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpPickerReturningAccountLoginVerifiesOverAccountChooser) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId1)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kActive);
+  controller->OnShowIdpPickerClicked(CreateMouseEvent());
+  OpenLoginToIdpPopup(controller.get());
+
+  // Emulate the user logging in to a returning account and the IDP closing the
+  // pop-up window.
+  IdentityRequestAccountPtr returning_account = CreateAccount(
+      idp_data2, LoginState::kSignIn, LoginState::kSignIn, kAccountId2);
+  controller->CloseModalDialog();
+  controller->Show(GetRpData(), {idp_data_, idp_data2},
+                   {accounts_[0], returning_account},
+                   blink::mojom::RpMode::kActive, {returning_account});
+
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_before_verifying_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId2);
+}
+
+// Tests that logging in to a returning account from the IDP picker, shown
+// directly because there were no accounts, shows the verifying sheet over the
+// account chooser rather than over the IDP picker.
+TEST_F(
+    FedCmAccountSelectionViewDesktopTest,
+    IdpPickerWithoutAccountsReturningAccountLoginVerifiesOverAccountChooser) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data2->idp_for_display = "idp2.com";
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, /*accounts=*/{},
+                            blink::mojom::RpMode::kActive);
+  ASSERT_EQ(TestAccountSelectionView::SheetType::kIdpPicker,
+            controller->GetTestView()->sheet_type_);
+  OpenLoginToIdpPopup(controller.get());
+
+  // Emulate the user logging in to a returning account and the IDP closing the
+  // pop-up window.
+  IdentityRequestAccountPtr returning_account = CreateAccount(
+      idp_data2, LoginState::kSignIn, LoginState::kSignIn, kAccountId2);
+  controller->CloseModalDialog();
+  controller->Show(GetRpData(), {idp_data_, idp_data2}, {returning_account},
+                   blink::mojom::RpMode::kActive, {returning_account});
+
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_before_verifying_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId2);
 }
 
 // Tests that auto re-authn works in active mode.
