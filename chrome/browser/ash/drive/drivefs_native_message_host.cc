@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 
 #include <algorithm>
 
@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
-#include "chrome/browser/chromeos/drivefs/drivefs_native_message_host_origins.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host_origins.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"

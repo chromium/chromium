@@ -22,7 +22,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_auth.h"
 #include "chromeos/ash/components/drivefs/drivefs_session.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

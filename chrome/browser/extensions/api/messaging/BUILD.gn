@@ -105,7 +105,6 @@ source_set("messaging") {
       "//chrome/browser/ash/arc/extensions",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/guest_os",
-      "//chrome/browser/chromeos/drivefs:native_message_host_origins",
       "//remoting/host/it2me:chrome_os_host",
     ]
   }

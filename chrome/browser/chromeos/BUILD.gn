@@ -16,7 +16,6 @@ group("unit_tests") {
 
   deps = [
     "//chrome/browser/chromeos/arc:unit_tests",
-    "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/component_extension_content_settings:unit_tests",
     "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
