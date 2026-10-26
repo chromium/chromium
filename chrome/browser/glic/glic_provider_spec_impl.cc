@@ -127,7 +127,9 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     return "GeminiEnterprise";
   }
   std::string_view GetMetricsInfix() const override { return "Enterprise"; }
-  bool IsActuationSupported() const override { return false; }
+  bool IsActuationSupported() const override {
+    return base::FeatureList::IsEnabled(features::kGeicActuation);
+  }
   bool RequiresNoWebview() const override { return true; }
   GURL GetGuestUrl(Profile* profile) const override {
     if (guest_url_.is_empty()) {

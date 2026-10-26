@@ -2738,6 +2738,36 @@ TEST_F(GlicEnablingWebActuationToggleGeicTest,
   EXPECT_FALSE(glic_service->enabling().ShouldShowWebActuationToggle());
 }
 
+TEST_F(GlicEnablingWebActuationToggleGeicTest,
+       ManagedProfile_Geic_CanActOnWeb_WithFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeicActuation);
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  SetGlicCapability(mutator, true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicActuationOnWeb,
+      std::to_underlying(glic::prefs::GlicActuationOnWebPolicyState::kEnabled));
+  profile()->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  EXPECT_TRUE(glic_service->provider_spec().IsActuationSupported());
+  EXPECT_TRUE(glic_service->actor_policy_checker().CanActOnWeb());
+  EXPECT_TRUE(glic_service->actor_policy_checker().GlicApiCanActOnWeb());
+  EXPECT_TRUE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
 // Tests for the subscription benefits priority pref
 // (`kSubscriptionBenefits`), which replaces the AI subscription tier check
 // when `kGlicSubscriptionBenefitsEligibility` is enabled.

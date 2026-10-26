@@ -198,6 +198,10 @@ extern const base::FeatureParam<std::string> kGeicGuestURL;
 // features on its completion. Without it, GEiC profiles are always consented.
 BASE_DECLARE_FEATURE(kGeicFre);
 
+// Allows the Gemini Enterprise (GEiC) guest to use the Glic actor (web
+// actuation).
+BASE_DECLARE_FEATURE(kGeicActuation);
+
 BASE_DECLARE_FEATURE(kGlicMarketingAutoOpen);
 extern const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist;
 extern const base::FeatureParam<int> kGlicMarketingAutoOpenMaxCount;
