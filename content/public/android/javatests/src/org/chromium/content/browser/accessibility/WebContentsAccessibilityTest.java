@@ -4542,6 +4542,50 @@ public class WebContentsAccessibilityTest {
         }
     }
 
+    /**
+     * Test that attempting to set extended selection on an ignored node does not crash and safely
+     * returns false.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_ignoredNodes() throws Throwable {
+        setupTestWithHTML("<p id=\"target\">Selectable text</p>");
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int targetVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "target");
+
+        // Dynamically hide the element so it becomes ignored in the accessibility tree while
+        // retaining its unique virtual view ID.
+        mTestData.setTypeWindowContentChangedCount(0);
+        executeJS("document.getElementById('target').setAttribute('aria-hidden', 'true');");
+
+        // Wait for the window content changed event to ensure the browser has received
+        // and processed the accessibility update marking the node as ignored.
+        CriteriaHelper.pollUiThread(
+                () -> mTestData.getTypeWindowContentChangedCount() > 0,
+                "TYPE_WINDOW_CONTENT_CHANGED event not received before timeout.");
+
+        // Verify that setting extended selection on an ignored node safely returns false.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        targetVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        targetVvid,
+                        5,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, targetVvid, 0, OFFSET_TYPE_TEXT, rootVvid, 1, OFFSET_TYPE_CHILD));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, rootVvid, 0, OFFSET_TYPE_CHILD, targetVvid, 0, OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, rootVvid, 0, OFFSET_TYPE_CHILD, rootVvid, 1, OFFSET_TYPE_CHILD));
+    }
+
     /** Test extended selection on editable node. */
     @Test
     @SmallTest
