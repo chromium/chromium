@@ -10,7 +10,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
@@ -152,6 +154,8 @@ class MagicBoostStateTest : public ChromeAshTestBase {
         ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
     return state_ptr;
   }
+
+  void ResetMagicBoostState() { magic_boost_state_.reset(); }
 
   void TriggerOnRefreshTokensReady() {
     magic_boost_state_->OnRefreshTokensReady();
@@ -553,6 +557,91 @@ TEST_F(MagicBoostStateTest,
   EXPECT_EQ(observer()->user_eligible_updated_count(), 2);
 
   MagicBoostState::Get()->RemoveObserver(observer());
+}
+
+class MagicBoostStateDeathTest : public MagicBoostStateTest {
+ protected:
+  void SetUp() override {
+    GTEST_FLAG_SET(death_test_style, "fast");
+    MagicBoostStateTest::SetUp();
+  }
+
+ private:
+  base::debug::OverrideStackTraceOutputForTesting suppress_stack_traces_{
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput};
+};
+
+TEST_F(MagicBoostStateDeathTest,
+       AssertPreconditionsOfHelpMeReadOrCrash_SucceedsWhenAllPreconditionsMet) {
+  ReplaceWithConfigurableState(base::ok(true));
+  prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+
+  MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+}
+
+TEST_F(MagicBoostStateDeathTest,
+       AssertPreconditionsOfHelpMeReadOrCrash_CrashesWhenStateIsNull) {
+  ResetMagicBoostState();
+  EXPECT_CHECK_DEATH(MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash());
+}
+
+TEST_F(MagicBoostStateDeathTest,
+       AssertPreconditionsOfHelpMeReadOrCrash_CrashesWhenUserIneligible) {
+  ReplaceWithConfigurableState(base::ok(false));
+  prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+
+  EXPECT_CHECK_DEATH(MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash());
+}
+
+TEST_F(
+    MagicBoostStateDeathTest,
+    AssertPreconditionsOfHelpMeReadOrCrash_CrashesWhenEligibilityUninitialized) {
+  ReplaceWithConfigurableState(
+      base::unexpected(MagicBoostState::Error::kUninitialized));
+  prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+
+  EXPECT_CHECK_DEATH(MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash());
+}
+
+TEST_F(MagicBoostStateDeathTest,
+       AssertPreconditionsOfHelpMeReadOrCrash_CrashesWhenMagicBoostDisabled) {
+  ReplaceWithConfigurableState(base::ok(true));
+  prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, false);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+
+  EXPECT_CHECK_DEATH(MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash());
+}
+
+TEST_F(MagicBoostStateDeathTest,
+       AssertPreconditionsOfHelpMeReadOrCrash_CrashesWhenHmrDisabled) {
+  ReplaceWithConfigurableState(base::ok(true));
+  prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
+  MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(false);
+
+  EXPECT_CHECK_DEATH(MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash());
+}
+
+TEST_F(MagicBoostStateDeathTest,
+       AssertPreconditionsOfHelpMeReadOrCrash_CrashesWhenConsentNotApproved) {
+  ReplaceWithConfigurableState(base::ok(true));
+  prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+
+  for (HMRConsentStatus status :
+       {HMRConsentStatus::kUnset, HMRConsentStatus::kPendingDisclaimer,
+        HMRConsentStatus::kDeclined}) {
+    MagicBoostState::Get()->AsyncWriteConsentStatus(status);
+    EXPECT_CHECK_DEATH(
+        MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash());
+  }
 }
 
 }  // namespace ash

@@ -62,15 +62,6 @@ source_set("unit_tests") {
     "base_provider_test_helper.h",
   ]
 
-  if (is_chromeos) {
-    sources += [
-      "orca_provider_unittest.cc",
-      "scanner_provider_unittest.cc",
-      "snapper_provider_unittest.cc",
-      "walrus_provider_unittest.cc",
-    ]
-  }
-
   deps = [
     ":manta",
     "proto",
@@ -82,4 +73,15 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "mahi_provider_unittest.cc",
+      "orca_provider_unittest.cc",
+      "scanner_provider_unittest.cc",
+      "snapper_provider_unittest.cc",
+      "walrus_provider_unittest.cc",
+    ]
+    deps += [ "//chromeos/components/magic_boost/public/cpp" ]
+  }
 }
