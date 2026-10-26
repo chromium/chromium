@@ -48,7 +48,7 @@ class TestPolicy : public MemoryCoordinatorPolicy {
       : MemoryCoordinatorPolicy(manager) {}
 
   void UpdateConsumersWithFilter(
-      MemoryCoordinatorPolicyManager::ConsumerFilter filter,
+      MemoryCoordinatorPolicyManager::ConsumerFilterRef filter,
       std::optional<base::MemoryLimit> memory_limit,
       bool release_memory) {
     manager().UpdateConsumers(this, filter, memory_limit, release_memory);

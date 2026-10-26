@@ -12,8 +12,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
@@ -37,6 +40,13 @@ constexpr base::MemoryConsumerTraits kTestTraits1(
     base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous);
+
+constexpr base::MemoryConsumerTraits kStatelessTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
+    base::MemoryConsumerTraits::InformationRetention::kLossy,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::IsStateful::kNo);
 
 class MockPolicy : public MemoryCoordinatorPolicy {
  public:
@@ -71,6 +81,17 @@ class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
               (override));
 };
 
+// Returns a filter that matches the consumer group with `target_id`.
+MemoryCoordinatorPolicyManager::ConsumerFilter MatchConsumerId(
+    uint32_t target_id) {
+  return base::BindRepeating(
+      [](uint32_t target_id, uint32_t consumer_id,
+         std::string_view consumer_name, base::MemoryConsumerTraits traits,
+         ProcessType process_type,
+         ChildProcessId child_process_id) { return consumer_id == target_id; },
+      target_id);
+}
+
 }  // namespace
 
 class MemoryCoordinatorPolicyManagerTest : public Test {
@@ -78,6 +99,11 @@ class MemoryCoordinatorPolicyManagerTest : public Test {
   MemoryCoordinatorPolicyManager& policy_manager() { return policy_manager_; }
 
  private:
+  // Whether a dropped release request is replayed depends on whether the group
+  // is stateful (see IsEffectivelyStateful()). Enable stateful memory pressure
+  // so that it doesn't depend on the platform's default.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      base::kStatefulMemoryPressure};
   base::test::TaskEnvironment task_environment_;
   MemoryCoordinatorPolicyManager policy_manager_;
 };
@@ -829,6 +855,738 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, MultipleConsumersSameChild) {
   EXPECT_CALL(policy, OnConsumerGroupRemoved(kConsumerId2, kChildId));
   policy_manager().OnConsumerGroupRemoved(kConsumerId2, kChildId);
 
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Release requests are dropped while a group is suppressed, but limits still
+// apply. Clearing the suppression asks the group to release memory.
+TEST_F(MemoryCoordinatorPolicyManagerTest, MemoryReleaseSuppression) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The limit is applied, but the release request is dropped.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // A release-only request is dropped entirely.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clearing the suppression asks the group to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Release requests are no longer dropped.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Only the groups that match the filter are suppressed.
+TEST_F(MemoryCoordinatorPolicyManagerTest, MemoryReleaseSuppression_Filter) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  const char kConsumerName1[] = "consumer1";
+  const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
+  const char kConsumerName2[] = "consumer2";
+  const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+                                        kTestTraits1, kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId1));
+
+  // Only the group that is not suppressed is asked to release memory.
+  EXPECT_CALL(
+      host, UpdateConsumers(ElementsAre(
+                MemoryConsumerUpdate{kConsumerId1,
+                                     base::MemoryLimit::FromPercent(50), false},
+                MemoryConsumerUpdate{
+                    kConsumerId2, base::MemoryLimit::FromPercent(50), true})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId1, base::MemoryLimit::FromPercent(50), true}},
+       {kChildId, {kConsumerId2, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Only the suppressed group is asked to release memory when the suppression
+  // is cleared.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId1, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId2, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// A group stays suppressed until all the policies that suppress it clear their
+// suppression.
+TEST_F(MemoryCoordinatorPolicyManagerTest, MemoryReleaseSuppression_Multiple) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  NiceMock<MockPolicy> suppressing_policy1(policy_manager());
+  MemoryCoordinatorPolicyRegistration suppressing_reg1(policy_manager(),
+                                                       suppressing_policy1);
+
+  NiceMock<MockPolicy> suppressing_policy2(policy_manager());
+  MemoryCoordinatorPolicyRegistration suppressing_reg2(policy_manager(),
+                                                       suppressing_policy2);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&suppressing_policy1,
+                                               MatchConsumerId(kConsumerId));
+  policy_manager().SetMemoryReleaseSuppression(&suppressing_policy2,
+                                               MatchConsumerId(kConsumerId));
+
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clearing the first suppression doesn't stop suppressing releases for the
+  // group.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().ClearMemoryReleaseSuppression(&suppressing_policy1);
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clearing the last suppression stops suppressing releases for the group.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&suppressing_policy2);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Setting a new filter replaces the previous one. Groups that no longer match
+// stop being suppressed.
+TEST_F(MemoryCoordinatorPolicyManagerTest, MemoryReleaseSuppression_Replace) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  const char kConsumerName1[] = "consumer1";
+  const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
+  const char kConsumerName2[] = "consumer2";
+  const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+                                        kTestTraits1, kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId1));
+
+  // The release request for the first group is dropped.
+  EXPECT_CALL(
+      host, UpdateConsumers(ElementsAre(
+                MemoryConsumerUpdate{kConsumerId1,
+                                     base::MemoryLimit::FromPercent(50), false},
+                MemoryConsumerUpdate{
+                    kConsumerId2, base::MemoryLimit::FromPercent(50), true})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId1, base::MemoryLimit::FromPercent(50), true}},
+       {kChildId, {kConsumerId2, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Switching to the second group asks the first group to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId1, std::nullopt, true})));
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId2));
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Only the second group is now suppressed.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId1, std::nullopt, true})));
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId1, std::nullopt, true}},
+                {kChildId, {kConsumerId2, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId2, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Removing a policy clears its suppression. The dropped release request is
+// sent along with the limit update, and only if still needed.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_RemovePolicy) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  // `policy` lowers the limit to 50%. `suppressing_policy` lowers it further to
+  // 25% and suppresses the release request.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(2);
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
+  {
+    NiceMock<MockPolicy> suppressing_policy(policy_manager());
+    MemoryCoordinatorPolicyRegistration suppressing_reg(policy_manager(),
+                                                        suppressing_policy);
+    policy_manager().SetMemoryReleaseSuppression(&suppressing_policy,
+                                                 MatchConsumerId(kConsumerId));
+    suppressing_policy.manager().UpdateConsumers(
+        &suppressing_policy,
+        {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+    Mock::VerifyAndClearExpectations(&host);
+
+    // Removing the policy restores the 50% limit. That is still lower than the
+    // peak limit since the last release (100%), so the release is replayed in
+    // the same update.
+    EXPECT_CALL(host,
+                UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                    kConsumerId, base::MemoryLimit::FromPercent(50), true})));
+  }
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Clearing the suppression of a policy that doesn't suppress releases is a
+// no-op.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_ClearWithoutSet) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Groups that are removed while suppressed are not notified when the
+// suppression is cleared.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_GroupRemoved) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Groups for which no release request was dropped are not asked to release
+// memory when the suppression is cleared.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_NoDroppedRelease) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // Only a limit is requested while suppressed.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// A dropped release request is not replayed if the limit was restored to the
+// highest limit since the group last released memory.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_LimitRestored) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The release request is dropped.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The limit is restored.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, base::MemoryLimit::Default(), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::Default(), false}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The consumer can't be above its limit, so it is not asked to release
+  // memory.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// A dropped release request is replayed if the limit is lower than the highest
+// limit since the group last released memory, even if above the default.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_AboveDefault) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  // The consumer is allowed to grow above the default.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(150), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(150), false}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The release request is dropped.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(120), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(120), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The consumer may be above its limit, so it is asked to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// A dropped release request is not replayed if the group already released
+// memory at its current limit before being suppressed.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_ReleasedBeforeSuppression) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  // The release request is sent.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), true})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The release request is dropped.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The consumer already released memory at its current limit, so it is not
+  // asked to release memory again.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// A dropped release request is replayed if the limit was raised while
+// suppressed, as the consumer may have grown above its current limit, even if
+// it released memory at that limit before being suppressed.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_LimitRaisedWhileSuppressed) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  // The release request is sent.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), true})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The limit is raised, allowing the consumer to grow.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, base::MemoryLimit::Default(), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::Default(), false}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The limit is lowered again, but the release request is dropped.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The consumer may be above its limit, so it is asked to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// A dropped release request is replayed for a stateless group as long as its
+// limit is below the default, even if it already released memory at its
+// current limit, as it ignores limit updates and may have grown since.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_StatelessReplayedUnderPressure) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kStatelessTraits, kChildId);
+
+  // The release request is sent.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), true})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The limit is lowered, but the release request is dropped.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(0), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(0), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The limit is raised back to where the group last released memory.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The group is still under pressure, so it is asked to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Groups that declare themselves stateful are treated as stateless when
+// base::kStatefulMemoryPressure is disabled, so a dropped release request is
+// replayed as long as their limit is below the default.
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       MemoryReleaseSuppression_StatefulFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // `kTestTraits1` declares the group as stateful.
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  // The release request is sent.
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), true})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().SetMemoryReleaseSuppression(&policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The release request is dropped.
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy.manager().UpdateConsumers(
+      &policy, {{kChildId, {kConsumerId, std::nullopt, true}}});
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Unlike in MemoryReleaseSuppression_ReleasedBeforeSuppression, the group is
+  // asked to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+// Groups added while releases are suppressed are suppressed before policies are
+// notified, so that release requests made in response are dropped.
+TEST_F(MemoryCoordinatorPolicyObserverTest, MemoryReleaseSuppression_NewGroup) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  MockObserverPolicy policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+
+  NiceMock<MockPolicy> suppressing_policy(policy_manager());
+  MemoryCoordinatorPolicyRegistration suppressing_registration(
+      policy_manager(), suppressing_policy);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().SetMemoryReleaseSuppression(&suppressing_policy,
+                                               MatchConsumerId(kConsumerId));
+
+  // The policy requests a limit and a release when the group is added. Only the
+  // limit is applied.
+  EXPECT_CALL(policy,
+              OnConsumerGroupAdded(kConsumerId, kConsumerName, _, _, kChildId))
+      .WillOnce([&]() {
+        policy.manager().UpdateConsumers(
+            &policy,
+            {{kChildId,
+              {kConsumerId, base::MemoryLimit::FromPercent(50), true}}});
+      });
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+  Mock::VerifyAndClearExpectations(&policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clearing the suppression asks the new group to release memory.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().ClearMemoryReleaseSuppression(&suppressing_policy);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  EXPECT_CALL(policy, OnConsumerGroupRemoved(kConsumerId, kChildId));
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 

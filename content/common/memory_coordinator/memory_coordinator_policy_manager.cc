@@ -8,14 +8,23 @@
 #include <cmath>
 #include <memory>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace content {
+
+bool IsEffectivelyStateful(const base::MemoryConsumerTraits& traits) {
+  return base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) &&
+         traits.is_stateful == base::MemoryConsumerTraits::IsStateful::kYes;
+}
 
 // MemoryCoordinatorPolicyManager::GroupState ----------------------------------
 
@@ -55,7 +64,7 @@ MemoryCoordinatorPolicyManager::GroupState::SetMemoryLimitForPolicy(
   if (new_limit == current_limit_) {
     return std::nullopt;
   }
-  current_limit_ = new_limit;
+  SetCurrentLimit(new_limit);
   return new_limit;
 }
 
@@ -70,8 +79,15 @@ MemoryCoordinatorPolicyManager::GroupState::SetOverrideLimit(
   if (new_limit == current_limit_) {
     return std::nullopt;
   }
-  current_limit_ = new_limit;
+  SetCurrentLimit(new_limit);
   return new_limit;
+}
+
+void MemoryCoordinatorPolicyManager::GroupState::SetCurrentLimit(
+    base::MemoryLimit memory_limit) {
+  current_limit_ = memory_limit;
+  peak_limit_since_release_ =
+      std::max(peak_limit_since_release_, current_limit_);
 }
 
 base::MemoryLimit
@@ -89,6 +105,33 @@ MemoryCoordinatorPolicyManager::GroupState::RecomputeMemoryLimit() const {
   }
   return base::MemoryLimit::FromPercent(
       static_cast<int>(std::nearbyint(result)));
+}
+
+void MemoryCoordinatorPolicyManager::GroupState::SetMemoryReleaseSuppression(
+    MemoryCoordinatorPolicy* policy) {
+  memory_release_suppressors_.insert(policy);
+}
+
+bool MemoryCoordinatorPolicyManager::GroupState::ClearMemoryReleaseSuppression(
+    MemoryCoordinatorPolicy* policy) {
+  if (!memory_release_suppressors_.erase(policy) ||
+      !memory_release_suppressors_.empty()) {
+    return false;
+  }
+  if (!std::exchange(has_pending_release_, false)) {
+    return false;
+  }
+  // The release is only needed if the consumer may be using more memory than
+  // its current limit allows. A stateful consumer can't be above the highest
+  // limit applied since it last released memory. A stateless consumer ignores
+  // limit updates, so it may be above its limit whenever under pressure.
+  return IsEffectivelyStateful(traits_)
+             ? current_limit_ < peak_limit_since_release_
+             : current_limit_ < base::MemoryLimit::Default();
+}
+
+void MemoryCoordinatorPolicyManager::GroupState::OnReleaseSent() {
+  peak_limit_since_release_ = current_limit_;
 }
 
 // MemoryCoordinatorPolicyManager::HostState -----------------------------------
@@ -151,17 +194,30 @@ void MemoryCoordinatorPolicyManager::RemovePolicy(
   size_t removed = policies_.erase(policy);
   CHECK_EQ(removed, 1u);
 
-  // When a policy is removed, its requested limits are cleared from all
-  // consumer groups.
+  const bool was_suppressing_memory_releases =
+      memory_release_suppression_filters_.erase(policy) > 0;
+
+  // When a policy is removed, its requested limits and its memory release
+  // suppression are cleared from all consumer groups.
   for (auto const& [child_id, host_state] : hosts_) {
     std::vector<MemoryConsumerUpdate> updates;
     updates.reserve(host_state->groups.size());
     for (auto const& [consumer_id, group_state] : host_state->groups) {
       // Setting the default limit clears the policy's requested limit.
-      if (std::optional<base::MemoryLimit> new_limit =
-              group_state->SetMemoryLimitForPolicy(
-                  policy, base::MemoryLimit::Default())) {
-        updates.push_back({consumer_id, *new_limit, /*release_memory=*/false});
+      std::optional<base::MemoryLimit> new_limit =
+          group_state->SetMemoryLimitForPolicy(policy,
+                                               base::MemoryLimit::Default());
+
+      // The limit is updated first so that a dropped release request is only
+      // replayed if still needed with the new limit.
+      bool release_memory = was_suppressing_memory_releases &&
+                            group_state->ClearMemoryReleaseSuppression(policy);
+      if (release_memory) {
+        group_state->OnReleaseSent();
+      }
+
+      if (new_limit || release_memory) {
+        updates.push_back({consumer_id, new_limit, release_memory});
       }
     }
     if (!updates.empty()) {
@@ -229,6 +285,15 @@ void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
     }
   }
 
+  // Apply the memory release suppression before notifying policies, so that
+  // release requests made in response to the notification are suppressed.
+  for (auto const& [policy, filter] : memory_release_suppression_filters_) {
+    if (filter.Run(consumer_id, consumer_name, traits, host_state.process_type,
+                   child_process_id)) {
+      group_it->second->SetMemoryReleaseSuppression(policy);
+    }
+  }
+
   base::AutoReset<bool> reset(&is_notifying_, true);
   for (MemoryCoordinatorPolicy* policy : policies_) {
     policy->OnConsumerGroupAdded(consumer_id, consumer_name, traits,
@@ -289,7 +354,7 @@ void MemoryCoordinatorPolicyManager::UpdateConsumers(
 
 void MemoryCoordinatorPolicyManager::UpdateConsumers(
     MemoryCoordinatorPolicy* policy,
-    ConsumerFilter filter,
+    ConsumerFilterRef filter,
     std::optional<base::MemoryLimit> memory_limit,
     bool release_memory) {
   for (auto const& [child_id, host_state] : hosts_) {
@@ -330,6 +395,17 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
           group_state.SetMemoryLimitForPolicy(policy, *update.memory_limit);
     }
 
+    // Release requests are dropped while suppressed for the group, and replayed
+    // if needed once it is no longer suppressed.
+    if (update.release_memory) {
+      if (group_state.IsMemoryReleaseSuppressed()) {
+        group_state.SetHasPendingRelease();
+        update.release_memory = false;
+      } else {
+        group_state.OnReleaseSent();
+      }
+    }
+
     // Redundant updates that have no observable effect on the consumer group
     // state are filtered out to avoid sending unnecessary work to the host.
     if (!new_effective_limit && !update.release_memory) {
@@ -350,6 +426,51 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
 
   if (!updates.empty()) {
     host_state.host->UpdateConsumers(std::move(updates));
+  }
+}
+
+void MemoryCoordinatorPolicyManager::SetMemoryReleaseSuppression(
+    MemoryCoordinatorPolicy* policy,
+    ConsumerFilter filter) {
+  CHECK(!is_notifying_);
+  CHECK(policies_.contains(policy));
+  auto [it, _] = memory_release_suppression_filters_.insert_or_assign(
+      policy, std::move(filter));
+  ApplyMemoryReleaseSuppression(policy, &it->second);
+}
+
+void MemoryCoordinatorPolicyManager::ClearMemoryReleaseSuppression(
+    MemoryCoordinatorPolicy* policy) {
+  CHECK(!is_notifying_);
+  if (memory_release_suppression_filters_.erase(policy) == 0) {
+    return;
+  }
+  ApplyMemoryReleaseSuppression(policy, nullptr);
+}
+
+void MemoryCoordinatorPolicyManager::ApplyMemoryReleaseSuppression(
+    MemoryCoordinatorPolicy* policy,
+    const ConsumerFilter* filter) {
+  for (auto const& [child_id, host_state] : hosts_) {
+    std::vector<MemoryConsumerUpdate> updates;
+    for (auto const& [consumer_id, group_state] : host_state->groups) {
+      if (filter && filter->Run(consumer_id, group_state->consumer_name(),
+                                group_state->traits(), host_state->process_type,
+                                child_id)) {
+        group_state->SetMemoryReleaseSuppression(policy);
+        continue;
+      }
+
+      // Release requests made while suppressed were dropped. Ask the group to
+      // release memory so that it converges to its aggregate limit.
+      if (group_state->ClearMemoryReleaseSuppression(policy)) {
+        group_state->OnReleaseSent();
+        updates.push_back({consumer_id, std::nullopt, /*release_memory=*/true});
+      }
+    }
+    if (!updates.empty()) {
+      host_state->host->UpdateConsumers(std::move(updates));
+    }
   }
 }
 
@@ -394,6 +515,7 @@ void MemoryCoordinatorPolicyManager::NotifyReleaseMemoryForTesting(
   for (auto const& [child_id, host_state] : hosts_) {
     auto it = host_state->groups.find(consumer_id);
     if (it != host_state->groups.end()) {
+      it->second->OnReleaseSent();
       host_state->host->UpdateConsumers({{consumer_id, std::nullopt, true}});
     }
   }
