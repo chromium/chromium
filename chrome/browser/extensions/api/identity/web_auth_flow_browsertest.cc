@@ -871,12 +871,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, StartAfterShutdownStarted) {
-  GetProfile()->NotifyWillBeDestroyed();
-  ASSERT_TRUE(GetProfile()->ShutdownStarted());
-
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   EXPECT_DEATH(
-      StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE), "");
+      {
+        GetProfile()->NotifyWillBeDestroyed();
+        ASSERT_TRUE(GetProfile()->ShutdownStarted());
+        StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
+      },
+      "");
 }
 
 // The navigation must be attributed to the origin that supplied the URL, so
