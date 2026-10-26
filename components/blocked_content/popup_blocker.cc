@@ -18,6 +18,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace blocked_content {
 namespace {
@@ -93,24 +94,24 @@ PopupBlockType ShouldBlockPopup(content::WebContents* web_contents,
 
 }  // namespace
 
-bool ConsiderForPopupBlocking(WindowOpenDisposition disposition) {
+bool ConsiderForPopupBlocking(ui::mojom::WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::kUnknown:
-    case WindowOpenDisposition::kCurrentTab:
-    case WindowOpenDisposition::kSingletonTab:
+    case ui::mojom::WindowOpenDisposition::kUnknown:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
     // OTR popups would be considered, but they cannot be triggered by any
     // renderer message so we can ignore them.
-    case WindowOpenDisposition::kOffTheRecord:
-    case WindowOpenDisposition::kSaveToDisk:
-    case WindowOpenDisposition::kIgnoreAction:
-    case WindowOpenDisposition::kSwitchToTab:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kSwitchToTab:
       return false;
-    case WindowOpenDisposition::kNewPopup:
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewWindow:
-    case WindowOpenDisposition::kNewPictureInPicture:
-    case WindowOpenDisposition::kNewSplitView:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewPictureInPicture:
+    case ui::mojom::WindowOpenDisposition::kNewSplitView:
       return true;
   }
 }

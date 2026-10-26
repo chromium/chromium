@@ -16,6 +16,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace blocked_content {
 namespace {
@@ -29,7 +30,7 @@ int CappedUserInteractions(int user_interactions, int max_interactions) {
 PopupTracker* PopupTracker::CreateForWebContents(
     content::WebContents* contents,
     content::WebContents* opener,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   DCHECK(contents);
   DCHECK(opener);
   auto* tracker = FromWebContents(contents);
@@ -44,7 +45,7 @@ PopupTracker::~PopupTracker() = default;
 
 PopupTracker::PopupTracker(content::WebContents* contents,
                            content::WebContents* opener,
-                           WindowOpenDisposition disposition)
+                           ui::mojom::WindowOpenDisposition disposition)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<PopupTracker>(*contents),
       visibility_tracker_(

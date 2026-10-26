@@ -4,6 +4,8 @@
 
 #include "components/blocked_content/test/test_popup_navigation_delegate.h"
 
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+
 namespace blocked_content {
 
 TestPopupNavigationDelegate::ResultHolder::ResultHolder() = default;
@@ -30,7 +32,7 @@ GURL TestPopupNavigationDelegate::GetURL() {
 PopupNavigationDelegate::NavigateResult
 TestPopupNavigationDelegate::NavigateWithGesture(
     const blink::mojom::WindowFeatures& window_features,
-    std::optional<WindowOpenDisposition> updated_disposition) {
+    std::optional<ui::mojom::WindowOpenDisposition> updated_disposition) {
   if (result_holder_) {
     result_holder_->did_navigate = true;
     result_holder_->navigation_window_features = window_features;

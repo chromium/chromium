@@ -24,6 +24,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace blocked_content {
 
@@ -127,15 +128,15 @@ void PopupBlockerTabHelper::AddBlockedPopup(
 
 void PopupBlockerTabHelper::ShowBlockedPopup(
     int32_t id,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   auto it = blocked_popups_.find(id);
   if (it == blocked_popups_.end())
     return;
 
   BlockedRequest* popup = it->second.get();
 
-  std::optional<WindowOpenDisposition> updated_disposition;
-  if (disposition != WindowOpenDisposition::kCurrentTab) {
+  std::optional<ui::mojom::WindowOpenDisposition> updated_disposition;
+  if (disposition != ui::mojom::WindowOpenDisposition::kCurrentTab) {
     updated_disposition = disposition;
   }
 
@@ -168,7 +169,7 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
 void PopupBlockerTabHelper::ShowAllBlockedPopups() {
   PopupIdMap blocked_popups = GetBlockedPopupRequests();
   for (const auto& elem : blocked_popups) {
-    ShowBlockedPopup(elem.first, WindowOpenDisposition::kCurrentTab);
+    ShowBlockedPopup(elem.first, ui::mojom::WindowOpenDisposition::kCurrentTab);
   }
 }
 

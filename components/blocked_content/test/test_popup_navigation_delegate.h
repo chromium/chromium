@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace blocked_content {
@@ -23,7 +24,7 @@ class TestPopupNavigationDelegate : public PopupNavigationDelegate {
 
     bool did_navigate = false;
     blink::mojom::WindowFeatures navigation_window_features;
-    std::optional<WindowOpenDisposition> navigation_disposition;
+    std::optional<ui::mojom::WindowOpenDisposition> navigation_disposition;
     int total_popups_blocked_on_page = 0;
   };
 
@@ -35,7 +36,8 @@ class TestPopupNavigationDelegate : public PopupNavigationDelegate {
   GURL GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      std::optional<WindowOpenDisposition> updated_disposition) override;
+      std::optional<ui::mojom::WindowOpenDisposition> updated_disposition)
+      override;
   void OnPopupBlocked(content::WebContents* web_contents,
                       int total_popups_blocked_on_page) override;
 

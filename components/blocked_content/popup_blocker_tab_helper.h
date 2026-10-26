@@ -14,8 +14,8 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/url_list_manager.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace tabs {
@@ -72,12 +72,14 @@ class PopupBlockerTabHelper : public content::WebContentsObserver {
   PopupIdMap GetBlockedPopupRequests();
 
   // Creates the blocked popup with |popup_id| in given |dispostion|.
-  // Note that if |disposition| is WindowOpenDisposition::kCurrentTab,
-  // blocked popup will be opened as it was specified by renderer.
-  void ShowBlockedPopup(int32_t popup_id, WindowOpenDisposition disposition);
+  // Note that if |disposition| is
+  // ui::mojom::WindowOpenDisposition::kCurrentTab, blocked popup will be opened
+  // as it was specified by renderer.
+  void ShowBlockedPopup(int32_t popup_id,
+                        ui::mojom::WindowOpenDisposition disposition);
 
   // All blocked popups will be opened with the disposition defaulted to
-  // WindowOpenDisposition::kCurrentTab. Used only on Android.
+  // ui::mojom::WindowOpenDisposition::kCurrentTab. Used only on Android.
   void ShowAllBlockedPopups();
 
   // Adds a new blocked popup to the UI.

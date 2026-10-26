@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class GURL;
 
@@ -40,11 +40,12 @@ class PopupNavigationDelegate {
   struct NavigateResult {
     raw_ptr<content::WebContents, DanglingUntriaged>
         navigated_or_inserted_contents = nullptr;
-    WindowOpenDisposition disposition = WindowOpenDisposition::kUnknown;
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kUnknown;
   };
   virtual NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      std::optional<WindowOpenDisposition> updated_disposition) = 0;
+      std::optional<ui::mojom::WindowOpenDisposition> updated_disposition) = 0;
 
   // Called when the navigation represented by this class was blocked.
   virtual void OnPopupBlocked(content::WebContents* web_contents,

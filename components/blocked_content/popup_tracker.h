@@ -14,8 +14,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/scoped_visibility_tracker.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace content {
 class WebContents;
@@ -40,9 +40,10 @@ class PopupTracker : public content::WebContentsObserver,
     kMaxValue = kUnsafe,
   };
 
-  static PopupTracker* CreateForWebContents(content::WebContents* contents,
-                                            content::WebContents* opener,
-                                            WindowOpenDisposition disposition);
+  static PopupTracker* CreateForWebContents(
+      content::WebContents* contents,
+      content::WebContents* opener,
+      ui::mojom::WindowOpenDisposition disposition);
 
   PopupTracker(const PopupTracker&) = delete;
   PopupTracker& operator=(const PopupTracker&) = delete;
@@ -60,7 +61,7 @@ class PopupTracker : public content::WebContentsObserver,
 
   PopupTracker(content::WebContents* contents,
                content::WebContents* opener,
-               WindowOpenDisposition disposition);
+               ui::mojom::WindowOpenDisposition disposition);
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -113,7 +114,7 @@ class PopupTracker : public content::WebContentsObserver,
       PopupSafeBrowsingStatus::kNoValue;
 
   // The window open disposition used when creating the popup.
-  const WindowOpenDisposition window_open_disposition_;
+  const ui::mojom::WindowOpenDisposition window_open_disposition_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

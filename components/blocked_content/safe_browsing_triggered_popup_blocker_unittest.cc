@@ -46,9 +46,9 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace blocked_content {
@@ -242,7 +242,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   GURL popup_url("https://example.popup/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          popup_url, WindowOpenDisposition::kNewForegroundTab,
+          popup_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           main_rfh()->GetCurrentInitiatorNavigationState());
   params.user_gesture = true;
@@ -272,7 +272,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   GURL popup_url("https://example.popup/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          popup_url, WindowOpenDisposition::kNewForegroundTab,
+          popup_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           main_rfh()->GetCurrentInitiatorNavigationState());
   params.user_gesture = true;

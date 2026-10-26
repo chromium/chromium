@@ -7,7 +7,7 @@
 
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
@@ -33,7 +33,7 @@ enum class PopupBlockType {
 // Whether a new window opened with |disposition| would be considered for
 // popup blocking. Note that this includes more dispositions than just
 // NEW_POPUP since the popup blocker targets all new windows and tabs.
-bool ConsiderForPopupBlocking(WindowOpenDisposition disposition);
+bool ConsiderForPopupBlocking(ui::mojom::WindowOpenDisposition disposition);
 
 // Returns null if the popup request defined by |delegate| and the optional
 // |open_url_params| should be blocked. In that case, it is also added to the

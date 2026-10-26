@@ -21,8 +21,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace blocked_content {
 namespace {
@@ -111,11 +111,12 @@ TEST_F(PopupBlockerTabHelperTest, BlocksAndShowsPopup) {
   EXPECT_THAT(observer.blocked_urls(),
               UnorderedElementsAre(Pair(0, GURL(kUrl1))));
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kNewForegroundTab);
+  helper()->ShowBlockedPopup(
+      0, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_TRUE(result.did_navigate);
   EXPECT_TRUE(result.navigation_window_features.has_x);
   EXPECT_EQ(result.navigation_disposition,
-            WindowOpenDisposition::kNewForegroundTab);
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(PopupBlockerTabHelperTest, MultiplePopups) {
@@ -138,14 +139,15 @@ TEST_F(PopupBlockerTabHelperTest, MultiplePopups) {
               UnorderedElementsAre(Pair(0, GURL(kUrl1)), Pair(1, GURL(kUrl2))));
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 2u);
 
-  helper()->ShowBlockedPopup(1, WindowOpenDisposition::kNewForegroundTab);
+  helper()->ShowBlockedPopup(
+      1, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 1u);
   EXPECT_TRUE(result2.did_navigate);
   EXPECT_EQ(result2.navigation_disposition,
-            WindowOpenDisposition::kNewForegroundTab);
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_FALSE(result1.did_navigate);
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kCurrentTab);
+  helper()->ShowBlockedPopup(0, ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 0u);
   EXPECT_TRUE(result1.did_navigate);
   EXPECT_FALSE(result1.navigation_disposition.has_value());
@@ -159,11 +161,13 @@ TEST_F(PopupBlockerTabHelperTest, DoesNotShowPopupWithInvalidID) {
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 1u);
 
   // Invalid ID should not do anything.
-  helper()->ShowBlockedPopup(1, WindowOpenDisposition::kNewForegroundTab);
+  helper()->ShowBlockedPopup(
+      1, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 1u);
   EXPECT_FALSE(result.did_navigate);
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kNewForegroundTab);
+  helper()->ShowBlockedPopup(
+      0, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(helper()->GetBlockedPopupsCount(), 0u);
   EXPECT_TRUE(result.did_navigate);
 }
@@ -185,10 +189,12 @@ TEST_F(PopupBlockerTabHelperTest, SetsContentSettingsPopupState) {
       blink::mojom::WindowFeatures(), PopupBlockType::kNoGesture);
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 
-  helper()->ShowBlockedPopup(0, WindowOpenDisposition::kNewForegroundTab);
+  helper()->ShowBlockedPopup(
+      0, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 
-  helper()->ShowBlockedPopup(1, WindowOpenDisposition::kNewForegroundTab);
+  helper()->ShowBlockedPopup(
+      1, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
