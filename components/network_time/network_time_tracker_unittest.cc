@@ -26,7 +26,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/network_time/network_time_test_utils.h"
 #include "components/network_time/time_tracker/time_tracker.h"
@@ -839,14 +838,7 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkServerError) {
   EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
 }
 
-#if BUILDFLAG(IS_IOS)
-// http://crbug.com/658619
-#define MAYBE_UpdateFromNetworkNetworkError \
-  DISABLED_UpdateFromNetworkNetworkError
-#else
-#define MAYBE_UpdateFromNetworkNetworkError UpdateFromNetworkNetworkError
-#endif
-TEST_F(NetworkTimeTrackerTest, MAYBE_UpdateFromNetworkNetworkError) {
+TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkNetworkError) {
   SetResponseHandler(base::BindRepeating(
       &NetworkTimeTrackerTest::NetworkErrorResponseHandler));
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
