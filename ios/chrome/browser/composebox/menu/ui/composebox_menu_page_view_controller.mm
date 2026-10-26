@@ -275,7 +275,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                                    absoluteDimension:itemWidth]
                heightDimension:
                    [NSCollectionLayoutDimension
-                       absoluteDimension:attachmentGroupEstimatedHeight]];
+                       estimatedDimension:attachmentGroupEstimatedHeight]];
 
     NSCollectionLayoutItem* item =
         [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
@@ -285,7 +285,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                                    absoluteDimension:itemWidth]
                heightDimension:
                    [NSCollectionLayoutDimension
-                       absoluteDimension:attachmentGroupEstimatedHeight]];
+                       estimatedDimension:attachmentGroupEstimatedHeight]];
     NSCollectionLayoutGroup* group =
         [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
                                                       subitems:@[ item ]];

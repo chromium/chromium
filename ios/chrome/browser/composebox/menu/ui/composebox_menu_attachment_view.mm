@@ -10,6 +10,9 @@
 
 namespace {
 
+// The minimum scale factor of the title label.
+constexpr CGFloat kTitleLabelMinimumScaleFactor = 0.8f;
+
 // The corner radius for the image view.
 const CGFloat kImageContainerCornerRadius = 20.0f;
 
@@ -97,8 +100,10 @@ const CGFloat kTitleMaxPointSize = 24.0f;
   _titleLabel.textAlignment = NSTextAlignmentCenter;
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _titleLabel.numberOfLines = 2;
+  _titleLabel.adjustsFontSizeToFitWidth = YES;
   _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  _titleLabel.minimumScaleFactor = kTitleLabelMinimumScaleFactor;
   CGFloat titleBaseFontSize = IsComposeboxPlusButtonLargeCarousel()
                                   ? kTitleBaseFontLargeSize
                                   : kTitleBaseFontSize;
