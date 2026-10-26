@@ -319,6 +319,7 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   // tests run in the same process.
   main_window_startup_interrupted_ = false;
   message_loop_start_ticks_ = base::TimeTicks();
+  message_loop_start_no_sleep_timer_.reset();
   browser_window_display_ticks_ = base::TimeTicks();
   browser_window_first_paint_ticks_ = base::TimeTicks();
   is_privacy_sandbox_attestations_component_ready_recorded_ = false;
@@ -347,6 +348,7 @@ void BrowserStartupMetricRecorder::RecordMessageLoopStartTicks(
   DCHECK(message_loop_start_ticks_.is_null());
   message_loop_start_ticks_ = ticks;
   DCHECK(!message_loop_start_ticks_.is_null());
+  message_loop_start_no_sleep_timer_.emplace();
 }
 
 base::TimeTicks BrowserStartupMetricRecorder::GetWebContentsStartTicks() const {
@@ -476,6 +478,17 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsNonEmptyPaint(
       &base::UmaHistogramLongTimes100,
       "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2",
       now - message_loop_start_ticks_);
+
+  DCHECK(message_loop_start_no_sleep_timer_.has_value());
+  // Only recorded when no system sleep was detected, so that the distribution
+  // can be compared to Startup.BrowserMessageLoopStart.To.NonEmptyPaint2.
+  if (std::optional<base::TimeDelta> elapsed_no_sleep =
+          message_loop_start_no_sleep_timer_->Elapsed()) {
+    EmitHistogramWithTemperature(
+        &base::UmaHistogramLongTimes100,
+        "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2.NoSleep",
+        *elapsed_no_sleep);
+  }
 }
 
 void BrowserStartupMetricRecorder::

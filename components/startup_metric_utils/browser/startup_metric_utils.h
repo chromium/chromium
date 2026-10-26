@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 
 // Utility functions to support metric collection for browser-process-specific
@@ -228,6 +229,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   volatile bool main_window_startup_interrupted_ = false;
 
   base::TimeTicks message_loop_start_ticks_;
+  std::optional<base::ElapsedNoSleepTimer> message_loop_start_no_sleep_timer_;
 
   base::TimeTicks browser_window_display_ticks_;
 

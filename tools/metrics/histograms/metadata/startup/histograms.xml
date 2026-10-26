@@ -797,6 +797,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2.NoSleep{StartupTemperature}"
+    units="ms" expires_after="2027-04-06">
+  <owner>olivierli@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Same as Startup.BrowserMessageLoopStart.To.NonEmptyPaint2, but measured with
+    base::ElapsedNoSleepTimer and only recorded if no system sleep was detected.
+    Sleep detection is best effort (see base/timer/elapsed_timer.h). In
+    particular, perfect detection cannot be expected on Windows.
+
+    {StartupTemperature}
+  </summary>
+</histogram>
+
+<histogram
     name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2{StartupTemperature}"
     units="ms" expires_after="never">
 <!-- expires-never: breakdown metric for Startup.FirstWebContents.NonEmptyPaint2
