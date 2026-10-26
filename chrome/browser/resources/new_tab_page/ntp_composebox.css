@@ -183,7 +183,9 @@ cr-composebox-submit::part(submit) {
 }
 
 :host([show-file-carousel]) #carouselContainer,
-:host([submit-enabled]) #carouselContainer {
+:host([submit-enabled]) #carouselContainer,
+:host([in-tool-mode]) #carouselContainer,
+#inputContainer:has(.has-tabs) #carouselContainer {
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
       8px;
   padding-block-end: var(--ntp-composebox-carousel-padding-block-end);
@@ -216,6 +218,13 @@ cr-composebox-submit::part(submit) {
 :host([searchbox-next-enabled]) #toolChipsContainer,
 :host([searchbox-next-enabled]) #voiceToolChipsContainer {
   padding-block-end: 0;
+  padding-block-start: 16px;
+}
+
+:host([searchbox-next-enabled][show-file-carousel])
+    #inputContainer:has(.has-tabs) #contextMenuContainer,
+:host([searchbox-next-enabled][show-file-carousel]) #toolChipsContainer,
+:host([searchbox-next-enabled][show-file-carousel]) #voiceToolChipsContainer {
   padding-block-start: 6px;
 }
 

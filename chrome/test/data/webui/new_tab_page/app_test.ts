@@ -2370,6 +2370,74 @@ suite('NewTabPageAppTest', () => {
                   LAYOUT_TOLERANCE_PX,
                   'Attachment chip and submit button should be bottom aligned');
             });
+
+        test(
+            'tool chip does not shift vertically when submit button appears',
+            async () => {
+              await recreateApp();
+              await microtasksFinished();
+
+              const searchbox = $$(app, '#searchbox');
+              assertTrue(!!searchbox);
+
+              searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                detail: {
+                  text: '',
+                  files: [],
+                },
+              }));
+              await microtasksFinished();
+
+              const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+              assertTrue(!!composebox);
+              composebox.inToolMode = true;
+              composebox.contextMenuEnabled = false;
+              composebox.requestUpdate();
+              await composebox.updateComplete;
+
+              const toolChipsContainer = $$(composebox, '#toolChipsContainer');
+              assertTrue(!!toolChipsContainer);
+              const toolChip =
+                  toolChipsContainer.querySelector('cr-composebox-tool-chip');
+              assertTrue(!!toolChip);
+              const toolChipButton = $$(toolChip, '#toolEnabledButton');
+              assertTrue(!!toolChipButton);
+
+              const carouselContainer = $$(composebox, '#carouselContainer');
+              assertTrue(!!carouselContainer);
+              assertFalse(
+                  !!carouselContainer.querySelector('cr-composebox-submit'));
+
+              const initialTop = toolChipButton.getBoundingClientRect().top;
+              const initialBottom =
+                  toolChipButton.getBoundingClientRect().bottom;
+
+              composebox.input = 'test query';
+              composebox.requestUpdate();
+              await composebox.updateComplete;
+
+              const submitElement =
+                  carouselContainer.querySelector('cr-composebox-submit');
+              assertTrue(!!submitElement);
+              const submitIcon = $$(submitElement, '#submitContainer');
+              assertTrue(!!submitIcon);
+
+              assertNear(
+                  initialTop, toolChipButton.getBoundingClientRect().top,
+                  LAYOUT_TOLERANCE_PX,
+                  'Tool chip top should not shift when submit button appears');
+              assertNear(
+                  initialBottom, toolChipButton.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
+                  'Tool chip bottom should not shift when submit button ' +
+                      'appears');
+              assertNear(
+                  toolChipButton.getBoundingClientRect().bottom,
+                  submitIcon.getBoundingClientRect().bottom,
+                  LAYOUT_TOLERANCE_PX,
+                  'Tool chip button and submit button should be bottom ' +
+                      'aligned');
+            });
       });
     });
 
