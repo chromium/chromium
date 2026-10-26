@@ -15,6 +15,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {DriveDisclaimerStatus, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle} from '../test_support.js';
@@ -241,7 +242,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
 
     const testInputState = {
-      ...new testSupport.MockInputState(),
+      ...new MockInputState(),
       activeTool: ToolMode.kDeepSearch,
     };
     testProxy.searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
@@ -1070,7 +1071,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
   test('pasting too many files records metric and prevents paste', async () => {
     // Arrange.
     const testInputState = {
-      ...new testSupport.MockInputState(),
+      ...new MockInputState(),
       maxInputsByType: {
         [InputType.kBrowserTab]: 1,
         [InputType.kLensImage]: 1,
@@ -1197,7 +1198,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
   test('pasting mixed files is processed correctly', async () => {
     // Arrange.
     const testInputState = {
-      ...new testSupport.MockInputState(),
+      ...new MockInputState(),
       maxInstances: {
         [InputType.kBrowserTab]: 2,
         [InputType.kLensImage]: 2,
@@ -1272,7 +1273,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
       async () => {
         // Arrange.
         const testInputState = {
-          ...new testSupport.MockInputState(),
+          ...new MockInputState(),
           maxTotalInputs: 5,
         };
         testSupport.createComposeboxElement(testProxy);
@@ -1334,7 +1335,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
       async () => {
         // Arrange.
         const testInputState = {
-          ...new testSupport.MockInputState(),
+          ...new MockInputState(),
           maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 3,
@@ -1657,7 +1658,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
 
     for (const toolMode of toolModes) {
       const testInputState = {
-        ...new testSupport.MockInputState(),
+        ...new MockInputState(),
         activeTool: toolMode,
       };
       testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
@@ -1674,7 +1675,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       'files are cleared when their input type is no longer allowed',
       async () => {
         const testInputState = {
-          ...new testSupport.MockInputState(),
+          ...new MockInputState(),
           allowedInputTypes: [
             InputType.kLensImage,
             InputType.kBrowserTab,
@@ -1700,7 +1701,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
 
         // Update InputState to disallow images and tabs.
         const newInputState = {
-          ...new testSupport.MockInputState(),
+          ...new MockInputState(),
           allowedInputTypes: [InputType.kLensFile],
         };
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(

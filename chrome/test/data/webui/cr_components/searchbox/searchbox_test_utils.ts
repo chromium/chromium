@@ -11,8 +11,6 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {ToolMode as ComposeboxToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals} from '//webui-test/chai_assert.js';
 
-export type {InputState};
-
 /**
  * Asserts the computed style value for an element.
  * @param name The name of the style to assert.

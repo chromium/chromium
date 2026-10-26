@@ -76,7 +76,6 @@ export class MockInputState implements InputState {
   }
 }
 // LINT.ThenChange(//chrome/test/data/webui/cr_components/searchbox/searchbox_test_utils.ts)
-export type {InputState};
 
 const THOUSANDTHS = 0.001;
 

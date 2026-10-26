@@ -7,9 +7,10 @@ import {InputType} from 'chrome://resources/cr_components/composebox/composebox_
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING, generateZeroId, MockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING, generateZeroId, setupComposeboxTest} from './test_support.js';
 
 suite('CrComposeboxAutocompleteContextTest', () => {
   const testProxy = setupComposeboxTest();
