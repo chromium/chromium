@@ -232,6 +232,7 @@ void NetworkLocationRequest::MakeRequest(
             "IP address is available."
           data: "Wi-Fi data, IP address."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "geolocation.googleapis.com"
         }
         policy {
           cookies_allowed: NO
