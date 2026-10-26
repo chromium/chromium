@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_launcher.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -128,15 +130,44 @@ void ArcAutoLaunchService::Shutdown() {
   StopLaunch();
 }
 
+void ArcAutoLaunchService::OnAppRegistered(
+    const std::string& app_id,
+    const ArcAppListPrefs::AppInfo& app_info) {
+  MaybeLaunchAppAfterUpdate(app_info);
+}
+
+void ArcAutoLaunchService::OnAppStatesChanged(
+    const std::string& app_id,
+    const ArcAppListPrefs::AppInfo& app_info) {
+  // An activity that is already registered, e.g. as a non-launchable task
+  // entry, reports becoming launchable here instead of in OnAppRegistered().
+  MaybeLaunchAppAfterUpdate(app_info);
+}
+
+void ArcAutoLaunchService::OnArcAppListPrefsDestroyed() {
+  StopLaunch();
+}
+
 void ArcAutoLaunchService::StartLaunch(const std::string& package_name) {
   if (package_name.empty()) {
     return;
   }
   package_name_ = package_name;
+
+  // The app might not be installed yet, e.g. on first sign-in, so wait for it.
+  arc_app_list_prefs_observation_.Observe(
+      &CHECK_DEREF(ArcAppListPrefs::Get(profile_)));
+  timeout_timer_.Start(FROM_HERE, kLaunchTimeout, this,
+                       &ArcAutoLaunchService::OnTimeout);
   MaybeLaunchApp();
 }
 
 void ArcAutoLaunchService::MaybeLaunchApp() {
+  // Nothing to do if the app is already being launched, or if launching was
+  // stopped.
+  if (app_launcher_ || package_name_.empty()) {
+    return;
+  }
   const ArcAppListPrefs& app_list_prefs =
       CHECK_DEREF(ArcAppListPrefs::Get(profile_));
   const std::string app_id =
@@ -144,13 +175,13 @@ void ArcAutoLaunchService::MaybeLaunchApp() {
           ? GetLaunchableAppId(app_list_prefs, package_name_)
           : std::string();
   if (app_id.empty()) {
-    LOG(WARNING) << "Not auto-launching " << package_name_ << ": "
-                 << GetLaunchFailureReason(*profile_->GetPrefs(),
-                                           app_list_prefs, package_name_);
+    // Keep waiting until the app is installed or the timeout fires.
     return;
   }
 
   VLOG(1) << "Waiting to auto-launch " << package_name_;
+  // The app is installed, so there is no need to wait for it anymore.
+  arc_app_list_prefs_observation_.Reset();
   // ArcAppLauncher launches the app as soon as it is ready.
   app_launcher_ = std::make_unique<ArcAppLauncher>(
       profile_, app_id, /*launch_intent=*/nullptr,
@@ -158,9 +189,43 @@ void ArcAutoLaunchService::MaybeLaunchApp() {
       apps::LaunchSource::kFromChromeInternal);
 }
 
+void ArcAutoLaunchService::MaybeLaunchAppAfterUpdate(
+    const ArcAppListPrefs::AppInfo& app_info) {
+  if (app_info.package_name != package_name_) {
+    return;
+  }
+  // The activities of a package are updated one at a time. Wait until the
+  // current batch is processed, so that the launched activity doesn't depend
+  // on the update order.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ArcAutoLaunchService::MaybeLaunchApp,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ArcAutoLaunchService::StopLaunch() {
+  timeout_timer_.Stop();
+  arc_app_list_prefs_observation_.Reset();
   app_launcher_.reset();
   package_name_.clear();
+}
+
+bool ArcAutoLaunchService::HasLaunchedApp() const {
+  return app_launcher_ && app_launcher_->app_launched();
+}
+
+void ArcAutoLaunchService::OnTimeout() {
+  if (HasLaunchedApp()) {
+    return;
+  }
+  std::string_view reason = "the app did not become ready";
+  if (!app_launcher_) {
+    reason = GetLaunchFailureReason(*profile_->GetPrefs(),
+                                    CHECK_DEREF(ArcAppListPrefs::Get(profile_)),
+                                    package_name_);
+  }
+  LOG(WARNING) << "Timed out auto-launching " << package_name_ << ": "
+               << reason;
+  StopLaunch();
 }
 
 }  // namespace arc

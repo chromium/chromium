@@ -5,10 +5,12 @@
 #include "chrome/browser/ash/arc/policy/arc_auto_launch_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
@@ -102,6 +104,7 @@ class ArcAutoLaunchServiceTest : public testing::Test {
 
   // Replaces the apps installed in ARC with `apps`, given as pairs of package
   // and activity names. The apps are ready since the ARC instance is connected.
+  // Also runs the tasks posted by the service in response.
   void SetInstalledApps(
       const std::vector<std::pair<std::string, std::string>>& apps) {
     std::vector<mojom::AppInfoPtr> app_infos;
@@ -110,6 +113,7 @@ class ArcAutoLaunchServiceTest : public testing::Test {
                                               activity, /*sticky=*/false));
     }
     arc_app_test_.app_instance()->SendRefreshAppList(app_infos);
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetAutoLaunchApps(const std::vector<std::string>& packages) {
@@ -216,6 +220,128 @@ TEST_F(ArcAutoLaunchServiceTest, FirstAppNotInstalled_OtherAppsNotLaunched) {
 
   CreateService();
 
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+}
+
+TEST_F(ArcAutoLaunchServiceTest, LaunchesAppWhenInstalledLater) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+
+  // The app is installed, e.g. by CloudDPC.
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kTestPackageName));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, OtherConfiguredAppInstalled_NotLaunched) {
+  constexpr char kPackage1[] = "com.example.app1";
+  constexpr char kPackage2[] = "com.example.app2";
+  SetAutoLaunchApps({kPackage1, kPackage2});
+
+  CreateService();
+
+  SetInstalledApps({{kPackage2, "com.example.app2.MainActivity"}});
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+
+  SetInstalledApps({{kPackage1, "com.example.app1.MainActivity"},
+                    {kPackage2, "com.example.app2.MainActivity"}});
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kPackage1));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, MultiActivityPackage_LaunchesFirstByNameOnce) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+
+  // The activity whose name sorts first is registered last.
+  SetInstalledApps({{kTestPackageName, "com.example.app.SettingsActivity"},
+                    {kTestPackageName, "com.example.app.MainActivity"}});
+  EXPECT_THAT(GetLaunchedActivities(),
+              ElementsAre("com.example.app.MainActivity"));
+}
+
+TEST_F(ArcAutoLaunchServiceTest,
+       NonLaunchableActivity_IgnoredUntilLaunchableActivityRegisters) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+
+  // A non-launchable activity registers first, e.g. through a background task
+  // created before the app list is refreshed.
+  static_cast<mojom::AppHost*>(ArcAppListPrefs::Get(profile_.get()))
+      ->OnTaskCreated(/*task_id=*/1, kTestPackageName,
+                      "com.example.app.BackgroundActivity", "Background",
+                      /*intent_uri=*/std::nullopt, /*session_id=*/0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedActivities(), ElementsAre(kTestActivity));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, TaskEntryBecomesLaunchable_LaunchesApp) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+
+  // The app's main activity starts a task before the app list is refreshed, so
+  // it is first registered as a non-launchable runtime entry.
+  static_cast<mojom::AppHost*>(ArcAppListPrefs::Get(profile_.get()))
+      ->OnTaskCreated(/*task_id=*/1, kTestPackageName, kTestActivity, "Task",
+                      /*intent_uri=*/std::nullopt, /*session_id=*/0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+
+  // The app list refresh then makes the same activity launchable, which is
+  // reported as a state change rather than a new registration.
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedActivities(), ElementsAre(kTestActivity));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, AppUpdate_DoesNotRelaunch) {
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kTestPackageName));
+
+  // Updating the app refreshes the app list.
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kTestPackageName));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, Timeout_StopsObservation) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+
+  // The app is installed too late, so it is not launched.
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+}
+
+TEST_F(ArcAutoLaunchServiceTest, ArcAppListPrefsDestroyed_CleansUpPending) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  ArcAutoLaunchService* service = CreateService();
+
+  service->OnArcAppListPrefsDestroyed();
+
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+}
+
+TEST_F(ArcAutoLaunchServiceTest, Shutdown_StopsPendingLaunch) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  ArcAutoLaunchService* service = CreateService();
+
+  service->Shutdown();
+
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
   EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
 }
 
