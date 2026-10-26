@@ -80,13 +80,7 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/prefer-localized-errorprone-suppressions.md"
   }
   capability_groups {
-    path_expression: "(?:.*/)?[^/]*\\.(?:gn|gni)"
-    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
-    rules: "agents/knowledge_base/rules/general/suffix-custom-vector-icons-with-custom.md"
-  }
-  capability_groups {
     path_expression: "(?:.*/)?[^/]*\\.(?:grd|grdp)"
-    rules: "agents/knowledge_base/rules/general/avoid-modifying-descriptions-on-existing-grd-strings.md"
     rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-grd-strings-for-developer-ui.md"
     rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-including-large-string-bundles-for-few-strings.md"
     rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-mid-word-line-breaks-in-grit-descriptions.md"
