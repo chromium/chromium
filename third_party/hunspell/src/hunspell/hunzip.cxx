@@ -87,7 +87,7 @@ int Hunzip::getcode(const char* key) {
   // check encryption
   if (strncmp(MAGIC_ENCRYPT, in, MAGICLEN) == 0) {
     unsigned char cs;
-    if (!key)
+    if (!key || !*key)
       return fail(MSG_KEY, filename);
     if (!fin.read(reinterpret_cast<char*>(c), 1))
       return fail(MSG_FORMAT, filename);

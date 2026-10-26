@@ -43,20 +43,25 @@
 class AffEntry {
  public:
   AffEntry()
-      : numconds(0)
-      , opts(0)
-      , aflag(0)
-      , morphcode(nullptr)
+      : morphcode(nullptr)
       , contclass(nullptr)
-      , contclasslen(0) {}
+      , line(0)
+      , headerline(0)
+      , aflag(0)
+      , contclasslen(0)
+      , numconds(0)
+      , opts(0)
+      , xprod(0) {}
   AffEntry(const AffEntry&) = delete;
   AffEntry& operator=(const AffEntry&) = delete;
   virtual ~AffEntry();
+
+  // the condition of the rule as text, in the form the .aff writes it. A rule
+  // with no condition of its own gives back a single dot
+  virtual std::string get_condition() const;
+
   std::string appnd;
   std::string strip;
-  unsigned char numconds;
-  char opts;
-  unsigned short aflag;
   union {
     char conds[MAXCONDLEN];
     struct {
@@ -66,7 +71,16 @@ class AffEntry {
   } c;
   char* morphcode;
   unsigned short* contclass;
+  // .aff line of the rule, and of the header line of its affix class
+  int line;
+  int headerline;
+  unsigned short aflag;
   unsigned short contclasslen;
+  unsigned char numconds;
+  char opts;
+  // the cross product character of the header line, as the file writes it. Any
+  // character other than Y turns the cross product off
+  char xprod;
 };
 
 #endif

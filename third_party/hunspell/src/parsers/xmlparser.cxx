@@ -203,7 +203,8 @@ bool XMLParser::next_token(const char* PATTERN[][2],
       case ST_CHAR_ENTITY:  // SGML element
         if ((tolower(line[actual][head]) == ';')) {
           state = prevstate;
-          head--;
+          if (head)
+            head--;
         }
     }
     if (next_char(line[actual].c_str(), &head))

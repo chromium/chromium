@@ -42,6 +42,7 @@
 #define MYSPELLMGR_H_
 
 #include "hunvisapi.h"
+#include "hunversion.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,6 +70,9 @@ LIBHUNSPELL_DLL_EXPORTED int Hunspell_add_dic(Hunhandle* pHunspell,
 LIBHUNSPELL_DLL_EXPORTED int Hunspell_spell(Hunhandle* pHunspell, const char*);
 
 LIBHUNSPELL_DLL_EXPORTED char* Hunspell_get_dic_encoding(Hunhandle* pHunspell);
+
+/* version of the hunspell library itself, for example "1.7.3" */
+LIBHUNSPELL_DLL_EXPORTED const char* Hunspell_get_library_version(void);
 
 /* suggest(suggestions, word) - search suggestions
  * input: pointer to an array of strings pointer and the (bad) word

@@ -134,7 +134,12 @@ bool FileMgr::getline(std::string& dest) {
   bool ret = false;
   ++linenum;
   if (fin.is_open()) {
-    ret = static_cast<bool>(std::getline(fin, dest));
+    // a line longer than the buffer ends the read the same way the end of the
+    // file does
+    fin.getline(in, sizeof(in));
+    ret = !fin.fail();
+    if (ret)
+      dest.assign(in);
   } else if (hin && hin->is_open()) {
     ret = hin->getline(dest);
   }

@@ -76,6 +76,7 @@
 #include <cctype>
 #include <iterator>
 #include <sstream>
+#include <unordered_set>
 #if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 #include <bit>
 #endif
@@ -127,141 +128,113 @@ void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mod
 }
 #endif
 
+// Encode a BMP-only sequence of w_char codepoints as UTF-8.
+// Each w_char represents a single 16-bit codepoint (h:l). Codepoints
+// outside the BMP are not representable here and never produced by
+// u8_u16, so the encoder only needs the 1/2/3-byte cases.
 std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   dest.clear();
   dest.reserve(src.size());
-  auto u2 = src.begin(), u2_max = src.end();
-  while (u2 < u2_max) {
-    signed char u8;
-    if (u2->h) {  // > 0xFF
-      // XXX 4-byte haven't implemented yet.
-      if (u2->h >= 0x08) {  // >= 0x800 (3-byte UTF-8 character)
-        u8 = 0xe0 + (u2->h >> 4);
-        dest.push_back(u8);
-        u8 = 0x80 + ((u2->h & 0xf) << 2) + (u2->l >> 6);
-        dest.push_back(u8);
-        u8 = 0x80 + (u2->l & 0x3f);
-        dest.push_back(u8);
-      } else {  // < 0x800 (2-byte UTF-8 character)
-        u8 = 0xc0 + (u2->h << 2) + (u2->l >> 6);
-        dest.push_back(u8);
-        u8 = 0x80 + (u2->l & 0x3f);
-        dest.push_back(u8);
-      }
-    } else {               // <= 0xFF
-      if (u2->l & 0x80) {  // >0x80 (2-byte UTF-8 character)
-        u8 = 0xc0 + (u2->l >> 6);
-        dest.push_back(u8);
-        u8 = 0x80 + (u2->l & 0x3f);
-        dest.push_back(u8);
-      } else {  // < 0x80 (1-byte UTF-8 character)
-        u8 = u2->l;
-        dest.push_back(u8);
-      }
+  for (const w_char& wc : src) {
+    uint16_t cp = (static_cast<uint16_t>(wc.h) << 8) | wc.l;
+    if (cp < 0x80) {
+      dest.push_back(static_cast<char>(cp));
+    } else if (cp < 0x800) {
+      dest.push_back(static_cast<char>(0xc0 | (cp >> 6)));
+      dest.push_back(static_cast<char>(0x80 | (cp & 0x3f)));
+    } else {
+      dest.push_back(static_cast<char>(0xe0 | (cp >> 12)));
+      dest.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3f)));
+      dest.push_back(static_cast<char>(0x80 | (cp & 0x3f)));
     }
-    ++u2;
   }
   return dest;
 }
 
+static void warn_missing_cont(const std::string& src, std::string::const_iterator p) {
+  HUNSPELL_WARNING(stderr,
+                   "UTF-8 encoding error. Missing continuation byte in "
+                   "%ld. character position:\n%s\n",
+                   static_cast<long>(std::distance(src.begin(), p)),
+                   src.c_str());
+}
+
+// Decode UTF-8 bytes into w_char codepoints. BMP-only; a 4-byte lead
+// (codepoint >= U+10000) terminates conversion and returns -1.
+//
+// On a malformed sequence the decoder emits U+FFFD and resyncs by
+// advancing past the lead byte plus any continuation bytes already
+// validated. e.g. a 3-byte lead with valid first cont but invalid
+// second cont advances by 2; a 3-byte lead with invalid first cont
+// advances by 1.
 int u8_u16(std::vector<w_char>& dest, const std::string& src, bool only_convert_first_letter) {
   // faster to oversize initially, assign to elements and resize to what's used
   // than to reserve and push_back
   dest.resize(only_convert_first_letter ? 1 : src.size());
-  auto u16 = dest.begin();
-  auto u8 = src.begin(), u8_max = src.end();
+  auto out = dest.begin();
+  auto p = src.begin(), end = src.end();
 
-  while (u8 < u8_max) {
-    w_char u2;
-    switch ((*u8) & 0xf0) {
-      case 0x00:
-      case 0x10:
-      case 0x20:
-      case 0x30:
-      case 0x40:
-      case 0x50:
-      case 0x60:
-      case 0x70: {
-        u2.h = 0;
-        u2.l = *u8;
-        break;
+  while (p < end) {
+    uint8_t b0 = static_cast<uint8_t>(*p);
+    uint16_t cp;
+
+    if (b0 < 0x80) {
+      // 1-byte ASCII
+      cp = b0;
+    } else if (b0 < 0xc0) {
+      // continuation byte at lead position
+      HUNSPELL_WARNING(stderr,
+                       "UTF-8 encoding error. Unexpected continuation bytes "
+                       "in %ld. character position\n%s\n",
+                       static_cast<long>(std::distance(src.begin(), p)),
+                       src.c_str());
+      cp = 0xfffd;
+    } else if (b0 < 0xe0) {
+      // 2-byte sequence: 110xxxxx 10yyyyyy
+      if (p + 1 < end && is_utf8_cont(p[1])) {
+        cp = ((b0 & 0x1f) << 6) | (static_cast<uint8_t>(p[1]) & 0x3f);
+        ++p;  // step past lead; loop bottom steps past cont
+      } else {
+        warn_missing_cont(src, p);
+        cp = 0xfffd;
       }
-      case 0x80:
-      case 0x90:
-      case 0xa0:
-      case 0xb0: {
-        HUNSPELL_WARNING(stderr,
-                         "UTF-8 encoding error. Unexpected continuation bytes "
-                         "in %ld. character position\n%s\n",
-                         static_cast<long>(std::distance(src.begin(), u8)),
-                         src.c_str());
-        u2.h = 0xff;
-        u2.l = 0xfd;
-        break;
-      }
-      case 0xc0:
-      case 0xd0: {  // 2-byte UTF-8 codes
-        if (u8 + 1 < u8_max && (*(u8 + 1) & 0xc0) == 0x80) {
-          u2.h = (*u8 & 0x1f) >> 2;
-          u2.l = (static_cast<unsigned char>(*u8) << 6) + (*(u8 + 1) & 0x3f);
-          ++u8;
+    } else if (b0 < 0xf0) {
+      // 3-byte sequence: 1110xxxx 10yyyyyy 10zzzzzz
+      if (p + 1 < end && is_utf8_cont(p[1])) {
+        uint8_t b1 = static_cast<uint8_t>(p[1]);
+        ++p;  // step past lead
+        if (p + 1 < end && is_utf8_cont(p[1])) {
+          cp = ((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (static_cast<uint8_t>(p[1]) & 0x3f);
+          ++p;  // step past first cont; loop bottom steps past second cont
         } else {
-          HUNSPELL_WARNING(stderr,
-                           "UTF-8 encoding error. Missing continuation byte in "
-                           "%ld. character position:\n%s\n",
-                           static_cast<long>(std::distance(src.begin(), u8)),
-                           src.c_str());
-          u2.h = 0xff;
-          u2.l = 0xfd;
+          warn_missing_cont(src, p);
+          cp = 0xfffd;
         }
-        break;
+      } else {
+        warn_missing_cont(src, p);
+        cp = 0xfffd;
       }
-      case 0xe0: {  // 3-byte UTF-8 codes
-        if (u8 + 1 < u8_max && (*(u8 + 1) & 0xc0) == 0x80) {
-          u2.h = ((*u8 & 0x0f) << 4) + ((*(u8 + 1) & 0x3f) >> 2);
-          ++u8;
-          if (u8 + 1 < u8_max && (*(u8 + 1) & 0xc0) == 0x80) {
-            u2.l = (static_cast<unsigned char>(*u8) << 6) + (*(u8 + 1) & 0x3f);
-            ++u8;
-          } else {
-            HUNSPELL_WARNING(stderr,
-                             "UTF-8 encoding error. Missing continuation byte "
-                             "in %ld. character position:\n%s\n",
-                             static_cast<long>(std::distance(src.begin(), u8)),
-                             src.c_str());
-            u2.h = 0xff;
-            u2.l = 0xfd;
-          }
-        } else {
-          HUNSPELL_WARNING(stderr,
-                           "UTF-8 encoding error. Missing continuation byte in "
-                           "%ld. character position:\n%s\n",
-                           static_cast<long>(std::distance(src.begin(), u8)),
-                           src.c_str());
-          u2.h = 0xff;
-          u2.l = 0xfd;
-        }
-        break;
-      }
-      default: {  // 4 or more byte UTF-8 codes
-        assert(((*u8) & 0xf0) == 0xf0 && "can only be 0xf0");
-        HUNSPELL_WARNING(stderr,
-                         "This UTF-8 encoding can't convert to UTF-16:\n%s\n",
-                         src.c_str());
-        u2.h = 0xff;
-        u2.l = 0xfd;
-        *u16++ = u2;
-        dest.resize(u16 - dest.begin());
-        return -1;
-      }
+    } else {
+      // 4+ byte lead: codepoint >= U+10000, can't fit in w_char
+      HUNSPELL_WARNING(stderr,
+                       "This UTF-8 encoding can't convert to UTF-16:\n%s\n",
+                       src.c_str());
+      out->h = 0xff;
+      out->l = 0xfd;
+      ++out;
+      dest.resize(out - dest.begin());
+      return -1;
     }
-    *u16++ = u2;
+
+    out->h = static_cast<unsigned char>(cp >> 8);
+    out->l = static_cast<unsigned char>(cp);
+    ++out;
     if (only_convert_first_letter)
-        break;
-    ++u8;
+      break;
+    ++p;  // consume lead byte
   }
 
-  int size = u16 - dest.begin();
+  int size = static_cast<int>(out - dest.begin());
   dest.resize(size);
   return size;
 }
@@ -326,6 +299,14 @@ std::vector<std::string> line_tok(const std::string& text, char breakchar) {
   return ret;
 }
 
+// keep the first of each line and drop the later repeats
+static void drop_repeated_lines(std::vector<std::string>& lines) {
+  std::unordered_set<std::string> seen;
+  auto firstrepeat = std::remove_if(lines.begin(), lines.end(),
+                                    [&seen](const std::string& line) { return !seen.insert(line).second; });
+  lines.erase(firstrepeat, lines.end());
+}
+
 // uniq line in place
 void line_uniq(std::string& text, char breakchar)
 {
@@ -334,20 +315,13 @@ void line_uniq(std::string& text, char breakchar)
   if (lines.empty()) {
     return;
   }
+
+  drop_repeated_lines(lines);
+
   text = lines[0];
   for (size_t i = 1; i < lines.size(); ++i) {
-    bool dup = false;
-    for (size_t j = 0; j < i; ++j) {
-      if (lines[i] == lines[j]) {
-        dup = true;
-        break;
-      }
-    }
-    if (!dup) {
-      if (!text.empty())
-        text.push_back(breakchar);
-      text.append(lines[i]);
-    }
+    text.push_back(breakchar);
+    text.append(lines[i]);
   }
 }
 
@@ -362,21 +336,8 @@ void line_uniq_app(std::string& text, char breakchar) {
   if (lines.empty()) {
     return;
   }
-  text = lines[0];
-  for (size_t i = 1; i < lines.size(); ++i) {
-    bool dup = false;
-    for (size_t j = 0; j < i; ++j) {
-      if (lines[i] == lines[j]) {
-        dup = true;
-        break;
-      }
-    }
-    if (!dup) {
-      if (!text.empty())
-        text.push_back(breakchar);
-      text.append(lines[i]);
-    }
-  }
+
+  drop_repeated_lines(lines);
 
   if (lines.size() == 1) {
     text = lines[0];
@@ -393,12 +354,14 @@ void line_uniq_app(std::string& text, char breakchar) {
 
 // append s to ends of every lines in text
 std::string& strlinecat(std::string& str, const std::string& apd) {
-  size_t pos = 0;
-  while ((pos = str.find('\n', pos)) != std::string::npos) {
-    str.insert(pos, apd);
-    pos += apd.length() + 1;
+  std::string result;
+  size_t pos = 0, end;
+  while ((end = str.find('\n', pos)) != std::string::npos) {
+    result.append(str, pos, end - pos).append(apd).push_back('\n');
+    pos = end + 1;
   }
-  str.append(apd);
+  result.append(str, pos, std::string::npos).append(apd);
+  str.swap(result);
   return str;
 }
 
@@ -411,6 +374,21 @@ int fieldlen(const char* r) {
   return n;
 }
 
+size_t append_compound_parts(const std::string& desc, std::string& result) {
+  // find by offset, a search from a bare pointer remeasures the rest of desc on every step
+  size_t part = desc.find(MORPH_PART);
+  if (part == std::string::npos)
+    return 0;
+  size_t nextpart = desc.find(MORPH_PART, part + 1);
+  while (nextpart != std::string::npos) {
+    const char* field = desc.c_str() + part + MORPH_TAG_LEN;
+    result.append(field, fieldlen(field));
+    part = nextpart;
+    nextpart = desc.find(MORPH_PART, part + 1);
+  }
+  return part;
+}
+
 bool copy_field(std::string& dest,
                 const std::string& morph,
                 const std::string& var) {
@@ -419,14 +397,11 @@ bool copy_field(std::string& dest,
   size_t pos = morph.find(var);
   if (pos == std::string::npos)
     return false;
-  dest.clear();
-  std::string beg(morph.substr(pos + MORPH_TAG_LEN, std::string::npos));
-
-  for (const char c : beg) {
-    if (c == ' ' || c == '\t' || c == '\n')
-      break;
-    dest.push_back(c);
-  }
+  pos += MORPH_TAG_LEN;
+  // copy the field value up to the next whitespace, without first
+  // making a throwaway copy of the whole remaining tail of the string
+  size_t end = morph.find_first_of(" \t\n", pos);
+  dest.assign(morph, pos, end == std::string::npos ? std::string::npos : end - pos);
 
   return true;
 }
@@ -563,7 +538,7 @@ w_char upper_utf(w_char u, int langnum) {
 //but g++ remains in five instructions
 //maybe use inline asm for g++?
 
-#if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+#if (__cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) && defined __cpp_lib_bit_cast && __cpp_lib_bit_cast >= 201806L
   return std::bit_cast<w_char>(unicodetoupper((unsigned short)u, langnum));
 #else
   const auto us = unicodetoupper((unsigned short)u, langnum);
@@ -587,7 +562,7 @@ w_char lower_utf(w_char u, int langnum) {
 //but g++ remains in five instructions
 //maybe use inline asm for g++?
 
-#if __cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+#if (__cplusplus >= 202002L || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) && defined __cpp_lib_bit_cast && __cpp_lib_bit_cast >= 201806L
   return std::bit_cast<w_char>(unicodetolower((unsigned short)u, langnum));
 #else
   const auto us = unicodetolower((unsigned short)u, langnum);
@@ -2490,7 +2465,8 @@ unsigned short unicodetoupper(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToUpperCase((char16_t)c);
 #else
-  return utf_tbl[c].cupper;
+  unsigned short up = utf_pages[utf_page_index[c >> 8]][c & 0xFF].cupper;
+  return up ? up : c;
 #endif
 #endif
 }
@@ -2507,7 +2483,8 @@ unsigned short unicodetolower(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToLowerCase((char16_t)c);
 #else
-  return utf_tbl[c].clower;
+  unsigned short lo = utf_pages[utf_page_index[c >> 8]][c & 0xFF].clower;
+  return lo ? lo : c;
 #endif
 #endif
 }
@@ -2516,7 +2493,7 @@ int unicodeisalpha(unsigned short c) {
 #ifdef OPENOFFICEORG
   return u_isalpha(c);
 #else
-  return utf_tbl[c].cletter;
+  return utf_pages[utf_page_index[c >> 8]][c & 0xFF].cletter;
 #endif
 }
 

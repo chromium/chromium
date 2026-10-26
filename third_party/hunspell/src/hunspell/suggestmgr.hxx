@@ -132,7 +132,8 @@ class SuggestMgr {
   void ngsuggest(std::vector<std::string>& slst, const char* word, const std::vector<std::unique_ptr<HashMgr>>& rHMgr, int captype);
 
   std::string suggest_morph(const std::string& word);
-  std::string suggest_gen(const std::vector<std::string>& pl, const std::string& pattern);
+  std::string suggest_gen(const std::vector<std::string>& pl, const std::string& pattern,
+                          std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::time_point::max());
 
  private:
 #ifdef HUNSPELL_CHROME_CLIENT

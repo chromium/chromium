@@ -67,6 +67,9 @@ static inline void HUNSPELL_WARNING(FILE*, const char*, ...) {}
 #define aeALIASF (1 << 2)
 #define aeALIASM (1 << 3)
 #define aeLONGCOND (1 << 4)
+// the rule wrote a condition that the stripping already forces, so the
+// condition was dropped and the rule now matches anything
+#define aeREDUNDANTCOND (1 << 5)
 
 // compound options
 #define IN_CPD_NOT 0
@@ -106,6 +109,9 @@ static inline void HUNSPELL_WARNING(FILE*, const char*, ...) {}
 #define TIMELIMIT_MS std::chrono::milliseconds(50)
 #define MINTIMER 100
 #define MAXPLUSTIMER 100
+
+// ceiling on the accumulated compound morph analysis string
+#define MAXMORPHRESULT (4 * 1024 * 1024)
 
 struct guessword {
   char* word;

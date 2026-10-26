@@ -72,6 +72,8 @@
 #define HASHMGR_HXX_
 
 #include <cstdio>
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -217,6 +219,20 @@ class HashMgr {
   void remove_forbidden_flag(const std::string& word);
   void free_table();
   void release_flags(unsigned short* astr, bool owned);
+
+  // Only internal consumers are allowed to arena-allocate.
+  int decode_flags(unsigned short** result, const std::string& flags, FileMgr* af, bool use_arena) const;
+
+  // Bump-pointer arena for load-time hentry/flag/aliasm allocations. Freed in
+  // bulk at destruction. arena_free is a no-op that tracks outstanding allocs
+  // and aborts on underflow. Mutable so const decode_flags can arena-allocate.
+  void* arena_alloc(size_t num_bytes, size_t alignment) const;
+  void arena_free(void* ptr) const;
+
+  mutable std::vector<std::unique_ptr<uint8_t[]>> arena;
+  mutable size_t current_chunk_size = 0;
+  mutable size_t current_chunk_offset = 0;
+  mutable size_t outstanding_arena_allocations = 0;
 };
 
 #endif
