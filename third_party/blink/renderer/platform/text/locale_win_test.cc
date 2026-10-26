@@ -216,6 +216,27 @@ TEST_F(LocaleWinTest, dateFormat) {
             LocaleWin::DateFormatForTesting("yyyy-''''MMMM-dd"));
 }
 
+// ddd/dddd (day of week) has no field UI; it is dropped together with the
+// literal text around it. crbug.com/574997087
+TEST_F(LocaleWinTest, dateFormatDayOfWeek) {
+  EXPECT_EQ("yyyy/MM/dd",
+            LocaleWin::DateFormatForTesting("yyyy/MM/dd '('ddd')'"));
+  EXPECT_EQ("yyyy/MM/dd",
+            LocaleWin::DateFormatForTesting("yyyy/MM/dd '('dddd')'"));
+  EXPECT_EQ("yyyy/MM/dd", LocaleWin::DateFormatForTesting("yyyy/MM/dd (ddd)"));
+  // Full-width parentheses.
+  EXPECT_EQ("yyyy/MM/dd", LocaleWin::DateFormatForTesting(
+                              String::FromUtf8("yyyy/MM/dd\xEF\xBC\x88"
+                                               "ddd\xEF\xBC\x89")));
+  EXPECT_EQ("yyyy/MM/dd", LocaleWin::DateFormatForTesting("yyyy/MM/dd ddd"));
+  EXPECT_EQ("dd MMMM yyyy",
+            LocaleWin::DateFormatForTesting("dddd, dd MMMM yyyy"));
+  // A literal between the day of week and a following field is kept as the
+  // separator.
+  EXPECT_EQ("yyyy MM", LocaleWin::DateFormatForTesting("yyyy ddd MM"));
+  EXPECT_EQ("", LocaleWin::DateFormatForTesting("ddd"));
+}
+
 TEST_F(LocaleWinTest, monthFormat) {
   // Month format for EnglishUS:
   //  "MMMM, yyyy" on Windows 7 or older.

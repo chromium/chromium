@@ -285,8 +285,8 @@ void CommitLiteralToken(StringBuilder& literal_buffer,
 //   We need to convert the following patterns:
 //     t -> a
 //     tt -> a
-//     ddd -> EEE
-//     dddd -> EEEE
+//     ddd -> ignore (day of week, no field UI; adjacent literals dropped)
+//     dddd -> ignore (ditto)
 //     g -> G
 //     gg -> ignore
 //
@@ -298,6 +298,8 @@ String ConvertWindowsDateTimeFormat(const String& format) {
   StringBuilder literal_buffer;
   bool in_quote = false;
   bool last_quote_can_be_literal = false;
+  bool in_day_of_week_gap = false;
+  bool field_before_day_of_week = false;
   for (wtf_size_t i = 0; i < format.length(); ++i) {
     UChar ch = format[i];
     if (in_quote) {
@@ -325,20 +327,29 @@ String ConvertWindowsDateTimeFormat(const String& format) {
         last_quote_can_be_literal = true;
       }
     } else if (IsAsciiAlpha(ch)) {
-      CommitLiteralToken(literal_buffer, converted);
       wtf_size_t symbol_start = i;
       wtf_size_t count = CountContinuousLetters(format, i);
       i += count - 1;
+      if (ch == 'd' && count > 2) {
+        // ddd and dddd mean a day of week, which no date/time field UI can
+        // show; drop them and the literal before them (e.g. the " (" of
+        // "yyyy/MM/dd '('ddd')'"). A literal after them only survives as
+        // the separator between two remaining fields.
+        literal_buffer.Clear();
+        in_day_of_week_gap = true;
+        field_before_day_of_week = converted.length() > 0;
+        continue;
+      }
+      if (in_day_of_week_gap) {
+        in_day_of_week_gap = false;
+        if (!field_before_day_of_week) {
+          literal_buffer.Clear();
+        }
+      }
+      CommitLiteralToken(literal_buffer, converted);
       if (ch == 'h' || ch == 'H' || ch == 'm' || ch == 's' || ch == 'M' ||
-          ch == 'y') {
+          ch == 'y' || ch == 'd') {
         converted.Append(format, symbol_start, count);
-      } else if (ch == 'd') {
-        if (count <= 2)
-          converted.Append(format, symbol_start, count);
-        else if (count == 3)
-          converted.Append("EEE");
-        else
-          converted.Append("EEEE");
       } else if (ch == 'g') {
         if (count == 1) {
           converted.Append('G');
@@ -354,6 +365,9 @@ String ConvertWindowsDateTimeFormat(const String& format) {
     } else {
       literal_buffer.Append(ch);
     }
+  }
+  if (in_day_of_week_gap) {
+    literal_buffer.Clear();
   }
   CommitLiteralToken(literal_buffer, converted);
   return converted.ToString();
