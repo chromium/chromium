@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/reporting/client/report_queue_provider.h"
 
 namespace reporting {

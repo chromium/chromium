@@ -17,7 +17,6 @@ static_library("user_added_removed") {
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/policy/messaging_layer/proto:add_remove_user_event_proto",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/settings",
     "//components/reporting/client:report_queue_provider",
     "//components/reporting/proto:record_constants",

@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
