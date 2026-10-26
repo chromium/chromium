@@ -33,6 +33,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -79,10 +79,6 @@ namespace ash::cloud_upload {
 namespace {
 
 namespace fm_tasks = ::file_manager::file_tasks;
-
-using chromeos::cloud_upload::kCloudUploadPolicyAllowed;
-using chromeos::cloud_upload::kCloudUploadPolicyAutomated;
-using chromeos::cloud_upload::kCloudUploadPolicyDisallowed;
 
 // The mime type and file_extension must be matching for
 // `CreateFakeWebApps()`.
@@ -737,15 +733,15 @@ IN_PROC_BROWSER_TEST_P(CloudUploadDialogHandlerDisabledBrowserTest,
   if (google_workspace_test) {
     // Disable Microsoft365.
     prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
-                     chromeos::cloud_upload::kCloudUploadPolicyAllowed);
+                     kCloudUploadPolicyAllowed);
     prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
-                     chromeos::cloud_upload::kCloudUploadPolicyDisallowed);
+                     kCloudUploadPolicyDisallowed);
   } else {
     // Disable Google Workspace.
     prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
-                     chromeos::cloud_upload::kCloudUploadPolicyDisallowed);
+                     kCloudUploadPolicyDisallowed);
     prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
-                     chromeos::cloud_upload::kCloudUploadPolicyAllowed);
+                     kCloudUploadPolicyAllowed);
 
     // Perform the necessary OneDrive & Microsoft365 setup.
     file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
@@ -793,9 +789,9 @@ IN_PROC_BROWSER_TEST_F(
     OneDriveSetupDialogShownWhenFixupFlowIsNecessaryForMicrosoft365) {
   auto* prefs = profile()->GetPrefs();
   prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
-                   chromeos::cloud_upload::kCloudUploadPolicyDisallowed);
+                   kCloudUploadPolicyDisallowed);
   prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
-                   chromeos::cloud_upload::kCloudUploadPolicyAllowed);
+                   kCloudUploadPolicyAllowed);
 
   const auto& doc_file = files_[0];
   ASSERT_EQ(doc_file.path().Extension(), ".docx");
@@ -856,8 +852,7 @@ class FileHandlerDialogBrowserTestWithAutomatedFlow
   // on the test configuration).
   bool ExplicitFileHandlersForOfficeExtensionsAndMimeTypesSet() {
     const bool google_workspace_test =
-        chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(
-            profile());
+        IsGoogleWorkspaceCloudUploadAutomated(profile());
     return ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
                fm_tasks::WordGroupExtensions(), fm_tasks::WordGroupMimeTypes(),
                google_workspace_test ? fm_tasks::kActionIdWebDriveOfficeWord
@@ -934,8 +929,7 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
 
   AssignClippyPrefs();
 
-  if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(
-          profile())) {
+  if (IsMicrosoftOfficeCloudUploadAutomated(profile())) {
     // Perform the necessary OneDrive & Microsoft365 setup.
     file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
     file_manager::test::AddFakeWebApp(
@@ -946,7 +940,7 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   EXPECT_TRUE(ExplicitFileHandlersForOfficeExtensionsAndMimeTypesSet());
 
   const CloudProvider cloud_provider =
-      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+      IsGoogleWorkspaceCloudUploadAutomated(profile())
           ? CloudProvider::kGoogleDrive
           : CloudProvider::kOneDrive;
   // Launch move confirmation dialog and get the web contents of the dialog to
@@ -965,12 +959,11 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   )";
 
   // Validate that the confirmation page is displayed for the correct drive.
-  ASSERT_EQ(content::EvalJs(web_contents, kGetProviderNameScript),
-            l10n_util::GetStringUTF8(
-                chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(
-                    profile())
-                    ? IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE
-                    : IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE));
+  ASSERT_EQ(
+      content::EvalJs(web_contents, kGetProviderNameScript),
+      l10n_util::GetStringUTF8(IsGoogleWorkspaceCloudUploadAutomated(profile())
+                                   ? IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE
+                                   : IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE));
 }
 
 // Tests that toggling the pref to `automated` and then back to `disallowed`
@@ -988,7 +981,7 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
 
   // Now toggle the automated policy to disallowed.
   profile()->GetPrefs()->SetString(
-      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+      IsGoogleWorkspaceCloudUploadAutomated(profile())
           ? ash::prefs::kGoogleWorkspaceCloudUpload
           : ash::prefs::kMicrosoftOfficeCloudUpload,
       kCloudUploadPolicyDisallowed);
@@ -1065,23 +1058,23 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   // Microsoft.
   EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
       word_extensions, word_mime_types,
-      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+      IsGoogleWorkspaceCloudUploadAutomated(profile())
           ? fm_tasks::kActionIdWebDriveOfficeWord
           : fm_tasks::kActionIdOpenInOffice));
   EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
       excel_extensions, excel_mime_types,
-      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+      IsGoogleWorkspaceCloudUploadAutomated(profile())
           ? fm_tasks::kActionIdWebDriveOfficeExcel
           : fm_tasks::kActionIdOpenInOffice));
   EXPECT_TRUE(ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
       power_point_extensions, power_point_mime_types,
-      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+      IsGoogleWorkspaceCloudUploadAutomated(profile())
           ? fm_tasks::kActionIdWebDriveOfficePowerPoint
           : fm_tasks::kActionIdOpenInOffice));
 
   // Now toggle the automated policy to disallowed.
   profile()->GetPrefs()->SetString(
-      chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
+      IsGoogleWorkspaceCloudUploadAutomated(profile())
           ? ash::prefs::kGoogleWorkspaceCloudUpload
           : ash::prefs::kMicrosoftOfficeCloudUpload,
       kCloudUploadPolicyDisallowed);

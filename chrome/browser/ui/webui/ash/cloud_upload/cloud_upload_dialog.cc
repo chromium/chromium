@@ -35,6 +35,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
@@ -1136,9 +1136,9 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
     case SetupOrMoveDialogPage::kFileHandlerDialog: {
       auto file_handler_dialog_args = mojom::FileHandlerDialogArgs::New();
       file_handler_dialog_args->show_google_workspace_task =
-          chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile_);
+          IsGoogleWorkspaceCloudUploadAllowed(profile_);
       file_handler_dialog_args->show_microsoft_office_task =
-          chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile_);
+          IsMicrosoftOfficeCloudUploadAllowed(profile_);
       args->dialog_specific_args =
           mojom::DialogSpecificArgs::NewFileHandlerDialogArgs(
               std::move(file_handler_dialog_args));

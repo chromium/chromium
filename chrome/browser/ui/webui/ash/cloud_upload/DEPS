@@ -1,6 +1,7 @@
 include_rules = [
   # Other ash directories in //chrome.
   "+chrome/browser/ash/arc/fileapi",
+  "+chrome/browser/ash/cloud_upload",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/file_manager",
@@ -8,7 +9,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/office_web_app",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/webui/ash/office_fallback",
   "+chrome/browser/ui/webui/ash/system_web_dialog",

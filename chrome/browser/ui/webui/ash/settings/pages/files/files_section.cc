@@ -11,8 +11,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -125,7 +125,7 @@ FilesSection::FilesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDefaultSearchConcepts());
-  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesMicrosoft365SearchConcepts());
     updater.AddSearchTags(GetFilesOneDriveSearchConcepts());
   }
@@ -272,7 +272,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "showOfficeSettings",
-      chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile()));
+      ash::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile()));
 
   const user_manager::User* user =
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile());

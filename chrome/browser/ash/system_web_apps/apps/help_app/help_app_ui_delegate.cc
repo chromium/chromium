@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
@@ -127,7 +127,7 @@ void ChromeHelpAppUIDelegate::TriggerWelcomeTipCallToAction(
 
 void ChromeHelpAppUIDelegate::LaunchMicrosoft365Setup() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  if (!chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile)) {
+  if (!ash::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile)) {
     return;
   }
   ash::cloud_upload::LaunchMicrosoft365Setup(

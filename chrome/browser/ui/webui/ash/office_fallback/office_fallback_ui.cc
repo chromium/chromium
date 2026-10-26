@@ -8,7 +8,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,7 +24,7 @@ namespace ash::office_fallback {
 
 bool OfficeFallbackUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+  return IsEligibleAndEnabledUploadOfficeToCloud(
       Profile::FromBrowserContext(browser_context));
 }
 

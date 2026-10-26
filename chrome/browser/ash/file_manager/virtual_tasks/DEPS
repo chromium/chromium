@@ -10,10 +10,10 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/cloud_upload",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/fusebox",
-  "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/cloud_upload",

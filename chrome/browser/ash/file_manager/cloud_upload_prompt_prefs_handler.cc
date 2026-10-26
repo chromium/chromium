@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -74,9 +74,9 @@ bool IsSyncEnabled(const syncer::SyncService* sync_service) {
 bool IsCloudUploadAutomated(Profile* profile,
                             ash::cloud_upload::CloudProvider cloud_provider) {
   return (cloud_provider == ash::cloud_upload::CloudProvider::kGoogleDrive &&
-          cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile)) ||
+          ash::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile)) ||
          (cloud_provider == ash::cloud_upload::CloudProvider::kOneDrive &&
-          cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile));
+          ash::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile));
 }
 
 // Checks the values of local and syncable prefs, and logs if they're different
@@ -223,9 +223,9 @@ void CloudUploadPromptPrefsHandler::OnSyncablePrefChanged(
 
 void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
   const bool google_workspace_automated =
-      IsGoogleWorkspaceCloudUploadAutomated(profile_);
+      ash::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile_);
   const bool microsoft_office_automated =
-      IsMicrosoftOfficeCloudUploadAutomated(profile_);
+      ash::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile_);
   // If neither policy is set to `automated`, no updates are needed.
   if (!google_workspace_automated && !microsoft_office_automated) {
     return;

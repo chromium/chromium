@@ -41,6 +41,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -63,7 +64,6 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -333,7 +333,7 @@ void PostProcessFoundTasks(Profile* profile,
     KeepOnlyFileManagerInternalTasks(&resulting_tasks->tasks);
   }
 
-  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (ash::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     // Hide the MS365 PWA File Handler.
     RemoveActionsForApp(ash::kMicrosoft365AppId, &resulting_tasks->tasks);
   }

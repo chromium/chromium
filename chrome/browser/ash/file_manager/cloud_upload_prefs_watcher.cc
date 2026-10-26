@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -123,18 +123,18 @@ void CloudUploadPrefsWatcher::Shutdown() {
 }
 
 void CloudUploadPrefsWatcher::OnCloudUploadPrefChanged() {
-  if (!IsMicrosoftOfficeCloudUploadAllowed(profile_)) {
+  if (!ash::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile_)) {
     UnsetMicrosoftOfficeAsDefaultHandlerIfNecessary(profile_);
   }
 
-  if (!IsGoogleWorkspaceCloudUploadAllowed(profile_)) {
+  if (!ash::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile_)) {
     UnsetGoogleWorkspaceAsDefaultHandlerIfNecessary(profile_);
   }
 
   const bool google_workspace_automated =
-      IsGoogleWorkspaceCloudUploadAutomated(profile_);
+      ash::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile_);
   const bool microsoft_office_automated =
-      IsMicrosoftOfficeCloudUploadAutomated(profile_);
+      ash::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile_);
   // A special case that is not supposed to happen in production; the agreed
   // decision is to ignore this setup and act as if both values were set to
   // `allowed` instead of `automated`.
@@ -170,7 +170,7 @@ std::unique_ptr<KeyedService>
 CloudUploadPrefsWatcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  if (!IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (!ash::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     return nullptr;
   }
   return CloudUploadPrefsWatcher::Create(Profile::FromBrowserContext(context));

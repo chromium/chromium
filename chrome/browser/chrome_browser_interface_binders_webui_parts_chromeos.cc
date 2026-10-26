@@ -75,7 +75,7 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
@@ -477,7 +477,7 @@ void PopulateChromeWebUIFrameBindersPartsCros(
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (ash::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::cloud_upload::mojom::PageHandlerFactory,
         ash::cloud_upload::CloudUploadUI>(map);

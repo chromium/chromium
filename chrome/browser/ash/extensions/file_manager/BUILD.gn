@@ -100,7 +100,6 @@ static_library("file_manager") {
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
     "//chrome/browser/chromeos/policy/dlp",
-    "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/devtools",
     "//chrome/browser/download",
     "//chrome/browser/feedback",

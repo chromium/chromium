@@ -850,7 +850,7 @@ if (is_chromeos) {
       "//ash/webui/status_area_internals/mojom",
       "//ash/webui/vc_background_ui",
       "//chrome/browser/ash/borealis",
-      "//chrome/browser/chromeos/upload_office_to_cloud",
+      "//chrome/browser/ash/cloud_upload",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/ash/add_supervision",
       "//chrome/browser/ui/webui/ash/app_install",

@@ -9,7 +9,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -125,7 +125,7 @@ bool ChromeOsWebAppExperiments::ShouldAddLinkPreference(
     const webapps::AppId& app_id,
     Profile* profile) {
   return IsExperimentEnabled(app_id) &&
-         chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAutomated(
+         ash::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAutomated(
              profile);
 }
 

@@ -54,7 +54,6 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/extensions/devtools_util.h"

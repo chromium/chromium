@@ -20,8 +20,8 @@ static_library("cloud_storage") {
   deps = [
     "//ash/constants",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/cloud_upload",
     "//chrome/browser/chromeos/extensions/odfs_config_private",
-    "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/extensions",
     "//chrome/common:constants",
     "//chromeos/ash/experiences/extensions/common/api",
@@ -33,8 +33,8 @@ static_library("cloud_storage") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/cloud_upload",
     "//chrome/browser/chromeos/extensions/odfs_config_private",
-    "//chrome/browser/chromeos/upload_office_to_cloud",
   ]
 }
 

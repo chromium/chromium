@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/grit/generated_resources.h"
@@ -272,8 +272,7 @@ bool IsOfficeWebAppInstalled(Profile* profile) {
 
 bool IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
     Profile* profile) {
-  return chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
-             profile) &&
+  return IsMicrosoftOfficeOneDriveIntegrationAllowed(profile) &&
          IsODFSInstalled(profile);
 }
 

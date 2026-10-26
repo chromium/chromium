@@ -22,7 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_extension_constants.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/forced_extensions/assessment_assistant_tracker.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -58,7 +58,7 @@ void ExternalComponentLoader::StartLoading() {
                            prefs);
     }
 
-    if (chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
+    if (ash::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
             profile_)) {
       AddExternalExtension(extension_misc::kODFSExtensionId, prefs);
     }

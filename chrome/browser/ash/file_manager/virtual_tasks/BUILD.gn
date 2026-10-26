@@ -18,9 +18,9 @@ static_library("virtual_tasks") {
   deps = [
     "//ash/webui/file_manager:constants",
     "//base",
+    "//chrome/browser/ash/cloud_upload",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/fusebox:fusebox_proto",
-    "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",

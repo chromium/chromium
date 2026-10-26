@@ -13,6 +13,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/smb_client/smb_constants.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/prefs/pref_service.h"
@@ -281,8 +281,8 @@ void ChromeFilesInternalsUIDelegate::ClearOfficeFileHandlers() {
   }
   // Do not allow cleaning office handlers when automated Clippy flows are in
   // place.
-  if (chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile) ||
-      chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile)) {
+  if (ash::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile) ||
+      ash::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile)) {
     return;
   }
   ScopedDictPrefUpdate mime_type_pref(profile->GetPrefs(),

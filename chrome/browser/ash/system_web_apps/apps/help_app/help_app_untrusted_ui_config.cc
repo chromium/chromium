@@ -26,12 +26,12 @@
 // TODO(b/342514059): Depending on chrome/browser/ash/child_accounts is not
 // ideal because it's in chrome.
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
@@ -204,7 +204,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // If true, then the user may launch the setup flow for Microsoft 365.
   source->AddBoolean(
       "Microsoft365",
-      chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile));
+      cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile));
 
   // Google Assistant on ChromeOS is deprecated.
   source->AddBoolean("assistantAllowed", false);

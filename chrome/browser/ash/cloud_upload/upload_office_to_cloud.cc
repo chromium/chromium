@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 
 #include <algorithm>
 #include <string_view>
@@ -17,7 +17,7 @@
 
 using extensions::api::odfs_config_private::Mount;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -110,4 +110,4 @@ bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile) {
 
 }  // namespace cloud_upload
 
-}  // namespace chromeos
+}  // namespace ash

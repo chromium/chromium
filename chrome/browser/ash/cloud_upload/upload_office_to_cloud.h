@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_UPLOAD_OFFICE_TO_CLOUD_UPLOAD_OFFICE_TO_CLOUD_H_
-#define CHROME_BROWSER_CHROMEOS_UPLOAD_OFFICE_TO_CLOUD_UPLOAD_OFFICE_TO_CLOUD_H_
+#ifndef CHROME_BROWSER_ASH_CLOUD_UPLOAD_UPLOAD_OFFICE_TO_CLOUD_H_
+#define CHROME_BROWSER_ASH_CLOUD_UPLOAD_UPLOAD_OFFICE_TO_CLOUD_H_
 
 class Profile;
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Return True if user of the `profile` is eligible for Office files upload.
 // A user is eligible if:
@@ -53,6 +53,6 @@ bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile);
 
 }  // namespace cloud_upload
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_UPLOAD_OFFICE_TO_CLOUD_UPLOAD_OFFICE_TO_CLOUD_H_
+#endif  // CHROME_BROWSER_ASH_CLOUD_UPLOAD_UPLOAD_OFFICE_TO_CLOUD_H_

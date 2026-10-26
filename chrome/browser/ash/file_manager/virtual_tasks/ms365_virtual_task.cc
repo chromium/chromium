@@ -12,9 +12,9 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
@@ -30,7 +30,7 @@ Ms365VirtualTask::Ms365VirtualTask() = default;
 Ms365VirtualTask::~Ms365VirtualTask() = default;
 
 bool Ms365VirtualTask::IsEnabled(Profile* profile) const {
-  return chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile) &&
+  return ash::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile) &&
          (!profile->GetProfilePolicyConnector()->IsManaged() ||
           ash::cloud_upload::IsODFSInstalled(profile));
 }

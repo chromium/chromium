@@ -13,9 +13,9 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/chromeos/extensions/odfs_config_private/odfs_config_private_api.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chromeos/ash/experiences/extensions/common/api/odfs_config_private.h"
@@ -155,7 +155,8 @@ void OneDrivePrefObserver::OnMicrosoftOneDriveAccountRestrictionsPrefChanged() {
 }
 
 void OneDrivePrefObserver::MaybeUninstallOdfsExtension(Mount mount) {
-  if (cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(profile_) ||
+  if (ash::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
+          profile_) ||
       !CHECK_DEREF(extensions::ExtensionRegistry::Get(profile_))
            .enabled_extensions()
            .GetByID(extension_misc::kODFSExtensionId)) {
@@ -258,7 +259,8 @@ void OneDrivePrefObserver::OnAppUpdate(const apps::AppUpdate& update) {
 }
 
 void OneDrivePrefObserver::MaybeSetSupportedLinksPreference() {
-  if (!cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAutomated(profile_)) {
+  if (!ash::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAutomated(
+          profile_)) {
     return;
   }
 

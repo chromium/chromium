@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/chromeos/drivefs",
   "+chrome/browser/chromeos/policy/dlp",
-  "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/devtools",
   "+chrome/browser/download",
   "+chrome/browser/extensions/api/file_system",

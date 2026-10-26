@@ -43,6 +43,7 @@
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
@@ -66,7 +67,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -921,8 +921,8 @@ class NonManagedAccount : public TestAccountBrowserTest {
 // non-managed user is logged in.
 IN_PROC_BROWSER_TEST_F(NonManagedAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_TRUE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 class WithEnterpriseFlag : public TestAccountBrowserTest {
@@ -941,8 +941,8 @@ class NonManagedAccountWithEnterpriseFlag : public WithEnterpriseFlag {
 // non-managed user is logged in.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_TRUE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 class WithEnterpriseFlagAndPrefs
@@ -1000,20 +1000,19 @@ IN_PROC_BROWSER_TEST_P(WithEnterpriseFlagAndPrefs,
 
       const size_t google_workspace_task_count = std::ranges::count_if(
           tasks, &IsWebDriveOfficeTask, &FullTaskDescriptor::task_descriptor);
-      EXPECT_EQ(
-          google_workspace_task_count,
-          chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile)
-              ? 1U
-              : 0U);
+      EXPECT_EQ(google_workspace_task_count,
+                ash::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile)
+                    ? 1U
+                    : 0U);
 
       const size_t microsoft_office_task_count = std::ranges::count_if(
           tasks, &IsOpenInOfficeTask, &FullTaskDescriptor::task_descriptor);
-      EXPECT_EQ(microsoft_office_task_count,
-                chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(
-                    profile) &&
-                        (!is_managed || odfs_extension_installed)
-                    ? 1U
-                    : 0U);
+      EXPECT_EQ(
+          microsoft_office_task_count,
+          ash::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile) &&
+                  (!is_managed || odfs_extension_installed)
+              ? 1U
+              : 0U);
     }
   }
 }
@@ -1022,12 +1021,12 @@ INSTANTIATE_TEST_SUITE_P(
     /**/,
     WithEnterpriseFlagAndPrefs,
     testing::Combine(
-        testing::Values(chromeos::cloud_upload::kCloudUploadPolicyDisallowed,
-                        chromeos::cloud_upload::kCloudUploadPolicyAllowed,
-                        chromeos::cloud_upload::kCloudUploadPolicyAutomated),
-        testing::Values(chromeos::cloud_upload::kCloudUploadPolicyDisallowed,
-                        chromeos::cloud_upload::kCloudUploadPolicyAllowed,
-                        chromeos::cloud_upload::kCloudUploadPolicyAutomated),
+        testing::Values(ash::cloud_upload::kCloudUploadPolicyDisallowed,
+                        ash::cloud_upload::kCloudUploadPolicyAllowed,
+                        ash::cloud_upload::kCloudUploadPolicyAutomated),
+        testing::Values(ash::cloud_upload::kCloudUploadPolicyDisallowed,
+                        ash::cloud_upload::kCloudUploadPolicyAllowed,
+                        ash::cloud_upload::kCloudUploadPolicyAutomated),
         testing::Bool(),
         testing::Bool()));
 
@@ -1081,8 +1080,8 @@ class EnterpriseAccount : public TestAccountBrowserTest {
 // enterprise user is logged in.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_TRUE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
@@ -1094,8 +1093,8 @@ class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 // enterprise user is logged in.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_TRUE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 class ChildAccount : public TestAccountBrowserTest {
@@ -1106,8 +1105,8 @@ class ChildAccount : public TestAccountBrowserTest {
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when a
 // child user is logged in.
 IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_FALSE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
@@ -1119,8 +1118,8 @@ class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 // child user is logged in.
 IN_PROC_BROWSER_TEST_F(ChildAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_FALSE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 // |InProcessBrowserTest| which allows a user to login to Guest mode.
@@ -1135,8 +1134,8 @@ class GuestMode : public MixinBasedInProcessBrowserTest {
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when the
 // user is in Guest mode.
 IN_PROC_BROWSER_TEST_F(GuestMode, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->GetProfile()));
+  ASSERT_FALSE(
+      ash::IsEligibleAndEnabledUploadOfficeToCloud(browser()->GetProfile()));
 }
 
 // A profile that has no policy connector.
@@ -1158,7 +1157,7 @@ using ProfileWithoutPolicyConnector = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ProfileWithoutPolicyConnector,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
   TestingProfileWithoutPolicyConnector profile;
-  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(&profile));
+  ASSERT_FALSE(ash::IsEligibleAndEnabledUploadOfficeToCloud(&profile));
 }
 
 // TODO(cassycc or petermarshall) share this class with other test files for

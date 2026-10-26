@@ -8,8 +8,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler_factory.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -48,6 +48,9 @@ std::string ConvertPrefNameToCamelCase(const std::string& pref_name) {
 }  // namespace
 
 using ash::cloud_upload::CloudProvider;
+using ash::cloud_upload::kCloudUploadPolicyAllowed;
+using ash::cloud_upload::kCloudUploadPolicyAutomated;
+using ash::cloud_upload::kCloudUploadPolicyDisallowed;
 
 class CloudUploadPromptPrefsHandlerTestBase : public InProcessBrowserTest {
  public:

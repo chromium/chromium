@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
-#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -179,8 +179,8 @@ bool IsMigrationMisconfigured(Profile* profile, MigrationDestination provider) {
       return !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
                   ->is_enabled();
     case MigrationDestination::kOneDrive:
-      return !chromeos::cloud_upload::
-          IsMicrosoftOfficeOneDriveIntegrationAllowed(profile);
+      return !ash::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
+          profile);
     case MigrationDestination::kDelete:
       // Cannot be misconfigured.
       return false;
