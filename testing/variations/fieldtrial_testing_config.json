@@ -17473,6 +17473,22 @@
             ]
         }
     ],
+    "ThrottleMainFrameTo60HzMacV3": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleMainFrameTo60Hz",
+                        "UrgentMainFrameForInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "ToolbarCaptureFixForSPAs": [
         {
             "platforms": [
