@@ -438,6 +438,7 @@ class CORE_EXPORT HTMLSelectElement final
     return children_descendant_counts_map_;
   }
   unsigned NumDescendantInputs() const;
+  HTMLElement* ListBoxForFilter() const;
 
  private:
   mojom::blink::FormControlType FormControlType() const override;

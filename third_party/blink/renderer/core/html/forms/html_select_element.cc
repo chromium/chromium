@@ -2346,6 +2346,16 @@ unsigned HTMLSelectElement::NumDescendantInputs() const {
   return num_descendant_inputs_;
 }
 
+HTMLElement* HTMLSelectElement::ListBoxForFilter() const {
+  if (HTMLDivElement* listbox = select_type_->ShadowListBox()) {
+    return listbox;
+  }
+  if (!UsesMenuList()) {
+    return const_cast<HTMLSelectElement*>(this);
+  }
+  return nullptr;
+}
+
 FocusableState HTMLSelectElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
   // Run SupportsFocus from the parent class first so it can do a style update

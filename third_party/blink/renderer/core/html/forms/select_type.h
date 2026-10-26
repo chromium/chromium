@@ -81,6 +81,7 @@ class SelectType : public GarbageCollected<SelectType> {
   virtual PopupMenu* PopupForTesting() const;
   virtual AXObject* PopupRootAXObject() const;
   virtual void ShowPicker();
+  HTMLDivElement* ShadowListBox() const { return listbox_.Get(); }
 
   enum SkipDirection { kSkipBackwards = -1, kSkipForwards = 1 };
   CORE_EXPORT HTMLOptionElement* NextSelectableOption(HTMLOptionElement*) const;
@@ -100,6 +101,9 @@ class SelectType : public GarbageCollected<SelectType> {
   const Member<HTMLSelectElement> select_;
   Member<HTMLSelectElement::SelectAutofillPreviewElement> autofill_popover_;
   Member<HTMLDivElement> autofill_popover_text_;
+  // Used by the FilterableSelect feature for the internal <div role=listbox>
+  // created when <select> has descendant <input> elements.
+  Member<HTMLDivElement> listbox_;
   bool will_be_destroyed_ = false;
 
  private:

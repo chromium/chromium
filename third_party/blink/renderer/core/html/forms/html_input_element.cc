@@ -2768,7 +2768,7 @@ bool HTMLInputElement::IsBaseAppearanceCombobox() const {
 }
 
 HTMLSelectElement* HTMLInputElement::FilterTarget() const {
-  if (!RuntimeEnabledFeatures::FilterableSelectEnabled()) {
+  if (!RuntimeEnabledFeatures::FilterableSelectEnabled() || !IsTextField()) {
     return nullptr;
   }
   if (nearest_ancestor_select_) {

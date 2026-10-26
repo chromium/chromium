@@ -322,7 +322,7 @@ class MODULES_EXPORT AXRelationCache {
   using TextRelationAttributeArray =
       std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 4>;
   using OtherRelationAttributeArray =
-      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 7>;
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 8>;
 
   static const TextRelationAttributeArray& GetTextRelationAttributes();
   static const OtherRelationAttributeArray& GetOtherRelationAttributes();

@@ -786,7 +786,10 @@ AXRelationCache::GetOtherRelationAttributes() {
         {html_names::kCommandforAttr,
          Element::FilterForAttribute(html_names::kCommandforAttr)},
         {html_names::kPopovertargetAttr,
-         Element::FilterForAttribute(html_names::kPopovertargetAttr)}}));
+         Element::FilterForAttribute(html_names::kPopovertargetAttr)},
+        // Used by the FilterableSelect feature for <input filter=select_id>.
+        {html_names::kFilterAttr,
+         Element::FilterForAttribute(html_names::kFilterAttr)}}));
   return attributes;
 }
 

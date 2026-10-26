@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -3710,6 +3711,109 @@ TEST_F(AccessibilityTest, SetAncestorsHaveDirtyDescendantsAndDynamicInclusion) {
   EXPECT_FALSE(ignored_included->HasDirtyDescendants());
   EXPECT_FALSE(main->HasDirtyDescendants());
   EXPECT_FALSE(root->HasDirtyDescendants());
+}
+
+TEST_F(AccessibilityTest, FilterableSelectControlsAndRole) {
+  ScopedFilterableSelectForTest filterable_select_enabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <input id="input1" filter="select1">
+    <select id="select1" size="4">
+      <option>one</option>
+      <option>two</option>
+    </select>
+
+    <select id="select2" style="appearance: base-select">
+      <input id="input2">
+      <option>one</option>
+      <option>two</option>
+    </select>
+
+    <select id="select3" size="4">
+      <input id="input3">
+      <option>one</option>
+      <option>two</option>
+    </select>
+
+    <input type="checkbox" id="checkbox" filter="select1">
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.UpdateAXForAllDocuments();
+
+  // 1. External <input filter="select1"> targeting <select id="select1"
+  // size="4">.
+  AXObject* ax_input1 = GetAXObjectByElementId("input1");
+  AXObject* ax_select1 = GetAXObjectByElementId("select1");
+  ASSERT_NE(nullptr, ax_input1);
+  ASSERT_NE(nullptr, ax_select1);
+  EXPECT_EQ(ax::mojom::blink::Role::kTextField, ax_input1->RoleValue());
+  EXPECT_EQ(ax::mojom::blink::Role::kListBox, ax_select1->RoleValue());
+
+  // 2. Nested <input> inside dropdown <select id="select2">.
+  auto* select2 = To<HTMLSelectElement>(GetElementById("select2"));
+  ASSERT_NE(nullptr, select2->ListBoxForFilter());
+  AXObject* ax_input2 = GetAXObjectByElementId("input2");
+  AXObject* ax_listbox2 = cache.Get(select2->ListBoxForFilter());
+  ASSERT_NE(nullptr, ax_input2);
+  ASSERT_NE(nullptr, ax_listbox2);
+  EXPECT_EQ(ax::mojom::blink::Role::kTextField, ax_input2->RoleValue());
+  EXPECT_EQ(ax::mojom::blink::Role::kListBox, ax_listbox2->RoleValue());
+
+  // 3. Nested <input> inside listbox <select id="select3" size="4">.
+  auto* select3 = To<HTMLSelectElement>(GetElementById("select3"));
+  ASSERT_NE(nullptr, select3->ListBoxForFilter());
+  AXObject* ax_input3 = GetAXObjectByElementId("input3");
+  AXObject* ax_listbox3 = cache.Get(select3->ListBoxForFilter());
+  ASSERT_NE(nullptr, ax_input3);
+  ASSERT_NE(nullptr, ax_listbox3);
+  EXPECT_EQ(ax::mojom::blink::Role::kTextField, ax_input3->RoleValue());
+  EXPECT_EQ(ax::mojom::blink::Role::kListBox, ax_listbox3->RoleValue());
+
+  // 4. Non-textfield <input type="checkbox" filter="select1"> should not get
+  // controlsIds.
+  AXObject* ax_checkbox = GetAXObjectByElementId("checkbox");
+  ASSERT_NE(nullptr, ax_checkbox);
+
+  {
+    ScopedFreezeAXCache freeze(cache);
+
+    ui::AXNodeData node_data1;
+    ax_input1->Serialize(&node_data1, ui::kAXModeComplete);
+    EXPECT_THAT(node_data1.GetIntListAttribute(
+                    ax::mojom::blink::IntListAttribute::kControlsIds),
+                testing::ElementsAre(ax_select1->AXObjectID()));
+
+    ui::AXNodeData node_data2;
+    ax_input2->Serialize(&node_data2, ui::kAXModeComplete);
+    EXPECT_THAT(node_data2.GetIntListAttribute(
+                    ax::mojom::blink::IntListAttribute::kControlsIds),
+                testing::ElementsAre(ax_listbox2->AXObjectID()));
+
+    ui::AXNodeData node_data3;
+    ax_input3->Serialize(&node_data3, ui::kAXModeComplete);
+    EXPECT_THAT(node_data3.GetIntListAttribute(
+                    ax::mojom::blink::IntListAttribute::kControlsIds),
+                testing::ElementsAre(ax_listbox3->AXObjectID()));
+
+    ui::AXNodeData checkbox_data;
+    ax_checkbox->Serialize(&checkbox_data, ui::kAXModeComplete);
+    EXPECT_FALSE(checkbox_data.HasIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kControlsIds));
+  }
+
+  // 5. Updating the filter attribute marks the input dirty and updates
+  // controlsIds.
+  GetElementById("input1")->setAttribute(html_names::kFilterAttr,
+                                         AtomicString("select3"));
+  cache.UpdateAXForAllDocuments();
+  {
+    ScopedFreezeAXCache freeze(cache);
+    ui::AXNodeData node_data1;
+    ax_input1->Serialize(&node_data1, ui::kAXModeComplete);
+    EXPECT_THAT(node_data1.GetIntListAttribute(
+                    ax::mojom::blink::IntListAttribute::kControlsIds),
+                testing::ElementsAre(ax_listbox3->AXObjectID()));
+  }
 }
 
 }  // namespace test

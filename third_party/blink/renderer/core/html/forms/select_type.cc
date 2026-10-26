@@ -632,15 +632,16 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     popover_input_slot_->SetIdAttribute(shadow_element_names::kSelectInput);
     popover_->AppendChild(popover_input_slot_);
 
-    HTMLDivElement* listbox = MakeGarbageCollected<HTMLDivElement>(doc);
-    listbox->SetShadowPseudoId(shadow_element_names::kSelectListbox);
-    listbox->setAttribute(html_names::kRoleAttr, AtomicString("listbox"));
-    popover_->AppendChild(listbox);
-    listbox->AppendChild(popover_options_slot_);
+    listbox_ = MakeGarbageCollected<HTMLDivElement>(doc);
+    listbox_->SetShadowPseudoId(shadow_element_names::kSelectListbox);
+    listbox_->setAttribute(html_names::kRoleAttr, AtomicString("listbox"));
+    popover_->AppendChild(listbox_);
+    listbox_->AppendChild(popover_options_slot_);
   } else {
     CHECK(!select_->NumDescendantInputs());
     popover_input_slot_ = nullptr;
     popover_->AppendChild(popover_options_slot_);
+    listbox_ = nullptr;
   }
 
   CreateAutofillPopover(root);
@@ -1288,7 +1289,6 @@ class ListBoxSelectType final : public SelectType {
   Member<HTMLOptionElement> active_selection_end_;
   Member<HTMLSlotElement> option_slot_;
   Member<HTMLSlotElement> input_slot_;
-  Member<HTMLDivElement> listbox_;
   bool is_in_non_contiguous_selection_ = false;
   bool active_selection_state_ = false;
   AppearanceState appearance_state_ = AppearanceState::kNoStyle;
@@ -1305,7 +1305,6 @@ void ListBoxSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(active_selection_end_);
   visitor->Trace(option_slot_);
   visitor->Trace(input_slot_);
-  visitor->Trace(listbox_);
   SelectType::Trace(visitor);
 }
 
@@ -1932,12 +1931,11 @@ void ListBoxSelectType::CreateShadowSubtree(ShadowRoot& root) {
     input_slot_->SetIdAttribute(shadow_element_names::kSelectInput);
     root.appendChild(input_slot_);
 
-    HTMLDivElement* listbox = MakeGarbageCollected<HTMLDivElement>(doc);
-    listbox->SetShadowPseudoId(shadow_element_names::kSelectListbox);
-    listbox->setAttribute(html_names::kRoleAttr, AtomicString("listbox"));
-    root.appendChild(listbox);
-    listbox->AppendChild(option_slot_);
-    listbox_ = listbox;
+    listbox_ = MakeGarbageCollected<HTMLDivElement>(doc);
+    listbox_->SetShadowPseudoId(shadow_element_names::kSelectListbox);
+    listbox_->setAttribute(html_names::kRoleAttr, AtomicString("listbox"));
+    root.appendChild(listbox_);
+    listbox_->AppendChild(option_slot_);
   } else {
     CHECK(!select_->NumDescendantInputs());
     input_slot_ = nullptr;
@@ -2054,6 +2052,7 @@ void SelectType::Trace(Visitor* visitor) const {
   visitor->Trace(select_);
   visitor->Trace(autofill_popover_);
   visitor->Trace(autofill_popover_text_);
+  visitor->Trace(listbox_);
 }
 
 void SelectType::CreateAutofillPopover(ShadowRoot& root) {

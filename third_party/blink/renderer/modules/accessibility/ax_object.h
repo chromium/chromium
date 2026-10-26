@@ -1009,6 +1009,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // element.
   AXObject* GetControlsForOverflowNavigation() const;
 
+  // Returns the listbox controlled by a filtering <input> for FilterableSelect.
+  AXObject* GetControlsListboxForFilterableSelect() const;
+
   // Returns true if this object is within or at the root of an editable region,
   // such as a contenteditable. Also, returns true if this object is an atomic
   // text field, i.e. an input or a textarea. Note that individual subtrees
