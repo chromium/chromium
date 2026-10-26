@@ -89,12 +89,6 @@
   <message name="IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Title in a dialog to confirm that the user wants to delete their account name and email address from Autofill." formatter_data="android_java">
     You can edit your name in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph> <ph name="ACCOUNT">$1<ex>example@gmail.com</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_REMOVE_VERIFIED_EMAIL_TITLE" desc="Title in a dialog to confirm that the user wants to delete a verified email address." formatter_data="android_java">
-    Remove verified email?
-  </message>
-  <message name="IDS_AUTOFILL_REMOVE_VERIFIED_EMAIL_BODY" desc="Text in a dialog to confirm that the user wants to delete a verified email address." formatter_data="android_java">
-    Chrome will stop automatically confirming this email on supported sites.
-  </message>
 
   <message name="IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON" desc="Text in a remove button for Autofill suggestion." formatter_data="android_java">
     Remove
@@ -418,9 +412,22 @@
   <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_EMPTY_LABEL" desc="Label shown when no verified email addresses are stored." formatter_data="android_java">
     Verified email addresses will appear here
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_SUMMARY" desc="Text shown below a verified email address indicating which identity provider verified it." formatter_data="android_java">
-    Verified by <ph name="IDP_ORIGIN">%1$s<ex>accounts.google.com</ex></ph>
+  <message name="IDS_AUTOFILL_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION" desc="Label for a menu item that removes the permission for a verified email address." formatter_data="android_java">
+    Remove permission
   </message>
+  <message name="IDS_AUTOFILL_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION_TITLE" desc="Title for the confirmation dialog when removing a verified email permission." formatter_data="android_java">
+    Remove permission?
+  </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION_BODY" desc="Body text for the confirmation dialog when removing a verified email permission." formatter_data="android_java">
+      Going forward, <ph name="ISSUER">%1$s<ex>google.com</ex></ph> will stop automatically confirming this email
+    </message>
+  </if>
+  <if expr="not is_android">
+    <message name="IDS_AUTOFILL_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION_BODY" desc="Body text for the confirmation dialog when removing a verified email permission.">
+      Going forward, <ph name="ISSUER">$1<ex>google.com</ex></ph> will stop automatically confirming this email
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_WHEN_ON_CONFIRM" desc="Bullet point in the 'When on' section of the email verification settings, explaining what happens when the setting is turned on." formatter_data="android_java">
     Email providers like google.com can confirm your email address so you don’t have to check your inbox
   </message>

@@ -15,6 +15,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -301,13 +302,17 @@ public class AutofillProfilesFragmentTest {
         return spyPdm;
     }
 
-    private void clickPreference(String key) {
+    /** Opens the "More" menu of a verified email and selects "Remove permission". */
+    private void clickRemovePermission(String email) {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Preference pref = mSettingsTestRule.getFragment().findPreference(key);
-                    assertNotNull("Preference not found: " + key, pref);
-                    pref.performClick();
-                });
+                () -> mSettingsTestRule.getFragment().scrollToPreference(email));
+        onView(
+                        allOf(
+                                withId(R.id.verified_email_more_button),
+                                withContentDescription(Matchers.containsString(email))))
+                .perform(click());
+        onView(withText(R.string.autofill_settings_remove_verified_email_permission))
+                .perform(click());
     }
 
     @Test
@@ -1322,7 +1327,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
         PersonalDataManager pdm = setUpSpiedPersonalDataManager();
         doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
@@ -1333,10 +1338,11 @@ public class AutofillProfilesFragmentTest {
                                     AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference pref = category.findPreference("test@example.com");
-                    Criteria.checkThat(pref, Matchers.notNullValue());
-                    Criteria.checkThat(pref.getTitle().toString(), Matchers.is("test@example.com"));
                     Criteria.checkThat(
-                            pref.getSummary().toString(), Matchers.containsString("example.com"));
+                            pref, Matchers.instanceOf(AutofillVerifiedEmailPreference.class));
+                    Criteria.checkThat(pref.getTitle().toString(), Matchers.is("test@example.com"));
+                    // The issuer is no longer shown as a secondary line.
+                    Criteria.checkThat(pref.getSummary(), Matchers.nullValue());
                 });
     }
 
@@ -1349,8 +1355,8 @@ public class AutofillProfilesFragmentTest {
         doReturn(List.of("test@example.com", "other@gmail.com"))
                 .when(pdm)
                 .getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
-        doReturn("gmail.com").when(pdm).getEmailVerificationIssuer("other@gmail.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://gmail.com").when(pdm).getEmailVerificationIssuer("other@gmail.com");
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
@@ -1390,7 +1396,7 @@ public class AutofillProfilesFragmentTest {
         PersonalDataManager pdm = setUpSpiedPersonalDataManager();
         String longEmail = "a".repeat(90) + "@example.com";
         doReturn(List.of(longEmail)).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer(longEmail);
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer(longEmail);
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
@@ -1408,35 +1414,11 @@ public class AutofillProfilesFragmentTest {
     @Test
     @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL})
     @MediumTest
-    public void testVerifiedEmailList_IssuerVisibility() {
-        AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
-        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
-        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
-
-        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    PreferenceCategory category =
-                            fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
-                    Criteria.checkThat(category, Matchers.notNullValue());
-                    Preference pref = category.findPreference("test@example.com");
-                    Criteria.checkThat(pref, Matchers.notNullValue());
-                    Criteria.checkThat(
-                            pref.getSummary().toString(), Matchers.containsString("example.com"));
-                });
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL})
-    @MediumTest
     public void testRemoveEmail_ClickShowsDialog() {
         AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
         PersonalDataManager pdm = setUpSpiedPersonalDataManager();
         doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
@@ -1446,8 +1428,20 @@ public class AutofillProfilesFragmentTest {
                     Criteria.checkThat(pref, Matchers.notNullValue());
                 });
 
-        clickPreference("test@example.com");
+        clickRemovePermission("test@example.com");
 
+        onView(withText(R.string.autofill_settings_remove_verified_email_permission_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        String expectedBody =
+                ContextUtils.getApplicationContext()
+                        .getString(
+                                R.string.autofill_settings_remove_verified_email_permission_body,
+                                "example.com");
+        onView(withText(expectedBody)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(android.R.id.button1))
+                .inRoot(isDialog())
+                .check(matches(withText(R.string.remove)));
         onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click());
     }
@@ -1459,11 +1453,11 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
         PersonalDataManager pdm = setUpSpiedPersonalDataManager();
         doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
-        clickPreference("test@example.com");
+        clickRemovePermission("test@example.com");
 
         onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click());
 
@@ -1477,12 +1471,12 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
         PersonalDataManager pdm = setUpSpiedPersonalDataManager();
         doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
         doNothing().when(pdm).removeEmailVerificationAddress(any());
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
-        clickPreference("test@example.com");
+        clickRemovePermission("test@example.com");
 
         onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
 
@@ -1498,13 +1492,13 @@ public class AutofillProfilesFragmentTest {
         doReturn(List.of("test@example.com", "other@gmail.com"))
                 .when(pdm)
                 .getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
-        doReturn("gmail.com").when(pdm).getEmailVerificationIssuer("other@gmail.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://gmail.com").when(pdm).getEmailVerificationIssuer("other@gmail.com");
         doNothing().when(pdm).removeEmailVerificationAddress(any());
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
-        clickPreference("test@example.com");
+        clickRemovePermission("test@example.com");
 
         doReturn(List.of("other@gmail.com")).when(pdm).getEmailVerificationAddresses();
         onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
@@ -1532,12 +1526,12 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
         PersonalDataManager pdm = setUpSpiedPersonalDataManager();
         doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
-        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("https://example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
         doNothing().when(pdm).removeEmailVerificationAddress(any());
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
 
-        clickPreference("test@example.com");
+        clickRemovePermission("test@example.com");
 
         doReturn(List.of()).when(pdm).getEmailVerificationAddresses();
         onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());

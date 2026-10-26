@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+  "More" button displayed on the right side of a verified email settings entry.
+  The button only covers the icon so that it fits within the row's padding.
+-->
+<org.chromium.ui.listmenu.ListMenuButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/verified_email_more_button"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:scaleType="center"
+    android:src="@drawable/ic_more_vert_24dp"
+    app:tint="@color/default_icon_color_tint_list"
+    app:menuVerticalOverlapAnchor="false" />
