@@ -63,6 +63,16 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                     }
 
                     @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        removeTabAndUpdateGroup(tab);
+                    }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        removeTabAndUpdateGroup(tab);
+                    }
+
+                    @Override
                     public void restoreCompleted() {
                         requestDataReset();
                     }
@@ -124,23 +134,42 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         addTabItem(tab);
     }
 
+    private void removeTabAndUpdateGroup(Tab tab) {
+        // Unconditionally remove the tab item (no-op when collapsed, removes the child row when
+        // expanded) and refresh the parent group header if grouped.
+        removeTabItem(tab.getId());
+        updateGroupItem(tab.getTabGroupId(), PayloadType.GROUP_MEMBERSHIP);
+    }
+
     /** Inserts the {@link TabGroupItem} if absent, or updates it if already present. */
     private void syncGroupItem(@Nullable Token tabGroupId) {
         if (tabGroupId == null) return;
 
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null) return;
-
         int index = indexOfTabGroupId(tabGroupId);
         if (index != TabList.INVALID_TAB_INDEX) {
-            updateGroupItemAt(model, index, tabGroupId, PayloadType.GROUP_MEMBERSHIP);
+            updateGroupItemAt(index, tabGroupId, PayloadType.GROUP_MEMBERSHIP);
             return;
         }
+
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null) return;
         insertItem(model, createGroupItem(model, TabModelUtils.getCurrentTab(model), tabGroupId));
     }
 
-    private void updateGroupItemAt(
-            TabModel model, int index, Token tabGroupId, @PayloadType int payload) {
+    /** Updates the existing {@link TabGroupItem} in {@link #mItems} and notifies observers. */
+    private void updateGroupItem(@Nullable Token tabGroupId, @PayloadType int payload) {
+        if (tabGroupId == null) return;
+        int index = indexOfTabGroupId(tabGroupId);
+        if (index == TabList.INVALID_TAB_INDEX) return;
+        updateGroupItemAt(index, tabGroupId, payload);
+    }
+
+    private void updateGroupItemAt(int index, Token tabGroupId, @PayloadType int payload) {
+        TabModel model = getTabModelIfTabStateInitialized();
+        // Skip updating if the last tab was removed and the group no longer exists in TabModel
+        // (didRemoveTabGroup will remove the group card next).
+        if (model == null || !model.containsTabGroup(tabGroupId)) return;
+
         TabGroupItem oldItem = (TabGroupItem) mItems.get(index);
         TabGroupItem updatedItem =
                 oldItem.withSelected(

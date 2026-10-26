@@ -330,6 +330,108 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     }
 
     // ============================================================================================
+    // Section C: Tab & Group Removals and Closure Callbacks
+    // ============================================================================================
+
+    @Test
+    public void testCloseTab_StandaloneTab_RemovesItem() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        closeTab(mTab1);
+
+        verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID)));
+        assertItems(item(TAB2_ID));
+    }
+
+    @Test
+    public void testCloseTab_GroupedMode_NonLastTab_UpdatesGroupMembership() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        closeTab(mTab1);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.GROUP_MEMBERSHIP);
+        verify(mObserver, never()).onItemsRemoved(any());
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testCloseTab_GroupedMode_LastTab_SuppressesGroupUpdate() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1);
+
+        // Closing the last tab in a group detaches it from TabModel (!containsTabGroup), so
+        // didRemoveTabForClosure suppresses the intermediate GROUP_MEMBERSHIP update before
+        // didRemoveTabGroup removes the group card.
+        closeTab(mTab1);
+
+        verifyNoInteractions(mObserver);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testCloseTab_NestedMode_Expanded_RemovesChildRowAndUpdatesHeader() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+
+        closeTab(mTab2);
+
+        verify(mObserver).onItemsRemoved(List.of(item(TAB2_ID)));
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                        PayloadType.GROUP_MEMBERSHIP);
+        assertItems(
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                item(TAB1_ID));
+    }
+
+    @Test
+    public void testCloseTab_NestedMode_Collapsed_UpdatesHeaderOnly() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, true);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+
+        closeTab(mTab2);
+
+        verify(mObserver, never()).onItemsRemoved(any());
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.GROUP_MEMBERSHIP);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testTabRemoved_StandaloneAndExpandedGroupChild() {
+        groupTabs(TAB_GROUP_ID, mTab2, mTab3);
+        mCollapsed.put(TAB_GROUP_ID, false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2, mTab3);
+
+        // Removing a standalone tab via tabRemoved (e.g. reparenting to another window).
+        mModelTabs.remove(mTab1);
+        mTabModelObserver.tabRemoved(mTab1);
+        verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID)));
+        clearInvocations(mObserver);
+
+        // Removing a child tab from an expanded group removes the child row and updates the header.
+        mModelTabs.remove(mTab2);
+        mTabModelObserver.tabRemoved(mTab2);
+        verify(mObserver).onItemsRemoved(List.of(item(TAB2_ID)));
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                        PayloadType.GROUP_MEMBERSHIP);
+        assertItems(
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                item(TAB3_ID));
+    }
+
+    // ============================================================================================
     // Section K: Concurrency, Lifecycle & State Recovery
     // ============================================================================================
 
