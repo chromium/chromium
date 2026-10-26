@@ -36,7 +36,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

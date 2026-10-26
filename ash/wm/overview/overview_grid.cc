@@ -107,7 +107,6 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range_f.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"

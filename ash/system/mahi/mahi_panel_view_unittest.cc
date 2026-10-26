@@ -51,7 +51,6 @@
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
