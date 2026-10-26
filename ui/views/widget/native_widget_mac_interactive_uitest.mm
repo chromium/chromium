@@ -212,8 +212,13 @@ bool ActivateFinder() {
   if (finder_apps.count == 0) {
     return false;
   }
-  return [finder_apps.firstObject
-      activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+  NSApplicationActivationOptions options = 0;
+  // NSApplicationActivateIgnoringOtherApps is deprecated and has no effect on
+  // macOS 14+.
+  if (!@available(macOS 14, *)) {
+    options = NSApplicationActivateIgnoringOtherApps;
+  }
+  return [finder_apps.firstObject activateWithOptions:options];
 }
 
 class ShowWidgetOnMousePressedView : public View {

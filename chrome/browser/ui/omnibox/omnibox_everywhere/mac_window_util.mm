@@ -29,8 +29,13 @@ void ActivateBrowserWindowOnMac(BrowserWindowInterface* bwi) {
 
   // Activate Chrome without NSApplicationActivateAllWindows so only the
   // targeted window is brought to the front rather than all Chrome windows.
-  [[NSRunningApplication currentApplication]
-      activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+  NSApplicationActivationOptions options = 0;
+  // NSApplicationActivateIgnoringOtherApps is deprecated and has no effect on
+  // macOS 14+.
+  if (!@available(macOS 14, *)) {
+    options = NSApplicationActivateIgnoringOtherApps;
+  }
+  [[NSRunningApplication currentApplication] activateWithOptions:options];
 
   NSWindow* window = bwi->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   if (window) {
