@@ -78,6 +78,10 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
 
   // Do not drop any frames at encoder.
   config->rc_dropframe_thresh = 0;
+  // Set a reasonable default for the first key frame before WebRTC begins
+  // sending updated max/min qp values based on network conditions.
+  config->rc_min_quantizer = 10;
+  config->rc_max_quantizer = 50;
   // We do not want variations in bandwidth.
   config->rc_end_usage = VPX_CBR;
   config->rc_undershoot_pct = 100;
