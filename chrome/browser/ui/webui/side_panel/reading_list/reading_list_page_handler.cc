@@ -228,7 +228,7 @@ void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
 
 void ReadingListPageHandler::MarkCurrentTabAsRead() {
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      webui::GetBrowserWindowInterface(web_contents());
   if (!browser) {
     return;
   }
@@ -239,7 +239,7 @@ void ReadingListPageHandler::MarkCurrentTabAsRead() {
 
 void ReadingListPageHandler::AddCurrentTab() {
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      webui::GetBrowserWindowInterface(web_contents());
   if (!browser) {
     return;
   }
@@ -261,7 +261,10 @@ void ReadingListPageHandler::ShowContextMenuForURL(const GURL& url,
                                                    int32_t y) {
   auto embedder = reading_list_ui_->embedder();
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      webui::GetBrowserWindowInterface(web_contents());
+  if (!browser) {
+    return;
+  }
   if (embedder) {
     embedder->ShowContextMenu(gfx::Point(x, y),
                               std::make_unique<ReadLaterItemContextMenu>(
