@@ -938,6 +938,22 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanCommitURL(renderer_id, icon_url));
   EXPECT_FALSE(p->CanCommitURL(renderer_id, sensitive_url));
 
+  // Verify that RevokeAllPermissionsForFile() revokes the permission granted
+  // by GrantRequestOfSpecificFile().
+  p->RevokeAllPermissionsForFile(process.GetID(), icon_path);
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, icon_url));
+  p->GrantRequestOfSpecificFile(process.GetID(), icon_path);
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, icon_url));
+
+  // Verify that GrantRequestOfSpecificFile() and RevokeAllPermissionsForFile()
+  // ignore trailing separators.
+  p->RevokeAllPermissionsForFile(process.GetID(),
+                                 icon_path.AsEndingWithSeparator());
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, icon_url));
+  p->GrantRequestOfSpecificFile(process.GetID(),
+                                icon_path.AsEndingWithSeparator());
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, icon_url));
+
   p->GrantCommitURL(renderer_id, icon_url);
   EXPECT_TRUE(p->CanRequestURL(renderer_id, icon_url));
   EXPECT_TRUE(p->CanRequestURL(renderer_id, sensitive_url));
