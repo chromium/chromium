@@ -74,4 +74,29 @@ TEST_F(WatermarkViewTest, TestExpandedSizeForSizeAngle) {
   EXPECT_NEAR(sizeNeg45.height, 212.13, 0.1);
 }
 
+// Tests that updateWithText:style: updates the text and style properties,
+// clamping opacities and preserving unset fields.
+TEST_F(WatermarkViewTest, TestUpdateWithTextAndStyle) {
+  WatermarkView* view = [[WatermarkView alloc] initWithFrame:CGRectZero];
+
+  WatermarkStyle style;
+  style.fill_opacity = 0.4f;
+  style.outline_opacity = 1.5f;  // should clamp to 1.0
+  style.font_size = 28;
+
+  [view updateWithText:@"Confidential Document" style:style];
+  EXPECT_NSEQ(view.text, @"Confidential Document");
+  EXPECT_NEAR(view.fillOpacity, 0.40, 0.01);
+  EXPECT_NEAR(view.outlineOpacity, 1.0, 0.01);
+  EXPECT_NEAR(view.fontSize, 28.0, 0.01);
+
+  // Partial update: only text changes, style fields unset.
+  WatermarkStyle empty_style;
+  [view updateWithText:@"Updated Text" style:empty_style];
+  EXPECT_NSEQ(view.text, @"Updated Text");
+  EXPECT_NEAR(view.fillOpacity, 0.40, 0.01);
+  EXPECT_NEAR(view.outlineOpacity, 1.0, 0.01);
+  EXPECT_NEAR(view.fontSize, 28.0, 0.01);
+}
+
 }  // namespace

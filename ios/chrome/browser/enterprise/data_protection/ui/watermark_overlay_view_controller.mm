@@ -23,16 +23,7 @@
 #pragma mark - WatermarkConsumer
 
 - (void)updateWatermarkWithText:(NSString*)text style:(WatermarkStyle)style {
-  self.watermarkView.text = text;
-  if (style.fill_opacity.has_value()) {
-    self.watermarkView.fillOpacity = style.fill_opacity.value();
-  }
-  if (style.outline_opacity.has_value()) {
-    self.watermarkView.outlineOpacity = style.outline_opacity.value();
-  }
-  if (style.font_size.has_value()) {
-    self.watermarkView.fontSize = style.font_size.value();
-  }
+  [self.watermarkView updateWithText:text style:style];
 }
 
 @end

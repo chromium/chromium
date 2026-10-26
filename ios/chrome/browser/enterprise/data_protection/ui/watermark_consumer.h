@@ -7,14 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <optional>
-
-// Struct to hold style customization for the WatermarkView.
-struct WatermarkStyle {
-  std::optional<float> fill_opacity;
-  std::optional<float> outline_opacity;
-  std::optional<int> font_size;
-};
+#import "ios/chrome/browser/enterprise/data_protection/ui/watermark_view_utils.h"
 
 // Consumer protocol for the watermark UI to receive style and text updates.
 @protocol WatermarkConsumer <NSObject>
