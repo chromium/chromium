@@ -784,6 +784,64 @@ TEST_F(MediaVideoEncoderWrapperTest, SoftwareEncoderUtilization) {
   EXPECT_DOUBLE_EQ(encoded_frame->encoder_utilization, 15000.0 / 33333.0);
 }
 
+TEST_F(MediaVideoEncoderWrapperTest, UsesEncoderQpForLossinessWhenAvailable) {
+  ExpectEncoderInitialized();
+
+  constexpr size_t kEncodedBytes = 1000;
+  constexpr double kKeyFrameQp = 0.5;
+  constexpr double kDeltaFrameQp = 0.25;
+
+  const FrameInfo key_frame_info = CreateFrameInfo(FrameType::kKey);
+  AdvanceClock(base::Milliseconds(30));
+  const FrameInfo delta_frame_info = CreateFrameInfo(FrameType::kIntermediate);
+
+  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(key_frame_info), _, _))
+      .WillOnce([&, key_frame_info](
+                    scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+        VideoEncoderOutput output;
+        output.key_frame = true;
+        output.timestamp = key_frame_info.reference_time - base::TimeTicks();
+        output.data = base::HeapArray<uint8_t>::WithSize(kEncodedBytes);
+        output.qp = kKeyFrameQp;
+        output_cb_.Run(std::move(output), std::nullopt);
+      });
+
+  EXPECT_CALL(*mock_encoder_,
+              Encode(FrameInfosAreEqual(delta_frame_info), _, _))
+      .WillOnce([&, delta_frame_info](
+                    scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+        VideoEncoderOutput output;
+        output.key_frame = false;
+        output.timestamp = delta_frame_info.reference_time - base::TimeTicks();
+        output.data = base::HeapArray<uint8_t>::WithSize(kEncodedBytes);
+        output.qp = kDeltaFrameQp;
+        output_cb_.Run(std::move(output), std::nullopt);
+      });
+
+  const double bitrate_utilization =
+      (kEncodedBytes * 8.0 / key_frame_info.frame_duration.InSecondsF()) /
+      config_.start_bitrate;
+
+  const auto encoded_key_frame = EncodeVideoFrame(key_frame_info);
+  ASSERT_NE(encoded_key_frame, nullptr);
+  EXPECT_DOUBLE_EQ(encoded_key_frame->lossiness,
+                   bitrate_utilization * kKeyFrameQp);
+
+  // Subsequent frames bypass FrameComplexityEstimator (which would return 0.0
+  // for two identical zero-initialized frames) and compute lossiness from
+  // `output.qp`.
+  const auto encoded_delta_frame = EncodeVideoFrame(delta_frame_info);
+  ASSERT_NE(encoded_delta_frame, nullptr);
+  EXPECT_DOUBLE_EQ(encoded_delta_frame->lossiness,
+                   bitrate_utilization * kDeltaFrameQp);
+}
+
 TEST_F(MediaVideoEncoderWrapperTest, HardwareEncoderUtilization) {
   // Create a hardware-configured wrapper.
   FrameSenderConfig hw_config = GetDefaultVideoSenderConfig();

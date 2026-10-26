@@ -734,6 +734,13 @@ VideoEncoderOutput Av1VideoEncoder::GetEncoderOutput(
       output.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
       output.temporal_id = output.key_frame ? 0 : temporal_id;
       output.color_space = color_space;
+      int qp = -1;
+      if (aom_codec_control(codec_.get(), AOME_GET_LAST_QUANTIZER_64, &qp) ==
+              AOM_CODEC_OK &&
+          qp >= 0) {
+        constexpr double kMaxAv1Quantizer = 63.0;
+        output.qp = std::clamp(qp / kMaxAv1Quantizer, 0.0, 1.0);
+      }
     }
   }
   return output;

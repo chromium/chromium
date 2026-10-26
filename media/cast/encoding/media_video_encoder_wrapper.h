@@ -101,6 +101,14 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
                              int encoder_version,
                              std::optional<double> estimated_complexity);
 
+  // Records `video_frame` metadata and dispatches the encode request.
+  void EnqueueFrameForEncode(scoped_refptr<VideoFrame> video_frame,
+                             media::VideoEncoder::EncodeOptions encode_options,
+                             base::TimeTicks reference_time,
+                             FrameEncodedCallback frame_encoded_callback,
+                             int encoder_version,
+                             std::optional<double> estimated_complexity);
+
   // Once we know the frame size on the first call to `EncodeVideoFrame`, we
   // can then construct the encoder.
   void ConstructEncoder();
@@ -129,10 +137,10 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   double ComputeAndRecordUtilization(base::TimeDelta processing_time);
 
   // Computes the frame's lossiness metric based on the actual vs target bitrate
-  // and the estimated complexity of the frame.
+  // and the normalized quantizer (or estimated complexity) of the frame.
   double ComputeLossiness(size_t data_size,
                           base::TimeDelta frame_duration,
-                          double estimated_complexity) const;
+                          double complexity) const;
 
   // Posts a task to update the encoder options, such as whether a key frame
   // is requested.
@@ -224,8 +232,18 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // Metadata associated with recently queued frames.
   base::queue<CachedMetadata> recent_metadata_;
 
-  // Used to compute utilization metrics for each frame.
+  // Used to estimate frame complexity when the encoder does not report a
+  // quantizer in `VideoEncoderOutput::qp`.
   base::SequenceBound<FrameComplexityEstimator> frame_complexity_estimator_;
+
+  // Number of frames currently in flight on `frame_complexity_estimator_`.
+  int pending_complexity_estimations_ = 0;
+
+  // True once the current encoder instance has populated
+  // `VideoEncoderOutput::qp`. When true (and no earlier frames are still in
+  // `frame_complexity_estimator_`), new frames skip
+  // `frame_complexity_estimator_` and use the encoder's real QP.
+  bool encoder_reports_qp_ = false;
 
   // Pending encodes to be run when options are updated.
   std::vector<base::OnceClosure> pending_encodes_;

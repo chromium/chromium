@@ -282,17 +282,27 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   }
   CHECK(encoder_);
 
+  const media::VideoEncoder::EncodeOptions encode_options = encode_options_;
+  encode_options_.key_frame = false;
+
+  if (encoder_reports_qp_ && pending_complexity_estimations_ == 0) {
+    EnqueueFrameForEncode(std::move(video_frame), encode_options,
+                          reference_time, std::move(frame_encoded_callback),
+                          encoder_version_,
+                          /*estimated_complexity=*/std::nullopt);
+    return true;
+  }
+
+  pending_complexity_estimations_++;
   frame_complexity_estimator_
-      .AsyncCall(encode_options_.key_frame
+      .AsyncCall(encode_options.key_frame
                      ? &FrameComplexityEstimator::EstimateForKeyFrame
                      : &FrameComplexityEstimator::EstimateForDeltaFrame)
       .WithArgs(std::cref(*video_frame))
       .Then(base::BindOnce(
           &MediaVideoEncoderWrapper::OnComplexityEstimated,
-          weak_factory_.GetWeakPtr(), video_frame, encode_options_,
+          weak_factory_.GetWeakPtr(), video_frame, encode_options,
           reference_time, std::move(frame_encoded_callback), encoder_version_));
-
-  encode_options_.key_frame = false;
 
   return true;
 }
@@ -305,6 +315,8 @@ void MediaVideoEncoderWrapper::OnComplexityEstimated(
     int encoder_version,
     std::optional<double> estimated_complexity) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  CHECK_GT(pending_complexity_estimations_, 0);
+  pending_complexity_estimations_--;
 
   if (encoder_version != encoder_version_) {
     // The encoder was reconstructed while we were estimating the quantizer.
@@ -313,6 +325,19 @@ void MediaVideoEncoderWrapper::OnComplexityEstimated(
     return;
   }
 
+  EnqueueFrameForEncode(std::move(video_frame), encode_options, reference_time,
+                        std::move(frame_encoded_callback), encoder_version,
+                        estimated_complexity);
+}
+
+void MediaVideoEncoderWrapper::EnqueueFrameForEncode(
+    scoped_refptr<media::VideoFrame> video_frame,
+    media::VideoEncoder::EncodeOptions encode_options,
+    base::TimeTicks reference_time,
+    FrameEncodedCallback frame_encoded_callback,
+    int encoder_version,
+    std::optional<double> estimated_complexity) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(encoder_);
 
   recent_metadata_.emplace(
@@ -401,11 +426,18 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
   encoded_frame->encoder_utilization =
       ComputeAndRecordUtilization(processing_time);
 
+  std::optional<double> complexity = metadata.estimated_complexity;
+  if (output.qp.has_value()) {
+    encoder_reports_qp_ = true;
+    complexity = std::clamp(*output.qp, 0.0, 1.0);
+  } else if (!output.data.empty()) {
+    encoder_reports_qp_ = false;
+  }
+
   encoded_frame->lossiness =
-      metadata.estimated_complexity
-          ? ComputeLossiness(output.data.size(), metadata.frame_duration,
-                             *metadata.estimated_complexity)
-          : 0.0f;
+      complexity ? ComputeLossiness(output.data.size(), metadata.frame_duration,
+                                    *complexity)
+                 : 0.0f;
 
   encoded_frame->capture_begin_time = metadata.capture_begin_time;
   encoded_frame->capture_end_time = metadata.capture_end_time;
@@ -442,11 +474,12 @@ double MediaVideoEncoderWrapper::ComputeAndRecordUtilization(
 //
 // A higher return value indicates a more heavily compressed (lower quality)
 // frame. This is estimated by multiplying the frame's bitrate utilization
-// by its estimated spatial/temporal complexity.
+// by its normalized quantizer (or estimated spatial/temporal complexity when
+// the encoder does not report a quantizer).
 double MediaVideoEncoderWrapper::ComputeLossiness(
     size_t data_size,
     base::TimeDelta frame_duration,
-    double estimated_complexity) const {
+    double complexity) const {
   const double duration = frame_duration.InSecondsF();
   if (duration <= 0.0) {
     return 0.0;
@@ -464,13 +497,11 @@ double MediaVideoEncoderWrapper::ComputeLossiness(
   CHECK_GT(target_bitrate, 0.0);
   const double bitrate_utilization = actual_bitrate / target_bitrate;
 
-  // 3. Scale utilization by the estimated complexity of the frame.
-  // The estimated_complexity represents how difficult the frame is to compress
-  // (e.g., high motion or high detail). A frame that uses 100% of the bitrate
-  // budget on a blank wall (low complexity) is not very lossy. A frame that
-  // uses 100% of the budget on a confetti explosion (high complexity) is
-  // assumed to be highly lossy.
-  const double raw_lossiness = bitrate_utilization * estimated_complexity;
+  // 3. Scale utilization by the normalized quantizer (or estimated complexity).
+  // A frame that uses 100% of the bitrate budget at a low quantizer is not
+  // very lossy. A frame that uses 100% of the budget at a high quantizer is
+  // heavily compressed.
+  const double raw_lossiness = bitrate_utilization * complexity;
 
   // 4. Clamp to a safe upper bound to protect the rate controller's internal
   // state from timestamp jitter anomalies.
@@ -543,6 +574,7 @@ MediaVideoEncoderWrapper::CachedMetadata::~CachedMetadata() = default;
 void MediaVideoEncoderWrapper::ConstructEncoder() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   encoder_version_++;
+  encoder_reports_qp_ = false;
 
   // Clear any pending encodes and options updates meant for the old encoder.
   pending_encodes_.clear();

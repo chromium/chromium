@@ -369,6 +369,12 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 
   result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
   result.color_space = color_space;
+  SEncoderStatistics stats = {};
+  if (codec_->GetOption(ENCODER_OPTION_GET_STATISTICS, &stats) ==
+      cmResultSuccess) {
+    constexpr double kMaxH264Qp = 51.0;
+    result.qp = std::clamp(stats.uiAverageFrameQP / kMaxH264Qp, 0.0, 1.0);
+  }
   result.data = base::HeapArray<uint8_t>::Uninit(total_chunk_size);
   auto gather_buffer = result.data.as_span();
 

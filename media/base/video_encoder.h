@@ -61,6 +61,10 @@ struct MEDIA_EXPORT VideoEncoderOutput {
   // Some platforms may adjust the encoding size to meet hardware requirements.
   // If not set, the encoded size is the same as configured.
   std::optional<gfx::Size> encoded_size;
+
+  // Normalized quantizer value used by the encoder for the frame, in the
+  // range [0.0, 1.0].
+  std::optional<double> qp;
 };
 
 class MEDIA_EXPORT VideoEncoder {

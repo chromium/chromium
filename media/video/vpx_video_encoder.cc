@@ -867,6 +867,13 @@ VideoEncoderOutput VpxVideoEncoder::GetEncoderOutput(
       output.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
       output.temporal_id = output.key_frame ? 0 : temporal_id;
       output.color_space = color_space;
+      int qp = -1;
+      if (vpx_codec_control(codec_.get(), VP8E_GET_LAST_QUANTIZER_64, &qp) ==
+              VPX_CODEC_OK &&
+          qp >= 0) {
+        constexpr double kMaxVpxQuantizer = 63.0;
+        output.qp = std::clamp(qp / kMaxVpxQuantizer, 0.0, 1.0);
+      }
     }
   }
   return output;

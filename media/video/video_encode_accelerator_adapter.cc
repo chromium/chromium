@@ -925,6 +925,28 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   if (metadata.encoded_size)
     result.encoded_size = metadata.encoded_size;
 
+  if (metadata.qp >= 0) {
+    std::optional<double> max_qp;
+    switch (VideoCodecProfileToVideoCodec(profile_)) {
+      case VideoCodec::kH264:
+      case VideoCodec::kHEVC:
+        max_qp = 51.0;
+        break;
+      case VideoCodec::kVP8:
+        max_qp = 127.0;
+        break;
+      case VideoCodec::kVP9:
+      case VideoCodec::kAV1:
+        max_qp = 255.0;
+        break;
+      default:
+        break;
+    }
+    if (max_qp.has_value()) {
+      result.qp = std::clamp(metadata.qp / *max_qp, 0.0, 1.0);
+    }
+  }
+
   if (buffer_id < 0 ||
       buffer_id >= static_cast<int>(output_buffer_handles_.size())) {
     NotifyErrorStatus(

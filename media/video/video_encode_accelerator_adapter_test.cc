@@ -370,14 +370,18 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription>) {
-        if (output.timestamp == base::Milliseconds(1))
+        if (output.timestamp == base::Milliseconds(1)) {
           EXPECT_EQ(output.temporal_id, 1);
-        else if (output.timestamp == base::Milliseconds(2))
+          ASSERT_TRUE(output.qp.has_value());
+          EXPECT_DOUBLE_EQ(*output.qp, 42.0 / 127.0);
+        } else if (output.timestamp == base::Milliseconds(2)) {
           EXPECT_EQ(output.temporal_id, 1);
-        else if (output.timestamp == base::Milliseconds(3))
+          EXPECT_EQ(output.qp, std::nullopt);
+        } else if (output.timestamp == base::Milliseconds(3)) {
           EXPECT_EQ(output.temporal_id, 2);
-        else if (output.timestamp == base::Milliseconds(4))
+        } else if (output.timestamp == base::Milliseconds(4)) {
           EXPECT_EQ(output.temporal_id, 2);
+        }
 
         EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
@@ -389,6 +393,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
         if (frame->timestamp() == base::Milliseconds(1)) {
           result.h264 = H264Metadata();
           result.h264->temporal_idx = 1;
+          result.qp = 42;
         } else if (frame->timestamp() == base::Milliseconds(2)) {
           result.vp8 = Vp8Metadata();
           result.vp8->temporal_idx = 1;

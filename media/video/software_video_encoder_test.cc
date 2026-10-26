@@ -458,6 +458,9 @@ TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
           std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_FALSE(output.data.empty());
         EXPECT_EQ(output.timestamp, frame_duration * outputs_count);
+        ASSERT_TRUE(output.qp.has_value());
+        EXPECT_GE(*output.qp, 0.0);
+        EXPECT_LE(*output.qp, 1.0);
         outputs_count++;
       });
 
@@ -495,6 +498,9 @@ TEST_P(SoftwareVideoEncoderTest, PerFrameQpEncoding) {
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_FALSE(output.data.empty());
+        ASSERT_TRUE(output.qp.has_value());
+        EXPECT_GE(*output.qp, 0.0);
+        EXPECT_LE(*output.qp, 1.0);
         outputs_count++;
       });
 
