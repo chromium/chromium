@@ -27,7 +27,6 @@
 #include "ui/color/color_id.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -88,7 +87,6 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* parent_menu_item,
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->GetViewAccessibility().SetIsIgnored(true);
-  icon_view_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   icon_view_->SetVisible(false);
 
@@ -98,7 +96,6 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* parent_menu_item,
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
   label_->GetViewAccessibility().SetIsIgnored(true);
-  label_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
   label_->SetCanProcessEventsWithinSubtree(false);
 
   if (submenu_item) {
@@ -108,8 +105,6 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* parent_menu_item,
     submenu_arrow_view_ = AddChildView(std::make_unique<views::ImageView>());
     submenu_arrow_view_->SetImageSize(gfx::Size(icon_size, icon_size));
     submenu_arrow_view_->GetViewAccessibility().SetIsIgnored(true);
-    submenu_arrow_view_->SetProperty(views::kSkipAccessibilityPaintChecks,
-                                     true);
     submenu_arrow_view_->SetCanProcessEventsWithinSubtree(false);
   }
 

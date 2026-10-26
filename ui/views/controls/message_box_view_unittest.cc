@@ -12,14 +12,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -180,6 +184,42 @@ TEST_F(MessageBoxViewTest, CanUpdateMessageLabel) {
   message_box_->SetMessageLabel(kUpdatedMessageLabel);
 
   EXPECT_EQ(kUpdatedMessageLabel, message_box_->label_text_for_testing());
+}
+
+// The message is used as the accessible name of the prompt field.
+TEST_F(MessageBoxViewTest, PromptFieldAccessibleNameIsMessage) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* message_box = widget->SetContentsView(
+      std::make_unique<MessageBoxView>(kDefaultMessage));
+  message_box->SetPromptField(std::u16string());
+  widget->Show();
+
+  const ViewAccessibility& prompt_accessibility =
+      message_box->GetVisiblePromptField()->GetViewAccessibility();
+  EXPECT_EQ(kDefaultMessage, prompt_accessibility.GetCachedName());
+  EXPECT_EQ(ax::mojom::NameFrom::kAttribute,
+            prompt_accessibility.GetCachedNameFrom());
+  RunAccessibilityPaintChecks(widget.get());
+}
+
+// A prompt without a message (window.prompt() with no arguments) leaves the
+// focusable prompt field without an accessible name, which must be marked as
+// intentional for the accessibility paint checks to pass.
+TEST_F(MessageBoxViewTest, EmptyMessagePromptPassesAccessibilityPaintChecks) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* message_box = widget->SetContentsView(
+      std::make_unique<MessageBoxView>(std::u16string()));
+  message_box->SetPromptField(std::u16string());
+  widget->Show();
+
+  const ViewAccessibility& prompt_accessibility =
+      message_box->GetVisiblePromptField()->GetViewAccessibility();
+  EXPECT_TRUE(prompt_accessibility.GetCachedName().empty());
+  EXPECT_EQ(ax::mojom::NameFrom::kAttributeExplicitlyEmpty,
+            prompt_accessibility.GetCachedNameFrom());
+  RunAccessibilityPaintChecks(widget.get());
 }
 
 }  // namespace views

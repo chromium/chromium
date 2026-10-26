@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_ACCESSIBILITY_PAINT_CHECKS_H_
 #define UI_VIEWS_ACCESSIBILITY_ACCESSIBILITY_PAINT_CHECKS_H_
 
-#include "ui/base/class_property.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -19,12 +18,6 @@ VIEWS_EXPORT void RunAccessibilityPaintChecks(View* view);
 
 // Runs the paint checks recursively starting from the Widget's RootView.
 VIEWS_EXPORT void RunAccessibilityPaintChecks(Widget* widget);
-
-// Skip accessibility paint checks on a specific View.
-// TODO(pbos): Remove this key. Do not add new uses to it, instead make sure
-// that the offending View is fixed.
-VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
-    kSkipAccessibilityPaintChecks;
 
 }  // namespace views
 

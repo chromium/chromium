@@ -18,12 +18,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -128,15 +128,17 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .ClipHeightTo(0, provider->GetDistanceMetric(
                                    DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
               .SetContents(std::move(message_contents)),
-          // TODO(crbug.com/40185544): Remove this, this is in place temporarily
-          // to be able to submit accessibility checks, but this focusable View
-          // needs to add a name so that the screen reader knows what to
-          // announce.
+          // The message doubles as the accessible name of the prompt field;
+          // see SetPromptField(). A page may open a prompt without a message
+          // (window.prompt() with no arguments), in which case the focusable
+          // field has to state explicitly that it has no name.
           Builder<Textfield>()
               .CopyAddressTo(&prompt_field_)
-              .SetProperty(kSkipAccessibilityPaintChecks, true)
               .SetProperty(kMarginsKey, horizontal_insets)
-              .SetAccessibleName(message)
+              .SetAccessibleName(
+                  message, message.empty()
+                               ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                               : ax::mojom::NameFrom::kAttribute)
               .SetVisible(false)
               .CustomConfigure(base::BindOnce([](Textfield* prompt_field) {
                 prompt_field->GetViewAccessibility().SetIsIgnored(true);

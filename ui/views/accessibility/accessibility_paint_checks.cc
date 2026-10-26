@@ -8,7 +8,6 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/class_property.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -16,17 +15,11 @@
 
 namespace views {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipAccessibilityPaintChecks, false)
-
 void RunAccessibilityPaintChecks(View* view) {
   // Note that none of these checks run if DCHECKs are off. Dead-code
   // elimination should remove the following. This is done instead of #ifs to
   // make sure that the code compiles regardless of DCHECK availability.
   if (!DCHECK_IS_ON()) {
-    return;
-  }
-
-  if (view->GetProperty(kSkipAccessibilityPaintChecks)) {
     return;
   }
 
@@ -43,10 +36,9 @@ void RunAccessibilityPaintChecks(View* view) {
 // TODO(crbug.com/40185544): Enable these DCHECKs on ash. One of the current
 // failures seem to be SearchResultPageView marking itself as ignored
 // (temporarily), which marks focusable children as ignored. One way of enabling
-// these here would be to turn `kSkipAccessibilityPaintChecks` into a cascading
-// property or introduce a cascading property specifically for the current
-// misbehavior in SearchResultPageView to be able to suppress that and enable
-// the DCHECK elsewhere.
+// these here would be to introduce a cascading property specifically for the
+// current misbehavior in SearchResultPageView to be able to suppress that and
+// enable the DCHECK elsewhere.
 #if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(!node_data.HasState(ax::mojom::State::kIgnored))
       << "View is focusable and should not be ignored.\n"
