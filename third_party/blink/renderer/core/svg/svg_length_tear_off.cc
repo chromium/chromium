@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -250,8 +251,8 @@ void SVGLengthTearOff::newValueSpecifiedUnits(uint16_t unit_type,
   if (!IsValidLengthUnit(unit_type)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"Cannot set value with unknown or invalid units (",
-                String::Number(unit_type), ")."}));
+        Format("Cannot set value with unknown or invalid units ({}).",
+               unit_type));
     return;
   }
   Target()->NewValueSpecifiedUnits(ToCSSUnitType(unit_type),
@@ -269,8 +270,7 @@ void SVGLengthTearOff::convertToSpecifiedUnits(
   if (!IsValidLengthUnit(unit_type)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"Cannot convert to unknown or invalid units (",
-                String::Number(unit_type), ")."}));
+        Format("Cannot convert to unknown or invalid units ({}).", unit_type));
     return;
   }
   // Cannot convert unparsed values.

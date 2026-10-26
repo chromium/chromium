@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
@@ -442,9 +443,9 @@ protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
     return response;
   int max_points = max_touch_points.value_or(1);
   if (max_points < 1 || max_points > WebTouchEvent::kTouchesLengthCap) {
-    String msg = StrCat({"Touch points must be between 1 and ",
-                         String::Number(static_cast<uint16_t>(
-                             WebTouchEvent::kTouchesLengthCap))});
+    String msg =
+        Format("Touch points must be between 1 and {}",
+               static_cast<uint16_t>(WebTouchEvent::kTouchesLengthCap));
     return protocol::Response::InvalidParams(msg.Utf8());
   }
   touch_event_emulation_enabled_.Set(enabled);

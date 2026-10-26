@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
@@ -121,7 +122,7 @@ void DomScenarioRunner::CreateInitialDOM(
       element = document.CreateRawElement(node_spec.tag);
     }
     element->setAttribute(html_names::kIdAttr,
-                          AtomicString(StrCat({"id_", String::Number(i)})));
+                          AtomicString(Format("id_{}", i)));
     // Set attributes first because there's a chance that one of the fuzzed
     // attributes is style. Should that occur we want the style domain to win.
     SetElementAttributes(element, node_spec.initial_state.attributes);
@@ -623,9 +624,8 @@ Element* DomScenarioRunner::WrapInShadowDOM(Element* element,
       html_names::TagToQualifiedName(html_names::HTMLTag::kDiv));
   // Use a counter to ensure unique IDs across initial and modification phases.
   shadow_host->setAttribute(
-      html_names::kIdAttr,
-      AtomicString(StrCat({"shadow-host-", String::Number(child_index), "-",
-                           String::Number(shadow_host_counter_++)})));
+      html_names::kIdAttr, AtomicString(Format("shadow-host-{}-{}", child_index,
+                                               shadow_host_counter_++)));
   ShadowRoot& shadow_root =
       shadow_host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
@@ -634,8 +634,7 @@ Element* DomScenarioRunner::WrapInShadowDOM(Element* element,
   if (use_slot_projection) {
     Element* slot = document.CreateRawElement(
         html_names::TagToQualifiedName(html_names::HTMLTag::kSlot));
-    AtomicString slot_name =
-        AtomicString(StrCat({"slot-", String::Number(child_index)}));
+    AtomicString slot_name = AtomicString(Format("slot-{}", child_index));
     slot->setAttribute(html_names::kNameAttr, slot_name);
     shadow_root.appendChild(slot);
     element->setAttribute(html_names::kSlotAttr, slot_name);

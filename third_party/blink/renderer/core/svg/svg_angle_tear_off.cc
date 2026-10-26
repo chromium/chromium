@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -76,8 +77,8 @@ void SVGAngleTearOff::newValueSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"Cannot set value with unknown or invalid units (",
-                String::Number(unit_type), ")."}));
+        Format("Cannot set value with unknown or invalid units ({}).",
+               unit_type));
     return;
   }
   Target()->NewValueSpecifiedUnits(
@@ -95,8 +96,7 @@ void SVGAngleTearOff::convertToSpecifiedUnits(uint16_t unit_type,
       unit_type > SVGAngle::kSvgAngletypeGrad) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        StrCat({"Cannot convert to unknown or invalid units (",
-                String::Number(unit_type), ")."}));
+        Format("Cannot convert to unknown or invalid units ({}).", unit_type));
     return;
   }
   if (Target()->UnitType() == SVGAngle::kSvgAngletypeUnknown) {

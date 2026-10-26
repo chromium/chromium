@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "url/origin.h"
 
@@ -405,9 +406,8 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
       network::OriginWithPossibleWildcards::NodeType::kAttribute};
 
   if (policy.length() > MAX_LENGTH_PARSE) {
-    logger_.Error(StrCat({"Feature policy declaration exceeds size limit(",
-                          String::Number(policy.length()), ">",
-                          String::Number(MAX_LENGTH_PARSE), ")"}));
+    logger_.Error(Format("Feature policy declaration exceeds size limit({}>{})",
+                         policy.length(), MAX_LENGTH_PARSE));
     return {};
   }
 
@@ -481,9 +481,9 @@ String GetEndpoint(const net::structured_headers::Parameters& params) {
 PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     const String& policy) {
   if (policy.length() > MAX_LENGTH_PARSE) {
-    logger_.Error(StrCat({"Permissions policy declaration exceeds size limit(",
-                          String::Number(policy.length()), ">",
-                          String::Number(MAX_LENGTH_PARSE), ")"}));
+    logger_.Error(
+        Format("Permissions policy declaration exceeds size limit({}>{})",
+               policy.length(), MAX_LENGTH_PARSE));
     return {};
   }
 

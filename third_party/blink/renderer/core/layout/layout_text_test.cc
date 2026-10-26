@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -35,8 +36,8 @@ class LayoutTextTest : public RenderingTest {
 
   void SetAhemBody(const char* content, const unsigned width) {
     SetBodyInnerHTML(
-        StrCat({"<div id='target' style='font: 10px Ahem; width: ",
-                String::Number(width), "em'>", content, "</div>"}));
+        Format("<div id='target' style='font: 10px Ahem; width: {}em'>{}</div>",
+               width, content));
   }
 
   LayoutText* GetLayoutTextById(const char* id) {

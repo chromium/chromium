@@ -59,7 +59,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -97,8 +97,8 @@ class FrontendMenuProvider final : public ContextMenuProvider {
   void ContextMenuItemSelected(unsigned action) override {
     if (!devtools_host_ || action >= DevToolsHost::kMaxContextMenuAction)
       return;
-    devtools_host_->EvaluateScript(StrCat(
-        {"DevToolsAPI.contextMenuItemSelected(", String::Number(action), ")"}));
+    devtools_host_->EvaluateScript(
+        Format("DevToolsAPI.contextMenuItemSelected({})", action));
   }
 
  private:

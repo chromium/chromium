@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -756,9 +757,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           // If prefetch/prerenderRule is not a map, then continue.
           JSONObject* input_rule = JSONObject::Cast(array->at(i));
           if (!input_rule) {
-            result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                             StrCat({"A rule must be an object: path = [\"",
-                                     key, "\"][", String::Number(i), "]"}));
+            result->SetError(
+                SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                Format("A rule must be an object: path = [\"{}\"][{}]", key,
+                       i));
             continue;
           }
 

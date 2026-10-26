@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -156,8 +157,7 @@ void MessagePort::postMessage(ScriptState* script_state,
     if (transferables.message_ports[i] == this) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          StrCat({"Port at index ", String::Number(i),
-                  " contains the source port."}));
+          Format("Port at index {} contains the source port.", i));
       return;
     }
   }
@@ -325,7 +325,7 @@ Vector<MessagePortChannel> MessagePort::DisentanglePorts(
         type = "a duplicate";
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          StrCat({"Port at index ", String::Number(i), " is ", type, "."}));
+          Format("Port at index {} is {}.", i, type));
       return Vector<MessagePortChannel>();
     }
     if (port->closed_)

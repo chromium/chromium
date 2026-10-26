@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -53,7 +54,7 @@ String UrlUtilsReadOnly::host(const KURL& kurl) {
   if (IsDefaultPortForProtocol(kurl.Port(), kurl.Protocol())) {
     return kurl.Host().ToString();
   }
-  return StrCat({kurl.Host(), ":", String::Number(kurl.Port())});
+  return Format("{}:{}", kurl.Host(), kurl.Port());
 }
 
 String UrlUtilsReadOnly::port(const KURL& kurl) {

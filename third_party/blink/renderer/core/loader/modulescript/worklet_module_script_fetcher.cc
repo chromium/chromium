@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -145,8 +146,7 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
         "Failed to load worklet module script: " + url_.GetString();
     switch (error_type) {
       case WorkletModuleError::Type::kHttp:
-        message = message +
-                  " (HTTP status: " + String::Number(http_status_code) + ")";
+        message = Format("{} (HTTP status: {})", message, http_status_code);
         break;
       case WorkletModuleError::Type::kCors:
         message = message + " (CORS or access check error)";

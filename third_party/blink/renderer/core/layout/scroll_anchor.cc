@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -283,11 +284,10 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
     }
   }
 
-  return StrCat({":nth-child(",
-                 String::Number(NthIndexCache::NthChildIndex(
-                     *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
-                     /*context=*/nullptr)),
-                 ")"});
+  return Format(":nth-child({})",
+                NthIndexCache::NthChildIndex(*element, /*filter=*/nullptr,
+                                             /*selector_checker=*/nullptr,
+                                             /*context=*/nullptr));
 }
 
 // Computes a selector that uniquely identifies |anchor_object|. This is done

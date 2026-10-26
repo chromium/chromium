@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 
 namespace blink {
@@ -161,8 +161,7 @@ InspectorAgentState::InspectorAgentState(const blink::String& domain_name)
     : domain_name_(domain_name) {}
 
 blink::String InspectorAgentState::RegisterField(Field* field) {
-  blink::String prefix_key =
-      StrCat({domain_name_, ".", blink::String::Number(fields_.size()), "/"});
+  blink::String prefix_key = Format("{}.{}/", domain_name_, fields_.size());
   fields_.push_back(field);
   return prefix_key;
 }

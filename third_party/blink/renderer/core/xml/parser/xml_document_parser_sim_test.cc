@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -130,7 +130,7 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScript) {
   ASSERT_TRUE(last);
   ASSERT_TRUE(last->parentElement());
   EXPECT_EQ(last->parentElement()->localName(),
-            StrCat({"e", String::Number(kNestingDepth - 1)}));
+            Format("e{}", kNestingDepth - 1));
 
   // The deferred completion must still finish the document.
   EXPECT_TRUE(GetDocument().LoadEventFinished());
@@ -171,7 +171,7 @@ TEST_F(XMLDocumentParserSimTest, FinalDataAndLoadCompletionDuringInlineScript) {
   ASSERT_TRUE(last);
   ASSERT_TRUE(last->parentElement());
   EXPECT_EQ(last->parentElement()->localName(),
-            StrCat({"e", String::Number(kNestingDepth - 1)}));
+            Format("e{}", kNestingDepth - 1));
 
   // The data received together with the completion must have been parsed.
   Element* tail = GetElementById("tail");

@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -182,8 +181,8 @@ void InspectorLogAgent::InnerEnable() {
         protocol::Log::LogEntry::create()
             .setSource(protocol::Log::LogEntry::SourceEnum::Other)
             .setLevel(protocol::Log::LogEntry::LevelEnum::Warning)
-            .setText(StrCat({String::Number(storage_->ExpiredCount()),
-                             " log entries are not shown."}))
+            .setText(Format("{} log entries are not shown.",
+                            storage_->ExpiredCount()))
             .setTimestamp(0)
             .build();
     GetFrontend()->entryAdded(std::move(expired));

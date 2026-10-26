@@ -3748,8 +3748,7 @@ String Internals::getAgentId(DOMWindow* window) {
   // This serializes a pointer as a decimal number, which is a bit ugly, but
   // it works. Is there any utility to dump a number in a hexadecimal form?
   // I couldn't find one in WTF.
-  return StrCat(
-      {String::Number(process_id), ":", String::Number(agent_address)});
+  return Format("{}:{}", process_id, agent_address);
 }
 
 void Internals::useMockOverlayScrollbars() {

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -65,8 +66,8 @@ void AugmentExceptionWithSourceLocation(ScriptState* script_state,
   String message_string = ToCoreString(isolate, message_value.As<v8::String>());
   String new_message_string;
   if (line_number != 0) {
-    new_message_string = StrCat({message_string, " (at ", location_string, ":",
-                                 String::Number(line_number), ")"});
+    new_message_string =
+        Format("{} (at {}:{})", message_string, location_string, line_number);
   } else {
     new_message_string =
         StrCat({message_string, " (at ", location_string, ")"});

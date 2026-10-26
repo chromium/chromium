@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -226,8 +227,7 @@ void ReceiveResponse(ImageResource* image_resource,
 }
 
 AtomicString BuildContentRange(size_t range_length, size_t total_length) {
-  return AtomicString(String("bytes 0-" + String::Number(range_length - 1) +
-                             "/" + String::Number(total_length)));
+  return AtomicString(Format("bytes 0-{}/{}", range_length - 1, total_length));
 }
 
 ResourceFetcher* CreateFetcher() {
