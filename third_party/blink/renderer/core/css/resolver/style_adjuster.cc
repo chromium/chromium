@@ -393,14 +393,6 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
          builder.Display() == EDisplay::kRubyText;
 }
 
-static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
-    const ComputedStyle& layout_parent_style) {
-  return layout_parent_style.IsDisplayFlex() ||
-         layout_parent_style.IsDisplayWebkitBox() ||
-         layout_parent_style.IsDisplayGrid() ||
-         layout_parent_style.IsDisplayGridLanes();
-}
-
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
                                           Element* element) {
   if (element && element->editContext()) {
@@ -1264,10 +1256,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetIsolation(EIsolation::kIsolate);
   }
 
+  if (layout_parent_style.AllowsZIndexOnChildren()) {
+    builder.SetIsInZIndexAllowingDisplay();
+  }
   // z-index is only applicable if positioned, or if a flex/grid/etc item.
   if (builder.GetPosition() != EPosition::kStatic ||
-      LayoutParentStyleForcesZIndexToCreateStackingContext(
-          layout_parent_style)) {
+      layout_parent_style.AllowsZIndexOnChildren()) {
     builder.SetAllowsZIndex(true);
     if (!builder.HasAutoZIndex()) {
       builder.SetForcesStackingContext(true);
@@ -1521,7 +1515,9 @@ bool StyleAdjuster::IsCacheCompatible(
       layout_parent_style_a.IsInBlockifyingDisplay() !=
           layout_parent_style_b.IsInBlockifyingDisplay() ||
       layout_parent_style_a.IsInInlinifyingDisplay() !=
-          layout_parent_style_b.IsInInlinifyingDisplay()) {
+          layout_parent_style_b.IsInInlinifyingDisplay() ||
+      layout_parent_style_a.IsInZIndexAllowingDisplay() !=
+          layout_parent_style_b.IsInZIndexAllowingDisplay()) {
     // The layout parent style's display style affects blockification,
     // stacking context, and many other things.
     return false;

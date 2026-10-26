@@ -1082,6 +1082,15 @@
       default_value: "false",
       custom_compare: true,
     },
+    // Set when the layout parent allows z-index on non-positioned children
+    // (e.g., flex/grid), including on display:contents ancestors, so display
+    // changes invalidate descendants.
+    {
+      name: "IsInZIndexAllowingDisplay",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // Set to true on elements which are either:
     // 1. An element that generates a child box of a content=drawable <canvas>
     // 2. display:contents ancestors of (1).

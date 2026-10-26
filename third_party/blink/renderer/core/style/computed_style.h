@@ -1823,6 +1823,12 @@ class ComputedStyle final : public ComputedStyleBase {
             display == EDisplay::kInlineListItem);
   }
 
+  bool AllowsZIndexOnChildren() const {
+    return IsDisplayFlex() || IsDisplayWebkitBox() || IsDisplayGrid() ||
+           IsDisplayGridLanes() ||
+           (Display() == EDisplay::kContents && IsInZIndexAllowingDisplay());
+  }
+
   // Isolation utility functions.
   bool HasIsolation() const { return Isolation() != EIsolation::kAuto; }
 

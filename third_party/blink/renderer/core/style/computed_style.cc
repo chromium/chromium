@@ -452,6 +452,8 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
   if (old_style.Display() != new_style.Display() &&
       (old_style.BlockifiesChildren() != new_style.BlockifiesChildren() ||
        old_style.InlinifiesChildren() != new_style.InlinifiesChildren() ||
+       old_style.AllowsZIndexOnChildren() !=
+           new_style.AllowsZIndexOnChildren() ||
        (old_style.Display() == EDisplay::kContents &&
         old_style.IsContentDrawableCanvasChild()) !=
            (new_style.Display() == EDisplay::kContents &&
