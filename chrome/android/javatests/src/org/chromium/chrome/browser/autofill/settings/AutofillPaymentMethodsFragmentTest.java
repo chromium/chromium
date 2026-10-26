@@ -325,6 +325,8 @@ public class AutofillPaymentMethodsFragmentTest {
     public void setUp() {
         mAutofillTestHelper = new AutofillTestHelper();
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
         Intents.init();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

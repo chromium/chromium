@@ -113,6 +113,8 @@ public class PasswordCsvDownloadFlowControllerTest {
                 org.chromium.components.browser_ui.test.R.style.Theme_BrowserUI_DayNight);
 
         LoginDbDeprecationUtilBridgeJni.setInstanceForTesting(mLoginDbDeprecationUtilBridge);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
     }
 
     @After

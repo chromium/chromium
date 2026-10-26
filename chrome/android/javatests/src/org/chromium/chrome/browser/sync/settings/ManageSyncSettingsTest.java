@@ -91,6 +91,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1510,6 +1511,8 @@ public class ManageSyncSettingsTest {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(biometricAvailabilityStatus);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                biometricAvailabilityStatus);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getTransportState()).thenReturn(transportState);
         when(mSyncService.getAuthError())

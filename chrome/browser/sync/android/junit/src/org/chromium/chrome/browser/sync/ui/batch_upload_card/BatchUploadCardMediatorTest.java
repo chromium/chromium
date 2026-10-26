@@ -112,6 +112,8 @@ public class BatchUploadCardMediatorTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
     }
