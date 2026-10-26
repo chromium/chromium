@@ -18,10 +18,12 @@ namespace {
 constexpr int kMaxRecords = RecentSessionTracker::kMaxRecentSessionRecords;
 
 // Gets midnight at the start of the next local day.
-// Note: inaccurate if the time is *exactly* midnight, but this will happen so
-// rarely that it's not worth worrying about.
+// Add 28 hours to `time`'s local midnight before rounding down to local
+// midnight so that 25-hour DST fall-back days still advance to the next
+// calendar day (and 23-hour spring-forward days do not skip a day).
 base::Time GetEndOfDay(base::Time time) {
-  return (time + base::Days(1)).LocalMidnight();
+  return (time.LocalMidnight() + base::Days(1) + base::Hours(4))
+      .LocalMidnight();
 }
 
 // Counts the number of active days in `recent_sessions` going back `num_days`

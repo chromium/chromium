@@ -10,8 +10,11 @@
 #include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_libc_timezone_override.h"
+#include "build/build_config.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -522,3 +525,53 @@ TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_DailyLimit) {
                      {{2, 1}, {4, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 2}});
 }
+
+#if !BUILDFLAG(IS_WIN)
+// Excluded on Windows because `Time::Explode` / `Time::FromExploded` use the
+// Win32 timezone APIs (`SystemTimeToTzSpecificLocalTime`), which query the OS
+// timezone directly and ignore both `TZ` and ICU timezone overrides.
+TEST_F(RecentSessionPolicyTest, DstFallBackDay) {
+  // In US Pacific time (America/Los_Angeles), DST ended on Sunday 2025-11-02,
+  // making that local calendar day 25 hours long.
+  // Before 01:00 local time on 2025-11-02 (PDT = UTC-7), adding a fixed 24h
+  // (`base::Days(1)`) lands at 23:xx on the SAME calendar day (PST = UTC-8).
+  base::test::ScopedRestoreDefaultTimezone pacific_tz("America/Los_Angeles");
+  base::test::ScopedLibcTimezoneOverride libc_tz("America/Los_Angeles");
+
+  // 2025-11-02 00:30:00 PDT = 2025-11-02 07:30:00 UTC.
+  base::Time fall_back_0030;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-11-02 07:30:00 UTC", &fall_back_0030));
+  // 2025-11-01 12:00:00 PDT = 2025-11-01 19:00:00 UTC (previous calendar day).
+  base::Time prev_day_noon;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-11-01 19:00:00 UTC", &prev_day_noon));
+  // 2025-11-02 10:00:00 PST = 2025-11-02 18:00:00 UTC (same calendar day).
+  base::Time fall_back_1000;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-11-02 18:00:00 UTC", &fall_back_1000));
+
+  RecentSessionData data;
+  data.enabled_time = fall_back_0030 - base::Days(30);
+  data.recent_session_start_times = {fall_back_0030};
+
+  RecentSessionPolicyImpl::ActiveDaysConstraint active_days(7);
+  // Without a DST-safe GetEndOfDay(), GetEndOfDay(fall_back_0030) returned
+  // 2025-11-02 00:00 PDT (< fall_back_0030), excluding the session from
+  // CountActiveDays() and returning 0.
+  EXPECT_EQ(1, active_days.GetCount(data));
+
+  // Adding a previous session on 2025-11-01 (12:00 PDT): DailyConstraint should
+  // recognize that 2025-11-01 12:00 PDT and 2025-11-02 00:30 PDT are on
+  // different calendar days and not skip recording.
+  data.recent_session_start_times = {fall_back_0030, prev_day_noon};
+  EXPECT_FALSE(active_days.ShouldSkipRecording(data));
+
+  // Starting another session later on 2025-11-02 (at 10:00 PST) is on the same
+  // calendar day as the 00:30 PDT session, so DailyConstraint should skip
+  // recording.
+  data.recent_session_start_times.insert(
+      data.recent_session_start_times.begin(), fall_back_1000);
+  EXPECT_TRUE(active_days.ShouldSkipRecording(data));
+}
+#endif  // !BUILDFLAG(IS_WIN)
