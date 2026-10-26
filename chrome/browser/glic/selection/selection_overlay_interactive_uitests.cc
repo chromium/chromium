@@ -214,11 +214,15 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
     return embedded_test_server()->GetURL("/empty.html");
   }
 
+  SelectionOverlayController* GetController() {
+    return SelectionOverlayController::FromTabWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
   void ShowWithSelection(selection::InteractionOptionsPtr options) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    auto* controller =
-        SelectionOverlayController::FromTabWebContents(web_contents);
+    auto* controller = GetController();
     ASSERT_TRUE(controller);
     gfx::Rect view_bounds = web_contents->GetViewBounds();
     controller->ShowWithSelection(
@@ -496,6 +500,52 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   ToggleGlicWindow(GlicWindowMode::kAttached),
                   InAnyContext(WaitForHide(kGlicHostElementId)),
                   WaitForHide(OverlayBaseController::kOverlayId));
+}
+
+// Nothing carries over from a closed session to the next one: the next
+// session starts with its own interaction options and no regions.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       ClosedSessionStateDoesNotCarryOver) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstOverlayWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondOverlayWebContentsId);
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kFirstOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kFirstOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      CheckJsResultAt(kFirstOverlayWebContentsId, kOverlay,
+                      "el => el.hideHandles && el.disableMultiSelect"),
+      Do([this]() { GetController()->Close(); }),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      // A plain session: default options, no pre-selected region.
+      Do([this]() { GetController()->Show(/*options=*/nullptr); }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kSecondOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      // The options are sent before the screenshot, so once the screenshot is
+      // here the checks below see the session's options, not the defaults.
+      WaitForJsResultAt(kSecondOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      CheckJsResultAt(kSecondOverlayWebContentsId, kOverlay,
+                      "el => !el.hideHandles && !el.disableMultiSelect"),
+      CheckJsResultAt(kSecondOverlayWebContentsId, kRenderer,
+                      "el => el.selectedRegions.length === 0"),
+      CheckResult(
+          [this]() { return GetController()->GetSelectedRegionCount(); }, 0u));
 }
 
 // A session with a pre-selected region opens directly in the post-selection
