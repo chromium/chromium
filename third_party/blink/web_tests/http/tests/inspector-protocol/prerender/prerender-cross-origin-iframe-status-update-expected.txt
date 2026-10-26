@@ -1,0 +1,361 @@
+Test that prerender nested cross-origin iframe navigations receive status updates
+{
+    pipelineIdIndex:0
+    url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/cross-origin-iframe-prerender-nesting.php?prerendering
+    Preload.prerenderStatusUpdated: {
+      status : Pending,
+      status : Running,
+      status : Ready,
+      status : Success,
+    }
+}
+{
+    pipelineIdIndex:1
+    url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?slm
+    Preload.prerenderStatusUpdated: {
+      status : Running,
+      status : Ready,
+      status : Success,
+    }
+}
+{
+    pipelineIdIndex:2
+    url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_slm
+    Preload.prerenderStatusUpdated: {
+      status : Running,
+      status : Ready,
+      status : Success,
+    }
+}
+{
+    pipelineIdIndex:3
+    url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_slm
+    Preload.prerenderStatusUpdated: {
+      status : Running,
+      status : Ready,
+      status : Success,
+    }
+}
+{
+    pipelineIdIndex:4
+    url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?no_slm
+    Preload.prerenderStatusUpdated: {
+      status : Running,
+      status : Ready,
+      status : Success,
+    }
+}
+{
+    pipelineIdIndex:5
+    url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_no_slm
+    Preload.prerenderStatusUpdated: {
+      status : Running,
+      status : Ready,
+      status : Success,
+    }
+}
+{
+    pipelineIdIndex:6
+    url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_no_slm
+    Preload.prerenderStatusUpdated: {
+      status : Running,
+      status : Failure, prerenderStatus : PrefetchFailedCrossOriginSubframe
+    }
+}
+Raw devtools protocol:
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/cross-origin-iframe-prerender-nesting.php?prerendering
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 0
+        status : Pending
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/cross-origin-iframe-prerender-nesting.php?prerendering
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 0
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/cross-origin-iframe-prerender-nesting.php?prerendering
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 0
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 1
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 1
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 2
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 3
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 2
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 3
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 4
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 4
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 5
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 6
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 6
+        prerenderStatus : PrefetchFailedCrossOriginSubframe
+        status : Failure
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 5
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/cross-origin-iframe-prerender-nesting.php?prerendering
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 0
+        status : Success
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 1
+        status : Success
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 2
+        status : Success
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://example.test:8000/inspector-protocol/prerender/resources/empty.html?cross_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 3
+        status : Success
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/cross-origin-iframe-nesting-child.php?no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 4
+        status : Success
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://localhost:8000/inspector-protocol/prerender/resources/empty.html?same_no_slm
+        }
+        pipelineId : <string>
+        pipelineIdIndex : 5
+        status : Success
+    }
+    sessionId : <string>
+}
+

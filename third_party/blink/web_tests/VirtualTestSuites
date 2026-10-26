@@ -3057,7 +3057,8 @@
     ],
     "bases": [
       "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender.https.html",
-      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender-nesting.https.html"
+      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender-nesting.https.html",
+      "http/tests/inspector-protocol/prerender/prerender-cross-origin-iframe-status-update.js"
     ],
     "exclusive_tests": "ALL",
     "args": [

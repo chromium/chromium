@@ -197,6 +197,9 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::FormSubmitWhenPrerendering;
     case PrerenderFinalStatus::kCrossDocumentRestart:
       return Preload::PrerenderFinalStatusEnum::CrossDocumentRestart;
+    case PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe:
+      return Preload::PrerenderFinalStatusEnum::
+          PrefetchFailedCrossOriginSubframe;
   }
 }
 

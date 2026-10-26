@@ -25214,6 +25214,7 @@ Called by update_net_error_codes.py.-->
   <int value="88" label="kPrerenderHostReused"/>
   <int value="89" label="kFormSubmitWhenPrerendering"/>
   <int value="90" label="kCrossDocumentRestart"/>
+  <int value="91" label="kPrefetchFailedCrossOriginSubframe"/>
 </enum>
 
 <enum name="PrintPreviewFailureType">

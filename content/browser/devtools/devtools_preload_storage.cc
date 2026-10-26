@@ -74,7 +74,8 @@ void DevToolsPreloadStorage::UpdatePrerenderStatus(
         mismatched_headers) {
   PrerenderKey key = {.prerender_url = prerender_url,
                       .form_submission = form_submission,
-                      .target_hint = target_hint};
+                      .target_hint = target_hint,
+                      .preload_pipeline_id = preload_pipeline_id};
   PrerenderData data;
   data.preload_pipeline_id = preload_pipeline_id;
   data.outcome = outcome;
@@ -127,12 +128,18 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
     return !prefetch_keys_from_candidates.contains(pair.first);
   });
   std::erase_if(prerender_data_map_, [&](const auto& pair) {
-    return !prerender_keys_from_candidates.contains(pair.first);
+    return !prerender_keys_from_candidates.contains(
+        {.prerender_url = pair.first.prerender_url,
+         .form_submission = pair.first.form_submission,
+         .target_hint = pair.first.target_hint});
   });
   std::optional<base::flat_set<PrerenderGroupKey>>
       prerender_groups_from_candidates;
   std::erase_if(prerender_until_script_data_map_, [&](const auto& pair) {
-    if (prerender_until_script_keys_from_candidates.contains(pair.first)) {
+    if (prerender_until_script_keys_from_candidates.contains(
+            {.prerender_url = pair.first.prerender_url,
+             .form_submission = pair.first.form_submission,
+             .target_hint = pair.first.target_hint})) {
       return false;
     }
     if (pair.second.effective_action !=

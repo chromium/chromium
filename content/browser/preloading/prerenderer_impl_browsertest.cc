@@ -7,6 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/timer/elapsed_timer.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
@@ -27,6 +29,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
@@ -34,6 +37,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/test_web_contents.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
@@ -371,6 +375,142 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
       {.path = "/title1.html", .sec_purpose_header_value = ""},
   };
   ASSERT_EQ(expected, GetObservedRequests());
+}
+
+class PrerendererImplCrossOriginIframesBrowserTest
+    : public PrerendererImplBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PrerendererImplCrossOriginIframesBrowserTest() {
+    feature_list_.InitWithFeatureStates(
+        {{blink::features::kPrerender2CrossOriginIframes, GetParam()},
+         {features::kPrerender2FallbackPrefetchSpecRules, false},
+         {blink::features::kLCPTimingPredictorPrerender2, false}});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PrerendererImplCrossOriginIframesBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    PrerendererImplCrossOriginIframesBrowserTest,
+    CrossOriginSubframeFailureDoesNotAffectTriggeringOutcome) {
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timer;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Main prerendered page opts in to cross-origin iframe prerendering.
+  const GURL prerender_url = GetUrl(
+      "/set-header?Supports-Loading-Mode: prerender-cross-origin-frames");
+  blink::mojom::SpeculationCandidatePtr candidate =
+      CreateSpeculationCandidate(prerender_url);
+  PreloadingPredictor enacting_predictor = GetPredictorForPreloadingTriggerType(
+      PreloadingTriggerType::kSpeculationRule);
+  GetPrerendererImpl().MaybePrerender(candidate, enacting_predictor,
+                                      PreloadingConfidence{100});
+  prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
+
+  RenderFrameHost* main_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(prerender_url);
+  ASSERT_TRUE(main_rfh);
+
+  // Add a cross-origin middle iframe that does NOT send
+  // `Supports-Loading-Mode: prerender-cross-origin-frames`.
+  const GURL middle_iframe_url = GetCrossSiteUrl("/empty.html");
+  ASSERT_TRUE(ExecJs(main_rfh, JsReplace(R"(
+    window.middleLoaded = new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      iframe.src = $1;
+      iframe.onload = () => resolve(true);
+      document.body.appendChild(iframe);
+    });
+    true;
+  )",
+                                         middle_iframe_url)));
+
+  if (GetParam()) {
+    // With `kPrerender2CrossOriginIframes` enabled, `middle_iframe_url` loads
+    // during prerendering because `main_rfh` opted in.
+    ASSERT_EQ(true, EvalJs(main_rfh, "window.middleLoaded"));
+    RenderFrameHost* middle_rfh = ChildFrameAt(main_rfh, 0);
+    ASSERT_TRUE(middle_rfh);
+
+    // Add a nested cross-origin iframe inside `middle_rfh`. Since `middle_rfh`
+    // did not opt in, `PrerenderSubframeNavigationThrottle::WillStartRequest()`
+    // defers it and reports `kPrefetchFailedCrossOriginSubframe`. Follow it
+    // with a same-origin iframe in `middle_rfh` so FIFO IPC ordering guarantees
+    // `WillStartRequest()` has executed before activation.
+    const GURL leaf_iframe_url = https_server().GetURL("c.test", "/empty.html");
+    ASSERT_TRUE(ExecJs(middle_rfh, JsReplace(R"(
+      window.leafLoaded = new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        iframe.onload = () => resolve(true);
+        document.body.appendChild(iframe);
+      });
+      true;
+    )",
+                                             leaf_iframe_url)));
+    const GURL same_origin_leaf_url = GetCrossSiteUrl("/title1.html");
+    ASSERT_EQ(true, EvalJs(middle_rfh, JsReplace(R"(
+      new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        iframe.onload = () => resolve(true);
+        document.body.appendChild(iframe);
+      })
+    )",
+                                                 same_origin_leaf_url)));
+  } else {
+    // With `kPrerender2CrossOriginIframes` disabled, `middle_iframe_url` is
+    // deferred during prerendering. Follow it with a same-origin iframe in
+    // `main_rfh` so FIFO IPC ordering guarantees `WillStartRequest()` has
+    // executed before activation.
+    const GURL same_origin_sibling_url = GetUrl("/title1.html");
+    ASSERT_EQ(true, EvalJs(main_rfh, JsReplace(R"(
+      new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        iframe.onload = () => resolve(true);
+        document.body.appendChild(iframe);
+      })
+    )",
+                                               same_origin_sibling_url)));
+  }
+
+  // Activate the prerendered page and ensure all deferred subframes finish.
+  TestNavigationObserver activation_observer(prerender_url);
+  activation_observer.WatchExistingWebContents();
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  activation_observer.Wait();
+  ASSERT_EQ(true, EvalJs(main_rfh, "window.middleLoaded"));
+  if (GetParam()) {
+    ASSERT_EQ(true, EvalJs(ChildFrameAt(main_rfh, 0), "window.leafLoaded"));
+  }
+
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.Attempt.SpeculationRules.TriggeringOutcome", 0);
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
+      PreloadingTriggeringOutcome::kSuccess, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kActivated, 1);
+
+  const ukm::SourceId source_id = activation_observer.next_page_ukm_source_id();
+  test::PreloadingAttemptUkmEntryBuilder attempt_entry_builder(
+      content_preloading_predictor::kSpeculationRules);
+  test::ExpectPreloadingAttemptUkm(
+      ukm_recorder,
+      {attempt_entry_builder.BuildEntry(
+          source_id, PreloadingType::kPrerender,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kSuccess,
+          PreloadingFailureReason::kUnspecified, /*accurate=*/true,
+          base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
 IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,

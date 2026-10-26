@@ -328,6 +328,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       NOTREACHED();
     case PrerenderFinalStatus::kPrerenderHostReused:
     case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
+    case PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe:
       NOTREACHED();
   }
 
@@ -1623,19 +1624,17 @@ PrerenderHostId PrerenderHostRegistry::GetPrerenderHostIdForNavigation(
 
 void PrerenderHostRegistry::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  // DidStartNavigation is used for monitoring the main frame navigation in a
-  // prerendered page so do nothing for other navigations.
   auto* navigation_request = NavigationRequest::From(navigation_handle);
-  if (!navigation_request->IsInPrerenderedMainFrame() ||
-      navigation_request->IsSameDocument()) {
+  if (navigation_request->IsSameDocument()) {
     return;
   }
 
-  // This navigation is running on the main frame in the prerendered page, so
-  // its FrameTree::Delegate should be PrerenderHost.
-  auto& prerender_host = PrerenderHost::GetFromFrameTreeNode(
+  auto* prerender_host = PrerenderHost::GetFromFrameTreeNodeIfPrerendering(
       *navigation_request->frame_tree_node());
-  prerender_host.DidStartNavigation(navigation_handle);
+  if (!prerender_host) {
+    return;
+  }
+  prerender_host->DidStartNavigation(navigation_handle);
 }
 
 void PrerenderHostRegistry::ReadyToCommitNavigation(

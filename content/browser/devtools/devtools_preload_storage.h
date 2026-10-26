@@ -67,6 +67,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
     GURL prerender_url;
     bool form_submission;
     std::optional<blink::mojom::SpeculationTargetHint> target_hint;
+    base::UnguessableToken preload_pipeline_id;
 
     auto operator<=>(const PrerenderKey&) const = default;
   };

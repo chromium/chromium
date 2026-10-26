@@ -448,6 +448,10 @@ class CONTENT_EXPORT PrerenderHost {
   // Called just before cancellation
   void OnWillBeCancelled(const PrerenderCancellationReason& reason);
 
+  void SetFailureReason(const PrerenderCancellationReason& reason,
+                        std::optional<GURL> subframe_url = std::nullopt,
+                        FrameTreeNodeId subframe_ftn_id = FrameTreeNodeId());
+
   const PreloadPipelineInfo& preload_pipeline_info() const {
     return *attributes_.preload_pipeline_info.get();
   }
@@ -545,7 +549,9 @@ class CONTENT_EXPORT PrerenderHost {
   // PreloadingFailureReason for PreloadingAttempt associated with this
   // PrerenderHost.
   void SetTriggeringOutcome(PreloadingTriggeringOutcome outcome);
-  void SetFailureReason(const PrerenderCancellationReason& reason);
+  void UpdateDevtoolsAttemptForSubFrame(FrameTreeNodeId ftn_id,
+                                        const GURL& url,
+                                        PreloadingTriggeringOutcome outcome);
 
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(

@@ -8,6 +8,7 @@
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -225,6 +226,12 @@ NavigationThrottle::ThrottleCheckResult PrerenderSubframeNavigationThrottle::
   observation_.Observe(prerender_host);
   CHECK(observation_.IsObservingSource(prerender_host));
   is_deferred_ = true;
+  if (prerender_host->AllowCrossOriginSubframeNavigation()) {
+    prerender_host->SetFailureReason(
+        PrerenderCancellationReason(
+            PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe),
+        navigation_handle()->GetURL(), frame_tree_node.frame_tree_node_id());
+  }
   return NavigationThrottle::DEFER;
 }
 

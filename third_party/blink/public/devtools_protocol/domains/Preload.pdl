@@ -192,6 +192,7 @@ experimental domain Preload
       PrerenderHostReused
       FormSubmitWhenPrerendering
       CrossDocumentRestart
+      PrefetchFailedCrossOriginSubframe
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

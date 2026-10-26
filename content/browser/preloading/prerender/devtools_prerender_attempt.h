@@ -7,11 +7,13 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -22,8 +24,8 @@ namespace content {
 // All status updates will be shared as soon as they are made.
 class CONTENT_EXPORT DevToolsPrerenderAttempt {
  public:
-  DevToolsPrerenderAttempt() = default;
-  ~DevToolsPrerenderAttempt() = default;
+  DevToolsPrerenderAttempt();
+  ~DevToolsPrerenderAttempt();
 
   DevToolsPrerenderAttempt(const DevToolsPrerenderAttempt&) = delete;
   DevToolsPrerenderAttempt& operator=(const DevToolsPrerenderAttempt&) = delete;
@@ -31,19 +33,21 @@ class CONTENT_EXPORT DevToolsPrerenderAttempt {
   DevToolsPrerenderAttempt& operator=(DevToolsPrerenderAttempt&&) = delete;
 
   void SetTriggeringOutcome(const PrerenderAttributes& attributes,
-                            PreloadingTriggeringOutcome outcome);
+                            PreloadingTriggeringOutcome outcome,
+                            FrameTreeNodeId ftn_id = FrameTreeNodeId());
   void SetFailureReason(const PrerenderAttributes& attributes,
-                        PrerenderFinalStatus prerender_status);
+                        PrerenderFinalStatus prerender_status,
+                        FrameTreeNodeId ftn_id = FrameTreeNodeId());
   void SetFailureReason(const PrerenderAttributes& attributes,
-                        const PrerenderCancellationReason& reasons);
+                        const PrerenderCancellationReason& reasons,
+                        FrameTreeNodeId ftn_id = FrameTreeNodeId());
   void SetEffectiveAction(const PrerenderAttributes& attributes,
                           blink::mojom::SpeculationAction effective_action);
 
  private:
-  // The latest non-failure outcome, re-emitted when the effective action
-  // changes without ending the attempt.
-  std::optional<PreloadingTriggeringOutcome> last_outcome_;
-  bool failed_ = false;
+  // The latest outcome for each frame (FrameTreeNodeId() for the main frame),
+  // re-emitted when the effective action changes without ending the attempt.
+  base::flat_map<FrameTreeNodeId, PreloadingTriggeringOutcome> attempts_;
   // Set when the browser commits to an in-place upgrade. The renderer resume
   // message is fire-and-forget, and the original action remains immutable.
   std::optional<blink::mojom::SpeculationAction> effective_action_;
