@@ -1215,6 +1215,15 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "release_builder_with_dchecks",
+    configs = [
+        "release_builder",
+        # Must come after "release_builder", which turns DCHECKs off.
+        "dcheck_always_on",
+    ],
+)
+
+gn_args.config(
     name = "release_builder_blink",
     configs = [
         "release_builder",

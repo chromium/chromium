@@ -412,7 +412,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x86",
@@ -802,7 +802,7 @@ ci.builder(
         configs = [
             "android_builder",
             "enable_android_secondary_abi",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "arm64",
@@ -1172,7 +1172,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -2742,7 +2742,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x86",
@@ -2876,7 +2876,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -3045,7 +3045,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -3184,7 +3184,7 @@ ci.builder(
         configs = [
             "android_builder",
             "android_with_static_analysis",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "arm64",
@@ -3305,7 +3305,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -3469,7 +3469,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -3526,7 +3526,7 @@ ci.builder(
         configs = [
             "android_builder",
             "android_with_static_analysis",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "arm64",
@@ -3648,7 +3648,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -3800,7 +3800,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -3872,7 +3872,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -4113,7 +4113,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -4300,7 +4300,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
@@ -4367,7 +4367,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
