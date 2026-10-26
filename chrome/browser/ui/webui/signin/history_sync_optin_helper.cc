@@ -296,9 +296,8 @@ void SyncServiceStartupStateObserverImpl::OnSyncServiceStartupTimeout() {
 
 // An implementation of `SyncServiceStartupStateObserver` based on the
 // soon to be deprecated `SyncStartupTracker`.
-// TODO(crbug.com/40067025): Delete this implementation once the
-// TurnSyncOnHelper is deprecated. `HistorySyncOptinHelper` should use the
-// `SyncServiceStartupStateObserver` (currently gated by a feature flag).
+// TODO(crbug.com/40067025): Delete this implementation once
+// `kEnableAwaitSyncServiceStartupOnHistorySync` is launched.
 class SyncServiceStartupStateLegacyObserverImpl
     : public SyncServiceStartupStateObserver {
  public:

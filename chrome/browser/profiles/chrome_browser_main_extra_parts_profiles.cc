@@ -429,7 +429,6 @@
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
 #endif
@@ -1545,9 +1544,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   TriggeredProfileResetterFactory::GetInstance();
 #endif
   ttc::TtcKeyedServiceFactory::GetInstance();
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-  TurnSyncOnHelper::EnsureFactoryBuilt();
-#endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   unexportable_keys::UnexportableKeyProfileGarbageCollectionServiceFactory::
       GetInstance();

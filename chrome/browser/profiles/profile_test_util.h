@@ -32,7 +32,7 @@ class ScopedNonEnterpriseDomainSetterForTesting {
  public:
   // Uses `example.com` by default, value chosen as it is the one used at  a
   // pretty basic level in tests (`user_manager::kStubUserEmail`)
-  // This is needed to prevent `TurnSyncOnHelper` for trying to make network
+  // This is needed to prevent sign-in flows from trying to make network
   // calls to fetch policy for the current account.
   // TODO(crbug.com/40831172): Try to get saner defaults for stub user
   // info or allowlisted domains.

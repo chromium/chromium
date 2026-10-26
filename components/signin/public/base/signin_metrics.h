@@ -592,7 +592,7 @@ enum class SourceForRefreshTokenOperation {
   kAccountReconcilor_Reconcile = 12,
   kDiceResponseHandler_Signin = 13,
   kDiceResponseHandler_Signout = 14,
-  kTurnOnSyncHelper_Abort = 15,
+  // DEPRECATED: kTurnOnSyncHelper_Abort = 15,
   kMachineLogon_CredentialProvider = 16,
   kTokenService_ExtractCredentials = 17,
   // DEPRECATED on 09/2021 (used for force migration to DICE)

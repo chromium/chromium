@@ -1821,7 +1821,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="AccountReconcilor::Reconcile"/>
   <int value="13" label="DiceResponseHandler::Signin"/>
   <int value="14" label="DiceResponseHandler::Signout"/>
-  <int value="15" label="TurnOnSyncHelper::Abort"/>
+  <int value="15" label="TurnOnSyncHelper::Abort (obsolete)"/>
   <int value="16" label="MachineLogon::CredentialProvider"/>
   <int value="17" label="TokenService::ExtractCredentials"/>
   <int value="18"

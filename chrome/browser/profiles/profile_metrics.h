@@ -25,6 +25,8 @@ class ProfileMetrics {
   // Enum for counting the ways users were added.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(ProfileAddNewUser)
   enum ProfileAdd {
     // User adds new user from icon menu -- no longer used
     // ADD_NEW_USER_ICON = 0,
@@ -40,11 +42,12 @@ class ProfileMetrics {
     ADD_NEW_USER_SIGNIN_INTERCEPTION = 5,
     // Created during the sync flow (to avoid clash with data in the existing
     // profile)
-    ADD_NEW_USER_SYNC_FLOW = 6,
+    // DEPRECATED: ADD_NEW_USER_SYNC_FLOW = 6,
     // User adds new signed-in profile from Profile Picker
     ADD_NEW_PROFILE_PICKER_SIGNED_IN = 7,
     kMaxValue = ADD_NEW_PROFILE_PICKER_SIGNED_IN
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileAddNewUser)
 
   // Outcome of the signed-in profile creation flow.
   // These values are persisted to logs. Entries should not be renumbered and

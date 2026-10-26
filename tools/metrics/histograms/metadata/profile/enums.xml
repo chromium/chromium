@@ -225,6 +225,8 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="Profile 99+"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileAddNewUser) -->
+
 <enum name="ProfileAddNewUser">
   <int value="0" label="(Deprecated) Add new profile from icon menu"/>
   <int value="1" label="(Deprecated) Add new profile from title bar menu"/>
@@ -233,9 +235,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Auto-created after deleting last user"/>
   <int value="5" label="Add new profile from sign-in interception"/>
   <int value="6"
-      label="Add new profile from the sync flow (to avoid data clash)"/>
+      label="(Deprecated) Add new profile from the sync flow (to avoid data
+             clash)"/>
   <int value="7" label="Add new signed-in profile from the Profile picker"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:ProfileAddNewUser) -->
 
 <enum name="ProfileAvatar">
   <int value="0" label="Generic"/>
