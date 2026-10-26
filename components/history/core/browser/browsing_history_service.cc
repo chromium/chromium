@@ -1152,6 +1152,10 @@ BrowsingHistoryService::GetSyncedDevicesForFiltering() const {
             ? l10n_util::GetStringFUTF8(IDS_HISTORY_DEVICE_FILTER_LOCAL_DEVICE,
                                         base::UTF8ToUTF16(device_name))
             : device_name;
+    if (is_local_device) {
+      // Local visits are stored with an empty `originator_cache_guid`.
+      pair.second.push_back("");
+    }
     return ClientGroup{.name = std::move(name),
                        .is_local_device = is_local_device,
                        .client_ids = std::move(pair.second)};

@@ -471,14 +471,11 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryWithClientIdFilter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kWebHistoryUseNewApi);
 
-  ResetService(driver(), /*local_history=*/nullptr, web_history(), sync(),
-               device_info_tracker());
-  AddHistory({{kUrl1, 1, kRemote, "", VisitSource::SOURCE_BROWSED, false,
-               "client_1"},
-              {kUrl2, 2, kRemote, "", VisitSource::SOURCE_BROWSED, false,
-               "client_2"},
-              {kUrl3, 3, kRemote, "", VisitSource::SOURCE_BROWSED, false,
-               "client_1"}});
+  AddHistory(
+      {{kUrl1, 1, kRemote, "", VisitSource::SOURCE_BROWSED, false, "client_1"},
+       {kUrl2, 2, kRemote, "", VisitSource::SOURCE_BROWSED, false, "client_2"},
+       {kUrl3, 3, kRemote, "", VisitSource::SOURCE_BROWSED, false, "client_1"},
+       {kUrl4, 4, kLocal}});
 
   QueryOptions options;
   options.client_ids = {"client_1"};
@@ -487,6 +484,18 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryWithClientIdFilter) {
               MatchesQueryResult(
                   baseline_time_, /*reached_beginning*/ true,
                   std::vector<TestResult>{
+                      {kUrl3, 3, kRemote, "", VisitSource::SOURCE_BROWSED,
+                       false, "client_1"},
+                      {kUrl1, 1, kRemote, "", VisitSource::SOURCE_BROWSED,
+                       false, "client_1"}}));
+
+  options.client_ids = {"client_1", ""};
+
+  EXPECT_THAT(QueryHistory(options),
+              MatchesQueryResult(
+                  baseline_time_, /*reached_beginning*/ true,
+                  std::vector<TestResult>{
+                      {kUrl4, 4, kLocal},
                       {kUrl3, 3, kRemote, "", VisitSource::SOURCE_BROWSED,
                        false, "client_1"},
                       {kUrl1, 1, kRemote, "", VisitSource::SOURCE_BROWSED,
@@ -1331,7 +1340,7 @@ TEST_F(BrowsingHistoryServiceTest,
       UnorderedElementsAre(
           AllOf(Field(&ClientGroup::name, "Device A (this browser)"),
                 Field(&ClientGroup::is_local_device, true),
-                Field(&ClientGroup::client_ids, ElementsAre("guid1"))),
+                Field(&ClientGroup::client_ids, ElementsAre("guid1", ""))),
           AllOf(Field(&ClientGroup::name, "Device A"),
                 Field(&ClientGroup::is_local_device, false),
                 Field(&ClientGroup::client_ids, ElementsAre("guid2"))),
@@ -1357,7 +1366,7 @@ TEST_F(BrowsingHistoryServiceTest,
                 Field(&ClientGroup::client_ids, ElementsAre("guid3", "guid4"))),
           AllOf(Field(&ClientGroup::name, "Device C"),
                 Field(&ClientGroup::is_local_device, true),
-                Field(&ClientGroup::client_ids, ElementsAre("guid5")))));
+                Field(&ClientGroup::client_ids, ElementsAre("guid5", "")))));
 }
 
 }  // namespace
