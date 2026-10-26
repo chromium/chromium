@@ -66,6 +66,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/webui/side_panel/reading_list",
     "//chrome/common",
     "//chrome/common/read_anything:mojo_bindings",
+    "//components/input",
     "//components/omnibox/browser",
     "//components/performance_manager",
     "//components/prefs",

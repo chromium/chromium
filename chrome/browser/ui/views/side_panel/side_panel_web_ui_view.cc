@@ -134,5 +134,11 @@ void SidePanelWebUIView::HideCustomContextMenu() {
   }
 }
 
+bool SidePanelWebUIView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return WebView::HandleKeyboardEvent(source, event);
+}
+
 BEGIN_METADATA(SidePanelWebUIView)
 END_METADATA
