@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
-#define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
+#ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
+#define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
 
 #include <memory>
 
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -25,7 +25,7 @@ class RenderWidgetHost;
 class WebContents;
 }  // namespace content
 
-namespace video_conference {
+namespace ash {
 
 struct VideoConferencePermissions;
 
@@ -81,7 +81,7 @@ class VideoConferenceWebApp
       base::UnguessableToken id,
       base::RepeatingCallback<void(const base::UnguessableToken&)>
           remove_media_app_callback,
-      base::RepeatingCallback<void(ash::VideoConferenceClientUpdate)>
+      base::RepeatingCallback<void(VideoConferenceClientUpdate)>
           client_update_callback);
 
   // This callback corresponds to a method on a
@@ -91,7 +91,7 @@ class VideoConferenceWebApp
       remove_media_app_callback_;
 
   // Callback to send a new client update.
-  base::RepeatingCallback<void(ash::VideoConferenceClientUpdate)>
+  base::RepeatingCallback<void(VideoConferenceClientUpdate)>
       client_update_callback_;
 
   VideoConferenceWebAppState state_;
@@ -100,6 +100,6 @@ class VideoConferenceWebApp
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace video_conference
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
+#endif  // CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_

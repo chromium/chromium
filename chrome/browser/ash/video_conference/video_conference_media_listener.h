@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MEDIA_LISTENER_H_
-#define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MEDIA_LISTENER_H_
+#ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MEDIA_LISTENER_H_
+#define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MEDIA_LISTENER_H_
 
 #include <string>
 
@@ -13,7 +13,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "content/public/browser/web_contents.h"
 
-namespace video_conference {
+namespace ash {
 
 class VideoConferenceWebApp;
 
@@ -29,7 +29,7 @@ class VideoConferenceMediaListener
       base::RepeatingCallback<void()> media_usage_update_callback,
       base::RepeatingCallback<VideoConferenceWebApp*(content::WebContents*)>
           create_vc_web_app_callback,
-      base::RepeatingCallback<void(ash::VideoConferenceMediaDevice,
+      base::RepeatingCallback<void(VideoConferenceMediaDevice,
                                    const std::u16string&)>
           device_used_while_disabled_callback);
 
@@ -39,7 +39,7 @@ class VideoConferenceMediaListener
 
   ~VideoConferenceMediaListener() override;
 
-  void SetSystemMediaDeviceStatus(ash::VideoConferenceMediaDevice device,
+  void SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
                                   bool enabled);
 
   // MediaStreamCaptureIndicator::Observer overrides
@@ -77,7 +77,7 @@ class VideoConferenceMediaListener
   base::RepeatingCallback<void()> media_usage_update_callback_;
   base::RepeatingCallback<VideoConferenceWebApp*(content::WebContents*)>
       create_vc_web_app_callback_;
-  base::RepeatingCallback<void(ash::VideoConferenceMediaDevice,
+  base::RepeatingCallback<void(VideoConferenceMediaDevice,
                                const std::u16string&)>
       device_used_while_disabled_callback_;
 
@@ -86,6 +86,6 @@ class VideoConferenceMediaListener
       observation_{this};
 };
 
-}  // namespace video_conference
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MEDIA_LISTENER_H_
+#endif  // CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MEDIA_LISTENER_H_

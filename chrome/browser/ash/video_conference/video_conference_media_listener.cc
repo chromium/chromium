@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
+#include "chrome/browser/ash/video_conference/video_conference_media_listener.h"
 
 #include <string>
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace video_conference {
+namespace ash {
 
 VideoConferenceMediaListener::VideoConferenceMediaListener(
     base::RepeatingCallback<void()> media_usage_update_callback,
     base::RepeatingCallback<VideoConferenceWebApp*(content::WebContents*)>
         create_vc_web_app_callback,
-    base::RepeatingCallback<void(ash::VideoConferenceMediaDevice,
+    base::RepeatingCallback<void(VideoConferenceMediaDevice,
                                  const std::u16string&)>
         device_used_while_disabled_callback)
     : media_usage_update_callback_(std::move(media_usage_update_callback)),
@@ -35,13 +35,13 @@ VideoConferenceMediaListener::VideoConferenceMediaListener(
 VideoConferenceMediaListener::~VideoConferenceMediaListener() = default;
 
 void VideoConferenceMediaListener::SetSystemMediaDeviceStatus(
-    ash::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     bool enabled) {
   switch (device) {
-    case ash::VideoConferenceMediaDevice::kCamera:
+    case VideoConferenceMediaDevice::kCamera:
       camera_system_enabled_ = enabled;
       break;
-    case ash::VideoConferenceMediaDevice::kMicrophone:
+    case VideoConferenceMediaDevice::kMicrophone:
       microphone_system_enabled_ = enabled;
       break;
   }
@@ -75,7 +75,7 @@ void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
     if (!camera_system_enabled_ && !prev_is_capturing_video &&
         is_capturing_video) {
       device_used_while_disabled_callback_.Run(
-          ash::VideoConferenceMediaDevice::kCamera, contents->GetTitle());
+          VideoConferenceMediaDevice::kCamera, contents->GetTitle());
     }
   }
 }
@@ -109,7 +109,7 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
     if (!microphone_system_enabled_ && !prev_is_capturing_audio &&
         is_capturing_audio) {
       device_used_while_disabled_callback_.Run(
-          ash::VideoConferenceMediaDevice::kMicrophone, contents->GetTitle());
+          VideoConferenceMediaDevice::kMicrophone, contents->GetTitle());
     }
   }
 }
@@ -190,4 +190,4 @@ VideoConferenceWebApp* VideoConferenceMediaListener::GetOrCreateVcWebApp(
   return vc_app;
 }
 
-}  // namespace video_conference
+}  // namespace ash

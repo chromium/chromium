@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 
 #include <algorithm>
 #include <string>
 
-
-namespace video_conference {
+namespace ash {
 
 const char* kSkipAppIds[3] = {
     "behllobkkfkfnphdnhnkndlbkcpglgmj",  // TestExtensionID
@@ -20,4 +19,4 @@ bool ShouldSkipId(const std::string& id) {
   return std::ranges::contains(kSkipAppIds, id);
 }
 
-}  // namespace video_conference
+}  // namespace ash

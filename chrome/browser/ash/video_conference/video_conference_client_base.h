@@ -11,7 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash {
@@ -28,8 +28,6 @@ class VideoConferenceClientBase : public VideoConferenceManagerClient {
   ~VideoConferenceClientBase() override;
 
   using AppIdString = std::string;
-  using VideoConferencePermissions =
-      video_conference::VideoConferencePermissions;
 
   // AppState records information that is required for VideoConferenceManagerAsh
   // to show correct icons.

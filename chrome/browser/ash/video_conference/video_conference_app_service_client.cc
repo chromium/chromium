@@ -16,7 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -29,7 +29,6 @@
 
 namespace ash {
 namespace {
-using video_conference::VideoConferenceUkmHelper;
 
 VideoConferenceAppServiceClient* g_client_instance = nullptr;
 
@@ -110,7 +109,7 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
     return;
   }
 
-  if (!is_already_tracked && ::video_conference::ShouldSkipId(app_id)) {
+  if (!is_already_tracked && ShouldSkipId(app_id)) {
     return;
   }
 
@@ -122,18 +121,16 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
   if (update.CameraChanged()) {
     state.is_capturing_camera = is_capturing_camera;
     if (ukm_hepler) {
-      ukm_hepler->RegisterCapturingUpdate(
-          video_conference::VideoConferenceMediaType::kCamera,
-          is_capturing_camera);
+      ukm_hepler->RegisterCapturingUpdate(VideoConferenceMediaType::kCamera,
+                                          is_capturing_camera);
     }
   }
 
   if (update.MicrophoneChanged()) {
     state.is_capturing_microphone = is_capturing_microphone;
     if (ukm_hepler) {
-      ukm_hepler->RegisterCapturingUpdate(
-          video_conference::VideoConferenceMediaType::kMicrophone,
-          is_capturing_microphone);
+      ukm_hepler->RegisterCapturingUpdate(VideoConferenceMediaType::kMicrophone,
+                                          is_capturing_microphone);
     }
   }
 
@@ -256,8 +253,8 @@ std::string VideoConferenceAppServiceClient::GetAppName(
 }
 
 // Get current camera/microphone permission of the `app_id`.
-VideoConferenceAppServiceClient::VideoConferencePermissions
-VideoConferenceAppServiceClient::GetAppPermission(const AppIdString& app_id) {
+VideoConferencePermissions VideoConferenceAppServiceClient::GetAppPermission(
+    const AppIdString& app_id) {
   VideoConferencePermissions permissions;
 
   const bool is_arc_app = GetAppType(app_id) == apps::AppType::kArc;

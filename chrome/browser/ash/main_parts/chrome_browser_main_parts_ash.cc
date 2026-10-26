@@ -181,9 +181,9 @@
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -1637,8 +1637,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     // initialized here in ChromeBrowserMainPartsAsh. Co-locating the clients
     // with their dependencies is the current design.
     video_conference_manager_client_ =
-        std::make_unique<video_conference::VideoConferenceManagerClientImpl>(
-            vc_manager);
+        std::make_unique<VideoConferenceManagerClientImpl>(vc_manager);
     vc_app_service_client_ =
         std::make_unique<VideoConferenceAppServiceClient>(vc_manager);
     vc_ash_feature_client_ =

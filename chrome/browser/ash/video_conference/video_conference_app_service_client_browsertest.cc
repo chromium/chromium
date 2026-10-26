@@ -28,8 +28,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -69,7 +69,7 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
   if (app_id == kAppId2) {
     app->name = kAppName2;
   }
-  if (std::ranges::contains(::video_conference::kSkipAppIds, app_id)) {
+  if (std::ranges::contains(kSkipAppIds, app_id)) {
     app->name = base::StrCat({"AppName-", app_id});
   }
 
@@ -162,8 +162,6 @@ class FakeAppInstance {
 class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
  public:
   using AppState = VideoConferenceAppServiceClient::AppState;
-  using VideoConferencePermissions =
-      VideoConferenceAppServiceClient::VideoConferencePermissions;
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -243,8 +241,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     return client_->GetAppType(app_id);
   }
 
-  VideoConferenceAppServiceClient::VideoConferencePermissions GetAppPermission(
-      const AppIdString& app_id) {
+  VideoConferencePermissions GetAppPermission(const AppIdString& app_id) {
     return client_->GetAppPermission(app_id);
   }
 
@@ -725,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                        SomeAppsAreNotTracked) {
   // Install all apps that should be skipped.
-  for (const std::string& app_id : ::video_conference::kSkipAppIds) {
+  for (const std::string& app_id : kSkipAppIds) {
     InstallApp(app_id);
     // Accessing mic and camera should trigger tracking except the app_id is
     // skipped.

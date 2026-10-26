@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 
 #include <memory>
 #include <string>
@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
@@ -28,7 +28,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
-namespace video_conference {
+namespace ash {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VideoConferenceWebApp);
 
@@ -129,7 +129,7 @@ void VideoConferenceWebApp::PrimaryPageChanged(content::Page& page) {
 void VideoConferenceWebApp::TitleWasSet(content::NavigationEntry* entry) {
   std::u16string new_title = std::u16string{entry->GetTitle()};
 
-  ash::VideoConferenceClientUpdate update;
+  VideoConferenceClientUpdate update;
   update.title_change_info.emplace();
   update.title_change_info->id = state_.id;
   update.title_change_info->new_title = std::move(new_title);
@@ -146,7 +146,7 @@ VideoConferenceWebApp::VideoConferenceWebApp(
 
         remove_media_app_callback,
 
-    base::RepeatingCallback<void(ash::VideoConferenceClientUpdate)>
+    base::RepeatingCallback<void(VideoConferenceClientUpdate)>
 
         client_update_callback)
     : content::WebContentsObserver(web_contents),
@@ -168,4 +168,4 @@ VideoConferenceWebApp::VideoConferenceWebApp(
   state_.is_extension = !!source->GetExtensionForWebContents(web_contents);
 }
 
-}  // namespace video_conference
+}  // namespace ash

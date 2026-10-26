@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_COMMON_H_
-#define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_COMMON_H_
+#ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_COMMON_H_
+#define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_COMMON_H_
 
 #include <array>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 
-namespace video_conference {
+namespace ash {
 
 // AppIds that we want to skip tracking.
 extern const char* kSkipAppIds[3];
@@ -43,6 +43,6 @@ enum VideoConferenceMediaType {
   kScreen,
 };
 
-}  // namespace video_conference
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_COMMON_H_
+#endif  // CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_COMMON_H_

@@ -14,6 +14,16 @@ static_library("video_conference") {
     "video_conference_client_base.h",
     "video_conference_manager_ash.cc",
     "video_conference_manager_ash.h",
+    "video_conference_manager_client.cc",
+    "video_conference_manager_client.h",
+    "video_conference_manager_client_common.cc",
+    "video_conference_manager_client_common.h",
+    "video_conference_media_listener.cc",
+    "video_conference_media_listener.h",
+    "video_conference_ukm_helper.cc",
+    "video_conference_ukm_helper.h",
+    "video_conference_web_app.cc",
+    "video_conference_web_app.h",
   ]
 
   public_deps = [
@@ -21,9 +31,11 @@ static_library("video_conference") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/camera_mic",
+    "//chrome/browser/media/webrtc",
     "//components/services/app_service",
     "//components/services/app_service/public/cpp:instance_update",
-    "//mojo/public/cpp/bindings",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
   ]
 
   deps = [
@@ -31,35 +43,41 @@ static_library("video_conference") {
     "//ash/webui/vc_background_ui",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/borealis",
-    "//chrome/browser/ash/camera_mic",
     "//chrome/browser/ash/crostini",
-    "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//components/prefs",
     "//components/session_manager/core",
-    "//services/metrics/public/cpp:metrics_cpp",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common:headers",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/camera_mic",
-    "//chrome/browser/chromeos/video_conference",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/camera_mic" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "video_conference_manager_ash_unittest.cc" ]
+  sources = [
+    "video_conference_manager_ash_unittest.cc",
+    "video_conference_ukm_helper_unittest.cc",
+  ]
 
   deps = [
     ":video_conference",
     "//ash",
     "//base",
     "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
   ]
 }
@@ -74,6 +92,8 @@ source_set("browser_tests") {
     "video_conference_ash_feature_client_browsertest.cc",
     "video_conference_integration_browsertest.cc",
     "video_conference_manager_ash_browsertest.cc",
+    "video_conference_manager_client_browsertest.cc",
+    "video_conference_media_listener_browsertest.cc",
   ]
 
   deps = [
@@ -90,20 +110,26 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/crostini",
-    "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
+    "//chrome/browser/ui/ash/main_extra_parts",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/audio",
     "//components/prefs",
     "//components/user_manager",
+    "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",
+    "//testing/gtest",
     "//ui/base",
     "//ui/events",
     "//ui/gfx",
     "//ui/views:test_support",
+    "//url",
   ]
 }

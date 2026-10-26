@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_H_
-#define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_H_
+#ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_H_
+#define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_H_
 
 #include <map>
 #include <utility>
@@ -15,11 +15,8 @@
 #include "content/public/browser/web_contents.h"
 
 namespace ash {
+
 class VideoConferenceManagerAsh;
-}  // namespace ash
-
-namespace video_conference {
-
 class VideoConferenceMediaListener;
 class VideoConferenceWebApp;
 struct VideoConferencePermissions;
@@ -31,12 +28,11 @@ struct VideoConferencePermissions;
 //       and capturing statuses and notifying `VideoConferenceManagerAsh`.
 //    2. Allowing the manager to query the client and perform actions by
 //       implementing the VideoConferenceManagerClient C++ interface.
-class VideoConferenceManagerClientImpl
-    : public ash::VideoConferenceManagerClient {
+class VideoConferenceManagerClientImpl : public VideoConferenceManagerClient {
  public:
   // The passed `video_conference_manager_ash` must outlive this instance.
   explicit VideoConferenceManagerClientImpl(
-      ash::VideoConferenceManagerAsh* video_conference_manager_ash);
+      VideoConferenceManagerAsh* video_conference_manager_ash);
 
   VideoConferenceManagerClientImpl(const VideoConferenceManagerClientImpl&) =
       delete;
@@ -60,19 +56,19 @@ class VideoConferenceManagerClientImpl
 
   // Notifies VCManager of media device usage while the device is system
   // disabled.
-  void HandleDeviceUsedWhileDisabled(ash::VideoConferenceMediaDevice device,
+  void HandleDeviceUsedWhileDisabled(VideoConferenceMediaDevice device,
                                      const std::u16string& app_name);
 
-  // ash::VideoConferenceManagerClient overrides
+  // VideoConferenceManagerClient overrides
   MediaApps GetMediaApps() override;
   bool ReturnToApp(const base::UnguessableToken& id) override;
-  bool SetSystemMediaDeviceStatus(ash::VideoConferenceMediaDevice device,
+  bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
                                   bool enabled) override;
 
  protected:
   // Sends VcManager the updated `VideoConferenceMediaUsageStatus`. Can be
   // overridden by test clients.
-  virtual void NotifyManager(ash::VideoConferenceMediaUsageStatus status);
+  virtual void NotifyManager(VideoConferenceMediaUsageStatus status);
 
  private:
   friend class FakeVideoConferenceManagerClient;
@@ -83,14 +79,14 @@ class VideoConferenceManagerClientImpl
 
   // Sends a new client update to the VC Manager. Uses mojo for lacros-chrome
   // clients.
-  void SendClientUpdate(ash::VideoConferenceClientUpdate update);
+  void SendClientUpdate(VideoConferenceClientUpdate update);
 
   // Unique id associated with this client. It is used by the VcManager to
   // identify clients.
   const base::UnguessableToken client_id_;
 
   // Previous status
-  ash::VideoConferenceMediaUsageStatus status_;
+  VideoConferenceMediaUsageStatus status_;
 
   std::unique_ptr<VideoConferenceMediaListener> media_listener_;
 
@@ -102,7 +98,7 @@ class VideoConferenceManagerClientImpl
   std::map<base::UnguessableToken, raw_ptr<content::WebContents>>
       id_to_webcontents_;
 
-  const raw_ref<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
+  const raw_ref<VideoConferenceManagerAsh> video_conference_manager_ash_;
 
   // Any `VideoConferenceWebApp` created by the client gets passed a callback
   // bound to `RemoveMediaApp`. In order to guard against situations where that
@@ -113,6 +109,6 @@ class VideoConferenceManagerClientImpl
       this};
 };
 
-}  // namespace video_conference
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_MANAGER_CLIENT_H_

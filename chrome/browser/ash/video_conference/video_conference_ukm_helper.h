@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_
+#define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_
 
 #include <cstdint>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm
 
-namespace video_conference {
+namespace ash {
 
 // A helper class for UKM logging and recording for VC web apps. An instance
 // should be created on each `VideoConferenceWebApp` and used to register media
@@ -77,6 +77,6 @@ class VideoConferenceUkmHelper {
   std::optional<base::Time> prev_screen_capture_time_;
 };
 
-}  // namespace video_conference
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_

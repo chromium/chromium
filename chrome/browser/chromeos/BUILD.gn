@@ -31,7 +31,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/reporting/network:unit_tests",
     "//chrome/browser/chromeos/reporting/websites:unit_tests",
     "//chrome/browser/chromeos/tablet_mode:unit_tests",
-    "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
 
   if (use_cups) {
@@ -56,7 +55,6 @@ group("browser_tests") {
     "//chrome/browser/chromeos/policy/dlp:browser_tests",
     "//chrome/browser/chromeos/reporting/network:browser_tests",
     "//chrome/browser/chromeos/reporting/websites:browser_tests",
-    "//chrome/browser/chromeos/video_conference:browser_tests",
   ]
 }
 

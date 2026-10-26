@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
+#include "chrome/browser/ash/video_conference/video_conference_media_listener.h"
 
 #include <algorithm>
 #include <memory>
@@ -19,8 +19,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -33,7 +33,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-namespace video_conference {
+namespace ash {
 
 class FakeVideoConferenceMediaListener : public VideoConferenceMediaListener {
  public:
@@ -102,7 +102,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kFeatureManagementVideoConference);
+        features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
@@ -147,7 +147,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
     content::WebContentsUserData<VideoConferenceWebApp>::CreateForWebContents(
         web_contents, base::UnguessableToken::Create(),
         base::BindRepeating([](const base::UnguessableToken& id) {}),
-        base::DoNothingAs<void(ash::VideoConferenceClientUpdate)>());
+        base::DoNothingAs<void(VideoConferenceClientUpdate)>());
 
     return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
         web_contents);
@@ -301,19 +301,19 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 
 // Tests request-on-mute functionality appropriately updates tray controller.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
-  ash::FakeVideoConferenceTrayController* controller =
-      static_cast<ash::FakeVideoConferenceTrayController*>(
-          ash::VideoConferenceTrayController::Get());
+  FakeVideoConferenceTrayController* controller =
+      static_cast<FakeVideoConferenceTrayController*>(
+          VideoConferenceTrayController::Get());
   ASSERT_TRUE(controller);
 
-  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  auto* vc_manager = VideoConferenceManagerAsh::Get();
   ASSERT_TRUE(vc_manager);
 
   auto* vc_app1 = CreateVcWebAppInNewTab();
   auto* vc_app2 = CreateVcWebAppInNewTab();
 
-  vc_manager->SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice::kCamera, /*enabled=*/false);
+  vc_manager->SetSystemMediaDeviceStatus(VideoConferenceMediaDevice::kCamera,
+                                         /*enabled=*/false);
 
   // Initially should be zero.
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 1u);
 
   vc_manager->SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice::kMicrophone,
+      VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/false);
   auto stop_capture_callback2 =
       StartCapture(&vc_app2->GetWebContents(),
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
 // client when capturing stops.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
                        ExtensionRemovedWhenCapturingStopped) {
-  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  auto* vc_manager = VideoConferenceManagerAsh::Get();
   ASSERT_TRUE(vc_manager);
 
   std::unique_ptr<FakeVideoConferenceMediaListener> media_listener =
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
   // Make `vc_app` an extension.
   vc_app->state().is_extension = true;
 
-  vc_manager->GetMediaApps(base::BindLambdaForTesting([](ash::MediaApps apps) {
+  vc_manager->GetMediaApps(base::BindLambdaForTesting([](MediaApps apps) {
     EXPECT_EQ(apps.size(), 1u);
     EXPECT_TRUE(apps[0].is_capturing_camera);
     EXPECT_FALSE(apps[0].is_capturing_microphone);
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 
   // The VC app for the extension should be destroyed and removed from client.
   vc_manager->GetMediaApps(base::BindLambdaForTesting(
-      [](ash::MediaApps apps) { EXPECT_EQ(apps.size(), 0u); }));
+      [](MediaApps apps) { EXPECT_EQ(apps.size(), 0u); }));
 
   // The VCWebApp associated with this webcontents should have been destroyed.
   EXPECT_FALSE(
@@ -379,4 +379,4 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
           web_contents));
 }
 
-}  // namespace video_conference
+}  // namespace ash

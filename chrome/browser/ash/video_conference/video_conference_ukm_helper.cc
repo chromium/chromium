@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 
 #include <cstdint>
 #include <optional>
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace video_conference {
+namespace ash {
 
 VideoConferenceUkmHelper::VideoConferenceUkmHelper(
     ukm::UkmRecorder* ukm_recorder,
@@ -130,4 +130,4 @@ void VideoConferenceUkmHelper::UpdateScreenCaptureDuration() {
   prev_screen_capture_time_ = std::nullopt;
 }
 
-}  // namespace video_conference
+}  // namespace ash

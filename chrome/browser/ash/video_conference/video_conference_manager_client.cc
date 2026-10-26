@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client.h"
 
 #include <utility>
 #include <vector>
@@ -14,9 +14,9 @@
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_media_listener.h"
+#include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/common/webui_url_constants.h"
@@ -28,23 +28,23 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 
-namespace video_conference {
+namespace ash {
 namespace {
 
 // Returns whether the `contents` is a WebApp.
 bool IsWebApp(content::WebContents* contents) {
-  ash::BrowserDelegate* browser = nullptr;
-  ash::BrowserController::GetInstance()->ForEachBrowser(
-      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
-      [&](ash::BrowserDelegate& current) {
+  BrowserDelegate* browser = nullptr;
+  BrowserController::GetInstance()->ForEachBrowser(
+      BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](BrowserDelegate& current) {
         for (size_t index = 0; index < current.GetWebContentsCount(); ++index) {
           content::WebContents* const tab = current.GetWebContentsAt(index);
           if (tab == contents) {
             browser = &current;
-            return ash::BrowserController::kBreakIteration;
+            return BrowserController::kBreakIteration;
           }
         }
-        return ash::BrowserController::kContinueIteration;
+        return BrowserController::kContinueIteration;
       });
 
   return browser && browser->IsWebApp();
@@ -52,31 +52,31 @@ bool IsWebApp(content::WebContents* contents) {
 
 // Returns the AppType of the `contents`.
 // We only handle cases that are relevant to video conference apps.
-ash::VideoConferenceAppType GetAppType(content::WebContents* contents) {
+VideoConferenceAppType GetAppType(content::WebContents* contents) {
   auto* ext = extensions::ProcessManager::Get(contents->GetBrowserContext())
                   ->GetExtensionForWebContents(contents);
   if (ext) {
     auto type = ext->GetType();
     if (type == extensions::Manifest::Type::kExtension) {
-      return ash::VideoConferenceAppType::kChromeExtension;
+      return VideoConferenceAppType::kChromeExtension;
     }
     if (type == extensions::Manifest::Type::kPlatformApp) {
-      return ash::VideoConferenceAppType::kChromeApp;
+      return VideoConferenceAppType::kChromeApp;
     }
 
-    return ash::VideoConferenceAppType::kBrowserUnknown;
+    return VideoConferenceAppType::kBrowserUnknown;
   }
   if (IsWebApp(contents)) {
-    return ash::VideoConferenceAppType::kWebApp;
+    return VideoConferenceAppType::kWebApp;
   }
 
-  return ash::VideoConferenceAppType::kChromeTab;
+  return VideoConferenceAppType::kChromeTab;
 }
 
 }  // namespace
 
 VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl(
-    ash::VideoConferenceManagerAsh* video_conference_manager_ash)
+    VideoConferenceManagerAsh* video_conference_manager_ash)
     : client_id_(base::UnguessableToken::Create()),
       status_(client_id_),
       video_conference_manager_ash_(CHECK_DEREF(video_conference_manager_ash)) {
@@ -126,8 +126,8 @@ void VideoConferenceManagerClientImpl::RemoveMediaApp(
   id_to_webcontents_.erase(it);
 
   // Send a client update notification to the VCManager.
-  SendClientUpdate(ash::VideoConferenceClientUpdate(
-      ash::VideoConferenceAppUpdate::kAppRemoved));
+  SendClientUpdate(
+      VideoConferenceClientUpdate(VideoConferenceAppUpdate::kAppRemoved));
 
   HandleMediaUsageUpdate();
 }
@@ -156,8 +156,8 @@ VideoConferenceManagerClientImpl::CreateVideoConferenceWebApp(
   id_to_webcontents_.insert({id, web_contents});
 
   // Send a client update notification to the VCManager.
-  SendClientUpdate(ash::VideoConferenceClientUpdate(
-      ash::VideoConferenceAppUpdate::kAppAdded));
+  SendClientUpdate(
+      VideoConferenceClientUpdate(VideoConferenceAppUpdate::kAppAdded));
 
   return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
       web_contents);
@@ -203,14 +203,14 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
   // Glic should not be categorized as video conferencing. Instead, it uses
   // traditinoal privacy indicators, for now.
   // TODO(crbug.com/476165193): Revisit this after GA.
-  ash::PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
       chrome::kChromeUIGlicURL, u"Gemini In Chrome",
       /*is_camera_used=*/false,
       /*mic=*/glic_capturing_microphone,
-      base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(),
-      ash::PrivacyIndicatorsSource::kApps);
+      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(),
+      PrivacyIndicatorsSource::kApps);
 
-  ash::VideoConferenceMediaUsageStatus status(client_id_);
+  VideoConferenceMediaUsageStatus status(client_id_);
   status.state.has_media_app = has_media_app;
   status.state.has_camera_permission = permissions.has_camera_permission;
   status.state.has_microphone_permission =
@@ -229,7 +229,7 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
 }
 
 void VideoConferenceManagerClientImpl::HandleDeviceUsedWhileDisabled(
-    ash::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
   video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
       std::move(device), app_name, base::DoNothing());
@@ -253,7 +253,7 @@ VideoConferenceManagerClientImpl::GetMediaApps() {
       continue;
     }
 
-    ash::VideoConferenceMediaAppInfo app;
+    VideoConferenceMediaAppInfo app;
     app.id = app_state.id;
     app.last_activity_time = app_state.last_activity_time;
     app.is_capturing_camera = app_state.is_capturing_camera;
@@ -288,14 +288,14 @@ bool VideoConferenceManagerClientImpl::ReturnToApp(
 }
 
 bool VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
-    ash::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     bool enabled) {
   media_listener_->SetSystemMediaDeviceStatus(std::move(device), enabled);
   return true;
 }
 
 void VideoConferenceManagerClientImpl::NotifyManager(
-    ash::VideoConferenceMediaUsageStatus status) {
+    VideoConferenceMediaUsageStatus status) {
   auto callback = base::BindOnce([](bool success) {
     if (!success) {
       LOG(ERROR)
@@ -335,8 +335,8 @@ VideoConferenceManagerClientImpl::GetAggregatedPermissions() {
 }
 
 void VideoConferenceManagerClientImpl::SendClientUpdate(
-    ash::VideoConferenceClientUpdate update) {
+    VideoConferenceClientUpdate update) {
   video_conference_manager_ash_->NotifyClientUpdate(std::move(update));
 }
 
-}  // namespace video_conference
+}  // namespace ash

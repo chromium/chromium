@@ -131,8 +131,8 @@ std::string VideoConferenceAshFeatureClient::GetAppName(
 }
 
 // Get current camera/microphone permission of the `app_id`.
-VideoConferenceAshFeatureClient::VideoConferencePermissions
-VideoConferenceAshFeatureClient::GetAppPermission(const AppIdString& app_id) {
+VideoConferencePermissions VideoConferenceAshFeatureClient::GetAppPermission(
+    const AppIdString& app_id) {
   VideoConferencePermissions permissions{false, false};
 
   // Get permission from prefs based in the app_id.

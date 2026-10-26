@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 
 #include <memory>
 #include <vector>
@@ -10,14 +10,14 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace video_conference {
+namespace ash {
 
 namespace {
 constexpr int kDuration10ms = 10;
@@ -276,4 +276,4 @@ TEST_F(VideoConferenceUkmHelperTest, DestructorIncludesPendingCaptures) {
       UkmEntry::kTotalDurationName, kDuration20ms);
 }
 
-}  // namespace video_conference
+}  // namespace ash

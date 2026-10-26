@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client.h"
 
 #include <string>
 #include <vector>
@@ -16,9 +16,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
-#include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/ash/video_conference/video_conference_media_listener.h"
+#include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 #include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -33,7 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-namespace video_conference {
+namespace ash {
 
 namespace {
 constexpr char kTestURL1[] = "about:blank";
@@ -48,7 +48,7 @@ class FakeVideoConferenceManagerClient
  public:
   // The passed `vc_manager` must outlive this instance.
   explicit FakeVideoConferenceManagerClient(
-      ash::VideoConferenceManagerAsh* vc_manager)
+      VideoConferenceManagerAsh* vc_manager)
       : VideoConferenceManagerClientImpl(vc_manager) {}
 
   FakeVideoConferenceManagerClient(const FakeVideoConferenceManagerClient&) =
@@ -77,10 +77,10 @@ class FakeVideoConferenceManagerClient
     return media_listener_->microphone_system_enabled_;
   }
 
-  ash::VideoConferenceMediaUsageStatus& status() { return status_; }
+  VideoConferenceMediaUsageStatus& status() { return status_; }
 
  protected:
-  void NotifyManager(ash::VideoConferenceMediaUsageStatus status) override {}
+  void NotifyManager(VideoConferenceMediaUsageStatus status) override {}
 };
 
 class VideoConferenceManagerClientTest : public InProcessBrowserTest {
@@ -96,7 +96,7 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kFeatureManagementVideoConference);
+        features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
@@ -129,8 +129,7 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
 // Tests creating VcWebApps and removing them by closing tabs.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        TabCreationAndRemoval) {
-  FakeVideoConferenceManagerClient client(
-      ash::VideoConferenceManagerAsh::Get());
+  FakeVideoConferenceManagerClient client(VideoConferenceManagerAsh::Get());
 
   auto* web_contents1 = CreateWebContentsAt(0);
   auto* web_contents2 = CreateWebContentsAt(1);
@@ -161,8 +160,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
 // removes it from the client.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        WebContentsPrimaryPageChange) {
-  FakeVideoConferenceManagerClient client(
-      ash::VideoConferenceManagerAsh::Get());
+  FakeVideoConferenceManagerClient client(VideoConferenceManagerAsh::Get());
   TabActivitySimulator tab_activity_simulator;
 
   auto* web_contents = CreateWebContentsAt(0);
@@ -186,8 +184,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
 // Tests `GetMediaApps` returns `VideoConferenceMediaAppInfo`s with expected
 // values.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
-  FakeVideoConferenceManagerClient client(
-      ash::VideoConferenceManagerAsh::Get());
+  FakeVideoConferenceManagerClient client(VideoConferenceManagerAsh::Get());
 
   auto* web_contents1 = CreateWebContentsAt(0);
   UpdateWebContentsTitle(web_contents1, u"app1");
@@ -231,41 +228,39 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
 // Tests setting/clearing system statuses for camera and microphone.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        SetSystemMediaDeviceStatus) {
-  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  auto* vc_manager = VideoConferenceManagerAsh::Get();
   FakeVideoConferenceManagerClient client(vc_manager);
 
   vc_manager->RegisterCppClient(&client, client.client_id());
 
-  ash::FakeVideoConferenceTrayController* controller =
-      static_cast<ash::FakeVideoConferenceTrayController*>(
-          ash::VideoConferenceTrayController::Get());
+  FakeVideoConferenceTrayController* controller =
+      static_cast<FakeVideoConferenceTrayController*>(
+          VideoConferenceTrayController::Get());
   ASSERT_TRUE(controller);
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
 
   EXPECT_TRUE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());
 
-  vc_manager->SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice::kCamera,
-      /*enabled=*/false);
+  vc_manager->SetSystemMediaDeviceStatus(VideoConferenceMediaDevice::kCamera,
+                                         /*enabled=*/false);
   EXPECT_FALSE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice::kMicrophone,
+      VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/false);
   EXPECT_FALSE(client.camera_system_enabled());
   EXPECT_FALSE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice::kMicrophone,
+      VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/true);
   EXPECT_FALSE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());
 
-  vc_manager->SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice::kCamera,
-      /*enabled=*/true);
+  vc_manager->SetSystemMediaDeviceStatus(VideoConferenceMediaDevice::kCamera,
+                                         /*enabled=*/true);
   EXPECT_TRUE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());
 }
@@ -273,14 +268,14 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
 // Tests client updates relating to adding and removing VC web apps and title
 // changes.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
-  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  auto* vc_manager = VideoConferenceManagerAsh::Get();
   FakeVideoConferenceManagerClient client(vc_manager);
 
   vc_manager->RegisterCppClient(&client, client.client_id());
 
-  ash::FakeVideoConferenceTrayController* controller =
-      static_cast<ash::FakeVideoConferenceTrayController*>(
-          ash::VideoConferenceTrayController::Get());
+  FakeVideoConferenceTrayController* controller =
+      static_cast<FakeVideoConferenceTrayController*>(
+          VideoConferenceTrayController::Get());
   ASSERT_TRUE(controller);
 
   // Add a new VC web app on the client.
@@ -291,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
   // Confirm the update received by the controller has `added_or_removed_app`
   // set to true.
   EXPECT_EQ(controller->last_client_update().added_or_removed_app,
-            ash::VideoConferenceAppUpdate::kAppAdded);
+            VideoConferenceAppUpdate::kAppAdded);
   EXPECT_FALSE(controller->last_client_update().title_change_info);
 
   // Update the title and confirm correct fields were set.
@@ -299,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
   UpdateWebContentsTitle(web_contents, new_title);
 
   EXPECT_EQ(controller->last_client_update().added_or_removed_app,
-            ash::VideoConferenceAppUpdate::kNone);
+            VideoConferenceAppUpdate::kNone);
   EXPECT_TRUE(controller->last_client_update().title_change_info);
   EXPECT_EQ(controller->last_client_update().title_change_info->new_title,
             new_title);
@@ -309,14 +304,13 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
                                                    TabCloseTypes::CLOSE_NONE);
 
   EXPECT_EQ(controller->last_client_update().added_or_removed_app,
-            ash::VideoConferenceAppUpdate::kAppRemoved);
+            VideoConferenceAppUpdate::kAppRemoved);
   EXPECT_FALSE(controller->last_client_update().title_change_info);
 }
 
 // Tests aggregated media usage status received on `HandleMediaUsageUpdate`.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
-  FakeVideoConferenceManagerClient client(
-      ash::VideoConferenceManagerAsh::Get());
+  FakeVideoConferenceManagerClient client(VideoConferenceManagerAsh::Get());
 
   EXPECT_FALSE(client.status().state.has_media_app);
   EXPECT_FALSE(client.status().state.is_capturing_camera);
@@ -375,8 +369,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
 // Tests if `ReturnToApp` correctly activates tab of the `VideoConferenceWebApp`
 // corresponding to the `id` provided.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ReturnToApp) {
-  FakeVideoConferenceManagerClient client(
-      ash::VideoConferenceManagerAsh::Get());
+  FakeVideoConferenceManagerClient client(VideoConferenceManagerAsh::Get());
 
   auto* web_contents1 = CreateWebContentsAt(0);
   auto* web_contents2 = CreateWebContentsAt(1);
@@ -396,8 +389,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ReturnToApp) {
 
 // Tests that for extensions, permissions equate to capturing statuses.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ExtensionPermissions) {
-  FakeVideoConferenceManagerClient client(
-      ash::VideoConferenceManagerAsh::Get());
+  FakeVideoConferenceManagerClient client(VideoConferenceManagerAsh::Get());
 
   auto* web_contents = CreateWebContentsAt(0);
 
@@ -425,4 +417,4 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ExtensionPermissions) {
   EXPECT_FALSE(permissions.has_microphone_permission);
 }
 
-}  // namespace video_conference
+}  // namespace ash
