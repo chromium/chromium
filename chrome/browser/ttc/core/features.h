@@ -15,6 +15,10 @@ namespace ttc {
 // this can be used to suppress the feature in tests.
 BASE_DECLARE_FEATURE(kTtcFre);
 
+// Enables chrome://ttc-internals, which records TTC sessions in memory
+// (pipeline health, timeline, tool calls, problems and audio) for debugging.
+BASE_DECLARE_FEATURE(kTtcDebugTools);
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_

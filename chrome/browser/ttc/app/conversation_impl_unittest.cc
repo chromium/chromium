@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -56,6 +57,7 @@ class FakeSessionController : public SessionController {
   // SessionController overrides:
   Profile* GetProfile() override { return profile_; }
   SessionJournal& GetJournal() override { return session_journal_; }
+  DebugSink* GetDebugSink() override { return debug_sink_; }
   SessionLifecycle GetSessionLifecycle() const override {
     return session_lifecycle_;
   }
@@ -136,6 +138,8 @@ class FakeSessionController : public SessionController {
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
   FakeSessionJournal session_journal_;
+  // Null, as in production while the debug tools are off.
+  raw_ptr<DebugSink> debug_sink_ = nullptr;
 };
 
 }  // namespace

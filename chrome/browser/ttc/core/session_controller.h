@@ -18,6 +18,7 @@ class Profile;
 namespace ttc {
 
 class Conversation;
+class DebugSink;
 class SessionJournal;
 
 // High-level lifecycle coordinator for a TTC session. Manages the lifetime
@@ -60,6 +61,10 @@ class SessionController {
 
   // The profile this session belongs to.
   virtual Profile* GetProfile() = 0;
+
+  // Instrumentation for chrome://ttc-internals. Null unless the TTC debug
+  // tools are enabled. Valid for the lifetime of this object.
+  virtual DebugSink* GetDebugSink() = 0;
 
   // The journal this session's events are recorded in.
   virtual SessionJournal& GetJournal() = 0;

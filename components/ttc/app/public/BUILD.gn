@@ -6,6 +6,7 @@
 # core. This is enforced via DEPS.
 source_set("public") {
   public = [
+    "debug_sink.h",
     "error_codes.h",
     "server_journal_event.h",
     "session_journal.h",

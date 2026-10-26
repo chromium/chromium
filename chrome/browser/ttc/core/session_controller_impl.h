@@ -56,6 +56,7 @@ class SessionControllerImpl : public SessionController,
   void OnSessionInitialized() override;
   void OnError(ErrorCode error) override;
   SessionJournalImpl& GetJournal() override;
+  DebugSink* GetDebugSink() override;
   SessionLifecycle GetSessionLifecycle() const override;
   void SetSessionLifecycle(SessionLifecycle lifecycle) override;
   void ProcessToolCall(const ToolRequest& tool_request,

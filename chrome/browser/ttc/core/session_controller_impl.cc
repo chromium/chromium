@@ -109,6 +109,11 @@ SessionJournalImpl& SessionControllerImpl::GetJournal() {
   return journal_;
 }
 
+DebugSink* SessionControllerImpl::GetDebugSink() {
+  // Nothing records sessions yet.
+  return nullptr;
+}
+
 void SessionControllerImpl::AddObserver(SessionController::Observer* observer) {
   observers_.AddObserver(observer);
   observer->OnSessionLifecycleChanged(session_lifecycle_);
