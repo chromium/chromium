@@ -118,6 +118,9 @@ enum class VerifyAppsEnabledResult {
 // The result status of SafetyNet.listHarmfulApps.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
 // TODO(b:449183636): Remove `FAILED` once internal usage is removed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(HasHarmfulAppsResultStatus)
 enum class HasHarmfulAppsResultStatus {
   SUCCESS = 0,
   TIMEOUT = 1,
@@ -132,6 +135,7 @@ enum class HasHarmfulAppsResultStatus {
   UNKNOWN_FAILURE = 5,
   kMaxValue = UNKNOWN_FAILURE,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:DeviceSignalsHarmfulAppsStatus)
 
 // Translates |threat_type| and |threat_attributes| from the Safe Browsing API
 // into ThreatMetadata.

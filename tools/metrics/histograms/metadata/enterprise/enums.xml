@@ -226,11 +226,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/device_signals/core/browser/metrics_utils.h:CertificateCollectionError) -->
 
+<!-- LINT.IfChange(DeviceSignalsHarmfulAppsStatus) -->
+
 <enum name="DeviceSignalsHarmfulAppsStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>
   <int value="2" label="Failed"/>
+  <int value="3" label="API failure (SafetyNet status code)"/>
+  <int value="4" label="Local failure (error in Chrome)"/>
+  <int value="5" label="Unknown failure"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/android/safe_browsing_api_handler_util.h:HasHarmfulAppsResultStatus) -->
 
 <enum name="DeviceSignalsParsingError">
   <int value="0" label="Hit max data size"/>
