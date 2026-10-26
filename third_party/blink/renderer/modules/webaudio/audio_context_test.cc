@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/webaudio/analyser_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
@@ -389,6 +390,7 @@ class AudioContextTest : public PageTestBase {
   }
 
   void SetUp() override {
+    web_audio_device_paused_ = false;
     PageTestBase::SetUp(gfx::Size());
     CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
                                                         std::string());
@@ -655,6 +657,80 @@ TEST_F(AudioContextTest, ExecutionContextPaused) {
   GetFrame().DomWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
   EXPECT_FALSE(web_audio_device_paused_);
+}
+
+TEST_F(AudioContextTest, CloseWhileFrozenStopsDestination) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ExpectContextBecomesRunningAsync(audio_context);
+  ExpectContextRunning(audio_context);
+
+  RealtimeAudioDestinationHandler* dest_handler =
+      &audio_context->destinationNode()->GetAudioDestinationHandler();
+
+  GetFrame().DomWindow()->SetLifecycleState(
+      mojom::FrameLifecycleState::kFrozen);
+  EXPECT_TRUE(web_audio_device_paused_);
+  EXPECT_FALSE(dest_handler->get_platform_destination_is_playing_for_testing());
+
+  {
+    V8TestingScope scope;
+    audio_context->closeContext(scope.GetScriptState(),
+                                scope.GetExceptionState());
+  }
+  EXPECT_EQ(audio_context->ContextState(), V8AudioContextState::Enum::kClosed);
+  EXPECT_FALSE(audio_context->IsPullingAudioGraph());
+
+  // Thawing the frame after closing must not resume the stopped destination.
+  GetFrame().DomWindow()->SetLifecycleState(
+      mojom::FrameLifecycleState::kRunning);
+  EXPECT_FALSE(dest_handler->get_platform_destination_is_playing_for_testing());
+  EXPECT_TRUE(web_audio_device_paused_);
+
+  // Verify that if Render() runs while pulling the audio graph is disabled,
+  // automatic pull nodes do not pull disposed upstream nodes.
+  FakeAudioThread audio_thread(ThreadType::kRealtimeAudioWorkletThread);
+  Persistent<AnalyserNode> analyser =
+      audio_context->createAnalyser(ASSERT_NO_EXCEPTION);
+  {
+    DelayNode* node = audio_context->createDelay(ASSERT_NO_EXCEPTION);
+    node->connect(analyser.Get(), 0, 0, ASSERT_NO_EXCEPTION);
+
+    // Flush the automatic pull handler list to
+    // `rendering_automatic_pull_handlers_` while the upstream `DelayNode` is
+    // still alive.
+    audio_thread.RunOnAudioThreadWithContext(
+        audio_context, CrossThreadBindOnce(
+                           [](RealtimeAudioDestinationHandler* handler) {
+                             const AudioIOPosition pos{0, 0, 0};
+                             const AudioCallbackMetric metric;
+                             scoped_refptr<AudioBus> bus =
+                                 AudioBus::Create(2, 128, /*allocate=*/true);
+                             handler->Render(bus.get(), 128, pos, metric,
+                                             base::TimeDelta(), {});
+                           },
+                           CrossThreadUnretained(dest_handler)));
+  }
+
+  WebHeap::CollectAllGarbageForTesting();
+
+  {
+    // Hold the graph lock so `UpdateAutomaticPullNodes()` is skipped and
+    // `rendering_automatic_pull_handlers_` retains `AnalyserHandler` after its
+    // upstream `DelayNode` has been collected and disposed.
+    DeferredTaskHandler::GraphAutoLocker locker(
+        audio_context->GetDeferredTaskHandler());
+    audio_thread.RunOnAudioThread(CrossThreadBindOnce(
+        [](RealtimeAudioDestinationHandler* handler) {
+          const AudioIOPosition pos{0, 0, 0};
+          const AudioCallbackMetric metric;
+          scoped_refptr<AudioBus> bus =
+              AudioBus::Create(2, 128, /*allocate=*/true);
+          handler->Render(bus.get(), 128, pos, metric, base::TimeDelta(), {});
+        },
+        CrossThreadUnretained(dest_handler)));
+  }
 }
 
 // Test that the AudioContext correctly handles audibility state transitions
