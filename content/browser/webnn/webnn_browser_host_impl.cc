@@ -294,7 +294,10 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
     compiler_remote.set_disconnect_handler(
         base::BindOnce(&WebNNBrowserHostImpl::OnDisconnected,
                        base::Unretained(this), target_device));
-    compiler_remote.reset_on_idle_timeout(kCompilerIdleTimeout);
+    compiler_remote.set_idle_handler(
+        kCompilerIdleTimeout,
+        base::BindRepeating(&WebNNBrowserHostImpl::OnIdle,
+                            base::Unretained(this), target_device));
   }
 
   // Tell the Compiler process to create a per-context compiler state.
@@ -306,10 +309,19 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
       std::move(callback));
 }
 
+void WebNNBrowserHostImpl::OnIdle(const webnn::EpDeviceInfo& device_info) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto it = webnn_compiler_remotes_.find(device_info);
+  CHECK(it != webnn_compiler_remotes_.end());
+  it->second.reset();
+}
+
 void WebNNBrowserHostImpl::OnDisconnected(
     const webnn::EpDeviceInfo& device_info) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  webnn_compiler_remotes_.erase(device_info);
+  auto it = webnn_compiler_remotes_.find(device_info);
+  CHECK(it != webnn_compiler_remotes_.end());
+  it->second.reset();
 
   // Any disconnect is unexpected and treated as a crash.
   int crash_count = ++GetWebNNCompilerCrashCounts()[device_info];

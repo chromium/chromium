@@ -107,7 +107,11 @@ class CONTENT_EXPORT WebNNBrowserHostImpl
       base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
           ep_package_info_map);
 
-  // Handles disconnection of the Compiler process for `device_info`, erasing
+  // Handles the Compiler process becoming idle for `device_info`, resetting its
+  // remote.
+  void OnIdle(const webnn::EpDeviceInfo& device_info);
+
+  // Handles disconnection of the Compiler process for `device_info`, resetting
   // its remote and updating crash accounting.
   void OnDisconnected(const webnn::EpDeviceInfo& device_info);
 
