@@ -59,24 +59,25 @@ if (safe_browsing_mode != 0) {
       "binary_feature_extractor.cc",
       "binary_feature_extractor.h",
     ]
+    public_deps = [
+      "//base",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//crypto",
+    ]
     if (is_mac) {
       sources += [
         "binary_feature_extractor_mac.cc",
         "mach_o_image_reader_mac.cc",
         "mach_o_image_reader_mac.h",
       ]
+      deps = [ "//components/safe_browsing/core/common:features" ]
+      public_deps += [ "//chrome/utility/safe_browsing/mac:dmg_ffi_bridge" ]
     } else if (is_win) {
       sources += [ "binary_feature_extractor_win.cc" ]
     }
     if (is_posix) {
       sources += [ "binary_feature_extractor_posix.cc" ]
     }
-
-    public_deps = [
-      "//base",
-      "//components/safe_browsing/core/common/proto:csd_proto",
-      "//crypto",
-    ]
   }
 
   source_set("mock_binary_feature_extractor") {

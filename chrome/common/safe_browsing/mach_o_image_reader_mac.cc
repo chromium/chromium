@@ -9,13 +9,17 @@
 #include <mach-o/loader.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/safe_math.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 
@@ -85,21 +89,36 @@ MachOImageReader::LoadCommand::~LoadCommand() = default;
 
 // static
 bool MachOImageReader::IsMachOMagicValue(uint32_t magic) {
+  if (base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+    return dmg::rust_ffi::is_mach_o_magic_value(magic);
+  }
   return magic == FAT_MAGIC   || magic == FAT_CIGAM    ||
          magic == MH_MAGIC    || magic == MH_CIGAM     ||
          magic == MH_MAGIC_64 || magic == MH_CIGAM_64;
 }
 
-MachOImageReader::MachOImageReader()
-    : data_(),
-      is_fat_(false),
-      is_64_bit_(false),
-      commands_() {
-}
+MachOImageReader::MachOImageReader() = default;
+
+MachOImageReader::MachOImageReader(
+    ::rust::Box<dmg::rust_ffi::RustMachOImageReader> rust_reader)
+    : rust_reader_(std::move(rust_reader)) {}
 
 MachOImageReader::~MachOImageReader() = default;
 
 bool MachOImageReader::Initialize(base::span<const uint8_t> image) {
+  if (base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+    fat_images_.clear();
+    rust_reader_.reset();
+    ::rust::Box<dmg::rust_ffi::RustMachOImageReader> reader =
+        dmg::rust_ffi::new_mach_o_image_reader(
+            ::rust::Slice<const uint8_t>(image));
+    if (!reader->is_valid()) {
+      return false;
+    }
+    rust_reader_ = std::move(reader);
+    return true;
+  }
+
   if (image.empty()) {
     return false;
   }
@@ -203,11 +222,25 @@ bool MachOImageReader::Initialize(base::span<const uint8_t> image) {
 }
 
 bool MachOImageReader::IsFat() {
+  if (rust_reader_.has_value()) {
+    return (*rust_reader_)->is_fat();
+  }
   return is_fat_;
 }
 
 std::vector<MachOImageReader*> MachOImageReader::GetFatImages() {
-  DCHECK(is_fat_);
+  DCHECK(IsFat());
+  if (rust_reader_.has_value() && fat_images_.empty()) {
+    // `GetFatImages()` returns non-owning `MachOImageReader*` pointers, so
+    // `fat_images_` owns the thin C++ `MachOImageReader` shells wrapping each
+    // Rust architecture slice for the lifetime of this reader.
+    const size_t num_fat = (*rust_reader_)->num_fat_images();
+    fat_images_.reserve(num_fat);
+    for (size_t i = 0; i < num_fat; ++i) {
+      fat_images_.push_back(base::WrapUnique(
+          new MachOImageReader((*rust_reader_)->take_fat_image(i))));
+    }
+  }
   std::vector<MachOImageReader*> images;
   for (const auto& image : fat_images_)
     images.push_back(image.get());
@@ -215,35 +248,83 @@ std::vector<MachOImageReader*> MachOImageReader::GetFatImages() {
 }
 
 bool MachOImageReader::Is64Bit() {
-  DCHECK(!is_fat_);
+  DCHECK(!IsFat());
+  if (rust_reader_.has_value()) {
+    return (*rust_reader_)->is_64_bit();
+  }
   return is_64_bit_;
 }
 
 const mach_header* MachOImageReader::GetMachHeader() {
-  DCHECK(!is_fat_);
+  DCHECK(!IsFat());
+  if (rust_reader_.has_value()) {
+    static_assert(alignof(mach_header) <= 4,
+                  "AlignedMachHeader in Rust is 4-byte aligned");
+    // `mach_header_bytes()` borrows from a 4-byte aligned `AlignedMachHeader`
+    // owned by `rust_reader_` for the lifetime of this `MachOImageReader`.
+    ::rust::Slice<const uint8_t> bytes = (*rust_reader_)->mach_header_bytes();
+    if (bytes.size() < sizeof(mach_header)) {
+      return nullptr;
+    }
+    return reinterpret_cast<const mach_header*>(bytes.data());
+  }
   return data_->GetPointerAt<mach_header>(0);
 }
 
 const mach_header_64* MachOImageReader::GetMachHeader64() {
-  DCHECK(is_64_bit_);
-  DCHECK(!is_fat_);
+  DCHECK(Is64Bit());
+  DCHECK(!IsFat());
+  if (rust_reader_.has_value()) {
+    static_assert(alignof(mach_header_64) <= 4,
+                  "AlignedMachHeader in Rust is 4-byte aligned");
+    // `mach_header_64_bytes()` borrows from a 4-byte aligned
+    // `AlignedMachHeader` owned by `rust_reader_` for the lifetime of this
+    // `MachOImageReader`.
+    ::rust::Slice<const uint8_t> bytes =
+        (*rust_reader_)->mach_header_64_bytes();
+    if (bytes.size() < sizeof(mach_header_64)) {
+      return nullptr;
+    }
+    return reinterpret_cast<const mach_header_64*>(bytes.data());
+  }
   return data_->GetPointerAt<mach_header_64>(0);
 }
 
 uint32_t MachOImageReader::GetFileType() {
-  DCHECK(!is_fat_);
+  DCHECK(!IsFat());
+  if (rust_reader_.has_value()) {
+    return (*rust_reader_)->file_type();
+  }
   return GetMachHeader()->filetype;
 }
 
-const std::vector<MachOImageReader::LoadCommand>&
-MachOImageReader::GetLoadCommands() {
-  DCHECK(!is_fat_);
+std::vector<MachOImageReader::LoadCommand> MachOImageReader::GetLoadCommands() {
+  DCHECK(!IsFat());
+  if (rust_reader_.has_value()) {
+    const size_t num_commands = (*rust_reader_)->num_load_commands();
+    std::vector<LoadCommand> commands(num_commands);
+    for (size_t i = 0; i < num_commands; ++i) {
+      const ::rust::Slice<const uint8_t> cmd_data =
+          (*rust_reader_)->load_command_data(i);
+      commands[i].data.assign(cmd_data.begin(), cmd_data.end());
+    }
+    return commands;
+  }
   return commands_;
 }
 
 bool MachOImageReader::GetCodeSignatureInfo(std::vector<uint8_t>* info) {
-  DCHECK(!is_fat_);
+  DCHECK(!IsFat());
   DCHECK(info->empty());
+
+  if (rust_reader_.has_value()) {
+    if (!(*rust_reader_)->has_code_signature()) {
+      return false;
+    }
+    ::rust::Slice<const uint8_t> sig = (*rust_reader_)->code_signature_info();
+    info->assign(sig.begin(), sig.end());
+    return true;
+  }
 
   // Find the LC_CODE_SIGNATURE command and cast it to its linkedit format.
   const linkedit_data_command* lc_code_signature = nullptr;

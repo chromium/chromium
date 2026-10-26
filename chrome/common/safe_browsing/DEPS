@@ -7,3 +7,9 @@ include_rules = [
   "+third_party/zlib",
   "+third_party/lzma_sdk/google",
 ]
+
+specific_include_rules = {
+  "mach_o_image_reader_mac\\.(cc|h)": [
+    "+chrome/utility/safe_browsing/mac/rust/ffi.rs.h",
+  ],
+}

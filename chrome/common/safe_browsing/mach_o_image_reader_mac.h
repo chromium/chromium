@@ -10,9 +10,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "chrome/utility/safe_browsing/mac/rust/ffi.rs.h"
 
 namespace safe_browsing {
 
@@ -87,19 +89,30 @@ class MachOImageReader {
   uint32_t GetFileType();
 
   // Returns an array of all the load commands in the image.
-  const std::vector<MachOImageReader::LoadCommand>& GetLoadCommands();
+  std::vector<MachOImageReader::LoadCommand> GetLoadCommands();
 
   // If the image has a LC_CODE_SIGNATURE command, this retreives the code
   // signature blob in the __LINKEDIT segment.
   bool GetCodeSignatureInfo(std::vector<uint8_t>* info);
 
  private:
-  std::unique_ptr<ByteSlice> data_;
+  // Constructs a child image reader wrapping an extracted Rust fat
+  // architecture slice.
+  explicit MachOImageReader(
+      ::rust::Box<dmg::rust_ffi::RustMachOImageReader> rust_reader);
 
-  bool is_fat_;
+  std::optional<::rust::Box<dmg::rust_ffi::RustMachOImageReader>> rust_reader_;
+
+  // Owns the child `MachOImageReader` instances returned as non-owning raw
+  // pointers by `GetFatImages()`. Used by both the C++ and Rust paths; when
+  // `rust_reader_` is active, each child `MachOImageReader` is a thin wrapper
+  // around a child `RustMachOImageReader` slice.
   std::vector<std::unique_ptr<MachOImageReader>> fat_images_;
 
-  bool is_64_bit_;
+  // Used only when `kSafeBrowsingRustDmgParser` is disabled.
+  std::unique_ptr<ByteSlice> data_;
+  bool is_fat_ = false;
+  bool is_64_bit_ = false;
   std::vector<LoadCommand> commands_;
 };
 

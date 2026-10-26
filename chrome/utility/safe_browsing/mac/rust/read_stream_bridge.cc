@@ -59,32 +59,6 @@ class RustReadStreamAdapter : public ReadStream {
 
 }  // namespace
 
-bool RustBridgeRead(ReadStream* stream,
-                    ::rust::Slice<uint8_t> buf,
-                    size_t& bytes_read) {
-  CHECK(stream);
-  return stream->Read(base::span<uint8_t>(buf), &bytes_read);
-}
-
-int64_t RustBridgeSeek(ReadStream* stream, int64_t offset, int32_t whence) {
-  CHECK(stream);
-  int posix_whence = SEEK_SET;
-  switch (whence) {
-    case 0:
-      posix_whence = SEEK_SET;
-      break;
-    case 1:
-      posix_whence = SEEK_CUR;
-      break;
-    case 2:
-      posix_whence = SEEK_END;
-      break;
-    default:
-      return -1;
-  }
-  return stream->Seek(static_cast<off_t>(offset), posix_whence);
-}
-
 std::unique_ptr<ReadStream> WrapRustReadStream(
     ::rust::Box<RustReadStream> rust_stream) {
   if (!rust_stream->is_valid()) {
