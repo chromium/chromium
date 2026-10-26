@@ -311,7 +311,7 @@ void IsolatedWebAppUpdateManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void IsolatedWebAppUpdateManager::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!content::AreIsolatedWebAppsEnabled(&*profile_)) {
     return;
   }
@@ -375,7 +375,7 @@ void IsolatedWebAppUpdateManager::DelayedStart() {
 }
 
 void IsolatedWebAppUpdateManager::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   install_manager_observation_.Reset();
   runtime_data_changed_subscription_ = {};
   next_update_discovery_check_.Reset();

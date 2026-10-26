@@ -294,7 +294,7 @@ void PartitionedLockManager::LockReleased(base::Location request_location,
   Lock& lock = it->second;
 
   // First, decrement the lock `acquired_count`.
-  DCHECK_GT(lock.acquired_count, 0);
+  CHECK_GT(lock.acquired_count, 0, base::NotFatalUntil::M162);
   --(lock.acquired_count);
   DecrementMaybeDeleteLocation(lock.request_locations, request_location);
   if (lock.acquired_count != 0) {

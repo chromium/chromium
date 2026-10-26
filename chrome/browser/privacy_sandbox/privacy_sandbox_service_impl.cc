@@ -62,9 +62,9 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       profile_type_(profile_type) {
-  DCHECK(privacy_sandbox_settings_);
-  DCHECK(pref_service_);
-  DCHECK(cookie_settings_);
+  CHECK(privacy_sandbox_settings_, base::NotFatalUntil::M162);
+  CHECK(pref_service_, base::NotFatalUntil::M162);
+  CHECK(cookie_settings_, base::NotFatalUntil::M162);
 
   // Clears the Topics, Fledge, and Measurement Privacy Sandbox API Prefs, if
   // the PrivacySandboxAdPrivacyUxDeprecation feature is enabled.

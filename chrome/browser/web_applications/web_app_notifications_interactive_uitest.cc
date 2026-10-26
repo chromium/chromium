@@ -52,7 +52,7 @@ class WebAppNotificationsBrowserTest : public WebAppBrowserTestBase {
   }
 
   NotificationDisplayServiceTester& display_service_tester() {
-    DCHECK(display_service_tester_);
+    CHECK(display_service_tester_, base::NotFatalUntil::M162);
     return *display_service_tester_;
   }
 
@@ -63,7 +63,7 @@ class WebAppNotificationsBrowserTest : public WebAppBrowserTestBase {
   }
 
   BrowserWindowInterface& app_browser() {
-    DCHECK(app_browser_);
+    CHECK(app_browser_, base::NotFatalUntil::M162);
     return *app_browser_;
   }
 

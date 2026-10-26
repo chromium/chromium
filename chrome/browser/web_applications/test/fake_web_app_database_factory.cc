@@ -150,7 +150,7 @@ void FakeWebAppDatabaseFactory::WriteProtos(
       std::move(write_batch),
       base::BindLambdaForTesting(
           [&](const std::optional<syncer::ModelError>& error) {
-            DCHECK(!error);
+            CHECK(!error, base::NotFatalUntil::M162);
             run_loop.Quit();
           }));
 

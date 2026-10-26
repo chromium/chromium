@@ -174,12 +174,14 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps(
 }
 
 ScopedTestingPreinstalledAppData::ScopedTestingPreinstalledAppData() {
-  DCHECK_EQ(nullptr, g_preinstalled_app_data_for_testing);
+  CHECK_EQ(nullptr, g_preinstalled_app_data_for_testing,
+           base::NotFatalUntil::M162);
   g_preinstalled_app_data_for_testing = &apps;
 }
 
 ScopedTestingPreinstalledAppData::~ScopedTestingPreinstalledAppData() {
-  DCHECK_EQ(&apps, g_preinstalled_app_data_for_testing);
+  CHECK_EQ(&apps, g_preinstalled_app_data_for_testing,
+           base::NotFatalUntil::M162);
   g_preinstalled_app_data_for_testing = nullptr;
 }
 

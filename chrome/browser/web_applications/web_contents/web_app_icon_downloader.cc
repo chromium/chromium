@@ -245,7 +245,8 @@ void WebAppIconDownloader::CancelDownloads(
   if (!IsRunning()) {
     return;
   }
-  DCHECK_NE(result, IconsDownloadedResult::kCompleted);
+  CHECK_NE(result, IconsDownloadedResult::kCompleted,
+           base::NotFatalUntil::M162);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   in_progress_requests_.clear();

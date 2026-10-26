@@ -66,7 +66,7 @@ static void JNI_HomeModulesRankingHelper_GetClassificationResult(
 static void JNI_HomeModulesRankingHelper_NotifyCardShown(
     Profile* profile,
     const std::string& card_label) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetHomeModulesCardRegistry(profile);
@@ -76,7 +76,7 @@ static void JNI_HomeModulesRankingHelper_NotifyCardShown(
 static void JNI_HomeModulesRankingHelper_NotifyCardInteracted(
     Profile* profile,
     const std::string& card_label) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetHomeModulesCardRegistry(profile);

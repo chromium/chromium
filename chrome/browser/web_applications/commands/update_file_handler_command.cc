@@ -86,9 +86,10 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void UpdateFileHandlerCommand::OnFileHandlerUpdated(
     bool file_handling_enabled) {
-  DCHECK_EQ(
+  CHECK_EQ(
       file_handling_enabled,
-      lock_->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id_));
+      lock_->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id_),
+      base::NotFatalUntil::M162);
   CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 

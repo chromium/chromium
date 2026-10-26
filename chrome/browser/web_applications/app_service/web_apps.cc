@@ -66,12 +66,12 @@ void WebApps::Shutdown() {
 }
 
 const WebApp* WebApps::GetWebApp(const webapps::AppId& app_id) const {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
   return provider_->registrar_unsafe().GetAppById(app_id);
 }
 
 void WebApps::Initialize() {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 
   // In some tests, WebAppPublisherHelper could be created during the shutdown
   // stage as the web app publisher is created async by AppServiceProxy. So
@@ -181,7 +181,8 @@ void WebApps::GetMenuModel(const std::string& app_id,
   apps::MenuItems menu_items;
   auto* swa_manager = ash::SystemWebAppManager::Get(profile());
   if (swa_manager && swa_manager->IsSystemWebApp(web_app->app_id())) {
-    DCHECK(web_app->client_data().system_web_app_data.has_value());
+    CHECK(web_app->client_data().system_web_app_data.has_value(),
+          base::NotFatalUntil::M162);
     ash::SystemWebAppType swa_type =
         web_app->client_data().system_web_app_data->system_app_type;
 
@@ -309,7 +310,7 @@ void WebApps::ModifyWebAppCapabilityAccess(
 }
 
 std::vector<apps::AppPtr> WebApps::CreateWebApps() {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
 
   std::vector<apps::AppPtr> apps;
   for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {

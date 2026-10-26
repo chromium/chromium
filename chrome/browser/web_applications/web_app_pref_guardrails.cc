@@ -43,7 +43,7 @@ bool TimeOccurredWithinDays(std::optional<base::Time> time, int days) {
 
 const base::DictValue* GetWebAppDictionary(const PrefService* pref_service,
                                            const webapps::AppId& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& web_apps_prefs =
       pref_service->GetDict(prefs::kWebAppsPreferences);
 
@@ -53,7 +53,7 @@ const base::DictValue* GetWebAppDictionary(const PrefService* pref_service,
 base::DictValue& UpdateWebAppDictionary(
     ScopedDictPrefUpdate& web_apps_prefs_update,
     const webapps::AppId& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return *web_apps_prefs_update->EnsureDict(app_id);
 }
 

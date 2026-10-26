@@ -13,7 +13,7 @@
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_SegmentationPlatformServiceFactory_GetForProfile(JNIEnv* env,
                                                      Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   segmentation_platform::SegmentationPlatformService* service =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile);

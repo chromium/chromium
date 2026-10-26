@@ -84,7 +84,7 @@ bool ShouldUpgradeShortcutFor(Profile* profile,
 }
 
 void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Wait for extensions to be ready before continuing.
   auto* extension_system = extensions::ExtensionSystem::Get(profile);

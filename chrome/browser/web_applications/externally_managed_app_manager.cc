@@ -125,7 +125,7 @@ ExternallyManagedAppManager::ExternallyManagedAppManager(Profile* profile)
     : profile_(profile) {}
 
 ExternallyManagedAppManager::~ExternallyManagedAppManager() {
-  DCHECK(!registration_callback_);
+  CHECK(!registration_callback_, base::NotFatalUntil::M162);
   // Extra check to verify that web_contents is released even if
   // shutdown somehow has not been invoked.
   if (!IsShuttingDown()) {
@@ -219,10 +219,10 @@ void ExternallyManagedAppManager::SetDataRetrieverFactoryForTesting(
 }
 
 void ExternallyManagedAppManager::ReleaseWebContents() {
-  DCHECK(pending_registrations_.empty());
-  DCHECK(!current_registration_);
-  DCHECK(pending_installs_metadata_.empty());
-  DCHECK(!current_install_metadata_);
+  CHECK(pending_registrations_.empty(), base::NotFatalUntil::M162);
+  CHECK(!current_registration_, base::NotFatalUntil::M162);
+  CHECK(pending_installs_metadata_.empty(), base::NotFatalUntil::M162);
+  CHECK(!current_install_metadata_, base::NotFatalUntil::M162);
 
   web_contents_.reset();
 }
@@ -231,7 +231,7 @@ std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
 ExternallyManagedAppManager::CreateRegistration(
     GURL install_url,
     const base::TimeDelta registration_timeout) {
-  DCHECK(!IsShuttingDown());
+  CHECK(!IsShuttingDown(), base::NotFatalUntil::M162);
   ExternallyManagedAppRegistrationTask::RegistrationCallback callback =
       base::BindOnce(&ExternallyManagedAppManager::OnRegistrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), install_url);
@@ -247,8 +247,9 @@ void ExternallyManagedAppManager::OnRegistrationFinished(
     return;
   }
 
-  DCHECK(!current_registration_ ||
-         current_registration_->install_url() == install_url);
+  CHECK(!current_registration_ ||
+            current_registration_->install_url() == install_url,
+        base::NotFatalUntil::M162);
 
   if (registration_callback_) {
     registration_callback_.Run(install_url, result);
@@ -381,7 +382,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
                           /*installed_placeholder_app_id=*/std::nullopt);
     return;
   }
-  DCHECK(!current_install_metadata_);
+  CHECK(!current_install_metadata_, base::NotFatalUntil::M162);
 
   if (current_registration_ || RunNextRegistration()) {
     return;
@@ -396,8 +397,8 @@ void ExternallyManagedAppManager::StartInstallationTask(
   if (IsShuttingDown()) {
     return;
   }
-  DCHECK(!current_install_metadata_);
-  DCHECK(!is_in_shutdown_);
+  CHECK(!current_install_metadata_, base::NotFatalUntil::M162);
+  CHECK(!is_in_shutdown_, base::NotFatalUntil::M162);
   if (current_registration_) {
     // Preempt current registration.
     pending_registrations_.push_front(
@@ -433,7 +434,7 @@ bool ExternallyManagedAppManager::RunNextRegistration() {
 }
 
 void ExternallyManagedAppManager::CreateWebContentsIfNecessary() {
-  DCHECK(!IsShuttingDown());
+  CHECK(!IsShuttingDown(), base::NotFatalUntil::M162);
   if (web_contents_) {
     return;
   }
@@ -687,7 +688,7 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
   SynchronizeRequest& request = source_and_request->second;
   request.install_results[install_url] = std::move(result);
   --request.remaining_install_requests;
-  DCHECK_GE(request.remaining_install_requests, 0);
+  CHECK_GE(request.remaining_install_requests, 0, base::NotFatalUntil::M162);
 
   ContinueSynchronization(source);
 }
@@ -701,7 +702,7 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
   SynchronizeRequest& request = source_and_request->second;
   request.uninstall_results[install_url] = code;
   --request.remaining_uninstall_requests;
-  DCHECK_GE(request.remaining_uninstall_requests, 0);
+  CHECK_GE(request.remaining_uninstall_requests, 0, base::NotFatalUntil::M162);
 
   ContinueSynchronization(source);
 }
@@ -719,7 +720,7 @@ void ExternallyManagedAppManager::ContinueSynchronization(
 
   // Installs only take place after all uninstalls.
   if (!request.pending_installs.empty()) {
-    DCHECK_GT(request.remaining_install_requests, 0);
+    CHECK_GT(request.remaining_install_requests, 0, base::NotFatalUntil::M162);
     // Note: It is intentional that std::move(request.pending_installs) clears
     // the vector in `request`, preventing this branch from triggering again.
     InstallApps(std::move(request.pending_installs),

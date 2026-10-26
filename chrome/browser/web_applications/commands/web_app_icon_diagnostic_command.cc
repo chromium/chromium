@@ -130,7 +130,7 @@ void WebAppIconDiagnosticCommand::DiagnoseGeneratedOrEmptyIconBitmap(
     return;
   }
 
-  DCHECK(icon_size_);
+  CHECK(icon_size_, base::NotFatalUntil::M162);
   SkBitmap generated_icon_bitmap = shortcuts::GenerateBitmap(
       *icon_size_,
       shortcuts::GenerateIconLetterFromName(base::UTF8ToUTF16(name)));

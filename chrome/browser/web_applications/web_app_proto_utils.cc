@@ -251,7 +251,7 @@ sync_pb::WebAppIconInfo AppIconInfoToSyncProto(
   if (icon_info.square_size_px.has_value()) {
     icon_info_proto.set_size_in_px(icon_info.square_size_px.value());
   }
-  DCHECK(!icon_info.url.is_empty());
+  CHECK(!icon_info.url.is_empty(), base::NotFatalUntil::M162);
   icon_info_proto.set_url(icon_info.url.spec());
   icon_info_proto.set_purpose(IconInfoPurposeToSyncPurpose(icon_info.purpose));
   return icon_info_proto;
@@ -260,7 +260,7 @@ sync_pb::WebAppIconInfo AppIconInfoToSyncProto(
 content::proto::ImageResource AppImageResourceToProto(
     const blink::Manifest::ImageResource& image_resource) {
   content::proto::ImageResource image_resource_proto;
-  DCHECK(!image_resource.src.is_empty());
+  CHECK(!image_resource.src.is_empty(), base::NotFatalUntil::M162);
 
   image_resource_proto.set_src(image_resource.src.spec());
 

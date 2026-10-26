@@ -88,7 +88,7 @@ TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
 std::unique_ptr<KeyedService>
 TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M162);
   Profile* profile = static_cast<Profile*>(context);
   auto* pref_service = profile->GetPrefs();
 

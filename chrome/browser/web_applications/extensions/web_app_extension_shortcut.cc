@@ -84,7 +84,7 @@ void UpdateAllShortcutsForShortcutInfo(
 using AppCallbackMap =
     base::flat_map<webapps::AppId, std::vector<base::OnceClosure>>;
 AppCallbackMap& GetShortcutsDeletedCallbackMap() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   static base::NoDestructor<AppCallbackMap> map;
   return *map;
 }
@@ -107,7 +107,7 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
                              const ShortcutLocations& locations,
                              CreateShortcutsCallback callback,
                              std::unique_ptr<ShortcutInfo> shortcut_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (shortcut_info == nullptr) {
     std::move(callback).Run(/*created_shortcut=*/false);
     return;
@@ -249,7 +249,7 @@ void CreateShortcuts(ShortcutCreationReason reason,
                      Profile* profile,
                      const extensions::Extension* app,
                      CreateShortcutsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!ShouldCreateShortcutFor(reason, profile, app)) {
     std::move(callback).Run(false /* created_shortcut */);
@@ -262,7 +262,7 @@ void CreateShortcuts(ShortcutCreationReason reason,
 }
 
 void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::unique_ptr<ShortcutInfo> shortcut_info(
       ShortcutInfoForExtensionAndProfile(app, profile));
@@ -275,7 +275,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
 
 void WaitForExtensionShortcutsDeleted(const webapps::AppId& app_id,
                                       base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   GetShortcutsDeletedCallbackMap()[app_id].push_back(std::move(callback));
 }
 
@@ -283,7 +283,7 @@ void UpdateAllShortcuts(const std::u16string& old_app_title,
                         Profile* profile,
                         const extensions::Extension* app,
                         base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {

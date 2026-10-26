@@ -31,7 +31,7 @@ GarbageCollectStoragePartitionsCommand::GarbageCollectStoragePartitionsCommand(
                                  AllAppsLockDescription(),
                                  std::move(done)),
       profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 }
 
 GarbageCollectStoragePartitionsCommand::

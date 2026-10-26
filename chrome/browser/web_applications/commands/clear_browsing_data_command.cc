@@ -22,7 +22,7 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
                              const base::Time& end_time,
                              AllAppsLock& lock,
                              base::DictValue& debug_value) {
-  DCHECK_LE(begin_time, end_time);
+  CHECK_LE(begin_time, end_time, base::NotFatalUntil::M162);
 
   WebAppSyncBridge* sync_bridge = &lock.sync_bridge();
   WebAppRegistrar* registrar = &lock.registrar();

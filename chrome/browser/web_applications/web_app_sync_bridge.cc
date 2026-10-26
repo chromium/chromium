@@ -134,7 +134,7 @@ BASE_FEATURE(kDeleteBadWebAppSyncEntitites, base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
-  DCHECK(!app.untranslated_name().empty());
+  CHECK(!app.untranslated_name().empty(), base::NotFatalUntil::M162);
 
   auto entity_data = std::make_unique<syncer::EntityData>();
   entity_data->name = app.untranslated_name();
@@ -169,7 +169,7 @@ WebAppSyncBridge::WebAppSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
       registrar_(registrar) {
-  DCHECK(registrar_);
+  CHECK(registrar_, base::NotFatalUntil::M162);
 }
 
 WebAppSyncBridge::~WebAppSyncBridge() = default;
@@ -186,9 +186,9 @@ void WebAppSyncBridge::SetProvider(base::PassKey<WebAppProvider> pass_key,
 
 [[nodiscard]] ScopedRegistryUpdate WebAppSyncBridge::BeginUpdate(
     CommitCallback callback) {
-  DCHECK(database_->is_opened());
+  CHECK(database_->is_opened(), base::NotFatalUntil::M162);
 
-  DCHECK(!is_in_update_);
+  CHECK(!is_in_update_, base::NotFatalUntil::M162);
   is_in_update_ = true;
 
   return ScopedRegistryUpdate(
@@ -245,7 +245,7 @@ void WebAppSyncBridge::SetAppIsDisabled(AppLock& lock,
     }
 
     std::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
-    DCHECK(cros_data.has_value());
+    CHECK(cros_data.has_value(), base::NotFatalUntil::M162);
 
     if (cros_data->is_disabled != is_disabled) {
       cros_data->is_disabled = is_disabled;
@@ -386,7 +386,7 @@ void WebAppSyncBridge::SetAppFileHandlerApprovalState(
 void WebAppSyncBridge::CommitUpdate(
     CommitCallback callback,
     std::unique_ptr<WebAppRegistryUpdate> update) {
-  DCHECK(is_in_update_);
+  CHECK(is_in_update_, base::NotFatalUntil::M162);
   is_in_update_ = false;
 
   if (update == nullptr) {
@@ -433,19 +433,20 @@ void WebAppSyncBridge::CheckRegistryUpdateData(
     const RegistryUpdateData& update_data) const {
 #if DCHECK_IS_ON()
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_create) {
-    DCHECK(!registrar_->GetAppById(web_app->app_id()));
-    DCHECK(!web_app->untranslated_name().empty());
-    DCHECK(web_app->manifest_id().is_valid());
+    CHECK(!registrar_->GetAppById(web_app->app_id()),
+          base::NotFatalUntil::M162);
+    CHECK(!web_app->untranslated_name().empty(), base::NotFatalUntil::M162);
+    CHECK(web_app->manifest_id().is_valid(), base::NotFatalUntil::M162);
   }
 
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_update) {
-    DCHECK(registrar_->GetAppById(web_app->app_id()));
-    DCHECK(!web_app->untranslated_name().empty());
-    DCHECK(web_app->manifest_id().is_valid());
+    CHECK(registrar_->GetAppById(web_app->app_id()), base::NotFatalUntil::M162);
+    CHECK(!web_app->untranslated_name().empty(), base::NotFatalUntil::M162);
+    CHECK(web_app->manifest_id().is_valid(), base::NotFatalUntil::M162);
   }
 
   for (const webapps::AppId& app_id : update_data.apps_to_delete) {
-    DCHECK(registrar_->GetAppById(app_id));
+    CHECK(registrar_->GetAppById(app_id), base::NotFatalUntil::M162);
   }
 #endif
 }
@@ -456,15 +457,17 @@ void WebAppSyncBridge::UpdateRegistrar(
 
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_create) {
     webapps::AppId app_id = web_app->app_id();
-    DCHECK(!registrar_->GetAppById(app_id,
-                                   WebAppFilter::IsAppSurfaceableToUser()));
+    CHECK(
+        !registrar_->GetAppById(app_id, WebAppFilter::IsAppSurfaceableToUser()),
+        base::NotFatalUntil::M162);
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_update) {
     WebApp* original_web_app = registrar_->GetAppByIdMutable(web_app->app_id());
-    DCHECK(original_web_app);
-    DCHECK_EQ(web_app->IsSystemApp(), original_web_app->IsSystemApp());
+    CHECK(original_web_app, base::NotFatalUntil::M162);
+    CHECK_EQ(web_app->IsSystemApp(), original_web_app->IsSystemApp(),
+             base::NotFatalUntil::M162);
     // Commit previously created copy into original. Preserve original web_app
     // object pointer value (the object's identity) to support stored pointers.
     *original_web_app = std::move(*web_app);
@@ -500,7 +503,7 @@ void WebAppSyncBridge::UpdateSync(
     const webapps::AppId& app_id = new_state->app_id();
     // Find the current state of the app to be overritten.
     const WebApp* current_state = registrar_->GetAppById(app_id);
-    DCHECK(current_state);
+    CHECK(current_state, base::NotFatalUntil::M162);
 
     // Include the app in the sync "view" if IsSynced flag becomes true. Update
     // the app if IsSynced flag stays true. Exclude the app from the sync "view"
@@ -524,7 +527,7 @@ void WebAppSyncBridge::UpdateSync(
 
   for (const webapps::AppId& app_id_to_delete : update_data.apps_to_delete) {
     const WebApp* current_state = registrar_->GetAppById(app_id_to_delete);
-    DCHECK(current_state);
+    CHECK(current_state, base::NotFatalUntil::M162);
     // Exclude the app from the sync "view" if IsSynced flag was true.
     if (current_state->IsSynced())
       change_processor()->Delete(app_id_to_delete,
@@ -539,8 +542,8 @@ void WebAppSyncBridge::OnDatabaseOpened(
     std::unique_ptr<syncer::MetadataBatch> metadata_batch,
     WebAppDatabaseOpenResult result,
     std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps) {
-  DCHECK(database_->is_opened() ||
-         result != WebAppDatabaseOpenResult::kSuccess);
+  CHECK(database_->is_opened() || result != WebAppDatabaseOpenResult::kSuccess,
+        base::NotFatalUntil::M162);
 
   // Report errors to sync.
   switch (result) {
@@ -786,7 +789,8 @@ std::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
   std::vector<webapps::AppId> apps_display_mode_changed;
 
   for (const auto& change : entity_data) {
-    DCHECK_NE(change->type(), syncer::EntityChange::ACTION_DELETE);
+    CHECK_NE(change->type(), syncer::EntityChange::ACTION_DELETE,
+             base::NotFatalUntil::M162);
     ManifestIdParseResult result = PrepareLocalUpdateFromSyncChange(
         *change, update_local_data.get(), apps_display_mode_changed);
     if (base::FeatureList::IsEnabled(kDeleteBadWebAppSyncEntitites) &&

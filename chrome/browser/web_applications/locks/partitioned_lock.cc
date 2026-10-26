@@ -18,7 +18,7 @@ PartitionedLock::PartitionedLock(PartitionedLock&& other) noexcept {
   this->lock_id_ = std::move(other.lock_id_);
   this->lock_released_callback_ = std::move(other.lock_released_callback_);
   this->request_location_ = std::move(other.request_location_);
-  DCHECK(!other.is_locked());
+  CHECK(!other.is_locked(), base::NotFatalUntil::M162);
 }
 PartitionedLock::PartitionedLock(PartitionedLockId lock_id,
                                  base::Location request_location,
@@ -34,7 +34,7 @@ PartitionedLock& PartitionedLock::operator=(PartitionedLock&& other) noexcept {
   this->lock_id_ = std::move(other.lock_id_);
   this->lock_released_callback_ = std::move(other.lock_released_callback_);
   this->request_location_ = std::move(other.request_location_);
-  DCHECK(!other.is_locked());
+  CHECK(!other.is_locked(), base::NotFatalUntil::M162);
   return *this;
 }
 

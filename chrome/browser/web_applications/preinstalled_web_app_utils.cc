@@ -314,7 +314,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   options.add_to_quick_launch_bar = create_shortcuts;
 
   // It doesn't make sense to hide the app and also create shortcuts for it.
-  DCHECK(!(hide_from_user && create_shortcuts));
+  CHECK(!(hide_from_user && create_shortcuts), base::NotFatalUntil::M162);
 
   // disable_if_arc_supported
   value = app_config_dict.Find(kDisableIfArcSupported);

@@ -548,7 +548,8 @@ void FinalizeInstallOrUpdateJob::SetWebAppFieldsForInstall(
   // install is user initiated or it's a new app.
   if (ShouldInstallOverwriteUserDisplayMode(options_.install_surface) ||
       !existing_web_app) {
-    DCHECK(web_app_info_.user_display_mode.has_value());
+    CHECK(web_app_info_.user_display_mode.has_value(),
+          base::NotFatalUntil::M162);
     web_app->SetUserDisplayMode(*web_app_info_.user_display_mode);
   }
   if (options_.run_on_os_login_mode.has_value()) {
@@ -667,7 +668,7 @@ void FinalizeInstallOrUpdateJob::WriteTranslations(
         translations,
     CommitCallback commit_callback,
     bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!success) {
     std::move(commit_callback).Run(success);
     return;
@@ -679,7 +680,7 @@ void FinalizeInstallOrUpdateJob::CommitToSyncBridge(
     std::unique_ptr<WebApp> web_app,
     CommitCallback commit_callback,
     bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!success) {
     std::move(commit_callback).Run(success);
     return;
@@ -702,8 +703,10 @@ void FinalizeInstallOrUpdateJob::WriteExternalConfigMapInfo(
     bool is_placeholder,
     GURL install_url,
     std::vector<std::string> additional_policy_ids) {
-  DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
-  DCHECK(!(source == WebAppManagement::Type::kUserInstalled && is_placeholder));
+  CHECK(!(source == WebAppManagement::Type::kSync && is_placeholder),
+        base::NotFatalUntil::M162);
+  CHECK(!(source == WebAppManagement::Type::kUserInstalled && is_placeholder),
+        base::NotFatalUntil::M162);
   if (source != WebAppManagement::Type::kSync &&
       source != WebAppManagement::Type::kUserInstalled &&
       !WebAppManagement::IsIwaType(source)) {
@@ -742,7 +745,7 @@ void FinalizeInstallOrUpdateJob::AdjustAppStateBeforeCommit(
 void FinalizeInstallOrUpdateJob::OnDatabaseCommitCompleted(
     std::optional<WebAppScope> old_scope,
     bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!success) {
     RunCallbackAndResetLock(webapps::AppId(),
                             webapps::InstallResultCode::kWriteDataFailed);

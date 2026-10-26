@@ -78,7 +78,7 @@ WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
                                ReportErrorCallback error_callback)
     : database_factory_(database_factory),
       error_callback_(std::move(error_callback)) {
-  DCHECK(database_factory_);
+  CHECK(database_factory_, base::NotFatalUntil::M162);
 }
 
 WebAppDatabase::~WebAppDatabase() {
@@ -97,7 +97,7 @@ void WebAppDatabase::SetProvider(base::PassKey<WebAppProvider> pass_key,
 
 void WebAppDatabase::OpenDatabase(RegistryOpenedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!store_);
+  CHECK(!store_, base::NotFatalUntil::M162);
   log_ = PersistableLog::Create(
       PersistableLog::GetLogPath(provider_->profile(), "WebAppDatabase.log"),
       PersistableLog::GetMode(), PersistableLog::GetMaxInMemoryLogEntries(),

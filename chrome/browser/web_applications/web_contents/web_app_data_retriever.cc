@@ -96,7 +96,7 @@ WebAppDataRetriever::~WebAppDataRetriever() = default;
 void WebAppDataRetriever::GetWebAppInstallInfo(
     content::WebContents* web_contents,
     GetWebAppInstallInfoCallback callback) {
-  DCHECK(!web_contents->IsBeingDestroyed());
+  CHECK(!web_contents->IsBeingDestroyed(), base::NotFatalUntil::M162);
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -159,7 +159,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     CheckInstallabilityCallback callback,
     std::optional<webapps::InstallableParams> params) {
-  DCHECK(!web_contents->IsBeingDestroyed());
+  CHECK(!web_contents->IsBeingDestroyed(), base::NotFatalUntil::M162);
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -186,7 +186,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents);
-  DCHECK(installable_manager);
+  CHECK(installable_manager, base::NotFatalUntil::M162);
 
   // Do not wait_for_worker. OnDidPerformInstallableCheck is always invoked.
   installable_manager->GetData(
@@ -218,7 +218,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
                                    bool download_page_favicons,
                                    bool fail_all_if_any_fail,
                                    GetIconsCallback callback) {
-  DCHECK(!web_contents->IsBeingDestroyed());
+  CHECK(!web_contents->IsBeingDestroyed(), base::NotFatalUntil::M162);
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -290,7 +290,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
     return;
   }
 
-  DCHECK(fallback_install_info_);
+  CHECK(fallback_install_info_, base::NotFatalUntil::M162);
 
   content::WebContents* contents = web_contents();
   Observe(nullptr);
@@ -412,7 +412,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
   Observe(nullptr);
   icon_downloader_.reset();
 
-  DCHECK(!get_icons_callback_.is_null());
+  CHECK(!get_icons_callback_.is_null(), base::NotFatalUntil::M162);
   std::move(get_icons_callback_)
       .Run(result, std::move(icons_map), std::move(icons_http_results));
 }

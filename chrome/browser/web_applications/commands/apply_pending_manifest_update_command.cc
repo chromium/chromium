@@ -37,7 +37,7 @@ std::vector<apps::IconInfo> ConvertSyncProtoIconsToAppIconInfos(
     if (icon_info_proto.has_size_in_px()) {
       icon_info.square_size_px = icon_info_proto.size_in_px();
     }
-    DCHECK(icon_info_proto.has_url());
+    CHECK(icon_info_proto.has_url(), base::NotFatalUntil::M162);
     icon_info.url = GURL(icon_info_proto.url());
     std::optional<apps::IconInfo::Purpose> icon_purpose =
         SyncPurposeToIconInfoPurpose(icon_info_proto.purpose());

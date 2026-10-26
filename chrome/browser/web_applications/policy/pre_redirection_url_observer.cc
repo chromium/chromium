@@ -18,7 +18,7 @@ PreRedirectionURLObserver::~PreRedirectionURLObserver() = default;
 
 void PreRedirectionURLObserver::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  DCHECK(handle);
+  CHECK(handle, base::NotFatalUntil::M162);
   // Don't save subframe navigations.
   if (!handle->IsInPrimaryMainFrame())
     return;

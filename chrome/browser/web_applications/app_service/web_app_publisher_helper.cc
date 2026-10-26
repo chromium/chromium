@@ -215,7 +215,7 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
     if (chromeos_data.oem_installed) {
-      DCHECK(!web_app->IsSystemApp());
+      CHECK(!web_app->IsSystemApp(), base::NotFatalUntil::M162);
       return apps::InstallReason::kOem;
     }
   }
@@ -354,7 +354,7 @@ bool IsLockScreenCapable(const WebApp& web_app) {
 
 apps::IntentFilterPtr CreateMimeTypeShareFilter(
     const std::vector<std::string>& mime_types) {
-  DCHECK(!mime_types.empty());
+  CHECK(!mime_types.empty(), base::NotFatalUntil::M162);
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   std::vector<apps::ConditionValuePtr> action_condition_values;
@@ -394,7 +394,7 @@ apps::IntentFilterPtr CreateIntentFilterFromOrigin(
 
   std::string authority = apps_util::AuthorityView::Encode(origin);
   if (add_subdomain_wildcard) {
-    DCHECK(!base::StartsWith(authority, "."));
+    CHECK(!base::StartsWith(authority, "."), base::NotFatalUntil::M162);
     authority = '.' + authority;
   }
   intent_filter->AddSingleValueCondition(
@@ -593,7 +593,7 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
   apps::AppPtr app =
       publisher_helper_->app_notifications_.CreateAppWithHasBadgeStatus(
           apps::AppType::kWeb, app_id);
-  DCHECK(app->has_badge.has_value());
+  CHECK(app->has_badge.has_value(), base::NotFatalUntil::M162);
   app->has_badge =
       publisher_helper_->ShouldShowBadge(app_id, app->has_badge.value());
   publisher_helper_->delegate_->PublishWebApp(std::move(app));
@@ -604,8 +604,8 @@ WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              WebAppProvider* provider,
                                              Delegate* delegate)
     : profile_(profile), provider_(provider), delegate_(delegate) {
-  DCHECK(profile_);
-  DCHECK(delegate_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   Init();
 }
 
@@ -660,7 +660,7 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
   const GURL& url = web_app->start_url();
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(host_content_settings_map);
+  CHECK(host_content_settings_map, base::NotFatalUntil::M162);
 
   for (ContentSettingsType type : kSupportedPermissionTypes) {
     ContentSetting setting =
@@ -761,7 +761,7 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
 }
 
 apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
-  DCHECK(!IsShuttingDown());
+  CHECK(!IsShuttingDown(), base::NotFatalUntil::M162);
 
   apps::Readiness readiness;
 
@@ -778,7 +778,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(web_app->chromeos_data().has_value());
+  CHECK(web_app->chromeos_data().has_value(), base::NotFatalUntil::M162);
   if (web_app->chromeos_data()->is_disabled) {
     readiness = apps::Readiness::kDisabledByPolicy;
   }
@@ -937,9 +937,9 @@ void WebAppPublisherHelper::UninstallWebApp(
 
   auto origin = url::Origin::Create(web_app->start_url());
 
-  DCHECK(provider_);
-  DCHECK(
-      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
+  CHECK(provider_, base::NotFatalUntil::M162);
+  CHECK(provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()),
+        base::NotFatalUntil::M162);
   webapps::WebappUninstallSource webapp_uninstall_source =
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
   provider_->scheduler().RemoveUserUninstallableManagements(
@@ -1025,7 +1025,7 @@ void WebAppPublisherHelper::GetCompressedIconData(
     int32_t size_in_dip,
     ui::ResourceScaleFactor scale_factor,
     apps::LoadIconCallback callback) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
   if (IsShuttingDown()) {
     return;
   }
@@ -1040,7 +1040,7 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                                      int32_t size_hint_in_dip,
                                      apps::IconEffects icon_effects,
                                      apps::LoadIconCallback callback) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
   if (IsShuttingDown()) {
     return;
   }
@@ -1234,7 +1234,7 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
 
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  DCHECK(host_content_settings_map);
+  CHECK(host_content_settings_map, base::NotFatalUntil::M162);
 
   const GURL url = web_app->start_url();
 

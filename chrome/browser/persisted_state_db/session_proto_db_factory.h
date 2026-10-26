@@ -122,7 +122,7 @@ template <typename T>
 std::unique_ptr<KeyedService>
 SessionProtoDBFactory<T>::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M162);
 
   leveldb_proto::ProtoDatabaseProvider* proto_database_provider =
       context->GetDefaultStoragePartition()->GetProtoDatabaseProvider();

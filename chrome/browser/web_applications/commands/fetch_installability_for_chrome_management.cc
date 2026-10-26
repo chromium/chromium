@@ -134,7 +134,7 @@ void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
                             std::nullopt);
     return;
   }
-  DCHECK(opt_manifest);
+  CHECK(opt_manifest, base::NotFatalUntil::M162);
   app_id_ = GenerateAppIdFromManifest(*opt_manifest);
   GetMutableDebugValue().Set("app_id", app_id_);
   app_lock_ = std::make_unique<AppLock>();
@@ -155,7 +155,7 @@ void FetchInstallabilityForChromeManagement::OnAppLockGranted() {
                             std::nullopt);
     return;
   }
-  DCHECK(!app_id_.empty());
+  CHECK(!app_id_.empty(), base::NotFatalUntil::M162);
 
   InstallableCheckResult result;
   if (app_lock_->registrar().GetInstallState(app_id_) == std::nullopt) {

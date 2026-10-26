@@ -156,7 +156,8 @@ void WebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void WebAppPolicyManager::Start(
     base::OnceClosure policy_settings_and_force_installs_applied) {
-  DCHECK(policy_settings_and_force_installs_applied_.is_null());
+  CHECK(policy_settings_and_force_installs_applied_.is_null(),
+        base::NotFatalUntil::M162);
 
   policy_settings_and_force_installs_applied_ =
       std::move(policy_settings_and_force_installs_applied);
@@ -347,7 +348,7 @@ std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
       web_app_registrar.GetExternallyInstalledApps(
           ExternalInstallSource::kExternalPolicy);
   if (auto* install_urls = base::FindOrNull(installed_apps, app_id)) {
-    DCHECK(!install_urls->empty());
+    CHECK(!install_urls->empty(), base::NotFatalUntil::M162);
     base::Extend(policy_ids, base::ToVector(*install_urls, &GURL::spec));
   }
 
@@ -645,9 +646,10 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
       entry.FindList(kUninstallAndReplaceKey);
   const std::optional<bool> install_as_diy = entry.FindBool(kInstallAsShortcut);
 
-  DCHECK(!default_launch_container ||
-         (*default_launch_container == kDefaultLaunchContainerWindowValue) ||
-         (*default_launch_container == kDefaultLaunchContainerTabValue));
+  CHECK(!default_launch_container ||
+            (*default_launch_container == kDefaultLaunchContainerWindowValue) ||
+            (*default_launch_container == kDefaultLaunchContainerTabValue),
+        base::NotFatalUntil::M162);
 
   if (!webapps::IsUrlEligibleForWebApp(install_gurl)) {
     LOG(WARNING) << "Policy-installed web app has invalid URL " << *install_url;
@@ -796,7 +798,8 @@ void WebAppPolicyManager::MaybeOverrideManifest(
         provider_->registrar_unsafe().GetExternallyInstalledApps(
             ExternalInstallSource::kExternalPolicy);
     if (policy_installed_apps.contains(app_id)) {
-      DCHECK_GT(policy_installed_apps[app_id].size(), 0UL);
+      CHECK_GT(policy_installed_apps[app_id].size(), 0UL,
+               base::NotFatalUntil::M162);
       for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
         if (custom_manifest_values_by_url_.contains(policy_install_url)) {
           OverrideManifest(policy_install_url, manifest);
@@ -1083,7 +1086,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     }
   }
 
-  DCHECK(system_web_apps_delegate_map_);
+  CHECK(system_web_apps_delegate_map_, base::NotFatalUntil::M162);
   // TODO(413343732): Remove/fix - IDs are not (always) resolved when this
   // function runs.
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {

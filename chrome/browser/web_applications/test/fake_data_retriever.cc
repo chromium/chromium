@@ -33,7 +33,7 @@ FakeDataRetriever::~FakeDataRetriever() {
 void FakeDataRetriever::GetWebAppInstallInfo(
     content::WebContents* web_contents,
     GetWebAppInstallInfoCallback callback) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   completion_callback_ =
       base::BindOnce(std::move(callback), std::move(web_app_info_));

@@ -374,8 +374,9 @@ base::Value WebAppLockManager::ToDebugValue() const {
     // Out of bounds things should NOT happen here, but given this is being
     // called from debug UI, it's better to return something reasonable
     // instead of doing undefined behavior.
-    DCHECK_GE(lock.partition, 0);
-    DCHECK_LE(lock.partition, static_cast<int>(LockPartition::kMaxValue));
+    CHECK_GE(lock.partition, 0, base::NotFatalUntil::M162);
+    CHECK_LE(lock.partition, static_cast<int>(LockPartition::kMaxValue),
+             base::NotFatalUntil::M162);
     if (lock.partition < 0 ||
         lock.partition > static_cast<int>(LockPartition::kMaxValue)) {
       return base::StringPrintf("Invalid lock partition: %i", lock.partition);
@@ -390,8 +391,9 @@ base::Value WebAppLockManager::ToDebugValue() const {
           return base::StringPrintf("Static, invalid number '%s'",
                                     lock.key.c_str());
         }
-        DCHECK_GE(lock_key, 0);
-        DCHECK_LE(lock_key, static_cast<int>(KeysOnStaticPartition::kMaxValue));
+        CHECK_GE(lock_key, 0, base::NotFatalUntil::M162);
+        CHECK_LE(lock_key, static_cast<int>(KeysOnStaticPartition::kMaxValue),
+                 base::NotFatalUntil::M162);
         if (lock_key < 0 ||
             lock_key > static_cast<int>(KeysOnStaticPartition::kMaxValue)) {
           return base::StringPrintf("Static, invalid key number: %i", lock_key);

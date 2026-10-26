@@ -450,7 +450,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     _AXEnhancedUserInterfaceRequests--;
   }
 
-  DCHECK(_AXEnhancedUserInterfaceRequests >= 0);
+  CHECK(_AXEnhancedUserInterfaceRequests >= 0, base::NotFatalUntil::M162);
 
   // _AXEnhancedUserInterfaceRequests > 0 means we want to enable screen
   // reader support, but we'll delay that action until there are no more state

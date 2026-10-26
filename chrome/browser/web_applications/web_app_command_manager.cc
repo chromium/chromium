@@ -43,7 +43,7 @@ WebAppCommandManager::WebAppCommandManager(Profile* profile)
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
-  DCHECK(is_in_shutdown_);
+  CHECK(is_in_shutdown_, base::NotFatalUntil::M162);
 }
 
 void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
@@ -302,7 +302,7 @@ void WebAppCommandManager::AddCommandToLog(
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {
-  DCHECK(!value.is_none());
+  CHECK(!value.is_none(), base::NotFatalUntil::M162);
   if (log_) {
     log_->AppendValue(std::move(value));
   }
@@ -314,7 +314,7 @@ content::WebContents* WebAppCommandManager::EnsureWebContentsCreated(
 }
 
 content::WebContents* WebAppCommandManager::EnsureWebContentsCreated() {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
   if (!shared_web_contents_) {
     shared_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));

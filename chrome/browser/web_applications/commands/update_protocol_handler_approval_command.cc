@@ -40,7 +40,7 @@ UpdateProtocolHandlerApprovalCommand::UpdateProtocolHandlerApprovalCommand(
   GetMutableDebugValue().Set("api_approval_state",
                              base::ToString(approval_state_));
   GetMutableDebugValue().Set("protocol_scheme", protocol_scheme);
-  DCHECK(!protocol_scheme.empty());
+  CHECK(!protocol_scheme.empty(), base::NotFatalUntil::M162);
 }
 
 UpdateProtocolHandlerApprovalCommand::~UpdateProtocolHandlerApprovalCommand() =

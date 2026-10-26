@@ -17,7 +17,7 @@ static base::android::ScopedJavaLocalRef<jobject>
 JNI_RegionalCapabilitiesServiceFactory_GetRegionalCapabilitiesService(
     JNIEnv* env,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return RegionalCapabilitiesServiceFactory::GetForProfile(profile)
       ->GetJavaObject();
 }

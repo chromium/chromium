@@ -62,7 +62,7 @@ void GetProgressiveWebAppSizeJob::GetDataSize() {
 
 void GetProgressiveWebAppSizeJob::OnQuotaModelInfoLoaded(
     BrowsingDataQuotaHelper::QuotaInfoArray quota_storage_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!lock_with_app_resources_->registrar().AppMatches(
           app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
@@ -101,7 +101,7 @@ void GetProgressiveWebAppSizeJob::OnQuotaModelInfoLoaded(
 
 void GetProgressiveWebAppSizeJob::OnLocalStorageModelInfoLoaded(
     const std::vector<content::StorageUsageInfo>& local_storage_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   for (const auto& local_storage_info : local_storage_info_list) {
     url::Origin local_origin = local_storage_info.storage_key.origin();

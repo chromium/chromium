@@ -38,8 +38,8 @@ bool EqualsWithComparison(
     const GURL& a,
     const GURL& b,
     webapps::WebAppUrlLoader::UrlComparison url_comparison) {
-  DCHECK(a.is_valid());
-  DCHECK(b.is_valid());
+  CHECK(a.is_valid(), base::NotFatalUntil::M162);
+  CHECK(b.is_valid(), base::NotFatalUntil::M162);
   if (a == b) {
     return true;
   }

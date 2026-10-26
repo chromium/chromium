@@ -49,7 +49,7 @@ class UkmDatabaseClient {
 
   // UKM observer will use the test recorder to observe metrics.
   void set_ukm_recorder_for_testing(ukm::UkmRecorderImpl* ukm_recorder) {
-    DCHECK(!ukm_observer_);
+    CHECK(!ukm_observer_, base::NotFatalUntil::M162);
     ukm_recorder_for_testing_ = ukm_recorder;
   }
 

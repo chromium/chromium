@@ -1128,7 +1128,7 @@ class WriteIconsJob {
       const base::FilePath& subdir_for_icons) {
     TRACE_EVENT0("ui",
                  "web_app_icon_manager::WriteIconsJob::AtomicallyWriteIcons");
-    DCHECK(!subdir_for_icons.IsAbsolute());
+    CHECK(!subdir_for_icons.IsAbsolute(), base::NotFatalUntil::M162);
     // Create the temp directory under the web apps root.
     // This guarantees it is on the same file system as the WebApp's eventual
     // install target.
@@ -1291,8 +1291,9 @@ class WriteIconsJob {
                                        const SkBitmap& bitmap) {
     TRACE_EVENT0("ui",
                  "web_app_icon_manager::WriteIconsJob::EncodeAndWriteIcon");
-    DCHECK_NE(bitmap.colorType(), kUnknown_SkColorType);
-    DCHECK_EQ(bitmap.width(), bitmap.height());
+    CHECK_NE(bitmap.colorType(), kUnknown_SkColorType,
+             base::NotFatalUntil::M162);
+    CHECK_EQ(bitmap.width(), bitmap.height(), base::NotFatalUntil::M162);
     base::FilePath icon_file =
         icons_dir.AppendASCII(base::StringPrintf("%i.png", bitmap.width()));
 
@@ -1399,7 +1400,7 @@ void WebAppIconManager::WriteData(
     IconsMap other_icons_map,
     WriteDataCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::WriteData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -1418,7 +1419,7 @@ void WebAppIconManager::WritePendingIconData(
     IconBitmaps pending_manifest_icon_bitmaps,
     WriteDataCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::WriteData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -1434,7 +1435,7 @@ void WebAppIconManager::WritePendingIconData(
 
 void WebAppIconManager::DeleteData(webapps::AppId app_id,
                                    WriteDataCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -1467,7 +1468,7 @@ void WebAppIconManager::Shutdown() {}
 bool WebAppIconManager::HasIcons(const webapps::AppId& app_id,
                                  IconPurpose purpose,
                                  const SortedSizesPx& icon_sizes) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return false;
@@ -1479,7 +1480,7 @@ bool WebAppIconManager::HasIcons(const webapps::AppId& app_id,
 bool WebAppIconManager::HasTrustedIcons(const webapps::AppId& app_id,
                                         IconPurpose purpose,
                                         const SortedSizesPx& icon_sizes) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // There can never be monochrome trusted icons.
   if (purpose == IconPurpose::MONOCHROME) {
     return false;
@@ -1499,7 +1500,7 @@ WebAppIconManager::FindIconMatchBigger(
     const std::vector<IconPurpose>& purposes,
     SquareSizePx min_size,
     bool skip_trusted_icons_for_favicons) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return std::nullopt;
@@ -1547,7 +1548,7 @@ void WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons(
     ReadIconMetadataCallback callback) {
   TRACE_EVENT0(
       "ui", "WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
@@ -1573,7 +1574,7 @@ void WebAppIconManager::ReadIconsForPendingUpdate(
     std::optional<IconPurpose> purpose_for_pending_info,
     ReadIconMetadataForUpdateCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadIconsForPendingUpdate");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!provider_->registrar_unsafe().GetAppById(app_id)) {
     std::move(callback).Run(IconMetadataForUpdate());
     return;
@@ -1603,7 +1604,7 @@ void WebAppIconManager::ReadAllShortcutMenuIconsWithTimestamp(
     ShortcutIconDataCallback callback) {
   TRACE_EVENT0("ui",
                "WebAppIconManager::ReadAllShortcutMenuIconsWithTimestamp");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(ShortcutIconDataVector());
@@ -1622,7 +1623,7 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
     const webapps::AppId& app_id,
     ReadIconsUpdateTimeCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadIconsLastUpdateTime");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(base::flat_map<SquareSizePx, base::Time>());
@@ -1673,7 +1674,7 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
 void WebAppIconManager::ReadAllIcons(const webapps::AppId& app_id,
                                      ReadIconBitmapsCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadAllIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(WebAppBitmaps());
@@ -1721,7 +1722,7 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
     const webapps::AppId& app_id,
     ReadShortcutsMenuIconsCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadAllShortcutsMenuIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(ShortcutsMenuIconBitmaps{});
@@ -1780,7 +1781,7 @@ void WebAppIconManager::ReadSmallestIcon(
     SquareSizePx min_size_in_px,
     ReadIconWithPurposeCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadSmallestIcon");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::optional<IconSizeAndPurpose> best_icon =
       FindIconMatchBigger(app_id, purposes, min_size_in_px);
@@ -1805,7 +1806,7 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
     SquareSizePx min_size_in_px,
     ReadCompressedIconWithPurposeCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadSmallestCompressedIcon");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::optional<IconSizeAndPurpose> best_icon =
       FindIconMatchBigger(app_id, purposes, min_size_in_px);
@@ -1828,7 +1829,7 @@ void WebAppIconManager::OverwriteAppIconsFromPendingIcons(
     base::PassKey<ApplyPendingManifestUpdateCommand>,
     OverwriteAppIconsFromPendingIconsCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::OverwriteIconsFromPendingIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!provider_->registrar_unsafe().GetInstallState(app_id)) {
     std::move(callback).Run(false);
     return;
@@ -1856,7 +1857,7 @@ void WebAppIconManager::DeletePendingIconData(
     DeletePendingPassKey,
     DeletePendingIconDataCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::DeletePendingIconData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!provider_->registrar_unsafe().GetInstallState(app_id)) {
     std::move(callback).Run(false);
     return;
@@ -1906,7 +1907,7 @@ void WebAppIconManager::CopyIconsFromOneAppToAnother(
     base::PassKey<ApplyManifestMigrationCommand>,
     AppIconsCopySuccessCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::OverwriteIconsFromPendingIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!provider_->registrar_unsafe().GetInstallState(from_app_id) ||
       !provider_->registrar_unsafe().GetInstallState(to_app_id)) {
     std::move(callback).Run(false);
@@ -2123,13 +2124,13 @@ void WebAppIconManager::ReadUntrustedIcons(const webapps::AppId& app_id,
                                            const SortedSizesPx& icon_sizes,
                                            ReadIconMetadataCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!provider_->registrar_unsafe().GetAppById(app_id)) {
     std::move(callback).Run(IconMetadataFromDisk());
     return;
   }
-  DCHECK(HasIcons(app_id, purpose, icon_sizes));
+  CHECK(HasIcons(app_id, purpose, icon_sizes), base::NotFatalUntil::M162);
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -2148,7 +2149,7 @@ WebAppIconManager::FindIconMatchSmaller(
     const std::vector<IconPurpose>& purposes,
     SquareSizePx max_size,
     bool skip_trusted_icons_for_favicons) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return std::nullopt;

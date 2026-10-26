@@ -231,37 +231,37 @@ void FakeWebAppProvider::SetExtensionsManager(
 }
 
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
-  DCHECK(registrar_);
+  CHECK(registrar_, base::NotFatalUntil::M162);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
 }
 
 WebAppIconManager& FakeWebAppProvider::GetIconManager() const {
-  DCHECK(icon_manager_);
+  CHECK(icon_manager_, base::NotFatalUntil::M162);
   return *icon_manager_;
 }
 
 WebAppCommandManager& FakeWebAppProvider::GetCommandManager() const {
-  DCHECK(command_manager_);
+  CHECK(command_manager_, base::NotFatalUntil::M162);
   return *command_manager_;
 }
 
 AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
-  DCHECK(database_factory_);
+  CHECK(database_factory_, base::NotFatalUntil::M162);
   return *database_factory_;
 }
 
 WebAppUiManager& FakeWebAppProvider::GetUiManager() const {
-  DCHECK(ui_manager_);
+  CHECK(ui_manager_, base::NotFatalUntil::M162);
   return *ui_manager_;
 }
 
 WebAppInstallManager& FakeWebAppProvider::GetInstallManager() const {
-  DCHECK(install_manager_);
+  CHECK(install_manager_, base::NotFatalUntil::M162);
   return *install_manager_;
 }
 
 OsIntegrationManager& FakeWebAppProvider::GetOsIntegrationManager() const {
-  DCHECK(os_integration_manager_);
+  CHECK(os_integration_manager_, base::NotFatalUntil::M162);
   return *os_integration_manager_;
 }
 
@@ -414,7 +414,8 @@ void FakeWebAppProviderCreator::OnWillCreateBrowserContextServices(
 std::unique_ptr<KeyedService> FakeWebAppProviderCreator::CreateWebAppProvider(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(!WebAppProviderFactory::IsServiceCreatedForProfile(profile));
+  CHECK(!WebAppProviderFactory::IsServiceCreatedForProfile(profile),
+        base::NotFatalUntil::M162);
   if (!AreWebAppsEnabled(profile) || !callback_)
     return nullptr;
   return callback_.Run(profile);

@@ -57,7 +57,7 @@ void UkmDatabaseClient::PreProfileInit(bool in_memory_database) {
   // Path service is setup at early startup.
   base::FilePath local_data_dir;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &local_data_dir);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
   ukm_data_manager_->Initialize(
       local_data_dir.Append(FILE_PATH_LITERAL("segmentation_platform/ukm_db")),
       in_memory_database);

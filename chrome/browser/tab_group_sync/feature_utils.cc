@@ -22,7 +22,7 @@ namespace tab_groups {
 // static
 static bool JNI_TabGroupSyncFeatures_IsTabGroupSyncEnabled(JNIEnv* env,
                                                            Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return IsTabGroupSyncEnabled(profile->GetPrefs());
 }
 #endif  // BUILDFLAG(IS_ANDROID)

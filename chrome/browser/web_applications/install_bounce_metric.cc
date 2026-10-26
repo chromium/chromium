@@ -54,7 +54,7 @@ struct InstallMetrics {
 std::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
     const PrefService* pref_service,
     const webapps::AppId& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   const base::DictValue& ids_to_metrics =
       pref_service->GetDict(prefs::kWebAppInstallMetrics);
@@ -79,7 +79,7 @@ std::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
 void WriteInstallMetricsToPrefs(const InstallMetrics& install_metrics,
                                 PrefService* pref_service,
                                 const webapps::AppId& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   base::DictValue dict;
   dict.Set(kInstallTimestamp, SerializeTime(install_metrics.timestamp));
   dict.Set(kInstallSource, static_cast<int>(install_metrics.source));

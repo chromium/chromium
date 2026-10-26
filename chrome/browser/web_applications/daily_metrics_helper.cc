@@ -50,7 +50,7 @@ int BucketedDailySeconds(base::TimeDelta delta) {
 class DesktopWebAppUkmRecorder {
  public:
   static void Emit(const DailyInteraction& record) {
-    DCHECK(record.start_url.is_valid());
+    CHECK(record.start_url.is_valid(), base::NotFatalUntil::M162);
     ukm::SourceId source_id =
         ukm::AppSourceUrlRecorder::GetSourceIdForPWA(record.start_url);
     ukm::builders::WebApp_DailyInteraction builder(source_id);
@@ -193,7 +193,7 @@ void RemoveRecords(PrefService* prefs) {
 }
 
 void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
-  DCHECK(record.start_url.is_valid());
+  CHECK(record.start_url.is_valid(), base::NotFatalUntil::M162);
   const std::string& url = record.start_url.spec();
   const base::DictValue& urls_to_features =
       prefs->GetDict(prefs::kWebAppsDailyMetrics);
@@ -224,7 +224,7 @@ DailyInteraction::DailyInteraction(const DailyInteraction&) = default;
 DailyInteraction::~DailyInteraction() = default;
 
 void FlushOldRecordsAndUpdate(DailyInteraction& record, Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (metrics::date_changed_helper::HasDateChangedSinceLastCall(
           profile->GetPrefs(), prefs::kWebAppsDailyMetricsDate)) {
     EmitRecords(profile);
@@ -234,7 +234,7 @@ void FlushOldRecordsAndUpdate(DailyInteraction& record, Profile* profile) {
 }
 
 void FlushAllRecordsForTesting(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   EmitRecords(profile);
   RemoveRecords(profile->GetPrefs());
 }

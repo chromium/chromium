@@ -17,7 +17,7 @@ icu::Locale GetLocaleFromTranslation(const Translation& translation) {
   UErrorCode error = U_ZERO_ERROR;
   icu::Locale locale =
       icu::Locale::forLanguageTag(translation.bcp47_locale, error);
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M162);
   return locale;
 }
 
@@ -29,7 +29,7 @@ OrderedSizeToBitmap LoadBundledIcons(
   for (int id : icon_resource_ids) {
     const gfx::Image& image =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(id);
-    DCHECK_EQ(image.Width(), image.Height());
+    CHECK_EQ(image.Width(), image.Height(), base::NotFatalUntil::M162);
     results[image.Width()] = image.AsBitmap();
   }
   return results;
@@ -43,15 +43,15 @@ const char* GetTranslatedName(const char* utf8_default_name,
                                        translations.begin(), translations.end(),
                                        GetLocaleFromTranslation)
                                    .build(error);
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M162);
 
   icu::Locale application_locale = icu::Locale::forLanguageTag(
       g_browser_process->GetApplicationLocale(), error);
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M162);
 
   int32_t best_index =
       matcher.getBestMatchResult(application_locale, error).getSupportedIndex();
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M162);
 
   if (best_index == -1)
     return utf8_default_name;

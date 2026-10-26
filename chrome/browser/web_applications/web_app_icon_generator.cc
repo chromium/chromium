@@ -72,7 +72,7 @@ OrderedSizeToBitmap ConstrainBitmapsToSizes(
   std::vector<std::pair<SquareSizePx, SkBitmap>> ordered_bitmaps_vector;
   ordered_bitmaps_vector.reserve(bitmaps.size());
   for (const SkBitmap& bitmap : bitmaps) {
-    DCHECK(bitmap.width() == bitmap.height());
+    CHECK(bitmap.width() == bitmap.height(), base::NotFatalUntil::M162);
     ordered_bitmaps_vector.emplace_back(bitmap.width(), bitmap);
   }
   OrderedSizeToBitmap ordered_bitmaps(std::move(ordered_bitmaps_vector));
@@ -104,7 +104,7 @@ OrderedSizeToBitmap ResizeIconsAndGenerateMissing(
     const std::set<SquareSizePx>& sizes_to_generate,
     std::u16string_view icon_letter,
     bool* is_generated_icon) {
-  DCHECK(is_generated_icon);
+  CHECK(is_generated_icon, base::NotFatalUntil::M162);
 
   // Resize provided icons to make sure we have versions for each size in
   // |sizes_to_generate|.

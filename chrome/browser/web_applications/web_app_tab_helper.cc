@@ -162,13 +162,14 @@ void WebAppTabHelper::EnqueueLaunchParams(webapps::LaunchParams launch_params) {
 void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
                                std::optional<webapps::AppId> window_app_id) {
   // Empty string should not be used to indicate "no app ID".
-  DCHECK(!app_id || !app_id->empty());
+  CHECK(!app_id || !app_id->empty(), base::NotFatalUntil::M162);
 
   // If the app_id is changing, then it should exist in the database.
-  DCHECK(app_id_ == app_id || !app_id ||
-         provider_->registrar_unsafe().AppMatches(
-             *app_id, WebAppFilter::IsAppSurfaceableToUser()) ||
-         provider_->registrar_unsafe().IsUninstalling(*app_id));
+  CHECK(app_id_ == app_id || !app_id ||
+            provider_->registrar_unsafe().AppMatches(
+                *app_id, WebAppFilter::IsAppSurfaceableToUser()) ||
+            provider_->registrar_unsafe().IsUninstalling(*app_id),
+        base::NotFatalUntil::M162);
 
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
     // This can be triggered for navigations that are happening in the same app

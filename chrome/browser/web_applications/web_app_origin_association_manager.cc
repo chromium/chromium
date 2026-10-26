@@ -60,7 +60,7 @@ void WebAppOriginAssociationManager::MaybeStartNextTask() {
 }
 
 void WebAppOriginAssociationManager::OnTaskCompleted() {
-  DCHECK(!pending_tasks_.empty());
+  CHECK(!pending_tasks_.empty(), base::NotFatalUntil::M162);
   task_in_progress_ = false;
   pending_tasks_.pop_front();
   MaybeStartNextTask();
@@ -73,7 +73,7 @@ void WebAppOriginAssociationManager::SetFetcherForTest(
 
 webapps::WebAppOriginAssociationFetcher&
 WebAppOriginAssociationManager::GetFetcherForTest() {
-  DCHECK(fetcher_);
+  CHECK(fetcher_, base::NotFatalUntil::M162);
   return *fetcher_;
 }
 

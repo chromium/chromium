@@ -127,8 +127,8 @@ void AddSquareIconsFromMapMatchingIconInfos(
 void AddSquareIconsFromBitmaps(std::vector<SkBitmap>* square_icons,
                                const OrderedSizeToBitmap& bitmaps) {
   for (const auto& [size, icon] : bitmaps) {
-    DCHECK_EQ(size, icon.width());
-    DCHECK_EQ(size, icon.height());
+    CHECK_EQ(size, icon.width(), base::NotFatalUntil::M162);
+    CHECK_EQ(size, icon.height(), base::NotFatalUntil::M162);
     if (!icon.empty()) {
       square_icons->push_back(icon);
     }
@@ -246,7 +246,7 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
   for (const auto& icon : home_tab.icons) {
     // An icon's purpose vector should never be empty (the manifest parser
     // should have added ANY if there was no purpose specified in the manifest).
-    DCHECK(!icon.purpose.empty());
+    CHECK(!icon.purpose.empty(), base::NotFatalUntil::M162);
 
     // Only store bitmaps for this URL if this is the first time we've seen it.
     bool bitmaps_already_saved_for_url =
@@ -270,7 +270,7 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
       }
     }
 
-    DCHECK(other_icon_bitmaps.size() <= kMaxIcons);
+    CHECK(other_icon_bitmaps.size() <= kMaxIcons, base::NotFatalUntil::M162);
   }
 }
 
@@ -662,7 +662,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   // WebApp.
   CHECK_EQ(web_app_info.manifest_id(), web_app.manifest_id());
 
-  DCHECK(!web_app_info.title.empty());
+  CHECK(!web_app_info.title.empty(), base::NotFatalUntil::M162);
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title.value()));
 
   const GURL& start_url = web_app_info.start_url();
@@ -685,21 +685,25 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description.value()));
   web_app.SetLaunchQueryParams(web_app_info.launch_query_params);
 
-  DCHECK(!web_app_info.theme_color.has_value() ||
-         SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE);
+  CHECK(!web_app_info.theme_color.has_value() ||
+            SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE,
+        base::NotFatalUntil::M162);
   web_app.SetThemeColor(web_app_info.theme_color);
 
-  DCHECK(!web_app_info.dark_mode_theme_color.has_value() ||
-         SkColorGetA(*web_app_info.dark_mode_theme_color) == SK_AlphaOPAQUE);
+  CHECK(!web_app_info.dark_mode_theme_color.has_value() ||
+            SkColorGetA(*web_app_info.dark_mode_theme_color) == SK_AlphaOPAQUE,
+        base::NotFatalUntil::M162);
   web_app.SetDarkModeThemeColor(web_app_info.dark_mode_theme_color);
 
-  DCHECK(!web_app_info.background_color.has_value() ||
-         SkColorGetA(*web_app_info.background_color) == SK_AlphaOPAQUE);
+  CHECK(!web_app_info.background_color.has_value() ||
+            SkColorGetA(*web_app_info.background_color) == SK_AlphaOPAQUE,
+        base::NotFatalUntil::M162);
   web_app.SetBackgroundColor(web_app_info.background_color);
 
-  DCHECK(!web_app_info.dark_mode_background_color.has_value() ||
-         SkColorGetA(*web_app_info.dark_mode_background_color) ==
-             SK_AlphaOPAQUE);
+  CHECK(!web_app_info.dark_mode_background_color.has_value() ||
+            SkColorGetA(*web_app_info.dark_mode_background_color) ==
+                SK_AlphaOPAQUE,
+        base::NotFatalUntil::M162);
   web_app.SetDarkModeBackgroundColor(web_app_info.dark_mode_background_color);
 
   if (!skip_icons_on_download_failure) {

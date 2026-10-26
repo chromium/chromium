@@ -434,7 +434,8 @@ void WebAppCommandScheduler::GetControlledFramePartition(
 void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
                                              OnceInstallCallback callback,
                                              const base::Location& location) {
-  DCHECK(web_app.is_from_sync_and_pending_installation());
+  CHECK(web_app.is_from_sync_and_pending_installation(),
+        base::NotFatalUntil::M162);
   std::vector<apps::IconInfo> manifest_icon_infos =
       ParseAppIconInfos("InstallFromSyncManifestIcons",
                         web_app.sync_proto().icon_infos())
