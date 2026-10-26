@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.ArrayList;
@@ -321,9 +322,10 @@ public class FlyoutController<T> implements Destroyable {
         assert mPopups.size() > 1;
 
         // We have to give special treatment to cases when all items in the new window are disabled.
+        WritableBooleanPropertyKey enabledKey = mKeyProvider.getEnabledKey();
         boolean newWindowFocusable = false;
         for (ListItem item : items) {
-            if (item.model.get(mKeyProvider.getEnabledKey())) {
+            if (item.model.containsKeyEqualTo(enabledKey, true)) {
                 newWindowFocusable = true;
                 break;
             }
