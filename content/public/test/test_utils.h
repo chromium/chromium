@@ -474,6 +474,10 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
 // the frame's presentation.
 void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
 
+// Forces the StorageService to run in-process instead of spawning a utility
+// process.
+void ForceInProcessStorageServiceForTesting();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_TEST_UTILS_H_

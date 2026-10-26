@@ -98,6 +98,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/device_features.h"
@@ -647,6 +648,14 @@ void InProcessBrowserTest::SetUp() {
 #endif
 
   EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt();
+
+#if !EXPENSIVE_TEST_LOGIC_IS_ON() && !BUILDFLAG(IS_ANDROID)
+  // Run the StorageService in-process on the IO thread instead of spawning a
+  // separate utility process per test in fast test builds.
+  if (force_in_process_storage_service_) {
+    content::ForceInProcessStorageServiceForTesting();
+  }
+#endif
 
   BrowserTestBase::SetUp();
 }

@@ -31,6 +31,7 @@ using ::testing::Key;
 class ChromeMainDelegateHangWatcherTest : public InProcessBrowserTest {
  public:
   ChromeMainDelegateHangWatcherTest() {
+    set_force_in_process_storage_service(false);
     feature_list_.InitWithFeaturesAndParameters(
         {{base::kEnableHangWatcher,
           {{base::kHangWatcherMonitoringPeriodParam, "1ms"}}},
