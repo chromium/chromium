@@ -229,6 +229,7 @@ class AuthenticationService : public KeyedService,
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   // ChromeAccountManagerService::Observer implementation.
   void OnIdentitiesInProfileChanged() override;
@@ -258,6 +259,10 @@ class AuthenticationService : public KeyedService,
   // Returns whether the service’s profile is personal (that is: a profile that
   // does not contains any managed account).
   bool IsPersonalProfile();
+
+  // Grants device signals consent if the profile or primary account is
+  // managed, clears it otherwise.
+  void SyncDeviceSignalsConsentWithManagementState();
 
   // Returns the active identities for MDM.
   NSArray<id<SystemIdentity>>* ActiveIdentities();

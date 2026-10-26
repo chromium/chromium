@@ -20,6 +20,7 @@ include_rules = [
   "+components/crash/core/browser",
   "+components/crash/core/common",
   "+components/device_reauth",
+  "+components/device_signals",
   "+components/dom_distiller/core",
   "+components/download",
   "+components/dom_distiller/ios",

@@ -15,6 +15,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
+#import "components/device_signals/core/browser/pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -224,6 +225,8 @@ void AuthenticationService::Initialize() {
       PerformProfileInitializationIfNecessary();
   base::UmaHistogramEnumeration(
       "Signin.IOSAuthenticationServiceInitializationOutcome", outcome);
+
+  SyncDeviceSignalsConsentWithManagementState();
 }
 
 void AuthenticationService::Shutdown() {
@@ -579,6 +582,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
   for (auto& observer : observer_list_) {
     observer.OnPrimaryIdentityChanged();
   }
+  SyncDeviceSignalsConsentWithManagementState();
 }
 
 void AuthenticationService::OnIdentitiesInProfileChanged() {
@@ -807,4 +811,47 @@ bool AuthenticationService::IsPersonalProfile() {
 NSArray<id<SystemIdentity>>* AuthenticationService::ActiveIdentities() {
   return GetPrimaryIdentity() ? account_manager_service_->GetAllIdentities()
                               : @[];
+}
+
+void AuthenticationService::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if (info.GetAccountId() ==
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    SyncDeviceSignalsConsentWithManagementState();
+  }
+}
+
+void AuthenticationService::SyncDeviceSignalsConsentWithManagementState() {
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+
+  if (!profile_manager) {
+    // profile_manager can be null in unit_tests.
+    CHECK_IS_TEST();
+    return;
+  }
+
+  if (!IsPersonalProfile() || HasPrimaryIdentityManaged()) {
+    pref_service_->SetBoolean(
+        device_signals::prefs::kDeviceSignalsConsentReceived, true);
+    pref_service_->SetBoolean(
+        device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+    return;
+  }
+
+  if (HasPrimaryIdentity()) {
+    AccountInfo info = identity_manager_->FindExtendedAccountInfo(
+        identity_manager_->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin));
+    if (info.IsManaged() == signin::Tribool::kUnknown) {
+      // Early exit if the extended account info has not yet been received to
+      // avoid flipping the consent bit unnecessarily.
+      return;
+    }
+  }
+
+  pref_service_->ClearPref(
+      device_signals::prefs::kDeviceSignalsConsentReceived);
+  pref_service_->ClearPref(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived);
 }
