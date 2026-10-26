@@ -73,6 +73,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
           data: "Image pixels and URLs. No user identifier is sent along with "
                 "the data."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "ckintersect-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
