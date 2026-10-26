@@ -2,19 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/jdk.gni")
+
 config("jdk") {
-  include_dirs = [
-    "current/include",
-    "current/include/linux",
-  ]
+  include_dirs = [ "$android_jdk_home/include" ]
+  if (host_os == "mac") {
+    include_dirs += [ "$android_jdk_home/include/darwin" ]
+  } else {
+    include_dirs += [ "$android_jdk_home/include/linux" ]
+  }
 }
 
 group("java_data") {
   data = [
-    "current/bin/java",
-    "current/bin/java.chromium",
-    "current/bin/jcmd",
-    "current/conf/",
-    "current/lib/",
+    "$android_jdk_home/bin/java",
+    "$android_jdk_home/bin/java.chromium",
+    "$android_jdk_home/bin/jcmd",
+    "$android_jdk_home/conf/",
+    "$android_jdk_home/lib/",
+    "//build/android/java_home.py",
   ]
 }

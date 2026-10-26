@@ -6,6 +6,7 @@
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
 import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
+import("//build/config/android/jdk.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/coverage/coverage.gni")
@@ -3013,7 +3014,7 @@ if (enable_java_templates) {
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
         inputs = [
-          "//third_party/jdk/current/bin/java",
+          "$android_jdk_home/bin/java",
           android_sdk_jar,
         ]
       } else if (invoker.enable_errorprone) {

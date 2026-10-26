@@ -34,6 +34,7 @@
 ../../third_party/catapult/third_party/six/six.py
 ../gn_helpers.py
 devil_chromium.py
+java_home.py
 pylib/__init__.py
 pylib/constants/__init__.py
 pylib/constants/host_paths.py

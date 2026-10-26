@@ -26,6 +26,7 @@
 ../../gn_helpers.py
 ../../print_python_deps.py
 ../../zip_helpers.py
+../java_home.py
 ../pylib/__init__.py
 ../pylib/utils/__init__.py
 ../pylib/utils/app_bundle_utils.py

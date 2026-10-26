@@ -120,6 +120,7 @@ template("create_native_executable_dist") {
 if (!is_robolectric && enable_java_templates) {
   import("//build/config/android/config.gni")
   import("//build/config/android/internal_rules.gni")
+  import("//build/config/android/jdk.gni")
   import("//build/config/android/tiered_dex.gni")
   import("//build/config/compiler/compiler.gni")
   import("//build/config/coverage/coverage.gni")

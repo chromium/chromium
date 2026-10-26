@@ -105,6 +105,7 @@ group("perf_without_chrome") {
 
            # For Pylib used by VR tests
            "//build/android/pylib/",
+           "//build/android/java_home.py",
 
            # For process perf results
            "//build/util/lib/",

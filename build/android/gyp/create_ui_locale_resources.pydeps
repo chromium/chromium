@@ -25,6 +25,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../zip_helpers.py
+../java_home.py
 create_ui_locale_resources.py
 util/__init__.py
 util/build_utils.py

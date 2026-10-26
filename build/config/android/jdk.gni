@@ -1,0 +1,74 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (host_os == "mac") {
+  android_jdk_home = "//third_party/jdk/current/Contents/Home"
+} else {
+  android_jdk_home = "//third_party/jdk/current"
+}
+
+# JDK files that Java actions depend on, relative to the JDK home.
+_jdk_files = [
+  "bin/java",
+  "bin/java.chromium",
+  "bin/javac",
+  "conf/logging.properties",
+  "conf/security/java.security",
+  "lib/ct.sym",
+  "lib/jrt-fs.jar",
+  "lib/jvm.cfg",
+  "lib/modules",
+  "lib/server/classes.jsa",
+  "lib/tzdb.dat",
+]
+_jdk_libs = [
+  "lib/libawt",
+  "lib/libjava",
+  "lib/libjimage",
+  "lib/libjli",
+  "lib/libmanagement",
+  "lib/libmanagement_ext",
+  "lib/libnet",
+  "lib/libnio",
+  "lib/libverify",
+  "lib/libzip",
+  "lib/server/libjvm",
+]
+
+# Not shipped by the macOS JDK.
+_linux_only_jdk_libs = [
+  "lib/libawt_headless",
+  "lib/libawt_xawt",
+  "lib/libjsvml",
+]
+
+_jdks = [
+  {
+    home = android_jdk_home
+    is_linux_jdk = host_os != "mac"
+  },
+]
+
+# Actions that use java should add this as inputs so that they are rebuilt
+# when the JDK changes.
+java_paths_for_inputs = []
+foreach(_jdk, _jdks) {
+  _libs = []
+  _libs = _jdk_libs
+  _ext = ".dylib"
+  if (_jdk.is_linux_jdk) {
+    _libs += _linux_only_jdk_libs
+    _ext = ".so"
+  }
+  foreach(_file, _jdk_files) {
+    java_paths_for_inputs += [ "${_jdk.home}/$_file" ]
+  }
+  foreach(_lib, _libs) {
+    java_paths_for_inputs += [ "${_jdk.home}/$_lib$_ext" ]
+  }
+}
+javac_paths_for_inputs = java_paths_for_inputs
+if (host_os == "linux" && host_cpu == "x64") {
+  javac_paths_for_inputs += [ "$android_jdk_home/bin/javac-graalvm" ]
+}

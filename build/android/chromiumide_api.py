@@ -341,9 +341,7 @@ def _extract_source_jar(source_jar: str) -> str:
     # not very fast, and suffer from GIL on parallelizing.
     subprocess.check_call(
         [
-            os.path.join(
-                _SRC_ROOT, 'third_party', 'jdk', 'current', 'bin', 'jar'
-            ),
+            os.path.join(os.path.abspath(build_utils.JAVA_HOME), 'bin', 'jar'),
             '-x',
             '-f',
             os.path.abspath(source_jar),

@@ -3,6 +3,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../zip_helpers.py
+../java_home.py
 dist_aar.py
 filter_zip.py
 util/__init__.py

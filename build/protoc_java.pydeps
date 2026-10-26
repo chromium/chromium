@@ -31,6 +31,7 @@
 action_helpers.py
 android/gyp/util/__init__.py
 android/gyp/util/build_utils.py
+android/java_home.py
 gn_helpers.py
 protoc_java.py
 zip_helpers.py

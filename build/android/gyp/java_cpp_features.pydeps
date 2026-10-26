@@ -3,6 +3,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../zip_helpers.py
+../java_home.py
 java_cpp_features.py
 util/__init__.py
 util/build_utils.py

@@ -2,6 +2,7 @@
 #   build/print_python_deps.py --output android_webview/tools/run_cts.pydeps --gn-paths android_webview/tools/run_cts.py
 //android_webview/tools/run_cts.py
 //build/android/devil_chromium.py
+//build/android/java_home.py
 //build/android/pylib/__init__.py
 //build/android/pylib/constants/__init__.py
 //build/android/pylib/constants/host_paths.py

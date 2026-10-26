@@ -95,6 +95,7 @@ gyp/util/__init__.py
 gyp/util/build_utils.py
 gyp/util/md5_check.py
 gyp/util/resource_utils.py
+java_home.py
 pylib/__init__.py
 pylib/constants/__init__.py
 pylib/constants/host_paths.py

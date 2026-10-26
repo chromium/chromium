@@ -471,44 +471,6 @@ if (is_android) {
 
   android_sdk_tools_bundle_aapt2 = "${android_sdk_tools_bundle_aapt2_dir}/aapt2"
 
-  _common_inputs_for_jre_jdk = [
-    "//third_party/jdk/current/conf/logging.properties",
-    "//third_party/jdk/current/conf/security/java.security",
-    "//third_party/jdk/current/lib/ct.sym",
-    "//third_party/jdk/current/lib/jrt-fs.jar",
-    "//third_party/jdk/current/lib/jvm.cfg",
-    "//third_party/jdk/current/lib/libawt.so",
-    "//third_party/jdk/current/lib/libawt_headless.so",
-    "//third_party/jdk/current/lib/libawt_xawt.so",
-    "//third_party/jdk/current/lib/libjava.so",
-    "//third_party/jdk/current/lib/libjimage.so",
-    "//third_party/jdk/current/lib/libjli.so",
-    "//third_party/jdk/current/lib/libjsvml.so",
-    "//third_party/jdk/current/lib/libmanagement.so",
-    "//third_party/jdk/current/lib/libmanagement_ext.so",
-    "//third_party/jdk/current/lib/libnet.so",
-    "//third_party/jdk/current/lib/libnio.so",
-    "//third_party/jdk/current/lib/libverify.so",
-    "//third_party/jdk/current/lib/libzip.so",
-    "//third_party/jdk/current/lib/modules",
-    "//third_party/jdk/current/lib/server/classes.jsa",
-    "//third_party/jdk/current/lib/server/libjvm.so",
-    "//third_party/jdk/current/lib/tzdb.dat",
-  ]
-
-  # Actions that use java should add this as inputs so that they are rebuilt
-  # when the JDK changes.
-  java_paths_for_inputs = [
-                            "//third_party/jdk/current/bin/java",
-                            "//third_party/jdk/current/bin/java.chromium",
-                          ] + _common_inputs_for_jre_jdk
-
-  javac_paths_for_inputs =
-      [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
-  if (host_os == "linux" && host_cpu == "x64") {
-    javac_paths_for_inputs += [ "//third_party/jdk/current/bin/javac-graalvm" ]
-  }
-
   kotlinc_paths_for_inputs = [
     "//third_party/kotlinc",
     "//third_party/kotlinc/current/bin/kotlinc",

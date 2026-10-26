@@ -2,6 +2,7 @@
 #   build/print_python_deps.py --root build/android/gyp --output build/android/gyp/process_native_prebuilt.pydeps build/android/gyp/process_native_prebuilt.py
 ../../action_helpers.py
 ../../gn_helpers.py
+../java_home.py
 process_native_prebuilt.py
 util/__init__.py
 util/build_utils.py

@@ -11,7 +11,7 @@ Shipped: no
 
 Description:
 The Java Development Kit (JDK) is a software development environment used for
-developing Java applications and applets. (linux-x64)
+developing Java applications and applets. (linux-x64, mac-arm64)
 
 On linux-x64, the package also contains bin/javac-graalvm: a GraalVM
 native-image build of the JDK's javac (built by 3pp/3pp.py using Oracle GraalVM,

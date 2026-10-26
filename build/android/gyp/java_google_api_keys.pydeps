@@ -3,6 +3,7 @@
 ../../../google_apis/google_api_keys.py
 ../../gn_helpers.py
 ../../zip_helpers.py
+../java_home.py
 java_google_api_keys.py
 util/__init__.py
 util/build_utils.py

@@ -10,8 +10,9 @@ import tempfile
 import zipfile
 from typing import List, Optional, Union
 
-_SRC_PATH = pathlib.Path(__file__).resolve().parents[4]
-_JDEPS_PATH = _SRC_PATH / 'third_party/jdk/current/bin/jdeps'
+from util import build_utils
+
+_JDEPS_PATH = pathlib.Path(build_utils.JAVA_HOME) / 'bin' / 'jdeps'
 
 _IGNORED_JAR_PATHS = [
     # This matches org_ow2_asm_asm_commons and org_ow2_asm_asm_analysis, both of

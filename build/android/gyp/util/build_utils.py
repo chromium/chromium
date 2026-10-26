@@ -38,7 +38,10 @@ DIR_SOURCE_ROOT = os.path.relpath(
         ),
     )
 )
-JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
+sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'build', 'android'))
+import java_home  # noqa: E402
+
+JAVA_HOME = os.path.relpath(java_home.JAVA_HOME)
 JAVA_PATH = os.path.join(JAVA_HOME, 'bin', 'java')
 JAVA_PATH_FOR_INPUTS = f'{JAVA_PATH}.chromium'
 JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')

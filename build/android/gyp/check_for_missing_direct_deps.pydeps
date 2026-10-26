@@ -11,6 +11,7 @@
 ../../../third_party/catapult/devil/devil/constants/exit_codes.py
 ../../action_helpers.py
 ../../gn_helpers.py
+../java_home.py
 ../list_java_targets.py
 ../pylib/__init__.py
 ../pylib/constants/__init__.py

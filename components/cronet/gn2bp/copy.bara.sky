@@ -99,7 +99,6 @@ origin_files = glob_with_gn2bp([
     # Note: Only used for tests.
     "third_party/googletest/**",
     "third_party/icu/**",
-    "third_party/jdk/java_home.py",
     "third_party/jni_zero/**",
     "third_party/libc++abi/**",
     # Note: Only used for tests.

@@ -141,6 +141,7 @@
 ../util/lib/results/result_types.py
 devil_chromium.py
 gyp/util/build_utils.py
+java_home.py
 pylib/__init__.py
 pylib/base/__init__.py
 pylib/base/base_test_result.py

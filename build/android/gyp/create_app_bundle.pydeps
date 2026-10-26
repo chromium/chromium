@@ -37,6 +37,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../zip_helpers.py
+../java_home.py
 ../pylib/__init__.py
 ../pylib/constants/__init__.py
 ../pylib/utils/__init__.py
