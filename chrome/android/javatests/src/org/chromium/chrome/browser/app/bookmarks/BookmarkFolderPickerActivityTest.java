@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -223,6 +224,39 @@ public class BookmarkFolderPickerActivityTest {
         startFolderPickerActivity(bookmark);
 
         onView(withId(R.id.close_button)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Bookmark"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testBackPress() throws ExecutionException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.FolderPicker.Outcome",
+                                BookmarkFolderPickerOutcome.DISMISSED)
+                        .build();
+
+        BookmarkId bookmark =
+                addBookmark(mMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
+        startFolderPickerActivity(bookmark);
+
+        onView(withText(startsWith("Mobile bookmarks"))).perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity.getOnBackPressedDispatcher().onBackPressed();
+                    assertFalse(mActivity.isFinishing());
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity.getOnBackPressedDispatcher().onBackPressed();
+                });
 
         CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
         histogramWatcher.assertExpected();
