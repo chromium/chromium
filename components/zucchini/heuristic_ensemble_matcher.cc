@@ -5,6 +5,7 @@
 #include "components/zucchini/heuristic_ensemble_matcher.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
