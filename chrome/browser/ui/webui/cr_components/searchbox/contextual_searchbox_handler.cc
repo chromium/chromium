@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -293,7 +294,8 @@ int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
 std::vector<searchbox::mojom::TabInfoPtr>
 ContextualSearchboxHandler::GetRecentTabInfos(
     BrowserWindowInterface* browser_window_interface,
-    int max_tab_suggestions) {
+    std::optional<int> max_tab_suggestions,
+    const base::flat_set<SessionID>& always_include_tab_ids) {
   if (!browser_window_interface) {
     return {};
   }
@@ -319,8 +321,12 @@ ContextualSearchboxHandler::GetRecentTabInfos(
     bool is_internal_page = url.SchemeIs(content::kChromeUIScheme) ||
                             url.SchemeIs(content::kChromeUIUntrustedScheme) ||
                             url.SchemeIs("chrome-extension");
+    const bool is_always_included =
+        !always_include_tab_ids.empty() && tab->GetContents() &&
+        always_include_tab_ids.contains(
+            sessions::SessionTabHelper::IdForTab(tab->GetContents()));
 
-    if (!is_internal_page) {
+    if (!is_internal_page || is_always_included) {
       tab_times.push_back({
           .tab = tab,
           .time = GetTabLastActiveTimeTicks(tab),
@@ -337,9 +343,9 @@ ContextualSearchboxHandler::GetRecentTabInfos(
     }
     return a.time > b.time;
   };
-  if (max_tab_suggestions > 0) {
+  if (max_tab_suggestions.has_value() && *max_tab_suggestions > 0) {
     int count =
-        std::min(static_cast<int>(tab_times.size()), max_tab_suggestions);
+        std::min(static_cast<int>(tab_times.size()), *max_tab_suggestions);
     std::partial_sort(tab_times.begin(), tab_times.begin() + count,
                       tab_times.end(), cmp);
     tab_times.resize(count);
@@ -412,13 +418,19 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_list_observation_.Observe(tab_list);
   }
 
-  int max_tab_suggestions = -1;
+  std::optional<int> max_tab_suggestions;
   if (!base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     max_tab_suggestions = GetContextMenuMaxTabSuggestions();
   }
 
-  std::vector<searchbox::mojom::TabInfoPtr> tabs =
-      GetRecentTabInfos(browser_window_interface, max_tab_suggestions);
+  base::flat_set<SessionID> always_include_tab_ids;
+  if (contextual_search::ContextualSearchSessionHandle* session_handle =
+          GetContextualSessionHandle()) {
+    always_include_tab_ids = session_handle->GetNonDeselectedTabSessionIds();
+  }
+
+  std::vector<searchbox::mojom::TabInfoPtr> tabs = GetRecentTabInfos(
+      browser_window_interface, max_tab_suggestions, always_include_tab_ids);
 
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Count duplicate tab titles to record in an UMA histogram.

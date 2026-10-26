@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -38,6 +39,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "components/sessions/core/session_id.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -189,11 +191,14 @@ class ContextualSearchboxHandler
                    bool is_voice_search) override;
 
   // Returns recent tabs from the tab list associated with
-  // `browser_window_interface` sorted by recency. If `max_tab_suggestions` > 0,
-  // the result is capped to that number of tabs.
+  // `browser_window_interface` sorted by recency. If `max_tab_suggestions` is
+  // set, the result is capped to that number of tabs. Tabs whose `SessionID` is
+  // in `always_include_tab_ids` are included even if they are internal pages
+  // (e.g. an NTP tab attached via Lens Overlay).
   static std::vector<searchbox::mojom::TabInfoPtr> GetRecentTabInfos(
       BrowserWindowInterface* browser_window_interface,
-      int max_tab_suggestions = -1);
+      std::optional<int> max_tab_suggestions = std::nullopt,
+      const base::flat_set<SessionID>& always_include_tab_ids = {});
 
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;

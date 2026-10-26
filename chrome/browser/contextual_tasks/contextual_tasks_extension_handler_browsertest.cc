@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <variant>
@@ -5016,6 +5017,175 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(suggest_inputs.added_contexts(0).search_session_id(),
             "zero_iframe_suggest_session");
   EXPECT_EQ(suggest_inputs.added_contexts(0).request_id().context_id(), 888);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    GetRecentTabs_IncludesAttachedInternalTabAndAllowsDeselection) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* ntp_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(ntp_tab, nullptr);
+  const int32_t ntp_tab_handle_id = ntp_tab->GetHandle().raw_value();
+  const SessionID ntp_session_id =
+      sessions::SessionTabHelper::IdForTab(ntp_tab->GetContents());
+  ASSERT_TRUE(ntp_session_id.is_valid());
+
+  // 1. Before the internal tab is attached to the session, `GetRecentTabs()`
+  // excludes it.
+  {
+    base::RunLoop run_loop;
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+        base::BindLambdaForTesting(
+            [&run_loop, ntp_tab_handle_id](
+                std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+              EXPECT_TRUE(std::ranges::none_of(
+                  tabs,
+                  [ntp_tab_handle_id](const searchbox::mojom::TabInfoPtr& t) {
+                    return t->tab_id == ntp_tab_handle_id;
+                  }));
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  // 2. Simulate Chromnient (Lens Overlay) attaching and submitting the NTP tab
+  // directly on the session handle (without going through `AddTabContext()`),
+  // followed by AIM echoing the tab back via `UpdateThreadContextLibrary`
+  // (`SetRestoredTabs()`). The tab now exists in both `state.attached` and
+  // `state.restored`.
+  const base::UnguessableToken ntp_token = base::UnguessableToken::Create();
+  lens::LensOverlayRequestId ntp_req_id;
+  ntp_req_id.set_uuid(8888);
+  mock_session_handle_->SetSubmittedContextTokens({ntp_token});
+  {
+    base::RunLoop notify_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&notify_loop, ntp_tab_handle_id](
+                      std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_tab_ids) {
+          ASSERT_EQ(tabs.size(), 1u);
+          EXPECT_EQ(tabs[0]->tab_id, ntp_tab_handle_id);
+          EXPECT_THAT(submitted_tab_ids,
+                      testing::ElementsAre(ntp_tab_handle_id));
+          notify_loop.Quit();
+        });
+    mock_session_handle_->SetPersistedTabs(
+        {{ntp_session_id, {ntp_token, ntp_req_id}}});
+    notify_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  contextual_search::TabInfo restored_ntp;
+  restored_ntp.tab_id = ntp_session_id.id();
+  restored_ntp.url = GURL(chrome::kChromeUINewTabURL);
+  restored_ntp.title = "New Tab";
+  {
+    base::RunLoop restore_notify_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&restore_notify_loop, ntp_tab_handle_id](
+                      std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_tab_ids) {
+          ASSERT_EQ(tabs.size(), 1u);
+          EXPECT_EQ(tabs[0]->tab_id, ntp_tab_handle_id);
+          EXPECT_THAT(submitted_tab_ids,
+                      testing::ElementsAre(ntp_tab_handle_id));
+          restore_notify_loop.Quit();
+        });
+    mock_session_handle_->SetRestoredTabs({restored_ntp});
+    restore_notify_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().attached.size(), 1u);
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+
+  // 3. `GetRecentTabs()` now includes the attached NTP tab so the user can see
+  // and unselect it in the tab picker.
+  {
+    base::RunLoop run_loop;
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+        base::BindLambdaForTesting(
+            [&run_loop, ntp_tab_handle_id](
+                std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+              EXPECT_TRUE(std::ranges::any_of(
+                  tabs,
+                  [ntp_tab_handle_id](const searchbox::mojom::TabInfoPtr& t) {
+                    return t->tab_id == ntp_tab_handle_id;
+                  }));
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  // 4. Unselecting the submitted NTP tab once via `DeleteTabContext()` removes
+  // it from both `attached` and `restored` immediately on the first click and
+  // notifies `OnTabContextUpdated()` with an empty tab list (instead of
+  // re-adding the tab from `state.restored`).
+  {
+    base::RunLoop deselect_notify_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&deselect_notify_loop](
+                      std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_tab_ids) {
+          EXPECT_TRUE(tabs.empty());
+          EXPECT_TRUE(submitted_tab_ids.empty());
+          deselect_notify_loop.Quit();
+        });
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->DeleteTabContext(
+        ntp_tab_handle_id);
+    deselect_notify_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().attached.empty());
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+  EXPECT_TRUE(mock_session_handle_->GetSubmittedContextTokens().empty());
+
+  // 5. Once unselected, `GetRecentTabs()` excludes the internal NTP tab again.
+  {
+    base::RunLoop run_loop;
+    static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+        base::BindLambdaForTesting(
+            [&run_loop, ntp_tab_handle_id](
+                std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+              EXPECT_TRUE(std::ranges::none_of(
+                  tabs,
+                  [ntp_tab_handle_id](const searchbox::mojom::TabInfoPtr& t) {
+                    return t->tab_id == ntp_tab_handle_id;
+                  }));
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  // 6. Submitting a follow-up query reports the unselected tab's request ID in
+  // `removed_contexts` to AIM even without `kContextManagementInComposebox`.
+  {
+    base::RunLoop submit_loop;
+    EXPECT_CALL(mock_page_, PostSearchMessage(_))
+        .WillRepeatedly([&submit_loop](mojo_base::ProtoWrapper wrapper) {
+          auto message = wrapper.As<lens::ClientToSearchMessage>();
+          if (!message.has_value() ||
+              !message->has_on_submit_query_response()) {
+            return;
+          }
+          const auto& response = message->on_submit_query_response();
+          ASSERT_EQ(response.removed_contexts_size(), 1);
+          EXPECT_EQ(response.removed_contexts(0).request_id().uuid(), 8888u);
+          submit_loop.Quit();
+        });
+    lens::SearchToClientMessage request;
+    request.mutable_on_submit_query_request();
+    const size_t size = request.ByteSizeLong();
+    std::vector<uint8_t> serialized_message(size);
+    request.SerializeToArray(serialized_message.data(), size);
+    SimulateUserInteraction();
+    handler_->OnWebviewMessage(serialized_message, std::nullopt);
+    submit_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(

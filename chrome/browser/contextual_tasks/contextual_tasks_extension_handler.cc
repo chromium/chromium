@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -475,8 +477,14 @@ void ContextualTasksExtensionHandler::GetCyclingPlaceholderConfig(
 }
 void ContextualTasksExtensionHandler::GetRecentTabs(
     GetRecentTabsCallback callback) {
+  base::flat_set<SessionID> always_include_tab_ids;
+  if (contextual_search::ContextualSearchSessionHandle* session_handle =
+          GetOrCreateContextualSessionHandle()) {
+    always_include_tab_ids = session_handle->GetNonDeselectedTabSessionIds();
+  }
   std::move(callback).Run(ContextualSearchboxHandler::GetRecentTabInfos(
-      GetBrowserWindowInterface()));
+      GetBrowserWindowInterface(), /*max_tab_suggestions=*/std::nullopt,
+      always_include_tab_ids));
 }
 void ContextualTasksExtensionHandler::GetTabPreview(
     int32_t tab_id,
