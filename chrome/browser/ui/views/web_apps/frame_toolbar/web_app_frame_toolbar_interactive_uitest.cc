@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -59,7 +58,9 @@ class WebAppFrameToolbarInteractiveUITest
 
   auto SetUpExtensionsContainer() {
     return Do([this]() {
-      CHECK(!features::IsWebUIExtensionsContainerEnabled());
+      // The web app frame toolbar always uses the Views-based
+      // ExtensionsToolbarDesktop, even when the WebUI extensions container is
+      // enabled for the main browser toolbar.
       ExtensionsToolbarDesktop* const extensions_container =
           static_cast<ExtensionsToolbarDesktop*>(
               helper()->web_app_frame_toolbar()->GetExtensionsContainerViews());
