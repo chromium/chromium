@@ -109,11 +109,15 @@ void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
         file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
             profile_, file_path, file_manager::util::GetFileManagerURL(),
             &crack_url);
-    CHECK(resolve_success, base::NotFatalUntil::M160);
+    // TODO(crbug.com/577675831): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(resolve_success);
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);
-    CHECK(file_system_url.is_valid(), base::NotFatalUntil::M160);
+    // TODO(crbug.com/577675831): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    CHECK(file_system_url.is_valid());
     const FileSuggestionType type =
         file_system_url.type() == storage::kFileSystemTypeDriveFs
             ? FileSuggestionType::kDriveFile
