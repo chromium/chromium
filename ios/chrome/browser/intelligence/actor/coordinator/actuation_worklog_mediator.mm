@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
@@ -285,6 +286,7 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
   [self stopObservingTask];
   _actorService = nullptr;
   _consumer = nil;
+  self.suggestionsConsumer = nil;
 }
 
 #pragma mark - Private
@@ -453,6 +455,11 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
   }
 
   [_consumer updateWorklogWithItem:cardItem chip:nil animated:YES];
+
+  __weak id<ActuationSuggestionsConsumer> suggestionsConsumer =
+      self.suggestionsConsumer;
+  [suggestionsConsumer setSuggestions:suggestions
+                 forActiveWorklogItem:cardItem];
   if (completionHandler) {
     _pendingInterventionCompletion =
         ^(InterventionActionIdentifier actionIdentifier) {
@@ -463,6 +470,7 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
                   ? firstSuggestion
                   : nil;
           completionHandler(selected, NO);
+          [suggestionsConsumer clearSuggestions];
         };
   }
 
@@ -522,13 +530,12 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
 }
 
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
-  if (_pendingInterventionCompletion) {
-    void (^completion)(InterventionActionIdentifier) =
-        _pendingInterventionCompletion;
-    _pendingInterventionCompletion = nil;
+  void (^completion)(InterventionActionIdentifier) =
+      _pendingInterventionCompletion;
+  [self discardPendingIntervention];
+  if (completion) {
     completion(static_cast<InterventionActionIdentifier>(action.identifier));
   }
-  [_consumer setIntervention:nil];
 }
 
 @end

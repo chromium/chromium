@@ -10,6 +10,7 @@
 @class ActuationWorklogChip;
 @class ActuationWorklogCompactView;
 @class ActuationWorklogItem;
+@protocol ActuationWorklogItemViewDelegate;
 
 // Delegate for handling height change updates during transitions.
 @protocol ActuationWorklogCompactViewDelegate <NSObject>
@@ -25,6 +26,9 @@
 
 // The delegate for height update notifications.
 @property(nonatomic, weak) id<ActuationWorklogCompactViewDelegate> delegate;
+
+// Delegate for receiving interaction events from item views.
+@property(nonatomic, weak) id<ActuationWorklogItemViewDelegate> itemDelegate;
 
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

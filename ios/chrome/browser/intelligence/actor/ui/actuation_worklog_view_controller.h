@@ -8,9 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 
 @class ActuationWorklogViewController;
+@protocol ActuationSuggestionsPresenter;
 @protocol ActuationWorklogMutator;
 
 // Delegate protocol for ActuationWorklogViewController events.
@@ -24,13 +26,18 @@
 
 // View controller displaying the actuation worklog in the Helios sheet.
 @interface ActuationWorklogViewController
-    : UIViewController <ActuationWorklogConsumer>
+    : UIViewController <ActuationWorklogConsumer,
+                        ActuationWorklogItemViewDelegate>
 
 // The delegate for this view controller.
 @property(nonatomic, weak) id<ActuationWorklogViewControllerDelegate> delegate;
 
 // Mutator for dispatching user actions.
 @property(nonatomic, weak) id<ActuationWorklogMutator> mutator;
+
+// Presenter for managing suggestion picker presentation.
+@property(nonatomic, weak) id<ActuationSuggestionsPresenter>
+    suggestionsPresenter;
 
 // How the worklog is presented. Defaults to
 // `ActuationWorklogDisplayModeCompact`.

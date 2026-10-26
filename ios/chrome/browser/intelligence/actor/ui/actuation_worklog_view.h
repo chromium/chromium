@@ -10,34 +10,18 @@
 @class ActuationWorklogAccessoryItem;
 @class ActuationWorklogChip;
 @class ActuationWorklogItem;
-@class ActuationWorklogView;
-
-// Delegate protocol for ActuationWorklogView interaction events.
-@protocol ActuationWorklogViewDelegate <NSObject>
-// Notifies the delegate when the worklog collapsed state changes.
-- (void)worklogView:(ActuationWorklogView*)worklogView
-    didChangeCollapsed:(BOOL)collapsed;
-
-// Notifies delegate when an accessory card item inside the worklog is tapped.
-- (void)worklogView:(ActuationWorklogView*)worklogView
-    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem;
-@end
+@class ActuationWorklogItemView;
+@protocol ActuationWorklogItemViewDelegate;
 
 // View displaying the list of actuation steps using a timeline.
 @interface ActuationWorklogView : UIView
 
-// Delegate for collapse events.
-@property(nonatomic, weak) id<ActuationWorklogViewDelegate> delegate;
-
-// Reflects whether the worklog is collapsed.
-@property(nonatomic, assign) BOOL collapsed;
+// Delegate for receiving interaction events from item views.
+@property(nonatomic, weak) id<ActuationWorklogItemViewDelegate> itemDelegate;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-
-// Sets the collapsed state with optional animation.
-- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated;
 
 // Sets or replaces all timeline items instantly.
 - (void)setItems:(NSArray<ActuationWorklogItem*>*)items;
@@ -52,6 +36,10 @@
 // Sets or clears the current actor tool chip at the end of the timeline.
 // Passing nil hides the chip.
 - (void)setChip:(ActuationWorklogChip*)chip;
+
+// Handles a tap event on `itemView`, toggling collapse if it is the header
+// item.
+- (void)handleTapOnView:(ActuationWorklogItemView*)itemView;
 
 // Resets all timeline items, chip, and collapse state.
 - (void)reset;

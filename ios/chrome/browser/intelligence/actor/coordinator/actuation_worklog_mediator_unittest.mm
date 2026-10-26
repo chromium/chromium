@@ -14,6 +14,7 @@
 #import "components/actor/core/task_source_info.h"
 #import "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -113,6 +114,30 @@ ActorFormSuggestion* CreateAutofillSuggestion(
 
 @end
 
+// Captures suggestions received from the mediator.
+@interface FakeActuationSuggestionsConsumer
+    : NSObject <ActuationSuggestionsConsumer>
+@property(nonatomic, strong) NSArray<ActorFormSuggestion*>* suggestions;
+@property(nonatomic, strong) ActuationWorklogItem* worklogItem;
+@property(nonatomic, assign) BOOL clearSuggestionsCalled;
+@end
+
+@implementation FakeActuationSuggestionsConsumer
+
+- (void)setSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+    forActiveWorklogItem:(ActuationWorklogItem*)worklogItem {
+  _suggestions = [suggestions copy];
+  _worklogItem = worklogItem;
+}
+
+- (void)clearSuggestions {
+  _clearSuggestionsCalled = YES;
+  _suggestions = nil;
+  _worklogItem = nil;
+}
+
+@end
+
 // Records the state of the task it observes, as reported by the posted task
 // updates.
 @interface FakeTaskStateObserver : NSObject <ActorTaskUpdatesObserver>
@@ -157,15 +182,19 @@ class ActuationWorklogMediatorTest : public PlatformTest {
                                           /*allow_incognito_web_states=*/false);
 
     fake_consumer_ = [[FakeActuationWorklogConsumer alloc] init];
+    fake_suggestions_consumer_ =
+        [[FakeActuationSuggestionsConsumer alloc] init];
     mediator_ =
         [[ActuationWorklogMediator alloc] initWithActorService:actor_service_];
     mediator_.consumer = fake_consumer_;
+    mediator_.suggestionsConsumer = fake_suggestions_consumer_;
   }
 
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
     fake_consumer_ = nil;
+    fake_suggestions_consumer_ = nil;
     actor_service_ = nullptr;
     PlatformTest::TearDown();
   }
@@ -242,6 +271,7 @@ class ActuationWorklogMediatorTest : public PlatformTest {
   raw_ptr<actor::ActorService> actor_service_ = nullptr;
   actor::ActorTaskId task_id_;
   FakeActuationWorklogConsumer* fake_consumer_;
+  FakeActuationSuggestionsConsumer* fake_suggestions_consumer_;
   ActuationWorklogMediator* mediator_;
 };
 
@@ -545,6 +575,11 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsAllow) {
   EXPECT_NSEQ(item.accessoryItem.title, @"user@example.com");
   EXPECT_NSEQ(item.accessoryItem.detailText, @"••••••••");
 
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions.count, 1u);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions.firstObject, suggestion);
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, item);
+  EXPECT_FALSE(fake_suggestions_consumer_.clearSuggestionsCalled);
+
   ASSERT_NE(fake_consumer_.intervention, nil);
   EXPECT_EQ(fake_consumer_.intervention.type, ActuationInterventionType::kRow);
   ASSERT_EQ(fake_consumer_.intervention.actions.count, 2u);
@@ -561,6 +596,8 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsAllow) {
   EXPECT_EQ(selected, suggestion);
   EXPECT_FALSE(stored);
   EXPECT_EQ(fake_consumer_.intervention, nil);
+  EXPECT_TRUE(fake_suggestions_consumer_.clearSuggestionsCalled);
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, nil);
 }
 
 // Tests selecting from credentials with the manual sign-in action.
@@ -595,6 +632,33 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsManualSignIn) {
   EXPECT_EQ(selected, nil);
   EXPECT_FALSE(stored);
   EXPECT_EQ(fake_consumer_.intervention, nil);
+}
+
+// Tests that the suggestions consumer is not cleared when interventions are
+// discarded (e.g. task ending) and detached on disconnect.
+TEST_F(ActuationWorklogMediatorTest,
+       TestSuggestionsConsumerNotClearedOnDiscardAndDetachedOnDisconnect) {
+  StartObservingTask(task_id_);
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  [mediator_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:nil];
+
+  ASSERT_NE(fake_suggestions_consumer_.worklogItem, nil);
+  EXPECT_FALSE(fake_suggestions_consumer_.clearSuggestionsCalled);
+
+  // Ending actuation discards the pending intervention, but suggestions
+  // remain available.
+  EndActuation();
+  EXPECT_FALSE(fake_suggestions_consumer_.clearSuggestionsCalled);
+  EXPECT_NE(fake_suggestions_consumer_.worklogItem, nil);
+
+  // Re-observe and disconnect.
+  StartObservingTask(task_id_);
+  EXPECT_NE(mediator_.suggestionsConsumer, nil);
+  [mediator_ disconnect];
+  EXPECT_EQ(mediator_.suggestionsConsumer, nil);
 }
 
 // Tests selecting from addresses while ignoring updates from other tasks.

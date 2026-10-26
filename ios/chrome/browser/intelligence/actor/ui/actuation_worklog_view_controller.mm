@@ -7,6 +7,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_compact_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
@@ -173,6 +174,19 @@ using intelligence::actor::kSpacingLarge;
   [self notifyHeightDidChange];
 }
 
+#pragma mark - ActuationWorklogItemViewDelegate
+
+- (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView {
+  if (self.displayMode == ActuationWorklogDisplayModeExpanded) {
+    [_fullView handleTapOnView:itemView];
+  }
+}
+
+- (void)worklogItemView:(ActuationWorklogItemView*)itemView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
+  [self.suggestionsPresenter showSuggestionsPickerForAccessory:accessoryItem];
+}
+
 #pragma mark - Private
 
 // Handles close button tap to request stopping the active actuation task.
@@ -206,6 +220,7 @@ using intelligence::actor::kSpacingLarge;
   _compactView = [[ActuationWorklogCompactView alloc] init];
   _compactView.accessibilityIdentifier = kCompactWorklogAccessibilityIdentifier;
   _compactView.delegate = self;
+  _compactView.itemDelegate = self;
   _compactView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_compactView];
 
@@ -218,7 +233,7 @@ using intelligence::actor::kSpacingLarge;
   [self.view addSubview:_scrollView];
 
   _fullView = [[ActuationWorklogView alloc] initWithFrame:CGRectZero];
-  // TODO(crbug.com/550337643): Set delegate when interactions are handled.
+  _fullView.itemDelegate = self;
   _fullView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:_fullView];
 

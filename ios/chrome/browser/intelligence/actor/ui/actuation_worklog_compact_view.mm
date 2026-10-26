@@ -294,6 +294,7 @@ const CGFloat kCompactBottomBufferHeight = kToolChipHeight + kSpacingMedium;
     addViewWithItem:(ActuationWorklogItem*)item
           connector:(ActuationWorklogConnectorVisibility)connector {
   ActuationWorklogItemView* view = [[ActuationWorklogItemView alloc] init];
+  view.delegate = self.itemDelegate;
   view.translatesAutoresizingMaskIntoConstraints = NO;
   [_stepsView addSubview:view];
 

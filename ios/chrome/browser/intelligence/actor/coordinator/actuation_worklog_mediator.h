@@ -16,6 +16,7 @@ namespace actor {
 class ActorService;
 }  // namespace actor
 
+@protocol ActuationSuggestionsConsumer;
 @protocol ActuationWorklogConsumer;
 
 // Translates `ActorTask` execution updates into displayable timeline items and
@@ -26,6 +27,9 @@ class ActorService;
 
 // The consumer that receives formatted worklog updates.
 @property(nonatomic, weak) id<ActuationWorklogConsumer> consumer;
+
+// Consumer handling suggestion coordinator lifecycle.
+@property(nonatomic, weak) id<ActuationSuggestionsConsumer> suggestionsConsumer;
 
 // Designated initializer with task update service to observe.
 - (instancetype)initWithActorService:(actor::ActorService*)actorService

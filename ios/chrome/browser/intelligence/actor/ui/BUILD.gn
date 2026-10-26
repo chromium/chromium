@@ -17,6 +17,7 @@ source_set("ui") {
     "actuation_header_view.mm",
     "actuation_intervention_view.h",
     "actuation_intervention_view.mm",
+    "actuation_suggestions_presenter.h",
     "actuation_task_button.h",
     "actuation_task_button.mm",
     "actuation_task_card_view.h",

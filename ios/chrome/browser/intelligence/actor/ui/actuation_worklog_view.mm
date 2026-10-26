@@ -39,15 +39,13 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
 
 }  // namespace
 
-@interface ActuationWorklogView () <ActuationWorklogItemViewDelegate>
-@end
-
 @implementation ActuationWorklogView {
   UIStackView* _mainStackView;
   UIStackView* _itemsStackView;
   ActorToolChipView* _toolChipView;
   UIStackView* _chipContainer;
   NSMutableArray<ActuationWorklogItemView*>* _itemViews;
+  BOOL _collapsed;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -86,29 +84,6 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
 
 #pragma mark - Public
 
-- (void)setCollapsed:(BOOL)collapsed {
-  [self setCollapsed:collapsed animated:NO];
-}
-
-- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated {
-  if (_collapsed == collapsed) {
-    return;
-  }
-  _collapsed = collapsed;
-
-  if (animated) {
-    [UIView transitionWithView:self
-                      duration:kAnimationDuration
-                       options:UIViewAnimationOptionTransitionCrossDissolve
-                    animations:^{
-                      [self updateVisibilityAndConnectors];
-                    }
-                    completion:nil];
-  } else {
-    [self updateVisibilityAndConnectors];
-  }
-}
-
 - (void)setItems:(NSArray<ActuationWorklogItem*>*)items {
   CHECK(items);
 
@@ -123,7 +98,7 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
   for (NSInteger i = 0; i < count; ++i) {
     ActuationWorklogItemView* itemView =
         [[ActuationWorklogItemView alloc] init];
-    itemView.delegate = self;
+    itemView.delegate = self.itemDelegate;
     [itemView configureWithItem:items[i]];
     [_itemViews addObject:itemView];
     [_itemsStackView addArrangedSubview:itemView];
@@ -136,7 +111,7 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
   CHECK(item);
 
   ActuationWorklogItemView* itemView = [[ActuationWorklogItemView alloc] init];
-  itemView.delegate = self;
+  itemView.delegate = self.itemDelegate;
   [itemView configureWithItem:item];
 
   [_itemViews addObject:itemView];
@@ -228,21 +203,40 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
   _chipContainer.alpha = 0.0;
 }
 
-#pragma mark - ActuationWorklogItemViewDelegate
-
-- (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView {
+- (void)handleTapOnView:(ActuationWorklogItemView*)itemView {
   if (_itemViews.count > 0 && itemView == _itemViews[0]) {
     [self setCollapsed:!_collapsed animated:YES];
-    [self.delegate worklogView:self didChangeCollapsed:_collapsed];
   }
 }
 
-- (void)worklogItemView:(ActuationWorklogItemView*)itemView
-    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
-  [self.delegate worklogView:self didTapAccessoryItem:accessoryItem];
+#pragma mark - Private
+
+// Sets the collapsed state without animation.
+- (void)setCollapsed:(BOOL)collapsed {
+  [self setCollapsed:collapsed animated:NO];
 }
 
-#pragma mark - Private
+// Sets the collapsed state. If `animated` is set, the view will collapse or
+// expand with optional cross-dissolve animation.
+- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated {
+  if (_collapsed == collapsed) {
+    return;
+  }
+  _collapsed = collapsed;
+
+  if (animated) {
+    __weak __typeof(self) weakSelf = self;
+    [UIView transitionWithView:self
+                      duration:kAnimationDuration
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                      [weakSelf updateVisibilityAndConnectors];
+                    }
+                    completion:nil];
+  } else {
+    [self updateVisibilityAndConnectors];
+  }
+}
 
 // Synchronizes subview visibility and timeline connector styles with the
 // current `_collapsed` state. In collapsed mode, only the header item and
