@@ -337,7 +337,7 @@ BASE_FEATURE_PARAM(int,
                    "reuse_delay_sec",
                    120);
 BASE_FEATURE_PARAM(bool,
-                   kTcpPortRandomizationMacForLoopback,
+                   kTcpPortRandomizationMacForPrivateRoutes,
                    &kTcpPortRandomizationMac,
                    false);
 #endif

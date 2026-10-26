@@ -133,8 +133,8 @@ class TCPSocketTest
     if (IsTcpPortRandomizationMacEnabled()) {
       AddScopedFeatureList().InitAndEnableFeatureWithParameters(
           features::kTcpPortRandomizationMac,
-          {{"TcpPortRandomizationMacForLoopback",
-            IsLoopbackRandomizationEnabled() ? "true" : "false"}});
+          {{"TcpPortRandomizationMacForPrivateRoutes",
+            IsPrivateRoutesRandomizationEnabled() ? "true" : "false"}});
     } else {
       AddScopedFeatureList().InitAndDisableFeature(
           features::kTcpPortRandomizationMac);
@@ -151,7 +151,7 @@ class TCPSocketTest
   }
 #elif BUILDFLAG(IS_MAC)
   bool IsTcpPortRandomizationMacEnabled() { return std::get<0>(GetParam()); }
-  bool IsLoopbackRandomizationEnabled() { return std::get<2>(GetParam()); }
+  bool IsPrivateRoutesRandomizationEnabled() { return std::get<2>(GetParam()); }
 #endif  // BUILDFLAG(IS_WIN)
 
   bool ShouldUseReadIfReady() { return std::get<1>(GetParam()); }
@@ -1800,18 +1800,22 @@ INSTANTIATE_TEST_SUITE_P(
 #elif BUILDFLAG(IS_MAC)
         // TcpPortRandomizationMac tests
         ,
-        std::make_tuple(true, false, false),  // TcpPortRandomizationMac, Read,
-                                              // LoopbackRandomizationDisabled
+        std::make_tuple(true,
+                        false,
+                        false),  // TcpPortRandomizationMac, Read,
+                                 // PrivateRoutesRandomizationDisabled
         std::make_tuple(true,
                         true,
                         false),  // TcpPortRandomizationMac, ReadIfReady,
-                                 // LoopbackRandomizationDisabled
-        std::make_tuple(true, false, true),  // TcpPortRandomizationMac, Read,
-                                             // LoopbackRandomizationEnabled
+                                 // PrivateRoutesRandomizationDisabled
+        std::make_tuple(true,
+                        false,
+                        true),  // TcpPortRandomizationMac, Read,
+                                // PrivateRoutesRandomizationEnabled
         std::make_tuple(true,
                         true,
                         true)  // TcpPortRandomizationMac, ReadIfReady,
-                               // LoopbackRandomizationEnabled
+                               // PrivateRoutesRandomizationEnabled
 #endif
         ),
     [](::testing::TestParamInfo<std::tuple<bool, bool, bool>> info) {
@@ -1827,8 +1831,8 @@ INSTANTIATE_TEST_SUITE_P(
       }
       name += std::get<1>(info.param) ? "_ReadIfReady" : "_Read";
 #if BUILDFLAG(IS_MAC)
-      name += std::get<2>(info.param) ? "_LoopbackRandomizationEnabled"
-                                      : "_LoopbackRandomizationDisabled";
+      name += std::get<2>(info.param) ? "_PrivateRoutesRandomizationEnabled"
+                                      : "_PrivateRoutesRandomizationDisabled";
 #endif
       return name;
     });

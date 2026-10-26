@@ -413,9 +413,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationMac);
 // the same peer. Defaults to 120 to match common NAT timeout values.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpPortRandomizationReuseDelaySec);
 // If enabled, port randomization applies even where the remote address is
-// the loopback address. See https://crbug.com/546919930 for context.
+// a private route. See https://crbug.com/575343797 for context.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                      kTcpPortRandomizationMacForLoopback);
+                                      kTcpPortRandomizationMacForPrivateRoutes);
 #endif
 
 // Avoid creating cache entries for transactions that are most likely no-store.
