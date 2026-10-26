@@ -50,7 +50,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
@@ -520,7 +519,6 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/477372460")
     public void testOnSearchboxLensTap_lensNotEnabled_lensNotStarted() {
         TextBubble.setSkipShowCheckForTesting(true);
         doReturn(false).when(mLensController).isLensEnabled(any());
