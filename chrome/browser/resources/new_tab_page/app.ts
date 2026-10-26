@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './logo.js';
-import './ntp_composebox.js';
 import './ntp_searchbox.js';
 import './left_hand_side.js';
 import '/strings.m.js';
@@ -13,9 +12,8 @@ import 'chrome://resources/cr_components/search/animated_glow.js';
 
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
+import {GlifAnimationState, VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
-import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
@@ -28,7 +26,6 @@ import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_util
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
@@ -157,14 +154,6 @@ function recordCustomizeChromeOpen(element: NtpCustomizeChromeEntryPoint) {
   recordEnumeration(
       'NewTabPage.CustomizeChromeOpened', element,
       NtpCustomizeChromeEntryPoint.MAX_VALUE + 1);
-}
-
-// Adds a <script> tag that holds the lazy loaded code.
-function ensureLazyLoaded() {
-  const script = document.createElement('script');
-  script.type = 'module';
-  script.src = getTrustedScriptURL`./lazy_load.js`;
-  document.body.appendChild(script);
 }
 
 function recordShowBrowserPromosResult(result: ShowNtpPromosResult) {
@@ -839,7 +828,7 @@ export class AppElement extends AppElementBase {
     this.pageHandler_.onAppRendered(WindowProxy.getInstance().now());
     // Let the browser breathe and then render remaining elements.
     WindowProxy.getInstance().waitForLazyRender().then(() => {
-      ensureLazyLoaded();
+      WindowProxy.getInstance().ensureLazyLoaded();
       this.lazyRender_ = true;
     });
     this.printPerformance_();
@@ -1090,6 +1079,9 @@ export class AppElement extends AppElementBase {
   }
 
   private async ensureComposeboxOpen_() {
+    // <ntp-composebox> may be defined in lazy_load.js, which may not have been
+    // loaded yet if the composebox is opened right after the NTP loads.
+    await WindowProxy.getInstance().ensureLazyLoaded();
     if (!this.showComposebox_) {
       this.showComposebox_ = true;
       if (this.composeboxOutsideClickEnabled_) {

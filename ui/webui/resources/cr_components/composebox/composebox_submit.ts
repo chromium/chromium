@@ -9,7 +9,7 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SubmitButtonIconType} from './composebox_mixin.js';
+import {SubmitButtonIconType} from './common.js';
 import {getCss} from './composebox_submit.css.js';
 import {getHtml} from './composebox_submit.html.js';
 

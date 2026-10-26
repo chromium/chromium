@@ -403,6 +403,16 @@ export enum GlifAnimationState {
   FINISHED = 'finished',
 }
 
+export enum VoiceSearchAction {
+  ACTIVATE = 0,
+  QUERY_SUBMITTED = 1,
+}
+
+export enum SubmitButtonIconType {
+  FORWARD = 'forward',
+  UPWARD = 'upward',
+}
+
 // LINT.IfChange(ContextualSearchInputStateDeletionType)
 export enum ContextualSearchInputStateDeletionType {
   FILE = 0,

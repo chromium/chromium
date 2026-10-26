@@ -1411,6 +1411,41 @@ suite('NewTabPageAppTest', () => {
           assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
         });
 
+    test('composebox waits for the lazy loaded code to load', async () => {
+      // Arrange: Simulate lazy_load.js not having finished loading yet when
+      // the user opens the composebox before waitForLazyRender resolves.
+      const lazyRenderResolver = new PromiseResolver<void>();
+      windowProxy.setResultFor('waitForLazyRender', lazyRenderResolver.promise);
+      windowProxy.resetResolver('ensureLazyLoaded');
+      const lazyLoadResolver = new PromiseResolver<void>();
+      windowProxy.setResultFor('ensureLazyLoaded', lazyLoadResolver.promise);
+      await recreateApp();
+
+      // Act.
+      const searchbox = $$(app, '#searchbox')!;
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {text: '', files: []},
+      }));
+      await microtasksFinished();
+
+      // Assert: Lazy loading is requested right away, but the composebox is
+      // not shown and session start is not recorded until lazy_load.js
+      // finishes loading.
+      assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertEquals(
+          0, metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+      assertFalse(!!app.shadowRoot.querySelector('#composebox'));
+
+      // Act.
+      lazyLoadResolver.resolve();
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(!!app.shadowRoot.querySelector('#composebox'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+    });
+
     test('composebox state toggles inert attribute on siblings', async () => {
       // Arrange: Verify blocked elements do NOT have inert initially.
       callbackRouterRemote.setTheme(createTheme());
@@ -1897,7 +1932,7 @@ suite('NewTabPageAppTest', () => {
               (searchbox.dispatchEvent(new CustomEvent('open-composebox', {
                 detail: {text: '', files: []},
               })));
-              await app.updateComplete;
+              await microtasksFinished();
 
               const composeboxElement =
                   app.shadowRoot.querySelector<NtpComposeboxElement>(

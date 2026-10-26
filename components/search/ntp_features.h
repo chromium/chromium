@@ -108,6 +108,7 @@ BASE_DECLARE_FEATURE(kBookmarkBarUpdatesForTesting);
 BASE_DECLARE_FEATURE(kNtpThreadsRail);
 BASE_DECLARE_FEATURE(kNtpEnableInstantApiAndroid);
 BASE_DECLARE_FEATURE(kNtpShortcutsReorder);
+BASE_DECLARE_FEATURE(kNtpLazyLoadComposebox);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

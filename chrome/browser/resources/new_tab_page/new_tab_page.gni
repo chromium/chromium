@@ -20,6 +20,7 @@ all_ts_files = [
                  "left_hand_side.ts",
                  "lens_upload_dialog_icons.html.ts",
                  "metrics_utils.ts",
+                 "new_tab_page_eager.ts",
                  "new_tab_page_proxy.ts",
                  "new_tab_page.ts",
                  "ntp_composebox.html.ts",

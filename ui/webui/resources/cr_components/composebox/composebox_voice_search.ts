@@ -14,9 +14,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Size} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
-import {getLoadTimeBoolean, recordEnumerationValue} from './common.js';
+import {getLoadTimeBoolean, recordEnumerationValue, SubmitButtonIconType} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
-import {SubmitButtonIconType} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './composebox_voice_search.css.js';
 import {getHtml} from './composebox_voice_search.html.js';

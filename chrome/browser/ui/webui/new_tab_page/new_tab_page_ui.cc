@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -901,6 +902,22 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   webui::SetupWebUIDataSource(source, kNewTabPageResources,
                               IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
+
+#if BUILDFLAG(OPTIMIZE_WEBUI)
+  // By default, `SetupWebUIDataSource` maps `new_tab_page.js` to the bundle
+  // that defers modules like ntp composebox to `lazy_load.js`. When
+  // `kNtpLazyLoadComposebox` is disabled, remap all three Rollup chunks to the
+  // eager bundle built from `new_tab_page_eager.ts`, which eagerly includes
+  // those modules.
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpLazyLoadComposebox)) {
+    source->AddResourcePath(
+        "new_tab_page.js", IDR_NEW_TAB_PAGE_EAGER_NEW_TAB_PAGE_EAGER_ROLLUP_JS);
+    source->AddResourcePath("lazy_load.js",
+                            IDR_NEW_TAB_PAGE_EAGER_LAZY_LOAD_ROLLUP_JS);
+    source->AddResourcePath("shared.rollup.js",
+                            IDR_NEW_TAB_PAGE_EAGER_SHARED_ROLLUP_JS);
+  }
+#endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePaths(kNewTabSharedResources);

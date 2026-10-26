@@ -5,12 +5,37 @@
 import("//build/config/chrome_build.gni")
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 
 assert(enable_webui_ntp)
 
 grd_prefix = "new_tab_page"
+
+if (optimize_webui) {
+  optimize_excludes = [
+    "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
+    "chrome://resources/cr_components/composebox/composebox.mojom-webui.js",
+    "chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js",
+    "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
+    "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
+    "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
+    "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
+    "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
+    "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
+    "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
+    "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+    "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
+    "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+    "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+  ]
+  optimize_external_paths =
+      [ "chrome://new-tab-page/shared|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc",
+                    root_build_dir) ]
+}
 
 build_webui("build") {
   icons_html_files = [
@@ -120,31 +145,39 @@ build_webui("build") {
   webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    extra_grdp_files += [ "$target_gen_dir/eager_resources.grdp" ]
+    extra_grdp_deps += [ ":build_eager_grdp" ]
     optimize_webui_host = "new-tab-page"
     optimize_webui_in_files = [
       "new_tab_page.js",
       "lazy_load.js",
     ]
-    optimize_webui_excludes = [
-      "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-      "chrome://resources/cr_components/composebox/composebox.mojom-webui.js",
-      "chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js",
-      "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
-      "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
-      "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
-      "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
-      "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-      "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+    optimize_webui_excludes = optimize_excludes
+    optimize_webui_external_paths = optimize_external_paths
+  }
+}
+
+if (optimize_webui) {
+  build_eager_manifest = "$target_gen_dir/build_eager_manifest.json"
+
+  optimize_webui("build_eager") {
+    host = "new-tab-page"
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    js_module_in_files = [
+      "new_tab_page_eager.js",
+      "lazy_load.js",
     ]
-    optimize_webui_external_paths =
-        [ "chrome://new-tab-page/shared|" +
-          rebase_path(
-              "$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc",
-              root_build_dir) ]
+    out_manifest = build_eager_manifest
+    excludes = optimize_excludes
+    external_paths = optimize_external_paths
+    deps = [ ":build_ts" ]
+  }
+
+  generate_grd("build_eager_grdp") {
+    grd_prefix = "new_tab_page_eager"
+    out_grd = "$target_gen_dir/eager_resources.grdp"
+    manifest_files = [ build_eager_manifest ]
+    deps = [ ":build_eager" ]
+    resource_path_prefix = "eager"
   }
 }
