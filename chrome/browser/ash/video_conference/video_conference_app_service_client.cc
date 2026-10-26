@@ -109,7 +109,7 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
     return;
   }
 
-  if (!is_already_tracked && ShouldSkipId(app_id)) {
+  if (!is_already_tracked && ShouldSkipIdForVideoConference(app_id)) {
     return;
   }
 

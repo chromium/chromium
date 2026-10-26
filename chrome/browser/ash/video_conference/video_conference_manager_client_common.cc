@@ -9,14 +9,14 @@
 
 namespace ash {
 
-const char* kSkipAppIds[3] = {
+const char* kIdsToSkipForVideoConference[3] = {
     "behllobkkfkfnphdnhnkndlbkcpglgmj",  // TestExtensionID
     "mecfefiddjlmabpeilblgegnbioikfmp",  // SigninProfileTestExtensionID
     "feedback",  // Chrome Feedback tool chrome://feedback/.
 };
 
-bool ShouldSkipId(const std::string& id) {
-  return std::ranges::contains(kSkipAppIds, id);
+bool ShouldSkipIdForVideoConference(const std::string& id) {
+  return std::ranges::contains(kIdsToSkipForVideoConference, id);
 }
 
 }  // namespace ash

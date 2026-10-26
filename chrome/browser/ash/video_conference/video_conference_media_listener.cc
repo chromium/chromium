@@ -180,7 +180,7 @@ VideoConferenceWebApp* VideoConferenceMediaListener::GetOrCreateVcWebApp(
       return nullptr;
     }
 
-    if (ShouldSkipId(contents->GetURL().GetHost())) {
+    if (ShouldSkipIdForVideoConference(contents->GetURL().GetHost())) {
       return nullptr;
     }
 

@@ -69,7 +69,7 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
   if (app_id == kAppId2) {
     app->name = kAppName2;
   }
-  if (std::ranges::contains(kSkipAppIds, app_id)) {
+  if (std::ranges::contains(kIdsToSkipForVideoConference, app_id)) {
     app->name = base::StrCat({"AppName-", app_id});
   }
 
@@ -722,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                        SomeAppsAreNotTracked) {
   // Install all apps that should be skipped.
-  for (const std::string& app_id : kSkipAppIds) {
+  for (const std::string& app_id : kIdsToSkipForVideoConference) {
     InstallApp(app_id);
     // Accessing mic and camera should trigger tracking except the app_id is
     // skipped.

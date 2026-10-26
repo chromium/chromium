@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
   EXPECT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
   auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
 
-  for (const std::string& app_id : kSkipAppIds) {
+  for (const std::string& app_id : kIdsToSkipForVideoConference) {
     const GURL url = GURL(base::StrCat(
         {"chrome-extension://", app_id, "/_generated_background_page.html"}));
     web_contents->GetController().GetLastCommittedEntry()->SetURL(GURL(url));

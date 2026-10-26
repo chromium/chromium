@@ -14,10 +14,10 @@
 namespace ash {
 
 // AppIds that we want to skip tracking.
-extern const char* kSkipAppIds[3];
+extern const char* kIdsToSkipForVideoConference[3];
 
 // Returns whether we should skip the contents for tracking.
-bool ShouldSkipId(const std::string& id);
+bool ShouldSkipIdForVideoConference(const std::string& id);
 
 // Struct holding the granted status of media device permissions used by
 // videoconferencing apps.
@@ -37,7 +37,7 @@ struct VideoConferenceWebAppState {
 };
 
 // Video conference media devices.
-enum VideoConferenceMediaType {
+enum class VideoConferenceMediaType {
   kCamera,
   kMicrophone,
   kScreen,
