@@ -37,6 +37,8 @@
 
     <application android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsApplication"
             android:label="ChromeBrowserTests"
+            android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload"
+            android:zygotePreloadNativeLib="lib{{ library_name }}.so"
             android:requestLegacyExternalStorage="true">
 
         <!--
@@ -186,6 +188,9 @@
         <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
                  android:isolatedProcess="true"
+                 {% if (i == 0) %}
+                 android:useAppZygote="true"
+                 {% endif %}
                  android:exported="false" />
         {% endfor %}
 
@@ -214,6 +219,9 @@
             android:process=":sandboxed_process{{ i }}"
             android:permission="{{ manifest_package|default(default_manifest_package) }}.permission.CHILD_SERVICE"
             android:isolatedProcess="true"
+            {% if (i == 0) %}
+            android:useAppZygote="true"
+            {% endif %}
             android:exported="false" >
             <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME"
                 android:value="lib{{ library_name }}.so" />

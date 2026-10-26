@@ -65,12 +65,6 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
                         });
     }
 
-    /** Tests don't use the preallocated child connection. */
-    @Override
-    public boolean shouldAllocateChildConnection() {
-        return false;
-    }
-
     /** Tests should not go through the first run process every time. */
     @Override
     protected boolean requiresFirstRunToBeCompleted(Intent intent) {
