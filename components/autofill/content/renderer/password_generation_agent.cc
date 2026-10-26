@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -526,13 +527,12 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
       form_util::GetFieldRendererId(last_focused_password_element);
 
   bool is_automatic_generation_available = false;
-  auto it = generation_enabled_fields_.find(last_focused_password_element_id);
-
-  if (it != generation_enabled_fields_.end()) {
+  if (const PasswordFormGenerationData* generation_data = base::FindOrNull(
+          generation_enabled_fields_, last_focused_password_element_id)) {
     is_automatic_generation_available = true;
     MaybeCreateCurrentGenerationItem(
         last_focused_password_element,
-        it->second.confirmation_password_renderer_id, /*form_cache=*/{});
+        generation_data->confirmation_password_renderer_id, /*form_cache=*/{});
   } else {
     auto* frame = unsafe_render_frame();
     blink::WebDocument document =
@@ -573,11 +573,11 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
     const SynchronousFormCache& form_cache) {
   CHECK(element);
 
-  auto it =
-      generation_enabled_fields_.find(form_util::GetFieldRendererId(element));
-  if (it != generation_enabled_fields_.end()) {
+  if (const PasswordFormGenerationData* generation_data = base::FindOrNull(
+          generation_enabled_fields_, form_util::GetFieldRendererId(element))) {
     MaybeCreateCurrentGenerationItem(
-        element, it->second.confirmation_password_renderer_id, form_cache);
+        element, generation_data->confirmation_password_renderer_id,
+        form_cache);
   }
 
   auto [current_generation_item, auto_protect] =

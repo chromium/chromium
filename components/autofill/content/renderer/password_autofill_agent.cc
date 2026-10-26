@@ -17,6 +17,8 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -2288,16 +2290,15 @@ PasswordAutofillAgent::FormStructureInfo
 PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
   FormStructureInfo result;
   result.renderer_id = form_data.renderer_id();
-  result.fields.resize(form_data.fields().size());
-
-  for (auto [form_field, field_info] :
-       std::views::zip(form_data.fields(), result.fields)) {
-    field_info.renderer_id = form_field.renderer_id();
-    field_info.form_control_type = form_field.form_control_type();
-    field_info.autocomplete_attribute = form_field.autocomplete_attribute();
-    field_info.is_focusable = form_field.is_focusable();
-  }
-
+  result.fields =
+      base::ToVector(form_data.fields(), [](const FormFieldData& form_field) {
+        return FormFieldInfo{
+            .renderer_id = form_field.renderer_id(),
+            .form_control_type = form_field.form_control_type(),
+            .autocomplete_attribute = form_field.autocomplete_attribute(),
+            .is_focusable = form_field.is_focusable(),
+        };
+      });
   return result;
 }
 
@@ -2307,17 +2308,18 @@ bool PasswordAutofillAgent::WasFormStructureChanged(
     return true;
   }
 
-  auto cached_form = forms_structure_cache_.find(form_info.renderer_id);
-  if (cached_form == forms_structure_cache_.end())
+  const FormStructureInfo* cached_form_info =
+      base::FindOrNull(forms_structure_cache_, form_info.renderer_id);
+  if (!cached_form_info) {
     return true;
+  }
 
-  const FormStructureInfo& cached_form_info = cached_form->second;
-
-  if (form_info.fields.size() != cached_form_info.fields.size())
+  if (form_info.fields.size() != cached_form_info->fields.size()) {
     return true;
+  }
 
   for (auto [form_field, cached_form_field] :
-       std::views::zip(form_info.fields, cached_form_info.fields)) {
+       std::views::zip(form_info.fields, cached_form_info->fields)) {
     if (form_field.renderer_id != cached_form_field.renderer_id) {
       return true;
     }
@@ -2339,18 +2341,18 @@ bool PasswordAutofillAgent::WasFormStructureChanged(
 void PasswordAutofillAgent::TryFixAutofilledForm(
     std::vector<WebFormControlElement>& control_elements) const {
   for (WebFormControlElement& control_element : control_elements) {
-    auto cached_element = autofilled_elements_cache_.find(
-        form_util::GetFieldRendererId(control_element));
-    if (cached_element == autofilled_elements_cache_.end()) {
+    const WebString* cached_value =
+        base::FindOrNull(autofilled_elements_cache_,
+                         form_util::GetFieldRendererId(control_element));
+    if (!cached_value) {
       continue;
     }
     // autofilled_elements_cache_ stores values filled at page load time and
     // gets wiped when we observe a user gesture. During this time, the
     // username/password fields can be in preview state and we restore this
     // state if JavaScript modifies the field's value.
-    const WebString& cached_value = cached_element->second;
-    if (cached_value != control_element.SuggestedValue()) {
-      control_element.SetSuggestedValue(cached_value);
+    if (*cached_value != control_element.SuggestedValue()) {
+      control_element.SetSuggestedValue(*cached_value);
     }
   }
 }
