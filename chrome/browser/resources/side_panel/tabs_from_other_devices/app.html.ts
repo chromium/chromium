@@ -11,7 +11,6 @@ import type {TabInfo, TabsFromOtherDevicesAppElement} from './app.js';
 // "no screenshots", "screenshots", "screenshot but load failed" cases.
 
 export function getHtml(this: TabsFromOtherDevicesAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
   <cr-toolbar-search-field id="search-input" label="$i18n{searchPrompt}"
@@ -84,5 +83,4 @@ export function getHtml(this: TabsFromOtherDevicesAppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
