@@ -4771,6 +4771,11 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
     driver_.context = EGL_NO_CONTEXT;
   }
   driver_.driver_gl.ClearBindings();
+
+  // WebGLContextObjectSupport depends on `gles2_for_objects_`.
+  if (!IsLost()) {
+    WebGLContextObjectSupport::OnContextLost();
+  }
   gles2_for_objects_ = nullptr;
 
   if (driver_.display) {
