@@ -632,9 +632,6 @@ crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Fa
 
 crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
 
-# Expect to fail. The test is applicable only when DigitalGoods flag is disabled.
-crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandatory-total.html [ Failure ]
-
 ### ====== Payments related tests end =======
 
 # WPT speculative-parsing tests failing

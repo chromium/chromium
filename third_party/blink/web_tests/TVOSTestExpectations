@@ -2113,7 +2113,6 @@ crbug.com/554992299 [ tvOS26-simulator ] http/tests/misc/synthetic-gesture-initi
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/misc/video-poster-image-load-outlives-gc-without-crashing.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/navigation/start-load-during-provisional-loader-detach.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/origin_trials/sample-api-script-added-after-css-declaration.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] http/tests/payments/payment-request-app-store-billing-mandatory-total.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/preload/meta-viewport-link-headers.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/printing/cross-site-frame-scrolled.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/printing/cross-site-frame.html [ Failure ]
