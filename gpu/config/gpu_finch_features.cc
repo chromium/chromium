@@ -488,6 +488,9 @@ BASE_FEATURE(kGpuPersistentCacheMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGpuPersistentCacheMetadataPreloadCount{
     &kGpuPersistentCacheMetadata, "preload_count", 50};
 
+BASE_FEATURE(kGpuPersistentCacheAsyncInitialize,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use a 100-command limit before forcing context switch per command buffer
 // instead of 20.
 BASE_FEATURE(kIncreasedCmdBufferParseSlice, base::FEATURE_DISABLED_BY_DEFAULT);

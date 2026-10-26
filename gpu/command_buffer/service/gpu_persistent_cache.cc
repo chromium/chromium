@@ -10,7 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
@@ -20,6 +22,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
@@ -32,6 +35,7 @@
 #include "components/persistent_cache/transaction_error.h"
 #include "components/version_info/version_info.h"
 #include "gpu/command_buffer/service/memory_cache.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ipc/common/gpu_client_ids.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -438,19 +442,54 @@ GpuPersistentCache::~GpuPersistentCache() = default;
 void GpuPersistentCache::InitializeCache(
     persistent_cache::PendingBackend pending_backend,
     scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
+  CHECK(!init_started_.IsSet());
+  init_started_.Set();
+  base::ScopedClosureRunner signal_init_complete(base::BindOnce(
+      [](scoped_refptr<GpuPersistentCache> self) {
+        self->init_complete_event_.Signal();
+      },
+      base::WrapRefCounted(this)));
+  if (async_write_options_.task_runner &&
+      !async_write_options_.task_runner->RunsTasksInCurrentSequence() &&
+      base::FeatureList::IsEnabled(
+          features::kGpuPersistentCacheAsyncInitialize)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&GpuPersistentCache::DoInitializeCache,
+                       base::WrapRefCounted(this), std::move(pending_backend),
+                       std::move(use_shader_cache_shm_count),
+                       std::move(signal_init_complete)));
+    return;
+  }
+
+  DoInitializeCache(std::move(pending_backend),
+                    std::move(use_shader_cache_shm_count),
+                    std::move(signal_init_complete));
+}
+
+void GpuPersistentCache::DoInitializeCache(
+    persistent_cache::PendingBackend pending_backend,
+    scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count,
+    base::ScopedClosureRunner signal_init_complete) {
+  TRACE_EVENT0("gpu", "GpuPersistentCache::DoInitializeCache");
   CHECK(!disk_cache_initialized_.IsSet());
+
   ASSIGN_OR_RETURN(
       auto cache,
       persistent_cache::PersistentCache::Bind(
           persistent_cache::Client::kShaderCache, std::move(pending_backend)),
       [&](persistent_cache::TransactionError error) {
-        HandlePersistentCacheError(&use_shader_cache_shm_count->data, error);
+        HandlePersistentCacheError(
+            use_shader_cache_shm_count ? &use_shader_cache_shm_count->data
+                                       : nullptr,
+            error);
       });
 
   disk_cache_ = base::MakeRefCounted<DiskCache>(
       cache_prefix_, std::move(cache), async_write_options_,
       std::move(use_shader_cache_shm_count));
-  disk_cache_initialized_.Set();
 
   base::UmaHistogramEnumeration(
       GetHistogramName(cache_prefix_, "MetadataEvent"),
@@ -470,6 +509,9 @@ void GpuPersistentCache::InitializeCache(
     });
   }
 
+  disk_cache_initialized_.Set();
+  signal_init_complete.RunAndReset();
+
   if (metadata_options_.enabled) {
     // Load and process any metadata found in the disk cache. Run it
     // asynchronously if possible.
@@ -483,6 +525,21 @@ void GpuPersistentCache::InitializeCache(
       LoadAndProcessMetadataFromDiskCache();
     }
   }
+}
+
+bool GpuPersistentCache::EnsureDiskCacheInitialized() const {
+  if (disk_cache_initialized_.IsSet()) {
+    return true;
+  }
+  if (!init_started_.IsSet()) {
+    return false;
+  }
+  if (!init_complete_event_.IsSignaled()) {
+    TRACE_EVENT0("gpu", "GpuPersistentCache::WaitForInitializeCache");
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
+    init_complete_event_.Wait();
+  }
+  return disk_cache_initialized_.IsSet();
 }
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
@@ -646,6 +703,7 @@ void GpuPersistentCache::OnMemoryDump(
 
 const persistent_cache::PersistentCache&
 GpuPersistentCache::GetPersistentCacheForTesting() const {
+  CHECK(EnsureDiskCacheInitialized());
   return disk_cache_->persistent_cache();
 }
 
@@ -671,7 +729,7 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
     std::string_view key,
     persistent_cache::BufferProvider buffer_provider,
     bool skip_memory_cache) {
-  const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
+  const bool disk_cache_initialized = EnsureDiskCacheInitialized();
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadImpl", "persistent_cache",
                disk_cache_initialized);
 
@@ -805,7 +863,12 @@ void GpuPersistentCache::GLBlobCacheSet(const void* key,
 void GpuPersistentCache::StoreImpl(std::string_view key,
                                    base::span<const uint8_t> value,
                                    bool skip_memory_cache) {
-  const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
+  scoped_refptr<MemoryCacheEntry> memory_cache_entry;
+  if (memory_cache_ && !skip_memory_cache) {
+    memory_cache_entry = memory_cache_->Store(key, value);
+  }
+
+  const bool disk_cache_initialized = EnsureDiskCacheInitialized();
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreImpl", "persistent_cache",
                disk_cache_initialized);
 
@@ -824,11 +887,6 @@ void GpuPersistentCache::StoreImpl(std::string_view key,
                                key.size());
     base::UmaHistogramCounts1M(GetHistogramName(cache_prefix_, "ValueSize2"),
                                value.size());
-  }
-
-  scoped_refptr<MemoryCacheEntry> memory_cache_entry;
-  if (memory_cache_ && !skip_memory_cache) {
-    memory_cache_entry = memory_cache_->Store(key, value);
   }
 
   if (!disk_cache_initialized) {
@@ -962,7 +1020,7 @@ void GpuPersistentCache::UpdateCacheMetadataForLoad(std::string_view key) {
 
 void GpuPersistentCache::FlushCacheMetadata(CacheMetadata metadata) {
   // If there is no disk cache to flush to, drop the metadata.
-  const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
+  const bool disk_cache_initialized = EnsureDiskCacheInitialized();
   if (!disk_cache_initialized) {
     return;
   }

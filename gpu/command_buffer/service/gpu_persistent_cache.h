@@ -13,12 +13,14 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -115,7 +117,10 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
   GpuPersistentCache(const GpuPersistentCache&) = delete;
   GpuPersistentCache& operator=(const GpuPersistentCache&) = delete;
 
-  // This can only be called once but is thread safe w.r.t loads and stores.
+  // Initializes the underlying persistent disk cache. If
+  // `async_write_options.task_runner` is set and does not run tasks on the
+  // calling sequence, initialization is posted to a background worker thread.
+  // This can only be called once and is thread safe w.r.t loads and stores.
   void InitializeCache(persistent_cache::PendingBackend pending_backend,
                        scoped_refptr<RefCountedGpuProcessShmCount>
                            use_shader_cache_shm_count = nullptr);
@@ -194,6 +199,12 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
 
   static bool IsCacheHitResult(CacheLoadResult result);
 
+  void DoInitializeCache(
+      persistent_cache::PendingBackend pending_backend,
+      scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count,
+      base::ScopedClosureRunner signal_init_complete);
+  bool EnsureDiskCacheInitialized() const;
+
   CacheLoadResult LoadImpl(std::string_view key,
                            persistent_cache::BufferProvider buffer_provider,
                            bool skip_memory_cache);
@@ -228,7 +239,11 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
   // initialized
   scoped_refptr<MemoryCache> memory_cache_;
 
+  base::AtomicFlag init_started_;
   base::AtomicFlag disk_cache_initialized_;
+  mutable base::WaitableEvent init_complete_event_{
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED};
   scoped_refptr<DiskCache> disk_cache_;
   const AsyncDiskWriteOpts async_write_options_;
 
