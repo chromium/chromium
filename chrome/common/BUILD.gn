@@ -221,6 +221,7 @@ static_library("common_lib") {
     "//components/omnibox/common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/policy:generated",
     "//components/policy/core/common",
     "//components/prefs",

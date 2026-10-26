@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_features.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace password_manager {

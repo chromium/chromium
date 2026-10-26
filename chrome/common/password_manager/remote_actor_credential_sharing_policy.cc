@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "chrome/common/chrome_features.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"

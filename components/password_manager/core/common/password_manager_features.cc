@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/common/password_manager_features.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -44,6 +46,30 @@ BASE_FEATURE_PARAM(int,
 // Removes password suggestion filtering by username.
 BASE_FEATURE(kNoPasswordSuggestionFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables sharing credentials with a remote actor (e.g. Gemini) by uploading
+// them to Passbox and granting the actor permission to use them.
+BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This parameter is for testing purposes only and must not be used in
+// production. It overrides the actor name displayed in the credential
+// selection dialog.
+const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingActorNameForTesting{
+        &kRemoteActorCredentialSharing, "actor_name_for_testing", "Gemini"};
+
+// This parameter is for testing purposes only and must not be used in
+// production. It overrides the whitelisted origins with the specified host.
+const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingAllowedHostForTesting{
+        &kRemoteActorCredentialSharing, "allowed_host_for_testing", ""};
+
+// The OAuth2 client ID used when requesting remote actor permissions from APS.
+const base::FeatureParam<std::string> kRemoteActorOAuthClientId{
+    &kRemoteActorCredentialSharing, "oauth_client_id",
+    "320695880279-gnq6the97ga85scn208u5jctnk82qelk.apps.googleusercontent.com"};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Allows to show suggestions automatically when password forms are autofocused
 // on pageload. Enabled by default on desktop in M140.
 BASE_FEATURE(kShowSuggestionsOnAutofocus,
@@ -72,5 +98,13 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 // high values is not strong.
 // Default to 5000 ms.
 const char kGenerationRequirementsTimeout[] = "timeout";
+
+bool RemoteActorCredentialSharingEnabled() {
+#if !BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(kRemoteActorCredentialSharing);
+#else
+  return false;
+#endif
+}
 
 }  // namespace password_manager::features

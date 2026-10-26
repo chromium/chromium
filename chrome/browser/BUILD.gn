@@ -1374,6 +1374,7 @@ source_set("core") {
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:features",
     "//components/payments/content",
     "//components/payments/core",
     "//components/pdf/common:constants",

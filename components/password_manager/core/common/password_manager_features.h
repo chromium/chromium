@@ -9,6 +9,8 @@
 // If the feature belongs logically to the browser process, put it into
 // components/password_manager/core/browser/features/password_features.h.
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -21,6 +23,9 @@ BASE_DECLARE_FEATURE(kActorLoginTreatFillingAsUserInput);
 BASE_DECLARE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys);
 BASE_DECLARE_FEATURE_PARAM(int, kDelaySuggestionsOnAutofocusTimeout);
 BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
+#endif  // !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
 
 // All features parameters are in alphabetical order.
@@ -36,6 +41,18 @@ extern const char kGenerationRequirementsFieldTrial[];
 extern const char kGenerationRequirementsVersion[];
 extern const char kGenerationRequirementsPrefixLength[];
 extern const char kGenerationRequirementsTimeout[];
+
+#if !BUILDFLAG(IS_ANDROID)
+extern const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingActorNameForTesting;
+extern const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingAllowedHostForTesting;
+extern const base::FeatureParam<std::string> kRemoteActorOAuthClientId;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Returns whether remote actor credential sharing is enabled. Always returns
+// false on platforms where the feature is not available.
+bool RemoteActorCredentialSharingEnabled();
 
 }  // namespace password_manager::features
 

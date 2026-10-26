@@ -7,10 +7,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -39,11 +39,11 @@ class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
   explicit RemoteActorCredentialSharingBrowserTest(bool enable_feature = true) {
     if (enable_feature) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kRemoteActorCredentialSharing,
+          password_manager::features::kRemoteActorCredentialSharing,
           {{"allowed_host_for_testing", kAllowedHost}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kRemoteActorCredentialSharing);
+          password_manager::features::kRemoteActorCredentialSharing);
     }
   }
 

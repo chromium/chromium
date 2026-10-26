@@ -29,7 +29,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -42,6 +41,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/password_specifics.pb.h"
@@ -409,7 +409,7 @@ class RemoteActorCredentialSharingImplTest
           policy::ManagementServiceFactory::GetForPlatform(),
           policy::EnterpriseManagementAuthority::NONE};
   base::test::ScopedFeatureList feature_list_{
-      ::features::kRemoteActorCredentialSharing};
+      features::kRemoteActorCredentialSharing};
 };
 
 // Verify that when the feature flag kRemoteActorCredentialSharing is enabled,

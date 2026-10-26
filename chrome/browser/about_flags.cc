@@ -14019,9 +14019,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"remote-actor-credential-sharing",
      flag_descriptions::kRemoteActorCredentialSharingName,
      flag_descriptions::kRemoteActorCredentialSharingDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRemoteActorCredentialSharing,
-                                    kRemoteActorCredentialSharingVariations,
-                                    "RemoteActorCredentialSharing")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kRemoteActorCredentialSharing,
+         kRemoteActorCredentialSharingVariations,
+         "RemoteActorCredentialSharing")},
 
     {"autofill-gmail-otp",
      flag_descriptions::kAutofillGmailOtpPreLaunchMetricsName,

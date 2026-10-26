@@ -701,7 +701,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   TabContextDecryptionTokenExtension::Create(render_frame);
   TrustedVaultEncryptionKeysExtension::Create(render_frame);
 #if !BUILDFLAG(IS_ANDROID)
-  if (features::RemoteActorCredentialSharingEnabled() &&
+  if (password_manager::features::RemoteActorCredentialSharingEnabled() &&
       render_frame->IsMainFrame()) {
     RemoteActorCredentialSharingExtension::Create(render_frame);
   }
