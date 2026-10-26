@@ -454,5 +454,73 @@ class CrossbenchResultConverterTest(unittest.TestCase):
     self.check_result(results, 'soc_power', 0.46, 'W_smallerIsBetter')
 
 
+  def test_trace_processor_multi_story_csv(self):
+    csv_content = (
+      'browser_window_first_paint_ms,cb_browser,cb_story,cb_temperature,cb_run\n'
+      '150,BrowserA,newtab_startup,default,0\n'
+      '160,BrowserA,newtab_startup,default,1\n'
+      '110,BrowserA,blank_startup,default,0\n'
+      '120,BrowserA,blank_startup,default,1\n'
+      '190,BrowserA,google_startup,default,0\n'
+    )
+    # Crossbench's TraceProcessorProbe merges all stories into <query>.json
+    # without cb_story; verify that convert() prefers <query>.csv so per-story
+    # histograms are preserved instead of collapsing into the default story.
+    merged_json_content = {
+      'browser_window_first_paint_ms': {
+        'values': [150, 160, 110, 120, 190],
+      }
+    }
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      tp_dir = dir_path / 'trace_processor'
+      tp_dir.mkdir()
+      csv_path = tp_dir / 'browser_window_first_paint.csv'
+      csv_path.write_text(csv_content)
+      json_path = tp_dir / 'browser_window_first_paint.json'
+      json_path.write_text(json.dumps(merged_json_content))
+
+      cb_results = {
+        'browsers': {
+          'BrowserA': {
+            'probes': {'trace_processor': None},
+          }
+        },
+        'probes': {
+          'trace_processor': {
+            'csv': [str(csv_path)],
+            'json': [str(json_path)],
+          }
+        },
+      }
+      (dir_path / 'cb.results.json').write_text(json.dumps(cb_results))
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path,
+        out_file,
+        benchmark='browser_startup.crossbench',
+        story='default',
+      )
+      raw_dicts = json.loads(out_file.read_text())
+
+    by_story = {}
+    for item in raw_dicts:
+      if item.get('name') == 'browser_window_first_paint_ms':
+        hist = histogram.Histogram.FromDict(item)
+        story_name = hist.diagnostics[
+          reserved_infos.STORIES.name
+        ].GetOnlyElement()
+        by_story[story_name] = item
+
+    self.assertEqual(
+      set(by_story),
+      {'newtab_startup', 'blank_startup', 'google_startup'},
+    )
+    self.assertEqual(by_story['newtab_startup']['sampleValues'], [150.0, 160.0])
+    self.assertEqual(by_story['blank_startup']['sampleValues'], [110.0, 120.0])
+    self.assertEqual(by_story['google_startup']['sampleValues'], [190.0])
+
+
 if __name__ == '__main__':
   unittest.main()

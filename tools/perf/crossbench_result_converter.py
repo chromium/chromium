@@ -24,12 +24,101 @@ from tracing.value.diagnostics import generic_set
 from tracing.value.diagnostics import reserved_infos
 
 
-def _get_crossbench_json_paths(out_dir: pathlib.Path) -> List[pathlib.Path]:
+_CB_METADATA_COLUMNS = frozenset(
+  {'cb_browser', 'cb_story', 'cb_temperature', 'cb_run'}
+)
+
+
+def _get_metric_unit(metric: str) -> str:
+  lower_key = metric.lower()
+  if 'score' in lower_key:
+    return 'unitless_biggerIsBetter'
+  if lower_key.endswith('_bytes'):
+    return 'sizeInBytes_smallerIsBetter'
+  if lower_key.endswith('_count'):
+    return 'count_smallerIsBetter'
+  return 'ms_smallerIsBetter'
+
+
+def _trace_processor_query_csv_results(
+  out_dir: pathlib.Path,
+  default_story: Optional[str] = None,
+) -> tuple[histogram_set.HistogramSet, set[str]]:
+  """Extracts per-story histograms from trace_processor query CSV files.
+
+  Crossbench's TraceProcessorProbe writes per-row `cb_story` metadata to each
+  `<query>.csv` file, whereas `<query>.json` merges values across all stories
+  via MetricsMerger without `cb_story`. Reading the CSV files preserves
+  per-story attribution for multi-story benchmarks (e.g. `browser-startup`).
+  """
+  results = histogram_set.HistogramSet()
+  handled_stems: set[str] = set()
+
+  cb_results_json_path = out_dir / 'cb.results.json'
+  if not cb_results_json_path.exists():
+    return results, handled_stems
+
+  with cb_results_json_path.open() as f:
+    results_info = json.load(f)
+
+  browsers = (results_info.get('browsers') or {}).values()
+  csv_candidates = [
+    *_trace_processor_csvs(results_info.get('probes')),
+    *(p for b in browsers for p in _trace_processor_csvs(b.get('probes'))),
+  ]
+
+  for candidate in csv_candidates:
+    csv_path = pathlib.Path(candidate)
+    if csv_path.stem in handled_stems:
+      continue
+    try:
+      with csv_path.open() as f:
+        story_metrics: dict[str, dict[str, list[float]]] = (
+          collections.defaultdict(lambda: collections.defaultdict(list))
+        )
+        for row in csv.DictReader(f):
+          story_name = row.get('cb_story') or default_story or 'Default'
+          for col, val_str in row.items():
+            if not col or col in _CB_METADATA_COLUMNS or not val_str:
+              continue
+            try:
+              val = float(val_str.split()[0])
+            except ValueError:
+              continue
+            story_metrics[story_name][col].append(val)
+    except FileNotFoundError:
+      continue
+
+    if not story_metrics:
+      continue
+
+    handled_stems.add(csv_path.stem)
+    for story_name, metrics in story_metrics.items():
+      for metric, samples in metrics.items():
+        h = histogram.Histogram.Create(
+          metric, _get_metric_unit(metric), samples
+        )
+        h.diagnostics[reserved_infos.STORIES.name] = generic_set.GenericSet(
+          [story_name]
+        )
+        results.AddHistogram(h)
+
+  return results, handled_stems
+
+
+def _get_crossbench_json_paths(
+  out_dir: pathlib.Path,
+  ignore_trace_processor_stems: Optional[set[str]] = None,
+  allow_empty: bool = False,
+) -> List[pathlib.Path]:
   """Given a crossbench output directory, find the result json file.
 
   Args:
     out_dir: Crossbench output directory. This should be the value passed
         as --out-dir to crossbench.
+    ignore_trace_processor_stems: Optional set of trace_processor query stems
+        already converted from CSV files.
+    allow_empty: If True, do not raise ValueError when no JSON paths remain.
 
   Returns:
     A list of paths to the result json files created by crossbench probes.
@@ -70,7 +159,13 @@ def _get_crossbench_json_paths(out_dir: pathlib.Path) -> List[pathlib.Path]:
       candidates = probe_data.get('json', [])
       if probe == 'trace_processor':
         for candidate in candidates:
-          probe_json_paths.append(pathlib.Path(candidate))
+          candidate_path = pathlib.Path(candidate)
+          if (
+            ignore_trace_processor_stems
+            and candidate_path.stem in ignore_trace_processor_stems
+          ):
+            continue
+          probe_json_paths.append(candidate_path)
       else:
         if len(candidates) > 1:
           raise ValueError(
@@ -82,7 +177,7 @@ def _get_crossbench_json_paths(out_dir: pathlib.Path) -> List[pathlib.Path]:
   except AttributeError as e:
     raise AttributeError(f'debug_info={debug_info}') from e
 
-  if not probe_json_paths:
+  if not probe_json_paths and not allow_empty:
     raise ValueError(
       f'No output json file found in {cb_results_json_path}, '
       f'debug_info={debug_info}'
@@ -111,13 +206,19 @@ def convert(
     _web_power(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
-  crossbench_json_filenames = _get_crossbench_json_paths(crossbench_out_dir)
+  results, handled_tp_stems = _trace_processor_query_csv_results(
+    crossbench_out_dir, default_story=story
+  )
+  crossbench_json_filenames = _get_crossbench_json_paths(
+    crossbench_out_dir,
+    ignore_trace_processor_stems=handled_tp_stems,
+    allow_empty=bool(handled_tp_stems),
+  )
   crossbench_result = {}
   for filename in crossbench_json_filenames:
     with filename.open() as f:
       crossbench_result.update(json.load(f))
 
-  results = histogram_set.HistogramSet()
   for key, value in crossbench_result.items():
     metric = None
     key_parts = key.split('/')
@@ -126,14 +227,7 @@ def convert(
       if lower_key.startswith('iteration') or lower_key == 'geomean':
         continue
       metric = key
-      if 'score' in lower_key:
-        unit = 'unitless_biggerIsBetter'
-      elif lower_key.endswith('_bytes'):
-        unit = 'sizeInBytes_smallerIsBetter'
-      elif lower_key.endswith('_count'):
-        unit = 'count_smallerIsBetter'
-      else:
-        unit = 'ms_smallerIsBetter'
+      unit = _get_metric_unit(key)
     elif len(key_parts) == 2:
       key = key_parts[1].lower()
       if key == 'total':
