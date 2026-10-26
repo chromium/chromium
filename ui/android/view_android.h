@@ -346,7 +346,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // child addition, removal, or reordering during event dispatch). Active
   // iterators register themselves in `active_iters_` so mutating operations can
   // update them in-place, preventing UAF and iterator invalidation.
-  class ScopedChildrenIter : public base::UnsafeLinkNode<ScopedChildrenIter> {
+  class ScopedChildrenIter : public base::SafeLinkNode<ScopedChildrenIter> {
    public:
     enum class IterationType {
       kForward,
@@ -383,7 +383,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   // Tracks all active iterators traversing the `children_` list, allowing
   // real-time updates when the list structure changes (e.g. RemoveChild).
-  base::UnsafeLinkedList<ScopedChildrenIter> active_iters_;
+  base::SafeLinkedList<ScopedChildrenIter> active_iters_;
 
   base::ObserverList<ViewAndroidObserver>::Unchecked observer_list_;
   scoped_refptr<cc::slim::Layer> layer_;
