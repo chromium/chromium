@@ -43,7 +43,8 @@ export class PrivacyGuidePromoElement extends CrLitElement {
     Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
   }
 
-  protected onNoThanksButtonClick_() {
+  protected async onNoThanksButtonClick_() {
+    await PrefService.getInstance().whenInitialized();
     PrefService.getInstance().setPrefValue('privacy_guide.viewed', true);
   }
 }
