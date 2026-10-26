@@ -8,11 +8,14 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -31,8 +34,13 @@ ExtendedUpdatesDialog::~ExtendedUpdatesDialog() = default;
 void ExtendedUpdatesDialog::Show() {
   ExtendedUpdatesDialog* dialog = ExtendedUpdatesDialog::Get();
 
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
   if (!ExtendedUpdatesController::Get()->IsOptInEligible(
-          ProfileManager::GetActiveUserProfile())) {
+          BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              active_session->account_id()))) {
     if (dialog) {
       LOG(ERROR)
           << "Trying to reshow Extended Updates dialog while not eligible.";

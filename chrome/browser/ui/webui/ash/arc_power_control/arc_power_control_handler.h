@@ -27,6 +27,10 @@ class ArcInstanceThrottle;
 class ArcSystemStatCollector;
 }  // namespace arc
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace ash {
 
 class ArcPowerControlHandler : public content::WebUIMessageHandler,
@@ -38,7 +42,7 @@ class ArcPowerControlHandler : public content::WebUIMessageHandler,
   using ThrottlingEvents =
       std::vector<std::pair<base::TimeTicks, bool /*should_throttle*/>>;
 
-  ArcPowerControlHandler();
+  explicit ArcPowerControlHandler(content::BrowserContext* browser_context);
   ArcPowerControlHandler(ArcPowerControlHandler const&) = delete;
   ArcPowerControlHandler& operator=(ArcPowerControlHandler const&) = delete;
   ~ArcPowerControlHandler() override;

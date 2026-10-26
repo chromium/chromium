@@ -12,12 +12,18 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_dimmer.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -52,8 +58,15 @@ void RecordParentAccessWidgetShowDialogError(
 ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
     parent_access_ui::mojom::ParentAccessParamsPtr params,
     ParentAccessDialog::Callback callback) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile->IsChild()) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  if (!supervised_user::IsSubjectToParentalControls(
+          CHECK_DEREF(user.GetProfilePrefs()))) {
     RecordParentAccessWidgetShowDialogError(
         ParentAccessDialogProvider::ShowErrorType::kNotAChildUser,
         params->flow_type);
@@ -76,7 +89,9 @@ ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
 
   // Dimmer should be shown before the dialog.
   dialog->ShowDimmer();
-  dialog->ShowSystemDialogForBrowserContext(profile);
+  dialog->ShowSystemDialogForBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
 
   return ParentAccessDialogProvider::ShowError::kNone;
 }
