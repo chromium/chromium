@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -35,7 +36,11 @@ LockScreenReauthManagerFactory::LockScreenReauthManagerFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  // LockScreenReauthManager holds the IdentityManager, so it must be destroyed
+  // before it.
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 LockScreenReauthManagerFactory::~LockScreenReauthManagerFactory() = default;
 
@@ -52,7 +57,8 @@ LockScreenReauthManagerFactory::BuildServiceInstanceForBrowserContext(
   if (!ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }
-  return std::make_unique<LockScreenReauthManager>(local_state, profile);
+  return std::make_unique<LockScreenReauthManager>(
+      local_state, profile, IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace ash

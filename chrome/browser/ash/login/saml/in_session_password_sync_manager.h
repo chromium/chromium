@@ -16,14 +16,20 @@
 
 class PrefService;
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace ash {
 
 // Manages SAML password sync for multiple customer devices.
 class InSessionPasswordSyncManager : public PasswordSyncTokenFetcher::Consumer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
+  // `local_state` and `identity_manager` must be non-null and must outlive
+  // `this`.
   InSessionPasswordSyncManager(PrefService* local_state,
-                               Profile* primary_profile);
+                               Profile* primary_profile,
+                               signin::IdentityManager* identity_manager);
   ~InSessionPasswordSyncManager() override;
 
   InSessionPasswordSyncManager(const InSessionPasswordSyncManager&) = delete;
@@ -46,6 +52,7 @@ class InSessionPasswordSyncManager : public PasswordSyncTokenFetcher::Consumer {
   const raw_ref<PrefService> local_state_;
   const raw_ptr<Profile> primary_profile_;
   const AccountId primary_account_id_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
 
   friend class InSessionPasswordSyncManagerTest;

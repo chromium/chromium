@@ -28,8 +28,15 @@ specific_include_rules = {
   "screen_locker_browsertest\\.cc": [
     "+chrome/browser/ui/exclusive_access",
   ],
+  # The factory injects the IdentityManager into LockScreenReauthManager and
+  # must DependsOn() IdentityManagerFactory so it outlives the service; the
+  # unittest constructs the service directly and resolves it the same way.
   "lock_screen_reauth_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/signin",
+  ],
+  "lock_screen_reauth_manager_unittest\\.cc": [
+    "+chrome/browser/signin",
   ],
   "screen_locker_unittest\\.cc": [
     "+chrome/browser/global_features.h",

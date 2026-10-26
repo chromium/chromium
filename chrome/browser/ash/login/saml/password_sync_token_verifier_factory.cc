@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
@@ -44,7 +45,11 @@ PasswordSyncTokenVerifierFactory::PasswordSyncTokenVerifierFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  // PasswordSyncTokenVerifier holds the IdentityManager, so it must be
+  // destroyed before it.
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 PasswordSyncTokenVerifierFactory::~PasswordSyncTokenVerifierFactory() = default;
 
@@ -63,7 +68,8 @@ PasswordSyncTokenVerifierFactory::BuildServiceInstanceForBrowserContext(
       !user->using_saml()) {
     return nullptr;
   }
-  return std::make_unique<PasswordSyncTokenVerifier>(local_state, profile);
+  return std::make_unique<PasswordSyncTokenVerifier>(
+      local_state, profile, IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace ash

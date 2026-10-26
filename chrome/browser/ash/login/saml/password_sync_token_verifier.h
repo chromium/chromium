@@ -21,6 +21,10 @@
 class PrefService;
 class Profile;
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace user_manager {
 class User;
 }
@@ -37,8 +41,11 @@ class PasswordSyncTokenVerifier : public KeyedService,
   // returned invalid data.
   static const net::BackoffEntry::Policy kFetchTokenRetryBackoffPolicy;
 
-  // `local_state` must be non-null and must outlive `this`.
-  PasswordSyncTokenVerifier(PrefService* local_state, Profile* primary_profile);
+  // `local_state` and `identity_manager` must be non-null and must outlive
+  // `this`.
+  PasswordSyncTokenVerifier(PrefService* local_state,
+                            Profile* primary_profile,
+                            signin::IdentityManager* identity_manager);
   ~PasswordSyncTokenVerifier() override;
 
   PasswordSyncTokenVerifier(const PasswordSyncTokenVerifier&) = delete;
@@ -77,6 +84,7 @@ class PasswordSyncTokenVerifier : public KeyedService,
 
   const raw_ptr<Profile> primary_profile_;
   const raw_ptr<const user_manager::User> primary_user_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
   net::BackoffEntry retry_backoff_;
 

@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -169,13 +168,15 @@ void RecheckPasswordExpiryTask::CancelPendingRecheck() {
 
 // static
 std::unique_ptr<InSessionPasswordChangeManager>
-InSessionPasswordChangeManager::CreateIfEnabled(PrefService* local_state,
-                                                Profile* primary_profile) {
+InSessionPasswordChangeManager::CreateIfEnabled(
+    PrefService* local_state,
+    Profile* primary_profile,
+    signin::IdentityManager* identity_manager) {
   if (primary_profile->GetPrefs()->GetBoolean(
           prefs::kSamlInSessionPasswordChangeEnabled)) {
     std::unique_ptr<InSessionPasswordChangeManager> manager =
-        std::make_unique<InSessionPasswordChangeManager>(local_state,
-                                                         primary_profile);
+        std::make_unique<InSessionPasswordChangeManager>(
+            local_state, primary_profile, identity_manager);
     manager->MaybeShowExpiryNotification();
     RecordEvent(InSessionPasswordChangeEvent::kManagerCreated);
     return manager;
@@ -199,10 +200,12 @@ InSessionPasswordChangeManager* InSessionPasswordChangeManager::Get() {
 
 InSessionPasswordChangeManager::InSessionPasswordChangeManager(
     PrefService* local_state,
-    Profile* primary_profile)
+    Profile* primary_profile,
+    signin::IdentityManager* identity_manager)
     : local_state_(CHECK_DEREF(local_state)),
       primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       urgent_warning_days_(kUrgentWarningDays) {
   CHECK(primary_user_, base::NotFatalUntil::M160);
 
@@ -481,8 +484,7 @@ void InSessionPasswordChangeManager::OnApiCallFailed(
 
 void InSessionPasswordChangeManager::CreateTokenAsync() {
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      primary_profile_->GetURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(primary_profile_.get()), this);
+      primary_profile_->GetURLLoaderFactory(), &identity_manager_.get(), this);
   password_sync_token_fetcher_->StartTokenCreate();
 }
 

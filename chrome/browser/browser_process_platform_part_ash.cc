@@ -47,6 +47,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_utils.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -106,6 +107,10 @@ class PrimaryProfileServicesShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PrimaryProfileServices") {
     DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+    // InSessionPasswordChangeManager holds the IdentityManager and is torn
+    // down from this notifier, so it must fire before the IdentityManager is
+    // destroyed.
+    DependsOn(IdentityManagerFactory::GetInstance());
   }
   ~PrimaryProfileServicesShutdownNotifierFactory() override = default;
 };
@@ -315,7 +320,8 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
   DCHECK(!in_session_password_change_manager_);
   in_session_password_change_manager_ =
       ash::InSessionPasswordChangeManager::CreateIfEnabled(
-          g_browser_process->local_state(), primary_profile);
+          g_browser_process->local_state(), primary_profile,
+          IdentityManagerFactory::GetForProfile(primary_profile));
 
   primary_profile_shutdown_subscription_ =
       PrimaryProfileServicesShutdownNotifierFactory::GetInstance()

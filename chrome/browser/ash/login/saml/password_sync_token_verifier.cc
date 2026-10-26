@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -46,11 +45,14 @@ const net::BackoffEntry::Policy
         true,  // Don't use initial delay unless last request was an error.
 };
 
-PasswordSyncTokenVerifier::PasswordSyncTokenVerifier(PrefService* local_state,
-                                                     Profile* primary_profile)
+PasswordSyncTokenVerifier::PasswordSyncTokenVerifier(
+    PrefService* local_state,
+    Profile* primary_profile,
+    signin::IdentityManager* identity_manager)
     : local_state_(CHECK_DEREF(local_state)),
       primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       retry_backoff_(&kFetchTokenRetryBackoffPolicy) {
   CHECK(primary_profile_, base::NotFatalUntil::M160);
   CHECK(primary_user_, base::NotFatalUntil::M160);
@@ -76,8 +78,7 @@ void PasswordSyncTokenVerifier::CreateTokenAsync() {
   }
 
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      url_loader_factory,
-      IdentityManagerFactory::GetForProfile(primary_profile_), this);
+      url_loader_factory, &identity_manager_.get(), this);
   password_sync_token_fetcher_->StartTokenCreate();
 }
 
@@ -112,8 +113,7 @@ void PasswordSyncTokenVerifier::PerformTokenCheck() {
     return;
   }
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      url_loader_factory,
-      IdentityManagerFactory::GetForProfile(primary_profile_), this);
+      url_loader_factory, &identity_manager_.get(), this);
 
   // Get current sync token for primary_user_.
   std::string token_to_verify = fake_token;
@@ -159,8 +159,7 @@ void PasswordSyncTokenVerifier::PerformFetchToken() {
   }
 
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      url_loader_factory,
-      IdentityManagerFactory::GetForProfile(primary_profile_), this);
+      url_loader_factory, &identity_manager_.get(), this);
   password_sync_token_fetcher_->StartTokenGet();
 }
 

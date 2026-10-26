@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -76,7 +77,8 @@ class InSessionPasswordChangeManagerTestBase : public testing::Test {
     ASSERT_TRUE(fake_user_manager_->GetPrimaryUser());
 
     manager_ = std::make_unique<InSessionPasswordChangeManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(), profile_);
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_,
+        IdentityManagerFactory::GetForProfile(profile_));
 
     // urgent_warning_days_ = -1: This means we only ever show a standard
     // notification, instead of an urgent one, because it is simpler to test.

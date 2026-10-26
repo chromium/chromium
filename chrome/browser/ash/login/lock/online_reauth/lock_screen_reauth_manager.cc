@@ -62,14 +62,17 @@ void RunAuthConfigExitIfNotNull(
 
 }  // namespace
 
-LockScreenReauthManager::LockScreenReauthManager(PrefService* local_state,
-                                                 Profile* primary_profile)
+LockScreenReauthManager::LockScreenReauthManager(
+    PrefService* local_state,
+    Profile* primary_profile,
+    signin::IdentityManager* identity_manager)
     : local_state_(CHECK_DEREF(local_state)),
       primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
       clock_(base::DefaultClock::GetInstance()),
-      in_session_password_sync_manager_(
-          InSessionPasswordSyncManager(local_state, primary_profile_)) {
+      in_session_password_sync_manager_(local_state,
+                                        primary_profile_,
+                                        identity_manager) {
   CHECK(primary_user_);
   auto* session_manager = session_manager::SessionManager::Get();
   // Extra check as SessionManager may be not initialized in some unit

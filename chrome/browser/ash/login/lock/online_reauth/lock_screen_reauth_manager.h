@@ -28,6 +28,10 @@ namespace user_manager {
 class User;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace ash {
 
 class AuthSessionAuthenticator;
@@ -46,8 +50,11 @@ class LockScreenReauthManager : public KeyedService,
                                 public session_manager::SessionManagerObserver,
                                 public AuthStatusConsumer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  LockScreenReauthManager(PrefService* local_state, Profile* primary_profile);
+  // `local_state` and `identity_manager` must be non-null and must outlive
+  // `this`.
+  LockScreenReauthManager(PrefService* local_state,
+                          Profile* primary_profile,
+                          signin::IdentityManager* identity_manager);
   ~LockScreenReauthManager() override;
 
   LockScreenReauthManager(const LockScreenReauthManager&) = delete;

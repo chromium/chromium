@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/in_session_password_change",
   "+chrome/browser/ui/webui/ash/lock_screen_reauth",
@@ -46,5 +45,12 @@ specific_include_rules = {
   ],
   ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
+  ],
+  # The keyed service factories inject the IdentityManager into the services
+  # they build, and must DependsOn() IdentityManagerFactory so it outlives
+  # them. Tests construct those services directly and resolve the
+  # IdentityManager the same way production does.
+  "(password_sync_token_verifier_factory|.*unittest|.*browsertest)\\.cc": [
+    "+chrome/browser/signin",
   ],
 }
