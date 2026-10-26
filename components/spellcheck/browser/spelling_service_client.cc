@@ -140,6 +140,7 @@ bool SpellingServiceClient::RequestTextCheck(
           data: "Text a user has typed into a text field. No user identifier "
                 "is sent along with the text."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "spelling.googleapis.com"
         }
         policy {
           cookies_allowed: NO
