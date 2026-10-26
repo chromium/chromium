@@ -1713,7 +1713,8 @@ bool IsRelevantChildFrame(const WebElement& element) {
 
 // Returns the <iframe> elements that are owned by `form_element`.
 //
-// An iframe is owned by `form_element` iff it is in the light DOM and
+// An iframe is owned by `form_element` iff it is accessible, in the light DOM,
+// and
 // - if `form_element` is non-null:
 //   `form_element` is the iframe's outermost <form> ancestor
 // - if `form_element` is null:
@@ -1729,7 +1730,8 @@ std::vector<WebElement> GetIframeElements(const WebDocument& document,
       document.GetElementsByHTMLTagName(GetWebString<kIframe>());
   for (WebElement iframe = iframes.FirstItem(); iframe;
        iframe = iframes.NextItem()) {
-    if (GetOutermostAncestorFormElement(iframe) == form_element &&
+    if (IsAccessible(iframe) &&
+        GetOutermostAncestorFormElement(iframe) == form_element &&
         IsRelevantChildFrame(iframe)) {
       relevant_iframes.push_back(iframe);
     }
