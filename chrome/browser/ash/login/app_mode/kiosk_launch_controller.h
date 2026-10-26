@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
+#include "chrome/browser/ash/app_mode/watchdog/kiosk_app_launch_watchdog.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
@@ -246,6 +247,16 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void OnNetworkOnline();
   void OnNetworkOffline();
   void OnTimerFire();
+
+  // Arms a watchdog that monitors the app's window creation. Gated by
+  // `kKioskAppLaunchWatchdog` experiment (default off). Reboots the device
+  // if the app does not load its window in the configured timeout.
+  void ArmAppLaunchWatchdog();
+
+  // Disarms the watchdog and clears the current reboot counter. The app
+  // launch is assumed to be a success when this is called.
+  void DisarmAppLaunchWatchdogOnSuccess();
+
   void CloseSplashScreen();
   void CleanUp();
   void LaunchApp();
@@ -309,6 +320,11 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
 
   // A timer to ensure the app splash is shown for a minimum amount of time.
   base::OneShotTimer splash_wait_timer_;
+
+  // Bounds the wait between `LaunchApp()` and `OnAppWindowCreated()`.
+  // Armed in `LaunchApp()` when `ash::features::kKioskAppLaunchWatchdog` is
+  // enabled.
+  std::unique_ptr<KioskAppLaunchWatchdog> app_launch_watchdog_;
 
   // Used to prepare and launch the actual kiosk app, is created after
   // profile initialization.

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
@@ -21,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -37,6 +39,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
+#include "chrome/browser/ash/app_mode/watchdog/kiosk_app_launch_watchdog.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/screens/fake_app_launch_splash_screen.h"
@@ -61,6 +64,8 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
@@ -229,7 +234,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         /*host=*/nullptr, &screen_, FakeLoadProfileCallback(),
         /*app_launched_callback=*/app_launched_future_.GetCallback(),
         /*done_callback=*/launch_done_future_.GetCallback(),
-        /*attempt_restart=*/base::DoNothing(),
+        /*attempt_relaunch=*/attempt_reboot_future_.GetCallback(),
         /*attempt_logout=*/base::DoNothing(),
         base::BindRepeating(
             &KioskLaunchControllerTest::BuildFakeKioskAppLauncher,
@@ -355,6 +360,16 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   auto& launch_done_future() { return launch_done_future_; }
 
+  auto& attempt_reboot_future() { return attempt_reboot_future_; }
+
+  int WatchdogConsecutiveTimeouts() {
+    return TestingBrowserProcess::GetGlobal()
+        ->local_state()
+        ->GetDict("kiosk")
+        .FindInt(KioskAppLaunchWatchdog::kConsecutiveTimeoutsKey)
+        .value_or(0);
+  }
+
   void WillResetController() {
     app_launcher_ = nullptr;
     accelerator_controller_ = nullptr;
@@ -409,6 +424,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
           app_launched_future_;
 
   base::test::TestFuture<KioskAppLaunchError::Error> launch_done_future_;
+  base::test::TestFuture<void> attempt_reboot_future_;
 
   base::AutoReset<std::optional<bool>> can_configure_network_for_testing_ =
       NetworkUiController::SetCanConfigureNetworkForTesting(true);
@@ -1056,6 +1072,165 @@ TEST_F(KioskLaunchControllerTest,
 
   task_environment()->FastForwardBy(base::Minutes(2));
   EXPECT_FALSE(launcher().HasAppLaunched());
+}
+
+class KioskLaunchControllerWatchdogTest : public KioskLaunchControllerTest {
+ public:
+  static constexpr base::TimeDelta kWatchdogTimeout = base::Seconds(60);
+
+  KioskLaunchControllerWatchdogTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ash::features::kKioskAppLaunchWatchdog,
+        {{ash::features::kKioskAppLaunchWatchdogTimeout.name, "60s"},
+         {ash::features::kKioskAppLaunchWatchdogMaxOsReboots.name, "1"}});
+  }
+
+  // Drives the controller up to the point where the app was asked to launch
+  // and the controller is waiting for the app window.
+  void RunUntilAppLaunchRequested() {
+    RunUntilAppPrepared();
+    FireSplashScreenTimer();
+    ASSERT_TRUE(launcher().HasAppLaunched());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(KioskLaunchControllerWatchdogTest,
+       ShouldRebootDeviceWhenAppWindowNeverAppears) {
+  RunUntilAppLaunchRequested();
+
+  task_environment()->FastForwardBy(kWatchdogTimeout - base::Seconds(1));
+  EXPECT_FALSE(attempt_reboot_future().IsReady());
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(attempt_reboot_future().IsReady());
+  EXPECT_EQ(WatchdogConsecutiveTimeouts(), 1);
+  // No launch error is persisted, otherwise auto-launch would be blocked on
+  // the next boot.
+  EXPECT_EQ(KioskAppLaunchError::Get(
+                *TestingBrowserProcess::GetGlobal()->local_state()),
+            KioskAppLaunchError::Error::kNone);
+  VerifyLaunchStateCrashKey(KioskLaunchState::kAppLaunchTimedOut);
+}
+
+TEST_F(KioskLaunchControllerWatchdogTest,
+       ShouldRebootDeviceWhenAppLaunchedButWindowNeverAppears) {
+  RunUntilAppLaunchRequested();
+  launcher().observers().NotifyAppLaunched();
+
+  task_environment()->FastForwardBy(kWatchdogTimeout);
+  EXPECT_TRUE(attempt_reboot_future().IsReady());
+}
+
+TEST_F(KioskLaunchControllerWatchdogTest,
+       ShouldNotRebootWhenRebootBudgetIsExhausted) {
+  // `MaxOsReboots` is 1 in this fixture; simulate that a previous run
+  // already used it up.
+  {
+    ScopedDictPrefUpdate update(
+        TestingBrowserProcess::GetGlobal()->local_state(), "kiosk");
+    update->Set(KioskAppLaunchWatchdog::kConsecutiveTimeoutsKey, 1);
+  }
+
+  RunUntilAppLaunchRequested();
+  task_environment()->FastForwardBy(kWatchdogTimeout);
+
+  // Reboot budget is exhausted; device remains in the broken state with no
+  // further reboots.
+  EXPECT_FALSE(attempt_reboot_future().IsReady());
+  EXPECT_EQ(WatchdogConsecutiveTimeouts(), 2);
+  VerifyLaunchStateCrashKey(KioskLaunchState::kAppLaunchTimedOut);
+}
+
+TEST_F(KioskLaunchControllerWatchdogTest,
+       ShouldNotFireWhenAppWindowIsCreatedInTime) {
+  RunUntilAppLaunchRequested();
+  launcher().observers().NotifyAppLaunched();
+
+  {
+    auto* launcher_ptr = &launcher();
+    WillResetController();
+    launcher_ptr->observers().NotifyAppWindowCreated("app-id");
+  }
+  ASSERT_TRUE(launch_done_future().IsReady());
+
+  task_environment()->FastForwardBy(kWatchdogTimeout * 2);
+  EXPECT_FALSE(attempt_reboot_future().IsReady());
+  EXPECT_EQ(WatchdogConsecutiveTimeouts(), 0);
+}
+
+TEST_F(KioskLaunchControllerWatchdogTest,
+       AppWindowCreatedShouldResetConsecutiveTimeouts) {
+  {
+    ScopedDictPrefUpdate update(
+        TestingBrowserProcess::GetGlobal()->local_state(), "kiosk");
+    update->Set(KioskAppLaunchWatchdog::kConsecutiveTimeoutsKey, 1);
+  }
+
+  RunUntilAppLaunchRequested();
+  launcher().observers().NotifyAppLaunched();
+
+  {
+    auto* launcher_ptr = &launcher();
+    WillResetController();
+    launcher_ptr->observers().NotifyAppWindowCreated("app-id");
+  }
+
+  EXPECT_EQ(WatchdogConsecutiveTimeouts(), 0);
+}
+
+TEST_F(KioskLaunchControllerWatchdogTest, ShouldNotFireAfterLaunchError) {
+  RunUntilAppLaunchRequested();
+
+  // A regular launch error takes the existing error path; the watchdog must
+  // not additionally reboot the device.
+  {
+    auto* launcher_ptr = &launcher();
+    WillResetController();
+    launcher_ptr->observers().NotifyLaunchFailed(
+        KioskAppLaunchError::Error::kUnableToLaunch);
+  }
+  ASSERT_TRUE(launch_done_future().IsReady());
+
+  task_environment()->FastForwardBy(kWatchdogTimeout * 2);
+  EXPECT_FALSE(attempt_reboot_future().IsReady());
+}
+
+TEST_F(KioskLaunchControllerWatchdogTest,
+       ShouldNotFireWhileNetworkConfigUiIsShowing) {
+  RunUntilAppLaunchRequested();
+
+  // Opening the network config UI tears the launcher down; the watchdog is
+  // re-armed once the launcher is re-created and the app launched again.
+  WillResetController();
+  controller().OnNetworkConfigureUiShowing();
+  task_environment()->FastForwardBy(kWatchdogTimeout * 2);
+  EXPECT_FALSE(attempt_reboot_future().IsReady());
+}
+
+class KioskLaunchControllerWatchdogDisabledTest
+    : public KioskLaunchControllerTest {
+ public:
+  static constexpr base::TimeDelta kWatchdogTimeout = base::Seconds(60);
+
+  KioskLaunchControllerWatchdogDisabledTest() {
+    feature_list_.InitAndDisableFeature(ash::features::kKioskAppLaunchWatchdog);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(KioskLaunchControllerWatchdogDisabledTest,
+       WatchdogShouldBeInertWhenFeatureDisabled) {
+  RunUntilAppPrepared();
+  FireSplashScreenTimer();
+  ASSERT_TRUE(launcher().HasAppLaunched());
+
+  task_environment()->FastForwardBy(kWatchdogTimeout * 2);
+  EXPECT_FALSE(attempt_reboot_future().IsReady());
 }
 
 }  // namespace ash

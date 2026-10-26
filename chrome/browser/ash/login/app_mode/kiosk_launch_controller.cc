@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/shell.h"
@@ -18,6 +19,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
+#include "chrome/browser/ash/app_mode/watchdog/kiosk_app_launch_watchdog.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_service_launcher.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
@@ -534,6 +537,7 @@ void KioskLaunchController::CleanUp() {
   cleaned_up_ = true;
 
   splash_wait_timer_.Stop();
+  app_launch_watchdog_.reset();
 
   // Close all windows opened on the splash screen before entering the kiosk
   // session.
@@ -616,6 +620,11 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   if (cleaned_up_) {
     return;
   }
+
+  // The launch is being aborted for a known reason; the watchdog must not
+  // reboot the device on top of that (in particular for errors like
+  // `kChromeAppDeprecated` that keep the splash screen up).
+  app_launch_watchdog_.reset();
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
 
@@ -734,6 +743,9 @@ void KioskLaunchController::OnAppWindowCreated(
     const std::optional<webapps::AppId>& app_id) {
   SYSLOG(INFO) << "App window created, closing splash screen.";
 
+  if (app_launch_watchdog_) {
+    DisarmAppLaunchWatchdogOnSuccess();
+  }
   app_window_id_ = app_id;
 
   // Not receiving the `OnAppLaunched` event before we come here leads to bugs
@@ -779,6 +791,9 @@ void KioskLaunchController::OnNetworkConfigRequested() {
 
 void KioskLaunchController::OnNetworkConfigureUiShowing() {
   splash_wait_timer_.Stop();
+  // The launcher is torn down below and re-created once the user is done;
+  // `LaunchApp()` will arm the watchdog again.
+  app_launch_watchdog_.reset();
   app_state_ = kInitNetwork;
   launch_on_install_ = true;
   app_launcher_observation_.Reset();
@@ -812,7 +827,31 @@ void KioskLaunchController::LaunchApp() {
 
   CHECK(app_state_ == AppState::kInstalled, base::NotFatalUntil::M161);
   splash_wait_timer_.Stop();
+
+  if (features::IsKioskAppLaunchWatchdogEnabled()) {
+    ArmAppLaunchWatchdog();
+  }
   app_launcher_->LaunchApp();
+}
+
+void KioskLaunchController::ArmAppLaunchWatchdog() {
+  app_launch_watchdog_ = std::make_unique<KioskAppLaunchWatchdog>(
+      local_state_.get(),
+      base::BindOnce(
+          [](KioskLaunchController* self) {
+            // Deliberately not going through `OnLaunchFailed()`: that path
+            // persists a `KioskAppLaunchError`, which blocks auto-launch on the
+            // next start and would leave the device on the login screen instead
+            // of recovering.
+            std::move(self->attempt_relaunch_).Run();
+          },
+          // Safe because `this` owns `app_launch_watchdog_`.
+          base::Unretained(this)));
+}
+
+void KioskLaunchController::DisarmAppLaunchWatchdogOnSuccess() {
+  app_launch_watchdog_->ClearRebootCounter();
+  app_launch_watchdog_.reset();
 }
 
 void KioskLaunchController::FinishLaunchWithSuccess() {
