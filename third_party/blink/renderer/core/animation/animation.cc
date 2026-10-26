@@ -2454,8 +2454,15 @@ void Animation::SetOutdated() {
   if (outdated_)
     return;
   outdated_ = true;
-  if (timeline_)
+  if (timeline_) {
     timeline_->SetOutdatedAnimation(this);
+  } else {
+    // Animations without a timeline will not be ticked on a subsequent frame.
+    // Synchronously update so that the animation is not left in an outdated
+    // state, which could trigger a style invalidation post-style and layout,
+    // e.g. mid-paint (see crbug.com/567645136).
+    Update(kTimingUpdateOnDemand);
+  }
 }
 
 void Animation::ForceServiceOnNextFrame() {
