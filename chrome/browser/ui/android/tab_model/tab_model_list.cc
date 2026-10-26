@@ -34,9 +34,7 @@ void TabModelList::AddTabModel(TabModel* tab_model) {
 
 void TabModelList::RemoveTabModel(TabModel* tab_model) {
   CHECK(tab_model, base::NotFatalUntil::M162);
-  if (GetInstance().archived_tab_model_ == tab_model) {
-    GetInstance().archived_tab_model_ = nullptr;
-  }
+  RemoveArchivedTabModel(tab_model);
   auto& tab_models = GetInstance().models_;
   std::erase(tab_models, tab_model);
 
@@ -135,10 +133,28 @@ const TabModelList::TabModelVector& TabModelList::models() {
 
 // static
 void TabModelList::SetArchivedTabModel(TabModel* archived_tab_model) {
-  GetInstance().archived_tab_model_ = archived_tab_model;
+  CHECK(archived_tab_model);
+  CHECK(archived_tab_model->GetProfile());
+  GetInstance().archived_tab_models_[archived_tab_model->GetProfile()] =
+      archived_tab_model;
 }
 
 // static
-TabModel* TabModelList::GetArchivedTabModel() {
-  return GetInstance().archived_tab_model_;
+void TabModelList::RemoveArchivedTabModel(TabModel* archived_tab_model) {
+  CHECK(archived_tab_model);
+  auto& archived_models = GetInstance().archived_tab_models_;
+  auto it = archived_models.find(archived_tab_model->GetProfile());
+  if (it != archived_models.end() && it->second == archived_tab_model) {
+    archived_models.erase(it);
+  }
+}
+
+// static
+TabModel* TabModelList::GetArchivedTabModel(Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+  auto& archived_models = GetInstance().archived_tab_models_;
+  auto it = archived_models.find(profile);
+  return it != archived_models.end() ? it->second.get() : nullptr;
 }

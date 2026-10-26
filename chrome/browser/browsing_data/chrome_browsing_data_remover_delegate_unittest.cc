@@ -2485,8 +2485,44 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_TABS, GetRemovalMask());
 
   // See the comment in DeleteTabs above.
-  TabModelList::SetArchivedTabModel(nullptr);
+  TabModelList::RemoveArchivedTabModel(&archived_tab_model);
   TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       DeleteTabs_ArchivedTabModelIsolatedByProfile) {
+  TestingProfile other_profile;
+  ::testing::NiceMock<MockTabModel> other_archived_tab_model(&other_profile);
+  TabModelList::SetArchivedTabModel(&other_archived_tab_model);
+
+  ::testing::NiceMock<MockTabModel> archived_tab_model(GetProfile());
+  TabModelList::SetArchivedTabModel(&archived_tab_model);
+
+  EXPECT_EQ(&archived_tab_model,
+            TabModelList::GetArchivedTabModel(GetProfile()));
+  EXPECT_EQ(&other_archived_tab_model,
+            TabModelList::GetArchivedTabModel(&other_profile));
+
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+
+  EXPECT_CALL(archived_tab_model,
+              CloseTabsNavigatedInTimeWindow(two_hours_ago, base::Time::Max()))
+      .Times(1);
+  EXPECT_CALL(other_archived_tab_model,
+              CloseTabsNavigatedInTimeWindow(::testing::_, ::testing::_))
+      .Times(0);
+
+  BlockUntilBrowsingDataRemoved(two_hours_ago, base::Time::Max(),
+                                chrome_browsing_data_remover::DATA_TYPE_TABS,
+                                false);
+
+  TabModelList::RemoveArchivedTabModel(&archived_tab_model);
+  EXPECT_EQ(nullptr, TabModelList::GetArchivedTabModel(GetProfile()));
+  EXPECT_EQ(&other_archived_tab_model,
+            TabModelList::GetArchivedTabModel(&other_profile));
+
+  TabModelList::RemoveArchivedTabModel(&other_archived_tab_model);
+  EXPECT_EQ(nullptr, TabModelList::GetArchivedTabModel(&other_profile));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

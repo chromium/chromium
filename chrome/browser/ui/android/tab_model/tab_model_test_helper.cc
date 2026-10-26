@@ -63,9 +63,7 @@ TestTabModel::~TestTabModel() {
   if (std::ranges::contains(TabModelList::models(), self)) {
     TabModelList::RemoveTabModel(self);
   }
-  if (TabModelList::GetArchivedTabModel() == self) {
-    TabModelList::SetArchivedTabModel(nullptr);
-  }
+  TabModelList::RemoveArchivedTabModel(self);
 }
 
 void TestTabModel::AddTabListInterfaceObserver(

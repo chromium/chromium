@@ -1003,7 +1003,7 @@ TabModelJniBridge::~TabModelJniBridge() {
   }
 
   if (GetTabModelType() == TabModelType::kArchived) {
-    TabModelList::SetArchivedTabModel(nullptr);
+    TabModelList::RemoveArchivedTabModel(this);
   } else {
     TabModelList::RemoveTabModel(this);
   }

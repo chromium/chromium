@@ -172,7 +172,7 @@ std::vector<int64_t> TabMatcherAndroid::GetOpenAndroidTabs(
   CHECK(input);
   if (omnibox::IsAndroidHubOrTabSearch(input->current_page_classification()) &&
       profile_->IsRegularProfile()) {
-    TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
+    TabModel* archived_tab_model = TabModelList::GetArchivedTabModel(profile_);
     if (archived_tab_model) {
       tab_models.push_back(archived_tab_model);
     }

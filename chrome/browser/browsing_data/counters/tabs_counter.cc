@@ -39,7 +39,7 @@ void TabsCounter::Count() {
     }
   }
 
-  TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
+  TabModel* archived_tab_model = TabModelList::GetArchivedTabModel(profile_);
   if (archived_tab_model) {
     total_tab_count += archived_tab_model->GetTabCountNavigatedInTimeWindow(
         begin_time, end_time);

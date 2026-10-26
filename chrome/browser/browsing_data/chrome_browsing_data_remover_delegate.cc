@@ -1533,7 +1533,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       tab_model->CloseTabsNavigatedInTimeWindow(delete_begin, delete_end);
     }
 
-    TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
+    TabModel* archived_tab_model = TabModelList::GetArchivedTabModel(profile_);
     if (archived_tab_model) {
       archived_tab_model->CloseTabsNavigatedInTimeWindow(delete_begin,
                                                          delete_end);
