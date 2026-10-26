@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
@@ -90,6 +91,9 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   views::View* GetInitiallyFocusedView() override;
   bool ShouldAllowKeyEventsDuringInputProtection() const override;
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
+
+  // LocationBarBubbleDelegateView:
+  void OnFullscreenStateChanged() override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;
@@ -182,6 +186,28 @@ bool ChooserBubbleUiViewDelegate::ShouldAllowKeyEventsDuringInputProtection()
 bool ChooserBubbleUiViewDelegate::IsDialogButtonEnabled(
     ui::mojom::DialogButton button) const {
   return device_chooser_content_view_->IsDialogButtonEnabled(button);
+}
+
+void ChooserBubbleUiViewDelegate::OnFullscreenStateChanged() {
+  // Showing this bubble exits tab fullscreen; keep the bubble open and update
+  // the anchor if that happens, instead of closing the bubble like the base
+  // class handler.
+  tabs::TabInterface* tab =
+      web_contents() ? tabs::TabInterface::MaybeGetFromContents(web_contents())
+                     : nullptr;
+  BrowserWindowInterface* browser =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  if (!browser) {
+    LocationBarBubbleDelegateView::OnFullscreenStateChanged();
+    return;
+  }
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser)->fullscreen_controller();
+  if (fullscreen_controller->IsTabFullscreen()) {
+    LocationBarBubbleDelegateView::OnFullscreenStateChanged();
+    return;
+  }
+  UpdateAnchor(browser);
 }
 
 void ChooserBubbleUiViewDelegate::OnSelectionChanged() {

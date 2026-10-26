@@ -382,3 +382,40 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
   // Verify that the bubble accepted and closed.
   EXPECT_TRUE(bubble_widget->IsClosed());
 }
+
+IN_PROC_BROWSER_TEST_F(
+    DeviceChooserBubbleTest,
+    ChooserBubbleStaysOpenAfterExitingFullscreenAndClosesOnTabSwitch) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("example.com")));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+
+  // Enter tab fullscreen from script.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+  ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+
+  // Showing the chooser bubble drops tab fullscreen and queues an asynchronous
+  // fullscreen state change notification. Create `fullscreen_waiter` before
+  // showing the bubble so `Wait()` waits for the asynchronous notification.
+  ui_test_utils::FullscreenWaiter fullscreen_waiter(browser(),
+                                                    {.tab_fullscreen = false});
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "ChooserBubbleUiViewDelegate");
+  ShowChooserBubble(browser(), std::make_unique<FakeUsbChooserController>(1));
+  views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(bubble_widget, nullptr);
+  fullscreen_waiter.Wait();
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  // Switching to a new tab should cleanly close the chooser bubble.
+  ASSERT_TRUE(AddTabAtIndex(1, GetURL("example.com"),
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
+  EXPECT_TRUE(bubble_widget->IsClosed());
+}

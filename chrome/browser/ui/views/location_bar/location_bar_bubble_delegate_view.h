@@ -68,7 +68,7 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   void ShowForReason(DisplayReason reason, bool allow_refocus_alert = true);
 
   // Closes the bubble when the browser's fullscreen state changes.
-  void OnFullscreenStateChanged();
+  virtual void OnFullscreenStateChanged();
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
