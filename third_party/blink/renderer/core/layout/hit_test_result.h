@@ -163,7 +163,7 @@ class CORE_EXPORT HitTestResult {
 
   bool IsSelected(const HitTestLocation& location) const;
   String Title(TextDirection&) const;
-  const AtomicString& AltDisplayString() const;
+  String AltDisplayString() const;
   static Image* GetImage(const Node* node);
   Image* GetImage() const;
   gfx::Rect ImageRect() const;
