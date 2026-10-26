@@ -1467,8 +1467,13 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
       state.bounds_dip, state.ui_scale / new_ui_scale);
   state.ui_scale = new_ui_scale;
 
-  // Adjust state values if necessary.
-  state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
+  // Adjust state values if necessary. Size constraints only apply to normal
+  // windows; per the xdg-shell specification, maximized geometry must be obeyed
+  // exactly, and fullscreen geometry is an upper bound (otherwise compositors
+  // raise xdg_wm_base.invalid_surface_state).
+  if (state.window_state == PlatformWindowState::kNormal) {
+    state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
+  }
 
   const float scale = state.window_scale * state.ui_scale;
 
