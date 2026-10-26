@@ -101,6 +101,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome of signed-in profile creation whenever it's started (by
     user choosing to sign-in in the first screen of the profile creation flow).
+    Post-sign-in sync confirmation outcomes are no longer recorded since the
+    removal of the legacy sync confirmation flow.
   </summary>
 </histogram>
 

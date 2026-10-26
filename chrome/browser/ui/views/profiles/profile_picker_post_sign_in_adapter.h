@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_POST_SIGN_IN_ADAPTER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_POST_SIGN_IN_ADAPTER_H_
 
+#include <memory>
 #include <optional>
+#include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -20,10 +21,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "url/gurl.h"
 
 class Profile;
-class HistorySyncOptinHelper;
-class SigninUIError;
 namespace content {
 struct ContextMenuParams;
 class RenderFrameHost;
@@ -31,21 +31,12 @@ class WebContents;
 }  // namespace content
 
 // Class triggering the signed-in section of the profile management flow, most
-// notably featuring the sync confirmation / history sync optin. This class:
+// notably featuring the history sync optin. This class:
 // - Expects a primary account to be set with `ConsentLevel::kSignin`.
-// - If the the Sync confirmation screen is used, then:
-//   1) It creates the `TurnSyncOnHelper` and provides it a delegate to
-//      interact with `host`.
-//   2) At the end of the flow we are in one of these cases:
-//   - The host is closed and a browser is opened, via `FinishAndOpenBrowser()`;
-//   - The host is not closed and the profile switch screen is shown, via
-//     `SwitchToProfileSwitch()`.
-// - If the History Sync Optin Screen is used (replacing the Sync confirmation
-//   screen) then:
-//   1) It creates the `HistorySyncOptinHelper` and this object
-//   acts as its delegate to interact with `host`.
-//   2) At the end of the flow the host is closed and a browser is opened,
-//   via `FinishAndOpenBrowser().
+// - Creates the `HistorySyncOptinHelper` and acts as its delegate to interact
+//   with `host`.
+// - At the end of the flow the host is closed and a browser is opened, via
+//   `FinishAndOpenBrowser()`.
 class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
                                        public HistorySyncOptinHelper::Delegate {
  public:
@@ -69,32 +60,6 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // By default does not do anything, in the flow it will be as if the dialog
   // was closed.
   virtual void Cancel();
-  // Resets the host by redirecting to the main profile picker screen and
-  // canceling the ongoing signed in flow. Shows an error dialog when the reset
-  // is done.
-  void ResetHostAndShowErrorDialog(
-      const std::variant<ForceSigninUIError, SigninUIError>& error);
-
-  // Finishes the creation flow for `profile_`: marks it fully created,
-  // transitions from `host_` to a new browser window and calls `callback` if
-  // the browser window was successfully opened.
-  // TODO(crbug.com/40242414): Tighten this contract by notifying the caller if
-  // the browser open was not possible.
-  void FinishAndOpenBrowser(PostHostClearedCallback callback);
-
-  // Finishes the sign-in process by moving to the sync confirmation screen.
-  void SwitchToSyncConfirmation();
-
-  // Finishes the sign-in process by moving to the managed user profile notice
-  // screen.
-  void SwitchToManagedUserProfileNotice(
-      ManagedUserProfileNoticeUI::ScreenType type,
-      signin::SigninChoiceCallback proceed_callback);
-
-  // When the sign-in flow cannot be completed because another profile at
-  // `profile_path` is already syncing with a chosen account, shows the profile
-  // switch screen. It uses the system profile for showing the switch screen.
-  void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
   // HistorySyncOptinHelper::Delegate implementation:
   void ShowHistorySyncOptinScreen(
@@ -119,8 +84,8 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   }
 
  protected:
-  virtual void FinishAndOpenBrowserInternal(PostHostClearedCallback callback,
-                                            bool is_continue_callback) = 0;
+  virtual void FinishAndOpenBrowserInternal(
+      PostHostClearedCallback callback) = 0;
 
   // Returns the profile color, taking into account current policies.
   std::optional<SkColor> GetProfileColor() const;
@@ -140,10 +105,20 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
 
+  // Finishes the creation flow for `profile_`: marks it fully created,
+  // transitions from `host_` to a new browser window and calls
+  // `FinishAndOpenBrowserInternal()`.
+  // TODO(crbug.com/40242414): Tighten this contract by notifying the caller if
+  // the browser open was not possible.
+  void FinishAndOpenBrowser();
 
+  // Finishes the sign-in process by moving to the managed user profile notice
+  // screen.
+  void SwitchToManagedUserProfileNotice(
+      ManagedUserProfileNoticeUI::ScreenType type,
+      signin::SigninChoiceCallback proceed_callback);
 
   // Callbacks that finalize initialization of WebUI pages.
-  void SwitchToSyncConfirmationFinished();
   void SwitchToHistorySyncOptinFinished();
   void SwitchToSignInCelebrationFinished(base::OnceClosure celebration_finished);
 
@@ -178,8 +153,8 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   std::optional<SkColor> profile_color_;
 
   // This callback will only return once the content of the step decided if it
-  // should be shown or not. E.g: Sync confirmation screen, profile switch, or
-  // enterprise management.
+  // should be shown or not. E.g.: History sync opt-in screen or enterprise
+  // management.
   StepSwitchFinishedCallback step_switch_callback_;
 
   // Steps to be executed after the user has made a choice in the history sync

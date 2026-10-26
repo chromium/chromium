@@ -600,20 +600,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/profiles/profile_load_tracker_win.h:ProfilePreviousExitStatus) -->
 
+<!-- LINT.IfChange(ProfileSignedInFlowOutcome) -->
+
 <enum name="ProfileSignedInFlowOutcome">
-  <int value="0" label="A consumer account is added and syncing"/>
-  <int value="1" label="A consumer account is added without sync"/>
+  <int value="0" label="(Obsolete) A consumer account is added and syncing"/>
+  <int value="1" label="(Obsolete) A consumer account is added without sync"/>
   <int value="2"
-      label="A consumer account is added with sync manually configured"/>
-  <int value="3" label="An enterprise account is added and syncing"/>
-  <int value="4" label="An enterprise account is added without sync"/>
+      label="(Obsolete) A consumer account is added with sync manually
+             configured"/>
+  <int value="3" label="(Obsolete) An enterprise account is added and syncing"/>
+  <int value="4"
+      label="(Obsolete) An enterprise account is added without sync"/>
   <int value="5"
-      label="An enterprise account is added with no link data consent
-             (deprecated)"/>
+      label="(Obsolete) An enterprise account is added with no link data
+             consent"/>
   <int value="6"
-      label="An enterprise account is added with sync manually configured"/>
-  <int value="7" label="An enterprise account is added but sync is disabled"/>
-  <int value="8" label="An account is added with some login error">
+      label="(Obsolete) An enterprise account is added with sync manually
+             configured"/>
+  <int value="7"
+      label="(Obsolete) An enterprise account is added but sync is disabled"/>
+  <int value="8" label="(Obsolete) An account is added with some login error">
     This includes the case that the account is already syncing in another
     profile.
   </int>
@@ -622,15 +628,20 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="The flow got aborted after sign-in (not in enterprise welcome)."/>
   <int value="12"
-      label="The flow got aborted after sign-in (in enterprise welcome)."/>
+      label="(Obsolete) The flow got aborted after sign-in (in enterprise
+             welcome)."/>
   <int value="13"
-      label="The flow was skipped because the profile is already syncing."/>
+      label="(Obsolete) The flow was skipped because the profile is already
+             syncing."/>
   <int value="14"
-      label="The flow was skipped due to the value of some policy(ies)."/>
+      label="(Obsolete) The flow was skipped due to the value of some
+             policy(ies)."/>
   <int value="15"
-      label="The flow got aborted after sync was declined while sign-in is
-             forced by policies."/>
+      label="(Obsolete) The flow got aborted after sync was declined while
+             sign-in is forced by policies."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:ProfileSignedInFlowOutcome) -->
 
 <enum name="ProfileUnconsentedPrimaryAccountType">
   <int value="0" label="Consumer account"/>

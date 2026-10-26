@@ -43,17 +43,9 @@ class ProfileManagementFlowControllerImpl
 
   // To be called when the sign-in and/or sync steps of the flow are completed
   // (or skipped), to proceed with additional steps or finish the flow.
-  //
-  // When `is_continue_callback` is true, the flow should finishing up
-  // immediately so that `post_host_cleared_callback` can be executed, without
-  // showing other steps.
-  // Otherwise, the flow can display post-identity steps, passing
-  // `post_host_cleared_callback` along so they can be executed at the right
-  // time.
   void HandleIdentityStepsCompleted(
       Profile* profile,
-      PostHostClearedCallback post_host_cleared_callback,
-      bool is_continue_callback);
+      PostHostClearedCallback post_host_cleared_callback);
 
   // Register the steps that will be shown after the identity step. The steps
   // should be registered and pushed to the queue in the order in which they

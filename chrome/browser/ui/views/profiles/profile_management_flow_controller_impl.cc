@@ -183,22 +183,7 @@ void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep() {
 
 void ProfileManagementFlowControllerImpl::HandleIdentityStepsCompleted(
     Profile* profile,
-    PostHostClearedCallback post_host_cleared_callback,
-    bool is_continue_callback) {
+    PostHostClearedCallback post_host_cleared_callback) {
   CHECK(profile);
-
-  if (is_continue_callback) {
-    RegisterStep(
-        Step::kFinishFlow,
-        ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
-            host(),
-            base::BindOnce(
-                &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
-                base::Unretained(this), profile,
-                std::move(post_host_cleared_callback))));
-    SwitchToStep(Step::kFinishFlow, /*reset_state=*/true);
-    return;
-  }
-
   SwitchToPostIdentitySteps(std::move(post_host_cleared_callback));
 }

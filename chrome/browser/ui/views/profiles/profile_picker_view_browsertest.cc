@@ -102,15 +102,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -153,7 +150,6 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -322,12 +318,6 @@ AccountInfo FillAccountInfo(
   mutator.set_is_subject_to_enterprise_features(is_managed);
   mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
   return account_info;
-}
-
-GURL GetSyncConfirmationURL() {
-  return AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                           SyncConfirmationStyle::kWindow,
-                                           /*is_sync_promo=*/true);
 }
 
 class BrowserAddedWaiter : public BrowserCollectionObserver {
@@ -888,7 +878,6 @@ class ProfilePickerCreationFlowBrowserTest
 
   // TODO(crbug.com/447584795): Add retry logic.
   void RejectHistoryOptin() {
-    CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
     CHECK_EQ(content::EvalJs(web_contents(),
                              profiles::testing::GetRejectHistoryOptinScript()),
              true);
@@ -896,7 +885,6 @@ class ProfilePickerCreationFlowBrowserTest
 
   // TODO(crbug.com/447584795): Add retry logic.
   void AcceptHistoryOptin() {
-    CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
     CHECK_EQ(content::EvalJs(web_contents(),
                              profiles::testing::GetAcceptHistoryOptinScript()),
              true);
@@ -981,12 +969,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  Profile* profile_being_created =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  Profile* profile_being_created = SignInForNewProfile(
+      GetHistorySyncOptinURL(), "joe.consumer@gmail.com", "Joe");
 
   signin_metrics::AccessPoint expected_access_point =
       signin_metrics::AccessPoint::kUserManager;
@@ -1004,12 +989,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -1040,12 +1020,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  Profile* profile_being_created =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  Profile* profile_being_created = SignInForNewProfile(
+      GetHistorySyncOptinURL(), "joe.consumer@gmail.com", "Joe");
 
   signin_metrics::AccessPoint expected_access_point =
       signin_metrics::AccessPoint::kUserManager;
@@ -1063,12 +1040,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -1132,21 +1104,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  Profile* profile_being_created =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  SignInForNewProfile(GetHistorySyncOptinURL(), "joe.consumer@gmail.com",
+                      "Joe");
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -1161,21 +1125,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  Profile* profile_being_created =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  SignInForNewProfile(GetHistorySyncOptinURL(), "joe.consumer@gmail.com",
+                      "Joe");
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   ASSERT_EQ(4, new_browser->GetTabStripModel()->count());
   ASSERT_FALSE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
@@ -1332,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   size_t initial_profile_count = 1u;
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), initial_profile_count);
 
-  // Create a new signin flow, sign-in, and wait for the History Sync Optin
+  // Create a new signin flow, sign-in, and wait for the History Sync Opt-in
   // promo.
   BrowserAddedWaiter browser_waiter(initial_browser_count + 1u,
                                     BrowserAddedWaiter::ReturnMode::kLatest);
@@ -1357,11 +1313,12 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(entry->IsSigninRequired(), true);
   EXPECT_EQ(entry->IsEphemeral(), true);
 
-  // Simulate the "No thanks" button clicked.
+  // Simulate the "No thanks" button clicked. Declining history sync still
+  // proceeds with finalizing the profile.
   RejectHistoryOptin();
 
-  // Declining history sync still proceeds with finalizing the profile.
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
+  WaitForPickerClosed();
   EXPECT_EQ(new_browser->GetProfile(), force_sign_in_profile);
   EXPECT_EQ(entry->IsSigninRequired(), false);
   EXPECT_EQ(entry->IsEphemeral(), false);
@@ -1401,12 +1358,11 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   OpenProfileFromPicker(entry->GetPath(), false);
   WaitForLoadStop(GetSigninChromeSyncDiceUrl());
 
-  // Sign in and decline sync.
+  // Sign in and decline history sync opt-in.
   FinishDiceSignIn(profile, kConsumerEmail, "Joe");
-  WaitForLoadStop(GetSyncConfirmationURL());
+  WaitForLoadStop(GetHistorySyncOptinURL());
   BrowserAddedWaiter browser_waiter(1u, BrowserAddedWaiter::ReturnMode::kNew);
-  LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
-      LoginUIService::ABORT_SYNC);
+  RejectHistoryOptin();
 
   // Opens a browser and unlocks the profile.
   BrowserWindowInterface* const initial_browser = browser_waiter.Wait();
@@ -1811,13 +1767,14 @@ IN_PROC_BROWSER_TEST_F(
             ProfilePicker::GetWebViewForTesting()->GetWebContents()->GetURL());
 
   const std::string email = "joe.consumer@gmail.com";
-  // Verify that patternt does not match.
+  // Verify that pattern does not match.
   ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(local_state, email));
 
   // Signing in with a profile that does not match the pattern should stop the
-  // profile creation flow without setting the primary account.
+  // profile creation flow without setting a primary account.
   FinishDiceSignIn(profile_being_created, email, "Joe", kNoHostedDomainFound,
-                   false, false);
+                   /*is_supervised_profile=*/false,
+                   /*should_have_primary_account=*/false);
 
   // Returning to the profile picker main page.
   WaitForLoadStop(GURL("chrome://profile-picker"));
@@ -1920,12 +1877,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileAfterCancellingFirstAttempt) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  Profile* profile_to_cancel =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  Profile* profile_to_cancel = SignInForNewProfile(
+      GetHistorySyncOptinURL(), "joe.consumer@gmail.com", "Joe");
 
   // Close the flow with the [X] button.
   ProfileDeletionObserver observer;
@@ -1940,10 +1894,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(storage.GetProfileAttributesWithPath(canceled_path), nullptr);
 
   // Restart the flow again. As the flow for `profile_to_cancel` got aborted,
-  // it's disregarded. Instead of the profile switch screen, the normal sync
-  // confirmation should appear.
-  Profile* profile_being_created =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // it's disregarded. Instead of the profile switch screen, the normal history
+  // sync opt-in screen should appear.
+  Profile* profile_being_created = SignInForNewProfile(
+      GetHistorySyncOptinURL(), "joe.consumer@gmail.com", "Joe");
   EXPECT_NE(canceled_path, profile_being_created->GetPath());
 
   // Simulate theme sync starting but receiving a default theme from the server.
@@ -1956,12 +1910,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -2087,12 +2036,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Simulate a successful Gaia sign-in.
   FinishDiceSignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
 
-  // Wait for the sign-in to propagate to the flow, resulting in sync
-  // confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  WaitForLoadStop(target_url);
+  // Wait for the sign-in to propagate to the flow, resulting in history sync
+  // optin screen getting displayed.
+  WaitForLoadStop(GetHistorySyncOptinURL());
 
   // Simulate theme sync starting but receiving a default theme from the server.
   // This is done as early as possible to avoid timeout.
@@ -2104,12 +2050,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -2132,60 +2073,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kDifferentProfileColor);
-}
-
-// TODO(crbug.com/40817459) Test is flaky on Linux CFI, Linux dbg, Mac ASan
-#if ((BUILDFLAG(CFI_ICALL_CHECK) || !defined(NDEBUG)) && \
-     BUILDFLAG(IS_LINUX)) ||                             \
-    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
-#define MAYBE_CreateSignedInProfileSettings \
-  DISABLED_CreateSignedInProfileSettings
-#else
-#define MAYBE_CreateSignedInProfileSettings CreateSignedInProfileSettings
-#endif
-IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       MAYBE_CreateSignedInProfileSettings) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // The history optin screen does not have a settings button.
-    GTEST_SKIP();
-  }
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  Profile* profile_being_created = SignInForNewProfile(
-      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
-
-  // Simulate closing the UI with "Settings".
-  BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  LoginUIServiceFactory::GetForProfile(profile_being_created)
-      ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
-  BrowserWindowInterface* const new_browser = browser_waiter.Wait();
-  WaitForBrowserUrl(GURL("chrome://settings/syncSetup"),
-                    new_browser->GetTabStripModel()->GetActiveWebContents());
-
-  // Check expectations when the profile creation flow is done.
-  WaitForPickerClosed();
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_being_created->GetPath());
-  ASSERT_NE(entry, nullptr);
-  EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
-
-  // Sync is getting configured.
-  EXPECT_TRUE(entry->IsAuthenticated());
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_TRUE(sync_service->HasSyncConsent());
-  EXPECT_FALSE(
-      sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-
-  // The color is not applied if the user enters settings.
-  EXPECT_FALSE(ThemeServiceFactory::GetForProfile(profile_being_created)
-                   ->GetUserColor()
-                   .has_value());
 }
 
 // The following tests rely on dice specific logic.
@@ -2251,14 +2138,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
       account_info.GetAccountId()));
 
-  // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
-  // confirmation screen getting displayed.
+  // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in history sync
+  // optin screen getting displayed.
   SimulateEnableSyncDiceHeader(web_contents(),
                                account_info.GetCoreAccountInfo());
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  WaitForLoadStop(target_url);
+  WaitForLoadStop(GetHistorySyncOptinURL());
 
   // Simulate theme sync starting but receiving a default theme from the server.
   // This is done as early as possible to avoid timeout.
@@ -2270,12 +2154,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   browser_waiter.Wait();
 
   // Check expectations when the profile creation flow is done.
@@ -2327,14 +2206,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
       account_info.GetAccountId()));
 
-  // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
-  // confirmation screen getting displayed.
+  // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in history sync
+  // optin screen getting displayed.
   SimulateEnableSyncDiceHeader(web_contents(),
                                account_info.GetCoreAccountInfo());
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  WaitForLoadStop(target_url);
+  WaitForLoadStop(GetHistorySyncOptinURL());
 
   // Simulate theme sync starting but receiving a default theme from the server.
   // This is done as early as possible to avoid timeout.
@@ -2346,12 +2222,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   base::RunLoop().RunUntilIdle();
 
   // Add full account info.
@@ -3008,15 +2879,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
 
 class SupervisedUserProfileIPHTest
     : public ProfilePickerCreationFlowBrowserTest,
-      public testing::WithParamInterface<
-          LoginUIService::SyncConfirmationUIClosedResult> {
+      public testing::WithParamInterface<bool> {
  public:
   SupervisedUserProfileIPHTest() = default;
 
  protected:
-  LoginUIService::SyncConfirmationUIClosedResult GetSyncConfirmationResult() {
-    return GetParam();
-  }
+  bool ShouldAcceptHistorySyncOptin() const { return GetParam(); }
 
   // Returns true if the supervised user profile IPH has been shown.
   bool SupervisedProfilePromoHasBeenShown(BrowserWindowInterface* browser) {
@@ -3025,39 +2893,16 @@ class SupervisedUserProfileIPHTest
   }
 };
 
-std::string SyncConfirmationResultToString(
-    LoginUIService::SyncConfirmationUIClosedResult result) {
-  switch (result) {
-    case LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC:
-      return "OnSyncAborted";
-    case LoginUIService::SyncConfirmationUIClosedResult::CONFIGURE_SYNC_FIRST:
-      return "OnSyncConfiguration";
-    case LoginUIService::SyncConfirmationUIClosedResult::
-        SYNC_WITH_DEFAULT_SETTINGS:
-      return "OnSyncAccepted";
-    case LoginUIService::SyncConfirmationUIClosedResult::UI_CLOSED:
-      return "OnSyncScreenClosed";
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SupervisedUserProfileIPHTest,
-    testing::Values(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS,
-                    LoginUIService::CONFIGURE_SYNC_FIRST,
-                    LoginUIService::ABORT_SYNC),
-    [](const auto& info) {
-      return SyncConfirmationResultToString(info.param);
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         SupervisedUserProfileIPHTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "OnHistorySyncAccepted"
+                                             : "OnHistorySyncRejected";
+                         });
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
                        ShowIphWhenCustomizationBubbleIsSkipped) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-      GetSyncConfirmationResult() == LoginUIService::CONFIGURE_SYNC_FIRST) {
-    // The history optin screen does not have a settings button.
-    GTEST_SKIP();
-  }
-
   size_t initial_browser_count =
       GlobalBrowserCollection::GetInstance()->GetSize();
   auto scoped_iph_delay =
@@ -3065,12 +2910,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
           base::Seconds(0));
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
+  // flow, resulting in history sync optin screen getting displayed.
   Profile* profile_being_created = SignInForNewProfile(
-      target_url, "joe@gmail.com", "Joe", kNoHostedDomainFound,
+      GetHistorySyncOptinURL(), "joe@gmail.com", "Joe", kNoHostedDomainFound,
       /*start_on_management_page=*/false,
       /*is_supervised_profile=*/true);
 
@@ -3083,24 +2925,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
   theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
       ThemeSyncableService::ThemeSyncState::kApplied);
 
-  // Pick an action from the Sync screen.
+  // Pick an action from the History Sync opt-in screen.
   BrowserAddedWaiter browser_waiter(initial_browser_count + 1,
                                     BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    switch (GetSyncConfirmationResult()) {
-      case LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC:
-        RejectHistoryOptin();
-        break;
-      case LoginUIService::SyncConfirmationUIClosedResult::
-          SYNC_WITH_DEFAULT_SETTINGS:
-        AcceptHistoryOptin();
-        break;
-      default:
-        NOTREACHED();
-    }
+  if (ShouldAcceptHistorySyncOptin()) {
+    AcceptHistoryOptin();
   } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(GetSyncConfirmationResult());
+    RejectHistoryOptin();
   }
 
   BrowserWindowInterface* new_browser = browser_waiter.Wait();
@@ -3140,11 +2971,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
-          : ManagedUserProfileNoticeUI::ScreenType::
-                kEntepriseAccountSyncEnabled,
+      /*expected_type=*/ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   // Simulate theme sync starting but receiving a default theme from the server.
@@ -3155,18 +2982,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
       ThemeSyncableService::ThemeSyncState::kApplied);
 
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  WaitForLoadStop(target_url);
+  WaitForLoadStop(GetHistorySyncOptinURL());
   // Simulate finishing the flow with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -3206,37 +3025,20 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       CookieSettingsFactory::GetForProfile(profile_being_created).get();
   cookie_settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
-  BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-
-  bool should_have_primary_account =
-      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
   FinishDiceSignIn(profile_being_created, kEmail, "Joe", kNoHostedDomainFound,
-                   false, should_have_primary_account);
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    BrowserWindowInterface* const new_browser = browser_waiter.Wait();
-    WaitForBrowserUrl(GURL("chrome://newtab/"),
-                      new_browser->GetTabStripModel()->GetActiveWebContents());
-
-    const SigninUIError& error =
-        LoginUIServiceFactory::GetForProfile(profile_being_created)
-            ->GetLastLoginError();
-    EXPECT_EQ(error.type(), SigninUIError::Type::kSigninCookiesDisallowed);
-    EXPECT_EQ(base::UTF16ToUTF8(error.email()), kEmail);
-  } else {
-    content::WebContents* picker_web_contents =
-        ProfilePicker::GetWebViewForTesting()->GetWebContents();
-    // The picker shows an error dialog.
-    EXPECT_TRUE(ProfilePicker::IsOpen());
-    WaitForLoadStop(GURL("chrome://profile-picker"));
-    EXPECT_TRUE(IsSigninErrorDialogShown(picker_web_contents));
-    SigninUIError signin_error = SigninUIError::SigninCookiesDisallowed(kEmail);
-    EXPECT_EQ(
-        l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE, kEmailU16),
-        GetSigninErrorDialogTitleText(picker_web_contents));
-    histogram_tester.ExpectBucketCount(
-        "ProfilePicker.ProfilePickerFlow.SignInError",
-        static_cast<int>(SigninUIError::Type::kSigninCookiesDisallowed), 1);
-  }
+                   /*is_supervised_profile=*/false,
+                   /*should_have_primary_account=*/false);
+  content::WebContents* picker_web_contents =
+      ProfilePicker::GetWebViewForTesting()->GetWebContents();
+  // The picker shows an error dialog.
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  EXPECT_TRUE(IsSigninErrorDialogShown(picker_web_contents));
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE, kEmailU16),
+            GetSigninErrorDialogTitleText(picker_web_contents));
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.ProfilePickerFlow.SignInError",
+      static_cast<int>(SigninUIError::Type::kSigninCookiesDisallowed), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
@@ -3268,15 +3070,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       expected_switch_url, "profileSwitchPath", base::ToString(other_path));
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to
-  // the flow, resulting in profile switch screen getting displayed (in
-  // between, chrome://sync-confirmation/loading gets displayed but that
-  // page may not finish loading and anyway is not so relevant).
-
-  bool should_have_primary_account =
-      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+  // the flow, resulting in profile switch screen getting displayed.
   Profile* contents_profile = SignInForNewProfile(
       expected_switch_url, "joe.consumer@gmail.com", "Joe",
-      kNoHostedDomainFound, false, false, should_have_primary_account);
+      kNoHostedDomainFound, /*start_on_management_page=*/false,
+      /*is_supervised_profile=*/false,
+      /*should_have_primary_account=*/false);
 
   base::FilePath contents_profile_path = contents_profile->GetPath();
 
@@ -3336,15 +3135,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       expected_switch_url, "profileSwitchPath", base::ToString(other_path));
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in profile switch screen getting displayed (in between,
-  // chrome://sync-confirmation/loading gets displayed but that page may not
-  // finish loading and anyway is not so relevant).
-
-  bool should_have_primary_account =
-      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+  // flow, resulting in profile switch screen getting displayed.
   Profile* contents_profile = SignInForNewProfile(
       expected_switch_url, "joe.consumer@gmail.com", "Joe",
-      kNoHostedDomainFound, false, false, should_have_primary_account);
+      kNoHostedDomainFound, /*start_on_management_page=*/false,
+      /*is_supervised_profile=*/false,
+      /*should_have_primary_account=*/false);
   base::FilePath contents_profile_path = contents_profile->GetPath();
 
   // Simulate clicking on the cancel button.
@@ -3406,25 +3202,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   WaitForLoadStop(GetManagedUserProfileNoticeUrl());
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
-          : ManagedUserProfileNoticeUI::ScreenType::
-                kEntepriseAccountSyncEnabled,
+      /*expected_type=*/ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  WaitForLoadStop(target_url);
+  WaitForLoadStop(GetHistorySyncOptinURL());
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  }
+  RejectHistoryOptin();
   WaitForPickerClosed();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
 
@@ -3478,11 +3262,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
-          : ManagedUserProfileNoticeUI::ScreenType::
-                kEntepriseAccountSyncDisabled,
+      /*expected_type=*/ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
@@ -3507,76 +3287,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       kProfileColor);
 }
 
-// TODO(crbug.com/40817459) Test is flaky on Linux CFI
-// TODO(crbug.com/40885685) Test is also flaky on Linux (dbg)
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CreateSignedInEnterpriseProfileSettings \
-  DISABLED_CreateSignedInEnterpriseProfileSettings
-#else
-#define MAYBE_CreateSignedInEnterpriseProfileSettings \
-  CreateSignedInEnterpriseProfileSettings
-#endif
-IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
-                       MAYBE_CreateSignedInEnterpriseProfileSettings) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // The history optin screen does not have a settings button.
-    GTEST_SKIP();
-  }
-
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in managed user notice screen getting displayed.
-  // Consumer-looking gmail address avoids code that forces the sync service to
-  // actually start which would add overhead in mocking further stuff.
-  // Enterprise domain needed for this profile being detected as Work.
-  Profile* profile_being_created =
-      SignInForNewProfile(GetManagedUserProfileNoticeUrl(),
-                          "joe.enterprise@gmail.com", "Joe", "enterprise.com");
-
-  // Wait for the sign-in to propagate to the flow, resulting in managed user
-  // notice screen getting displayed.
-  WaitForLoadStop(GetManagedUserProfileNoticeUrl());
-
-  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/
-      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
-
-  WaitForLoadStop(GetSyncConfirmationURL());
-  // Simulate finishing the flow with "Configure sync".
-  BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  LoginUIServiceFactory::GetForProfile(profile_being_created)
-      ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
-
-  BrowserWindowInterface* const new_browser = browser_waiter.Wait();
-  WaitForBrowserUrl(GURL("chrome://settings/syncSetup"),
-                    new_browser->GetTabStripModel()->GetActiveWebContents());
-  WaitForPickerClosed();
-
-  // Check expectations when the profile creation flow is done.
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_being_created->GetPath());
-  ASSERT_NE(entry, nullptr);
-  EXPECT_NE(entry->GetGAIAId(), GaiaId());
-  EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
-
-  // Sync is getting configured.
-  EXPECT_TRUE(entry->IsAuthenticated());
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_TRUE(sync_service->HasSyncConsent());
-  EXPECT_FALSE(
-      sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-
-  // The color is not applied if the user enters settings.
-  EXPECT_FALSE(ThemeServiceFactory::GetForProfile(profile_being_created)
-                   ->GetUserColor()
-                   .has_value());
-}
-
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
@@ -3595,10 +3305,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
-          : ManagedUserProfileNoticeUI::ScreenType::
-                kEntepriseAccountSyncEnabled,
+      /*expected_type=*/ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
       /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the profile creation flow was opened directly, the window is closed now.
@@ -3634,10 +3341,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
-          : ManagedUserProfileNoticeUI::ScreenType::
-                kEntepriseAccountSyncEnabled,
+      /*expected_type=*/ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
       /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the management page was opened, the picker returns to it.
@@ -3753,12 +3457,9 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   ASSERT_TRUE(OriginalProfileExists());
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  Profile* profile_being_created =
-      SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  Profile* profile_being_created = SignInForNewProfile(
+      GetHistorySyncOptinURL(), "joe.consumer@gmail.com", "Joe");
 
   // Check that the profile is ephemeral, regardless of the policy.
   ProfileAttributesEntry* entry =
@@ -3771,12 +3472,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
 
   // Simulate closing the UI with "No, thanks".
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RejectHistoryOptin();
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  }
+  RejectHistoryOptin();
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -3854,16 +3550,14 @@ INSTANTIATE_TEST_SUITE_P(
 // Only MacOS has a keyboard shortcut to exit Chrome.
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       SyncConfirmationExitChromeTest) {
+                       HistorySyncOptinExitChromeTest) {
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  SignInForNewProfile(GetHistorySyncOptinURL(), "joe.consumer@gmail.com",
+                      "Joe");
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
-  // Exit the sync confirmation view (Cmd-Q).
+  // Exit the view (Cmd-Q).
   view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_Q, ui::EF_COMMAND_DOWN));
   WaitForPickerClosed();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
@@ -3871,13 +3565,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       SyncConfirmationNavigateBackTest) {
+                       HistorySyncOptinNavigateBackTest) {
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                        ? GetHistorySyncOptinURL()
-                        : GetSyncConfirmationURL();
-  SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
+  // flow, resulting in history sync optin screen getting displayed.
+  SignInForNewProfile(GetHistorySyncOptinURL(), "joe.consumer@gmail.com",
+                      "Joe");
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // Navigate back does nothing.
@@ -4018,8 +3710,6 @@ class ProfilePickerCreationFlowRoamingProfileBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
   base::ScopedTempDir local_sync_backend_dir_;
 };
 
@@ -4064,16 +3754,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowRoamingProfileBrowserTest,
 
 class SigninErrorProfilePickerBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
- public:
-  SigninErrorProfilePickerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kReplaceSyncPromosWithSignInPromos,
-         switches::kSupportErrorsInProfilePicker},
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSupportErrorsInProfilePicker};
 };
 
 // Tests that a signin error from a GoogleServiceAuthError shows the error

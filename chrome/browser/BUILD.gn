@@ -3998,7 +3998,6 @@ source_set("browser") {
       "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
       "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider_impl",
       "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
-      "//chrome/browser/ui/views/profiles:profile_picker_turn_sync_on_delegate",
       "//chrome/browser/ui/views/profiles:profile_picker_utils",
       "//chrome/browser/ui/views/profiles/feature_showcase",
       "//chrome/browser/ui/views/search_ai_mode",

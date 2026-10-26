@@ -46,28 +46,36 @@ class ProfileMetrics {
     kMaxValue = ADD_NEW_PROFILE_PICKER_SIGNED_IN
   };
 
+  // Outcome of the signed-in profile creation flow.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // Logged for `Profile.AddSignInFlowOutcome`.
+  //
+  // LINT.IfChange(ProfileSignedInFlowOutcome)
   enum class ProfileSignedInFlowOutcome {
-    kConsumerSync = 0,
-    kConsumerSigninOnly = 1,
-    kConsumerSyncSettings = 2,
-    kEnterpriseSync = 3,
-    kEnterpriseSigninOnly = 4,
+    // Obsolete: Post-sign-in sync confirmation outcomes were only recorded by
+    // the deleted `ProfilePickerTurnSyncOnDelegate`.
+    // kConsumerSync = 0,
+    // kConsumerSigninOnly = 1,
+    // kConsumerSyncSettings = 2,
+    // kEnterpriseSync = 3,
+    // kEnterpriseSigninOnly = 4,
     // DEPRECATED: kEnterpriseSigninOnlyNotLinked = 5,
-    kEnterpriseSyncSettings = 6,
-    kEnterpriseSyncDisabled = 7,
-    // Includes the case that the account is already syncing in another profile.
-    kLoginError = 8,
+    // kEnterpriseSyncSettings = 6,
+    // kEnterpriseSyncDisabled = 7,
+    // kLoginError = 8,
     kSAML = 9,
     kAbortedBeforeSignIn = 10,
     kAbortedAfterSignIn = 11,
-    kAbortedOnEnterpriseWelcome = 12,
-    kSkippedAlreadySyncing = 13,
-    kSkippedByPolicies = 14,
-    kForceSigninSyncNotGranted = 15,
-    kMaxValue = kForceSigninSyncNotGranted,
+    // kAbortedOnEnterpriseWelcome = 12,
+    // kSkippedAlreadySyncing = 13,
+    // kSkippedByPolicies = 14,
+    // Note: Not commented out because `kMaxValue` must share the value of the
+    // highest enumerator. Comment out when adding a new entry.
+    kDeprecatedForceSigninSyncNotGranted = 15,
+    kMaxValue = kDeprecatedForceSigninSyncNotGranted,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileSignedInFlowOutcome)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

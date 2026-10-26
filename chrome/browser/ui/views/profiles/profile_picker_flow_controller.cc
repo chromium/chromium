@@ -136,7 +136,7 @@ void MaybeShowProfileIPHs(BrowserWindowInterface* browser) {
 }
 
 // Class triggering the signed-in section of the profile management flow, most
-// notably featuring the sync confirmation. In addition to what its base class
+// notably featuring the history sync optin. In addition to what its base class
 // `ProfilePickerPostSignInAdapter` is doing, this class:
 // - shows in product help and customization bubble at the end of the flow
 // - applies profile customizations (theme, profile name)
@@ -153,8 +153,7 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       std::optional<SkColor> profile_color,
-      base::OnceCallback<void(PostHostClearedCallback, bool)>
-          step_completed_callback)
+      base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback)
       : ProfilePickerPostSignInAdapter(host,
                                        profile,
                                        account_info,
@@ -171,8 +170,6 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
   ~ProfileCreationPostSignInAdapter() override {
     // Record unfinished signed-in profile creation.
     if (!is_finishing_) {
-      // TODO(crbug.com/40216113): Consider moving this recording into
-      // ProfilePickerTurnSyncOnDelegate and unify this code with Cancel().
       ProfileMetrics::LogProfileAddSignInFlowOutcome(
           ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
     }
@@ -187,7 +184,7 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
         std::make_unique<ProfileNameResolver>(identity_manager, account_info());
 
     // Stop with the sign-in navigation and show a spinner instead. The spinner
-    // will be shown until the post-sign-in flow figures out whether it's a
+    // will be shown until `HistorySyncOptinHelper` figures out whether it's a
     // managed account and whether sync/policies are resolved (which in some
     // cases involves fetching policies/capabilities and can take a couple of
     // seconds).
@@ -204,12 +201,9 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     is_finishing_ = true;
   }
 
-  void FinishAndOpenBrowserInternal(PostHostClearedCallback callback,
-                                    bool is_continue_callback) override {
+  void FinishAndOpenBrowserInternal(PostHostClearedCallback callback) override {
     // Do nothing if the sign-in flow is aborted or if this has already been
-    // called. Note that this can get called first time from a special case
-    // handling (such as the Settings link) and than second time when the
-    // TurnSyncOnHelper finishes.
+    // called.
     if (is_finishing_) {
       return;
     }
@@ -224,7 +218,7 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &ProfileCreationPostSignInAdapter::FinishFlow,
         // Unretained ok: `this` outlives `profile_name_resolver_`.
-        base::Unretained(this), std::move(callback), is_continue_callback));
+        base::Unretained(this), std::move(callback)));
   }
 
  private:
@@ -251,7 +245,6 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
   }
 
   void FinishFlow(PostHostClearedCallback post_host_cleared_callback,
-                  bool is_continue_callback,
                   std::u16string name_for_signed_in_profile) {
     TRACE_EVENT1("browser", "ProfileCreationPostSignInAdapter::FinishFlow",
                  "profile_path", profile()->GetPath().AsUTF8Unsafe());
@@ -268,7 +261,7 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
     std::move(step_completed_callback_)
-        .Run(std::move(post_host_cleared_callback), is_continue_callback);
+        .Run(std::move(post_host_cleared_callback));
   }
 
   // Controls whether the flow still needs to finalize (which includes showing
@@ -276,8 +269,7 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
   bool is_finishing_ = false;
 
   std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
-  base::OnceCallback<void(PostHostClearedCallback, bool)>
-      step_completed_callback_;
+  base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback_;
 };
 
 class ReauthFlowStepController : public ProfileManagementStepController {
@@ -697,8 +689,7 @@ void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
   HandleIdentityStepsCompleted(
       created_profile_.get(),
       PostHostClearedCallback(base::BindOnce(&ShowLocalProfileCustomization,
-                                             profile_picked_time_on_startup_)),
-      /*is_continue_callback=*/false);
+                                             profile_picked_time_on_startup_)));
 }
 
 void ProfilePickerFlowController::ShowSigninError(Profile* profile,
