@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -405,13 +406,11 @@ TEST_F(GWSPrewarmPageLoadMetricsObserverTest, DidLoadResourceFromMemoryCache) {
                     internal::kSubresourceSuffixMemoryCached}),
       network::mojom::RequestDestination::kScript, 1);
   histogram_tester.ExpectTotalCount(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceDestination,
-                    internal::kSubresourceSuffixHttpCached}),
-      0);
+      internal::kHistogramGWSPrewarmSubresourceDestinationHttpCached, 0);
   histogram_tester.ExpectTotalCount(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceDestination,
-                    internal::kSubresourceSuffixNotCached}),
-      0);
+      internal::kHistogramGWSPrewarmSubresourceDestinationFontCache, 0);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSPrewarmSubresourceDestinationNotCached, 0);
 
   page_load_metrics::mojom::PageLoadTiming timing;
   observer.OnComplete(timing);
@@ -419,25 +418,136 @@ TEST_F(GWSPrewarmPageLoadMetricsObserverTest, DidLoadResourceFromMemoryCache) {
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramGWSPrewarmSubresourceCount, 1, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixCached}),
-      1, 1);
+      internal::kHistogramGWSPrewarmSubresourceCountCached, 1, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixHttpCached}),
-      0, 1);
+      internal::kHistogramGWSPrewarmSubresourceCountHttpCached, 0, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixMemoryCached}),
-      1, 1);
+      internal::kHistogramGWSPrewarmSubresourceCountMemoryCached, 1, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixNotCached}),
-      0, 1);
+      internal::kHistogramGWSPrewarmSubresourceCountFontCache, 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountNotCached, 0, 1);
   histogram_tester.ExpectTotalCount(
       internal::kHistogramGWSPrewarmNavigationToLastSubresourceLoad, 0);
   histogram_tester.ExpectTotalCount(
       internal::kHistogramGWSPrewarmLastSubresourceLoadToCancellation, 0);
+}
+
+TEST_F(GWSPrewarmPageLoadMetricsObserverTest, DidLoadResourceFromFontCache) {
+  base::HistogramTester histogram_tester;
+  TestPrewarmObserverDelegate delegate;
+  delegate.navigation_start_ = base::TimeTicks::Now();
+  delegate.set_time_to_page_end(base::Milliseconds(1200));
+  GWSPrewarmPageLoadMetricsObserver observer;
+  observer.SetDelegate(&delegate);
+
+  content::MockNavigationHandle start_handle(GURL(kGoogleSearchPrewarmUrl),
+                                             /*render_frame_host=*/nullptr);
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING,
+            observer.OnPrerenderStart(&start_handle, GURL()));
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING,
+            observer.OnCommit(&start_handle));
+
+  blink::SubresourceLoadMetrics subresource_metrics;
+  subresource_metrics.number_of_subresource_loads_from_local_font_cache = 1;
+  observer.OnSubresourceLoadMetricsObserved(/*rfh=*/nullptr,
+                                            subresource_metrics);
+
+  // Repeated update with the same cumulative count should be ignored.
+  observer.OnSubresourceLoadMetricsObserved(/*rfh=*/nullptr,
+                                            subresource_metrics);
+
+  // Cumulative update to 2 should record one additional font cache subresource.
+  subresource_metrics.number_of_subresource_loads_from_local_font_cache = 2;
+  observer.OnSubresourceLoadMetricsObserved(/*rfh=*/nullptr,
+                                            subresource_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceDestination,
+      network::mojom::RequestDestination::kFont, 2);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceDestinationCached,
+      network::mojom::RequestDestination::kFont, 2);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceDestinationFontCache,
+      network::mojom::RequestDestination::kFont, 2);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSPrewarmSubresourceDestinationHttpCached, 0);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSPrewarmSubresourceDestinationMemoryCached, 0);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSPrewarmSubresourceDestinationNotCached, 0);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  observer.OnComplete(timing);
+
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCount, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountCached, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountHttpCached, 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountMemoryCached, 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountFontCache, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountNotCached, 0, 1);
+}
+
+TEST_F(GWSPrewarmPageLoadMetricsObserverTest, MixedSubresourceCacheStates) {
+  base::HistogramTester histogram_tester;
+  TestPrewarmObserverDelegate delegate;
+  base::TimeTicks now = base::TimeTicks::Now();
+  delegate.navigation_start_ = now;
+  delegate.set_time_to_page_end(base::Milliseconds(1200));
+  GWSPrewarmPageLoadMetricsObserver observer;
+  observer.SetDelegate(&delegate);
+
+  content::MockNavigationHandle start_handle(GURL(kGoogleSearchPrewarmUrl),
+                                             /*render_frame_host=*/nullptr);
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING,
+            observer.OnPrerenderStart(&start_handle, GURL()));
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING,
+            observer.OnCommit(&start_handle));
+
+  // 1. Network load (NotCached)
+  observer.OnLoadedResource(CreateExtraRequestCompleteInfo(
+      network::mojom::RequestDestination::kScript, /*was_cached=*/false, now,
+      now + base::Milliseconds(300)));
+
+  // 2. HTTP cache load (HttpCached)
+  observer.OnLoadedResource(CreateExtraRequestCompleteInfo(
+      network::mojom::RequestDestination::kStyle, /*was_cached=*/true, now,
+      now + base::Milliseconds(400)));
+
+  // 3. Memory cache load (MemoryCached)
+  page_load_metrics::MemoryResourceLoadInfo memory_resource(
+      url::SchemeHostPort(GURL("https://www.google.com/image.png")),
+      network::mojom::RequestDestination::kImage, content::FrameTreeNodeId(1));
+  observer.DidLoadResourceFromMemoryCache(memory_resource);
+
+  // 4. Local font cache load (FontCache)
+  blink::SubresourceLoadMetrics subresource_metrics;
+  subresource_metrics.number_of_subresource_loads_from_local_font_cache = 1;
+  observer.OnSubresourceLoadMetricsObserved(/*rfh=*/nullptr,
+                                            subresource_metrics);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  observer.OnComplete(timing);
+
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCount, 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountCached, 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountHttpCached, 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountMemoryCached, 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountFontCache, 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSPrewarmSubresourceCountNotCached, 1, 1);
 }
 
 TEST_F(GWSPrewarmPageLoadMetricsObserverTest, SubresourceLoadOutOfOrder) {

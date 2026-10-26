@@ -265,7 +265,9 @@ chromium-metrics-reviews@google.com.
 <variants name="GWSPrewarmSubresourceCacheStatus">
   <variant name="" summary="all subresources"/>
   <variant name=".Cached"
-      summary="all cached subresources (HTTP and memory cache)"/>
+      summary="all cached subresources (HTTP, memory, and font cache)"/>
+  <variant name=".FontCache"
+      summary="subresources served from the local font cache"/>
   <variant name=".HttpCached"
       summary="subresources served from the HTTP cache"/>
   <variant name=".MemoryCached"
@@ -3499,7 +3501,8 @@ chromium-metrics-reviews@google.com.
     Records the total count of {SubresourceCacheStatus} loaded successfully on
     the Google Search prewarm prerendered page. Recorded once at session end
     when the prerendered prewarm page ends or is cancelled without being
-    activated.
+    activated. Starting from M155, font cache served resources will also be
+    tracked.
   </summary>
   <token key="SubresourceCacheStatus"
       variants="GWSPrewarmSubresourceCacheStatus"/>
@@ -3515,7 +3518,7 @@ chromium-metrics-reviews@google.com.
     Image, Font) of {SubresourceCacheStatus} loaded on the Google Search prewarm
     prerendered page. Recorded in the browser when each completed subresource
     load notification is received from the network stack or in-renderer memory
-    cache.
+    cache. Starting from M155, font cache served resources will also be tracked.
   </summary>
   <token key="SubresourceCacheStatus"
       variants="GWSPrewarmSubresourceCacheStatus"/>

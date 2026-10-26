@@ -7,8 +7,10 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace internal {
 
@@ -21,12 +23,25 @@ extern const char kHistogramGWSPrewarmLoadEventOccurredBeforeCancellation[];
 extern const char kHistogramGWSPrewarmLoadEventToCancellation[];
 extern const char kHistogramGWSPrewarmNavigationToLastSubresourceLoad[];
 extern const char kHistogramGWSPrewarmLastSubresourceLoadToCancellation[];
+
 extern const char kHistogramGWSPrewarmSubresourceDestination[];
+extern const char kHistogramGWSPrewarmSubresourceDestinationCached[];
+extern const char kHistogramGWSPrewarmSubresourceDestinationHttpCached[];
+extern const char kHistogramGWSPrewarmSubresourceDestinationMemoryCached[];
+extern const char kHistogramGWSPrewarmSubresourceDestinationFontCache[];
+extern const char kHistogramGWSPrewarmSubresourceDestinationNotCached[];
+
 extern const char kHistogramGWSPrewarmSubresourceCount[];
+extern const char kHistogramGWSPrewarmSubresourceCountCached[];
+extern const char kHistogramGWSPrewarmSubresourceCountHttpCached[];
+extern const char kHistogramGWSPrewarmSubresourceCountMemoryCached[];
+extern const char kHistogramGWSPrewarmSubresourceCountFontCache[];
+extern const char kHistogramGWSPrewarmSubresourceCountNotCached[];
 
 extern const char kSubresourceSuffixCached[];
 extern const char kSubresourceSuffixHttpCached[];
 extern const char kSubresourceSuffixMemoryCached[];
+extern const char kSubresourceSuffixFontCache[];
 extern const char kSubresourceSuffixNotCached[];
 
 }  // namespace internal
@@ -67,6 +82,9 @@ class GWSPrewarmPageLoadMetricsObserver
   void DidLoadResourceFromMemoryCache(
       const page_load_metrics::MemoryResourceLoadInfo&
           memory_resource_load_info) override;
+  void OnSubresourceLoadMetricsObserved(
+      content::RenderFrameHost* rfh,
+      const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFailedProvisionalLoad(
@@ -80,10 +98,15 @@ class GWSPrewarmPageLoadMetricsObserver
   bool was_activated() const { return was_activated_; }
 
  private:
+  // Caching tier of a subresource load. `kFontCache` represents local OS font
+  // resolutions (via CSS `@font-face src: local(...)`), which bypass network
+  // and Blink memory caches but are counted so subresource metrics reflect
+  // Android system font usage.
   enum class SubresourceCacheType {
     kNotCached,
     kHttpCached,
     kMemoryCached,
+    kFontCache,
   };
 
   void RecordSubresourceHistograms(
@@ -104,7 +127,11 @@ class GWSPrewarmPageLoadMetricsObserver
   int cached_subresources_count_ = 0;
   int http_cached_subresources_count_ = 0;
   int memory_cached_subresources_count_ = 0;
+  int font_cached_subresources_count_ = 0;
   int not_cached_subresources_count_ = 0;
+
+  base::flat_map<content::GlobalRenderFrameHostId, uint32_t>
+      prev_local_font_cache_loads_by_frame_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_PREWARM_PAGE_LOAD_METRICS_OBSERVER_H_

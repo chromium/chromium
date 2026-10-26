@@ -5,14 +5,16 @@
 #include "components/page_load_metrics/google/browser/gws_prewarm_page_load_metrics_observer.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 
 namespace internal {
 
@@ -34,14 +36,37 @@ const char kHistogramGWSPrewarmNavigationToLastSubresourceLoad[] =
     "PageLoad.Clients.GoogleSearch.Prewarm.NavigationToLastSubresourceLoad";
 const char kHistogramGWSPrewarmLastSubresourceLoadToCancellation[] =
     "PageLoad.Clients.GoogleSearch.Prewarm.LastSubresourceLoadToCancellation";
+
 const char kHistogramGWSPrewarmSubresourceDestination[] =
     "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination";
+const char kHistogramGWSPrewarmSubresourceDestinationCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination.Cached";
+const char kHistogramGWSPrewarmSubresourceDestinationHttpCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination.HttpCached";
+const char kHistogramGWSPrewarmSubresourceDestinationMemoryCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination.MemoryCached";
+const char kHistogramGWSPrewarmSubresourceDestinationFontCache[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination.FontCache";
+const char kHistogramGWSPrewarmSubresourceDestinationNotCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination.NotCached";
+
 const char kHistogramGWSPrewarmSubresourceCount[] =
     "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount";
+const char kHistogramGWSPrewarmSubresourceCountCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount.Cached";
+const char kHistogramGWSPrewarmSubresourceCountHttpCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount.HttpCached";
+const char kHistogramGWSPrewarmSubresourceCountMemoryCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount.MemoryCached";
+const char kHistogramGWSPrewarmSubresourceCountFontCache[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount.FontCache";
+const char kHistogramGWSPrewarmSubresourceCountNotCached[] =
+    "PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount.NotCached";
 
 const char kSubresourceSuffixCached[] = ".Cached";
 const char kSubresourceSuffixHttpCached[] = ".HttpCached";
 const char kSubresourceSuffixMemoryCached[] = ".MemoryCached";
+const char kSubresourceSuffixFontCache[] = ".FontCache";
 const char kSubresourceSuffixNotCached[] = ".NotCached";
 
 }  // namespace internal
@@ -158,8 +183,7 @@ void GWSPrewarmPageLoadMetricsObserver::RecordSubresourceHistograms(
   if (cache_type != SubresourceCacheType::kNotCached) {
     cached_subresources_count_++;
     base::UmaHistogramEnumeration(
-        base::StrCat({internal::kHistogramGWSPrewarmSubresourceDestination,
-                      internal::kSubresourceSuffixCached}),
+        internal::kHistogramGWSPrewarmSubresourceDestinationCached,
         request_destination);
   }
 
@@ -167,22 +191,26 @@ void GWSPrewarmPageLoadMetricsObserver::RecordSubresourceHistograms(
     case SubresourceCacheType::kNotCached:
       not_cached_subresources_count_++;
       base::UmaHistogramEnumeration(
-          base::StrCat({internal::kHistogramGWSPrewarmSubresourceDestination,
-                        internal::kSubresourceSuffixNotCached}),
+          internal::kHistogramGWSPrewarmSubresourceDestinationNotCached,
           request_destination);
       break;
     case SubresourceCacheType::kHttpCached:
       http_cached_subresources_count_++;
       base::UmaHistogramEnumeration(
-          base::StrCat({internal::kHistogramGWSPrewarmSubresourceDestination,
-                        internal::kSubresourceSuffixHttpCached}),
+          internal::kHistogramGWSPrewarmSubresourceDestinationHttpCached,
           request_destination);
       break;
     case SubresourceCacheType::kMemoryCached:
       memory_cached_subresources_count_++;
       base::UmaHistogramEnumeration(
-          base::StrCat({internal::kHistogramGWSPrewarmSubresourceDestination,
-                        internal::kSubresourceSuffixMemoryCached}),
+          internal::kHistogramGWSPrewarmSubresourceDestinationMemoryCached,
+          request_destination);
+      break;
+    case SubresourceCacheType::kFontCache:
+      CHECK_EQ(request_destination, network::mojom::RequestDestination::kFont);
+      font_cached_subresources_count_++;
+      base::UmaHistogramEnumeration(
+          internal::kHistogramGWSPrewarmSubresourceDestinationFontCache,
           request_destination);
       break;
   }
@@ -228,6 +256,26 @@ void GWSPrewarmPageLoadMetricsObserver::DidLoadResourceFromMemoryCache(
   RecordSubresourceHistograms(memory_resource_load_info.request_destination,
                               SubresourceCacheType::kMemoryCached,
                               /*completion_time=*/std::nullopt);
+}
+
+void GWSPrewarmPageLoadMetricsObserver::OnSubresourceLoadMetricsObserved(
+    content::RenderFrameHost* rfh,
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
+  const content::GlobalRenderFrameHostId frame_id =
+      rfh ? rfh->GetGlobalId() : content::GlobalRenderFrameHostId();
+  uint32_t& prev_count = prev_local_font_cache_loads_by_frame_[frame_id];
+  const uint32_t current_count =
+      subresource_load_metrics
+          .number_of_subresource_loads_from_local_font_cache;
+  if (current_count > prev_count) {
+    const uint32_t delta = current_count - prev_count;
+    for (uint32_t i = 0; i < delta; ++i) {
+      RecordSubresourceHistograms(network::mojom::RequestDestination::kFont,
+                                  SubresourceCacheType::kFontCache,
+                                  /*completion_time=*/std::nullopt);
+    }
+    prev_count = current_count;
+  }
 }
 
 void GWSPrewarmPageLoadMetricsObserver::DidActivatePrerenderedPage(
@@ -287,22 +335,21 @@ void GWSPrewarmPageLoadMetricsObserver::RecordSessionEndHistograms(
     }
   }
 
-  base::UmaHistogramCounts100(internal::kHistogramGWSPrewarmSubresourceCount,
-                              total_subresources_count_);
-  base::UmaHistogramCounts100(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixCached}),
+  base::UmaHistogramCounts1000(internal::kHistogramGWSPrewarmSubresourceCount,
+                               total_subresources_count_);
+  base::UmaHistogramCounts1000(
+      internal::kHistogramGWSPrewarmSubresourceCountCached,
       cached_subresources_count_);
-  base::UmaHistogramCounts100(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixHttpCached}),
+  base::UmaHistogramCounts1000(
+      internal::kHistogramGWSPrewarmSubresourceCountHttpCached,
       http_cached_subresources_count_);
-  base::UmaHistogramCounts100(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixMemoryCached}),
+  base::UmaHistogramCounts1000(
+      internal::kHistogramGWSPrewarmSubresourceCountMemoryCached,
       memory_cached_subresources_count_);
-  base::UmaHistogramCounts100(
-      base::StrCat({internal::kHistogramGWSPrewarmSubresourceCount,
-                    internal::kSubresourceSuffixNotCached}),
+  base::UmaHistogramCounts1000(
+      internal::kHistogramGWSPrewarmSubresourceCountFontCache,
+      font_cached_subresources_count_);
+  base::UmaHistogramCounts1000(
+      internal::kHistogramGWSPrewarmSubresourceCountNotCached,
       not_cached_subresources_count_);
 }
