@@ -90,7 +90,7 @@ def _ChooseLatestCrashpadDump(device, crashpad_dump_path):
 
 
 def _ExtractLibraryNamesFromDump(build_path, dump_path):
-    default_library_name = 'libmonochrome.so'
+    default_library_name = 'libchrome.so'
     dumper_path = os.path.join(build_path, 'minidump_dump')
     if not os.access(dumper_path, os.X_OK):
         logging.warning(
