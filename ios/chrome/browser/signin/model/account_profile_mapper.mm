@@ -398,13 +398,14 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
 
     const std::string previous_personal_profile_name = GetPersonalProfileName();
 
-    const std::set<GaiaId, std::less<>> personal_gaia_ids =
+    std::set<GaiaId, std::less<>> personal_gaia_ids =
         profile_to_gaia_ids_[previous_personal_profile_name];
 
     // Detach all Gaia IDs from the old personal profile.
     for (const GaiaId& gaia_id : personal_gaia_ids) {
       DetachGaiaIdFromProfile(previous_personal_profile_name, gaia_id);
     }
+    personal_gaia_ids.erase(managed_gaia_id);
 
     ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
     CHECK(storage);

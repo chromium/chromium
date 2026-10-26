@@ -830,11 +830,23 @@ TEST_F(AccountProfileMapperTest, AssignsPrimaryManagedAccountToManagedProfile) {
   // The managed identity should be attached to its managed profile, which is
   // the old personal profile that got converted to managed. And a new personal
   // profile gets created for the personal identity.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+  const std::string new_personal_profile_name =
+      profile_attributes_storage()->GetPersonalProfileName();
+  const std::string new_managed_profile_name = kPersonalProfileName;
+  EXPECT_NE(new_personal_profile_name, new_managed_profile_name);
   EXPECT_THAT(profile_attributes_storage()
-                  ->GetAttributesForProfileWithName(kPersonalProfileName)
+                  ->GetAttributesForProfileWithName(new_managed_profile_name)
                   .GetAttachedGaiaIds(),
               UnorderedElementsAre(google_identity.gaiaId));
-  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+  EXPECT_THAT(profile_attributes_storage()
+                  ->GetAttributesForProfileWithName(new_personal_profile_name)
+                  .GetAttachedGaiaIds(),
+              UnorderedElementsAre(gmail_identity1.gaiaId));
+  EXPECT_NSEQ(@[ google_identity ],
+              GetIdentitiesForProfile(new_managed_profile_name));
+  EXPECT_NSEQ(@[ gmail_identity1 ],
+              GetIdentitiesForProfile(new_personal_profile_name));
 }
 
 // Tests that if a managed account is assigned to the personal profile, but is
