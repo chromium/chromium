@@ -20,7 +20,6 @@ import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -39,9 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class SyncSettingsUtils {
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
-    private static final String LEGACY_SYNC_DASHBOARD_URL =
-            "https://www.google.com/settings/chrome/sync";
-    private static final String NEW_SYNC_DASHBOARD_URL = "https://chrome.google.com/data";
+    private static final String SYNC_DASHBOARD_URL = "https://chrome.google.com/data";
     private static final String TAG = "SyncSettingsUtils";
 
     @IntDef({TitlePreference.FULL_NAME, TitlePreference.EMAIL})
@@ -123,12 +120,7 @@ public class SyncSettingsUtils {
      */
     public static void openSyncDashboard(
             Context context, SettingsCustomTabLauncher customTabLauncher) {
-        openCustomTabWithURL(
-                context,
-                customTabLauncher,
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL)
-                        ? NEW_SYNC_DASHBOARD_URL
-                        : LEGACY_SYNC_DASHBOARD_URL);
+        openCustomTabWithURL(context, customTabLauncher, SYNC_DASHBOARD_URL);
     }
 
     /**

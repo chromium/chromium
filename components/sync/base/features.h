@@ -162,10 +162,6 @@ inline constexpr base::FeatureParam<double>
 BASE_DECLARE_FEATURE(kSyncTrustedVaultErrorMessageDuration);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// If enabled, the new sync dashboard URL will be opened when the user clicks
-// on the "Review your synced data" (or equivalent) entrypoint in settings.
-BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
-
 // If enabled, use the access token propagated from SyncSchedulerImpl through
 // SyncCycle rather than reading from ServerConnectionManager's cache.
 BASE_DECLARE_FEATURE(kSyncUsePropagatedAccessToken);

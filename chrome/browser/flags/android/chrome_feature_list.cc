@@ -632,7 +632,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sync_preferences::features::kCrossDevicePrefTrackerExtraLogs,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kNewTabPageCustomizationThemeSync,
-    &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncTrustedVaultErrorMessageDuration,
     &tab_groups::kUpdateTabGroupColors,
     &tab_groups::kUseAlternateHistorySyncIllustration,

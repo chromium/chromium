@@ -9,9 +9,7 @@
 namespace ash::chrome_external_urls {
 
 inline constexpr char16_t kChromiumProjectURL[] = u"https://www.chromium.org/";
-inline constexpr char kLegacySyncGoogleDashboardURL[] =
-    "https://www.google.com/settings/chrome/sync";
-inline constexpr char kNewSyncGoogleDashboardURL[] =
+inline constexpr char kSyncGoogleDashboardURL[] =
     "https://chrome.google.com/data";
 inline constexpr char kSyncAndGoogleServicesLearnMoreURL[] =
     "https://support.google.com/chrome?p=syncgoogleservices";

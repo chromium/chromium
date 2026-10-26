@@ -556,20 +556,12 @@ inline constexpr char16_t kSyncEncryptionHelpURL[] =
 inline constexpr char kSyncErrorsHelpURL[] =
     "https://support.google.com/chrome?p=settings_sync_error";
 
-// Legacy URL to the sync google dashboard.
-inline constexpr char kLegacySyncGoogleDashboardURL[] =
-    "https://www.google.com/settings/chrome/sync";
-#if BUILDFLAG(IS_CHROMEOS)
-static_assert(std::string_view(kLegacySyncGoogleDashboardURL) ==
-              ash::chrome_external_urls::kLegacySyncGoogleDashboardURL);
-#endif
-
-// New URL to the sync google dashboard.
-inline constexpr char kNewSyncGoogleDashboardURL[] =
+// URL to the sync google dashboard.
+inline constexpr char kSyncGoogleDashboardURL[] =
     "https://chrome.google.com/data";
 #if BUILDFLAG(IS_CHROMEOS)
-static_assert(std::string_view(kNewSyncGoogleDashboardURL) ==
-              ash::chrome_external_urls::kNewSyncGoogleDashboardURL);
+static_assert(std::string_view(kSyncGoogleDashboardURL) ==
+              ash::chrome_external_urls::kSyncGoogleDashboardURL);
 #endif
 
 // The URL for the "Learn more" page for sync setup on the personal stuff page.

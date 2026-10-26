@@ -9,7 +9,6 @@
 #include "ash/constants/chrome_url_constants.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
@@ -138,10 +137,7 @@ void SyncSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
-          GURL(base::FeatureList::IsEnabled(
-                   syncer::kSyncEnableNewSyncDashboardUrl)
-                   ? ash::chrome_external_urls::kNewSyncGoogleDashboardURL
-                   : ash::chrome_external_urls::kLegacySyncGoogleDashboardURL),
+          GURL(ash::chrome_external_urls::kSyncGoogleDashboardURL),
           std::string(application_locale_storage_->GetTag().tag_string()))
           .spec();
 

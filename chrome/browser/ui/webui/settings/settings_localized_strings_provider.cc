@@ -2212,10 +2212,7 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
                              Profile* profile) {
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
-          GURL(base::FeatureList::IsEnabled(
-                   syncer::kSyncEnableNewSyncDashboardUrl)
-                   ? chrome::kNewSyncGoogleDashboardURL
-                   : chrome::kLegacySyncGoogleDashboardURL),
+          GURL(chrome::kSyncGoogleDashboardURL),
           g_browser_process->GetApplicationLocale())
           .spec();
 
