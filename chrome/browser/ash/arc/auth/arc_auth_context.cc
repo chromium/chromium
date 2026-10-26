@@ -29,8 +29,9 @@ ArcAuthContext::ArcAuthContext(signin::IdentityManager* identity_manager,
                                const CoreAccountId& account_id)
     : identity_manager_(CHECK_DEREF(identity_manager)),
       account_id_(account_id) {
-  CHECK(identity_manager_->HasAccountWithRefreshToken(account_id),
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/576417065): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
 }
 
 ArcAuthContext::~ArcAuthContext() {
