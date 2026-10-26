@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"

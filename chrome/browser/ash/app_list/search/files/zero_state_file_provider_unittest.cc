@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

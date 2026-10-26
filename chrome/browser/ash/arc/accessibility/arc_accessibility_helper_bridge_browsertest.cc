@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

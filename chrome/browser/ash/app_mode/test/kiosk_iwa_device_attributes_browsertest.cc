@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"

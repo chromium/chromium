@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_contents_observer.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"

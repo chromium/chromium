@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"

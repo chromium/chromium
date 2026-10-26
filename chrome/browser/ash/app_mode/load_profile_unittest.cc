@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"

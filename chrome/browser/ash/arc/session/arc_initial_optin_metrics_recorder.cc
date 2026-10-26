@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "content/public/browser/browser_thread.h"
 
