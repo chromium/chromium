@@ -61,7 +61,6 @@
       "unit"
     ],
     "export_coverage_to_zoss": true,
-    "generate_blame_list": true,
     "use_java_coverage": true
   },
   "$build/siso": {

@@ -236,7 +236,6 @@ nightly_coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
-    generate_blame_list = True,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     use_java_coverage = True,
 )
