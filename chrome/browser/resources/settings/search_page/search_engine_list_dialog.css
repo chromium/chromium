@@ -13,10 +13,12 @@
 
 .subtitle {
   font-size: 0.75rem;
+  grid-column: 1;
   line-height: 22px;
 }
 
 .title {
+  grid-column: 1;
   margin-bottom: 16px;
 }
 

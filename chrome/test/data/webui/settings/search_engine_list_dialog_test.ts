@@ -64,6 +64,16 @@ suite('SearchEngineListDialog', function() {
         isVisible(dialog.shadowRoot.querySelector('#moreEnginesButton')));
   });
 
+  test('Subtitle is displayed below title', function() {
+    const title = dialog.shadowRoot.querySelector<HTMLElement>('.title');
+    const subtitle = dialog.shadowRoot.querySelector<HTMLElement>('.subtitle');
+    assertTrue(!!title);
+    assertTrue(!!subtitle);
+    assertTrue(
+        title.getBoundingClientRect().bottom <=
+        subtitle.getBoundingClientRect().top);
+  });
+
   test('Search engine list dialog sets default engine', async function() {
     browserProxy.resetResolver('setDefaultSearchEngine');
 
