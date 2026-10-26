@@ -14,6 +14,7 @@
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+#include "chrome/browser/vr/vr_browser_renderer_thread.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -174,6 +175,40 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestCameraInUseIndicator) {
   TestIndicatorOnAccessForContentType(
       t, ContentSettingsType::MEDIASTREAM_CAMERA,
       UserFriendlyElementName::kWebXrVideoPermissionIndicator);
+}
+
+// Showing a permission prompt while the indicators are visible stops the
+// overlay and starts it again right away (see
+// VRUiHostImpl::ShowExternalNotificationPrompt()). The restarted overlay
+// creates its graphics asynchronously, and an overlay pose or frame submission
+// from before the restart may still be in flight; it must not draw until the
+// graphics are ready.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPromptWhileIndicatorsVisible) {
+  MockXRDeviceHookBase mock_device;
+  LoadGenericPageChangeDefaultPermissionAndEnterVr(
+      t, {{permissions::PermissionUtil::GetGeolocationType(),
+           CreateGeolocationSetting(CONTENT_SETTING_ALLOW)}});
+
+  auto utils = UiUtils::Create();
+  utils->WaitForVisibilityStatus(
+      UserFriendlyElementName::kWebXrLocationPermissionIndicator, true,
+      XrBrowserTestBase::kPollTimeoutLong);
+  // The overlay is drawing, so it has a pose request or a submission
+  // outstanding.
+  mock_device.WaitNumFrames(2);
+
+  VRBrowserRendererThread* renderer_thread =
+      VRBrowserRendererThread::GetInstanceForTesting();
+  ASSERT_TRUE(renderer_thread);
+  renderer_thread->SetIndicatorsVisible(false);
+  renderer_thread->SetVisibleExternalPromptNotification(
+      ExternalPromptNotificationType::kPromptGenericPermission);
+
+  mock_device.WaitNumFrames(5);
+  utils->WaitForVisibilityStatus(
+      UserFriendlyElementName::kWebXrExternalPromptNotification, true);
+
+  t->EndSessionOrFail();
 }
 
 // Single indicator tests on entering immersive session
