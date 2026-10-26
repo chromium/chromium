@@ -18,6 +18,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
@@ -58,7 +59,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/nss_temp_certs_cache_chromeos.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
@@ -1242,23 +1242,26 @@ void GaiaScreenHandler::HandleGetDeviceId(const std::string& callback_id) {
 }
 
 void GaiaScreenHandler::StartClearingDnsCache() {
-  if (dns_clear_task_running_ ||
-      !g_browser_process->system_network_context_manager()) {
+  if (dns_clear_task_running_) {
+    return;
+  }
+
+  if (!SystemNetworkContextManager::HasInstance()) {
+    CHECK_IS_TEST();
     return;
   }
 
   dns_cleared_ = false;
 
-  g_browser_process->system_network_context_manager()
-      ->GetContext()
-      ->ClearHostCache(nullptr /* filter */,
-                       // Need to ensure that even if the network service
-                       // crashes, OnDnsCleared() is invoked.
-                       mojo::WrapCallbackWithDropHandler(
-                           base::BindOnce(&GaiaScreenHandler::OnDnsCleared,
-                                          weak_factory_.GetWeakPtr()),
-                           base::BindOnce(&GaiaScreenHandler::OnDnsCleared,
-                                          weak_factory_.GetWeakPtr())));
+  SystemNetworkContextManager::GetInstance()->GetContext()->ClearHostCache(
+      nullptr /* filter */,
+      // Need to ensure that even if the network service
+      // crashes, OnDnsCleared() is invoked.
+      mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(&GaiaScreenHandler::OnDnsCleared,
+                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(&GaiaScreenHandler::OnDnsCleared,
+                         weak_factory_.GetWeakPtr())));
   dns_clear_task_running_ = true;
 }
 

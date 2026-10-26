@@ -250,7 +250,6 @@ static_library("login") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:global_features",
     "//chrome/browser:resources",
