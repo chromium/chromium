@@ -8,6 +8,8 @@ package enterprise_connectors;
 
 option optimize_for = LITE_RUNTIME;
 
+// For EventInitiatorInfo.
+import "components/enterprise/common/proto/synced/browser_events.proto";
 // For ClientDownloadRequest.
 import "components/safe_browsing/core/common/proto/csd.proto";
 
@@ -111,6 +113,11 @@ message ContentMetaData {
 
   // File size in bytes. Only populated for file scanning events.
   optional uint64 file_size = 18;
+
+  // The entity that initiated the action (e.g. a Chrome extension). Only
+  // populated when Chrome can determine the initiator. Lets the server
+  // attribute the reporting events it generates for this request.
+  optional chrome.cros.reporting.proto.EventInitiatorInfo initiator = 19;
 }
 
 message ClientMetadata {
