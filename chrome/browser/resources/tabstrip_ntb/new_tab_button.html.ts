@@ -9,7 +9,6 @@ import type {NewTabButtonElement} from './new_tab_button.js';
 export function getHtml(this: NewTabButtonElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="button"
-    iron-icon="cr:add"
     aria-label="$i18n{newTabButtonAccName}"
     title="$i18n{newTabButtonAccName}"
     @click="${this.onClick}">
