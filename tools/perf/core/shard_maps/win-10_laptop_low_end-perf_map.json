@@ -34,6 +34,9 @@
             "blink_perf.layout": {
                 "abridged": false
             },
+            "blink_perf.service_worker": {
+                "abridged": false
+            },
             "blink_perf.owp_storage": {
                 "abridged": false
             },

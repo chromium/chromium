@@ -532,10 +532,11 @@ class ServiceWorkerRequestHandler(
 )
 class BlinkPerfServiceWorker(_BlinkPerfBenchmark):
   SUBDIR = 'service_worker'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.service_worker'
+    return 'blink_perf.service_worker'
 
   def CreateStorySet(self, options):
     path = os.path.join(BLINK_PERF_BASE_DIR, self.SUBDIR)
