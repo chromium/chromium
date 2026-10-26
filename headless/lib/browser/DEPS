@@ -11,6 +11,7 @@ include_rules = [
   "+printing",
   "+services/cert_verifier/public/mojom",
   "+services/network",
+  "+services/proxy_resolver/public/mojom",
   "+storage/browser/quota",
   "+storage/common/quota",
   "+third_party/skia/include",

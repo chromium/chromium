@@ -274,6 +274,44 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
   EXPECT_TRUE(browser_context->GetAllWebContents().empty());
 }
 
+class HeadlessBrowserTestWithPacProxy : public HeadlessBrowserTestWithProxy {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTestWithProxy::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kProxyPacUrl,
+        base::StringPrintf("data:application/x-ns-proxy-autoconfig,"
+                           "function FindProxyForURL(url, host) {"
+                           "  return 'PROXY %s';"
+                           "}",
+                           proxy_server()->host_port_pair().ToString()));
+  }
+};
+
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/40697469): Fix this test on Fuchsia and re-enable.
+#define MAYBE_ProxyPacUrl DISABLED_ProxyPacUrl
+#else
+#define MAYBE_ProxyPacUrl ProxyPacUrl
+#endif
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithPacProxy, MAYBE_ProxyPacUrl) {
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContext(HeadlessBrowserContext::CreateParams());
+  ASSERT_TRUE(browser_context);
+
+  // Load a page which doesn't actually exist, but which the PAC script routes
+  // to our proxy, which returns valid content anyway.
+  HeadlessWebContents* web_contents = browser_context->CreateWebContents(
+      GURL("http://not-an-actual-domain.tld/hello.html"));
+  ASSERT_TRUE(web_contents);
+
+  net::Error error = net::OK;
+  ASSERT_TRUE(WaitForLoad(web_contents, &error));
+  EXPECT_EQ(net::OK, error);
+  EXPECT_THAT(EvaluateScript(web_contents, "document.body.innerText"),
+              DictHasValue("result.result.value", "Hello headless world!"));
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
   // Tests copy-pasting text with the clipboard in headless mode.
   ui::Clipboard* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();

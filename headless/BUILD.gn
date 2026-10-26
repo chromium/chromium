@@ -282,6 +282,8 @@ source_set("headless_utility") {
     ":headless_common",
     "//mojo/public/cpp/bindings",
     "//printing/buildflags",
+    "//services/proxy_resolver:lib",
+    "//services/proxy_resolver/public/mojom",
   ]
   if (enable_printing) {
     deps += [
@@ -396,6 +398,7 @@ source_set("headless_browser") {
     "//sandbox/policy",
     "//services/cert_verifier/public/mojom",
     "//services/device/public/cpp/geolocation",
+    "//services/proxy_resolver/public/mojom",
     "//services/service_manager/public/cpp",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/re2",

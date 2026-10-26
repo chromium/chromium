@@ -4,18 +4,27 @@
 
 #include "headless/lib/utility/headless_content_utility_client.h"
 
+#include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/proxy_resolver/proxy_resolver_factory_impl.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "components/services/print_compositor/print_compositor_impl.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "content/public/utility/utility_thread.h"
-#include "mojo/public/cpp/bindings/service_factory.h"
 #endif
 
 namespace headless {
 
 namespace {
+
+auto RunProxyResolver(
+    mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolverFactory>
+        receiver) {
+  return std::make_unique<proxy_resolver::ProxyResolverFactoryImpl>(
+      std::move(receiver));
+}
 
 #if BUILDFLAG(ENABLE_PRINTING)
 auto RunPrintCompositor(
@@ -33,6 +42,7 @@ HeadlessContentUtilityClient::~HeadlessContentUtilityClient() = default;
 
 void HeadlessContentUtilityClient::RegisterMainThreadServices(
     mojo::ServiceFactory& services) {
+  services.Add(RunProxyResolver);
 #if BUILDFLAG(ENABLE_PRINTING)
   services.Add(RunPrintCompositor);
 #endif

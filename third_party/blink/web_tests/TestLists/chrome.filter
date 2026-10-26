@@ -26,6 +26,10 @@ external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html
 external/wpt/signed-exchange/reporting/*
 virtual/split-http-cache/external/wpt/signed-exchange/reporting/*
 
+# Headless shell doesn't handle network hints, so <link rel=preconnect> is a
+# no-op there.
+external/wpt/preload/preconnect.html
+
 # Translator API is implemented in the `//chrome` layer.
 external/wpt/ai/translator/*
 

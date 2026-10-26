@@ -111,6 +111,10 @@ inline constexpr char kPasswordStore[] = "password-store";
 // rules.
 inline constexpr char kProxyBypassList[] = "proxy-bypass-list";
 
+// Uses the PAC script at the specified URL to pick proxies, overrides system
+// settings. Takes precedence over --proxy-server.
+inline constexpr char kProxyPacUrl[] = "proxy-pac-url";
+
 // Uses a specified proxy server, overrides system settings. This switch only
 // affects HTTP and HTTPS requests.
 inline constexpr char kProxyServer[] = "proxy-server";

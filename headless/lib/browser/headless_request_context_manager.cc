@@ -14,8 +14,10 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/service_process_host.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/public/switches.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/http/http_auth_preferences.h"
@@ -26,6 +28,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/url_request_context_builder_mojo.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 namespace headless {
 
@@ -55,6 +58,18 @@ net::NetworkTrafficAnnotationTag GetProxyConfigTrafficAnnotationTag() {
         "This config is only used for headless mode and provided by user."
     })");
   return traffic_annotation;
+}
+
+// Launches the proxy resolver service in a utility process, so that the
+// network service can run PAC scripts.
+mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
+LaunchProxyResolverFactory() {
+  mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory> remote;
+  content::ServiceProcessHost::Launch(remote.InitWithNewPipeAndPassReceiver(),
+                                      content::ServiceProcessHost::Options()
+                                          .WithDisplayName("Proxy Resolver")
+                                          .Pass());
+  return remote;
 }
 
 }  // namespace
@@ -296,6 +311,9 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
   if (proxy_config_) {
     context_params->initial_proxy_config = net::ProxyConfigWithAnnotation(
         *proxy_config_, GetProxyConfigTrafficAnnotationTag());
+    if (proxy_config_->has_pac_url()) {
+      context_params->proxy_resolver_factory = LaunchProxyResolverFactory();
+    }
   } else {
     proxy_config_monitor_->AddToNetworkContextParams(context_params);
   }

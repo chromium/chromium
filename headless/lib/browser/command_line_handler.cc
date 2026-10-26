@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace headless {
 
@@ -85,6 +86,23 @@ void HandleProxyServer(base::CommandLine& command_line,
   }
 
   options.proxy_config = std::move(proxy_config);
+}
+
+bool HandleProxyPacUrl(base::CommandLine& command_line,
+                       HeadlessBrowser::Options& options) {
+  DCHECK(command_line.HasSwitch(switches::kProxyPacUrl));
+
+  std::string pac_url_str =
+      command_line.GetSwitchValueASCII(switches::kProxyPacUrl);
+  GURL pac_url(pac_url_str);
+  if (!pac_url.is_valid()) {
+    LOG(ERROR) << "Invalid PAC script URL: " << pac_url_str;
+    return false;
+  }
+
+  options.proxy_config = std::make_unique<net::ProxyConfig>(
+      net::ProxyConfig::CreateFromCustomPacURL(pac_url));
+  return true;
 }
 
 bool HandleWindowSize(base::CommandLine& command_line,
@@ -205,7 +223,11 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     options.devtools_pipe_enabled = true;
   }
 
-  if (command_line.HasSwitch(switches::kProxyServer)) {
+  if (command_line.HasSwitch(switches::kProxyPacUrl)) {
+    if (!HandleProxyPacUrl(command_line, options)) {
+      return false;
+    }
+  } else if (command_line.HasSwitch(switches::kProxyServer)) {
     HandleProxyServer(command_line, options);
   }
 
