@@ -78,14 +78,6 @@ bool HasShutdownStarted();
 // This is true for kEndSession and kSilentExit shutdown types.
 bool ShouldIgnoreUnloadHandlers();
 
-// Returns true if OnShutdownStarting has been called and renderer processes
-// should be fast-killed without waiting for unload handlers, workers, or
-// keep-alive requests. This is only enabled on ChromeOS, where session_manager
-// enforces a 3 s SIGTERM timeout across both ShouldIgnoreUnloadHandlers() and
-// kBrowserExit (reached from ExitIgnoreUnloadHandlers() when all browsers are
-// closeable).
-bool ShouldFastShutdownRenderers();
-
 // Get the current shutdown type.
 ShutdownType GetShutdownType();
 

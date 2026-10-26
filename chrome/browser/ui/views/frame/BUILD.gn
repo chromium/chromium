@@ -998,7 +998,6 @@ source_set("browser_view") {
       "//ash/constants",
       "//ash/public/cpp",
       "//chrome/browser/ash/boca/on_task",
-      "//chrome/browser/lifetime",
       "//chrome/browser/ui/chromeos/locked_state",
       "//chromeos/components/mgs",
       "//chromeos/ui/base",
