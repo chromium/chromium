@@ -160,6 +160,7 @@ PerformanceEntry::EntryType kDroppableEntryTypes[] = {
     PerformanceEntry::kEvent,
     PerformanceEntry::kLayoutShift,
     PerformanceEntry::kLargestContentfulPaint,
+    PerformanceEntry::kPaint,
     PerformanceEntry::kBackForwardCacheRestoration,
     PerformanceEntry::kSoftNavigation,
     PerformanceEntry::kInteractionContentfulPaint,
@@ -264,6 +265,11 @@ constexpr size_t kDefaultLongTaskBufferSize = 200;
 constexpr size_t kDefaultLongAnimationFrameBufferSize = 200;
 constexpr size_t kDefaultBackForwardCacheRestorationBufferSize = 200;
 constexpr size_t kDefaultSoftNavigationBufferSize = 50;
+// Paint timing entries is more than twice as much as the soft navigation buffer
+// size, as there can be 2 paint entries for each soft navigation, plus 2
+// entries for the initial navigation.
+constexpr size_t kDefaultPaintEntriesBufferSize =
+    kDefaultSoftNavigationBufferSize * 2 + 2;
 
 Performance::Performance(
     base::TimeTicks time_origin,
@@ -369,12 +375,9 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
     InsertEntryIntoSortedBuffer(entries, *navigation_timing_);
   }
 
-  if (first_paint_timing_ && CheckName(first_paint_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *first_paint_timing_);
-  }
-  if (first_contentful_paint_timing_ &&
-      CheckName(first_contentful_paint_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *first_contentful_paint_timing_);
+  if (paint_entries_timing_.size()) {
+    entries = MergePerformanceEntryVectors(entries, paint_entries_timing_,
+                                           maybe_name);
   }
 
   entries = MergePerformanceEntryVectors(
@@ -525,15 +528,7 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kPaint: {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kPaintTimingRequested);
-      // TODO(crbug.com/576982828): Ensure FP and FCP presentation callbacks
-      // cannot produce FP.startTime > FCP.startTime, so that returning FP
-      // before FCP preserves startTime order.
-      if (first_paint_timing_) {
-        entries_storage.push_back(first_paint_timing_);
-      }
-      if (first_contentful_paint_timing_) {
-        entries_storage.push_back(first_contentful_paint_timing_);
-      }
+      entries = &paint_entries_timing_;
       break;
     }
 
@@ -1395,15 +1390,13 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
   PerformancePaintTiming* entry = MakeGarbageCollected<PerformancePaintTiming>(
       type, paint_timing_info, DynamicTo<LocalDOMWindow>(GetExecutionContext()),
       NavigationId().web_exposed_id);
-  switch (type) {
-    case PerformancePaintTiming::PaintType::kFirstPaint:
-      CHECK(!first_paint_timing_);
-      first_paint_timing_ = entry;
-      break;
-    case PerformancePaintTiming::PaintType::kFirstContentfulPaint:
-      CHECK(!first_contentful_paint_timing_);
-      first_contentful_paint_timing_ = entry;
-      break;
+  DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
+         (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
+
+  if (paint_entries_timing_.size() < kDefaultPaintEntriesBufferSize) {
+    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry);
+  } else {
+    ++(dropped_entries_count_map_.find(PerformanceEntry::kPaint)->value);
   }
   NotifyObserversOfEntry(*entry);
 }
@@ -1457,8 +1450,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(long_animation_frame_buffer_);
   visitor->Trace(navigation_timing_);
   visitor->Trace(user_timing_);
-  visitor->Trace(first_paint_timing_);
-  visitor->Trace(first_contentful_paint_timing_);
+  visitor->Trace(paint_entries_timing_);
   visitor->Trace(first_input_timing_);
   visitor->Trace(observers_);
   visitor->Trace(active_observers_);

@@ -35,6 +35,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/timing/declarative_performance_observer.mojom-blink.h"
@@ -165,7 +166,15 @@ class CORE_EXPORT Performance : public EventTarget {
   }
 
   PerformanceEntry* FirstPaintTiming() const {
-    return first_paint_timing_.Get();
+    if (paint_entries_timing_.empty()) {
+      return nullptr;
+    }
+    // `paint_entries_timing_` only ever stores "first-paint" followed by
+    // "first-contentful-paint" (could be replaced with two dedicated named
+    // members instead of a vector).
+    CHECK_EQ(paint_entries_timing_[0]->name(),
+             performance_entry_names::kFirstPaint, base::NotFatalUntil::M162);
+    return paint_entries_timing_[0].Get();
   }
 
   // Get all performance entries of the main frame. This is kept until the one
@@ -459,8 +468,7 @@ class CORE_EXPORT Performance : public EventTarget {
   PerformanceEntryVector long_animation_frame_buffer_;
   Member<PerformanceNavigationTiming> navigation_timing_;
   Member<UserTiming> user_timing_;
-  Member<PerformancePaintTiming> first_paint_timing_;
-  Member<PerformancePaintTiming> first_contentful_paint_timing_;
+  PerformanceEntryVector paint_entries_timing_;
   Member<PerformanceEventTiming> first_input_timing_;
 
   base::TimeTicks time_origin_;
