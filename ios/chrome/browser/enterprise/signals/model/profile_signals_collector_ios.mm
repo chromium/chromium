@@ -9,7 +9,9 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/time/time.h"
 #import "components/device_signals/core/browser/browser_utils.h"
+#import "components/device_signals/core/browser/metrics_utils.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -62,6 +64,9 @@ void ProfileSignalsCollectorIOS::PopulateProfileSignals(
     const device_signals::SignalsAggregationRequest& request,
     device_signals::SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  // Marks the start of the collection. The collection latency is measured
+  // from here until the outcome is recorded below.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   device_signals::ProfileSignalsResponse signal_response;
 
   // 1. Collect signals from Preferences using shared helpers.
@@ -91,6 +96,14 @@ void ProfileSignalsCollectorIOS::PopulateProfileSignals(
   }
 
   response.profile_signals_response = std::move(signal_response);
+
+  // Profile signals collection has no failure path once the permission check
+  // has passed, so the outcome is always recorded as a success. This also
+  // records the collection latency, i.e. the time elapsed between `start_time`
+  // (when the collection started) and now (when the outcome is known).
+  device_signals::LogSignalCollectionSucceeded(
+      device_signals::SignalName::kBrowserContextSignals, start_time,
+      /*signal_collection_size=*/std::nullopt);
 
   // All signals are fetched synchronously for now.
   std::move(done_closure).Run();

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/run_loop.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
@@ -31,6 +32,14 @@
 namespace {
 constexpr char kFakeProfileEnrollmentDomain[] = "profile.domain.com";
 constexpr char kFakeProfileAffiliationId[] = "profile-affiliation-id";
+
+constexpr char kCollectionSuccessHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success";
+constexpr char kCollectionFailureHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Failure";
+constexpr char kBrowserContextSignalsSuccessLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success.BrowserContextSignals."
+    "Latency";
 }  // namespace
 
 // Test fixture for ProfileSignalsCollectorIOS. It sets up a fake profile with
@@ -120,6 +129,7 @@ TEST_F(ProfileSignalsCollectorIOSTest, PopulateProfileSignals_ManagedProfile) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  base::HistogramTester histogram_tester;
 
   device_signals::SignalsAggregationRequest request;
   device_signals::SignalsAggregationResponse response;
@@ -152,6 +162,15 @@ TEST_F(ProfileSignalsCollectorIOSTest, PopulateProfileSignals_ManagedProfile) {
   EXPECT_FALSE(profile_signals.built_in_dns_client_enabled);
   EXPECT_FALSE(profile_signals.chrome_remote_desktop_app_blocked);
   EXPECT_FALSE(profile_signals.site_isolation_enabled);
+
+  // The collection outcome is recorded as a success, along with the latency
+  // measured from the start of the collection to its outcome.
+  histogram_tester.ExpectUniqueSample(
+      kCollectionSuccessHistogram,
+      device_signals::SignalName::kBrowserContextSignals, 1);
+  histogram_tester.ExpectTotalCount(
+      kBrowserContextSignalsSuccessLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCollectionFailureHistogram, 0);
 }
 
 // Test that missing policy data produces an empty affiliation ID list.

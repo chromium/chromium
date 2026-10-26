@@ -11,6 +11,7 @@
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
@@ -31,6 +32,13 @@ namespace {
 constexpr char kFakeVendorId[] = "fake-vendor-id";
 constexpr char kFakeDeviceAffiliationId[] = "device-affiliation-id";
 constexpr char kFakeDeviceEnrollmentDomain[] = "device.domain.com";
+
+constexpr char kCollectionSuccessHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success";
+constexpr char kCollectionFailureHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Failure";
+constexpr char kOsSignalsSuccessLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Collection.Success.OsSignals.Latency";
 
 class IOSSystemSignalsCollectorTest : public PlatformTest {
  protected:
@@ -109,6 +117,7 @@ TEST_F(IOSSystemSignalsCollectorTest, IsSignalSupported) {
 
 TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_Success) {
   reauth_module_.canAttempt = YES;
+  base::HistogramTester histogram_tester;
 
   const device_signals::OsSignalsResponse os_signals =
       CollectOsSignals(collector_.get());
@@ -123,6 +132,13 @@ TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_Success) {
   EXPECT_EQ(os_signals.disk_encryption,
             device_signals::SettingValue::ENABLED);  // Mirrors screen lock
   EXPECT_EQ(os_signals.os_firewall, device_signals::SettingValue::UNKNOWN);
+
+  // The collection outcome is recorded as a success, along with the latency
+  // measured from the start of the collection to its outcome.
+  histogram_tester.ExpectUniqueSample(
+      kCollectionSuccessHistogram, device_signals::SignalName::kOsSignals, 1);
+  histogram_tester.ExpectTotalCount(kOsSignalsSuccessLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kCollectionFailureHistogram, 0);
 }
 
 TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_ScreenLockDisabled) {

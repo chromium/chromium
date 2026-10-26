@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/system/sys_info.h"
+#import "base/time/time.h"
 #import "components/device_signals/core/browser/base_signals_collector.h"
 #import "components/device_signals/core/browser/signals_types.h"
 
@@ -47,6 +48,7 @@ class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
                     base::OnceClosure done_closure);
 
   void OnHardwareInfoReceived(
+      base::TimeTicks start_time,
       device_signals::SignalsAggregationResponse& response,
       std::unique_ptr<device_signals::OsSignalsResponse> signal_response,
       base::OnceClosure done_closure,
