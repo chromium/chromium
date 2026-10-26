@@ -189,7 +189,7 @@ enum class ActionAfterReauth {
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.mediator.isEEAAccount =
       ios::RegionalCapabilitiesServiceFactory::GetForProfile(self.profile)
-          ->IsInEeaCountry();
+          ->MayShowLinkedGoogleServicesSetting();
 
   ManageSyncSettingsTableViewController* viewController =
       [[ManageSyncSettingsTableViewController alloc]

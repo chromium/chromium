@@ -381,8 +381,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   regional_capabilities::RegionalCapabilitiesService* regional_capabilties =
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
           profile);
-  html_source->AddBoolean("isEeaChoiceCountry",
-                          regional_capabilties->IsInEeaCountry());
+  html_source->AddBoolean(
+      "mayShowLinkedGoogleServicesSetting",
+      regional_capabilties->MayShowLinkedGoogleServicesSetting());
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(

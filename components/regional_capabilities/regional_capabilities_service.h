@@ -162,6 +162,12 @@ class RegionalCapabilitiesService : public KeyedService {
 
   bool ShouldRecordSearchEngineChoicesMadeFromSettings();
 
+  // Returns whether the "Linked Google Services" setting may be shown in
+  // Sync/Account personalization settings for the active regional program.
+  // Whether the setting is actually displayed also depends on the account
+  // being signed in and other platform-specific conditions.
+  bool MayShowLinkedGoogleServicesSetting();
+
 #if !BUILDFLAG(IS_ANDROID)
   // Returns the appropriate choice screen design strings for the active
   // program, if one is required. Returns `std::nullopt` if the region does not
@@ -250,6 +256,9 @@ class RegionalCapabilitiesService : public KeyedService {
 
   // If the Java-side service has been created, commands it to destroy itself.
   void DestroyJavaObject();
+
+  // See `MayShowLinkedGoogleServicesSetting()`.
+  bool MayShowLinkedGoogleServicesSetting(JNIEnv* env);
 
   // See `IsInEeaCountry()`.
   bool IsInEeaCountry(JNIEnv* env);

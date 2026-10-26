@@ -866,7 +866,7 @@ suite('EEAChoiceCountry', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       signinAllowed: true,
-      isEeaChoiceCountry: true,
+      mayShowLinkedGoogleServicesSetting: true,
     });
   });
 

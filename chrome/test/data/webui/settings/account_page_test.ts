@@ -25,7 +25,7 @@ suite('AccountPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      isEeaChoiceCountry: false,
+      mayShowLinkedGoogleServicesSetting: false,
       // <if expr="is_chromeos">
       replaceSyncPromosWithSignInPromos: true,
       osSettingsAccountsPageUrl: 'chrome://os-settings/osPeople',
@@ -183,7 +183,7 @@ suite('AccountPage', function() {
 
   test('EEAChoiceCountry', async function() {
     loadTimeData.overrideValues({
-      isEeaChoiceCountry: true,
+      mayShowLinkedGoogleServicesSetting: true,
     });
     resetRouterForTesting();
     accountSettingsPage = createSettingsAccountPageElement();

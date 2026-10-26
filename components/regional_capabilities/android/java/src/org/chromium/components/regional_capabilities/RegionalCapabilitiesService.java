@@ -43,6 +43,22 @@ public class RegionalCapabilitiesService {
     }
 
     /**
+     * Returns whether the "Linked Google Services" setting may be shown in Sync/Account
+     * personalization settings for the active regional program. Whether the setting is actually
+     * displayed also depends on the account being signed in and other conditions.
+     *
+     * <p>Testing note: To control the value this returns in manual or automated tests, consider
+     * using the {@code --search-engine-choice-country} command line flag and its special arguments,
+     * defined in //components/regional_capabilities/regional_capabilities_switches.h
+     */
+    @MainThread
+    public boolean mayShowLinkedGoogleServicesSetting() {
+        ThreadUtils.assertOnUiThread();
+        return RegionalCapabilitiesServiceJni.get()
+                .mayShowLinkedGoogleServicesSetting(mNativeService);
+    }
+
+    /**
      * Returns whether the profile country is a EEA member. Uses the understanding of profile
      * country that is used for search engine choice screens and similar features, which might be
      * different than what LocaleUtils returns.
@@ -50,7 +66,10 @@ public class RegionalCapabilitiesService {
      * <p>Testing note: To control the value this returns in manual or automated consider using the
      * {@code --search-engine-choice-country} command line flag and its special arguments, defined
      * in //components/regional_capabilities/regional_capabilities_switches.h
+     *
+     * @deprecated Prefer using more specific regional capabilities getters.
      */
+    @Deprecated
     @MainThread
     public boolean isInEeaCountry() {
         ThreadUtils.assertOnUiThread();
@@ -59,6 +78,8 @@ public class RegionalCapabilitiesService {
 
     @NativeMethods
     public interface Natives {
+        boolean mayShowLinkedGoogleServicesSetting(long nativeRegionalCapabilitiesService);
+
         boolean isInEeaCountry(long nativeRegionalCapabilitiesService);
     }
 }

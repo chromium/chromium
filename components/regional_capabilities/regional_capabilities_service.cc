@@ -602,6 +602,10 @@ RegionalCapabilitiesService::GetChoiceScreenEligibilityConfig() {
   return GetActiveProgramSettings().choice_screen_eligibility_config;
 }
 
+bool RegionalCapabilitiesService::MayShowLinkedGoogleServicesSetting() {
+  return GetActiveProgramSettings().program == Program::kWaffle;
+}
+
 bool RegionalCapabilitiesService::IsInEeaCountry() {
   // Feature behaviour was directly based on the current country, as a
   // decentralised way to express a concept we are now framing as "program
@@ -829,6 +833,11 @@ void RegionalCapabilitiesService::DestroyJavaObject() {
                                              java_ref_);
     java_ref_.Reset();
   }
+}
+
+bool RegionalCapabilitiesService::MayShowLinkedGoogleServicesSetting(
+    JNIEnv* env) {
+  return MayShowLinkedGoogleServicesSetting();
 }
 
 bool RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {

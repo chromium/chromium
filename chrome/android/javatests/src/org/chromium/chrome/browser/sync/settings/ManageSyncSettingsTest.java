@@ -256,7 +256,7 @@ public class ManageSyncSettingsTest {
                 GoogleActivityController.class, mGoogleActivityController);
 
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(false);
 
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
 
@@ -1246,7 +1246,7 @@ public class ManageSyncSettingsTest {
     @Feature({"PersonalizedGoogleServices", "RenderTest"})
     @DisabledTest(message = "Flaky - crbug.com/466094740")
     public void testLinkedServicesSettingEea() throws Exception {
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1273,7 +1273,7 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"PersonalizedGoogleServices"})
     public void testClickPersonalizeGoogleServicesEEA() {
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
         // Scroll to and click the Personalize Google services pref.
@@ -1791,7 +1791,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     public void testPreferenceScreenMatchesSearchIndex_signedIn_nonEea() {
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(false);
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
 
@@ -1801,7 +1801,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     public void testPreferenceScreenMatchesSearchIndex_signedIn_eea() {
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
 

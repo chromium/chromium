@@ -127,7 +127,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       existingPassphraseLabel_: {type: String},
 
-      isEeaChoiceCountry_: {type: Boolean},
+      mayShowLinkedGoogleServicesSetting_: {type: Boolean},
 
       personalizationCollapseExpanded_: {type: Boolean},
     };
@@ -146,8 +146,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   protected accessor signedIn_: boolean = true;
   protected accessor syncDisabledByAdmin_: boolean = false;
   protected accessor syncSectionDisabled_: boolean = false;
-  protected accessor isEeaChoiceCountry_: boolean =
-      loadTimeData.getBoolean('isEeaChoiceCountry');
+  protected accessor mayShowLinkedGoogleServicesSetting_: boolean =
+      loadTimeData.getBoolean('mayShowLinkedGoogleServicesSetting');
   protected accessor personalizationCollapseExpanded_: boolean = false;
 
   // <if expr="not is_chromeos">

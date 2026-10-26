@@ -87,7 +87,7 @@ public class PersonalizeGoogleServicesSettingsTest {
         ServiceLoaderUtil.setInstanceForTesting(
                 GoogleActivityController.class, mGoogleActivityController);
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(true);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class PersonalizeGoogleServicesSettingsTest {
     @SmallTest
     @Feature({"PersonalizedGoogleServices"})
     public void testSearchPersonalizeGoogleServices_nonEea() {
-        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
+        when(mRegionalCapabilities.mayShowLinkedGoogleServicesSetting()).thenReturn(false);
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 

@@ -1136,6 +1136,26 @@ TEST_F(RegionalCapabilitiesServiceTest,
   EXPECT_EQ(GetPrefSerializedCountryID(), kBelgiumCountryId.Serialize());
 }
 
+TEST_F(RegionalCapabilitiesServiceTest, MayShowLinkedGoogleServicesSetting) {
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(kBelgiumCountryId
+#if BUILDFLAG(IS_ANDROID)
+                  ,
+                  Program::kWaffle
+#endif  // BUILDFLAG(IS_ANDROID)
+      );
+  EXPECT_TRUE(service->MayShowLinkedGoogleServicesSetting());
+
+  SetCommandLineCountry("US");
+  EXPECT_FALSE(service->MayShowLinkedGoogleServicesSetting());
+
+  SetCommandLineCountry("JP");
+  EXPECT_FALSE(service->MayShowLinkedGoogleServicesSetting());
+
+  SetCommandLineCountry(kBelgiumCountryCode);
+  EXPECT_TRUE(service->MayShowLinkedGoogleServicesSetting());
+}
+
 TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
   std::unique_ptr<RegionalCapabilitiesService> service =
       InitService(kBelgiumCountryId

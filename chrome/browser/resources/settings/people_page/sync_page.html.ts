@@ -83,7 +83,7 @@ export function getHtml(this: SettingsSyncPageElement) {
               @click="${this.onSyncAdvancedClick_}">
           </cr-link-row>
 
-          ${!this.isEeaChoiceCountry_ ? html`
+          ${!this.mayShowLinkedGoogleServicesSetting_ ? html`
             <cr-link-row class="hr" id="activityControlsLinkRowV2"
                 label="$i18n{personalizeGoogleServicesTitleV2}"
                 sub-label="$i18n{personalizeGoogleServicesDesc}"

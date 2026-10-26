@@ -247,7 +247,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         setupAccountSettings(profile);
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
-        if (isEeaChoiceCountry()) {
+        if (mayShowLinkedGoogleServicesSetting()) {
             mGoogleActivityControls.setTitle(
                     R.string.sign_in_personalize_google_services_title_eea);
         }
@@ -770,7 +770,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
-        if (isEeaChoiceCountry()) {
+        if (mayShowLinkedGoogleServicesSetting()) {
             SettingsNavigationFactory.createSettingsNavigation(getContext())
                     .startSettings(
                             getContext(),
@@ -985,14 +985,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         notifyPreferencesUpdated();
     }
 
-    private static boolean isEeaChoiceCountry(Profile profile) {
+    private static boolean mayShowLinkedGoogleServicesSetting(Profile profile) {
         RegionalCapabilitiesService regionalCapabilities =
                 RegionalCapabilitiesServiceFactory.getForProfile(profile);
-        return regionalCapabilities.isInEeaCountry();
+        return regionalCapabilities.mayShowLinkedGoogleServicesSetting();
     }
 
-    private boolean isEeaChoiceCountry() {
-        return isEeaChoiceCountry(getProfile());
+    private boolean mayShowLinkedGoogleServicesSetting() {
+        return mayShowLinkedGoogleServicesSetting(getProfile());
     }
 
     /**
@@ -1074,7 +1074,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowSwitchToIncognitoPref(profile)) {
                         indexData.removeEntryForKey(frag, PREF_SWITCH_TO_INCOGNITO);
                     }
-                    if (isEeaChoiceCountry(profile)) {
+                    if (mayShowLinkedGoogleServicesSetting(profile)) {
                         String activityControlsId = getUniqueId(PREF_GOOGLE_ACTIVITY_CONTROLS);
                         SettingsIndexData.Entry entry = indexData.getEntry(activityControlsId);
                         if (entry != null) {

@@ -62,7 +62,7 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
        */
       syncPrefs: {type: Object},
 
-      isEeaChoiceCountry_: {type: Boolean},
+      mayShowLinkedGoogleServicesSetting_: {type: Boolean},
 
       personalizationCollapseExpanded_: {type: Boolean},
 
@@ -79,8 +79,8 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   protected accessor syncStatus_: SyncStatus|null = null;
   accessor syncPrefs: SyncPrefs|null = null;
 
-  protected accessor isEeaChoiceCountry_: boolean =
-      loadTimeData.getBoolean('isEeaChoiceCountry');
+  protected accessor mayShowLinkedGoogleServicesSetting_: boolean =
+      loadTimeData.getBoolean('mayShowLinkedGoogleServicesSetting');
   protected accessor personalizationCollapseExpanded_: boolean = false;
   protected accessor dataEncrypted_: boolean = false;
   protected accessor encryptionExpanded_: boolean = false;
