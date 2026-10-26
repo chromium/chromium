@@ -1622,10 +1622,6 @@ BASE_FEATURE(kAuthPanelUsingAuthHub, base::FEATURE_DISABLED_BY_DEFAULT);
 // that lives in ash/auth/view/active_session_auth_view
 BASE_FEATURE(kWebAuthNAuthDialogMerge, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use the staging URL as part of the "Messages" feature under "Connected
-// Devices" settings.
-BASE_FEATURE(kUseMessagesStagingUrl, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLiveCaptionUserMicrophone, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the Stork production SM-DS server when fetching pending eSIM profiles.
