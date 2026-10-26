@@ -58,33 +58,6 @@ struct DoctypeData {
   bool force_quirks_;
 };
 
-enum class DOMPartTokenType {
-  kChildNodePartStart,
-  kChildNodePartEnd,
-};
-
-struct DOMPartData {
-  USING_FAST_MALLOC(DOMPartData);
-
- public:
-  explicit DOMPartData(DOMPartTokenType type) : type_(type) {
-  }
-  DOMPartData(const DOMPartData&) = delete;
-  DOMPartData& operator=(const DOMPartData&) = delete;
-
-  Vector<String> metadata_;
-  DOMPartTokenType type_;
-};
-
-struct DOMPartsNeeded {
- public:
-  bool needs_node_part{false};
-  Vector<AtomicString> needs_attribute_parts{};
-  explicit operator bool() const {
-    return needs_node_part || !needs_attribute_parts.empty();
-  }
-};
-
 static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
                                                const QualifiedName& name) {
   for (Attribute& attr : attributes) {

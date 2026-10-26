@@ -1218,10 +1218,6 @@ class CORE_EXPORT Node : public EventTarget {
 
   void Trace(Visitor*) const override;
 
-  bool HasNodePart() const { return GetFlag(kHasNodePart); }
-  void SetHasNodePart() { SetFlag(kHasNodePart); }
-  void ClearHasNodePart() { ClearFlag(kHasNodePart); }
-
   // This method calls Document::AddConsoleMessage but also attaches this
   // node to the console message so developers can see the relevant element
   // in DevTools.
@@ -1295,17 +1291,14 @@ class CORE_EXPORT Node : public EventTarget {
     kSelfOrAncestorHasDirAutoAttribute = 1u << 27,
     kCachedDirectionalityIsRtl = 1u << 28,
 
-    // Bits indicating this Node is a NodePart or a ChildNodePart endpoint.
-    kHasNodePart = 1u << 29,
-
     // Whether this node is an Element that is a shadow host.
     // Used to speed up GetShadowRoot(). This bit can be freed up if
     // GetShadowRoot() can be inlined by the compiler; see crbug.com/465839474.
-    kHasShadowRootFlag = 1u << 30,
+    kHasShadowRootFlag = 1u << 29,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 1 bit(s) remaining.
+    // 2 bit(s) remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {

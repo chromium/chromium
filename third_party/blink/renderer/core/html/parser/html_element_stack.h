@@ -38,12 +38,6 @@ namespace blink {
 class ContainerNode;
 class Element;
 
-enum class DOMPartsAllowed {
-  kNever,
-  kInsideParseParts,
-  kAlways,
-};
-
 // NOTE: The HTML5 spec uses a backwards (grows downward) stack.  We're using
 // more standard (grows upwards) stack terminology here.
 class HTMLElementStack {
@@ -148,9 +142,6 @@ class HTMLElementStack {
   void RemoveNonTopCommon(Element*);
   void UpdatePElementInButtonScope(
       const HeapVector<Member<HTMLStackItem>>& items_above);
-
-  unsigned parse_parts_count_{0};
-  DOMPartsAllowed dom_parts_allowed_state_{DOMPartsAllowed::kInsideParseParts};
 
   Member<HTMLStackItem> top_;
 

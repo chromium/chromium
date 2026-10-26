@@ -32,7 +32,6 @@
 namespace blink {
 
 class Document;
-class DocumentPartRoot;
 class StreamingSanitizer;
 
 class CORE_EXPORT DocumentFragment : public ContainerNode {
@@ -72,11 +71,6 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
 
   // This will catch anyone doing an unnecessary check.
   bool IsDocumentFragment() const = delete;
-
-  // https://crbug.com/1453291
-  // The DOM Parts API:
-  // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
-  DocumentPartRoot& getPartRoot();
 
   void Trace(Visitor* visitor) const override;
 

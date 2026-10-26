@@ -309,7 +309,6 @@ class CORE_EXPORT HTMLTokenizer {
   bool force_null_character_replacement_;
   bool should_allow_cdata_;
   const bool truncated_markup_declaration_enabled_;
-  bool should_allow_dom_parts_{false};
   const HTMLParserOptions options_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#additional-allowed-character

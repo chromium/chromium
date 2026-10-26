@@ -1330,8 +1330,7 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
   }
 
   // As an optimization we don't notify leaf nodes when when inserting
-  // into detached subtrees that are not in a shadow tree, unless the
-  // node has DOM Parts attached.
+  // into detached subtrees that are not in a shadow tree.
   if (!node.IsContainerNode() && !IsInShadowTree()) {
     return;
   }
@@ -1427,9 +1426,8 @@ void ContainerNode::NotifyNodeRemoved(Node& root) {
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
     // As an optimization we skip notifying Text nodes and other leaf nodes
-    // of removal when they're not in the Document tree, not in a shadow root,
-    // and don't have DOM Parts, since the virtual call to removedFrom is not
-    // needed.
+    // of removal when they're not in the Document tree or a shadow root, since
+    // the virtual call to removedFrom is not needed.
     if (!node.IsContainerNode() && !node.IsInTreeScope()) {
       continue;
     }

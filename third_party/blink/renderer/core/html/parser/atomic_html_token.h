@@ -316,13 +316,8 @@ class CORE_EXPORT AtomicHTMLToken {
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
 
-  // For DOM Parts
-  std::unique_ptr<DOMPartData> dom_part_data_;
-
   // For Processing Instructions
   String processing_instruction_target_;
-
-  DOMPartsNeeded dom_parts_needed_;
 
   // For StartTag and EndTag
   bool self_closing_ = false;
