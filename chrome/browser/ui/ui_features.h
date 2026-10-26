@@ -402,6 +402,8 @@ BASE_DECLARE_FEATURE(kAiOverlayDisableNavigationContext);
 
 BASE_DECLARE_FEATURE(kTabGroupsFocusing);
 BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusFreezing);
+BASE_DECLARE_FEATURE_PARAM(int, kTabGroupsFocusingIphMinTabs);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabGroupsFocusingIphPromoDelay);
 bool IsTabGroupsFocusFreezingEnabled();
 
 BASE_DECLARE_FEATURE(kTabGroupRibbon);

@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_window_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/tab_drag_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_focus_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_injector_impl.h"
@@ -1121,6 +1122,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
               .CreateInstance<send_tab_to_self::SendTabToSelfIphController>(
                   *browser, browser);
     }
+
+    if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+      tab_group_focus_iph_controller_ =
+          GetUserDataFactory().CreateInstance<TabGroupFocusIphController>(
+              *browser, browser);
+    }
   }
 
   // Initialize post-window dependent embedder features last.
@@ -1151,6 +1158,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // InitPostWindowConstruction (reverse).
 
   // TYPE_NORMAL members.
+  tab_group_focus_iph_controller_.reset();
   send_tab_to_self_iph_controller_.reset();
   vertical_tab_iph_controller_.reset();
   ttc_entrypoint_controller_.reset();

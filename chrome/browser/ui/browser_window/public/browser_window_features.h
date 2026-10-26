@@ -102,6 +102,7 @@ class SidePanelRegistry;
 class SigninViewController;
 class SplitViewIphController;
 class TabDragServiceFeature;
+class TabGroupFocusIphController;
 class TabListBridge;
 
 namespace send_tab_to_self {
@@ -456,6 +457,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<BrowserUserEducationInterface> user_education_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfIphController>
       send_tab_to_self_iph_controller_;
+  std::unique_ptr<TabGroupFocusIphController> tab_group_focus_iph_controller_;
   std::unique_ptr<VerticalTabIphController> vertical_tab_iph_controller_;
   std::unique_ptr<tabs::VerticalTabStripStateController>
       vertical_tab_strip_state_controller_;
