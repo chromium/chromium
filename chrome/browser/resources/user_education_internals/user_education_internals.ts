@@ -570,6 +570,36 @@ export class UserEducationInternalsElement extends
     });
   }
 
+  protected onModuleClearWhatsNewData_(e: CustomEvent<string>) {
+    this.featurePromoErrorMessage_ = '';
+
+    this.handler_.clearWhatsNewModuleData(e.detail).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getWhatsNewModules().then(({whatsNewModules}) => {
+          this.whatsNewModules_ = whatsNewModules;
+        });
+      }
+    });
+  }
+
+  protected onEditionClearWhatsNewData_(e: CustomEvent<string>) {
+    this.featurePromoErrorMessage_ = '';
+
+    this.handler_.clearWhatsNewEditionData(e.detail).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
+          this.whatsNewEditions_ = whatsNewEditions;
+        });
+      }
+    });
+  }
+
   protected onClearNtpPromoPreferencesClick_() {
     this.handler_.clearNtpPromoPreferences().then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;

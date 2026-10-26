@@ -287,6 +287,14 @@ void WhatsNewRegistry::ResetData() const {
   storage_service_->Reset();
 }
 
+void WhatsNewRegistry::ClearModuleData(std::string_view module_name) const {
+  storage_service_->ClearModules({std::string(module_name)});
+}
+
+void WhatsNewRegistry::ClearEditionData(std::string_view edition_name) const {
+  storage_service_->ClearEditions({std::string(edition_name)});
+}
+
 WhatsNewRegistry::WhatsNewRegistry(
     std::unique_ptr<WhatsNewStorageService> storage_service)
     : storage_service_(std::move(storage_service)) {}

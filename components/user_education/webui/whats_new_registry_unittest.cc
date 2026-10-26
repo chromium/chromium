@@ -296,6 +296,24 @@ TEST_F(WhatsNewRegistryTest, ResetStorageService) {
   whats_new_registry_->ResetData();
 }
 
+TEST_F(WhatsNewRegistryTest, ClearModuleData) {
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  EXPECT_CALL(*mock_storage_service,
+              ClearModules(std::set<std::string>({"TestModule"})));
+  RegisterModules(std::move(mock_storage_service));
+
+  whats_new_registry_->ClearModuleData("TestModule");
+}
+
+TEST_F(WhatsNewRegistryTest, ClearEditionData) {
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  EXPECT_CALL(*mock_storage_service,
+              ClearEditions(std::set<std::string>({"TestEdition"})));
+  RegisterModules(std::move(mock_storage_service));
+
+  whats_new_registry_->ClearEditionData("TestEdition");
+}
+
 TEST_F(WhatsNewRegistryTest, VersionOverride) {
   auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
   RegisterModules(std::move(mock_storage_service));

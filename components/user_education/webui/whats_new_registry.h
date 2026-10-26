@@ -203,6 +203,10 @@ class WhatsNewRegistry {
   // Resets all stored data for manual testing.
   void ResetData() const;
 
+  // Clears data for a specific module or edition for manual testing.
+  void ClearModuleData(std::string_view module_name) const;
+  void ClearEditionData(std::string_view edition_name) const;
+
   // Get the version of the page that should be requested.
   std::optional<int32_t> version_override() const { return version_override_; }
 

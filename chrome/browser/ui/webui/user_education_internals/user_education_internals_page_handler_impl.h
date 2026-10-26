@@ -71,6 +71,12 @@ class UserEducationInternalsPageHandlerImpl
   void GetWhatsNewModules(GetWhatsNewModulesCallback callback) override;
   void GetWhatsNewEditions(GetWhatsNewEditionsCallback callback) override;
   void ClearWhatsNewData(ClearWhatsNewDataCallback callback) override;
+  void ClearWhatsNewModuleData(
+      const std::string& module_name,
+      ClearWhatsNewModuleDataCallback callback) override;
+  void ClearWhatsNewEditionData(
+      const std::string& edition_name,
+      ClearWhatsNewEditionDataCallback callback) override;
   void LaunchWhatsNewStaging() override;
   void UpdateWhatsNewVersionOverride(int32_t version) override;
   void GetNtpPromos(GetNtpPromosCallback callback) override;

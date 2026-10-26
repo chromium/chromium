@@ -251,7 +251,7 @@ export function getHtml(this: UserEducationInternalsElement) {
                 ?hidden="${!this.whatsNewFilter_(item)}"
                 .item="${item}"
                 type="module"
-                @clear-whats-new-data="${this.onClearWhatsNewData_}">
+                @clear-whats-new-data="${this.onModuleClearWhatsNewData_}">
             </user-education-whats-new-internals-card>`)}
           ${this.whatsNewEditions_.length > 0 ? html`
             <h3 class="whats-new-section">Editions</h3>` :
@@ -262,7 +262,7 @@ export function getHtml(this: UserEducationInternalsElement) {
                 ?hidden="${!this.whatsNewFilter_(item)}"
                 .item="${item}"
                 type="edition"
-                @clear-whats-new-data="${this.onClearWhatsNewData_}">
+                @clear-whats-new-data="${this.onEditionClearWhatsNewData_}">
             </user-education-whats-new-internals-card>`)}
           <p class="if-empty">
             No What's New Editions match the search filter.

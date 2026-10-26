@@ -142,6 +142,14 @@ interface UserEducationInternalsPageHandler {
   // Returns an error message if the operation fails; empty string on success.
   ClearWhatsNewData() => (string error_message);
 
+  // Clears What's New module data for the specified module.
+  // Returns an error message if the operation fails; empty string on success.
+  ClearWhatsNewModuleData(string module_name) => (string error_message);
+
+  // Clears What's New edition data for the specified edition.
+  // Returns an error message if the operation fails; empty string on success.
+  ClearWhatsNewEditionData(string edition_name) => (string error_message);
+
   // Clears NTP Promo data for the specified promo ID.
   // Returns an error message if the operation fails; empty string on success.
   ClearNtpPromoData(string id) => (string error_message);

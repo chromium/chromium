@@ -53,11 +53,10 @@ export class UserEducationWhatsNewInternalsCardElement extends CrLitElement {
   protected accessor dataExpanded_: boolean = false;
 
   protected onClearDataClick_() {
-    if (confirm(
-            'Clear all What\'s New data?\n' +
-            'This affects module order and edition use data.')) {
-      this.fire(CLEAR_WHATS_NEW_DATA_EVENT);
+    if (!confirm(`Clear data associated with this What's New ${this.type}?`)) {
+      return;
     }
+    this.fire(CLEAR_WHATS_NEW_DATA_EVENT, this.formatName_());
   }
 
   protected isModule_() {
