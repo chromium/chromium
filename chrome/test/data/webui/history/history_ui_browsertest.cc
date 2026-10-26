@@ -173,8 +173,18 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryListTest,
-                       CorrectDisplayMessageWhenNoHistoryAvailable) {
-  RunTestCase("CorrectDisplayMessageWhenNoHistoryAvailable");
+                       CorrectElementDisplayedWithAndWithoutResults) {
+  RunTestCase("CorrectElementDisplayedWithAndWithoutResults");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       CorrectNoResultsMessageWhenFilteringDisabled) {
+  RunTestCase("CorrectNoResultsMessageWhenFilteringDisabled");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       CorrectNoResultsMessageWhenFilteringEnabled) {
+  RunTestCase("CorrectNoResultsMessageWhenFilteringEnabled");
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryListTest,

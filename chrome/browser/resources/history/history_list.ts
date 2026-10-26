@@ -724,10 +724,28 @@ export class HistoryListElement extends HistoryListElementBase {
     return this.historyData_.length > 0;
   }
 
+  private isHistoryFilteringEnabled_(): boolean {
+    return loadTimeData.getBoolean('isBrowsingHistoryFilterByActorEnabled') ||
+        loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled');
+  }
+
+  private hasActiveFilter_(): boolean {
+    const hasActiveActorDropdownFilter =
+        loadTimeData.getBoolean('isBrowsingHistoryFilterByActorEnabled') &&
+        (!this.queryState.includeUserVisits ||
+         !this.queryState.includeActorVisits);
+    return hasActiveActorDropdownFilter || this.queryState.clientIds.length > 0;
+  }
+
   protected noResultsMessage_(): string {
-    const messageId =
-        this.searchedTerm !== '' ? 'noSearchResults' : 'noResults';
-    return loadTimeData.getString(messageId);
+    if (this.isHistoryFilteringEnabled_()) {
+      return loadTimeData.getString(
+          this.searchedTerm !== '' || this.hasActiveFilter_() ?
+              'noMatchingResults' :
+              'noResults');
+    }
+    return loadTimeData.getString(
+        this.searchedTerm !== '' ? 'noSearchResults' : 'noResults');
   }
 
   protected canSearchMoreFromSite_(): boolean {

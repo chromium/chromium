@@ -68,6 +68,9 @@
   <message name="IDS_HISTORY_MORE_FROM_SITE" desc="Command in the history entry drop-down menu. Shows more history entries from the same site.">
     More from this site
   </message>
+  <message name="IDS_HISTORY_NO_MATCHING_RESULTS" desc="Text shown on the Chrome history page when no history entries match the current search query or applied filters.">
+    No results found
+  </message>
   <message name="IDS_HISTORY_NO_RESULTS" desc="Text shown when no history entries are found.">
     Your browsing history appears here
   </message>

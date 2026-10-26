@@ -68,6 +68,7 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"openAll", IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL},
       {"openSelected", IDS_HISTORY_OPEN},
       {"openTabsMenuItem", IDS_HISTORY_OPEN_TABS_MENU_ITEM},
+      {"noMatchingResults", IDS_HISTORY_NO_MATCHING_RESULTS},
       {"noResults", IDS_HISTORY_NO_RESULTS},
       {"noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS},
       {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},

@@ -318,7 +318,7 @@ suite('HistoryListTest', function() {
     assertGT(title.children[1]!.innerHTML.indexOf('<b>google</b>'), -1);
   });
 
-  test('CorrectDisplayMessageWhenNoHistoryAvailable', async function() {
+  test('CorrectElementDisplayedWithAndWithoutResults', async function() {
     await finishSetup([]);
     await microtasksFinished();
     assertFalse(element.$.noResults.hidden);
@@ -333,6 +333,119 @@ suite('HistoryListTest', function() {
     await microtasksFinished();
     assertTrue(element.$.noResults.hidden);
     assertFalse(element.$.infiniteList.hidden);
+  });
+
+  test('CorrectNoResultsMessageWhenFilteringDisabled', async function() {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+    });
+    await finishSetup([]);
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
+
+    // Setting a search query updates the empty-state message.
+    element.searchedTerm = 'test query';
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noSearchResults'),
+        element.$.noResults.textContent.trim());
+
+    // Clearing the search query restores the default empty-state message.
+    element.searchedTerm = '';
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
+  });
+
+  test('CorrectNoResultsMessageWhenFilteringEnabled', async function() {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: true,
+      isBrowsingHistoryFilterByDeviceEnabled: true,
+    });
+    await finishSetup([]);
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
+
+    // Filtering by search query alone.
+    element.searchedTerm = 'test query';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: true,
+      includeActorVisits: true,
+      clientIds: [],
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noMatchingResults'),
+        element.$.noResults.textContent.trim());
+
+    // Filtering by device alone.
+    element.searchedTerm = '';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: true,
+      includeActorVisits: true,
+      clientIds: ['device_1'],
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noMatchingResults'),
+        element.$.noResults.textContent.trim());
+
+    // Filtering by user visits alone.
+    element.searchedTerm = '';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: true,
+      includeActorVisits: false,
+      clientIds: [],
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noMatchingResults'),
+        element.$.noResults.textContent.trim());
+
+    // Filtering by actor visits alone.
+    element.searchedTerm = '';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: false,
+      includeActorVisits: true,
+      clientIds: [],
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noMatchingResults'),
+        element.$.noResults.textContent.trim());
+
+    // Resetting all filters and the search query restores the default
+    // empty-state message.
+    element.searchedTerm = '';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: true,
+      includeActorVisits: true,
+      clientIds: [],
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
   });
 
   test('MoreFromThisSiteSendsAndSetsCorrectData', async function() {
