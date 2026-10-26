@@ -62,8 +62,8 @@ public class DownloadController {
         }
         // The PdfPage may become a FrozenNativePage while downloading.
         // Need to check before cast to PdfPage.
-        if (nativePage instanceof PdfPage) {
-            ((PdfPage) nativePage).onDownloadComplete(fileName, filePath, isDownloadSafe);
+        if (nativePage instanceof PdfPage pdfPage) {
+            pdfPage.onDownloadComplete(fileName, filePath, isDownloadSafe);
             tab.updateTitle();
         }
     }

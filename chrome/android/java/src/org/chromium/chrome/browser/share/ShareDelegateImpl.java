@@ -327,8 +327,8 @@ public class ShareDelegateImpl implements ShareDelegate {
         // Safely resolve the Activity (weak reference might be null during teardown).
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
-            if (mContext instanceof Activity) {
-                activity = (Activity) mContext;
+            if (mContext instanceof Activity activityContext) {
+                activity = activityContext;
             } else {
                 return;
             }

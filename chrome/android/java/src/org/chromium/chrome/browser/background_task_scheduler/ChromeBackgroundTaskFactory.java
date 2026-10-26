@@ -51,9 +51,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
     @Override
     public BackgroundTask getBackgroundTaskFromTaskId(int taskId) {
         BackgroundTask backgroundTask = createBackgroundTaskFromTaskId(taskId);
-        if (backgroundTask instanceof NativeBackgroundTask) {
-            ((NativeBackgroundTask) backgroundTask)
-                    .setDelegate(new ChromeNativeBackgroundTaskDelegate());
+        if (backgroundTask instanceof NativeBackgroundTask nativeBackgroundTask) {
+            nativeBackgroundTask.setDelegate(new ChromeNativeBackgroundTaskDelegate());
         }
 
         return backgroundTask;

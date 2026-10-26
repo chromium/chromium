@@ -142,7 +142,7 @@ public class ToolbarSwipeLayout extends Layout {
             @Nullable ControlContainer controlContainer,
             Runnable forceLayoutUpdateAndCaptureRunnable) {
         super(context, updateHost, renderHost);
-        mControlView = controlContainer instanceof View ? (View) controlContainer : null;
+        mControlView = (controlContainer instanceof View view) ? view : null;
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         Resources res = context.getResources();
