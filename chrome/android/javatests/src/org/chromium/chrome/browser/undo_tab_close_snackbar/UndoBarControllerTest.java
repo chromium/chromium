@@ -986,6 +986,8 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Tab.CloseUndoBar.Dismissed")
                         .expectNoRecords("Tab.CloseUndoBar.Undone")
+                        .expectIntRecord(
+                                "Tab.CloseUndoBar.UndoneExternally", Snackbar.UMA_TAB_CLOSE_UNDO)
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1025,6 +1027,7 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Tab.CloseUndoBar.Dismissed", Snackbar.UMA_TAB_CLOSE_UNDO)
                         .expectNoRecords("Tab.CloseUndoBar.Undone")
+                        .expectNoRecords("Tab.CloseUndoBar.UndoneExternally")
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1064,6 +1067,7 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Tab.CloseUndoBar.Dismissed", Snackbar.UMA_TAB_CLOSE_UNDO)
                         .expectNoRecords("Tab.CloseUndoBar.Undone")
+                        .expectNoRecords("Tab.CloseUndoBar.UndoneExternally")
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1102,6 +1106,9 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Tab.CloseUndoBar.Dismissed")
                         .expectNoRecords("Tab.CloseUndoBar.Undone")
+                        .expectIntRecord(
+                                "Tab.CloseUndoBar.UndoneExternally",
+                                Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1149,11 +1156,15 @@ public class UndoBarControllerTest {
         assertNull(getCurrentSnackbar());
         assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
-        // A bar partly undone outside of it records no dismissal when the rest is committed.
+        // A bar partly undone outside of it records an external undo, not a dismissal, when the
+        // rest is committed.
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Tab.CloseUndoBar.Dismissed")
                         .expectNoRecords("Tab.CloseUndoBar.Undone")
+                        .expectIntRecord(
+                                "Tab.CloseUndoBar.UndoneExternally",
+                                Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1200,6 +1211,8 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Tab.CloseUndoBar.Undone", Snackbar.UMA_TAB_CLOSE_UNDO)
                         .expectNoRecords("Tab.CloseUndoBar.Dismissed")
+                        .expectIntRecord(
+                                "Tab.CloseUndoBar.UndoneExternally", Snackbar.UMA_TAB_CLOSE_UNDO)
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1255,6 +1268,9 @@ public class UndoBarControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Tab.CloseUndoBar.Dismissed")
                         .expectNoRecords("Tab.CloseUndoBar.Undone")
+                        .expectIntRecord(
+                                "Tab.CloseUndoBar.UndoneExternally",
+                                Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1312,6 +1328,7 @@ public class UndoBarControllerTest {
                                 Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO,
                                 Snackbar.UMA_TAB_CLOSE_UNDO)
                         .expectNoRecords("Tab.CloseUndoBar.Dismissed")
+                        .expectNoRecords("Tab.CloseUndoBar.UndoneExternally")
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1387,6 +1404,7 @@ public class UndoBarControllerTest {
                         .expectIntRecord(
                                 "Tab.CloseUndoBar.Dismissed", Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                         .expectIntRecord("Tab.CloseUndoBar.Undone", Snackbar.UMA_TAB_CLOSE_UNDO)
+                        .expectNoRecords("Tab.CloseUndoBar.UndoneExternally")
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(

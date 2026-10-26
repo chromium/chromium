@@ -498,6 +498,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.CloseUndoBar.UndoneExternally" enum="SnackbarIdentifier"
+    expires_after="2027-07-01">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    Recorded when an undo snackbar for closed tabs is dismissed because all of
+    its tabs were undone or committed outside of the snackbar (e.g. from the tab
+    group row or Recent Tabs) and at least one of them was undone. The value is
+    the snackbar's UMA type (Snackbar.UMA_*). Complements
+    Tab.CloseUndoBar.Undone and Tab.CloseUndoBar.Dismissed.
+  </summary>
+</histogram>
+
 <histogram name="Tab.ContextMenu.{TabContextMenuCommand}.SelectedTabsCount"
     units="tabs" expires_after="2027-04-11">
   <owner>dpenning@chromium.org</owner>

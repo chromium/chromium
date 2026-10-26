@@ -162,9 +162,10 @@ public abstract class UndoBarController
     /**
      * Notes that the given tabs were undone or committed outside of the undo bars. The tabs are
      * first dropped from the queued, not yet shown snapshots. Any shown bar whose tabs are now all
-     * resolved is dismissed without committing; the dismissal histogram is recorded for it only if
-     * none of its tabs was undone outside of the bar. A bar with tabs remaining keeps showing, and
-     * its own undo or dismissal then acts only on the remaining tabs.
+     * resolved is dismissed without committing; it records the external undo histogram if any of
+     * its tabs was undone outside of the bar, and the dismissal histogram otherwise. A bar with
+     * tabs remaining keeps showing, and its own undo or dismissal then acts only on the remaining
+     * tabs.
      *
      * @param tabIds The collection of tab identifiers that were resolved.
      * @param undone Whether the tabs were undone (true) or committed (false).
@@ -184,7 +185,10 @@ public abstract class UndoBarController
 
             iterator.remove();
             UndoBarContent barContent = entry.getKey();
-            if (!shownBar.mAnyUndoneExternally) {
+            if (shownBar.mAnyUndoneExternally) {
+                RecordHistogram.recordSparseHistogram(
+                        "Tab.CloseUndoBar.UndoneExternally", barContent.umaType);
+            } else {
                 RecordHistogram.recordSparseHistogram(
                         "Tab.CloseUndoBar.Dismissed", barContent.umaType);
             }
@@ -205,8 +209,8 @@ public abstract class UndoBarController
      * i.e. those not yet resolved outside of the bar); it is dismissed or times out ({@link
      * #onDismissNoAction}, which calls {@link TabModel#commitTabClosure(int)} for the remaining
      * tabs); or it is dismissed after all of its tabs were resolved outside of the bar, in which
-     * case nothing is committed and the dismissal histogram is recorded only if none of its tabs
-     * was undone outside of the bar.
+     * case nothing is committed; it records the external undo histogram if any of its tabs was
+     * undone outside of the bar, and the dismissal histogram otherwise.
      *
      * @param snapshot An immutable snapshot of the closed tabs and groups.
      */
