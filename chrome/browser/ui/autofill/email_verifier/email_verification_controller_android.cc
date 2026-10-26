@@ -44,6 +44,14 @@ EmailVerificationControllerAndroid::EmailVerificationControllerAndroid(
 EmailVerificationControllerAndroid::~EmailVerificationControllerAndroid() =
     default;
 
+void EmailVerificationControllerAndroid::HideLoadingToastImpl() {
+  // `Dismiss()` dismisses all active messages on `GetMessageController()`.
+  // This is safe because `HideLoadingToastImpl()` is only invoked when a
+  // subsequent-run loading message is active, and Android Messages shows at
+  // most one web-contents-scoped Autofill banner at a time.
+  GetMessageController().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
+}
+
 void EmailVerificationControllerAndroid::ShowPopupImpl(
     const gfx::RectF& /*element_bounds*/,
     const url::Origin& issuer_origin,
@@ -82,9 +90,9 @@ void EmailVerificationControllerAndroid::ShowPopupImpl(
         } else if (on_prompt_dismissed) {
           // If the user already accepted the prompt (`cb->data` was consumed by
           // `on_accepted`), a subsequent dismissal means the loading bottom
-          // sheet was closed. For programmatic hides, `HidePopup()` already
-          // transitioned `prompt_state_` to `kClosed`, making
-          // `OnPromptDismissed` a no-op.
+          // sheet was closed. For programmatic hides, `DismissActiveUi()`
+          // already reset `loading_start_time_`, making `OnPromptDismissed` a
+          // no-op.
           std::move(on_prompt_dismissed).Run();
         }
       },
@@ -104,8 +112,6 @@ void EmailVerificationControllerAndroid::ShowLoadingToastImpl(
   if (!IsWebContentsVisible()) {
     return;
   }
-  // TODO(crbug.com/555673134): Move this dismissal into `HideLoadingToastImpl`.
-  GetMessageController().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
   GetMessageController().Show(
       AutofillMessageModel::CreateForEmailVerificationLoading(base::BindOnce(
           [](base::OnceClosure on_cancelled, messages::DismissReason reason) {
@@ -120,11 +126,6 @@ void EmailVerificationControllerAndroid::ShowLoadingToastImpl(
 }
 
 void EmailVerificationControllerAndroid::ShowErrorToastImpl() {
-  // `Dismiss()` dismisses all active messages on `GetMessageController()`.
-  // This is safe because Android Messages shows at most one web-contents-scoped
-  // Autofill banner at a time.
-  // TODO(crbug.com/555673134): Move this dismissal into `HideLoadingToastImpl`.
-  GetMessageController().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
   if (!IsWebContentsVisible()) {
     return;
   }
@@ -134,8 +135,6 @@ void EmailVerificationControllerAndroid::ShowErrorToastImpl() {
 
 void EmailVerificationControllerAndroid::ShowVerifiedToastImpl(
     const GURL& url) {
-  // TODO(crbug.com/555673134): Move this dismissal into `HideLoadingToastImpl`.
-  GetMessageController().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
   if (!IsWebContentsVisible()) {
     return;
   }

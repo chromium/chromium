@@ -1449,7 +1449,8 @@ ChromeAutofillClient::GetEmailVerificationController() {
 }
 
 void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
-  GetEmailVerificationController()->ShowVerifiedToast(issuer);
+  GetEmailVerificationController()->HidePopup(
+      EmailVerificationController::CompletionStatus::kVerified, issuer);
 }
 
 void ChromeAutofillClient::ShowEmailVerificationPopup(
@@ -1472,7 +1473,8 @@ void ChromeAutofillClient::ShowEmailVerificationLoadingToast(
 }
 
 void ChromeAutofillClient::ShowEmailVerificationErrorToast() {
-  GetEmailVerificationController()->ShowErrorToast();
+  GetEmailVerificationController()->HidePopup(
+      EmailVerificationController::CompletionStatus::kError);
 }
 
 void ChromeAutofillClient::ShowGmailOtpOptInBubble(

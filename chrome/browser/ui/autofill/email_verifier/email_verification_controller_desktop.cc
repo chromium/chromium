@@ -42,7 +42,7 @@ void EmailVerificationControllerDesktop::ShowPopupImpl(
 }
 
 void EmailVerificationControllerDesktop::HidePopupImpl() {
-  const bool was_loading = prompt_state() == PromptState::kLoading;
+  const bool was_loading = popup_controller_.is_loading();
   popup_controller_.Dismiss();
   if (was_loading && IsWebContentsVisible()) {
     // The popup is activatable and took focus when the user clicked "Verify".

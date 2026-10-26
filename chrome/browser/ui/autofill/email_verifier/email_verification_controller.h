@@ -25,16 +25,28 @@ class WebContents;
 
 namespace autofill {
 
-// Coordinates the Email Verification Protocol (EVP) UI flows on Desktop,
-// including the first-run permission prompt popup, the subsequent-run loading
-// toast, completion toasts (verified / error), and minimum display duration
-// anti-flicker timing.
+// Coordinates the Email Verification Protocol (EVP) UI flows across Desktop and
+// Android, including the first-run permission prompt, the subsequent-run
+// loading notification, completion notifications (verified / error), and
+// minimum display duration anti-flicker timing.
 class EmailVerificationController {
  public:
   // Minimum duration the loading state (popup spinner or loading toast) should
   // remain visible to avoid visual flickering on fast network responses.
   static constexpr base::TimeDelta kMinimumLoadingDuration =
       base::Milliseconds(800);
+
+  // Outcome of an email verification attempt when hiding the active UI.
+  enum class CompletionStatus {
+    // Verification was aborted (e.g. inactive frame); hide active UI without
+    // showing a completion notification.
+    kAborted,
+    // Verification failed; hide active UI and show the error notification.
+    kError,
+    // Verification succeeded; hide active UI and show the verified notification
+    // for `verified_issuer_url`.
+    kVerified,
+  };
 
   explicit EmailVerificationController(content::WebContents* web_contents);
   EmailVerificationController(const EmailVerificationController&) = delete;
@@ -50,9 +62,12 @@ class EmailVerificationController {
                      void(AutofillClient::EmailVerificationPermissionUiStatus)>
                      decision_callback);
 
-  // Dismisses the permission popup, deferring closure if necessary to satisfy
-  // the minimum loading display duration.
-  void HidePopup();
+  // Dismisses any active permission popup or subsequent-run loading
+  // notification, deferring dismissal if necessary to satisfy the minimum
+  // loading display duration, and then displays the completion notification
+  // corresponding to `status` (if any).
+  void HidePopup(CompletionStatus status = CompletionStatus::kAborted,
+                 const GURL& verified_issuer_url = GURL());
 
   // Displays the "Verifying email" loading notification (Desktop toast or
   // Android Message banner) for subsequent-run verifications, dismissing any
@@ -60,52 +75,10 @@ class EmailVerificationController {
   // the user cancels verification from the loading UI.
   void ShowLoadingToast(base::OnceClosure cancel_callback);
 
-  // Displays the "Couldn't verify your email" error toast, deferring display
-  // until any active loading UI has satisfied the minimum display duration.
-  void ShowErrorToast();
-
-  // Displays the "{issuer} verified your email" success toast, deferring
-  // display until any active loading UI has satisfied the minimum display
-  // duration.
-  void ShowVerifiedToast(const GURL& url);
-
  protected:
-  // Lifecycle state of the first-run permission prompt:
-  //
-  // clang-format off
-  //                            ┌───────────────────┐
-  //                            │      kClosed      │◄─────────────────────────┐
-  //                            └─────────┬─────────┘                          │
-  //                                      │  ▲                                 │
-  //                          ShowPopup() │  │ OnPromptDecision(!kAllowed)     │
-  //                                      │  │   or HidePopup()                │
-  //                                      ▼  │                                 │
-  //                            ┌───────────────────┐                          │
-  //         ┌─────────────────►│     kShowing      │                          │
-  //         │                  └─────────┬─────────┘                          │
-  //         │                            │                                    │
-  //         │ ShowPopup()                │ OnPromptDecision(kAllowed)         │
-  //         │ [timer running]            │                                    │
-  //         │                            ▼                                    │
-  //         │                  ┌───────────────────┐                          │
-  //         └──────────────────┤     kLoading      ├──────────────────────────┘
-  //                            └───────────────────┘  HidePopup() [>= 800ms]
-  //                              │               ▲      or ShowLoadingToast()
-  //                              └───────────────┘
-  //                             HidePopup() [< 800ms]
-  //                               or ShowPopup() [in flight]
-  // clang-format on
-  enum class PromptState {
-    kClosed,
-    kShowing,
-    kLoading,
-  };
-
   // Handles the user's decision from the first-run permission prompt.
   void OnPromptDecision(
       AutofillClient::EmailVerificationPermissionUiStatus status);
-
-  PromptState prompt_state() const { return prompt_state_; }
 
   content::WebContents& web_contents() const { return *web_contents_; }
   bool IsWebContentsVisible() const;
@@ -121,6 +94,11 @@ class EmailVerificationController {
       base::OnceClosure on_dismissed) = 0;
   virtual void HidePopupImpl() = 0;
   virtual void ShowLoadingToastImpl(base::OnceClosure on_cancelled) = 0;
+  // Dismisses the subsequent-run loading notification. Defaults to a no-op
+  // because on Desktop, toasts manage their own lifecycle and preemption
+  // automatically, whereas Android overrides this to dismiss the active loading
+  // Message banner.
+  virtual void HideLoadingToastImpl() {}
   virtual void ShowErrorToastImpl() = 0;
   virtual void ShowVerifiedToastImpl(const GURL& url) = 0;
 
@@ -133,6 +111,11 @@ class EmailVerificationController {
  private:
   friend class EmailVerificationControllerTestApi;
 
+  // Immediately stops `hide_popup_timer_`, resets `loading_start_time_`, and
+  // dismisses any active permission prompt or subsequent-run loading
+  // notification.
+  void DismissActiveUi();
+
   // Invoked when the first-run permission prompt is dismissed externally while
   // in the loading state.
   void OnPromptDismissed();
@@ -141,42 +124,31 @@ class EmailVerificationController {
   // notification UI.
   void OnLoadingCancelled();
 
-  // Resets loading state (`prompt_state_`, `hide_popup_timer_`, and
-  // `loading_start_time_`) and flushes any pending `toast_timer_` if the
-  // WebContents is visible.
+  // Resets loading state (`hide_active_ui_callback_`,
+  // `loading_cancel_callback_`, and `loading_start_time_`) and flushes any
+  // pending `hide_popup_timer_` callback if the WebContents is visible.
   void ResetLoadingStateAndFlushToast();
 
   bool IsFirstRunRequestInFlight() const;
   bool IsLoadingToastActive() const;
 
   // Records `loading_start_time_` so that subsequent transitions out of loading
-  // (`HidePopup()`, `ShowVerifiedToast()`, or `ShowErrorToast()`) enforce
-  // `kMinimumLoadingDuration`.
+  // via `HidePopup()` enforce `kMinimumLoadingDuration`.
   void StartLoadingTimer();
-
-  // Defers executing `show_toast_callback` if the active loading state has not
-  // yet satisfied `kMinimumLoadingDuration` (800ms). Returns true if deferred
-  // via `toast_timer_`, or false if no remaining delay was needed (in which
-  // case `loading_start_time_` is reset).
-  bool DeferToast(base::OnceClosure show_toast_callback);
-
-  void OnToastTimerFired(base::OnceClosure show_toast_callback);
 
   // Computes the remaining duration needed to satisfy the minimum loading
   // display duration (800ms) across any active loading UI (first-run popup or
   // subsequent-run loading toast) before tearing down loading UI or showing
-  // completion toasts.
+  // completion notifications.
   base::TimeDelta GetRemainingLoadingDuration() const;
 
   const raw_ref<content::WebContents> web_contents_;
 
-  // Tracks the lifecycle state of the first-run permission prompt. Needed
-  // alongside `loading_start_time_` because `loading_start_time_` is set for
-  // both the first-run prompt (`kLoading`) and the subsequent-run loading
-  // toast, whereas `HidePopup()` is called unconditionally by
-  // `EmailVerifierDelegate` on every verification response and must be a no-op
-  // when no prompt is open (`kClosed`).
-  PromptState prompt_state_ = PromptState::kClosed;
+  // Callback that tears down whichever UI surface is currently active
+  // (`HidePopupImpl()` for a first-run permission prompt, or
+  // `HideLoadingToastImpl()` for a subsequent-run loading notification). Null
+  // when no prompt or loading notification is open.
+  base::OnceClosure hide_active_ui_callback_;
 
   // Start timestamp when the loading state was initiated (either when the user
   // confirmed the first-run prompt or when the subsequent-run loading toast was
@@ -189,7 +161,6 @@ class EmailVerificationController {
   base::OnceClosure loading_cancel_callback_;
 
   base::OneShotTimer hide_popup_timer_;
-  base::OneShotTimer toast_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

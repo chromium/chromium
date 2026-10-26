@@ -72,7 +72,7 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   // `kOther`.
   void Dismiss();
 
-  bool is_loading_for_testing() const { return is_loading_; }
+  bool is_loading() const { return is_loading_; }
 
   base::WeakPtr<EmailVerificationPopupController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

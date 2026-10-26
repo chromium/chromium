@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/visibility.h"
@@ -42,20 +43,9 @@ void EmailVerificationController::ShowPopup(
     return;
   }
 
-  hide_popup_timer_.Stop();
-  toast_timer_.Stop();
-  loading_start_time_.reset();
-  base::OnceClosure previous_cancel_callback =
-      std::move(loading_cancel_callback_);
-  if (prompt_state_ == PromptState::kShowing ||
-      prompt_state_ == PromptState::kLoading) {
-    HidePopupImpl();
-  }
-  if (previous_cancel_callback) {
-    std::move(previous_cancel_callback).Run();
-  }
-  prompt_state_ = PromptState::kShowing;
-
+  DismissActiveUi();
+  hide_active_ui_callback_ =
+      base::BindOnce(&EmailVerificationController::HidePopupImpl, GetWeakPtr());
   ShowPopupImpl(
       element_bounds, issuer_origin, email,
       base::BindOnce(
@@ -80,82 +70,54 @@ void EmailVerificationController::OnPromptDecision(
   // TODO(crbug.com/554034658): Record the Blink.Evp.PermissionUi.Status
   // histogram here across Desktop and Android in a follow-up CL.
   if (status == AutofillClient::EmailVerificationPermissionUiStatus::kAllowed) {
-    prompt_state_ = PromptState::kLoading;
     StartLoadingTimer();
-  } else if (prompt_state_ == PromptState::kShowing) {
-    prompt_state_ = PromptState::kClosed;
+  } else {
+    hide_active_ui_callback_.Reset();
   }
 }
 
-void EmailVerificationController::HidePopup() {
+void EmailVerificationController::HidePopup(CompletionStatus status,
+                                            const GURL& verified_issuer_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (prompt_state_) {
-    case PromptState::kClosed:
-      return;
-    case PromptState::kShowing:
-      HidePopupImpl();
-      prompt_state_ = PromptState::kClosed;
-      return;
-    case PromptState::kLoading: {
-      loading_cancel_callback_.Reset();
-      base::TimeDelta delay = GetRemainingLoadingDuration();
-      if (!delay.is_zero()) {
-        if (!hide_popup_timer_.IsRunning()) {
-          hide_popup_timer_.Start(
-              FROM_HERE, delay,
-              base::BindOnce(&EmailVerificationController::HidePopup,
-                             GetWeakPtr()));
-        }
-        return;
-      }
-      hide_popup_timer_.Stop();
-      loading_start_time_.reset();
-      HidePopupImpl();
-      prompt_state_ = PromptState::kClosed;
-      return;
-    }
+  // Once verification finishes, the in-flight request can no longer be
+  // cancelled by the user. Keep a no-op closure in `loading_cancel_callback_`
+  // while `hide_popup_timer_` is pending so `IsLoadingToastActive()` remains
+  // true until the loading notification is actually dismissed.
+  if (loading_cancel_callback_) {
+    loading_cancel_callback_ = base::DoNothing();
+  }
+  base::TimeDelta delay = GetRemainingLoadingDuration();
+  if (!delay.is_zero()) {
+    hide_popup_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&EmailVerificationController::HidePopup, GetWeakPtr(),
+                       status, verified_issuer_url));
+    return;
+  }
+  DismissActiveUi();
+  switch (status) {
+    case CompletionStatus::kAborted:
+      break;
+    case CompletionStatus::kError:
+      ShowErrorToastImpl();
+      break;
+    case CompletionStatus::kVerified:
+      ShowVerifiedToastImpl(verified_issuer_url);
+      break;
   }
 }
 
 void EmailVerificationController::ShowLoadingToast(
     base::OnceClosure cancel_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  hide_popup_timer_.Stop();
-  toast_timer_.Stop();
-  loading_start_time_.reset();
-  base::OnceClosure previous_cancel_callback =
-      std::move(loading_cancel_callback_);
-  if (prompt_state_ == PromptState::kShowing ||
-      prompt_state_ == PromptState::kLoading) {
-    HidePopupImpl();
-    prompt_state_ = PromptState::kClosed;
-  }
-  if (previous_cancel_callback) {
-    std::move(previous_cancel_callback).Run();
-  }
-  loading_cancel_callback_ = std::move(cancel_callback);
+  DismissActiveUi();
+  hide_active_ui_callback_ = base::BindOnce(
+      &EmailVerificationController::HideLoadingToastImpl, GetWeakPtr());
+  loading_cancel_callback_ =
+      cancel_callback ? std::move(cancel_callback) : base::DoNothing();
   StartLoadingTimer();
   ShowLoadingToastImpl(base::BindOnce(
       &EmailVerificationController::OnLoadingCancelled, GetWeakPtr()));
-}
-
-void EmailVerificationController::ShowErrorToast() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (DeferToast(base::BindOnce(
-          &EmailVerificationController::ShowErrorToastImpl, GetWeakPtr()))) {
-    return;
-  }
-  ShowErrorToastImpl();
-}
-
-void EmailVerificationController::ShowVerifiedToast(const GURL& url) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (DeferToast(
-          base::BindOnce(&EmailVerificationController::ShowVerifiedToastImpl,
-                         GetWeakPtr(), url))) {
-    return;
-  }
-  ShowVerifiedToastImpl(url);
 }
 
 bool EmailVerificationController::IsWebContentsVisible() const {
@@ -163,16 +125,29 @@ bool EmailVerificationController::IsWebContentsVisible() const {
          web_contents_->GetVisibility() != content::Visibility::HIDDEN;
 }
 
+void EmailVerificationController::DismissActiveUi() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  hide_popup_timer_.Stop();
+  loading_start_time_.reset();
+  base::OnceClosure previous_cancel_callback =
+      std::move(loading_cancel_callback_);
+  if (hide_active_ui_callback_) {
+    std::move(hide_active_ui_callback_).Run();
+  }
+  if (previous_cancel_callback) {
+    std::move(previous_cancel_callback).Run();
+  }
+}
+
 bool EmailVerificationController::IsFirstRunRequestInFlight() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return prompt_state_ == PromptState::kLoading &&
+  return loading_start_time_.has_value() && !IsLoadingToastActive() &&
          !hide_popup_timer_.IsRunning();
 }
 
 bool EmailVerificationController::IsLoadingToastActive() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return prompt_state_ == PromptState::kClosed &&
-         loading_start_time_.has_value();
+  return !loading_cancel_callback_.is_null();
 }
 
 void EmailVerificationController::StartLoadingTimer() {
@@ -182,8 +157,8 @@ void EmailVerificationController::StartLoadingTimer() {
 
 void EmailVerificationController::OnPromptDismissed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (prompt_state_ != PromptState::kLoading ||
-      !loading_start_time_.has_value()) {
+  if (!loading_start_time_.has_value() || IsLoadingToastActive() ||
+      !hide_active_ui_callback_) {
     return;
   }
   ResetLoadingStateAndFlushToast();
@@ -191,57 +166,30 @@ void EmailVerificationController::OnPromptDismissed() {
 
 void EmailVerificationController::OnLoadingCancelled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsLoadingToastActive()) {
+  if (!IsLoadingToastActive() || !hide_active_ui_callback_) {
     return;
   }
+  base::OnceClosure cancel_callback = std::move(loading_cancel_callback_);
   ResetLoadingStateAndFlushToast();
-  if (loading_cancel_callback_) {
-    std::move(loading_cancel_callback_).Run();
-  }
+  std::move(cancel_callback).Run();
 }
 
 void EmailVerificationController::ResetLoadingStateAndFlushToast() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prompt_state_ = PromptState::kClosed;
-  hide_popup_timer_.Stop();
+  hide_active_ui_callback_.Reset();
+  loading_cancel_callback_.Reset();
   loading_start_time_.reset();
-  if (toast_timer_.IsRunning()) {
+  if (hide_popup_timer_.IsRunning()) {
     // If the verification response already arrived during the 800ms minimum
     // loading duration (so the token was already sent to the page), show the
     // deferred completion notification immediately if the tab is still visible,
     // or cancel it if the tab is hidden or being destroyed.
     if (IsWebContentsVisible()) {
-      toast_timer_.FireNow();
+      hide_popup_timer_.FireNow();
     } else {
-      toast_timer_.Stop();
+      hide_popup_timer_.Stop();
     }
   }
-}
-
-bool EmailVerificationController::DeferToast(
-    base::OnceClosure show_toast_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Once a completion notification (verified or error) is triggered, the
-  // verification request has already finished and can no longer be cancelled.
-  loading_cancel_callback_.Reset();
-  base::TimeDelta delay = GetRemainingLoadingDuration();
-  if (!delay.is_zero()) {
-    toast_timer_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&EmailVerificationController::OnToastTimerFired,
-                       GetWeakPtr(), std::move(show_toast_callback)));
-    return true;
-  }
-  toast_timer_.Stop();
-  loading_start_time_.reset();
-  return false;
-}
-
-void EmailVerificationController::OnToastTimerFired(
-    base::OnceClosure show_toast_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  loading_start_time_.reset();
-  std::move(show_toast_callback).Run();
 }
 
 base::TimeDelta EmailVerificationController::GetRemainingLoadingDuration()

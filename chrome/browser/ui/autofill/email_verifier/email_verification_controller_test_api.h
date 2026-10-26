@@ -59,14 +59,8 @@ class EmailVerificationControllerTestApi {
   }
 #endif
 
-  using PromptState = EmailVerificationController::PromptState;
-
-  PromptState prompt_state() const { return controller_->prompt_state_; }
   bool is_hide_popup_timer_running() const {
     return controller_->hide_popup_timer_.IsRunning();
-  }
-  bool is_toast_timer_running() const {
-    return controller_->toast_timer_.IsRunning();
   }
   std::optional<base::TimeTicks> loading_start_time() const {
     return controller_->loading_start_time_;
