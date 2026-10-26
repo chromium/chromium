@@ -11,13 +11,16 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +43,11 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
   ~TestMagicBoostStateObserver() override = default;
 
   // MagicBoostStateObserver:
+  void OnUserEligibleForGenAIFeaturesUpdated(bool eligible) override {
+    user_eligible_for_genai_features_ = eligible;
+    ++user_eligible_updated_count_;
+  }
+
   void OnHMREnabledUpdated(bool enabled) override { hmr_enabled_ = enabled; }
 
   void OnHMRConsentStatusUpdated(HMRConsentStatus status) override {
@@ -52,12 +60,48 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
     // instance gets destructed.
   }
 
+  bool user_eligible_for_genai_features() const {
+    return user_eligible_for_genai_features_;
+  }
+  int user_eligible_updated_count() const {
+    return user_eligible_updated_count_;
+  }
   bool hmr_enabled() const { return hmr_enabled_; }
   HMRConsentStatus hmr_consent_status() const { return hmr_consent_status_; }
 
  private:
+  bool user_eligible_for_genai_features_ = false;
+  int user_eligible_updated_count_ = 0;
   bool hmr_enabled_ = false;
   HMRConsentStatus hmr_consent_status_ = HMRConsentStatus::kUnset;
+};
+
+// `MagicBoostState` test double with a configurable GenAI eligibility result.
+class ConfigurableEligibilityMagicBoostState : public ash::MagicBoostState {
+ public:
+  explicit ConfigurableEligibilityMagicBoostState(
+      base::expected<bool, MagicBoostState::Error> expected_eligibility)
+      : ash::MagicBoostState(base::BindRepeating(
+            []() { return static_cast<Profile*>(nullptr); })),
+        expected_eligibility_(expected_eligibility) {}
+
+  void set_expected_eligibility(
+      base::expected<bool, MagicBoostState::Error> expected_eligibility) {
+    expected_eligibility_ = expected_eligibility;
+  }
+
+  int eligibility_check_count() const { return eligibility_check_count_; }
+
+ protected:
+  base::expected<bool, MagicBoostState::Error>
+  IsUserEligibleForGenAIFeaturesExpected() const override {
+    ++eligibility_check_count_;
+    return expected_eligibility_;
+  }
+
+ private:
+  base::expected<bool, MagicBoostState::Error> expected_eligibility_;
+  mutable int eligibility_check_count_ = 0;
 };
 
 }  // namespace
@@ -89,6 +133,28 @@ class MagicBoostStateTest : public ChromeAshTestBase {
     magic_boost_state_.reset();
     prefs_ = nullptr;
     ChromeAshTestBase::TearDown();
+  }
+
+  ConfigurableEligibilityMagicBoostState* ReplaceWithConfigurableState(
+      base::expected<bool, MagicBoostState::Error> initial_expected) {
+    prefs_ = nullptr;
+    magic_boost_state_.reset();
+    ClearLogin();
+
+    auto state = std::make_unique<ConfigurableEligibilityMagicBoostState>(
+        initial_expected);
+    auto* state_ptr = state.get();
+    state->set_editor_panel_manager_for_test(&mock_editor_manager_);
+    magic_boost_state_ = std::move(state);
+
+    SimulateUserLogin(kRegularUserLoginInfo);
+    prefs_ = static_cast<TestingPrefServiceSimple*>(
+        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+    return state_ptr;
+  }
+
+  void TriggerOnRefreshTokensReady() {
+    magic_boost_state_->OnRefreshTokensReady();
   }
 
   TestingPrefServiceSimple* prefs() { return prefs_; }
@@ -367,5 +433,126 @@ INSTANTIATE_TEST_SUITE_P(
         MagicBoostHmrCardShowConditionTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+TEST_F(MagicBoostStateTest,
+       IsUserEligibleForGenAIFeatures_DefaultAndWithMahiEnabled) {
+  MagicBoostState::Get()->AddObserver(observer());
+
+  // By default in unit tests (`kFeatureManagementMahi` disabled), the user is
+  // not eligible for GenAI features.
+  EXPECT_EQ(MagicBoostState::Get()->is_user_eligible_for_genai_features(),
+            base::ok(false));
+  EXPECT_FALSE(MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
+
+  // When Mahi is enabled and restrictions are overridden, refreshing tokens
+  // marks the user as eligible and notifies observers.
+  base::test::ScopedFeatureList feature_list(
+      chromeos::features::kFeatureManagementMahi);
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      chromeos::switches::kMahiRestrictionsOverride);
+
+  TriggerOnRefreshTokensReady();
+
+  EXPECT_EQ(MagicBoostState::Get()->is_user_eligible_for_genai_features(),
+            base::ok(true));
+  EXPECT_TRUE(MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
+  EXPECT_TRUE(observer()->user_eligible_for_genai_features());
+  EXPECT_EQ(observer()->user_eligible_updated_count(), 1);
+
+  MagicBoostState::Get()->RemoveObserver(observer());
+}
+
+TEST_F(
+    MagicBoostStateTest,
+    IsUserEligibleForGenAIFeatures_UninitializedReturnsFalseAndDoesNotCache) {
+  auto* state = ReplaceWithConfigurableState(
+      base::unexpected(MagicBoostState::Error::kUninitialized));
+  MagicBoostState::Get()->AddObserver(observer());
+
+  // Initial login check saw `kUninitialized`, so state remains uninitialized.
+  EXPECT_EQ(state->is_user_eligible_for_genai_features(),
+            base::unexpected(MagicBoostState::Error::kUninitialized));
+  const int checks_after_login = state->eligibility_check_count();
+  EXPECT_EQ(checks_after_login, 1);
+
+  // Calling `IsUserEligibleForGenAIFeatures()` while still uninitialized
+  // returns false as a fail-safe and leaves the state uninitialized for future
+  // retries.
+  EXPECT_FALSE(state->IsUserEligibleForGenAIFeatures());
+  EXPECT_EQ(state->is_user_eligible_for_genai_features(),
+            base::unexpected(MagicBoostState::Error::kUninitialized));
+  EXPECT_EQ(state->eligibility_check_count(), checks_after_login + 1);
+  EXPECT_EQ(observer()->user_eligible_updated_count(), 0);
+
+  MagicBoostState::Get()->RemoveObserver(observer());
+}
+
+TEST_F(MagicBoostStateTest,
+       IsUserEligibleForGenAIFeatures_LazyReloadsMinorIneligibleAndCaches) {
+  auto* state = ReplaceWithConfigurableState(
+      base::unexpected(MagicBoostState::Error::kUninitialized));
+  ASSERT_EQ(state->is_user_eligible_for_genai_features(),
+            base::unexpected(MagicBoostState::Error::kUninitialized));
+
+  // Simulate account capability resolving to false (e.g. U13 / minor account).
+  state->set_expected_eligibility(base::ok(false));
+  const int checks_before = state->eligibility_check_count();
+
+  EXPECT_FALSE(state->IsUserEligibleForGenAIFeatures());
+  EXPECT_EQ(state->is_user_eligible_for_genai_features(), base::ok(false));
+  EXPECT_EQ(state->eligibility_check_count(), checks_before + 1);
+
+  // Subsequent calls use the cached value without re-querying.
+  EXPECT_FALSE(state->IsUserEligibleForGenAIFeatures());
+  EXPECT_EQ(state->eligibility_check_count(), checks_before + 1);
+}
+
+TEST_F(MagicBoostStateTest,
+       IsUserEligibleForGenAIFeatures_LazyReloadsAdultEligibleAndCaches) {
+  auto* state = ReplaceWithConfigurableState(
+      base::unexpected(MagicBoostState::Error::kUninitialized));
+  ASSERT_EQ(state->is_user_eligible_for_genai_features(),
+            base::unexpected(MagicBoostState::Error::kUninitialized));
+
+  // Simulate account capability resolving to true (eligible adult account).
+  state->set_expected_eligibility(base::ok(true));
+  const int checks_before = state->eligibility_check_count();
+
+  EXPECT_TRUE(state->IsUserEligibleForGenAIFeatures());
+  EXPECT_EQ(state->is_user_eligible_for_genai_features(), base::ok(true));
+  EXPECT_EQ(state->eligibility_check_count(), checks_before + 1);
+
+  // Subsequent calls use the cached value without re-querying.
+  EXPECT_TRUE(state->IsUserEligibleForGenAIFeatures());
+  EXPECT_EQ(state->eligibility_check_count(), checks_before + 1);
+}
+
+TEST_F(MagicBoostStateTest,
+       OnRefreshTokensReady_UpdatesEligibilityAndNotifiesObserverOnChange) {
+  auto* state = ReplaceWithConfigurableState(
+      base::unexpected(MagicBoostState::Error::kUninitialized));
+  MagicBoostState::Get()->AddObserver(observer());
+
+  // Resolve to ineligible (minor account) on refresh tokens ready.
+  state->set_expected_eligibility(base::ok(false));
+  TriggerOnRefreshTokensReady();
+  EXPECT_EQ(state->is_user_eligible_for_genai_features(), base::ok(false));
+  EXPECT_FALSE(observer()->user_eligible_for_genai_features());
+  EXPECT_EQ(observer()->user_eligible_updated_count(), 1);
+
+  // Re-triggering with the same eligibility value does not notify again.
+  TriggerOnRefreshTokensReady();
+  EXPECT_EQ(observer()->user_eligible_updated_count(), 1);
+
+  // Updating to eligible notifies the observer.
+  state->set_expected_eligibility(base::ok(true));
+  TriggerOnRefreshTokensReady();
+  EXPECT_EQ(state->is_user_eligible_for_genai_features(), base::ok(true));
+  EXPECT_TRUE(observer()->user_eligible_for_genai_features());
+  EXPECT_EQ(observer()->user_eligible_updated_count(), 2);
+
+  MagicBoostState::Get()->RemoveObserver(observer());
+}
 
 }  // namespace ash
