@@ -1784,8 +1784,6 @@ component("platform") {
       "fonts/mac/font_matcher_mac.mm",
       "mac/color_mac.h",
       "mac/color_mac.mm",
-      "mac/graphics_context_canvas.h",
-      "mac/graphics_context_canvas.mm",
       "text/locale_mac.h",
       "text/locale_mac.mm",
       "theme/web_theme_engine_mac.cc",
@@ -2525,7 +2523,6 @@ source_set("blink_platform_unittests_sources") {
       "fonts/mac/font_matcher_mac_test.mm",
       "fonts/mac/font_platform_data_mac_test.mm",
       "fonts/opentype/open_type_caps_support_test.mm",
-      "mac/graphics_context_canvas_test.mm",
       "text/locale_mac_test.mm",
     ]
   } else if (is_posix || is_fuchsia) {
