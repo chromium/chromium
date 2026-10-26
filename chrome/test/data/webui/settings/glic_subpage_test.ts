@@ -737,6 +737,8 @@ suite('GlicSubpage', function() {
       const shakeTriggerToggle =
           $<SettingsToggleButtonElement>('shakeTriggerToggle')!;
       assertTrue(isVisible(shakeTriggerToggle));
+      assertEquals(
+          1, page.shadowRoot.querySelectorAll('#shakeTriggerToggle').length);
     });
 
     test('ShakeTriggerToggleEnabled', async () => {

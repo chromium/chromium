@@ -397,15 +397,6 @@ export function getHtml(this: SettingsGlicSubpageElement) {
                 this.onMediaUnderstandingToggleSubLabelLinkClicked_}">
         </settings-toggle-button>
       ` : ''}
-      <settings-toggle-button class="hr"
-          id="shakeTriggerToggle"
-          pref-key="glic.shake_trigger_enabled"
-          ?hidden="${!this.showGlicShakeTrigger_}"
-          label="$i18n{glicShakeTriggerToggle}"
-          sub-label="$i18n{glicShakeTriggerToggleSublabel}"
-          @settings-boolean-control-change="${
-              this.onShakeTriggerToggleSettingsBooleanControlChange_}">
-      </settings-toggle-button>
       ${this.actorLoginFederatedLoginSupportEnabled_ ? html`
         <cr-link-row id="actorLoginPermissionsButton" class="hr"
             @click="${this.onActorLoginPermissionsRowClick_}"
