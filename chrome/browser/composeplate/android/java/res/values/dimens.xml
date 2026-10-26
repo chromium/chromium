@@ -8,7 +8,13 @@ found in the LICENSE file.
 
 <resources>
     <dimen name="composeplate_view_button_margin">8dp</dimen>
-    <dimen name="composeplate_view_optional_button_padding">32dp</dimen>
+    <!-- The lateral padding of the icon-only optional and incognito buttons
+         with the phone layout. It is reduced in very narrow windows, e.g.,
+         split screen at the minimum width, to leave enough space for the AI
+         Mode button. See values-w360dp/dimens.xml for the regular value. -->
+    <dimen name="composeplate_view_optional_button_padding">
+        @dimen/composeplate_view_button_margin
+    </dimen>
     <dimen name="composeplate_view_optional_button_margin">4dp</dimen>
     <!-- The spacing of the optional button with the large form factor layout. -->
     <dimen name="composeplate_view_optional_button_padding_lff">@dimen/composeplate_view_button_margin</dimen>

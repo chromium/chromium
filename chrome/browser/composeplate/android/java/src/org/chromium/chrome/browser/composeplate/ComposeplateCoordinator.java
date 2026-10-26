@@ -334,9 +334,10 @@ public class ComposeplateCoordinator {
             } else {
                 // Always read the phone layout dimensions from the current resources instead of
                 // caching them, since the activity isn't recreated on configuration changes and
-                // wide windows have different values (see values-w600dp/dimens.xml). This ensures
-                // fresh values are applied after the screen rotates or the window is resized,
-                // e.g., when entering or leaving split-screen mode.
+                // narrow and wide windows have different values (see values-w360dp/dimens.xml and
+                // values-w600dp/dimens.xml). This ensures fresh values are applied whenever the
+                // NTP notifies a display style change, e.g., after the screen rotates or the
+                // window is resized.
                 Resources res = mView.getResources();
                 optionalButtonPadding =
                         res.getDimensionPixelSize(

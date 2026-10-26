@@ -54,6 +54,7 @@ android_resources("java_resources") {
     "java/res/layout/composeplate_view_beside_mvt_layout.xml",
     "java/res/layout/composeplate_view_layout.xml",
     "java/res/values-sw600dp/dimens.xml",
+    "java/res/values-w360dp/dimens.xml",
     "java/res/values-w600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
