@@ -6881,4 +6881,41 @@ suite('OmniboxPopupSearchboxTest', function() {
    // Restore original values so `loadTimeData` does not leak into other tests.
    loadTimeData.overrideValues(originalConstants);
  });
+
+  test('ComposeButtonDoesNotShiftWhenDropdownOpens', async () => {
+    // Match `omnibox_popup_document_style.css` (`body { margin: 0; }`) so
+    // `:host(:not([dropdown-is-visible]))`'s top margin does not collapse with
+    // the default 8px user-agent body margin.
+    const originalMargin = document.body.style.margin;
+    document.body.style.margin = '0';
+    searchbox.dropdownIsVisible = false;
+    testProxy.page.setAimButtonVisible(true);
+    await microtasksFinished();
+
+    const composeButton = searchbox.$.composeButton;
+    assertTrue(isVisible(composeButton));
+    const glowContainer =
+        composeButton.shadowRoot.querySelector<HTMLElement>('.glow-container');
+    assertTrue(!!glowContainer);
+
+    const closedGlowRect = glowContainer.getBoundingClientRect();
+
+    // Open the dropdown by populating autocomplete matches.
+    searchbox.activeQueryId = 0;
+    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: 0,
+      input: 'test',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    const openGlowRect = glowContainer.getBoundingClientRect();
+    assertEquals(closedGlowRect.top, openGlowRect.top);
+    assertEquals(closedGlowRect.bottom, openGlowRect.bottom);
+    assertEquals(closedGlowRect.left, openGlowRect.left);
+    assertEquals(closedGlowRect.right, openGlowRect.right);
+
+    document.body.style.margin = originalMargin;
+  });
 });
