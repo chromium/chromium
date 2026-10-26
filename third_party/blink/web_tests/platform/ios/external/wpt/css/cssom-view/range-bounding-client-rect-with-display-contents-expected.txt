@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] the space between elements using a range should be the same as using another method
-  assert_equals: range.getBoundingClientRect().height expected 47 but got 60
-Harness: the test ran to completion.
-

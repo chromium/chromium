@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>Range.getClientRects() with display: contents elements</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+  #boxed, #sibling { display: block; }
+  .contents { display: contents; }
+  /* Padding keeps the border box of #inner distinct from its text quad. */
+  #inner { padding: 6px; }
+</style>
+<body>
+<div id="boxed">
+  <span class="contents"><b id="inner">inner</b></span>
+</div>
+<div id="sibling">sibling</div>
+
+<script>
+function boxRects(node) {
+  // Only the border boxes; text quads are reported on top of those and are not
+  // what this test is about.
+  const range = document.createRange();
+  range.selectNode(node);
+  return [...range.getClientRects()];
+}
+
+test(() => {
+  const contents = document.querySelector('.contents');
+  const inner = document.getElementById('inner');
+  const rects = boxRects(contents);
+  const innerRect = inner.getBoundingClientRect();
+
+  // The display: contents element has no box of its own, so the box of its
+  // child has to be reported instead of nothing.
+  assert_true(rects.some(rect => rect.top === innerRect.top &&
+                                 rect.height === innerRect.height),
+              'a child box of the display: contents element is reported');
+}, 'A range selecting a display: contents element reports its children');
+
+test(() => {
+  const boxed = document.getElementById('boxed');
+  const rects = boxRects(boxed);
+  const boxedRect = boxed.getBoundingClientRect();
+  const innerRect = document.getElementById('inner').getBoundingClientRect();
+
+  assert_true(rects.some(rect => rect.top === boxedRect.top &&
+                                 rect.height === boxedRect.height),
+              'the border box of the selected element is reported');
+  assert_false(rects.some(rect => rect.top === innerRect.top &&
+                                  rect.height === innerRect.height &&
+                                  rect.width === innerRect.width),
+               'boxes already enclosed by the selected element are not repeated');
+}, 'A range selecting an element encloses boxes below a display: contents child');
+</script>
+</body>
+</html>

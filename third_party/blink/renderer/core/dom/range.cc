@@ -1699,18 +1699,31 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
   Node* end_container = &end_.Container();
   Node* stop_node = PastLastNode();
 
-  // Stores the elements selected by the range.
+  // A selected box-less element stays in this set so its descendants inherit
+  // selection. Only an enclosing box suppresses their border boxes.
   HeapHashSet<Member<const Node>> selected_elements;
+  // Stores the elements whose border box is already enclosed by a selected
+  // ancestor, i.e. that ancestor draws a boundary around this subtree. A
+  // box-less ancestor, such as a `display: contents` element, encloses
+  // nothing. Ancestors are visited before their descendants, so this only
+  // looks at the parent.
+  HeapHashSet<Member<const Node>> enclosed_elements;
   for (Node* node = FirstNode(); node && node != stop_node;
        node = NodeTraversal::Next(*node)) {
     if (!node->IsElementNode())
       continue;
     auto* parent_node = node->parentNode();
-    if ((parent_node && selected_elements.Contains(parent_node)) ||
+    const bool parent_is_selected =
+        parent_node && selected_elements.Contains(parent_node);
+    if (parent_is_selected ||
         (!node->contains(start_container) && !node->contains(end_container))) {
       DCHECK_LE(StartPosition(), Position::BeforeNode(*node));
       DCHECK_GE(EndPosition(), Position::AfterNode(*node));
       selected_elements.insert(node);
+    }
+    if (parent_is_selected && (parent_node->GetLayoutObject() ||
+                               enclosed_elements.Contains(parent_node))) {
+      enclosed_elements.insert(node);
     }
   }
 
@@ -1719,8 +1732,9 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
     auto* element_node = DynamicTo<Element>(node);
     if (element_node) {
       if (!selected_elements.Contains(node) ||
-          selected_elements.Contains(node->parentNode()))
+          enclosed_elements.Contains(node)) {
         continue;
+      }
       LayoutObject* const layout_object = element_node->GetLayoutObject();
       if (!layout_object)
         continue;

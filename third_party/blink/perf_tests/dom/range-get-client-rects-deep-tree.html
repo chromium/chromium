@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+
+<style>
+  .contents { display: contents; }
+</style>
+<div id="container"></div>
+<script>
+'use strict';
+
+// Range.getClientRects() walks every node in the range twice and decides per
+// element whether a selected ancestor already encloses it. A deep tree with
+// `display: contents` elements in the ancestor chain is the worst case for
+// that decision.
+const kDepth = 200;
+const kLeavesPerLevel = 20;
+
+const container = document.getElementById('container');
+let parent = container;
+for (let depth = 0; depth < kDepth; depth++) {
+  const wrapper = document.createElement('div');
+  wrapper.className = depth % 2 ? 'contents' : '';
+  for (let leaf = 0; leaf < kLeavesPerLevel; leaf++) {
+    const span = document.createElement('span');
+    span.textContent = 'leaf';
+    wrapper.appendChild(span);
+  }
+  parent.appendChild(wrapper);
+  parent = wrapper;
+}
+
+const range = document.createRange();
+range.selectNodeContents(container);
+
+PerfTestRunner.measureTime({
+  description: 'Range.getClientRects() over a ' + kDepth + ' level deep tree ' +
+               'with display: contents elements in every other level.',
+  run: () => {
+    PerfTestRunner.forceLayout();
+    range.getClientRects();
+  },
+});
+</script>
