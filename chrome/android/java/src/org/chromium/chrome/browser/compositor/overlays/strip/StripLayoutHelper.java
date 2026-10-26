@@ -5458,6 +5458,11 @@ public class StripLayoutHelper
         return mScrollDelegate.getScrollOffsetLimitForTesting(); // IN-TEST
     }
 
+    /** Returns the reorder start margin for testing. */
+    float getReorderStartMarginForTesting() {
+        return mScrollDelegate.getReorderStartMargin(); // IN-TEST
+    }
+
     /** Returns The scroller. */
     StackScroller getScrollerForTesting() {
         return mScrollDelegate.getScrollerForTesting(); // IN-TEST

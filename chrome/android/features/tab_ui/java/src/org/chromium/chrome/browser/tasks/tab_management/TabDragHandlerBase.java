@@ -548,6 +548,10 @@ public abstract class TabDragHandlerBase
         ResettersForTesting.register(() -> sDragToken = null);
     }
 
+    public void setDragSourceViewForTesting(@Nullable View dragSourceView) {
+        mDragSourceView = dragSourceView;
+    }
+
     private static @Nullable List<Tab> getDraggedTabs(ChromeDropDataAndroid dropData) {
         if (dropData instanceof ChromeTabDropDataAndroid tabDropData) {
             return Collections.singletonList(assertNonNull(tabDropData.tab));

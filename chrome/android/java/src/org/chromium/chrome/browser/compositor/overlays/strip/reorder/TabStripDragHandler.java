@@ -599,17 +599,23 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     }
 
     private boolean onDragEnd(boolean dropHandled) {
-        mHoveringInStrip = false;
-
         if (mIsLinkDrag) {
+            mHoveringInStrip = false;
             mIsLinkDrag = false;
             return mLinkDragDelegate.onDragExit();
         }
 
-        // No-op for destination strip.
+        // Clean up reorder mode on the destination strip if the drag ended without a drop while
+        // hovering.
         if (!isDragSource()) {
+            if (!dropHandled && mHoveringInStrip) {
+                mStripLayoutHelperSupplier.get().stopReorderMode(/* isDragCancelled= */ true);
+            }
+            mHoveringInStrip = false;
             return false;
         }
+
+        mHoveringInStrip = false;
 
         if (dropHandled && !DragDropGlobalState.didChromeHandleDrop()) {
             // If browser content is dragged off the strip, then dropped to create a new window,
