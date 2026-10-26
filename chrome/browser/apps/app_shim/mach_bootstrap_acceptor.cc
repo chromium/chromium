@@ -48,8 +48,12 @@ void MachBootstrapAcceptor::Start() {
 }
 
 void MachBootstrapAcceptor::Stop() {
-  endpoint_.reset();
+  // `dispatch_source_` runs `HandleRequest()` on a background dispatch queue,
+  // which accesses `endpoint_` via `port()`. Reset `dispatch_source_` first
+  // (which cancels the source and waits for any in-flight event handler to
+  // finish) before resetting `endpoint_`.
   dispatch_source_.reset();
+  endpoint_.reset();
 }
 
 void MachBootstrapAcceptor::HandleRequest() {

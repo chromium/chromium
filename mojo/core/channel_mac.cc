@@ -70,6 +70,21 @@ constexpr mach_msg_id_t kChannelMacOOLMsgId = 'MOJ+';
 constexpr base::TimeDelta kPeerValidationTimeout = base::Seconds(10);
 #endif  // BUILDFLAG(IS_MAC)
 
+// Returns whether the message at the start of `buffer`, which must have been
+// received with a MACH_RCV_TRAILER_AUDIT trailer, was sent by the kernel. Only
+// messages sent by the kernel can be trusted to be genuine Mach notifications,
+// since anyone holding a send right to a port can send it a message with any
+// msgh_id. `buffer` is taken by value so that the caller's position in it is
+// not changed.
+bool IsMessageFromKernel(base::BufferIterator<char> buffer,
+                         const mach_msg_header_t& header) {
+  buffer.Seek(header.msgh_size);
+  auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
+  static const audit_token_t kernel_audit_token = KERNEL_AUDIT_TOKEN_VALUE;
+  return trailer && base::byte_span_from_ref(trailer->msgh_audit) ==
+                        base::byte_span_from_ref(kernel_audit_token);
+}
+
 class ChannelMac : public Channel,
                    public base::CurrentThread::DestructionObserver,
                    public base::MessagePumpKqueue::MachPortWatcher {
@@ -257,7 +272,9 @@ class ChannelMac : public Channel,
       SendHandshake();
     } else if (receive_port_ != MACH_PORT_NULL) {
       DCHECK(send_port_ == MACH_PORT_NULL);
-      // Wait for the received message via the MessageLoop.
+      // Wait for the handshake message via the MessageLoop, watching for peer
+      // loss meanwhile.
+      RequestNoSendersNotification();
     } else {
       NOTREACHED();
     }
@@ -331,6 +348,52 @@ class ChannelMac : public Channel,
     return true;
   }
 
+  // For a channel created with only a receive right, requests that the kernel
+  // notify `receive_port_` once no send rights to it exist anymore. Until the
+  // handshake provides `send_port_` for a dead-name notification, this is how
+  // the channel detects that its peer's send right was destroyed without ever
+  // sending a handshake (e.g., if a Mach message carrying the send right was
+  // destroyed undelivered, or its recipient dropped it).
+  //
+  // This relies on the following Mach semantics:
+  //  - The kernel's send-right count for a port includes send rights in transit
+  //    in queued Mach messages (including as a message destination), while
+  //    excluding send-once rights. A send right that is still queued thus does
+  //    not trigger this notification; once the count drops to zero, no peer can
+  //    ever send a handshake because this channel makes no send rights to
+  //    `receive_port_` before the handshake.
+  //  - Passing `sync = 0` fires the notification immediately if all send rights
+  //    were already gone before the channel started.
+  void RequestNoSendersNotification() {
+    DCHECK(send_port_ == MACH_PORT_NULL);
+    base::apple::ScopedMachSendRight previous;
+    kern_return_t kr = mach_port_request_notification(
+        mach_task_self(), receive_port_.get(), MACH_NOTIFY_NO_SENDERS,
+        /*sync=*/0, receive_port_.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE,
+        base::apple::ScopedMachSendRight::Receiver(previous).get());
+    if (kr != KERN_SUCCESS) {
+      MACH_LOG(ERROR, kr) << "mach_port_request_notification NO_SENDERS";
+      return;
+    }
+    awaiting_no_senders_notification_ = true;
+  }
+
+  // Cancels the request made in RequestNoSendersNotification() and ignores any
+  // MACH_NOTIFY_NO_SENDERS notification already queued behind the handshake.
+  void CancelNoSendersNotification() {
+    if (!awaiting_no_senders_notification_) {
+      return;
+    }
+    awaiting_no_senders_notification_ = false;
+    base::apple::ScopedMachSendRight previous;
+    kern_return_t kr = mach_port_request_notification(
+        mach_task_self(), receive_port_.get(), MACH_NOTIFY_NO_SENDERS,
+        /*sync=*/0, MACH_PORT_NULL, MACH_MSG_TYPE_MAKE_SEND_ONCE,
+        base::apple::ScopedMachSendRight::Receiver(previous).get());
+    MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
+        << "mach_port_request_notification cancel NO_SENDERS";
+  }
+
   // SendHandshake() sends to the |receive_port_| a right to |send_port_|,
   // establishing bi-directional communication with the peer. After the
   // handshake message has been sent, this Channel can queue any pending
@@ -369,6 +432,10 @@ class ChannelMac : public Channel,
     }
 
     DCHECK(send_port_ == MACH_PORT_NULL);
+
+    // Once a handshake arrives, either it fails right away or the dead-name
+    // notification on `send_port_` takes over peer-death detection.
+    CancelNoSendersNotification();
 
     auto* message = buffer.Object<mach_msg_header_t>();
     if (message->msgh_id != kChannelMacHandshakeMsgId ||
@@ -708,29 +775,32 @@ class ChannelMac : public Channel,
       return;
     }
 
-    if (header->msgh_id == MACH_NOTIFY_DEAD_NAME) {
+    if (header->msgh_id == MACH_NOTIFY_DEAD_NAME &&
+        IsMessageFromKernel(buffer, *header)) {
       // The DEAD_NAME notification contains a port right that must be
       // explicitly destroyed, as it is not carried in a descriptor.
       buffer.Seek(0);
       auto* notification = buffer.Object<mach_dead_name_notification_t>();
-
-      // Verify that the kernel sent the notification.
-      buffer.Seek(notification->not_header.msgh_size);
-      auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
-      static const audit_token_t kernel_audit_token = KERNEL_AUDIT_TOKEN_VALUE;
-      if (UNSAFE_TODO(memcmp(&trailer->msgh_audit, &kernel_audit_token,
-                             sizeof(audit_token_t))) == 0) {
-        DCHECK(notification->not_port == send_port_);
-        // Release the notification's send right using this scoper.
-        base::apple::ScopedMachSendRight notify_port(notification->not_port);
-      }
+      DCHECK(notification->not_port == send_port_);
+      // Release the notification's send right using this scoper.
+      base::apple::ScopedMachSendRight notify_port(notification->not_port);
       OnError(Error::kDisconnected);
+      return;
+    } else if (header->msgh_id == MACH_NOTIFY_NO_SENDERS &&
+               IsMessageFromKernel(buffer, *header)) {
+      // Ignored if `CancelNoSendersNotification()` has already been called.
+      // Non-kernel messages with this ID (or `MACH_NOTIFY_DEAD_NAME`) are not
+      // notifications and fall through to regular message handling below.
+      if (awaiting_no_senders_notification_) {
+        awaiting_no_senders_notification_ = false;
+        OnError(Error::kDisconnected);
+      }
       return;
     } else if (header->msgh_id == MACH_NOTIFY_SEND_ONCE) {
       // Notification of an extant send-once right being destroyed. This is
-      // sent for the right allocated in RequestSendDeadNameNotification(),
-      // and no action needs to be taken. Since it is ignored, the kernel
-      // audit token need not be checked.
+      // sent for the rights allocated in RequestSendDeadNameNotification()
+      // and RequestNoSendersNotification(), and no action needs to be taken.
+      // Since it is ignored, the kernel audit token need not be checked.
       return;
     }
 
@@ -905,6 +975,11 @@ class ChannelMac : public Channel,
   // directional communication, is complete. If false, calls to Write() will
   // enqueue messages on |pending_messages_|.
   bool handshake_done_ = false;
+
+  // Whether a MACH_NOTIFY_NO_SENDERS notification for `receive_port_` is
+  // active and should be reported as a disconnection if it arrives. Only
+  // accessed on `io_task_runner_`.
+  bool awaiting_no_senders_notification_ = false;
 
   // If the channel was created with a receive right, the first message it
   // receives is the internal handshake. The audit token of the sender of the
