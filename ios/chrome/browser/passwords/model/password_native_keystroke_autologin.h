@@ -17,6 +17,9 @@ class WebState;
 
 // Represents the final state of an auto-submission flow.
 struct AutoSubmissionState {
+  // True if the submission attempt was aborted mid-flow (e.g., `WebState` being
+  // backgrounded or destroyed).
+  bool aborted = false;
   // True if the native Enter keystroke (`insertText:@"\n"`) was dispatched to
   // the `WebState`'s first responder. Note that this tracks native keystroke
   // dispatch rather than DOM form submission acceptance.

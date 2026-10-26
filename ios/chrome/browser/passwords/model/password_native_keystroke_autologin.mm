@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/scoped_observation.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/password_manager/ios/features.h"
@@ -17,12 +18,24 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace {
 
-// Encapsulates the state and context of an auto-submission flow_context.
-// This object is move-only and is passed through the asynchronous sequence.
-class SubmitFlowContext {
+// Returns true if `web_state` is currently visible and its view is attached to
+// a window.
+bool IsWebStateVisibleInWindow(web::WebState* web_state) {
+  if (!web_state || !web_state->IsVisible()) {
+    return false;
+  }
+  UIView* view = web_state->GetView();
+  return view != nil && view.window != nil;
+}
+
+// Encapsulates the state and context of an auto-submission flow.
+// This object is non-copyable and non-movable and is passed via
+// `std::unique_ptr` through the asynchronous sequence.
+class SubmitFlowContext : public web::WebStateObserver {
  public:
   SubmitFlowContext(base::WeakPtr<web::WebState> web_state,
                     base::WeakPtr<web::WebFrame> frame,
@@ -31,13 +44,47 @@ class SubmitFlowContext {
       : web_state_(web_state),
         frame_(frame),
         field_id_(field_id),
-        completion_handler_(std::move(completion_handler)) {}
+        completion_handler_(std::move(completion_handler)) {
+    CHECK(web_state_);
+    web_state_observation_.Observe(web_state_.get());
+  }
 
   SubmitFlowContext(const SubmitFlowContext&) = delete;
   SubmitFlowContext& operator=(const SubmitFlowContext&) = delete;
-  SubmitFlowContext(SubmitFlowContext&&) = default;
-  SubmitFlowContext& operator=(SubmitFlowContext&&) = default;
-  ~SubmitFlowContext() = default;
+  SubmitFlowContext(SubmitFlowContext&&) = delete;
+  SubmitFlowContext& operator=(SubmitFlowContext&&) = delete;
+  // Ensures cleanup still runs if `SubmitFlowContext` is destroyed.
+  ~SubmitFlowContext() override {
+    if (!done_) {
+      state_.aborted = true;
+      std::move(*this).Finish();
+    }
+  }
+
+  // web::WebStateObserver:
+  void WasHidden(web::WebState* web_state) override { state_.aborted = true; }
+
+  void WebStateDestroyed(web::WebState* web_state) override {
+    state_.aborted = true;
+    web_state_observation_.Reset();
+    web_state_ = nullptr;
+    frame_ = nullptr;
+  }
+
+  // Returns true if the flow has not been aborted (e.g., by the `WebState`
+  // being hidden or destroyed mid-flow), the target `WebFrame` still exists,
+  // and the `WebState` is still visible and attached to a window. Latches
+  // `state_.aborted = true` if the flow can no longer proceed.
+  bool CanProceed() {
+    if (state_.aborted) {
+      return false;
+    }
+    if (!frame_ || !IsWebStateVisibleInWindow(web_state_.get())) {
+      state_.aborted = true;
+      return false;
+    }
+    return true;
+  }
 
   // Finish the flow by doing Cleanup & Completion. Last step in the sequence
   // regardless of the auto-submission process outcome (success or failure). Can
@@ -45,6 +92,7 @@ class SubmitFlowContext {
   void Finish() && {
     CHECK(!done_);
     done_ = true;
+    web_state_observation_.Reset();
 
     if (web_state_) {
       if (shield_raised_) {
@@ -93,6 +141,8 @@ class SubmitFlowContext {
   base::WeakPtr<web::WebState> web_state_;
   base::WeakPtr<web::WebFrame> frame_;
   autofill::FieldRendererId field_id_;
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   // --- State (Progress) ---
   // True if the interaction shield over the web view was raised.
@@ -116,7 +166,7 @@ using StepCallback =
 
 // Triggers submit via native keystroke on the first responder.
 void RunNativeSubmit(std::unique_ptr<SubmitFlowContext> flow_context) {
-  if (flow_context->web_state()) {
+  if (flow_context->CanProceed()) {
     UIView* web_view = flow_context->web_state()->GetView();
     UIResponder* first_responder = GetFirstResponder();
 
@@ -149,11 +199,13 @@ StepCallback CreateInteractionShieldStep(StepCallback next_step) {
 
   auto step_logic = [](StepCallback next_step,
                        std::unique_ptr<SubmitFlowContext> flow_context) {
-    if (flow_context->web_state()) {
-      if (UIView* web_view = flow_context->web_state()->GetView()) {
-        web_view.userInteractionEnabled = NO;
-        flow_context->set_shield_raised(true);
-      }
+    if (!flow_context->CanProceed()) {
+      std::move(*flow_context).Finish();
+      return;
+    }
+    if (UIView* web_view = flow_context->web_state()->GetView()) {
+      web_view.userInteractionEnabled = NO;
+      flow_context->set_shield_raised(true);
     }
     if (!flow_context->shield_raised()) {
       // Terminate flow if the shield could not be raised.
@@ -178,21 +230,23 @@ StepCallback CreatePreventKeyboardStep(StepCallback next_step,
 
   auto step_logic = [](StepCallback next_step,
                        std::unique_ptr<SubmitFlowContext> flow_context) {
-    web::WebFrame* frame_ptr = flow_context->frame().get();
-    if (!frame_ptr) {
+    if (!flow_context->CanProceed()) {
       std::move(*flow_context).Finish();
       return;
     }
+    web::WebFrame* frame_ptr = flow_context->frame().get();
 
     auto js_callback = [](StepCallback next_step,
                           std::unique_ptr<SubmitFlowContext> flow_context,
                           BOOL success) {
       if (success) {
         flow_context->set_input_mode_changed(true);
-        std::move(next_step).Run(std::move(flow_context));
-        return;
+        if (flow_context->CanProceed()) {
+          std::move(next_step).Run(std::move(flow_context));
+          return;
+        }
       }
-      // Abandon flow if the operation wasn't as success.
+      // Abandon flow if the operation wasn't a success or the tab was hidden.
       std::move(*flow_context).Finish();
     };
 
@@ -213,9 +267,8 @@ StepCallback CreatePreventKeyboardStep(StepCallback next_step,
 StepCallback CreateDismissKeyboardStep(StepCallback next_step) {
   auto step_logic = [](StepCallback next_step,
                        std::unique_ptr<SubmitFlowContext> flow_context) {
-    if (!flow_context->web_state()) {
-      // Terminate flow if there is no more webstate in which case there
-      // is no point in keeping the flow.
+    if (!flow_context->CanProceed()) {
+      // Terminate flow if the web state is gone or no longer in the foreground.
       std::move(*flow_context).Finish();
       return;
     }
@@ -237,20 +290,20 @@ StepCallback CreateDismissKeyboardStep(StepCallback next_step) {
 StepCallback CreateFocusStep(StepCallback next_step) {
   auto step_logic = [](StepCallback next_step,
                        std::unique_ptr<SubmitFlowContext> flow_context) {
-    web::WebFrame* frame_ptr = flow_context->frame().get();
-    if (!frame_ptr) {
+    if (!flow_context->CanProceed()) {
       std::move(*flow_context).Finish();
       return;
     }
+    web::WebFrame* frame_ptr = flow_context->frame().get();
 
     auto js_callback = [](StepCallback next_step,
                           std::unique_ptr<SubmitFlowContext> flow_context,
                           BOOL success) {
-      if (success) {
+      if (success && flow_context->CanProceed()) {
         std::move(next_step).Run(std::move(flow_context));
         return;
       }
-      // Terminate flow if the operation wasn't a success.
+      // Terminate flow if the operation wasn't a success or the tab was hidden.
       std::move(*flow_context).Finish();
     };
 
@@ -270,19 +323,21 @@ StepCallback CreateFocusStep(StepCallback next_step) {
 StepCallback CreateRendererShieldStep(StepCallback next_step) {
   auto step_logic = [](StepCallback next_step,
                        std::unique_ptr<SubmitFlowContext> flow_context) {
-    web::WebFrame* frame_ptr = flow_context->frame().get();
-    if (!frame_ptr) {
+    if (!flow_context->CanProceed()) {
       std::move(*flow_context).Finish();
       return;
     }
+    web::WebFrame* frame_ptr = flow_context->frame().get();
 
     auto js_callback = [](StepCallback next_step,
                           std::unique_ptr<SubmitFlowContext> flow_context,
                           BOOL success) {
       if (success) {
         flow_context->set_renderer_shield_raised(true);
-        std::move(next_step).Run(std::move(flow_context));
-        return;
+        if (flow_context->CanProceed()) {
+          std::move(next_step).Run(std::move(flow_context));
+          return;
+        }
       }
       std::move(*flow_context).Finish();
     };
@@ -312,9 +367,9 @@ StepCallback CreateNativeSubmitStep() {
   if (wait_period_ms > 0) {
     auto delayed_logic = [](StepCallback task, base::TimeDelta delay,
                             std::unique_ptr<SubmitFlowContext> flow_context) {
-      if (!flow_context->web_state()) {
-        // Terminate flow if there is no more webstate in which case there
-        // is no point in keeping the flow.
+      if (!flow_context->CanProceed()) {
+        // Terminate flow if the web state is gone or no longer in the
+        // foreground.
         std::move(*flow_context).Finish();
         return;
       }
@@ -332,12 +387,14 @@ StepCallback CreateNativeSubmitStep() {
   // first responder.
   auto force_first_responder =
       [](StepCallback task, std::unique_ptr<SubmitFlowContext> flow_context) {
-        if (flow_context->web_state()) {
-          if (UIView* web_view = flow_context->web_state()->GetView()) {
-            // Make sure the web view is the first responder so
-            // it can receive the keystroke.
-            [web_view becomeFirstResponder];
-          }
+        if (!flow_context->CanProceed()) {
+          std::move(*flow_context).Finish();
+          return;
+        }
+        if (UIView* web_view = flow_context->web_state()->GetView()) {
+          // Make sure the web view is the first responder so
+          // it can receive the keystroke.
+          [web_view becomeFirstResponder];
         }
         std::move(task).Run(std::move(flow_context));
       };
@@ -395,17 +452,12 @@ void TriggerAutoSubmissionWithResult(
     bool should_prevent_keyboard) {
   CHECK(completion_handler);
 
-  if (!weak_web_state) {
+  if (!IsWebStateVisibleInWindow(weak_web_state.get()) || field_id.is_null()) {
     std::move(completion_handler).Run(AutoSubmissionState{});
     return;
   }
 
   UIView* view = weak_web_state->GetView();
-  if (!view) {
-    std::move(completion_handler).Run(AutoSubmissionState{});
-    return;
-  }
-
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFramesManager* manager =
