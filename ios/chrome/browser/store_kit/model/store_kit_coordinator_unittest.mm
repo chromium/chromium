@@ -128,15 +128,7 @@ TEST_F(StoreKitCoordinatorTest, NoOverlappingStoreKitsPresented) {
 
 // Tests that if the base view controller is presenting any view controller,
 // starting the coordinator doesn't present new view controller.
-// TODO:(crbug.com/968514): Re-enable this test on devices.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_NoOverlappingPresentedViewControllers \
-  NoOverlappingPresentedViewControllers
-#else
-#define MAYBE_NoOverlappingPresentedViewControllers \
-  DISABLED_NoOverlappingPresentedViewControllers
-#endif
-TEST_F(StoreKitCoordinatorTest, MAYBE_NoOverlappingPresentedViewControllers) {
+TEST_F(StoreKitCoordinatorTest, NoOverlappingPresentedViewControllers) {
   NSString* kTestITunesItemIdentifier = @"TestITunesItemIdentifier";
   coordinator_.iTunesProductParameters = @{
     SKStoreProductParameterITunesItemIdentifier : kTestITunesItemIdentifier,
