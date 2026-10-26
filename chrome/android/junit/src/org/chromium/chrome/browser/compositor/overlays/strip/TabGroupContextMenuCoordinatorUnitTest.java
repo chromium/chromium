@@ -1481,6 +1481,72 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
+    public void testTitleEditor_DoubleTapReselectsText() {
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+
+        View contentView = mTabGroupContextMenuCoordinator.getContentViewForTesting();
+        assertNotNull(contentView);
+        EditText titleEditText = contentView.findViewById(R.id.tab_group_title);
+        assertNotNull(titleEditText);
+        assertTrue(titleEditText.getText().length() > 0);
+
+        // 1. First double-tap: deselect or place cursor at beginning, then reselect.
+        titleEditText.setSelection(0, 0);
+        assertEquals(0, titleEditText.getSelectionStart());
+        assertEquals(0, titleEditText.getSelectionEnd());
+
+        // Simulate double-tap within double-tap timeout.
+        long now = SystemClock.uptimeMillis();
+        MotionEvent down1 = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 10f, 10f, 0);
+        MotionEvent up1 = MotionEvent.obtain(now, now + 20, MotionEvent.ACTION_UP, 10f, 10f, 0);
+        MotionEvent down2 =
+                MotionEvent.obtain(now + 100, now + 100, MotionEvent.ACTION_DOWN, 10f, 10f, 0);
+        MotionEvent up2 =
+                MotionEvent.obtain(now + 100, now + 120, MotionEvent.ACTION_UP, 10f, 10f, 0);
+
+        titleEditText.dispatchTouchEvent(down1);
+        titleEditText.dispatchTouchEvent(up1);
+        titleEditText.dispatchTouchEvent(down2);
+        titleEditText.dispatchTouchEvent(up2);
+
+        assertEquals(0, titleEditText.getSelectionStart());
+        assertEquals(titleEditText.getText().length(), titleEditText.getSelectionEnd());
+
+        down1.recycle();
+        up1.recycle();
+        down2.recycle();
+        up2.recycle();
+
+        // 2. Second double-tap cycle: deselect and wait past double-tap window to verify repeated
+        // re-selection.
+        titleEditText.setSelection(1, 1);
+        assertEquals(1, titleEditText.getSelectionStart());
+        assertEquals(1, titleEditText.getSelectionEnd());
+
+        now += 500;
+        MotionEvent down3 = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 10f, 10f, 0);
+        MotionEvent up3 = MotionEvent.obtain(now, now + 20, MotionEvent.ACTION_UP, 10f, 10f, 0);
+        MotionEvent down4 =
+                MotionEvent.obtain(now + 100, now + 100, MotionEvent.ACTION_DOWN, 10f, 10f, 0);
+        MotionEvent up4 =
+                MotionEvent.obtain(now + 100, now + 120, MotionEvent.ACTION_UP, 10f, 10f, 0);
+
+        titleEditText.dispatchTouchEvent(down3);
+        titleEditText.dispatchTouchEvent(up3);
+        titleEditText.dispatchTouchEvent(down4);
+        titleEditText.dispatchTouchEvent(up4);
+
+        assertEquals(0, titleEditText.getSelectionStart());
+        assertEquals(titleEditText.getText().length(), titleEditText.getSelectionEnd());
+
+        down3.recycle();
+        up3.recycle();
+        down4.recycle();
+        up4.recycle();
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
     public void testMenuWidthAndVisibility_SubMenu() {
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
         MultiWindowUtils.setInstanceCountForTesting(2);
