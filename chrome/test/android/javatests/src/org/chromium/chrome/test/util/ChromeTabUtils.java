@@ -6,11 +6,9 @@ package org.chromium.chrome.test.util;
 
 import android.app.Instrumentation;
 import android.text.TextUtils;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 
@@ -43,14 +41,12 @@ import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -626,63 +622,6 @@ public class ChromeTabUtils {
 
         tabModel.mergeTabsToGroup(tab1.getId(), tab2.getId());
         Assert.assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
-    }
-
-    /**
-     * Long presses the view, selects an item from the context menu, and asserts that a new tab is
-     * opened and is incognito if expectIncognito is true. For use in testing long-press context
-     * menu options that open new tabs.
-     *
-     * @param activity The {@link ChromeTabbedActivity}
-     * @param view The {@link View} to long press.
-     * @param contextMenuItemId The context menu item to select on the view.
-     * @param expectIncognito Whether the opened tab is expected to be incognito.
-     * @param expectedUrl The expected url for the new tab.
-     */
-    public static void invokeContextMenuAndOpenInANewTab(
-            ChromeTabbedActivity activity,
-            View view,
-            int contextMenuItemId,
-            boolean expectIncognito,
-            final String expectedUrl)
-            throws ExecutionException {
-        final CallbackHelper createdCallback = new CallbackHelper();
-        final TabModel tabModel = activity.getTabModelSelector().getModel(expectIncognito);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabModel.addObserver(
-                            new TabModelObserver() {
-                                @Override
-                                public void didAddTab(
-                                        Tab tab,
-                                        @TabLaunchType int type,
-                                        @TabCreationState int creationState,
-                                        boolean markedForSelection) {
-                                    if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
-                                        createdCallback.notifyCalled();
-                                        tabModel.removeObserver(this);
-                                    }
-                                }
-                            });
-                });
-
-        TestTouchUtils.performLongClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), view);
-        Assert.assertTrue(
-                InstrumentationRegistry.getInstrumentation()
-                        .invokeContextMenuAction(activity, contextMenuItemId, 0));
-
-        try {
-            createdCallback.waitForCallback(0);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Never received tab creation event", e);
-        }
-
-        if (expectIncognito) {
-            Assert.assertTrue(activity.getTabModelSelector().isIncognitoSelected());
-        } else {
-            Assert.assertFalse(activity.getTabModelSelector().isIncognitoSelected());
-        }
     }
 
     /**

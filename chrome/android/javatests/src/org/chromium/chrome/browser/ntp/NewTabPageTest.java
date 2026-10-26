@@ -378,22 +378,6 @@ public class NewTabPageTest {
         histogramWatcher.assertExpected();
     }
 
-    /** Tests opening a most visited item in a new tab. */
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "Flaky - crbug.com/40440132")
-    public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
-        ensureTestServerStarted();
-        Assert.assertNotNull(mMvTilesLayout);
-        ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
-                mActivityTestRule.getActivity(),
-                mMvTilesLayout.getTileAt(0),
-                ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
-                false,
-                mSiteSuggestions.get(0).url.getSpec());
-    }
-
     /** Tests deleting a most visited item. */
     @Test
     @SmallTest

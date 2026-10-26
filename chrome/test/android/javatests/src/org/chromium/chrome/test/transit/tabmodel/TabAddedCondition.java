@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.chrome.browser.tab.Tab;
@@ -16,9 +18,13 @@ import java.util.function.Supplier;
 
 // TODO(crbug.com/576318784): CallbackCondition ignores the expected number of calls when the
 // starting count is 0, so this is fulfilled after the first tab even if more are expected.
-/** Fulfilled when the expected number of tabs are added to a TabModel. */
-public class TabAddedCondition extends CallbackCondition implements TabModelObserver {
+/**
+ * Fulfilled when the expected number of tabs are added to a TabModel. Supplies the last added Tab.
+ */
+public class TabAddedCondition extends CallbackCondition
+        implements TabModelObserver, Supplier<Tab> {
     private TabModel mTabModel;
+    private @Nullable Tab mLastAddedTab;
     private final Supplier<TabModel> mTabModelSupplier;
 
     public TabAddedCondition(int numTabsBeingOpened, Supplier<TabModel> tabModelSupplier) {
@@ -32,6 +38,7 @@ public class TabAddedCondition extends CallbackCondition implements TabModelObse
             @TabLaunchType int type,
             @TabCreationState int creationState,
             boolean markedForSelection) {
+        mLastAddedTab = tab;
         notifyCalled();
     }
 
@@ -52,5 +59,10 @@ public class TabAddedCondition extends CallbackCondition implements TabModelObse
                 () -> {
                     mTabModel.removeObserver(this);
                 });
+    }
+
+    @Override
+    public @Nullable Tab get() {
+        return mLastAddedTab;
     }
 }
