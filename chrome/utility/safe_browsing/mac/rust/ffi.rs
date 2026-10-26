@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 //! `cxx` FFI bridge between C++ `safe_browsing::dmg` (`UDIFParser`,
-//! `HFSIterator`, and `ReadStream`) and the pure-Rust `dmg_parser` crate.
+//! `HFSIterator`, and `ReadStream`) / `safe_browsing::MachOImageReader` and
+//! the pure-Rust `dmg_parser` crate.
 //!
 //! This is the only Rust target in `chrome/utility/safe_browsing/mac` with
 //! `allow_unsafe = true` (required by `#[cxx::bridge]`).
@@ -15,6 +16,7 @@ chromium::import! {
 use std::io::{self, Read, Seek, SeekFrom};
 
 use dmg_parser::hfs::HfsIterator;
+use dmg_parser::mach_o::MachOImage;
 use dmg_parser::udif::UdifParser;
 use dmg_parser::{ReadSeek, SharedStream};
 
@@ -96,6 +98,38 @@ mod ffi {
         /// `RustHfsIterator` is alive and not mutated.
         fn path_utf16(self: &RustHfsIterator) -> &[u16];
         fn read_stream(self: &RustHfsIterator) -> Box<RustReadStream>;
+
+        type RustMachOImageReader;
+        fn is_mach_o_magic_value(magic: u32) -> bool;
+        /// Parses `image` as a thin or fat Mach-O binary. Callers must check
+        /// `is_valid()` on the returned reader before calling other methods.
+        fn new_mach_o_image_reader(image: &[u8]) -> Box<RustMachOImageReader>;
+        fn is_valid(self: &RustMachOImageReader) -> bool;
+        fn is_fat(self: &RustMachOImageReader) -> bool;
+        fn num_fat_images(self: &RustMachOImageReader) -> usize;
+        /// Transfers ownership of the fat architecture slice at `index` to the
+        /// caller. Subsequent calls with the same `index` return an invalid
+        /// (`!is_valid()`) reader.
+        fn take_fat_image(
+            self: &mut RustMachOImageReader,
+            index: usize,
+        ) -> Box<RustMachOImageReader>;
+        fn is_64_bit(self: &RustMachOImageReader) -> bool;
+        /// The returned 28-byte slice borrows from `self` and is valid while
+        /// this `RustMachOImageReader` is alive and not mutated.
+        fn mach_header_bytes(self: &RustMachOImageReader) -> &[u8];
+        /// The returned 32-byte slice borrows from `self` and is valid while
+        /// this `RustMachOImageReader` is alive and not mutated.
+        fn mach_header_64_bytes(self: &RustMachOImageReader) -> &[u8];
+        fn file_type(self: &RustMachOImageReader) -> u32;
+        fn num_load_commands(self: &RustMachOImageReader) -> usize;
+        /// The returned slice borrows from `self` and is valid while this
+        /// `RustMachOImageReader` is alive and not mutated.
+        fn load_command_data(self: &RustMachOImageReader, index: usize) -> &[u8];
+        fn has_code_signature(self: &RustMachOImageReader) -> bool;
+        /// The returned slice borrows from `self` and is valid while this
+        /// `RustMachOImageReader` is alive and not mutated.
+        fn code_signature_info(self: &RustMachOImageReader) -> &[u8];
     }
 }
 
@@ -304,5 +338,111 @@ impl RustHfsIterator {
     fn read_stream(&self) -> Box<RustReadStream> {
         let inner = self.opened.as_ref().and_then(HfsIterator::read_stream);
         Box::new(RustReadStream { inner })
+    }
+}
+
+fn is_mach_o_magic_value(magic: u32) -> bool {
+    MachOImage::is_mach_o_magic_value(magic)
+}
+
+/// Validated Mach-O reader state.
+///
+/// Separated from [`RustMachOImageReader`] so that invalid states are
+/// unrepresentable on this type (`parsed` is always a valid [`MachOImage`]),
+/// while [`RustMachOImageReader`] provides the `Option` wrapper required at the
+/// `#[cxx::bridge]` boundary (since `cxx` does not support `Option<Box<T>>`,
+/// and `cxx`'s `Result<T>` requires C++ exceptions).
+struct ValidMachOImageReader {
+    parsed: MachOImage,
+    /// Validated thin architecture slices for a fat binary, wrapped in `Option`
+    /// slots so `take_fat_image(index)` can move each slice out once in O(1)
+    /// time without shifting the indices of remaining slices.
+    fat_images: Vec<Option<MachOImage>>,
+}
+
+impl ValidMachOImageReader {
+    fn try_new(image: &[u8]) -> Option<Self> {
+        MachOImage::parse(image).ok().map(Self::new)
+    }
+
+    fn new(mut parsed: MachOImage) -> Self {
+        // Every slice returned by `MachOImage::take_fat_images()` was already
+        // parsed and validated during `MachOImage::parse()` (which fails the
+        // entire fat binary if any architecture slice is invalid, matching C++
+        // `MachOImageReader::Initialize()`). Wrap each valid `MachOImage` in
+        // `Some` so `take_fat_image(index)` can move ownership out via
+        // `Option::take()` without shifting indices.
+        let fat_images = parsed.take_fat_images().into_iter().map(Some).collect();
+        Self { parsed, fat_images }
+    }
+
+    fn take_fat_image(&mut self, index: usize) -> Option<Self> {
+        let child = self.fat_images.get_mut(index)?.take()?;
+        Some(Self::new(child))
+    }
+}
+
+/// FFI wrapper around [`ValidMachOImageReader`] backing C++
+/// `safe_browsing::MachOImageReader`.
+pub struct RustMachOImageReader(Option<ValidMachOImageReader>);
+
+fn new_mach_o_image_reader(image: &[u8]) -> Box<RustMachOImageReader> {
+    Box::new(RustMachOImageReader(ValidMachOImageReader::try_new(image)))
+}
+
+impl RustMachOImageReader {
+    fn is_valid(&self) -> bool {
+        self.0.is_some()
+    }
+
+    fn is_fat(&self) -> bool {
+        self.0.as_ref().is_some_and(|r| r.parsed.is_fat())
+    }
+
+    fn num_fat_images(&self) -> usize {
+        self.0.as_ref().map_or(0, |r| r.fat_images.len())
+    }
+
+    /// Transfers ownership of the fat architecture slice at `index` to the
+    /// caller. Subsequent calls with the same `index` return an invalid
+    /// (`!is_valid()`) reader.
+    fn take_fat_image(&mut self, index: usize) -> Box<RustMachOImageReader> {
+        let child = self.0.as_mut().and_then(|r| r.take_fat_image(index));
+        Box::new(Self(child))
+    }
+
+    fn is_64_bit(&self) -> bool {
+        self.0.as_ref().is_some_and(|r| r.parsed.is_64_bit())
+    }
+
+    fn mach_header_bytes(&self) -> &[u8] {
+        self.0.as_ref().map_or(&[], |r| r.parsed.mach_header_bytes())
+    }
+
+    fn mach_header_64_bytes(&self) -> &[u8] {
+        self.0.as_ref().map_or(&[], |r| r.parsed.mach_header_64_bytes())
+    }
+
+    fn file_type(&self) -> u32 {
+        self.0.as_ref().map_or(0, |r| r.parsed.file_type())
+    }
+
+    fn num_load_commands(&self) -> usize {
+        self.0.as_ref().map_or(0, |r| r.parsed.load_commands().len())
+    }
+
+    fn load_command_data(&self, index: usize) -> &[u8] {
+        self.0
+            .as_ref()
+            .and_then(|r| r.parsed.load_commands().get(index))
+            .map_or(&[], |cmd| cmd.data.as_slice())
+    }
+
+    fn has_code_signature(&self) -> bool {
+        self.0.as_ref().and_then(|r| r.parsed.code_signature()).is_some()
+    }
+
+    fn code_signature_info(&self) -> &[u8] {
+        self.0.as_ref().and_then(|r| r.parsed.code_signature()).unwrap_or(&[])
     }
 }

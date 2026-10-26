@@ -74,11 +74,13 @@ source_set("read_stream_bridge_hdr") {
   public_deps = [ "//build/rust:cxx_cppdeps" ]
 }
 
-# `cxx` FFI bridge exposing `dmg_parser` to C++ (`UDIFParser` / `HFSIterator`).
+# `cxx` FFI bridge exposing `dmg_parser` to C++ (`UDIFParser`, `HFSIterator`,
+# and `MachOImageReader`).
 # Permits `unsafe` for `#[cxx::bridge]` (along with `dmg_decompress`).
 rust_static_library("dmg_ffi_bridge") {
   visibility = [
     ":*",
+    "//chrome/common/safe_browsing:*",
     "//chrome/utility/safe_browsing:*",
   ]
 
