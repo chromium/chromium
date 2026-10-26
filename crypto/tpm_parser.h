@@ -233,13 +233,13 @@ struct CRYPTO_EXPORT SignatureAlgorithms {
                          const SignatureAlgorithms&) = default;
 };
 
-// Builds a serialized TPM2_Create command buffer for an Attestation Identity
-// Key (AIK) configured according to the provided `kind` under `parent_handle`.
-//
-// Returns nullopt if `kind` is not supported for AIK creation.
-CRYPTO_EXPORT std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
+// Builds a serialized TPM2_Create command buffer for an ECDSA Attestation
+// Identity Key (AIK) under `parent_handle` that signs with `hash`. The NIST
+// curve follows from `hash`: P-256 for SHA-256, P-384 for SHA-384 and P-521
+// for SHA-512. `hash` must not be SHA-1.
+CRYPTO_EXPORT std::vector<uint8_t> BuildCreateEcdsaAikCommand(
     uint32_t parent_handle,
-    sign::SignatureKind kind);
+    hash::HashKind hash);
 
 // Parses a serialized TPM2_Create response and extracts the private area and
 // public area.

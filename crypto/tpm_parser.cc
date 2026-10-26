@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/span_rust.h"
 #include "base/containers/to_vector.h"
@@ -153,41 +154,6 @@ SignatureErrorOr<void> VerifyEcdsaSignature(
   return base::ok();
 }
 
-std::optional<SignatureAlgorithms> ToSignatureAlgorithms(
-    sign::SignatureKind kind) {
-  switch (kind) {
-    case sign::SignatureKind::RSA_PKCS1_SHA256:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSASSA,
-                                 .hash_alg = TPM_ALG_SHA256};
-    case sign::SignatureKind::RSA_PKCS1_SHA384:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSASSA,
-                                 .hash_alg = TPM_ALG_SHA384};
-    case sign::SignatureKind::RSA_PKCS1_SHA512:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSASSA,
-                                 .hash_alg = TPM_ALG_SHA512};
-    case sign::SignatureKind::RSA_PSS_SHA256:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSAPSS,
-                                 .hash_alg = TPM_ALG_SHA256};
-    case sign::SignatureKind::RSA_PSS_SHA384:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSAPSS,
-                                 .hash_alg = TPM_ALG_SHA384};
-    case sign::SignatureKind::RSA_PSS_SHA512:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSAPSS,
-                                 .hash_alg = TPM_ALG_SHA512};
-    case sign::SignatureKind::ECDSA_SHA256:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_ECDSA,
-                                 .hash_alg = TPM_ALG_SHA256};
-    case sign::SignatureKind::ECDSA_SHA384:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_ECDSA,
-                                 .hash_alg = TPM_ALG_SHA384};
-    case sign::SignatureKind::ECDSA_SHA512:
-      return SignatureAlgorithms{.sig_alg = TPM_ALG_ECDSA,
-                                 .hash_alg = TPM_ALG_SHA512};
-    default:
-      return std::nullopt;
-  }
-}
-
 }  // namespace
 
 // A nonexistent handle is reported in more than one way: response codes are
@@ -207,14 +173,11 @@ bool IsHandleError(const TpmParseError& error) {
   }
 }
 
-std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
-    uint32_t parent_handle,
-    sign::SignatureKind kind) {
-  return ToSignatureAlgorithms(kind).transform(
-      [parent_handle](const auto& algs) {
-        return base::ToVector(build_create_aik_command(
-            parent_handle, algs.sig_alg, algs.hash_alg));
-      });
+std::vector<uint8_t> BuildCreateEcdsaAikCommand(uint32_t parent_handle,
+                                                hash::HashKind hash) {
+  CHECK_NE(hash, hash::kSha1);
+  return base::ToVector(
+      build_create_ecdsa_aik_command(parent_handle, ToTpmAlgHash(hash)));
 }
 
 TpmParseErrorOr<CreateResponse> ParseCreateResponse(

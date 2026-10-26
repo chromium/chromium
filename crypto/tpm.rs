@@ -350,8 +350,8 @@ pub mod ffi {
 
     extern "Rust" {
 
-        /// Builds a TPM2_Create command buffer for an Attestation Identity Key
-        /// (AIK).
+        /// Builds a TPM2_Create command buffer for an ECDSA Attestation
+        /// Identity Key (AIK).
         ///
         /// This function constructs the raw byte representation of a
         /// TPM2_Create command.
@@ -360,10 +360,9 @@ pub mod ffi {
         ///
         /// * `parent_handle` - Handle of the parent key (e.g., Storage Root
         ///   Key).
-        /// * `scheme` - Signing scheme (e.g., TPM_ALG_ECDSA, TPM_ALG_RSASSA, or
-        ///   TPM_ALG_RSAPSS).
-        /// * `hash_alg` - Hash algorithm (e.g., TPM_ALG_SHA256, TPM_ALG_SHA384,
-        ///   or TPM_ALG_SHA512).
+        /// * `hash_alg` - Hash algorithm (TPM_ALG_SHA256, TPM_ALG_SHA384, or
+        ///   TPM_ALG_SHA512). The ECC curve is inferred from `hash_alg`: P-256
+        ///   for SHA-256, P-384 for SHA-384 and P-521 for SHA-512.
         ///
         /// # Returns
         ///
@@ -371,12 +370,8 @@ pub mod ffi {
         ///
         /// # Panics
         ///
-        /// Panics if `scheme` or `hash_alg` is unsupported.
-        fn build_create_aik_command(
-            parent_handle: u32,
-            scheme: TpmAlgSigScheme,
-            hash_alg: TpmAlgHash,
-        ) -> Vec<u8>;
+        /// Panics if `hash_alg` is unsupported.
+        fn build_create_ecdsa_aik_command(parent_handle: u32, hash_alg: TpmAlgHash) -> Vec<u8>;
 
         /// Parses a TPM2_Create response.
         ///
@@ -695,19 +690,16 @@ impl Writer {
     }
 }
 
-/// Builds a TPM2_Create command for an Attestation Identity Key (AIK).
+/// Builds a TPM2_Create command for an ECDSA Attestation Identity Key (AIK).
 ///
 /// * `parent_handle` - Handle of the parent key under which the AIK is created
 ///   (e.g., Storage Root Key).
-/// * `scheme` - Signing scheme (TPM_ALG_RSASSA, TPM_ALG_RSAPSS, or
-///   TPM_ALG_ECDSA).
 /// * `hash_alg` - Hash algorithm (TPM_ALG_SHA256, TPM_ALG_SHA384, or
 ///   TPM_ALG_SHA512).
 ///
-/// Key type and parameters are inferred from the signing scheme:
-/// - RSASSA / RSAPSS implies RSA (2048 bits, default exponent).
-/// - ECDSA implies ECC (curve inferred from hash algorithm: SHA-256 -> P-256,
-///   SHA-384 -> P-384, SHA-512 -> P-521).
+/// The key uses the ECDSA signing scheme (`TPM_ALG_ECDSA`) with the NIST curve
+/// inferred from `hash_alg` (SHA-256 -> P-256, SHA-384 -> P-384, SHA-512 ->
+/// P-521).
 ///
 /// A TPM Create command has the following structure (Table 18 in Part 3):
 ///
@@ -732,37 +724,20 @@ impl Writer {
 /// | TPML_PCR_SELECTION  | creationPCR              |
 ///
 /// See Table 18 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=67.
-pub fn build_create_aik_command(
-    parent_handle: u32,
-    scheme: TpmAlgSigScheme,
-    hash_alg: TpmAlgHash,
-) -> Vec<u8> {
-    let (key_type, curve_id) = match scheme {
-        TpmAlgSigScheme::TPM_ALG_RSASSA | TpmAlgSigScheme::TPM_ALG_RSAPSS => {
-            (TpmAlgPublic::TPM_ALG_RSA, None)
-        }
-        TpmAlgSigScheme::TPM_ALG_ECDSA => {
-            let curve = match hash_alg {
-                TpmAlgHash::TPM_ALG_SHA256 => TpmEccCurve::TPM_ECC_NIST_P256,
-                TpmAlgHash::TPM_ALG_SHA384 => TpmEccCurve::TPM_ECC_NIST_P384,
-                TpmAlgHash::TPM_ALG_SHA512 => TpmEccCurve::TPM_ECC_NIST_P521,
-                _ => panic!("unsupported hash_alg for ECC in build_create_aik_command"),
-            };
-            (TpmAlgPublic::TPM_ALG_ECC, Some(curve))
-        }
-        _ => panic!("unsupported scheme in build_create_aik_command"),
+pub fn build_create_ecdsa_aik_command(parent_handle: u32, hash_alg: TpmAlgHash) -> Vec<u8> {
+    let curve = match hash_alg {
+        TpmAlgHash::TPM_ALG_SHA256 => TpmEccCurve::TPM_ECC_NIST_P256,
+        TpmAlgHash::TPM_ALG_SHA384 => TpmEccCurve::TPM_ECC_NIST_P384,
+        TpmAlgHash::TPM_ALG_SHA512 => TpmEccCurve::TPM_ECC_NIST_P521,
+        _ => panic!("unsupported hash_alg for ECC in build_create_ecdsa_aik_command"),
     };
     let in_scheme_size = 4; // 2 bytes scheme + 2 bytes hash_alg
-    let public_parms_size = match key_type {
-        TpmAlgPublic::TPM_ALG_RSA => 2 + in_scheme_size + 2 + 4,
-        TpmAlgPublic::TPM_ALG_ECC => 2 + in_scheme_size + 2 + 2,
-        _ => unreachable!(),
-    };
-    let unique_size = match key_type {
-        TpmAlgPublic::TPM_ALG_RSA => 2,
-        TpmAlgPublic::TPM_ALG_ECC => 4,
-        _ => unreachable!(),
-    };
+    let public_parms_size = 2 // symmetric (TPM_ALG_NULL)
+        + in_scheme_size
+        + 2 // curveID
+        + 2; // kdf (TPM_ALG_NULL)
+    let unique_size = 2 // x size (0)
+        + 2; // y size (0)
     let tpmt_public_size = 2 // type
         + 2 // nameAlg
         + 4 // objectAttributes
@@ -808,32 +783,21 @@ pub fn build_create_aik_command(
 
     // inPublic (TPM2B_PUBLIC)
     writer.write_u16(u16::try_from(tpmt_public_size).unwrap());
-    writer.write_u16(key_type.repr);
+    writer.write_u16(TpmAlgPublic::TPM_ALG_ECC.repr);
     writer.write_u16(hash_alg.repr);
     writer.write_u32(AIK_OBJECT_ATTRIBUTES);
     writer.write_u16(0); // authPolicy (empty TPM2B_DIGEST)
 
-    // parameters (TPMU_PUBLIC_PARMS)
+    // parameters (TPMS_ECC_PARMS)
     writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr); // symmetric
-    writer.write_u16(scheme.repr);
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_ECDSA.repr); // scheme
     writer.write_u16(hash_alg.repr);
-    match key_type {
-        TpmAlgPublic::TPM_ALG_RSA => {
-            writer.write_u16(2048);
-            writer.write_u32(0); // exponent (default 2^16 + 1)
-                                 // unique (TPM2B_PUBLIC_KEY_RSA)
-            writer.write_u16(0);
-        }
-        TpmAlgPublic::TPM_ALG_ECC => {
-            let curve = curve_id.unwrap();
-            writer.write_u16(curve.repr);
-            writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr); // kdf scheme
-                                                                  // unique (TPMS_ECC_POINT)
-            writer.write_u16(0); // x
-            writer.write_u16(0); // y
-        }
-        _ => unreachable!(),
-    }
+    writer.write_u16(curve.repr);
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr); // kdf scheme
+
+    // unique (TPMS_ECC_POINT)
+    writer.write_u16(0); // x
+    writer.write_u16(0); // y
 
     // outsideInfo (TPM2B_DATA)
     writer.write_u16(0);

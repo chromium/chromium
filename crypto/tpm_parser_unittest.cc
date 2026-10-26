@@ -16,6 +16,7 @@
 #include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/types/expected.h"
 #include "crypto/ecdsa_utils.h"
 #include "crypto/hash.h"
@@ -801,72 +802,38 @@ TEST(TpmCppParserTest, ParseSequenceCompleteResponse_TpmError) {
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
 }
 
-TEST(TpmCppParserTest, BuildCreateAikCommand_SupportedAlgorithms) {
-  constexpr uint32_t kParentHandle = 0x81000001;
+TEST(TpmCppParserTest, BuildCreateEcdsaAikCommand) {
+  constexpr uint32_t kParentHandle = 0x81000009;
+  constexpr struct {
+    hash::HashKind hash;
+    TpmAlgHash tpm_alg;
+  } kCases[] = {
+      {hash::kSha256, TPM_ALG_SHA256},
+      {hash::kSha384, TPM_ALG_SHA384},
+      {hash::kSha512, TPM_ALG_SHA512},
+  };
 
-  // RSA PKCS1
-  EXPECT_TRUE(BuildCreateAikCommand(kParentHandle,
-                                    sign::SignatureKind::RSA_PKCS1_SHA256));
-  EXPECT_TRUE(BuildCreateAikCommand(kParentHandle,
-                                    sign::SignatureKind::RSA_PKCS1_SHA384));
-  EXPECT_TRUE(BuildCreateAikCommand(kParentHandle,
-                                    sign::SignatureKind::RSA_PKCS1_SHA512));
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.hash);
+    std::vector<uint8_t> cmd =
+        BuildCreateEcdsaAikCommand(kParentHandle, test_case.hash);
+    EXPECT_EQ(cmd.size(), 65u);
 
-  // RSA PSS
-  EXPECT_TRUE(BuildCreateAikCommand(kParentHandle,
-                                    sign::SignatureKind::RSA_PSS_SHA256));
-  EXPECT_TRUE(BuildCreateAikCommand(kParentHandle,
-                                    sign::SignatureKind::RSA_PSS_SHA384));
-  EXPECT_TRUE(BuildCreateAikCommand(kParentHandle,
-                                    sign::SignatureKind::RSA_PSS_SHA512));
+    base::SpanReader<const uint8_t> reader(cmd);
+    EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
+    EXPECT_EQ(reader.ReadU32BigEndian(), 65u);
+    EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_CREATE);
+    EXPECT_EQ(reader.ReadU32BigEndian(), kParentHandle);
 
-  // ECDSA
-  EXPECT_TRUE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::ECDSA_SHA256));
-  EXPECT_TRUE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::ECDSA_SHA384));
-  EXPECT_TRUE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::ECDSA_SHA512));
-
-  // Check command structure for an ECC command
-  ASSERT_OK_AND_ASSIGN(
-      std::vector<uint8_t> ecc_cmd,
-      BuildCreateAikCommand(0x81000009u, sign::SignatureKind::ECDSA_SHA256));
-  EXPECT_EQ(ecc_cmd.size(), 65u);
-
-  base::SpanReader<const uint8_t> ecc_reader(ecc_cmd);
-  EXPECT_EQ(ecc_reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
-  EXPECT_EQ(ecc_reader.ReadU32BigEndian(), 65u);
-  EXPECT_EQ(ecc_reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_CREATE);
-  EXPECT_EQ(ecc_reader.ReadU32BigEndian(), 0x81000009u);
-
-  // Check command structure for an RSA command
-  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> rsa_cmd,
-                       BuildCreateAikCommand(
-                           0x81000001u, sign::SignatureKind::RSA_PKCS1_SHA256));
-  EXPECT_EQ(rsa_cmd.size(), 65u);
-
-  base::SpanReader<const uint8_t> rsa_reader(rsa_cmd);
-  EXPECT_EQ(rsa_reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
-  EXPECT_EQ(rsa_reader.ReadU32BigEndian(), 65u);
-  EXPECT_EQ(rsa_reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_CREATE);
-  EXPECT_EQ(rsa_reader.ReadU32BigEndian(), 0x81000001u);
+    // Skip the auth session (13 bytes), inSensitive (6) and the size and type
+    // of inPublic (4) to reach its nameAlg.
+    ASSERT_TRUE(reader.Skip(23u));
+    EXPECT_EQ(reader.ReadEnumBigEndian<TpmAlgHash>(), test_case.tpm_alg);
+  }
 }
 
-TEST(TpmCppParserTest, BuildCreateAikCommand_UnsupportedAlgorithms) {
-  constexpr uint32_t kParentHandle = 0x81000001;
-  EXPECT_FALSE(BuildCreateAikCommand(kParentHandle,
-                                     sign::SignatureKind::RSA_PKCS1_SHA1));
-  EXPECT_FALSE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::ECDSA_SHA1));
-  EXPECT_FALSE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::ED25519));
-  EXPECT_FALSE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::MLDSA_44));
-  EXPECT_FALSE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::MLDSA_65));
-  EXPECT_FALSE(
-      BuildCreateAikCommand(kParentHandle, sign::SignatureKind::MLDSA_87));
+TEST(TpmCppParserTest, BuildCreateEcdsaAikCommandSha1Death) {
+  EXPECT_CHECK_DEATH(BuildCreateEcdsaAikCommand(0x81000009, hash::kSha1));
 }
 
 TEST(TpmCppParserTest, ParseCreateResponse_Success) {
