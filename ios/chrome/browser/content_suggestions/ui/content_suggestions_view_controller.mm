@@ -257,7 +257,6 @@ constexpr CGFloat kStackViewSpacing = 12.0;
 
 // Returns a module containing an AI Mode button.
 - (UIView*)createAIMModule {
-  // TODO(crbug.com/549012340): Add an accessibility identifier.
   CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
 
   MostVisitedTileView* aimTile =
@@ -267,6 +266,9 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   aimTile.translatesAutoresizingMaskIntoConstraints = NO;
   aimTile.isAccessibilityElement = YES;
   aimTile.accessibilityTraits = UIAccessibilityTraitButton;
+  aimTile.accessibilityLabel = aimTile.titleLabel.text;
+  aimTile.accessibilityIdentifier =
+      kContentSuggestionsAIMModuleAccessibilityIdentifier;
   [aimTile addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                     initWithTarget:self
                                             action:@selector(aimModuleTapped)]];

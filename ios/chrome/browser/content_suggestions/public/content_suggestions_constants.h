@@ -77,6 +77,9 @@ extern NSString* const
 extern NSString* const
     kContentSuggestionsShortcutsAccessibilityIdentifierPrefix;
 
+// Represents the standalone AIM Module.
+extern NSString* const kContentSuggestionsAIMModuleAccessibilityIdentifier;
+
 // Represents the Magic Stack ScrollView.
 extern NSString* const kMagicStackScrollViewAccessibilityIdentifier;
 

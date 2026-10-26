@@ -155,11 +155,12 @@ UIButton* CreateQuickActionButton(UIImage* image, NSString* title) {
 + (UIButton*)aimImageGenerationButton {
   CHECK_EQ(GetAimButtonRefactorArm(),
            AimButtonRefactorArm::kImageGenerationQuickAction);
-  // TODO(crbug.com/549020046): Add an accessibility label to this button.
   UIImage* icon =
       QuickActionButtonIconWithSymbol(SymbolImageCreate, /*has_title=*/false);
   UIButton* aimImageGenerationButton =
       CreateQuickActionButton(icon, /*title=*/nil);
+  aimImageGenerationButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_NTP_CREATE_IMAGE);
   aimImageGenerationButton.accessibilityIdentifier =
       kNTPAIMImageGenerationQuickActionIdentifier;
   return aimImageGenerationButton;
@@ -169,10 +170,11 @@ UIButton* CreateQuickActionButton(UIImage* image, NSString* title) {
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == AimButtonRefactorArm::kImageGenerationQuickAction);
-  // TODO(crbug.com/549020046): Add an accessibility label to this button.
   UIImage* icon = QuickActionButtonIconWithSymbol(SymbolPhotoBadgePlus,
                                                   /*has_title=*/false);
   UIButton* aimAttachImageButton = CreateQuickActionButton(icon, /*title=*/nil);
+  aimAttachImageButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_NTP_ATTACH_IMAGE);
   aimAttachImageButton.accessibilityIdentifier =
       kNTPAIMAttachImageQuickActionIdentifier;
   return aimAttachImageButton;

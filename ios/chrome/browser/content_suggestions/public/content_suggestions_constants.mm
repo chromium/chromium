@@ -30,6 +30,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
     @"contentSuggestionsShortcutsAccessibilityIdentifierPrefix";
 
+NSString* const kContentSuggestionsAIMModuleAccessibilityIdentifier =
+    @"ContentSuggestionsAIMModuleAccessibilityIdentifier";
+
 NSString* const kMagicStackScrollViewAccessibilityIdentifier =
     @"MagicStackScrollViewAccessibilityIdentifier";
 
