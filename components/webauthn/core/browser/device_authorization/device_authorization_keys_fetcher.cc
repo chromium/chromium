@@ -60,6 +60,7 @@ void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
           data:
             "OAuth2 access token"
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromesyncpasswords-pa.googleapis.com"
           internal {
             contacts {
               email: "rgod@google.com"
