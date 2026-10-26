@@ -388,14 +388,11 @@ void VRBrowserRendererThread::OnPose(int request_id,
     return;
   }
 
-  // The overlay may have stopped and started again since this pose was
-  // requested, and its graphics initialize asynchronously. OnGraphicsReady()
-  // requests a new pose once they're ready.
-  if (!graphics_) {
-    return;
-  }
-
   data = ValidateFrameData(std::move(data));
+
+  // If we're getting poses and should be drawing, StartOverlay() should have
+  // initialized graphics_.
+  DCHECK(graphics_);
   graphics_->SetXrViews(std::move(data->views));
 
   if (!PreRender())
@@ -483,7 +480,7 @@ void VRBrowserRendererThread::SubmitResult(bool success) {
     scheduler_ui_->OnWebXrFrameAvailable();
   }
 
-  if (draw_state_.ShouldDrawUI() && graphics_) {
+  if (draw_state_.ShouldDrawUI() && started_) {
     DVLOG(3) << __func__ << " Requesting Overlay Pose";
     overlay_->RequestNextOverlayPose(
         base::BindOnce(&VRBrowserRendererThread::OnPose,
