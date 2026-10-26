@@ -177,8 +177,7 @@ void PrintGeolocationError(const GURL& server_url,
   position->error_message = base::StringPrintf(
       "SystemLocationProvider at '%s' : %s.",
       server_url.DeprecatedGetOriginAsURL().spec().c_str(), message.c_str());
-  VLOG(1) << "SystemLocationProvider::GetGeolocationFromResponse() : "
-          << position->error_message;
+  VLOG(1) << "SimpleGeolocationRequest: " << position->error_message;
 }
 
 // Parses the server response body. Returns true if parsing was successful.
@@ -195,9 +194,6 @@ bool ParseServerResponse(const GURL& server_url,
     RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
     return false;
   }
-  VLOG(1) << "SimpleGeolocationRequest::ParseServerResponse() : "
-             "Parsing response '"
-          << response_body << "'";
 
   // Parse the response, ignoring comments.
   auto response_result = base::JSONReader::ReadAndReturnValueWithError(
@@ -287,9 +283,6 @@ bool GetGeolocationFromResponse(bool http_success,
                                 const std::string& response_body,
                                 const GURL& server_url,
                                 Geoposition* position) {
-  VLOG(1) << "GetGeolocationFromResponse(http_success=" << http_success
-          << ", status_code=" << status_code << "): response_body:\n"
-          << response_body;
 
   // HttpPost can fail for a number of reasons. Most likely this is because
   // we're offline, or there was no response.
@@ -439,8 +432,6 @@ void SimpleGeolocationRequest::StartRequest() {
   ++retries_;
 
   const std::string request_body = FormatRequestBody();
-  VLOG(1) << "SimpleGeolocationRequest::StartRequest(): request body:\n"
-          << request_body;
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = request_url_;
@@ -516,10 +507,6 @@ void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(
       (response_code >= 500 && response_code < 600);
   const bool success = parse_success && position_.Valid();
   simple_url_loader_.reset();
-
-  DVLOG(1)
-      << "SimpleGeolocationRequest::OnSimpleURLLoaderComplete(): position={"
-      << position_.ToString() << "}";
 
   // Retry on error, except when it's being rate-limited (handled by the
   // caller).
