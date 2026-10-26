@@ -89,13 +89,14 @@ const CGFloat kEstimatedNavigationItemSpacing = 56.0;
 }
 
 - (CGSize)preferredContentSize {
-  if (self.isViewLoaded && self.view.window) {
-    [self.view layoutIfNeeded];
-  }
-
   ComposeboxMenuPageViewController* topViewController =
       base::apple::ObjCCast<ComposeboxMenuPageViewController>(
           self.topViewController);
+  BOOL isFirstPage =
+      topViewController.menuPageType != ComposeboxMenuPageType::kSecondaryPage;
+  if (isFirstPage && self.isViewLoaded && self.view.window) {
+    [self.view layoutIfNeeded];
+  }
   CGSize size =
       [self.view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
 
