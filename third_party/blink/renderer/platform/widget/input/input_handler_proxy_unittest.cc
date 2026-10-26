@@ -448,6 +448,7 @@ class InputHandlerProxyEventQueueTest
       WebGestureEvent::InertialPhaseState inertial_phase);
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::StrictMock<cc::MockInputHandler> mock_input_handler_;
@@ -457,7 +458,6 @@ class InputHandlerProxyEventQueueTest
   std::vector<ui::LatencyInfo> latency_info_recorder_;
 
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::WeakPtrFactory<InputHandlerProxyEventQueueTest> weak_ptr_factory_{this};
 };
