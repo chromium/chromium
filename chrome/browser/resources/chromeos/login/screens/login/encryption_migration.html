@@ -6,15 +6,11 @@ found in the LICENSE file.
 
 <style include="oobe-dialog-host-styles">
   paper-progress {
-    --paper-progress-active-color: var(--google-blue-500);
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
     height: 3px;
     margin-bottom: 28px;
     width: 100%;
-  }
-
-  :host-context(.jelly-enabled) paper-progress {
-    --paper-progress-active-color: var(--cros-sys-primary);
-    --paper-progress-container-color: var(--cros-sys-primary_container);
   }
 
   [slot='content'] div {

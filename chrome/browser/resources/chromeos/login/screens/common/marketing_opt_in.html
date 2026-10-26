@@ -33,10 +33,6 @@ found in the LICENSE file.
   }
 
   .legal-info {
-    color: var(--cros-text-color-secondary);
-  }
-
-  :host-context(.jelly-enabled) .legal-info {
     color: var(--oobe-subheader-text-color);
     font-family: var(--oobe-marketing-opt-in-legal-info-font-family);
     font-size: var(--oobe-marketing-opt-in-legal-info-font-size);
@@ -45,10 +41,6 @@ found in the LICENSE file.
   }
 
   .toggle-title {
-    color: var(--cros-text-color-primary);
-  }
-
-  :host-context(.jelly-enabled) .toggle-title {
     color: var(--oobe-text-color);
     font-family: var(--oobe-marketing-opt-in-legal-title-font-family);
     font-size: var(--oobe-marketing-opt-in-legal-title-font-size);
@@ -80,19 +72,11 @@ found in the LICENSE file.
   #toggleRowIcon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
-    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-fill-color: var(--oobe-adaptive-dialog-icon-fill-color);
     padding-inline-end: 16px;
   }
 
-  :host-context(.jelly-enabled) #toggleRowIcon {
-    --iron-icon-fill-color: var(--oobe-adaptive-dialog-icon-fill-color);
-  }
-
   #googleUrl {
-    color: var(--cros-color-prominent);
-  }
-
-  :host-context(.jelly-enabled) #googleUrl {
     color: var(--cros-sys-primary);
   }
 

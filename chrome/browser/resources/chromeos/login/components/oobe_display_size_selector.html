@@ -16,8 +16,8 @@
 
   #preview {
     align-items: center;
-    background-color: rgba(var(--cros-color-disabled-rgb), 0.08);
-    border: 1px solid rgba(var(--cros-icon-color-secondary-rgb), 0.3);
+    background-color: var(--cros-sys-base_elevated);
+    border: 0;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -28,22 +28,13 @@
     text-align: center;
   }
 
-  :host-context(.jelly-enabled) #preview {
-    background-color: var(--cros-sys-base_elevated);
-    border: 0;
-  }
-
   #previewTitle {
-    color: var(--cros-text-color-primary);
+    color: var(--cros-sys-on_surface);
     font-size: 14px;
     font-weight: 500; /* roboto-medium */
     line-height: 20px;
     margin-bottom: 0;
     margin-top: 16px;
-  }
-
-  :host-context(.jelly-enabled) #previewTitle {
-    color: var(--cros-sys-on_surface);
   }
 
   #grid-container {
@@ -72,20 +63,14 @@
   }
 
   #sliderTitleContainer ::slotted(*) {
+    color: var(--cros-sys-on_surface);
     font-weight: 500;
     margin: 0;
   }
 
-  :host-context(.jelly-enabled) #sliderTitleContainer ::slotted(*) {
-    color: var(--cros-sys-on_surface);
-  }
-
   #sliderDescriptionContainer ::slotted(*) {
-    margin: 0;
-  }
-
-  :host-context(.jelly-enabled) #sliderDescriptionContainer ::slotted(*) {
     color: var(--cros-sys-on_surface_variant);
+    margin: 0;
   }
 
   .sign-button {
@@ -94,6 +79,11 @@
     min-height: auto;
     min-width: auto;
     padding: 0;
+  }
+
+  /* Needs to beat the cr-button rule from cros-color-overrides. */
+  #sliderContainer .sign-button {
+    background-color: transparent;
   }
 
   .sign-icon {
@@ -149,10 +139,6 @@
     :host-context([screen=gaia-signin]) #grid {
       grid-column-gap: 28px;
     }
-  }
-
-  :host-context(.jelly-enabled) cr-button.sign-button {
-    background-color: transparent;
   }
 </style>
 <div id="displaySizeSelector">

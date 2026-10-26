@@ -8,15 +8,11 @@
     min-height: 60px;
   }
   #demoPreferencesDialog .language-selection-title {
-    color: var(--cros-text-color-primary);
+    color: var(--oobe-text-color);
     font-size: var(--oobe-demo-preferences-selection-title-font-size);
   }
-  :host-context(.jelly-enabled)
-    #demoPreferencesDialog .language-selection-title {
-      color: var(--oobe-text-color);
-  }
   #store-number-input-display-text {
-    color: var(--cros-text-color-secondary);
+    color: var(--oobe-subheader-text-color);
     display: var(--cr-input-error-display, block);
     font-size: var(--oobe-demo-preferences-number-input-font-size);
     height: var(--cr-form-field-label-height);
@@ -25,18 +21,11 @@
     visibility: visible;
     white-space: var(--cr-input-error-white-space);
   }
-  :host-context(.jelly-enabled) #store-number-input-display-text {
-    color: var(--oobe-subheader-text-color);
-  }
   :host([store-number-input-invalid]) #store-number-input-display-text {
-    color: var(--cros-textfield-label-color-error);
-  }
-  :host-context(.jelly-enabled):host([store-number-input-invalid])
-    #store-number-input-display-text {
-      color: var(--cros-sys-error);
+    color: var(--cros-sys-error);
   }
 
-  :host-context(.jelly-enabled) cr-input.language-selection-title {
+  #demoPreferencesDialog cr-input.language-selection-title {
     --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
 

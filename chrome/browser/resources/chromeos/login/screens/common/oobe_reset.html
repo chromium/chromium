@@ -6,8 +6,14 @@ found in the LICENSE file.
 
 
 <style include="oobe-dialog-host-styles cros-color-overrides">
+  /* Higher specificity than the .throbber rule in throbber.css (linked after
+     this style), so that the themed mask-based throbber overrides the default
+     background image. */
   #reset-revert-spinner {
+    background: none;
+    background-color: var(--cros-sys-primary);
     padding-inline-end: 5px;
+    -webkit-mask: url(chrome://resources/images/throbber_small.svg) no-repeat;
   }
 
   #tpmFirmwareUpdate {
@@ -24,12 +30,6 @@ found in the LICENSE file.
     cursor: default;
     line-height: var(--oobe-reset-firmware-update-line-height);
     pointer-events: auto;
-  }
-
-  :host-context(.jelly-enabled) .throbber {
-    background: none;
-    background-color: var(--cros-sys-primary);
-    -webkit-mask: url(chrome://resources/images/throbber_small.svg) no-repeat;
   }
 </style>
 <link rel="stylesheet" href="throbber.css">

@@ -10,23 +10,13 @@
   --shelf-area-height-base: 57px;
   --oobe-oobe-dialog-height-base: 504px;
   --oobe-oobe-dialog-width-base: 461px;
-  --oobe-bg-color: var(--cros-bg-color);
-  --oobe-container-border-radius: 2px;
-  --oobe-container-elevation: none;
-}
-
-:root.jelly-enabled {
   --oobe-bg-color: var(--cros-sys-app_base_shaded);
-}
-
-:root.jelly-enabled,
-:root.boot-animation-enabled {
   --oobe-container-border-radius: 24px;
+  --oobe-container-elevation: none;
 }
 @media screen and (min-height: 1040px),
         screen and (min-width: 1040px) {
-  :root.jelly-enabled:not([tablet]),
-  :root.boot-animation-enabled:not([tablet]) {
+  :root:not([tablet]) {
     --oobe-container-elevation: var(--cros-sys-app-elevation-3-shadow);
   }
 }
@@ -39,10 +29,8 @@ body {
 }
 @media screen and (min-height: 1040px),
         screen and (min-width: 1040px) {
-  html.jelly-enabled:not([tablet]),
-  html.boot-animation-enabled:not([tablet]),
-  :root.jelly-enabled:not([tablet]) body,
-  :root.boot-animation-enabled:not([tablet]) body {
+  html:not([tablet]),
+  :root:not([tablet]) body {
     background-color: transparent;
   }
 }
@@ -98,7 +86,6 @@ html[dir=rtl] {
 html[screen=gaia-signin] {
   /* has to be with px suffix to be used in calc */
   --oobe-dialog-side-margin: 0px;
-  --oobe-bg-color: var(--cros-bg-color-elevation-3);
 }
 
 /* Adapt for horizontal screen */

@@ -9,11 +9,7 @@
 
 :host {
     --radio-button-height: 120px;
-    --oobe-card-radio-button-icon-color: var(--cr-checked-color);
-}
-
-:host-context(.jelly-enabled) {
-  --oobe-card-radio-button-icon-color: var(--cros-sys-primary);
+    --oobe-card-radio-button-icon-color: var(--cros-sys-primary);
 }
 
 cr-radio-group {
@@ -27,6 +23,7 @@ cr-card-radio-button {
     * corners, which don't match the rounded corners of the card. */
     -webkit-tap-highlight-color: transparent;
     border-radius: 16px;
+    box-shadow: none;
     margin-bottom: 0;
     --cr-card-radio-button-checkmark-right: 24px;
 
@@ -36,15 +33,13 @@ cr-card-radio-button {
     --cr-card-radio-button-width: 100%;
     --cr-radio-button-ink-size: 0;
     --cr-radio-group-item-padding: 0;
+    --focus-shadow-color: var(--cros-sys-focus_ring);
 }
 
-:host-context(.jelly-enabled) cr-card-radio-button {
-  --focus-shadow-color: var(--cros-sys-focus_ring);
-  box-shadow: none;
-}
-
-:host-context(.jelly-enabled) cr-card-radio-button:hover {
-  --cr-card-background-color: var(--cros-sys-app_base_shaded);
+/* !important is needed to override the value set by the more specific
+ * cr-card-radio-button rule in cros-color-overrides. */
+cr-card-radio-button:hover {
+  --cr-card-background-color: var(--cros-sys-app_base_shaded) !important;
 }
 
 cr-card-radio-button:not(:last-child) {
@@ -64,13 +59,8 @@ cr-card-radio-button:not(:last-child) {
 }
 
 .card-icon {
-    --iron-icon-height: 48px;
-    --iron-icon-width: 48px;
-}
-
-:host-context(.jelly-enabled) .card-icon {
-  --iron-icon-height: 40px;
-  --iron-icon-width: 40px;
+    --iron-icon-height: 40px;
+    --iron-icon-width: 40px;
 }
 
 .card-content {
@@ -81,45 +71,34 @@ cr-card-radio-button:not(:last-child) {
 }
 
 .card-label {
-    color: var(--oobe-header-text-color);
-    font-family: var(--oobe-header-font-family);
-    font-size: var(--oobe-radio-card-label-font-size);
-    font-weight: 500;
-    line-height: var(--oobe-radio-card-label-line-height);
+    color: var(--cros-sys-on_surface);
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font-weight: var(--cros-button-1-font-weight);
+    line-height: var(--cros-button-1-line-height);
 }
 
-:host-context(.jelly-enabled) .card-label {
-  color: var(--cros-sys-on_surface);
-  font-family: var(--cros-button-1-font-family);
-  font-size: var(--cros-button-1-font-size);
-  font-weight: var(--cros-button-1-font-weight);
-  line-height: var(--cros-button-1-line-height);
-}
-
-:host-context(.jelly-enabled) cr-card-radio-button[checked] .card-label {
+cr-card-radio-button[checked] .card-label {
   color: var(--cros-sys-on_primary_container);
 }
 
 .card-text {
-    color: var(--oobe-text-color);
-    line-height: 20px;
+    color: var(--cros-sys-on_surface_variant);
+    font-family: var(--cros-body-2-font-family);
+    font-size: var(--cros-body-2-font-size);
+    font-weight: var(--cros-body-2-font-weight);
+    line-height: var(--cros-body-2-line-height);
 }
 
-:host-context(.jelly-enabled) .card-text {
-  color: var(--cros-sys-on_surface_variant);
-  font-family: var(--cros-body-2-font-family);
-  font-size: var(--cros-body-2-font-size);
-  font-weight: var(--cros-body-2-font-weight);
-  line-height: var(--cros-body-2-line-height);
-}
-
-:host-context(.jelly-enabled) cr-card-radio-button[checked] .card-text {
+cr-card-radio-button[checked] .card-text {
   color: var(--cros-sys-on_primary_container);
 }
 
-:host-context(.jelly-enabled) cr-card-radio-button[checked] {
+cr-card-radio-button[checked] {
   background-color: var(--cros-sys-primary_container);
-  --cr-checked-color: var(--cros-sys-on_primary_container);
+  /* !important is needed to override the value set by the more specific
+   * cr-card-radio-button rule in cros-color-overrides. */
+  --cr-checked-color: var(--cros-sys-on_primary_container) !important;
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
   --oobe-card-radio-button-icon-color: var(--cros-sys-on_primary_container);

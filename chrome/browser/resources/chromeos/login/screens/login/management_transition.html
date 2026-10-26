@@ -6,19 +6,12 @@ found in the LICENSE file.
 
 <style include="oobe-dialog-host-styles">
   paper-progress {
-    --paper-progress-active-color: var(--cros-slider-color-active);
-    --paper-progress-container-color: var(--cros-slider-track-color-active);
-    --paper-progress-secondary-color: var(--cros-slider-color-active);
-    height: 3px;
-    width: 100%;
-  }
-
-  :host-context(.jelly-enabled) paper-progress {
     --paper-progress-active-color: var(--cros-sys-primary);
     --paper-progress-container-color: var(--cros-sys-primary_container);
     --paper-progress-secondary-color: var(--cros-sys-primary);
+    height: 3px;
+    width: 100%;
   }
-
 </style>
 <oobe-adaptive-dialog id="managementTransitionDialog" role="dialog"
     aria-label$="[[getDialogTitle(locale, arcTransition, managementEntity)]]"

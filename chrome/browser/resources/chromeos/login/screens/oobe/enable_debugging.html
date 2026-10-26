@@ -6,18 +6,13 @@ found in the LICENSE file.
 
 <style include="oobe-dialog-host-styles cros-color-overrides">
   #password-note {
-    color: var(--cros-color-secondary);
+    color: var(--oobe-subheader-text-color);
     font-size: var(--oobe-enable-debugging-font-size);
   }
 
-  :host-context(.jelly-enabled)
-    cr-input#password,
-    cr-input#passwordRepeat {
-      --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
-  }
-
-  :host-context(.jelly-enabled) #password-note {
-    color: var(--oobe-subheader-text-color);
+  cr-input#password,
+  cr-input#passwordRepeat {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
 </style>
 <oobe-adaptive-dialog id="removeProtectionDialog" role="dialog"

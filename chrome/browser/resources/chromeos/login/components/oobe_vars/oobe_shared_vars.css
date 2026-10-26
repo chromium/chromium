@@ -23,31 +23,7 @@
       --oobe-adaptive-dialog-item-vertical-padding: 24px;
       --oobe-adaptive-dialog-content-padding: 40px;
       /* TODO(b/268463435) Remove during Jelly cleanup */
-      --oobe-adaptive-dialog-header-top-padding:
-            var(--oobe-adaptive-dialog-content-padding);
-      /* TODO(b/268463435) Remove during Jelly cleanup */
-      --oobe-adaptive-dialog-title-top-padding: 40px;
+      --oobe-adaptive-dialog-header-top-padding: 0px;
       --oobe-adaptive-dialog-content-top-padding:
         var(--oobe-adaptive-dialog-content-padding);
-
-      /* Fonts vars */
-      --oobe-header-font-family: 'Google Sans', Roboto, sans-serif;
-
-      --oobe-radio-card-label-font-size: 18px;
-      --oobe-modal-dialog-header-font-size: 15px;
-
-      --oobe-default-font-weight: 400; /* regular */
-      --oobe-subheader-font-weight: 400; /* regular */
-      --oobe-modal-dialog-header-font-weight: 500; /* medium */
-
-      --oobe-header-text-color: var(--cros-text-color-primary);
-      --oobe-subheader-text-color: var(--cros-text-color-secondary);
-      --oobe-text-color: var(--cros-text-color-secondary);
-
-      --oobe-radio-card-label-line-height: 24px;
-      /* Fonts vars end */
-    }
-
-    html.jelly-enabled {
-      --oobe-adaptive-dialog-header-top-padding: 0px;
     }

@@ -25,29 +25,18 @@ found in the LICENSE file.
 }
 
 #areaText {
-  color: var(--cros-text-color-primary);
-  font-size: 14px;
-  font-weight: 500; /* roboto-medium */
+  color: var(--oobe-text-color);
+  font-size: var(--oobe-touchpad-scroll-font-size);
+  font-weight: var(--oobe-touchpad-scroll-font-weight);
   left: 20px;
-  line-height: 20px;
+  line-height: var(--oobe-touchpad-scroll-line-height);
   padding-top: 20px;
   position: sticky;
   top: 0px;
   z-index : 1;
 }
 
-:host-context(.jelly-enabled) #areaText {
-  color: var(--oobe-text-color);
-  font-size: var(--oobe-touchpad-scroll-font-size);
-  font-weight: var(--oobe-touchpad-scroll-font-weight);
-  line-height: var(--oobe-touchpad-scroll-line-height);
-}
-
 #toggleTitle {
-  color: var(--cros-text-color-primary);
-}
-
-:host-context(.jelly-enabled) #toggleTitle {
   color: var(--oobe-text-color);
 }
 

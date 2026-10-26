@@ -69,9 +69,11 @@ found in the LICENSE file.
 
   #mainContainer {
     align-items: var(--oobe-adaptive-dialog-item-alignment);
+    border-radius: var(--oobe-container-border-radius);
     flex-direction: column;
     margin-inline-end: var(--oobe-adaptive-dialog-content-padding);
     margin-inline-start: var(--oobe-adaptive-dialog-content-padding);
+    overflow: hidden;
   }
 
   :host([isGaia]) #mainContainer {
@@ -80,11 +82,6 @@ found in the LICENSE file.
        - var(--gaia-horizontal-padding-offset));
     margin-inline-end: var(--oobe-content-dialog-content-padding);
     margin-inline-start: var(--oobe-content-dialog-content-padding);
-  }
-
-  :host-context(.jelly-enabled) #mainContainer {
-    border-radius: var(--oobe-container-border-radius);
-    overflow: hidden;
   }
 
   :host([fullscreen]) #mainContainer {

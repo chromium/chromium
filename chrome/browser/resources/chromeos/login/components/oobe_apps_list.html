@@ -41,10 +41,6 @@ found in the LICENSE file.
   }
 
   #appsListContainer .app-item:not(:first-child) {
-    border-top: 1px solid var(--cros-color-primary-dark);
-  }
-
-  :host-context(.jelly-enabled) #appsListContainer .app-item:not(:first-child) {
     border-top: 1px solid var(--cros-sys-separator);
   }
 
@@ -60,17 +56,13 @@ found in the LICENSE file.
   }
 
   #unselectAll {
-    border-bottom: solid 2px var(--cr-checked-color);
+    border-bottom: solid 2px var(--cros-sys-primary);
     height: 19px;
     margin-inline-start: calc(
       (var(--checkbox-column-width) - var(--checkbox-size)) / 2 + 4px
     );
     position: absolute;
     width: 8px;
-  }
-
-  :host-context(.jelly-enabled) #unselectAll {
-    border-bottom: solid 2px var(--cros-sys-primary);
   }
 
   cr-checkbox.some-selected {
@@ -96,28 +88,14 @@ found in the LICENSE file.
 
   .app-title {
     color: var(--oobe-header-text-color);
-    font-size: var(--oobe-modal-dialog-header-font-size);
-    font-weight: var(--oobe-modal-dialog-header-font-weight);
-    grid-area: title;
-    line-height: 22px;
-  }
-
-  :host-context(.jelly-enabled) .app-title {
     font-family: var(--oobe-apps-list-app-title-font-family);
     font-size: var(--oobe-apps-list-app-title-font-size);
     font-weight: var(--oobe-apps-list-app-title-font-weight);
+    grid-area: title;
     line-height: var(--oobe-apps-list-app-title-line-height);
   }
 
   .secondary-text {
-    color: var(--oobe-text-color);
-    font-family: var(--oobe-default-font-family);
-    font-size: 12px;
-    font-weight: var(--oobe-default-font-weight);
-    line-height: 18px;
-  }
-
-  :host-context(.jelly-enabled) .secondary-text {
     color: var(--oobe-subheader-text-color);
     font-family: var(--oobe-apps-list-secondary-text-font-family);
     font-size: var(--oobe-apps-list-secondary-text-font-size);
@@ -140,13 +118,10 @@ found in the LICENSE file.
   }
 
   .app-tags ul > li::before {
+    color: var(--cros-sys-separator);
     content: '|' / '';
     margin-inline-end: 6px;
     margin-inline-start: 6px;
-  }
-
-  :host-context(.jelly-enabled) .app-tags ul > li::before {
-    color: var(--cros-sys-separator);
   }
 
   .app-tags ul > li:first-of-type::before {

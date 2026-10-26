@@ -116,6 +116,7 @@ found in the LICENSE file.
     line-height: var(--oobe-subheader-line-height);
     margin: 0;
     overflow-wrap: break-word;
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
     text-align: var(--oobe-text-alignment);
   }
 
@@ -164,45 +165,21 @@ found in the LICENSE file.
   }
 
   #oobe-title {
-    padding-top: var(--oobe-adaptive-dialog-title-top-padding);
-  }
-  :host-context(.jelly-enabled) #oobe-title {
     padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
   #oobe-progress ::slotted(*) {
-    margin-top: 32px;
-  }
-  :host-context(.jelly-enabled) #oobe-progress ::slotted(*) {
     margin-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
   #oobe-progress ::slotted(paper-progress) {
-    --paper-progress-active-color: var(--cros-slider-color-active);
-    --paper-progress-container-color: var(--cros-slider-track-color-active);
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
     height: 4px;
     width: 100%;
   }
-  :host-context(.jelly-enabled) #oobe-progress ::slotted(paper-progress) {
-    --paper-progress-active-color: var(--cros-sys-primary);
-    --paper-progress-container-color: var(--cros-sys-primary_container);
-  }
-
-  #oobe-subtitle {
-    padding-top: 16px;
-  }
-  /* Avoid applying the padding twice if there's no text */
-  :host-context(.jelly-enabled) #oobe-subtitle {
-    padding-top: 0;
-  }
-  :host-context(.jelly-enabled) #oobe-subtitle ::slotted(*) {
-    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
-  }
 
   #oobe-subtitle-illustration ::slotted(*) {
-    padding-top: 16px;
-  }
-  :host-context(.jelly-enabled) #oobe-subtitle-illustration ::slotted(*) {
     padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 

@@ -6,20 +6,15 @@ found in the LICENSE file.
 
 <style include="oobe-common-styles">
   #container {
-    background: white;
-    border: 1px solid var(--google-grey-200);
-    border-radius: 16px;
+    background: var(--cros-sys-base_elevated);
+    border: none;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     height: 100%;
     position: relative;
     white-space: nowrap;
     width: 100%;
-  }
-  :host-context(.jelly-enabled) #container {
-    background: var(--cros-sys-base_elevated);
-    border: none;
-    border-radius: 20px;
   }
 
   #scrollContainer {
@@ -38,14 +33,11 @@ found in the LICENSE file.
   }
 
   #navigationContainer {
-    background-color: white;
+    background: var(--cros-sys-base_elevated);
     padding: 8px;
     display: flex;
     justify-content: center;
     width: 100%;
-  }
-  :host-context(.jelly-enabled) #navigationContainer {
-    background: var(--cros-sys-base_elevated);
   }
 
   #dotsContainer {
@@ -82,50 +74,27 @@ found in the LICENSE file.
     margin-inline-start: 0;
     width: 20px;
   }
-  :host-context(.jelly-enabled) .slider-dot {
-    margin-inline-end: 1px;
-    margin-inline-start: 1px;
-  }
 
   .slider-dot {
-    background: var(--cros-color-primary-inverted);
+    background: transparent;
     border-radius: 5px;
     cursor: pointer;
-    height: 10px;
-    margin: 5px;
-    transition: background 200ms;
-    transition-delay: 100ms;
-    width: 10px;
-  }
-  .slider-dot[active] {
-    background: var(--cros-icon-color-blue);
-  }
-  .slider-dot:focus {
-    box-shadow: 0 0 7px 1px rgba(var(--cros-icon-color-blue-rgb), .75);
-    outline: none;
-  }
-  :host-context(.jelly-enabled) .slider-dot {
     height: 8px;
-    width: 8px;
     margin: 6px 7px;
-    background: transparent;
     outline: 1px solid var(--cros-sys-primary);
     outline-offset: -1px;
+    transition: background 200ms;
+    transition-delay: 100ms;
+    width: 8px;
   }
-  :host-context(.jelly-enabled) .slider-dot:hover {
+  .slider-dot:hover {
     background: var(--cros-sys-highlight_shape);
   }
-  :host-context(.jelly-enabled) .slider-dot[active] {
+  .slider-dot[active] {
     background: var(--cros-sys-primary);
-  }
-  :host-context(.jelly-enabled) .slider-dot:focus {
-    box-shadow: none;
   }
 
   .arrow-button {
-    --cr-icon-button-fill-color: var(--cros-app-shield-color);
-  }
-  :host-context(.jelly-enabled) .arrow-button {
     --cr-icon-button-fill-color: var(--cros-sys-secondary);
   }
 </style>

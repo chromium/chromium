@@ -29,13 +29,16 @@
       --oobe-header-font-size: 32px;
       --oobe-header-line-height: 40px;
       --oobe-header-font-weight: 500; /* medium */
+      --oobe-header-font-family: 'Google Sans', Roboto, sans-serif;
 
       --oobe-subheader-font-family: 'Google Sans', Roboto, sans-serif;
       --oobe-subheader-font-size: 22px;
       --oobe-subheader-line-height: 28px;
+      --oobe-subheader-font-weight: 400; /* regular */
 
       --oobe-default-font-family: 'Google Sans', Roboto, sans-serif;
       --oobe-default-font-size: 22px;
+      --oobe-default-font-weight: 400; /* regular */
       --oobe-default-line-height: 28px;
 
       --oobe-button-font-family: 'Google Sans', Roboto, sans-serif;
@@ -62,10 +65,8 @@
       --oobe-content-dialog-line-height: var(--oobe-default-line-height);
 
       --oobe-modal-dialog-header-font-family: var(--oobe-default-font-family);
-      --oobe-modal-dialog-header-font-size:
-          var(--oobe-modal-dialog-header-font-size);
-      --oobe-modal-dialog-header-font-weight:
-          var(--oobe-modal-dialog-header-font-weight);
+      --oobe-modal-dialog-header-font-size: 15px;
+      --oobe-modal-dialog-header-font-weight: 500; /* medium */
 
       --oobe-modal-dialog-content-font-family: var(--oobe-default-font-family);
       --oobe-modal-dialog-content-font-size: var(--oobe-default-font-size);
@@ -116,12 +117,22 @@
 
       --oobe-autolaunch-app-name-font-size: 22px;
 
+      --oobe-header-text-color: var(--cros-text-color-primary);
+      --oobe-subheader-text-color: var(--cros-text-color-secondary);
+      --oobe-text-color: var(--cros-text-color-secondary);
+
       /* Select */
       --oobe-select-height: 44px;
 
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 48px;
-      --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);
+      --oobe-adaptive-dialog-icon-fill-color: var(--cros-color-preview-blue);
+
+      /* Button Color */
+      --oobe-button-icon-fill-color-bg-transparent:
+          var(--cros-color-preview-blue);
+      --oobe-icon-button-text-color-bg-transparent:
+          var(--cros-color-preview-blue);
 
       /* Welcome screen */
       --selection-entry-height: 72px;
@@ -129,22 +140,4 @@
 
       /* Network screen */
       --oobe-network-row-height: 78px;
-    }
-
-    html.jelly-enabled {
-      /* Button Color */
-      --oobe-button-icon-fill-color-bg-transparent:
-          var(--cros-color-preview-blue);
-      --oobe-icon-button-text-color-bg-transparent:
-          var(--cros-color-preview-blue);
-      --oobe-adaptive-dialog-icon-fill-color: var(--cros-color-preview-blue);
-
-      /* Font */
-      --oobe-button-font-family: 'Google Sans', Roboto, sans-serif;
-      --oobe-button-font-size: 22px;
-      --oobe-button-font-weight: 500;
-
-      --oobe-welcome-left-button-font-family: var(--oobe-button-font-family);
-      --oobe-welcome-left-button-font-size: var(--oobe-button-font-size);
-      --oobe-welcome-left-button-font-weight: var(--oobe-button-font-weight);
     }

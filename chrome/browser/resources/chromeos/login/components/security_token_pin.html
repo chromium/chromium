@@ -13,28 +13,19 @@ found in the LICENSE file.
   #pinKeyboard {
     --pin-keyboard-pin-input-width: 192px;
     --pin-keyboard-input-letter-spacing: 13px;
-    --pin-keyboard-number-color: var(--cros-text-color-primary);
+    --pin-keyboard-number-color: var(--oobe-text-color);
     --cr-icon-button-margin-start: 5px;
   }
 
-  :host-context(.jelly-enabled) #pinKeyboard {
-    --pin-keyboard-number-color: var(--oobe-text-color);
-  }
-
   #errorContainer {
-    color: var(--cros-icon-color-red);
-    font-size: 12px;
-    padding: 4px 0 0;
-    text-align: center;
-    width: 100%;
-  }
-
-  :host-context(.jelly-enabled) #errorContainer {
     color: var(--cros-sys-error);
     font-family: var(--oobe-security-token-pin-font-family);
     font-size: var(--oobe-security-token-pin-font-size);
     font-weight: var(--oobe-security-token-pin-font-weight);
     line-height: var(--oobe-security-token-pin-line-height);
+    padding: 4px 0 0;
+    text-align: center;
+    width: 100%;
   }
 
   #errorIcon {
@@ -48,7 +39,7 @@ found in the LICENSE file.
     visibility: hidden;
   }
 
-  :host-context(.jelly-enabled) iron-icon[icon='cr:error-outline'] {
+  iron-icon[icon='cr:error-outline'] {
     color: var(--cros-sys-error);
   }
 </style>

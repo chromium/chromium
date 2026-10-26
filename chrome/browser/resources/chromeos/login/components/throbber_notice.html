@@ -24,15 +24,12 @@ found in the LICENSE file.
     width: 38px;
   }
 
-  :host-context(.jelly-enabled) paper-spinner-lite {
+  /* Needs to beat the paper-spinner-lite rule from cros-color-overrides. */
+  :host-context([cros]) paper-spinner-lite {
     --paper-spinner-color: var(--cros-sys-primary);
   }
 
   #comment {
-    color: var(--cros-text-color-secondary);
-  }
-
-  :host-context(.jelly-enabled) #comment {
     color: var(--cros-sys-on_surface);
   }
 </style>

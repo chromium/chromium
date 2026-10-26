@@ -11,7 +11,8 @@
 -->
 
 <style include="oobe-dialog-host-styles cros-color-overrides">
-  :host-context(body.jelly-enabled) cr-checkbox {
+  /* Needs to beat the cr-checkbox rule from cros-color-overrides. */
+  #appsList cr-checkbox {
     --cr-checkbox-checked-box-color: var(--cros-sys-secondary);
     --cr-checkbox-unchecked-box-color: var(--cros-sys-secondary);
   }
