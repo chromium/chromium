@@ -2428,18 +2428,19 @@ TEST_F(MLGraphTest, MLConstantFoldingTransformerTest) {
       MLGraphBuilder::Create(scope.GetScriptState(), context, exception_state);
   ASSERT_THAT(builder, testing::NotNull());
 
-  // [a] -> transpose -> reshape -> transpose -> relu -> [e]
+  // [a] -> reshape -> transpose -> transpose -> relu -> [e]
   auto* a = BuildConstant(scope.GetScriptState(), builder, {3, 4, 5},
                           V8MLOperandDataType::Enum::kFloat32, exception_state);
+  auto* b = builder->reshape(a, {4, 3, 5}, MLOperatorOptions::Create(),
+                             exception_state);
+  ASSERT_THAT(b, testing::NotNull());
   auto* transpose_options = MLTransposeOptions::Create();
   transpose_options->setPermutation({0, 2, 1});
-  auto* b = builder->transpose(a, transpose_options, exception_state);
-  ASSERT_THAT(b, testing::NotNull());
-  auto* c = builder->reshape(b, {3, 20}, MLOperatorOptions::Create(),
-                             exception_state);
+  auto* c = builder->transpose(b, transpose_options, exception_state);
   ASSERT_THAT(c, testing::NotNull());
-  auto* d =
-      builder->transpose(c, MLTransposeOptions::Create(), exception_state);
+  transpose_options = MLTransposeOptions::Create();
+  transpose_options->setPermutation({1, 2, 0});
+  auto* d = builder->transpose(c, transpose_options, exception_state);
   ASSERT_THAT(d, testing::NotNull());
   auto* e = builder->relu(d, MLOperatorOptions::Create(), exception_state);
   ASSERT_THAT(e, testing::NotNull());
@@ -2449,11 +2450,62 @@ TEST_F(MLGraphTest, MLConstantFoldingTransformerTest) {
   auto* constant_folding_transformer =
       MakeGarbageCollected<ConstantFoldingTransformer>(builder);
   constant_folding_transformer->Transform(named_outputs);
+  // The reshape and both transposes are folded into a single constant whose
+  // pending permutation combines the two transposes.
   auto& relu_input = e->Operator()->Inputs()[0];
-  EXPECT_EQ(relu_input->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
-  Vector<uint32_t> expected_shape{20, 3};
+  ASSERT_EQ(relu_input->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
+  Vector<uint32_t> expected_shape{5, 3, 4};
   EXPECT_EQ(e->shape(), expected_shape);
   EXPECT_EQ(e->shape(), relu_input->shape());
+  EXPECT_THAT(relu_input->Descriptor().pending_permutation(),
+              testing::ElementsAre(2u, 1u, 0u));
+
+  auto [graph, error_name, error_message] =
+      BuildGraph(scope, builder, named_outputs);
+  ASSERT_THAT(graph, testing::NotNull());
+}
+
+// A reshape of a transposed constant cannot be folded into the constant's
+// descriptor alone: the pending permutation describes how to read the original
+// data, and must not be dropped.
+TEST_F(MLGraphTest, MLConstantFoldingTransformerReshapeOfTransposeTest) {
+  V8TestingScope scope;
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  MLContext* context = CreateContext(scope, MLContextOptions::Create());
+  DummyExceptionStateForTesting exception_state;
+  auto* builder =
+      MLGraphBuilder::Create(scope.GetScriptState(), context, exception_state);
+  ASSERT_THAT(builder, testing::NotNull());
+
+  // [a] -> transpose -> reshape -> relu -> [d]
+  auto* a = BuildConstant(scope.GetScriptState(), builder, {3, 4, 5},
+                          V8MLOperandDataType::Enum::kFloat32, exception_state);
+  auto* transpose_options = MLTransposeOptions::Create();
+  transpose_options->setPermutation({0, 2, 1});
+  auto* b = builder->transpose(a, transpose_options, exception_state);
+  ASSERT_THAT(b, testing::NotNull());
+  auto* c = builder->reshape(b, {3, 20}, MLOperatorOptions::Create(),
+                             exception_state);
+  ASSERT_THAT(c, testing::NotNull());
+  auto* d = builder->relu(c, MLOperatorOptions::Create(), exception_state);
+  ASSERT_THAT(d, testing::NotNull());
+
+  MLNamedOperands named_outputs = {{"d", d}};
+  MakeGarbageCollected<ConstantFoldingTransformer>(builder)->Transform(
+      named_outputs);
+
+  // The transpose is folded into the constant, but the reshape is kept.
+  MLOperand* relu_input = d->Operator()->Inputs()[0];
+  ASSERT_NE(relu_input->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
+  ASSERT_THAT(relu_input->Operator(), testing::NotNull());
+  EXPECT_EQ(relu_input->Operator()->Kind(),
+            webnn::mojom::blink::Operation::Tag::kReshape);
+  MLOperand* reshape_input = relu_input->Operator()->Inputs()[0];
+  ASSERT_EQ(reshape_input->Kind(),
+            webnn::mojom::blink::Operand::Kind::kConstant);
+  EXPECT_EQ(reshape_input->shape(), Vector<uint32_t>({3, 5, 4}));
+  EXPECT_THAT(reshape_input->Descriptor().pending_permutation(),
+              testing::ElementsAre(0u, 2u, 1u));
 
   auto [graph, error_name, error_message] =
       BuildGraph(scope, builder, named_outputs);

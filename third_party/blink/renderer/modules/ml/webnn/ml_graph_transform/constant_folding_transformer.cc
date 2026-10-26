@@ -43,6 +43,12 @@ void ConstantFoldingTransformer::TryFoldConstant(MLOperator& op) {
     return;
   }
   MLConstantOperand* constant_operand = input->AsConstantOperand();
+  // A pending permutation describes how to read the data in its original
+  // shape, so it cannot carry over to a reshaped constant.
+  if (op.Kind() == blink_mojom::Operation::Tag::kReshape &&
+      !constant_operand->Descriptor().pending_permutation().empty()) {
+    return;
+  }
   if (op.Kind() == blink_mojom::Operation::Tag::kTranspose) {
     // TODO(crbug.com/428232161): Support sub byte transposes.
     if (webnn::OperandDescriptor::GetBitsPerElement(input->DataType()) < 8u) {
