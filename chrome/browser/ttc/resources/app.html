@@ -35,8 +35,8 @@
       !this.speakingBlobUrl || !this.listeningBlobUrl
     ? html`
       <div id="initializerState"
-          .className=${this.initializationState}
-          ?hidden=${!this.usePersona || this.initializationState === 'initialized'}>
+          .className="${this.initializationState}"
+          ?hidden="${!this.usePersona || this.initializationState === 'initialized'}">
       </div>`
     : html`
       <video id="talking" .src="${this.speakingBlobUrl}"

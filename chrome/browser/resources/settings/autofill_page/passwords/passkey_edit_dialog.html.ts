@@ -12,7 +12,7 @@ export function getHtml(this: PasskeyEditDialogElement) {
   <div slot="title" id="title">$i18n{editPasskeyDialogTitle}</div>
   <div slot="body">
     <cr-input id="websiteInput" label="$i18n{editPasskeySiteLabel}"
-        placeholder="${this.relyingPartyId}" readonly="true">
+        placeholder="${this.relyingPartyId}" readonly>
     </cr-input>
     <cr-input id="usernameInput" label="$i18n{editPasskeyUsernameLabel}"
         .value="${this.username}"

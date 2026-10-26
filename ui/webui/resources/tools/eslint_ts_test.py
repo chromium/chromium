@@ -909,7 +909,13 @@ class EslintTsTest(unittest.TestCase):
 
     _NO_FALSE_BINDING_ERROR = "Incorrect assignment to boolean attribute expression '?%(attributeName)s=' using '${false}'. Use property binding '.%(propertyName)s=\"${false}\"' instead"
 
-    _PROPERTY_TYPE_MISMATCH_ERROR = "Property type mismatch: %(propertyName)s is declared as %(declaredType)s reactive property but is typed as %(tsType)s"
+    _CAMEL_CASE_ATTRIBUTE_ERROR = "Attribute '%(attributeName)s' uses camelCase. Use either '.%(propertyName)s=\"${...}\"' or '%(dashCaseName)s' instead"
+
+    _INVALID_BOOLEAN_ATTRIBUTE_EXPRESSION_ERROR = "Invalid boolean attribute expression: '?%(attributeName)s=' syntax only works with '${...}' rvalues. Use just '%(dashCaseName)s' if always `true` or '?%(dashCaseName)s=\"${...}\"' for a dynamic binding"
+
+    _NO_STATIC_TRUE_BOOLEAN_ERROR = "Boolean attribute '%(attributeName)s' does not need to be set to '=\"true\"'. Use either '%(dashCaseName)s' or '.%(propertyName)s=\"${true}\"' instead"
+
+    _PROPERTY_TYPE_MISMATCH_ERROR = "Property type mismatch: '%(propertyName)s' is declared as '%(declaredType)s' reactive property but is typed as '%(tsType)s'"
 
     _BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
 
@@ -1031,6 +1037,46 @@ class EslintTsTest(unittest.TestCase):
         'expectedType': 'string',
         'providedType': 'boolean',
       },
+      _CAMEL_CASE_ATTRIBUTE_ERROR
+      % {
+        'attributeName': '?fooBoolean',
+        'propertyName': 'fooBoolean',
+        'dashCaseName': '?foo-boolean',
+      },
+      _CAMEL_CASE_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'fooNumber',
+        'propertyName': 'fooNumber',
+        'dashCaseName': 'foo-number',
+      },
+      _CAMEL_CASE_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'fooString',
+        'propertyName': 'fooString',
+        'dashCaseName': 'foo-string',
+      },
+      _INVALID_BOOLEAN_ATTRIBUTE_EXPRESSION_ERROR
+      % {
+        'attributeName': 'is-collapsible',
+        'dashCaseName': 'is-collapsible',
+      },
+      _INVALID_BOOLEAN_ATTRIBUTE_EXPRESSION_ERROR
+      % {
+        'attributeName': 'foo-boolean',
+        'dashCaseName': 'foo-boolean',
+      },
+      _NO_STATIC_TRUE_BOOLEAN_ERROR
+      % {
+        'attributeName': 'foo-boolean',
+        'dashCaseName': 'foo-boolean',
+        'propertyName': 'fooBoolean',
+      },
+      _NO_STATIC_TRUE_BOOLEAN_ERROR
+      % {
+        'attributeName': 'disabled',
+        'dashCaseName': 'disabled',
+        'propertyName': 'disabled',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -1082,6 +1128,35 @@ class EslintTsTest(unittest.TestCase):
       % {
         'propertyName': 'mixinString',
         'tagName': 'hello-world-child',
+      },
+      _INVALID_BOOLEAN_ATTRIBUTE_EXPRESSION_ERROR
+      % {
+        'attributeName': 'disabled',
+        'dashCaseName': 'disabled',
+      },
+      _NO_STATIC_TRUE_BOOLEAN_ERROR
+      % {
+        'attributeName': 'aria-hidden',
+        'dashCaseName': 'aria-hidden',
+        'propertyName': 'ariaHidden',
+      },
+      _NO_STATIC_TRUE_BOOLEAN_ERROR
+      % {
+        'attributeName': 'draggable',
+        'dashCaseName': 'draggable',
+        'propertyName': 'draggable',
+      },
+      _NO_STATIC_TRUE_BOOLEAN_ERROR
+      % {
+        'attributeName': 'foo-string',
+        'dashCaseName': 'foo-string',
+        'propertyName': 'fooString',
+      },
+      _CAMEL_CASE_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'viewBox',
+        'propertyName': 'viewBox',
+        'dashCaseName': 'view-box',
       },
     ]
     for e in non_errors:
