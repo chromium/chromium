@@ -1849,6 +1849,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2423506062824112361">Gagal memuat turun kandungan atas sebab yang tidak diketahui.</translation>
 <translation id="2423578206845792524">Si&amp;mpan imej sebagai...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Tetamu}other{Tetamu (#)}}</translation>
+<translation id="2424762488607770568">Lalai (padankan sistem)</translation>
 <translation id="2426805022920575512">Pilih akaun lain</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 kata laluan akaun disimpan pada peranti ini sahaja. Lagi butiran}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} kata laluan akaun disimpan pada peranti ini sahaja. Lagi butiran}}</translation>
@@ -5660,6 +5661,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5280426389926346830">Buat Pintasan?</translation>
 <translation id="5280966903879030278">Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda dan temukan laman yang telah anda lawati. Tetapan ini dimatikan.</translation>
 <translation id="5281013262333731149">Dibuka dalam: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Warna halaman</translation>
 <translation id="5284107433515104664">Semasa penukaran kata laluan, kandungan halaman dan maklumat berkaitan dihantar kepada Google dan boleh disemak oleh jurusemak untuk meningkatkan ciri ini. Kata laluan anda disulitkan dan tidak akan dilihat oleh sesiapa sahaja.</translation>
 <translation id="5284445933715251131">Teruskan Memuat Turun</translation>
 <translation id="5285635972691565180">Paparkan <ph name="DISPLAY_ID" /></translation>
@@ -6550,6 +6552,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5989497858237037960">Semasa anda menyemak imbas laman, kandungan halaman bagi laman tersebut disulitkan dan disimpan pada peranti anda. Hal ini boleh menjejaskan prestasi Chrome</translation>
 <translation id="5990266201903445068">Wi-Fi sahaja</translation>
 <translation id="5990386583461751448">Diterjemahkan</translation>
+<translation id="5991039386730545918">Tema warna halaman pilihan anda hanya digunakan semasa kontras tinggi sistem dihidupkan</translation>
 <translation id="5992225669837656567">Semua tetikus telah diputuskan sambungan</translation>
 <translation id="5992652489368666106">Tiada sempadan</translation>
 <translation id="5996490984199062729">Profil anda belum disediakan</translation>
@@ -9335,6 +9338,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8118362518458010043">Dilumpuhkan oleh Chrome. Sambungan ini mungkin tidak selamat.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# penanda halaman}other{# penanda halaman}}</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Penyemak imbas anda diurus<ph name="END_LINK" /> oleh organisasi anda</translation>
+<translation id="8118496140027032067">Gantikan warna halaman web dengan tema kontras tinggi atau matikan warna paksa</translation>
 <translation id="8118515372935001629">Kadar muat semula paparan</translation>
 <translation id="8118860139461251237">Urus muat turun anda</translation>
 <translation id="8119438628456698432">Menjana fail log...</translation>
@@ -10013,6 +10017,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8648408795949963811">Suhu warna Cahaya Malam</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> dan pelbagai lagi</translation>
 <translation id="8648889679430451455">Kosongkan data keperibadian</translation>
+<translation id="8649290269169747916">Gunakan warna halaman lalai apabila kontras tinggi sistem dimatikan</translation>
 <translation id="8651585100578802546">Paksa Muatkan Semula Halaman Ini</translation>
 <translation id="8651806635673244884">Anda boleh mengalihkan tab anda kembali kepada bahagian atas dengan mengklik kanan mana-mana tab dan memilih “Tunjukkan tab secara mendatar”</translation>
 <translation id="8652400352452647993">Ralat sambungan pek</translation>

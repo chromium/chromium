@@ -5083,7 +5083,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4852383141291180386">Spravovať upozornenia aplikácií</translation>
 <translation id="4852916668365817106">Farba myši</translation>
 <translation id="4853020600495124913">Otvoriť v &amp;novom okne</translation>
-<translation id="4853328060971905294">Zapnúť (zapnúť označenie riadka)</translation>
+<translation id="4853328060971905294">Zapnúť riadkové zvýraznenie</translation>
 <translation id="4854317507773910281">Vyberte účet rodiča na schválenie</translation>
 <translation id="4854603338816296098">Adresa bola odstránená</translation>
 <translation id="485480310608090163">Ďalšie nastavenia a povolenia</translation>
@@ -6019,7 +6019,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5576472948015790634">Teraz môžete spravovať skupiny kariet a čety s Gemini na jednom mieste. Túto možnosť môžete kedykoľvek odopnúť.</translation>
 <translation id="5578059481725149024">Automaticky prihlasovať</translation>
 <translation id="5578387000057347457">Ak chcete vytvoriť obrázok, zadajte vlastný pokyn alebo zvýraznite text</translation>
-<translation id="557893471177655572">Vyskúšajte sústredenie na riadok</translation>
+<translation id="557893471177655572">Vyskúšajte riadkové zvýraznenie</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 položka je uložená iba v tomto zariadení. Ak ju chcete používať v iných zariadeniach, <ph name="BEGIN_LINK" />uložte si ju do účtu Google<ph name="END_LINK" />.}few{{ITEM_COUNT} položky sú uložené iba v tomto zariadení. Ak ich chcete používať v iných zariadeniach, <ph name="BEGIN_LINK" />uložte si ich do účtu Google<ph name="END_LINK" />.}many{{ITEM_COUNT} items are saved only to this device. To use them on your other devices, <ph name="BEGIN_LINK" />save them in your Google Account<ph name="END_LINK" />.}other{{ITEM_COUNT} položiek je uložených iba v tomto zariadení. Ak ich chcete používať v iných zariadeniach, <ph name="BEGIN_LINK" />uložte si ich do účtu Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Odstrániť web <ph name="SITE" /> zo zoznamu <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">Rozdelené zobrazenie</translation>
@@ -7343,6 +7343,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6628328486509726751">Nahrané <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Silnejšie zabezpečenie</translation>
+<translation id="6630211688479622571">Zobraziť najnovšie</translation>
 <translation id="6630452975878488444">Skratka výberu</translation>
 <translation id="6630752851777525409">Rozšírenie <ph name="EXTENSION_NAME" /> požaduje trvalý prístup k certifikátu na vlastné overenie vo vašom mene.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Opustiť skupinu}few{Opustiť skupiny}many{Leave groups}other{Opustiť skupiny}}</translation>
@@ -8504,7 +8505,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7502528909759062987">Pozastaviť prenos karty do zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="750275011730776314">Prejsť späť na Gemini</translation>
 <translation id="7502804472671406749">Zdieľané karty sa dajú posúvať a približovať</translation>
-<translation id="750314150962284310">Zameranie na čiaru</translation>
+<translation id="750314150962284310">Riadkové zvýraznenie</translation>
 <translation id="7503191893372251637">Netscape – typ certifikátu </translation>
 <translation id="7503259455663961898">Zmeniť</translation>
 <translation id="7503985202154027481">V bezpečnostnom kľúči sa uchová záznam vašej návštevy tohto webu.</translation>
@@ -8809,7 +8810,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="7737948071472253612">Nemôže používať vašu kameru</translation>
 <translation id="77381465218432215">Zobrazovať diakritické znamienka a špeciálne znaky</translation>
 <translation id="7739524723876359011">Stlačením klávesa <ph name="ACCELERATOR" /> označte túto bublinu.</translation>
-<translation id="7740996059027112821">Štandardne</translation>
+<translation id="7740996059027112821">Bežné</translation>
 <translation id="7742706086992565332">Môžete nastaviť úroveň priblíženia alebo oddialenia určitých webov</translation>
 <translation id="7742879569460013116">Zdieľať odkaz na</translation>
 <translation id="774377079771918250">Vyberte, kam sa má uložiť</translation>
@@ -10844,7 +10845,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> chce získať informácie z vášho mobilného zariadenia</translation>
 <translation id="988320949174893488">Príležitostné zasekávanie</translation>
 <translation id="988978206646512040">Prístupová fráza nemôže byť prázdna</translation>
-<translation id="989111665033316622">Vypnúť (vypnúť označenie riadka)</translation>
+<translation id="989111665033316622">Vypnúť riadkové zvýraznenie</translation>
 <translation id="992032470292211616">Rozšírenia, aplikácie a motívy môžu poškodiť vaše zariadenie. Naozaj chcete pokračovať?</translation>
 <translation id="992256792861109788">Ružová</translation>
 <translation id="994087375490600917">Bočné panely</translation>

@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">โปรแกรมดูข้อความของภาพ Alt</translation>
 <translation id="381767806621926835">คลิกขวาที่ใดก็ได้ด้วยแอตทริบิวต์ "longdesc" หรือ "aria-describedat" เพื่อเข้าถึงคำอธิบายแบบยาว</translation>
 <translation id="4023902424053835668">เรียกดูข้อความของหน้าเว็บโดยใช้แป้นลูกศร</translation>
+<translation id="4384008284958619421">ตอนนี้โปรแกรมอ่านหน้าจอที่ทันสมัยและ Google Chrome รองรับคำอธิบายองค์ประกอบที่เข้าถึงได้และมาตรฐาน ARIA ในตัวแล้ว</translation>
 <translation id="4388820049312272371">ไฮไลต์ตำแหน่งเคอร์เซอร์ด้วยการกะพริบเร็วๆ</translation>
 <translation id="4394049700291259645">ปิดการใช้งาน</translation>
 <translation id="4769065380738716500">มีการแทนที่รูปภาพด้วยข้อความ alt ของรูปภาพเหล่านั้น</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="786423340267544509">เพิ่มขอบให้กับองค์ประกอบด้วยแอตทริบิวต์ aria-describedat หรือ longdesc</translation>
 <translation id="7942349550061667556">สีแดง</translation>
+<translation id="8081200409424070383">เราจะเลิกใช้งานคำอธิบายแบบยาวในวันที่ 20 พฤศจิกายน 2569</translation>
 <translation id="8260673944985561857">ตัวเลือกการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="8321034316479930120">นโยบายภาพเคลื่อนไหว</translation>
 <translation id="8480209185614411573">คอนทราสต์สูง</translation>

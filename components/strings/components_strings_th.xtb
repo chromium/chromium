@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">ออกให้แก่: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">เจาะรูด้านขวาล่าง</translation>
+<translation id="2121418473709291357">ละเว้นเนื่องจากการจัดการระบบคลาวด์ของเบราว์เซอร์ Chrome ปิดใช้อยู่</translation>
 <translation id="2122214041802369259">ราคาสูง</translation>
 <translation id="2122719317867821810">นโยบายนี้ทำงานตามที่ควรจะเป็นแต่มีการตั้งค่าที่ขัดแย้งกันไว้ที่อื่นและถูกลบล้างโดยนโยบายนี้</translation>
 <translation id="2124081665399116863">อัปเดตรถใน Google Wallet</translation>
@@ -2915,6 +2916,7 @@
 <translation id="5843987376989109187">ยังไม่รองรับภาษานี้
     <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">หลังจากที่ตรวจสอบคำสั่งซื้อแล้ว คุณต้องลงชื่อเข้าใช้หรือสร้างบัญชีกับ <ph name="BNPL_ISSUER_NAME" /> ระบบจะลิงก์บัญชีนี้ใน Google Wallet โดยอัตโนมัติ</translation>
+<translation id="5848916806551637625">ระบบจะลิงก์บัญชี Pix กับ <ph name="ACCOUNT_EMAIL" /> หากต้องการปิดการตรวจหาโค้ด Pix ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่า Chrome<ph name="END_LINK1" /></translation>
 <translation id="5851548754964597211">รายการแท็บ</translation>
 <translation id="5851868085455377790">ผู้ออกใบรับรอง</translation>
 <translation id="5852909432155870672">RA4</translation>

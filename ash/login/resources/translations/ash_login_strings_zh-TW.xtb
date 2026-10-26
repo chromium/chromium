@@ -576,6 +576,7 @@
 <translation id="7171259390164035663">不註冊</translation>
 <translation id="7189451821249468368">你的升級授權不足，無法註冊這個裝置。請與銷售人員聯絡以購買更多授權。如果你認為不應顯示這則訊息，請與支援小組聯絡。</translation>
 <translation id="7202337678781136582">使用 Android 手機掃描 QR code</translation>
+<translation id="7227254059753088272">設定觸控螢幕</translation>
 <translation id="7228854227189381547">不切換</translation>
 <translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內部磁碟。你也可以稍後再透過登入畫面安裝。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />如果尚未準備好安裝，可以先透過 USB 執行並試用。這種做法可保留現有 OS 和資料，但儲存空間和效能可能會受限。<ph name="END_PARAGRAPH2" /></translation>

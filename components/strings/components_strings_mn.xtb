@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Дугтуй C5</translation>
 <translation id="2119505898009119320"><ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />] руу олгосон</translation>
 <translation id="2119867082804433120">Баруун доод буланд нэг нүх цоолох</translation>
+<translation id="2121418473709291357">Chrome Browser Cloud Management-г идэвхгүй болгосон тул үл хэрэгссэн.</translation>
 <translation id="2122214041802369259">Үнэ өндөр байна</translation>
 <translation id="2122719317867821810">Энэ бодлого нь хэвийн ажиллаж байгаа хэдий ч зөрчилтэй утгыг өөр газар тохируулсан бөгөөд энэ бодлогоор дарсан байна.</translation>
 <translation id="2124081665399116863">Google Wallet-д тээврийн хэрэгслийг шинэчилнэ үү</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 инч</translation>
 <translation id="2156467141257470387">Та хадгалсан хаягаа Google-н бүтээгдэхүүн даяар ашиглаж болно. Энэ нь таны одоо байгаа ажлын хаягийг өөрчлөхгүй. Үүнийг таны <ph name="ACCOUNT" /> Google Бүртгэлд хадгална.</translation>
 <translation id="2157640075051554492">Үнэ хяналтын мэдэгдэл</translation>
+<translation id="2158964559178498011">Автоматаар бөглөх онцлог илүү олон газарт ажилладаг — мэдээлэл олж, бөглөхийн тулд Ctrl дээр хоёр удаа дарна уу</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162435186600002085">Үндсэн толгой хэсгийн лого</translation>
 <translation id="2162535140284745414">Танд ХОУ-аар үзэх шинэ аргуудыг олоход туслах бодит цагийн зөвлөмж аваарай.</translation>
@@ -2201,6 +2203,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Хуудсыг орчуулах уу?</translation>
 <translation id="468314109939257734">Таны виртуал картын дугаар</translation>
+<translation id="4684818564800397688">Автоматаар бөглөх онцлог илүү олон газарт ажилладаг — мэдээлэл олж, бөглөхийн тулд ⌘ дээр хоёр удаа дарна уу</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
 <translation id="4690205240253392065">Дараа төлөх үйлчилгээ үзүүлэгч сонгоно уу</translation>
 <translation id="469028408546145398">Нууцлалтай цонхыг хаах товчлуур, одоогоор нээлттэй байгаа бүх нууцлалтай цонхыг хаахын тулд идэвхжүүлнэ үү</translation>
@@ -2917,6 +2920,7 @@
 <translation id="5843987376989109187">Энэ хэлийг одоогоор дэмждэггүй.
     <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Та захиалгаа хянасны дараа <ph name="BNPL_ISSUER_NAME" /> бүртгэлд нэвтрэх эсвэл тухайн бүртгэлийг үүсгэх ёстой. Энэ бүртгэлийг Google Wallet-д автоматаар холбоно.</translation>
+<translation id="5848916806551637625">Pix бүртгэлийг <ph name="ACCOUNT_EMAIL" />-д холбоно. Pix код илрүүлэхийг унтраахын тулд <ph name="BEGIN_LINK1" />Chrome-н тохиргоо<ph name="END_LINK1" /> руу очно уу.</translation>
 <translation id="5851548754964597211">Цонхны жагсаалт</translation>
 <translation id="5851868085455377790">Сертификатыг олгосон</translation>
 <translation id="5852909432155870672">RA4</translation>

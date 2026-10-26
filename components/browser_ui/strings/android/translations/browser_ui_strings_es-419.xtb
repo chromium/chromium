@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Impedir que los sitios utilicen tus datos y dispositivos de realidad virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Reducción de precio en la pestaña abierta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Revocar el permiso del dispositivo para <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Cuando la ventana sea angosta, solicitar la vista para dispositivos móviles</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6530703012083415527">Cuando esta opción está activada, los sitios pueden usar ventanas emergentes y redireccionamientos. Cuando está desactivada, los sitios no pueden usar ventanas emergentes ni redireccionamientos.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
 <translation id="7201549776650881587">Esta acción borrará todos los datos y cookies que almacenaron todos los sitios secundarios de <ph name="ORIGIN" /> o su app en la pantalla principal</translation>
 <translation id="7219254577985949841">¿Quieres borrar los datos del sitio?</translation>
+<translation id="7225256190577194089">Revocar todos los permisos para el dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Seleccionar imágenes</translation>
 <translation id="7243246278722455312">Hoja inferior de personalización de la página de nueva pestaña</translation>
 <translation id="7243308994586599757">Opciones disponibles junto a la parte inferior de la pantalla</translation>

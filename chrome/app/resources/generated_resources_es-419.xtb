@@ -7341,6 +7341,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6628328486509726751">Fecha y hora de carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Mayor seguridad</translation>
+<translation id="6630211688479622571">Mostrar los más recientes</translation>
 <translation id="6630452975878488444">Acceso directo de selección</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> solicita acceso permanente a un certificado para autenticarse en tu nombre.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Abandonar grupo}other{Abandonar grupos}}</translation>

@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">圖片 Alt 文字檢視器</translation>
 <translation id="381767806621926835">對任何含有「longdesc」或「aria-describedat」屬性的元素按一下滑鼠右鍵，即可查看其完整說明。</translation>
 <translation id="4023902424053835668">使用方向鍵瀏覽網頁文字。</translation>
+<translation id="4384008284958619421">新版螢幕閱讀器和 Google Chrome，現在都已原生支援無障礙元素說明和 ARIA 標準。</translation>
 <translation id="4388820049312272371">使用快閃指示標明游標位置。</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4769065380738716500">圖片已被 alt 文字取代。</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="786423340267544509">為含有 aria-describedat 或 longdesc 屬性的元素加上框線。</translation>
 <translation id="7942349550061667556">紅色</translation>
+<translation id="8081200409424070383">「詳細說明」將於 2026 年 11 月 20 日淘汰。</translation>
 <translation id="8260673944985561857">鍵盤瀏覽選項</translation>
 <translation id="8321034316479930120">動畫政策</translation>
 <translation id="8480209185614411573">高對比</translation>

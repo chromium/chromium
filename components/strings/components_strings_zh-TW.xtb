@@ -660,6 +660,7 @@
 <translation id="2118132148597630479">信封 C5</translation>
 <translation id="2119505898009119320">核發對象：<ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">打孔 (右下方)</translation>
+<translation id="2121418473709291357">已忽略，因為 Chrome 瀏覽器雲端管理服務已停用。</translation>
 <translation id="2122214041802369259">價格偏高</translation>
 <translation id="2122719317867821810">這項政策運作正常，但與其他地方設定的值有所衝突，並已覆寫該值。</translation>
 <translation id="2124081665399116863">更新 Google 錢包中的車輛資訊</translation>
@@ -2914,6 +2915,7 @@
 <translation id="5843987376989109187">目前尚不支援這個語言。
     <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google 錢包。</translation>
+<translation id="5848916806551637625">Pix 帳戶將連結到 <ph name="ACCOUNT_EMAIL" />。如要關閉 Pix 碼偵測功能，請前往 <ph name="BEGIN_LINK1" />Chrome 設定<ph name="END_LINK1" />。</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5851868085455377790">發行者</translation>
 <translation id="5852909432155870672">RA4</translation>

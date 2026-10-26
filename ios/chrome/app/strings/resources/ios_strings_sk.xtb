@@ -1942,6 +1942,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="6946722113367118030">Zamyslená tvár</translation>
 <translation id="6947751977892029882">Pri tomto nastavení sa niečo pokazilo. Aktualizujte a reštartujte Chrome aj iOS a skúste to znova. Ak sa táto chyba vyskytuje opakovane, váš iPhone zrejme toto nastavenie nepodporuje.</translation>
 <translation id="6950522403736391608">Skryté</translation>
+<translation id="6957084631403333422">Vyskúšajte stránku na novej karte s funkciou sústredenia</translation>
 <translation id="695965663642079255">Uložte si platobné údaje a spravujte ich, aby ste mohli platiť rýchlejšie</translation>
 <translation id="6962809930976936328">Získavajte štatistiky s Gemini</translation>
 <translation id="6964300328304469089">Aktuálne vybrané: <ph name="NAME" />, <ph name="EMAIL" />. Vyberte účet.</translation>
@@ -2179,6 +2180,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Položka bola uložená vo vašom účte Google {email}}few{Položky boli uložené vo vašom účte Google {email}}many{Items saved in your Google Account, {email}}other{Položky boli uložené vo vašom účte Google {email}}}</translation>
 <translation id="7729458878441927652">Ak chcete vidieť karty z vašich ostatných zariadení, synchronizujte si karty aj históriu.</translation>
 <translation id="7730020510075123961">Nie, zlúčiť dáta</translation>
+<translation id="7730937523779541003">Bola použitá stránka na novej karte s funkciou sústredenia</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Iba v tomto zariadení.</translation>
 <translation id="7737550920399185748">Fotky na domovskej stránke z vašej knižnice fotiek sa v jednotlivých zariadeniach nebudú synchronizovať.</translation>
 <translation id="7738120385185846461">Nahlásiť problém…</translation>
@@ -2622,6 +2624,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="9032405509996909363">Potvrdiť odstránenie dát prehliadania</translation>
 <translation id="9038526468059454274">Zhrňte to pomocou</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
+<translation id="9042363670218758847">Prejdite na rozloženie vytvorené na rýchle vyhľadávanie</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="9044703854323320868"><ph name="INDEX" />. správa v Gmaile</translation>
 <translation id="9055291197094969722">Vytvorte skupinu kariet, aby ste si karty mohli usporiadať a zachovať si produktivitu</translation>

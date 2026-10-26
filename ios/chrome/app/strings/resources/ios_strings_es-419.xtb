@@ -1942,6 +1942,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="6946722113367118030">Pensando</translation>
 <translation id="6947751977892029882">Se produjo un error con este parámetro de configuración. Actualiza y reinicia Chrome y iOS, y vuelve a intentarlo. Si este error persiste, es posible que tu iPhone no admita este parámetro de configuración.</translation>
 <translation id="6950522403736391608">Ocultos</translation>
+<translation id="6957084631403333422">Prueba una página Nueva pestaña enfocada</translation>
 <translation id="695965663642079255">Guarda y administra la información de pago para confirmar la compra más rápido</translation>
 <translation id="6962809930976936328">Obtén estadísticas con Gemini</translation>
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
@@ -2179,6 +2180,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elemento guardado en tu Cuenta de Google ({email})}other{Elementos guardados en tu Cuenta de Google ({email})}}</translation>
 <translation id="7729458878441927652">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial.</translation>
 <translation id="7730020510075123961">No, combinar datos</translation>
+<translation id="7730937523779541003">Se aplicó la página Nueva pestaña enfocada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo en este dispositivo.</translation>
 <translation id="7737550920399185748">Las fotos de la página principal de tu biblioteca de fotos no se sincronizarán en tus dispositivos.</translation>
 <translation id="7738120385185846461">Informar un problema…</translation>
@@ -2622,6 +2624,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="9032405509996909363">Confirmar que quieres borrar los datos de navegación</translation>
 <translation id="9038526468059454274">Resúmelo con</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
+<translation id="9042363670218758847">Cambia a un diseño creado para búsquedas rápidas</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9044703854323320868">Mensaje de Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea grupos de pestañas para organizar las pestañas abiertas y mantener la productividad</translation>

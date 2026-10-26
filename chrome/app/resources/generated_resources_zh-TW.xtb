@@ -1836,6 +1836,7 @@
 <translation id="2423506062824112361">因不明原因無法下載內容。</translation>
 <translation id="2423578206845792524">另存圖片(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
+<translation id="2424762488607770568">預設 (與系統一致)</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427507373259914951">按左鍵</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 個帳戶，密碼只會儲存到這部裝置。瞭解詳情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 個帳戶，密碼只會儲存到這部裝置。瞭解詳情}}</translation>
@@ -5639,6 +5640,7 @@
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
 <translation id="5280966903879030278">使用日常用語搜尋瀏覽記錄，找出造訪過的網站。這項設定已關閉。</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
+<translation id="5283747245540449968">網頁色彩</translation>
 <translation id="5284107433515104664">系統變更密碼時，會將網頁內容和相關資訊傳送給 Google，並可能交由專人審查，以提升這項功能。你的密碼會加密處理，任何人都無法看到。</translation>
 <translation id="5284445933715251131">繼續下載</translation>
 <translation id="5285635972691565180">螢幕 <ph name="DISPLAY_ID" /></translation>
@@ -6525,6 +6527,7 @@
 <translation id="5989497858237037960">瀏覽網站時，網頁內容會加密並儲存到裝置上。這可能會影響 Chrome 的效能</translation>
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
+<translation id="5991039386730545918">系統高對比模式開啟時，才會使用所選網頁色彩主題</translation>
 <translation id="5992225669837656567">所有滑鼠均已中斷連線</translation>
 <translation id="5992652489368666106">無框線</translation>
 <translation id="5996490984199062729">你的設定檔尚未完成設定</translation>
@@ -9308,6 +9311,7 @@
 <translation id="8118362518458010043">這個擴充功能可能不安全，因此遭到 Chrome 停用。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 個書籤}other{# 個書籤}}</translation>
 <translation id="8118488170956489476">你的<ph name="BEGIN_LINK" />瀏覽器是由貴機構所管理<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">使用高對比主題覆寫網頁色彩，或關閉強制色彩模式</translation>
 <translation id="8118515372935001629">螢幕重新整理頻率</translation>
 <translation id="8118860139461251237">管理下載內容</translation>
 <translation id="8119438628456698432">正在產生記錄檔...</translation>
@@ -9985,6 +9989,7 @@
 <translation id="8648408795949963811">夜燈模式色溫</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 要求<ph name="FIRST_PERMISSION" />以及<ph name="SECOND_PERMISSION" />等權限</translation>
 <translation id="8648889679430451455">清除個人化資料</translation>
+<translation id="8649290269169747916">系統高對比模式關閉時，使用預設網頁色彩</translation>
 <translation id="8651585100578802546">強制重新載入此網頁</translation>
 <translation id="8651806635673244884">如要將分頁移回頂端，請在任一分頁按一下滑鼠右鍵，然後選取「水平顯示分頁」</translation>
 <translation id="8652400352452647993">封裝擴充功能錯誤</translation>

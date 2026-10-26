@@ -661,6 +661,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2118132148597630479">Sampul C5</translation>
 <translation id="2119505898009119320">Dikeluarkan kepada: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Tebukan bawah sebelah kanan</translation>
+<translation id="2121418473709291357">Diabaikan kerana Pengurusan Awan Penyemak Imbas Chrome dilumpuhkan.</translation>
 <translation id="2122214041802369259">Harga Tinggi</translation>
 <translation id="2122719317867821810">Dasar ini berfungsi seperti yang diharapkan tetapi nilai yang bercanggah ditetapkan di tempat lain dan dibatalkan oleh dasar ini.</translation>
 <translation id="2124081665399116863">Kemas kinikan kenderaan dalam Google Wallet</translation>
@@ -2919,6 +2920,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5843987376989109187">Bahasa ini belum disokong lagi.
     <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Selepas anda menyemak pesanan anda, anda mestilah log masuk atau membuat akaun dengan <ph name="BNPL_ISSUER_NAME" />. Akaun ini akan dipautkan secara automatik dalam Google Wallet.</translation>
+<translation id="5848916806551637625">Akaun Pix akan dipautkan kepada <ph name="ACCOUNT_EMAIL" />. Untuk mematikan pengesanan kod Pix, akses <ph name="BEGIN_LINK1" />Tetapan Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Senarai tab</translation>
 <translation id="5851868085455377790">Pengeluar</translation>
 <translation id="5852909432155870672">RA4</translation>
