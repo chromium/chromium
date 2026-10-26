@@ -11,12 +11,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "components/metrics/profile_metrics_service.h"
 
 namespace {
 
@@ -54,7 +56,7 @@ int GetMetricsBucketIndex(const Profile* profile) {
   return entry->GetMetricsBucketIndex();
 }
 
-void RecordProfileSessionDuration(const Profile* profile,
+void RecordProfileSessionDuration(Profile* profile,
                                   base::TimeDelta session_length) {
   if (!profile || session_length.InMinutes() <= 0) {
     return;
@@ -68,6 +70,10 @@ void RecordProfileSessionDuration(const Profile* profile,
                                 base::HistogramBase::kUmaTargetedHistogramFlag)
         ->AddCount(profile_bucket, session_length.InMinutes());
   }
+
+  ProfileMetricsServiceFactory::GetForProfile(profile)->UmaHistogramCustomTimes(
+      "Profile.SessionDuration", session_length, base::Milliseconds(1),
+      base::Hours(24), 50);
 }
 
 void RecordBrowserActivation(const Profile* profile) {

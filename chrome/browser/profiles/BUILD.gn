@@ -207,8 +207,10 @@ source_set("misc") {
       "profile_list_desktop.h",
     ]
     deps += [
+      "//chrome/browser/metrics",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/ui:chrome_pages",
+      "//components/metrics",
     ]
   }
 

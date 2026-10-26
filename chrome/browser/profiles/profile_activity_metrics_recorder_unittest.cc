@@ -214,9 +214,9 @@ TEST_F(ProfileActivityMetricsRecorderTest, IncognitoProfile) {
 
 TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   // Profile 1: Profile is created. This does not affect the histogram.
-  Profile* profile1 = profile_manager()->CreateTestingProfile("p1");
+  Profile* profile1 = profile_manager()->CreateTestingProfile("Profile 1");
   // Profile 2: Profile is created. This does not affect the histogram.
-  Profile* profile2 = profile_manager()->CreateTestingProfile("p2");
+  Profile* profile2 = profile_manager()->CreateTestingProfile("Profile 2");
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 0);
 
   // Profile 1: Browser is activated for the first time. The profile is assigned
@@ -227,7 +227,7 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   SimulateUserActionAndExpectRecording(/*bucket=*/1);
 
   // Profile 3: Profile is created. This does not affect the histogram.
-  Profile* profile3 = profile_manager()->CreateTestingProfile("p3");
+  Profile* profile3 = profile_manager()->CreateTestingProfile("Profile 3");
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 1);
 
   // Profile 1: Another browser is activated.
@@ -254,6 +254,10 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   // Profile 1: Session ended. The duration(2 minutes) is recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
+  histograms()->ExpectTimeBucketCount("Profile.SessionDuration",
+                                      base::Minutes(2), /*count=*/1);
+  histograms()->ExpectTimeBucketCount("Profile.SessionDuration.Profile1",
+                                      base::Minutes(2), /*count=*/1);
 
   // Profile 3: Session lasts 2 minutes.
   task_environment()->FastForwardBy(base::Minutes(2));
@@ -270,12 +274,16 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   // Profile 3: Session ended. The duration(2 minutes) is recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
                                   /*bucket=*/2, /*count=*/2);
+  histograms()->ExpectTimeBucketCount("Profile.SessionDuration",
+                                      base::Minutes(2), /*count=*/2);
+  histograms()->ExpectTimeBucketCount("Profile.SessionDuration.Profile3",
+                                      base::Minutes(2), /*count=*/1);
 
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 4);
 }
 
 TEST_F(ProfileActivityMetricsRecorderTest, SessionInactivityNotRecorded) {
-  Profile* profile = profile_manager()->CreateTestingProfile("p1");
+  Profile* profile = profile_manager()->CreateTestingProfile("Profile 1");
 
   ActivateBrowser(profile);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
@@ -291,6 +299,10 @@ TEST_F(ProfileActivityMetricsRecorderTest, SessionInactivityNotRecorded) {
   // The inactive time is not recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
+  histograms()->ExpectTimeBucketCount("Profile.SessionDuration",
+                                      base::Minutes(2), /*count=*/1);
+  histograms()->ExpectTimeBucketCount("Profile.SessionDuration.Profile1",
+                                      base::Minutes(2), /*count=*/1);
 }
 
 TEST_F(ProfileActivityMetricsRecorderTest, ProfileState) {
