@@ -8,17 +8,19 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
-
 #include <cstddef>
 #include <cstdint>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/thread_isolation/alignment.h"
+#endif  // PA_BUILDFLAG(ENABLE_PKEYS)
 
 namespace partition_alloc::internal {
 
 constexpr int kDefaultPkey = 0;
 constexpr int kInvalidPkey = -1;
+
+#if PA_BUILDFLAG(ENABLE_PKEYS)
 
 // Check if the CPU supports pkeys.
 bool CPUHasPkeySupport();
@@ -50,8 +52,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LiftPkeyRestrictionsScope {
   uint32_t saved_pkey_value_;
 };
 
-}  // namespace partition_alloc::internal
-
 #endif  // PA_BUILDFLAG(ENABLE_PKEYS)
+
+}  // namespace partition_alloc::internal
 
 #endif  // PARTITION_ALLOC_THREAD_ISOLATION_PKEY_H_

@@ -43,18 +43,6 @@ constexpr PageTag kPageTag = PageTag::kPartitionAlloc;
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-namespace {
-
-// This will crash if the range cannot be decommitted.
-void DecommitPages(uintptr_t address, size_t size) {
-  // Callers rely on the pages being zero-initialized when recommitting them.
-  // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
-  // particular on macOS, but |DecommitAndZeroSystemPages| does.
-  PA_CHECK(DecommitAndZeroSystemPages(address, size, kPageTag));
-}
-
-}  // namespace
-
 void AddressPoolManager::SetAsyncSafeMemoryPressureNotification(
     AsyncSafeMemoryPressureNotification notification) {
   async_safe_memory_pressure_notification_.store(notification,
@@ -71,14 +59,17 @@ void AddressPoolManager::NotifyMemoryPressureIfNeeded(bool should_notify) {
   }
 }
 
-void AddressPoolManager::Add(pool_handle handle, uintptr_t ptr, size_t length) {
+void AddressPoolManager::Add(pool_handle handle,
+                             uintptr_t ptr,
+                             size_t length,
+                             int pkey) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
   PA_CHECK(handle > 0 && handle <= std::size(pools_));
 
   Pool* pool = GetPool(handle);
   PA_CHECK(!pool->IsInitialized());
-  pool->Initialize(ptr, length);
+  pool->Initialize(ptr, length, pkey);
 }
 
 void AddressPoolManager::GetPoolUsedSuperPages(
@@ -154,13 +145,15 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
   PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
   Pool* pool = GetPool(handle);
   PA_DCHECK(pool->IsInitialized());
-  DecommitPages(address, length);
+  pool->DecommitPages(address, length);
   const bool should_notify =
       pool->FreeChunk(address, length, almost_full_pool_count_);
   NotifyMemoryPressureIfNeeded(should_notify);
 }
 
-void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
+void AddressPoolManager::Pool::Initialize(uintptr_t ptr,
+                                          size_t length,
+                                          int pkey) {
   PA_CHECK(ptr != 0);
   PA_CHECK(!(ptr & kSuperPageOffsetMask));
   PA_CHECK(!(length & kSuperPageOffsetMask));
@@ -173,12 +166,42 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   total_bits_ = length / kSuperPageSize;
   PA_CHECK(total_bits_ <= kMaxSuperPagesInPool);
 
+#if PA_BUILDFLAG(ENABLE_PKEYS)
+  if (pkey != kInvalidPkey) {
+    pkey_ = pkey;
+    SetSystemPagesAccess(ptr, length,
+                         PageAccessibilityConfiguration(
+                             PageAccessibilityConfiguration::kInaccessible,
+                             ThreadIsolationOption(pkey_)));
+  }
+#else
+  PA_CHECK(pkey == kInvalidPkey);
+#endif
+
   ScopedGuard scoped_lock(lock_);
   alloc_bitset_.reset();
   bit_hint_ = 0;
   high_bit_hint_ = total_bits_;
   allocated_bits_ = 0;
   is_almost_full_ = false;
+}
+
+void AddressPoolManager::Pool::DecommitPages(uintptr_t address, size_t size) {
+  // Callers rely on the pages being zero-initialized when recommitting them.
+  // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
+  // particular on macOS, but |DecommitAndZeroSystemPages| does.
+  PA_CHECK(DecommitAndZeroSystemPages(address, size, kPageTag));
+#if PA_BUILDFLAG(ENABLE_PKEYS)
+  if (pkey_ != kInvalidPkey) {
+    // DecommitAndZeroSystemPages replaces the mapping with fresh anonymous
+    // pages via mmap(MAP_FIXED, PROT_NONE), which resets the memory protection
+    // key to the default key (0). Re-tag the pages with the pool's pkey.
+    SetSystemPagesAccess(address, size,
+                         PageAccessibilityConfiguration(
+                             PageAccessibilityConfiguration::kInaccessible,
+                             ThreadIsolationOption(pkey_)));
+  }
+#endif
 }
 
 bool AddressPoolManager::Pool::IsInitialized() {
@@ -190,6 +213,9 @@ bool AddressPoolManager::Pool::Reset(
   ScopedGuard scoped_lock(lock_);
   address_begin_ = 0;
   total_bits_ = 0;
+#if PA_BUILDFLAG(ENABLE_PKEYS)
+  pkey_ = kInvalidPkey;
+#endif
   alloc_bitset_.reset();
   bit_hint_ = 0;
   high_bit_hint_ = 0;

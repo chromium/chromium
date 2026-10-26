@@ -54,12 +54,14 @@ void PkeyFree(int pkey) {
   PA_PCHECK(syscall(SYS_pkey_free, pkey) == 0);
 }
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 uint32_t Rdpkru() {
   uint32_t pkru;
   asm volatile(".byte 0x0f,0x01,0xee\n" : "=a"(pkru) : "c"(0), "d"(0));
   return pkru;
 }
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void Wrpkru(uint32_t pkru) {
   asm volatile(".byte 0x0f,0x01,0xef\n" : : "a"(pkru), "c"(0), "d"(0));
 }

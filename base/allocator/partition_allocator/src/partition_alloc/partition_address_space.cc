@@ -327,7 +327,8 @@ void PartitionAddressSpace::InitZeroSegment() {
 #endif  // PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
 
 void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
-                                                 size_t size) {
+                                                 size_t size,
+                                                 int pkey) {
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());
 
@@ -349,8 +350,9 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   setup_.configurable_pool_base_address_ = pool_base;
   setup_.configurable_pool_base_mask_ = ~(size - 1);
 
-  AddressPoolManager::GetInstance().Add(
-      kConfigurablePoolHandle, setup_.configurable_pool_base_address_, size);
+  AddressPoolManager::GetInstance().Add(kConfigurablePoolHandle,
+                                        setup_.configurable_pool_base_address_,
+                                        size, pkey);
 
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   // Initialize metadata for configurable pool without PartitionAlloc enabled.

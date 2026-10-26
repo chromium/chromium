@@ -21,6 +21,7 @@
 #include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/thread_isolation/alignment.h"
+#include "partition_alloc/thread_isolation/pkey.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -61,7 +62,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   AddressPoolManager& operator=(const AddressPoolManager&) = delete;
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  void Add(pool_handle handle, uintptr_t address, size_t length);
+  void Add(pool_handle handle,
+           uintptr_t address,
+           size_t length,
+           int pkey = kInvalidPkey);
   void Remove(pool_handle handle);
 
   // Populate a |used| bitset of superpages currently in use.
@@ -150,16 +154,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
   class Pool {
    public:
-    constexpr Pool() = default;
+    PA_ALWAYS_INLINE constexpr Pool();
     ~Pool() = default;
 
     Pool(const Pool&) = delete;
     Pool& operator=(const Pool&) = delete;
 
-    void Initialize(uintptr_t ptr, size_t length) PA_LOCKS_EXCLUDED(lock_);
+    void Initialize(uintptr_t ptr, size_t length, int pkey = kInvalidPkey)
+        PA_LOCKS_EXCLUDED(lock_);
     bool IsInitialized();
     bool Reset(std::atomic<size_t>& almost_full_pool_count)
         PA_LOCKS_EXCLUDED(lock_);
+
+    void DecommitPages(uintptr_t address, size_t size);
 
     uintptr_t FindChunk(size_t size,
                         std::atomic<size_t>& almost_full_pool_count,
@@ -228,6 +235,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
     uintptr_t address_end_ = 0;
 #endif
+#if PA_BUILDFLAG(ENABLE_PKEYS)
+    int pkey_ = kInvalidPkey;
+#endif
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     friend class AddressPoolManager;
@@ -268,6 +278,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
   constinit static AddressPoolManager singleton_;
 };
+
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+PA_ALWAYS_INLINE constexpr AddressPoolManager::Pool::Pool() = default;
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 }  // namespace partition_alloc::internal
 

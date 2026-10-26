@@ -6627,6 +6627,91 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
 #endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 }
 
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) && PA_BUILDFLAG(ENABLE_PKEYS)
+
+namespace {
+
+void VerifyAllocationHasPkey(void* ptr, int pkey) {
+  volatile uint32_t* typed_ptr = static_cast<volatile uint32_t*>(ptr);
+  *typed_ptr = 42;
+  EXPECT_EQ(42u, *typed_ptr);
+
+  // Each protection key occupies 2 bits in the PKRU register (at bit offset
+  // `2 * pkey`). Verify that write access is currently enabled for `pkey`, then
+  // set its write-disable bit in the death test to check that writing to `ptr`
+  // triggers a PKU fault.
+  const uint32_t pkru = Rdpkru();
+  const uint32_t disable_write_mask = static_cast<uint32_t>(PKEY_DISABLE_WRITE)
+                                      << (2 * pkey);
+  ASSERT_EQ(0u, pkru & disable_write_mask);
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        Wrpkru(pkru | disable_write_mask);
+        *typed_ptr = 99;
+      },
+      "");
+}
+
+}  // namespace
+
+TEST_P(PartitionAllocTest, ConfigurablePoolPkey) {
+  int pkey = PkeyAlloc(0);
+  if (pkey == kInvalidPkey) {
+    // `PA_BUILDFLAG(ENABLE_PKEYS)` is unconditionally enabled at compile time
+    // on all x64 Linux/ChromeOS builds, but the test binary may run on an x64
+    // CPU/VM that does not support PKU at runtime, in which case `PkeyAlloc`
+    // fails and returns `kInvalidPkey`.
+    GTEST_SKIP();
+  }
+  ASSERT_NE(pkey, kDefaultPkey);
+
+  const size_t pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
+  EXPECT_FALSE(IsConfigurablePoolAvailable());
+  uintptr_t pool_base =
+      AllocPages(pool_size, pool_size,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
+                 PageTag::kPartitionAlloc);
+  ASSERT_NE(0u, pool_base);
+  PA_PCHECK(PkeyMprotect(reinterpret_cast<void*>(pool_base), pool_size,
+                         PROT_NONE, pkey) == 0);
+  PartitionAddressSpace::InitConfigurablePool(pool_base, pool_size, pkey);
+  EXPECT_TRUE(IsConfigurablePoolAvailable());
+
+  PartitionOptions opts = GetCommonPartitionOptions();
+  opts.use_configurable_pool = PartitionOptions::kAllowed;
+  std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(
+      opts, PartitionTestOptions{.uncap_empty_slot_span_memory = true,
+                                 .set_bucket_distribution = true});
+
+  const size_t direct_map_size = BucketIndexLookup::kMaxBucketSize + 1;
+  void* ptr1 = root->Alloc(direct_map_size);
+  ASSERT_NE(nullptr, ptr1);
+  VerifyAllocationHasPkey(ptr1, pkey);
+
+  // Freeing a direct-mapped allocation calls `UnreserveAndDecommit`. Check that
+  // reallocating those pages preserves `pkey`.
+  root->Free(ptr1);
+  void* ptr2 = root->Alloc(direct_map_size);
+  ASSERT_EQ(ptr1, ptr2);
+  VerifyAllocationHasPkey(ptr2, pkey);
+  root->Free(ptr2);
+
+  // Also check normal bucket allocations reusing the `UnreserveAndDecommit`ted
+  // superpage at the start of the pool.
+  void* bucket_ptr = root->Alloc(kTestAllocSize);
+  ASSERT_NE(nullptr, bucket_ptr);
+  VerifyAllocationHasPkey(bucket_ptr, pkey);
+
+  root->Free(bucket_ptr);
+  PartitionRoot::DeleteForTesting(root.release());
+  PartitionAddressSpace::UninitConfigurablePoolForTesting();
+  FreePages(pool_base, pool_size);
+  PkeyFree(pkey);
+}
+
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) && PA_BUILDFLAG(ENABLE_PKEYS)
+
 TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Use another root, since the ones from the test harness disable the empty
   // slot span size cap.
