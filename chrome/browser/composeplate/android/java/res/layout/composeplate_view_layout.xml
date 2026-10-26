@@ -61,8 +61,8 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/composeplate_view_button_margin"
         android:paddingStart="@dimen/composeplate_view_button_margin"
         android:paddingEnd="@dimen/composeplate_view_button_margin"
-        android:contentDescription="@string/ntp_action_chip_gallery_accessibility"
-        android:tooltipText="@string/ntp_action_chip_gallery_accessibility"
+        android:contentDescription="@string/ntp_action_chip_add_image_accessibility"
+        android:tooltipText="@string/ntp_action_chip_add_image_accessibility"
         style="@style/ComposeplateViewButton"
         android:visibility="gone"
         tools:ignore="UseCompoundDrawables">

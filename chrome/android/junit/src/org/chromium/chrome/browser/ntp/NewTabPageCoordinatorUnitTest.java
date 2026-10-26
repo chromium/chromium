@@ -1170,7 +1170,7 @@ public class NewTabPageCoordinatorUnitTest {
 
         // The Create image strings aren't applied, so the layout's default strings are kept.
         assertEquals(
-                mActivity.getString(R.string.ntp_action_chip_gallery_accessibility),
+                mActivity.getString(R.string.ntp_action_chip_add_image_accessibility),
                 optionalButton.getContentDescription());
         TextView optionalButtonText = mNewTabPageLayout.findViewById(R.id.optional_button_text);
         assertEquals(mActivity.getString(R.string.add), optionalButtonText.getText().toString());

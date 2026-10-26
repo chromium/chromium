@@ -697,8 +697,8 @@
   <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_ACCESSIBILITY" desc="Accessibility content description of the create image merchandising chip on the NTP. Announced by screen readers instead of the short visible label." formatter_data="android_java" is_accessibility_with_no_ui="true">
     Create image
   </message>
-  <message name="IDS_NTP_ACTION_CHIP_GALLERY_ACCESSIBILITY" desc="Accessibility content description of the gallery merchandising chip on the NTP, which lets the user add images to their search. Announced by screen readers instead of the short visible label." formatter_data="android_java" is_accessibility_with_no_ui="true">
-    Add images
+  <message name="IDS_NTP_ACTION_CHIP_ADD_IMAGE_ACCESSIBILITY" desc="Accessibility content description of the add image (gallery) merchandising chip on the NTP, which lets the user add images to their search. Announced by screen readers instead of the short visible label." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Add images to your search
   </message>
   <!-- NTP Action Chips Fallback Prompts -->
   <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_1" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
