@@ -80,11 +80,13 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
       std::min(pref_service_->GetTime(kLastAttemptedToRecordPref), now);
 
   // The metrics should be recorded once per calendar day, so the next possible
-  // time is midnight on the following day.
+  // time is midnight on the following day. Add 4 hours before rounding down to
+  // midnight to account for DST "fall back" days (which are 25 hours long).
   base::Time earliest_allowed =
       last_recorded_at.is_null()
           ? now
-          : (last_recorded_at + base::Days(1)).LocalMidnight();
+          : (last_recorded_at.LocalMidnight() + base::Days(1) + base::Hours(4))
+                .LocalMidnight();
 
   if (earliest_allowed > now) {
     // Recording has already happened today. Wait (somewhat arbitrarily) until
@@ -92,6 +94,13 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
     // immediate succession if the previous recording happened just before
     // midnight.
     earliest_allowed += base::Hours(12);
+  }
+
+  // Defense-in-depth against clock/timezone changes: never run again within
+  // 12 hours of the last attempt.
+  if (!last_recorded_at.is_null()) {
+    earliest_allowed =
+        std::max(earliest_allowed, last_recorded_at + base::Hours(12));
   }
 
   // If metrics reporting is disabled, try again one day from now at the
