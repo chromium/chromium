@@ -5,9 +5,6 @@
 #ifndef ASH_SYSTEM_NOTIFICATION_CENTER_ASH_MESSAGE_CENTER_LOCK_SCREEN_CONTROLLER_H_
 #define ASH_SYSTEM_NOTIFICATION_CENTER_ASH_MESSAGE_CENTER_LOCK_SCREEN_CONTROLLER_H_
 
-#include <optional>
-
-#include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "components/account_id/account_id.h"
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
@@ -19,15 +16,6 @@ class AshMessageCenterLockScreenController
     : public message_center::LockScreenController,
       public SessionObserver {
  public:
-  // Returns if the message center shows the notifications on the lock screen
-  // or not. True if it shows, false if doesn't.
-  static ASH_EXPORT bool IsEnabled();
-
-  // Returns if the message center on the lock screen is forcibly disabled,
-  // due to the policy or the corrupt state.
-  // When this returns true, |IsEnabled()| must return false.
-  static ASH_EXPORT bool IsAllowed();
-
   AshMessageCenterLockScreenController();
 
   AshMessageCenterLockScreenController(
@@ -45,18 +33,6 @@ class AshMessageCenterLockScreenController
   bool IsNotificationAllowedOnLockScreen(const std::string& id) const override;
 
  private:
-  // Modes of the lock screen notification.
-  enum class Mode { PROHIBITED, HIDE, SHOW, HIDE_SENSITIVE };
-
-  // Returns the current mode of the lock screen notification.
-  static Mode GetMode();
-
-  // Override the current mode for tests.
-  // Exporting for test.
-  static ASH_EXPORT void OverrideModeForTest(std::optional<Mode> new_mode);
-
-  static std::optional<Mode> overridden_mode_for_testing_;
-
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;

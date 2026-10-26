@@ -21,39 +21,6 @@
 
 namespace ash {
 
-// static private
-std::optional<AshMessageCenterLockScreenController::Mode>
-    AshMessageCenterLockScreenController::overridden_mode_for_testing_;
-
-// static
-bool AshMessageCenterLockScreenController::IsEnabled() {
-  auto mode = GetMode();
-  bool is_showing = (mode == Mode::SHOW || mode == Mode::HIDE_SENSITIVE);
-  // If |isAllowed()| is false, must return false;
-  DCHECK(!is_showing || IsAllowed());
-  return is_showing;
-}
-
-// static
-bool AshMessageCenterLockScreenController::IsAllowed() {
-  return GetMode() != Mode::PROHIBITED;
-}
-
-// static, private
-AshMessageCenterLockScreenController::Mode
-AshMessageCenterLockScreenController::GetMode() {
-  if (overridden_mode_for_testing_.has_value())
-    return *overridden_mode_for_testing_;
-
-  return Mode::PROHIBITED;
-}
-
-// static, only for testing
-void AshMessageCenterLockScreenController::OverrideModeForTest(
-    std::optional<AshMessageCenterLockScreenController::Mode> new_mode) {
-  overridden_mode_for_testing_ = new_mode;
-}
-
 namespace {
 const char kToastId[] = "ash-lock-screen-manager";
 }  // anonymous namespace

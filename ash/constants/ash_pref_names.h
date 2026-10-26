@@ -1285,10 +1285,7 @@ inline constexpr char kMessageCenterLockScreenMode[] =
 
 // Value of each options of the lock screen notification settings. They are
 // used the pref of ash::prefs::kMessageCenterLockScreenMode.
-inline constexpr char kMessageCenterLockScreenModeShow[] = "show";
 inline constexpr char kMessageCenterLockScreenModeHide[] = "hide";
-inline constexpr char kMessageCenterLockScreenModeHideSensitive[] =
-    "hideSensitive";
 
 // A boolean pref storing the enabled status of the ambient color feature.
 inline constexpr char kAmbientColorEnabled[] = "ash.ambient_color.enabled";

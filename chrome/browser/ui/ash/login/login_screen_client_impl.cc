@@ -11,8 +11,6 @@
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/debug/dump_without_crashing.h"
@@ -20,8 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
@@ -39,8 +35,6 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
-#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
-#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -306,24 +300,6 @@ void LoginScreenClientImpl::ShowParentAccessHelpApp() {
   // bounded by its parent window.
   base::MakeRefCounted<ash::HelpAppLauncher>(/*parent_window=*/nullptr)
       ->ShowHelpTopic(ash::HelpAppLauncher::HELP_PARENT_ACCESS_CODE);
-}
-
-void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
-  // TODO(crbug.com/447287122): Revisit here to pass the appropriate user
-  // context here.
-  auto* session = session_manager::SessionManager::Get()->GetActiveSession();
-  if (!session) {
-    return;
-  }
-  ash::SettingsAppManager::Get()->Open(
-      CHECK_DEREF(
-          user_manager::UserManager::Get()->FindUser(session->account_id())),
-      {.sub_page = base::StrCat(
-           {chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2,
-            "?settingId=",
-            base::NumberToString(
-                std::to_underlying(chromeos::settings::mojom::Setting::
-                                       kLockScreenNotification))})});
 }
 
 void LoginScreenClientImpl::OnFocusLeavingSystemTray(bool reverse) {

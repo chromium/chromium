@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/system/notification_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_animation_controller.h"
@@ -54,8 +53,7 @@ bool ShouldShowNotification(message_center::Notification* notification) {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   if (!session_controller->ShouldShowNotificationTray() ||
-      (session_controller->IsScreenLocked() &&
-       !AshMessageCenterLockScreenController::IsEnabled())) {
+      session_controller->IsScreenLocked()) {
     return false;
   }
 

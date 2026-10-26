@@ -746,7 +746,6 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kLockScreenV2,
       mojom::Setting::kChangeAuthPinV2,
       mojom::Setting::kPeripheralDataAccessProtection,
-      mojom::Setting::kLockScreenNotification,
       mojom::Setting::kDataRecovery,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSecurityAndSignInV2,

@@ -93,7 +93,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void HandleAccelerator(ash::LoginAcceleratorAction action);
   void ShowAccountAccessHelpApp(gfx::NativeWindow parent_window);
   void ShowParentAccessHelpApp();
-  void ShowLockScreenNotificationSettings();
   void FocusOobeDialog();
 
   // Enable or disable authentication for the debug overlay.

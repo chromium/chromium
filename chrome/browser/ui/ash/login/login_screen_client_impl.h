@@ -112,7 +112,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
   void HandleAccelerator(ash::LoginAcceleratorAction action) override;
   void ShowAccountAccessHelpApp(gfx::NativeWindow parent_window) override;
   void ShowParentAccessHelpApp() override;
-  void ShowLockScreenNotificationSettings() override;
   void OnFocusLeavingSystemTray(bool reverse) override;
   void OnSystemTrayBubbleShown() override;
   void OnLoginScreenShown() override;

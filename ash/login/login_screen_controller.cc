@@ -470,10 +470,6 @@ void LoginScreenController::ShowParentAccessHelpApp() {
   client_->ShowParentAccessHelpApp();
 }
 
-void LoginScreenController::ShowLockScreenNotificationSettings() {
-  client_->ShowLockScreenNotificationSettings();
-}
-
 void LoginScreenController::FocusOobeDialog() {
   if (!client_) {
     return;

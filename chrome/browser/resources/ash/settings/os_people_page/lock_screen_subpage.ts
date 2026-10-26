@@ -148,15 +148,12 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   override supportedSettingIds = new Set<Setting>([
     Setting.kLockScreenV2,
     Setting.kChangeAuthPinV2,
-    Setting.kLockScreenNotification,
     Setting.kDataRecovery,
   ]);
 
   declare private fingerprintUnlockEnabled_: boolean;
   declare private numFingerprints_: number;
   declare private numFingerprintDescription_: string;
-  private lockScreenNotificationsEnabled_: boolean = false;
-  private lockScreenHideSensitiveNotificationSupported_: boolean = false;
   declare private recovery_: chrome.settingsPrivate.PrefObject|null;
   declare private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   declare private recoveryChangeInProcess_: boolean;

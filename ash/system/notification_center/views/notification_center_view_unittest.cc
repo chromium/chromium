@@ -6,12 +6,9 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/notification_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
@@ -24,8 +21,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/prefs/pref_service.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
