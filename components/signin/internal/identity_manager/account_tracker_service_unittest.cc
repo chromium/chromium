@@ -1332,6 +1332,10 @@ TEST_F(AccountTrackerServiceTest, UpgradeToFullAccountInfo) {
 }
 
 TEST_F(AccountTrackerServiceTest, TimerRefresh) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kFetchAccountCapabilitiesOnRestart);
+
   // Start by creating a tracker and adding a couple accounts to be persisted
   // to prefs.
   ResetAccountTracker();
