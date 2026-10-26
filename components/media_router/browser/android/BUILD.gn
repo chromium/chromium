@@ -4,9 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
-import("//tools/grit/grit_rule.gni")
 
 android_library("java") {
   resources_package = "org.chromium.components.media_router"
@@ -21,11 +19,9 @@ android_library("java") {
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
     "//services/media_session/public/cpp/android:media_session_java",
-    "//third_party/android_media:android_media_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -65,7 +61,6 @@ android_library("java") {
     "java/src/org/chromium/components/media_router/caf/CastSessionController.java",
     "java/src/org/chromium/components/media_router/caf/CastUtils.java",
     "java/src/org/chromium/components/media_router/caf/CreateRouteRequestInfo.java",
-    "java/src/org/chromium/components/media_router/caf/remoting/CafExpandedControllerActivity.java",
     "java/src/org/chromium/components/media_router/caf/remoting/CafRemotingMediaRouteProvider.java",
     "java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java",
     "java/src/org/chromium/components/media_router/caf/remoting/RemotingMediaSource.java",
@@ -112,6 +107,7 @@ android_library("test_support_java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
@@ -168,37 +164,10 @@ robolectric_library("junit") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-hdpi/ic_cast_dark_off.png",
-    "java/res/drawable-hdpi/ic_cast_dark_on.png",
     "java/res/drawable-hdpi/ic_notification_media_route.png",
-    "java/res/drawable-mdpi/ic_cast_dark_off.png",
-    "java/res/drawable-mdpi/ic_cast_dark_on.png",
     "java/res/drawable-mdpi/ic_notification_media_route.png",
-    "java/res/drawable-xhdpi/ic_cast_dark_off.png",
-    "java/res/drawable-xhdpi/ic_cast_dark_on.png",
     "java/res/drawable-xhdpi/ic_notification_media_route.png",
-    "java/res/drawable-xxhdpi/ic_cast_dark_off.png",
-    "java/res/drawable-xxhdpi/ic_cast_dark_on.png",
     "java/res/drawable-xxhdpi/ic_notification_media_route.png",
     "java/res/drawable-xxxhdpi/ic_notification_media_route.png",
-    "java/res/drawable/ic_cast_dark_chrome.xml",
-    "java/res/layout/caf_controller_media_route_button.xml",
-    "java/res/layout/expanded_cast_controller.xml",
-    "java/res/values/styles.xml",
   ]
-  deps = [
-    ":java_strings_grd",
-    "//third_party/android_media:android_media_resources",
-  ]
-}
-
-java_strings_grd("java_strings_grd") {
-  grd_file = "java/strings/android_chrome_media_router_strings.grd"
-  inputs = process_file_template(
-          xtb_locales,
-          [ "java/strings/translations/android_chrome_media_router_strings_{{source_name_part}}.xtb" ])
-
-  outputs = [ "values/android_chrome_media_router_strings.xml" ] + process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_chrome_media_router_strings.xml" ])
 }

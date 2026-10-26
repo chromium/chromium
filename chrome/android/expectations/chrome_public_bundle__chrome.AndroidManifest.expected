@@ -503,16 +503,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 9c5197e9
     </activity>  # DIFF-ANCHOR: aea75380
-    <activity  # DIFF-ANCHOR: 1d9b4077
-        android:name="org.chromium.components.media_router.caf.remoting.CafExpandedControllerActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:excludeFromRecents="true"
-        android:hardwareAccelerated="true"
-        android:label="Chrome.CafExpandedControllerActivity"
-        android:launchMode="singleTask"
-        android:noHistory="true"
-        android:theme="@style/Theme.Chromium.Activity">
-    </activity>  # DIFF-ANCHOR: 1d9b4077
     <activity  # DIFF-ANCHOR: 5d3091ca
         android:name="org.chromium.components.webxr.XrHostActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation|density|touchscreen|colorMode|fontScale|fontWeightAdjustment"

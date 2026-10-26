@@ -490,7 +490,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="testing/android/reporter/java/src"/>
     <classpathentry kind="src" path="third_party/android_build_tools/json/src"/>
     <classpathentry kind="src" path="third_party/android_build_tools/lint/java/src"/>
-    <classpathentry kind="src" path="third_party/android_media/java/src"/>
     <classpathentry kind="src" path="third_party/android_protobuf/src/java/src"/>
     <classpathentry kind="src" path="third_party/android_protobuf/src/java/src/main/java" including="com/google/protobuf/nano/*"/>
     <classpathentry kind="src" path="third_party/android_provider/java/src"/>
@@ -645,7 +644,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_deps/com_android_support_transition_java.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_deps/com_android_support_versionedparcelable_java.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_deps/com_android_support_viewpager_java.jar"/>
-    <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_media/android_media_java.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_protobuf/protobuf_nano_javalib.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_support_test_runner/runner-release-no-dep.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_swipe_refresh/android_swipe_refresh_java.jar"/>

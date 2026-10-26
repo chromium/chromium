@@ -82,6 +82,9 @@ public class BaseNotificationControllerTest {
 
     @Test
     public void testOnSessionStarted() {
+        Intent tabIntent = new Intent();
+        doReturn(tabIntent).when(mMediaRouterClient).createBringTabToFrontIntent(TAB_ID);
+
         ArgumentCaptor<MediaNotificationInfo> notificationInfoCaptor =
                 ArgumentCaptor.forClass(MediaNotificationInfo.class);
         mController.onSessionStarted();
@@ -89,16 +92,12 @@ public class BaseNotificationControllerTest {
         verify(mMediaRouterClient).showNotification(notificationInfoCaptor.capture());
         MediaNotificationInfo notificationInfo = notificationInfoCaptor.getValue();
         assertEquals(DEVICE_NAME, notificationInfo.metadata.getTitle());
+        assertEquals(tabIntent, notificationInfo.contentIntent);
     }
 
     private static class TestNotificationController extends BaseNotificationController {
         public TestNotificationController(BaseSessionController sessionController) {
             super(sessionController);
-        }
-
-        @Override
-        public Intent createContentIntent() {
-            return null;
         }
 
         @Override

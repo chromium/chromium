@@ -50,7 +50,6 @@
       "components/embedder_support/android/java/strings/web_contents_delegate_android_strings.grd",
       "components/guest_view/browser/slim_web_view/strings/slim_web_view_strings.grd",
       "components/javascript_dialogs/android/javascript_dialogs_android_strings.grd",
-      "components/media_router/browser/android/java/strings/android_chrome_media_router_strings.grd",
       "components/permissions/android/permissions_android_strings.grd",
       "components/privacy_sandbox_strings.grd",
       "components/webapps/browser/android/android_webapps_strings.grd",

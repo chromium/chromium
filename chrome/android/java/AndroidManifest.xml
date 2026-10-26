@@ -891,16 +891,6 @@ by a child template that "extends" this file.
             </intent-filter>
         </activity>
 
-        <activity android:name="org.chromium.components.media_router.caf.remoting.CafExpandedControllerActivity"
-            android:theme="@style/Theme.Chromium.Activity"
-            android:label="Chrome.CafExpandedControllerActivity"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleTask"
-            android:noHistory="true"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-            android:excludeFromRecents="true">
-        </activity>
-
         <activity android:name="org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfShareTargetActivity"
             android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar"
             android:exported="false"

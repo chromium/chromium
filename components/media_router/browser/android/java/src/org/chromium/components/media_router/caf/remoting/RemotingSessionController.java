@@ -17,18 +17,10 @@ import org.chromium.components.media_router.caf.BaseNotificationController;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.components.media_router.caf.CafBaseMediaRouteProvider;
 
-import java.lang.ref.WeakReference;
-
 /** Wrapper for {@link CastSession} for remoting. */
 @NullMarked
 public class RemotingSessionController extends BaseSessionController {
     private static final String TAG = "RmtSessionCtrl";
-
-    private static @Nullable WeakReference<RemotingSessionController> sInstance;
-
-    public static @Nullable RemotingSessionController getInstance() {
-        return sInstance != null ? sInstance.get() : null;
-    }
 
     private @Nullable FlingingControllerAdapter mFlingingControllerAdapter;
     private final RemotingNotificationController mNotificationController;
@@ -36,7 +28,6 @@ public class RemotingSessionController extends BaseSessionController {
     RemotingSessionController(CafBaseMediaRouteProvider provider) {
         super(provider);
         mNotificationController = new RemotingNotificationController(this);
-        sInstance = new WeakReference<>(this);
     }
 
     /**

@@ -6,9 +6,6 @@ package org.chromium.components.media_router.caf.remoting;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Intent;
-
-import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.components.media_router.caf.BaseNotificationController;
@@ -20,12 +17,6 @@ public class RemotingNotificationController extends BaseNotificationController {
     public RemotingNotificationController(BaseSessionController sessionController) {
         super(sessionController);
         sessionController.addCallback(this);
-    }
-
-    @Override
-    public Intent createContentIntent() {
-        return new Intent(
-                ContextUtils.getApplicationContext(), CafExpandedControllerActivity.class);
     }
 
     @Override
