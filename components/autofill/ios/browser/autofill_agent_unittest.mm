@@ -50,6 +50,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/prefs/pref_service.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -994,6 +995,56 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_UndoWithGPay) {
             completion_handler_suggestions[1].type);
   EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             completion_handler_suggestions[2].type);
+}
+
+// Tests that `kIPH_AutofillAmbientAutofillSpiiDisclaimer` on an Autofill AI
+// suggestion maps to
+// `SuggestionFeatureForIPH::kAutofillAmbientAutofillSpiiDisclaimer`.
+TEST_F(AutofillAgentTest,
+       onSuggestionsReady_AutofillAmbientAutofillSpiiDisclaimerIPH) {
+  __block NSArray<FormSuggestion*>* completion_handler_suggestions = nil;
+  __block BOOL completion_handler_called = NO;
+
+  autofill::Suggestion suggestion(u"1234", u"",
+                                  autofill::Suggestion::Icon::kNoIcon,
+                                  autofill::SuggestionType::kFillAutofillAi);
+  suggestion.iph_metadata = autofill::Suggestion::IPHMetadata(
+      &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer);
+
+  [autofill_agent_
+       showAutofillPopup:{suggestion}
+      suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()
+                  formId:{}
+                 fieldId:{}];
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:FormRendererId(1)
+       fieldIdentifier:@"passport"
+       fieldRendererID:FieldRendererId(2)
+             fieldType:FieldType::kText
+                  type:ActivityType::kFocus
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(kTestFrameId)
+          onlyPassword:NO];
+  [autofill_agent_
+      retrieveSuggestionsForForm:form_query
+                        webState:&fake_web_state_
+               completionHandler:^(NSArray<FormSuggestion*>* suggestions,
+                                   id<FormSuggestionProvider> delegate) {
+                 completion_handler_suggestions = [suggestions copy];
+                 completion_handler_called = YES;
+               }];
+  fake_web_state_.WasShown();
+
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
+
+  ASSERT_EQ(1U, completion_handler_suggestions.count);
+  EXPECT_EQ(SuggestionFeatureForIPH::kAutofillAmbientAutofillSpiiDisclaimer,
+            completion_handler_suggestions[0].featureForIPH);
 }
 
 // Test that every frames are processed whatever is the order of pageloading

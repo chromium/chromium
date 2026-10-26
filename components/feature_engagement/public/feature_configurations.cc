@@ -1967,22 +1967,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPH_AutofillAmbientAutofillSpiiDisclaimer.name == feature->name) {
-    // Allows an IPH for showing a disclaimer when an Ambient Autofill
-    // suggestion contains sensitive personal information (SPII).
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = Comparator(EQUAL, 0);
-    config.trigger =
-        EventConfig("autofill_ai_spii_disclaimer_trigger",
-                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
-    config.used =
-        EventConfig("autofill_ai_spii_disclaimer_used", Comparator(EQUAL, 0),
-                    k10YearsInDays, k10YearsInDays);
-    return config;
-  }
-
   if (kIPHBookmarkBarVisibilityFeature.name == feature->name) {
     // Allows an IPH telling the user they can show the Bookmark Bar on Android:
     // * Only when no other session IPHs have been shown.
@@ -3791,6 +3775,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("autofill_ai_valuables_feature_used", Comparator(EQUAL, 0),
                     /*window=*/k10YearsInDays, /*storage=*/k10YearsInDays);
 
+    return config;
+  }
+
+  if (kIPH_AutofillAmbientAutofillSpiiDisclaimer.name == feature->name) {
+    // Allows an IPH for showing a disclaimer when an Ambient Autofill
+    // suggestion contains sensitive personal information (SPII).
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("autofill_ai_spii_disclaimer_trigger",
+                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("autofill_ai_spii_disclaimer_used", Comparator(EQUAL, 0),
+                    k10YearsInDays, k10YearsInDays);
     return config;
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

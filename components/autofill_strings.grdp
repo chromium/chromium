@@ -310,6 +310,12 @@
   <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_TITLE" desc="Title text for IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
     Fill forms faster
   </message>
+  <message name="IDS_AUTOFILL_IPH_AMBIENT_AUTOFILL_SPII_DISCLAIMER" desc="IPH bubble shown on Ambient Autofill suggestion chips containing sensitive personal information (such as passport, driver's license, or national ID card) extracted by Gemini, reminding the user to long-press the suggestion to review the original source and verify accuracy.">
+    Gemini can make mistakes. Long press the suggestion to review the original source and make sure this info is accurate.
+  </message>
+  <message name="IDS_AUTOFILL_IPH_AMBIENT_AUTOFILL_SPII_DISCLAIMER_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH bubble shown on Ambient Autofill suggestion chips containing sensitive personal information (such as passport, driver's license, or national ID card) extracted by Gemini, reminding the user to long-press the suggestion to review the original source and verify accuracy.">
+    Gemini can make mistakes. Long press the suggestion to review the original source and make sure this info is accurate.
+  </message>
 
   <!-- Autofill credit card suggestion popup -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. [CHAR_LIMIT=32]">

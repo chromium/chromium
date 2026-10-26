@@ -136,6 +136,8 @@ const base::Feature* FetchIPHFeatureFromEnum(
       return &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
     case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
       return &feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature;
+    case SuggestionFeatureForIPH::kAutofillAmbientAutofillSpiiDisclaimer:
+      return &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
   }
@@ -483,6 +485,9 @@ void UndoInSessionSuppressedEntity(
       case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
         tracker->NotifyEvent(
             "account_name_email_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kAutofillAmbientAutofillSpiiDisclaimer:
+        tracker->NotifyEvent("autofill_ai_spii_disclaimer_used");
         break;
       case SuggestionFeatureForIPH::kUnknown:
         NOTREACHED();
@@ -1259,6 +1264,12 @@ void UndoInSessionSuppressedEntity(
           IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION);
       voiceOverText = l10n_util::GetNSString(
           IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER);
+      break;
+    case SuggestionFeatureForIPH::kAutofillAmbientAutofillSpiiDisclaimer:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_AMBIENT_AUTOFILL_SPII_DISCLAIMER);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_AMBIENT_AUTOFILL_SPII_DISCLAIMER_SCREENREADER);
       break;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
