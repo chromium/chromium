@@ -71,8 +71,8 @@ message ProcessNode {
   int64 process_id = 1;
   int64 parent_process_id = 2;
 
-  // Sanitized path or binary name of the executable (e.g., /usr/bin/node or
-  // node).
+  // Client-side sanitized executable path (e.g., /usr/bin/node or
+  // /Users/<user>/bin/agent)
   string executable_path = 3
       // copybara:datapol_begin
       // [
@@ -81,7 +81,7 @@ message ProcessNode {
       // copybara:datapol_end
       ;
 
-  // Sanitized script path or script command-line argument.
+  // Client-side sanitized script path (e.g., /Users/<user>/project/script.js)
   string script_path = 4
       // copybara:datapol_begin
       // [
@@ -98,18 +98,29 @@ message ExternalProcessInfo {
     TRANSPORT_TYPE_UNSPECIFIED = 0;
     TRANSPORT_TYPE_PIPE = 1;
     TRANSPORT_TYPE_WEBSOCKET = 2;
-    TRANSPORT_TYPE_DEVTOOLS_UI = 3;
+    reserved 3;  // DevTools UI uses BrowserFeatureInfo on EventInitiatorInfo.
+    reserved "TRANSPORT_TYPE_DEVTOOLS_UI";
   }
 
   message ExternalProcess {
     TransportType transport_type = 1;
 
     // Ordered from immediate connecting process (index 0) up to root ancestor.
-    // Empty when transport_type is TRANSPORT_TYPE_DEVTOOLS_UI.
+    // Populated for TRANSPORT_TYPE_PIPE and TRANSPORT_TYPE_WEBSOCKET.
     repeated ProcessNode process_nodes = 2;
   }
 
   repeated ExternalProcess external_processes = 1;
+}
+
+// First-party built-in browser feature or surface that initiated the event.
+message BrowserFeatureInfo {
+  enum FeatureType {
+    FEATURE_TYPE_UNSPECIFIED = 0;
+    FEATURE_TYPE_DEVTOOLS_UI = 1;
+  }
+
+  FeatureType feature_type = 1;
 }
 
 // Represents the entity that initiated the event.
@@ -119,9 +130,13 @@ message EventInitiatorInfo {
     safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo
         chrome_extension = 1;
 
-    // Populated when one or more external CDP actors are attached to the
-    // target.
+    // Populated when one or more CDP actors are attached (wraps repeated
+    // ExternalProcesses):
     ExternalProcessInfo external_process_info = 2;
+
+    // Populated when the event involves a built-in browser feature (e.g.,
+    // native F12 DevTools UI).
+    BrowserFeatureInfo browser_feature_info = 3;
   }
 }
 
