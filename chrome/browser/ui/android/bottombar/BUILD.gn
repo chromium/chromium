@@ -120,6 +120,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
@@ -194,6 +195,8 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
+    "//ui/accessibility:ui_accessibility_test_support_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_junit_test_support",

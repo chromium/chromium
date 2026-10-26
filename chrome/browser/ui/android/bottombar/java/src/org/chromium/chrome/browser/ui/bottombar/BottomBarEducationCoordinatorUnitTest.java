@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -70,7 +71,11 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.FakeAccessibilityStateDelegate;
 import org.chromium.ui.base.TestActivity;
+
+import java.time.Duration;
 
 /** Unit tests for {@link BottomBarEducationCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -905,6 +910,153 @@ public class BottomBarEducationCoordinatorUnitTest {
     }
 
     @Test
+    public void testAccessibilityTimeout_ExtendsAutoDismiss() {
+        AccessibilityState.setDelegateForTesting(
+                new FakeAccessibilityStateDelegate(null) {
+                    @Override
+                    public int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
+                        return 20000;
+                    }
+                });
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+        mCoordinator.getBubbleViewForTesting().findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+
+        // Wait 5s, should NOT dismiss yet
+        advanceTimeBySeconds(5);
+        assertEquals(tooltip1, mCoordinator.getCurrentTooltipForTesting());
+
+        // Wait another 15s (total 20s), should dismiss and advance
+        advanceTimeBySeconds(15);
+
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        assertNotSame(tooltip1, tooltip2);
+    }
+
+    @Test
+    public void testTooltipAdvancesOnTimeout() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BottomBar.IPH.Glic.Event", IphEvent.SHOWN)
+                        .expectIntRecord("Android.BottomBar.IPH.Glic.Event", IphEvent.DISMISSED)
+                        .expectIntRecord("Android.BottomBar.IPH.NewTab.Event", IphEvent.SHOWN)
+                        .build();
+
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+        mCoordinator.getBubbleViewForTesting().findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+
+        advanceTimeBySeconds(4);
+        assertEquals(tooltip1, mCoordinator.getCurrentTooltipForTesting());
+
+        advanceTimeBySeconds(1);
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        assertNotSame(tooltip1, tooltip2);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testTimeoutOnLastStep_EndsTour() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BottomBar.IPH.TabSwitcher.Event", IphEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.IPH.TabSwitcher.Event", IphEvent.DISMISSED)
+                        .build();
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+        mCoordinator.getBubbleViewForTesting().findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Skip to the last step (Tab Switcher is index 2)
+        mCoordinator.getCurrentTooltipForTesting().onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mCoordinator.getCurrentTooltipForTesting().onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Now we are on the last step (Tab Switcher).
+        // Since it was shown from a callback, it might suffer from Robolectric's popup issue.
+        // We can force it to be laid out to the main thread.
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip3 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip3);
+
+        // Now wait 5s for it to timeout
+        advanceTimeBySeconds(5);
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+        verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testTimeoutWhileBarHidden_PausesTour() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BottomBar.IPH.Glic.Event", IphEvent.SHOWN)
+                        .expectIntRecord("Android.BottomBar.IPH.Glic.Event", IphEvent.DISMISSED)
+                        .expectIntRecord("Android.BottomBar.IPH.NewTab.Event", IphEvent.SHOWN)
+                        .build();
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+        mCoordinator.getBubbleViewForTesting().findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+
+        // Hide bar
+        mBottomBarView.setVisibility(View.GONE);
+        mCoordinator.onBottomBarHidden();
+        tooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Wait 5s while hidden
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+        advanceTimeBySeconds(5);
+
+        // Ensure no advance
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+
+        // Show bar again
+        mBottomBarView.setVisibility(View.VISIBLE);
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        // It's the SAME step, so if we idle 5s, it advances to next
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+        advanceTimeBySeconds(5);
+
+        TextBubble tooltip3 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip3);
+        assertNotSame(tooltip2, tooltip3);
+        watcher.assertExpected();
+    }
+
+    @Test
     public void testTooltipChain_AllButtons() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1430,5 +1582,10 @@ public class BottomBarEducationCoordinatorUnitTest {
         mCoordinator.destroy();
 
         histogramWatcher.assertExpected();
+    }
+
+    private void advanceTimeBySeconds(long seconds) {
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(seconds));
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

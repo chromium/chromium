@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
@@ -55,6 +56,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -85,6 +87,7 @@ public class BottomBarEducationCoordinator
         R.string.bottom_bar_education_tooltip_new_tab,
         R.string.bottom_bar_education_tooltip_tab_switcher
     };
+    private static final int TOOLTIP_AUTO_DISMISS_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
 
     private static boolean sSkipTooltipShowCheckForTesting;
     private static boolean sEducationShownThisSession;
@@ -654,6 +657,9 @@ public class BottomBarEducationCoordinator
                                 stringId,
                                 stringId)
                         .build();
+        mCurrentTooltip.setAutoDismissTimeout(
+                AccessibilityState.getRecommendedTimeoutMillis(
+                        TOOLTIP_AUTO_DISMISS_TIMEOUT_MS, TOOLTIP_AUTO_DISMISS_TIMEOUT_MS));
         mCurrentTooltip.setDismissOnTouchInteraction(true);
         TextBubble tooltip = mCurrentTooltip;
         mCurrentTooltip.addOnDismissListener(
