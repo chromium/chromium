@@ -255,3 +255,21 @@ TEST_F(ClientIdBackupFileManagerTest, CacheUpdateOnSet) {
   EXPECT_THAT(ClientIdBackupFileManager::GetInstance().ClientIdFromCache(),
               Optional(std::string(kValidUuid2)));
 }
+
+TEST_F(ClientIdBackupFileManagerTest, MissingUserDataDir) {
+  base::ScopedPathOverride empty_user_data_dir(
+      chrome::DIR_USER_DATA, base::FilePath(), /*should_skip_check=*/true);
+
+  EXPECT_TRUE(ClientIdBackupFileManager::GetBackupFilePathForTesting().empty());
+  EXPECT_THAT(
+      ClientIdBackupFileManager::GetInstance().ClientIdFromCacheOrDisk(),
+      Eq(std::nullopt));
+  EXPECT_FALSE(ClientIdBackupFileManager::GetInstance().SetClientIdForTesting(
+      kValidUuid1));
+  EXPECT_THAT(ClientIdBackupFileManager::GetInstance().ClientIdFromCache(),
+              Optional(std::string(kValidUuid1)));
+  EXPECT_FALSE(
+      ClientIdBackupFileManager::GetInstance().ClearClientIdForTesting());
+  EXPECT_THAT(ClientIdBackupFileManager::GetInstance().ClientIdFromCache(),
+              Eq(std::nullopt));
+}

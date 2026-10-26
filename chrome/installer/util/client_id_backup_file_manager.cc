@@ -4,7 +4,6 @@
 
 #include "chrome/installer/util/client_id_backup_file_manager.h"
 
-#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,12 +28,12 @@ constexpr base::FilePath::CharType kClientIdBackupFileName[] =
     FILE_PATH_LITERAL("Consent To Send Stats");
 #endif
 
-base::FilePath GetBackupFileDir() {
-  return base::PathService::CheckedGet(chrome::DIR_USER_DATA);
-}
-
 base::FilePath GetBackupFilePath() {
-  return GetBackupFileDir().Append(kClientIdBackupFileName);
+  base::FilePath dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &dir) || dir.empty()) {
+    return base::FilePath();
+  }
+  return dir.Append(kClientIdBackupFileName);
 }
 
 void SetClientIdBackupFilePermissionIfNeeded(
@@ -102,6 +101,9 @@ ClientIdBackupFileManager::ClientIdFromCacheOrDisk() {
                                                 base::BlockingType::MAY_BLOCK);
 
   const base::FilePath backup_file_path = GetBackupFilePath();
+  if (backup_file_path.empty()) {
+    return std::nullopt;
+  }
   std::string client_id;
 
   if (!base::ReadFileToString(backup_file_path, &client_id)) {
@@ -146,6 +148,9 @@ bool ClientIdBackupFileManager::SetClientIdInternal(
                                                 base::BlockingType::MAY_BLOCK);
 
   const base::FilePath backup_file = GetBackupFilePath();
+  if (backup_file.empty()) {
+    return false;
+  }
 
   bool persistence_update_success =
       client_id.has_value() ? base::WriteFile(backup_file, *client_id)
