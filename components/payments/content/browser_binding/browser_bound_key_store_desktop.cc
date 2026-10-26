@@ -99,6 +99,9 @@ BrowserBoundKeyStoreDesktop::GetOrCreateBrowserBoundKeyForCredentialId(
   key = key_provider_->GenerateSigningKeySlowly(algorithms);
   base::UmaHistogramTimes(kCreateKeyLatencyHistogramName,
                           create_key_timer.Elapsed());
+  if (!key) {
+    return nullptr;
+  }
   return std::make_unique<BrowserBoundKeyDesktop>(std::move(key));
 }
 

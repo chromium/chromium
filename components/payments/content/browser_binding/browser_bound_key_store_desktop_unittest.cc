@@ -116,6 +116,24 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
 }
 
 TEST_F(BrowserBoundKeyStoreDesktopTest,
+       GetOrCreateBrowserBoundKeyForCredentialId_CreateFails) {
+  const std::vector<crypto::sign::SignatureKind> algorithms = {
+      crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256};
+
+  EXPECT_CALL(*key_provider(), FromWrappedSigningKeySlowly(
+                                   base::span<const uint8_t>(kCredentialId)))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(*key_provider(),
+              GenerateSigningKeySlowly(
+                  base::span<const crypto::sign::SignatureKind>(algorithms)))
+      .WillOnce(Return(nullptr));
+
+  EXPECT_THAT(key_store()->GetOrCreateBrowserBoundKeyForCredentialId(
+                  kCredentialId, kAllowedCredentials),
+              IsNull());
+}
+
+TEST_F(BrowserBoundKeyStoreDesktopTest,
        GetOrCreateBrowserBoundKeyForCredentialId_NullKeyProvider) {
   scoped_refptr<BrowserBoundKeyStore> key_store =
       base::MakeRefCounted<BrowserBoundKeyStoreDesktop>(nullptr);
