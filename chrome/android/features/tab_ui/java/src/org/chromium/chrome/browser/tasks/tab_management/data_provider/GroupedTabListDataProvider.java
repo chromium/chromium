@@ -99,6 +99,24 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         TabGroupObserver tabGroupObserver =
                 new TabGroupObserver() {
                     @Override
+                    public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
+                        TabItem existingItem = syncTabItem(movedTab);
+                        updateTabItem(existingItem, PayloadType.GROUP_MEMBERSHIP);
+                        syncGroupItem(movedTab.getTabGroupId());
+                    }
+
+                    @Override
+                    public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
+                        // Sync movedTab only when ungrouped to a standalone tab; group-to-group
+                        // merges follow with didMergeTabToGroup.
+                        if (movedTab.getTabGroupId() == null) {
+                            TabItem existingItem = syncTabItem(movedTab);
+                            updateTabItem(existingItem, PayloadType.GROUP_MEMBERSHIP);
+                        }
+                        updateGroupItem(oldTabGroupId, PayloadType.GROUP_MEMBERSHIP);
+                    }
+
+                    @Override
                     public void onTabGroupRemoving(Token tabGroupId) {
                         mRemovingTabGroupIds.add(tabGroupId);
                     }

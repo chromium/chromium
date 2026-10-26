@@ -225,17 +225,40 @@ public abstract class TabListDataProvider {
 
     /**
      * Synchronizes {@code tab}'s {@link TabItem} in {@link #mItems} against {@link
-     * #shouldShowTab(Tab)}. Inserts the tab if it became visible, or removes it if it is no longer
-     * visible.
+     * #shouldShowTab(Tab)}. Removes the item if hidden, inserts it if newly visible, or repositions
+     * and returns the existing {@link TabItem} if already present.
      *
      * @param tab The {@link Tab} to synchronize.
+     * @return The existing {@link TabItem} if it was already in {@link #mItems} and remains
+     *     visible, or null if the item was inserted, removed, or remained hidden.
      */
-    protected void syncTabItem(Tab tab) {
-        if (shouldShowTab(tab)) {
-            addTabItem(tab);
-        } else {
+    protected @Nullable TabItem syncTabItem(Tab tab) {
+        if (!shouldShowTab(tab)) {
             removeTabItem(tab.getId());
+            return null;
         }
+
+        int fromIndex = indexOfTabId(tab.getId());
+        if (fromIndex == TabList.INVALID_TAB_INDEX) {
+            addTabItem(tab);
+            return null;
+        }
+
+        TabItem existingItem = (TabItem) mItems.get(fromIndex);
+        moveTabItem(tab);
+        return existingItem;
+    }
+
+    /**
+     * Notifies observers via {@link TabListDataObserver#onItemUpdated} that {@code item} changed if
+     * non-null.
+     *
+     * @param item The {@link TabItem} to update, or null to no-op.
+     * @param payload The {@link PayloadType} indicating which property changed.
+     */
+    protected void updateTabItem(@Nullable TabItem item, @PayloadType int payload) {
+        if (item == null) return;
+        notifyObservers(obs -> obs.onItemUpdated(item, payload));
     }
 
     /**
