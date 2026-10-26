@@ -76,6 +76,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = None,
     contact_team_email = "cbe-compliance@google.com",
 )
 
@@ -91,6 +92,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
+    ssd = None,
     contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -131,6 +133,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
+    ssd = None,
     contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -186,6 +189,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = None,
     contact_team_email = "chrome-counter-abuse-core@google.com",
 )
 
@@ -252,6 +256,7 @@ try_.builder(
         "ci/win-webdriver-bidi-rel",
     ],
     gn_args = "ci/win-webdriver-bidi-rel",
+    ssd = None,
     contact_team_email = "chrome-devtools@google.com",
     cq_settings = try_.cq_settings(
         includable_only = True,
@@ -270,6 +275,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = None,
     contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -515,6 +521,7 @@ try_.builder(
     mirrors = ["ci/win-fieldtrial-rel"],
     gn_args = "ci/win-fieldtrial-rel",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
 )
 
 try_.builder(
@@ -528,6 +535,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = None,
 )
 
 try_.builder(
@@ -543,6 +551,7 @@ try_.builder(
         "ci/win-treesinviz-disabled-rel",
     ],
     gn_args = "ci/win-treesinviz-disabled-rel",
+    ssd = None,
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -643,6 +652,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
+    ssd = None,
     contact_team_email = "toyoshim@chromium.org",
     cq_settings = try_.cq_settings(
         includable_only = True,

@@ -888,7 +888,7 @@ ci.builder(
     builderless = False,
     cores = 16,
     os = os.WINDOWS_DEFAULT,
-    ssd = True,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
         short_name = "64",
@@ -942,7 +942,7 @@ ci.builder(
     builderless = False,
     cores = 16,
     os = os.WINDOWS_DEFAULT,
-    ssd = True,
+    ssd = None,
     # TODO(crbug.com/335863313): Enable when verified.
     gardener_rotations = args.ignore_default(None),
     # TODO(crbug.com/335863313): Enable when verified.
