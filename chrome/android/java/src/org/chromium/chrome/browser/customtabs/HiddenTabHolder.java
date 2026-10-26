@@ -274,7 +274,7 @@ public class HiddenTabHolder {
     }
 
     private static void destroyHiddenTabAndObservers(HiddenTab hiddenTab) {
-        hiddenTab.tabObserverRegistrar.onDestroy();
+        hiddenTab.tabObserverRegistrar.destroy();
         hiddenTab.tab.destroy();
     }
 

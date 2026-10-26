@@ -45,6 +45,7 @@ public class EngagementSignalsHandlerUnitTest {
     @Mock private CustomTabsSessionToken mSession;
     @Mock private EngagementSignalsCallback mCallback;
     @Mock private TabObserverRegistrar mTabObserverRegistrar;
+    @Mock private TabObserverRegistrar mTabObserverRegistrar2;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private TabInteractionRecorder mTabInteractionRecorder;
     @Mock private Tab mTab;
@@ -122,6 +123,45 @@ public class EngagementSignalsHandlerUnitTest {
                         .orElseThrow();
         verify(mTabObserverRegistrar).unregisterActivityTabObserver(tabObserverInHandler);
         assertNull(mEngagementSignalsHandler.getEngagementSignalsObserverForTesting());
+    }
+
+    @Test
+    public void testDestroyTabDestroysEverything() {
+        mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        ArgumentCaptor<CustomTabTabObserver> tabObserver =
+                ArgumentCaptor.forClass(CustomTabTabObserver.class);
+        assertTrue(mCrashUploadPermittedSupplier.hasObservers());
+        verify(mTabObserverRegistrar, times(2)).registerActivityTabObserver(tabObserver.capture());
+        var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
+        var tabObserverInHandler =
+                tabObserver.getAllValues().stream()
+                        .filter(o -> !o.equals(observer))
+                        .findFirst()
+                        .orElseThrow();
+        tabObserverInHandler.onDestroyed(mTab);
+        assertFalse(mCrashUploadPermittedSupplier.hasObservers());
+        verify(mTabObserverRegistrar).unregisterActivityTabObserver(tabObserverInHandler);
+        assertNull(mEngagementSignalsHandler.getEngagementSignalsObserverForTesting());
+    }
+
+    @Test
+    public void testSetTabObserverRegistrarUnregistersPreviousObserver() {
+        mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        ArgumentCaptor<CustomTabTabObserver> tabObserver =
+                ArgumentCaptor.forClass(CustomTabTabObserver.class);
+        verify(mTabObserverRegistrar, times(2)).registerActivityTabObserver(tabObserver.capture());
+        var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
+        var tabObserverInHandler =
+                tabObserver.getAllValues().stream()
+                        .filter(o -> !o.equals(observer))
+                        .findFirst()
+                        .orElseThrow();
+
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar2);
+        verify(mTabObserverRegistrar).unregisterActivityTabObserver(tabObserverInHandler);
+        assertNotNull(mEngagementSignalsHandler.getEngagementSignalsObserverForTesting());
     }
 
     @Test

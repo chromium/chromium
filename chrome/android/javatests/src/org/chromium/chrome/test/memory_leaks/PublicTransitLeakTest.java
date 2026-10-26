@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.CctTransitTestRule;
@@ -158,6 +160,11 @@ public class PublicTransitLeakTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(connection.newSession(token));
+        org.chromium.base.ThreadUtils.runOnUiThreadBlocking(
+                () -> PrivacyPreferencesManagerImpl.getInstance().setUsageAndCrashReporting(true));
+        Assert.assertTrue(
+                connection.setEngagementSignalsCallback(
+                        token, new EngagementSignalsCallback() {}, android.os.Bundle.EMPTY));
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
     }

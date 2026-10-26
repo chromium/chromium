@@ -28,6 +28,7 @@ public class EngagementSignalsHandler {
     private @Nullable EngagementSignalsInitialScrollObserver mInitialScrollObserver;
     private @Nullable RealtimeEngagementSignalObserver mObserver;
     private @Nullable TabObserverRegistrar mTabObserverRegistrar;
+    private @Nullable CustomTabTabObserver mTabObserver;
     private @Nullable EngagementSignalsCallback mCallback;
     private @Nullable Callback<Boolean> mPrivacyPreferencesObserver;
 
@@ -38,9 +39,15 @@ public class EngagementSignalsHandler {
     /**
      * Sets the {@link TabObserverRegistrar}. This should be called when the registrar becomes
      * available.
+     *
      * @param registrar The {@link TabObserverRegistrar}.
      */
     public void setTabObserverRegistrar(TabObserverRegistrar registrar) {
+        if (mInitialScrollObserver != null) {
+            mInitialScrollObserver.destroy();
+            mInitialScrollObserver = null;
+        }
+        destroyObservers();
         mTabObserverRegistrar = registrar;
         if (mCallback != null) {
             // If the registrar became available after the callback, we don't need to create the
@@ -88,23 +95,21 @@ public class EngagementSignalsHandler {
         if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
             return;
         }
-        // This can happen if the client app sets a new EngagementSignalsCallback. In that case,
-        // we should recreate the observer.
-        if (mObserver != null) {
-            mObserver.destroy();
-        }
-        assert mTabObserverRegistrar != null;
-        assert mCallback != null;
         boolean hadScrollDown =
                 mInitialScrollObserver != null
                         && mInitialScrollObserver.hasCurrentPageHadScrollDown();
-        mObserver =
-                new RealtimeEngagementSignalObserver(
-                        mTabObserverRegistrar, mSession, mCallback, hadScrollDown);
         if (mInitialScrollObserver != null) {
             mInitialScrollObserver.destroy();
             mInitialScrollObserver = null;
         }
+        // This can happen if the client app sets a new EngagementSignalsCallback or reuses the
+        // session across activities. Clean up any existing observers first.
+        destroyObservers();
+        assert mTabObserverRegistrar != null;
+        assert mCallback != null;
+        mObserver =
+                new RealtimeEngagementSignalObserver(
+                        mTabObserverRegistrar, mSession, mCallback, hadScrollDown);
 
         mPrivacyPreferencesObserver =
                 (permitted) -> {
@@ -125,26 +130,41 @@ public class EngagementSignalsHandler {
         PrivacyPreferencesManagerImpl.getInstance()
                 .getUsageAndCrashReportingPermittedObservableSupplier()
                 .addSyncObserverAndPostIfNonNull(mPrivacyPreferencesObserver);
-        mTabObserverRegistrar.registerActivityTabObserver(
+        mTabObserver =
                 new CustomTabTabObserver() {
                     @Override
-                    protected void onAllTabsClosed() {
-                        if (mTabObserverRegistrar != null) {
-                            mTabObserverRegistrar.unregisterActivityTabObserver(this);
-                            mTabObserverRegistrar = null;
-                        }
-                        if (mObserver != null) {
-                            mObserver.destroy();
-                            mObserver = null;
-                        }
-                        if (mPrivacyPreferencesObserver != null) {
-                            PrivacyPreferencesManagerImpl.getInstance()
-                                    .getUsageAndCrashReportingPermittedObservableSupplier()
-                                    .removeObserver(mPrivacyPreferencesObserver);
-                            mPrivacyPreferencesObserver = null;
-                        }
+                    public void onDestroyed(Tab tab) {
+                        cleanUp();
                     }
-                });
+
+                    @Override
+                    protected void onAllTabsClosed() {
+                        cleanUp();
+                    }
+
+                    private void cleanUp() {
+                        destroyObservers();
+                        mTabObserverRegistrar = null;
+                    }
+                };
+        mTabObserverRegistrar.registerActivityTabObserver(mTabObserver);
+    }
+
+    private void destroyObservers() {
+        if (mTabObserver != null && mTabObserverRegistrar != null) {
+            mTabObserverRegistrar.unregisterActivityTabObserver(mTabObserver);
+        }
+        mTabObserver = null;
+        if (mObserver != null) {
+            mObserver.destroy();
+            mObserver = null;
+        }
+        if (mPrivacyPreferencesObserver != null) {
+            PrivacyPreferencesManagerImpl.getInstance()
+                    .getUsageAndCrashReportingPermittedObservableSupplier()
+                    .removeObserver(mPrivacyPreferencesObserver);
+            mPrivacyPreferencesObserver = null;
+        }
     }
 
     public @Nullable RealtimeEngagementSignalObserver getEngagementSignalsObserverForTesting() {

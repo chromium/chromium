@@ -31,7 +31,7 @@ import java.util.Set;
  * attach to the current active tab.
  */
 @NullMarked
-public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
+public class TabObserverRegistrar implements TabModelObserver {
     private @Nullable CustomTabActivityTabProvider mTabProvider;
     private final Set<PageLoadMetrics.Observer> mPageLoadMetricsObservers = new HashSet<>();
     private final Set<TabObserver> mTabObservers = new HashSet<>();
@@ -81,7 +81,9 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         mTabProvider = tabProvider;
         mTabProvider.addObserver(mActivityTabProviderObserver);
 
-        lifecycleDispatcher.register(this);
+        // Do not implement DestroyObserver directly because TabModelObserver#onDestroy() shares the
+        // same method name and runs in TabCollectionTabModelImpl#destroy() before Tab#destroy().
+        lifecycleDispatcher.register((DestroyObserver) this::destroy);
     }
 
     /** Registers a {@link PageLoadMetrics.Observer} to be managed by this Registrar. */
@@ -197,8 +199,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         }
     }
 
-    @Override
-    public void onDestroy() {
+    public void destroy() {
         removePageLoadMetricsObservers();
         if (mTabProviderTab != null) {
             removeTabObservers(mTabProviderTab, mActivityTabObservers.iterator());
