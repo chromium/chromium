@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_UNIQUE_IDS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_UNIQUE_IDS_H_
 
+#include <compare>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -28,7 +29,7 @@ class TokenType
     : public base::StrongAlias<TokenTypeMarker, base::UnguessableToken> {
  public:
   using base::StrongAlias<TokenTypeMarker, base::UnguessableToken>::StrongAlias;
-  bool is_empty() const { return this->value().is_empty(); }
+  constexpr bool is_empty() const { return this->value().is_empty(); }
   explicit constexpr operator bool() const { return !is_empty(); }
   std::string ToString() const { return this->value().ToString(); }
 };
@@ -137,8 +138,8 @@ struct GlobalId {
     return static_cast<bool>(renderer_id);
   }
 
-  friend auto operator<=>(const GlobalId<RendererId>& lhs,
-                          const GlobalId<RendererId>& rhs) = default;
+  friend constexpr auto operator<=>(const GlobalId<RendererId>& lhs,
+                                    const GlobalId<RendererId>& rhs) = default;
   friend bool operator==(const GlobalId<RendererId>& lhs,
                          const GlobalId<RendererId>& rhs) = default;
 
