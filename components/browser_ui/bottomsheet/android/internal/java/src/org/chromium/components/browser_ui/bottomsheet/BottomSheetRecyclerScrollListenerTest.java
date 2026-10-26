@@ -39,7 +39,7 @@ public class BottomSheetRecyclerScrollListenerTest {
 
     @Before
     public void setUp() {
-        mContext = Robolectric.setupActivity(Activity.class);
+        mContext = Robolectric.buildActivity(Activity.class).setup().get();
         mScrollListener =
                 new BottomSheetRecyclerScrollListener(
                         mMockBottomSheetController, mMockBottomSheetContent);

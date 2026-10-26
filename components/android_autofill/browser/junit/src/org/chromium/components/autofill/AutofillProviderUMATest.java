@@ -82,7 +82,7 @@ public class AutofillProviderUMATest {
         Context unknownContext = new ContextWrapper(ContextUtils.getApplicationContext());
         assertEquals(AutofillManagerCreationContext.UNKNOWN, toCreationContext(unknownContext));
 
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         assertEquals(AutofillManagerCreationContext.ACTIVITY_CONTEXT, toCreationContext(activity));
     }
 

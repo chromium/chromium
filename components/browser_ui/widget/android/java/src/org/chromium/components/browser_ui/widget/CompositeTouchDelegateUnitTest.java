@@ -36,7 +36,7 @@ public final class CompositeTouchDelegateUnitTest {
 
     @Before
     public void setUp() {
-        View view = new View(Robolectric.setupActivity(Activity.class));
+        View view = new View(Robolectric.buildActivity(Activity.class).setup().get());
         mCompositeTouchDelegate = new CompositeTouchDelegate(view);
         mCompositeTouchDelegate.addDelegateForDescendantView(mMockTouchDelegate);
         mCompositeTouchDelegate.addDelegateForDescendantView(mMockOtherTouchDelegate);

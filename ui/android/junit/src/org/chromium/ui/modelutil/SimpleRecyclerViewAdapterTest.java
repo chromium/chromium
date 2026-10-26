@@ -61,7 +61,7 @@ public class SimpleRecyclerViewAdapterTest {
                                 .useConstructor(mModelList)
                                 .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
-        View view = new View(Robolectric.setupActivity(Activity.class));
+        View view = new View(Robolectric.buildActivity(Activity.class).setup().get());
         mSpyAdapter.registerType(VIEW_TYPE_1, parent -> view, (m, v, p) -> {});
         mSpyAdapter.registerType(VIEW_TYPE_2, parent -> view, (m, v, p) -> {});
         mSpyAdapter.registerType(VIEW_TYPE_3, parent -> view, (m, v, p) -> {});

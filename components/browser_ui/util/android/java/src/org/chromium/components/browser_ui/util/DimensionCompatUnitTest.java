@@ -50,7 +50,7 @@ public class DimensionCompatUnitTest {
 
     @Before
     public void beforeTest() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         if (VERSION.SDK_INT >= VERSION_CODES.R) {
             sTestSysBarInsets =
                     new WindowInsets.Builder()
