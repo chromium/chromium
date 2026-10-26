@@ -615,6 +615,11 @@ source_set("wayland_unittests") {
     ]
     defines += [ "WAYLAND_GBM" ]
   }
+
+  if (use_dbus) {
+    sources += [ "host/org_gnome_mutter_idle_monitor_unittest.cc" ]
+    deps += [ "//dbus:test_support" ]
+  }
 }
 
 fuzzer_test("wayland_buffer_fuzzer") {

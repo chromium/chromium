@@ -4,6 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -18,11 +21,11 @@ namespace ui {
 
 namespace {
 
-// After the system has gone idle, the D-Bus service will wait for this time
-// before notifying us.  This reduces "jitter" of the idle/active state, but
-// also adds some lag in responsiveness: when we are finally notified that the
-// idle state has come, it is already there for kIdleThresholdMs milliseconds.
-constexpr uint64_t kIdleThresholdMs = 5000;
+// Inactivity duration after which the user is considered idle. Passed to
+// AddIdleWatch for uninhibited sessions, and used in GetIdleTime() to throttle
+// on-demand GetIdletime queries (since Mutter suppresses AddIdleWatch when a
+// session idle inhibitor such as Chrome Remote Desktop is active).
+constexpr base::TimeDelta kIdleThreshold = base::Seconds(5);
 
 constexpr char kInterface[] = "org.gnome.Mutter.IdleMonitor";
 constexpr char kObjectPath[] = "/org/gnome/Mutter/IdleMonitor/Core";
@@ -32,10 +35,27 @@ constexpr char kMethodAddUserActiveWatch[] = "AddUserActiveWatch";
 constexpr char kMethodGetIdletime[] = "GetIdletime";
 constexpr char kSignalWatchFired[] = "WatchFired";
 
+std::optional<base::TimeDelta> ReadIdleTime(dbus::Message* message) {
+  if (!message) {
+    return std::nullopt;
+  }
+
+  dbus::MessageReader reader(message);
+  uint64_t idletime;
+  if (!reader.PopUint64(&idletime) || reader.HasMoreData()) {
+    return std::nullopt;
+  }
+  return base::Milliseconds(idletime);
+}
+
 }  // namespace
 
 OrgGnomeMutterIdleMonitor::OrgGnomeMutterIdleMonitor()
-    : bus_(dbus_thread_linux::GetSharedSessionBus()) {}
+    : OrgGnomeMutterIdleMonitor(dbus_thread_linux::GetSharedSessionBus()) {}
+
+OrgGnomeMutterIdleMonitor::OrgGnomeMutterIdleMonitor(
+    scoped_refptr<dbus::Bus> bus)
+    : bus_(std::move(bus)) {}
 
 OrgGnomeMutterIdleMonitor::~OrgGnomeMutterIdleMonitor() = default;
 
@@ -64,6 +84,10 @@ std::optional<base::TimeDelta> OrgGnomeMutterIdleMonitor::GetIdleTime() const {
 
     case ServiceState::kWorking:
       if (idle_timestamp_.is_null()) {
+        if (!idle_check_in_flight_ &&
+            base::TimeTicks::Now() - last_idle_check_time_ >= kIdleThreshold) {
+          RequestIdleTime();
+        }
         return base::Seconds(0);
       }
       return base::Time::Now() - idle_timestamp_;
@@ -117,7 +141,7 @@ void OrgGnomeMutterIdleMonitor::OnWatchFiredSignalConnected(
   // Add the Idle watch.
   dbus::MethodCall call(kInterface, kMethodAddIdleWatch);
   dbus::MessageWriter writer(&call);
-  writer.AppendUint64(kIdleThresholdMs);
+  writer.AppendUint64(kIdleThreshold.InMilliseconds());
   proxy_->CallMethod(&call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                      base::BindOnce(&OrgGnomeMutterIdleMonitor::OnAddIdleWatch,
                                     weak_factory_.GetWeakPtr()));
@@ -132,12 +156,7 @@ void OrgGnomeMutterIdleMonitor::OnAddIdleWatch(dbus::Response* response) {
     return Shutdown();
   }
 
-  // Add the User Active watch.
-  dbus::MethodCall call(kInterface, kMethodAddUserActiveWatch);
-  proxy_->CallMethod(
-      &call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OrgGnomeMutterIdleMonitor::OnAddUserActiveWatch,
-                     weak_factory_.GetWeakPtr()));
+  RequestIdleTime();
 }
 
 void OrgGnomeMutterIdleMonitor::OnAddUserActiveWatch(dbus::Response* response) {
@@ -148,28 +167,25 @@ void OrgGnomeMutterIdleMonitor::OnAddUserActiveWatch(dbus::Response* response) {
                  << kInterface << " D-Bus service failed";
     return Shutdown();
   }
-
-  if (service_state_ == ServiceState::kInitializing) {
-    // If we are still initialising, request the current idle time to have the
-    // correct initial idle time.
-    dbus::MethodCall call(kInterface, kMethodGetIdletime);
-    proxy_->CallMethod(&call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                       base::BindOnce(&OrgGnomeMutterIdleMonitor::OnGetIdletime,
-                                      weak_factory_.GetWeakPtr()));
-  }
 }
 
 void OrgGnomeMutterIdleMonitor::OnGetIdletime(dbus::Response* response) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  idle_check_in_flight_ = false;
 
-  if (!response || !UpdateIdleTime(response)) {
+  std::optional<base::TimeDelta> idle_time = ReadIdleTime(response);
+  if (!idle_time) {
     LOG(WARNING) << "Call to " << kMethodGetIdletime << " method of "
                  << kInterface << " D-Bus service failed";
     return Shutdown();
   }
 
-  // Successfully initialised.
   service_state_ = ServiceState::kWorking;
+
+  if (*idle_time >= kIdleThreshold && idle_timestamp_.is_null()) {
+    idle_timestamp_ = base::Time::Now() - *idle_time;
+    RequestUserActiveWatch();
+  }
 }
 
 void OrgGnomeMutterIdleMonitor::OnWatchFired(dbus::Signal* signal) {
@@ -184,30 +200,39 @@ void OrgGnomeMutterIdleMonitor::OnWatchFired(dbus::Signal* signal) {
     return Shutdown();
   }
 
-  if (id == idle_watch_id_) {
-    idle_timestamp_ = base::Time::Now() - base::Milliseconds(kIdleThresholdMs);
-    dbus::MethodCall call(kInterface, kMethodAddUserActiveWatch);
-    proxy_->CallMethod(
-        &call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&OrgGnomeMutterIdleMonitor::OnAddUserActiveWatch,
-                       weak_factory_.GetWeakPtr()));
-  } else if (id == active_watch_id_) {
+  if (idle_watch_id_ != 0 && id == idle_watch_id_) {
+    if (idle_timestamp_.is_null()) {
+      idle_timestamp_ = base::Time::Now() - kIdleThreshold;
+      RequestUserActiveWatch();
+    }
+  } else if (active_watch_id_ != 0 && id == active_watch_id_) {
+    active_watch_id_ = 0;
     idle_timestamp_ = base::Time{};
+    last_idle_check_time_ = base::TimeTicks::Now();
   }
 }
 
-bool OrgGnomeMutterIdleMonitor::UpdateIdleTime(dbus::Message* message) {
-  if (!message) {
-    return false;
-  }
+void OrgGnomeMutterIdleMonitor::RequestIdleTime() const {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  CHECK(proxy_);
 
-  dbus::MessageReader reader(message);
-  uint64_t idletime;
-  if (!reader.PopUint64(&idletime) || reader.HasMoreData()) {
-    return false;
-  }
-  idle_timestamp_ = base::Time::Now() - base::Milliseconds(idletime);
-  return true;
+  idle_check_in_flight_ = true;
+  last_idle_check_time_ = base::TimeTicks::Now();
+  dbus::MethodCall call(kInterface, kMethodGetIdletime);
+  proxy_->CallMethod(&call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                     base::BindOnce(&OrgGnomeMutterIdleMonitor::OnGetIdletime,
+                                    weak_factory_.GetMutableWeakPtr()));
+}
+
+void OrgGnomeMutterIdleMonitor::RequestUserActiveWatch() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  CHECK(proxy_);
+
+  dbus::MethodCall call(kInterface, kMethodAddUserActiveWatch);
+  proxy_->CallMethod(
+      &call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&OrgGnomeMutterIdleMonitor::OnAddUserActiveWatch,
+                     weak_factory_.GetWeakPtr()));
 }
 
 bool OrgGnomeMutterIdleMonitor::ReadWatchId(dbus::Message* message,
@@ -223,8 +248,13 @@ bool OrgGnomeMutterIdleMonitor::ReadWatchId(dbus::Message* message,
 }
 
 void OrgGnomeMutterIdleMonitor::Shutdown() {
+  idle_watch_id_ = 0;
+  active_watch_id_ = 0;
+  idle_check_in_flight_ = false;
+  last_idle_check_time_ = base::TimeTicks{};
   idle_timestamp_ = base::Time{};
   service_state_ = ServiceState::kNotAvailable;
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace ui
