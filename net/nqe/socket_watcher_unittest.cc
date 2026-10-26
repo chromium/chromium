@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/socket/socket_performance_watcher_factory.h"
 #include "net/test/test_with_task_environment.h"
@@ -179,13 +178,7 @@ TEST_F(NetworkQualitySocketWatcherTest, QuicFirstNotificationDropped) {
   EXPECT_TRUE(socket_watcher.ShouldNotifyUpdatedRTT());
 }
 
-#if BUILDFLAG(IS_IOS)
-// Flaky on iOS: crbug.com/672917.
-#define MAYBE_PrivateAddressRTTNotNotified DISABLED_PrivateAddressRTTNotNotified
-#else
-#define MAYBE_PrivateAddressRTTNotNotified PrivateAddressRTTNotNotified
-#endif
-TEST_F(NetworkQualitySocketWatcherTest, MAYBE_PrivateAddressRTTNotNotified) {
+TEST_F(NetworkQualitySocketWatcherTest, PrivateAddressRTTNotNotified) {
   base::SimpleTestTickClock tick_clock;
   tick_clock.SetNowTicks(base::TimeTicks::Now());
 
