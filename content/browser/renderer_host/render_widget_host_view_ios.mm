@@ -1073,6 +1073,18 @@ void RenderWidgetHostViewIOS::AdvanceFocusForIME(
       focus_type);
 }
 
+void RenderWidgetHostViewIOS::ClearFocusedElement() {
+  auto* host = GetFocusedWidget();
+  if (!host) {
+    return;
+  }
+  auto* rfh = host->frame_tree()->GetFocusedFrame();
+  if (!rfh) {
+    return;
+  }
+  rfh->current_frame_host()->ClearFocusedElement();
+}
+
 void RenderWidgetHostViewIOS::SendKeyEvent(
     const input::NativeWebKeyboardEvent& event) {
   auto* host = GetFocusedWidget();

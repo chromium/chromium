@@ -7,6 +7,7 @@
 #include "base/apple/foundation_util.h"
 #include "testing/platform_test.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_flags.h"
 
@@ -359,7 +360,13 @@ TEST_F(RenderWidgetHostViewIOSUIViewTest,
   UIBarButtonItem* previousButton;
   UIBarButtonItem* nextButton;
 
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // Set editable state so updateInputAssistantItem populates the groups.
+    ui::mojom::TextInputState editable_state;
+    editable_state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT;
+    editable_state.mode = ui::TextInputMode::TEXT_INPUT_MODE_TEXT;
+    [uiview_ onUpdateTextInputState:editable_state withBounds:CGRectZero];
+
     NSArray<UIBarButtonItemGroup*>* trailingGroups =
         uiview_.inputAssistantItem.trailingBarButtonGroups;
     ASSERT_EQ(trailingGroups.count, 1u);
@@ -367,6 +374,12 @@ TEST_F(RenderWidgetHostViewIOSUIViewTest,
     previousButton = trailingGroups[0].barButtonItems[0];
     nextButton = trailingGroups[0].barButtonItems[1];
   } else {
+    // Set editable state so inputAccessoryView returns the toolbar.
+    ui::mojom::TextInputState editable_state;
+    editable_state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT;
+    editable_state.mode = ui::TextInputMode::TEXT_INPUT_MODE_TEXT;
+    [uiview_ onUpdateTextInputState:editable_state withBounds:CGRectZero];
+
     UIView* inputAccessoryView = [uiview_ inputAccessoryView];
     ASSERT_NE(inputAccessoryView, nil);
 

@@ -11,6 +11,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/browser/renderer_host/ios_extended_text_input_traits.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -191,8 +192,19 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
   [self becomeFirstResponder];
 }
 
+- (UIView*)inputView {
+  if (_isEditable) {
+    return nil;
+  }
+  // Suppress the system keyboard while remaining first responder.
+  if (!_emptyInputView) {
+    _emptyInputView = [[UIView alloc] init];
+  }
+  return _emptyInputView;
+}
+
 - (UIView*)inputAccessoryView {
-  return _inputAccessoryContainerView;
+  return _isEditable ? _inputAccessoryContainerView : nil;
 }
 
 - (void)initializeInputAccessory {
@@ -211,13 +223,13 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
   _nextAccessoryButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_NEXT);
 
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     UIBarButtonItemGroup* navigationGroup =
         [[UIBarButtonItemGroup alloc] initWithBarButtonItems:@[
           _previousAccessoryButton, _nextAccessoryButton
         ]
                                           representativeItem:nil];
-    self.inputAssistantItem.trailingBarButtonGroups = @[ navigationGroup ];
+    _navigationTrailingBarButtonGroups = @[ navigationGroup ];
     return;
   }
 
@@ -241,7 +253,7 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
       initWithImage:[UIImage systemImageNamed:kDoneAccessoryImageName]
               style:UIBarButtonItemStylePlain
              target:self
-             action:@selector(hideKeyboard)];
+             action:@selector(handleDoneAccessoryAction)];
   doneButton.accessibilityLabel = l10n_util::GetNSString(IDS_DONE);
 
   toolbar.items = @[
@@ -407,7 +419,27 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
   }
 
   _isEditable = isEditable;
+  [self updateInputAssistantItem];
   return YES;
+}
+
+- (void)updateInputAssistantItem {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  if (_isEditable) {
+    self.inputAssistantItem.trailingBarButtonGroups =
+        _navigationTrailingBarButtonGroups;
+    if (_defaultLeadingBarButtonGroups) {
+      self.inputAssistantItem.leadingBarButtonGroups =
+          std::exchange(_defaultLeadingBarButtonGroups, nil);
+    }
+  } else {
+    _defaultLeadingBarButtonGroups =
+        self.inputAssistantItem.leadingBarButtonGroups;
+    self.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.inputAssistantItem.trailingBarButtonGroups = @[];
+  }
 }
 
 - (BOOL)automaticallyPresentEditMenu {
@@ -1376,10 +1408,10 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
               withBounds:bounds];
     } else if (state.last_vk_visibility_request ==
                ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
-      [self hideKeyboard];
+      [self reloadInputViews];
     }
   } else if (state.always_hide_ime || !editable) {
-    [self hideKeyboard];
+    [self reloadInputViews];
   } else if (state.show_ime_if_needed) {
     [self showKeyboard:(state.value && !state.value->empty())
             withBounds:bounds];
@@ -1396,14 +1428,13 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
   _view->AdvanceFocusForIME(blink::mojom::FocusType::kForward);
 }
 
-- (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds {
-  self.frame = bounds;
-  [self becomeFirstResponder];
-  [self reloadInputViews];
+- (void)handleDoneAccessoryAction {
+  CHECK(_view);
+  _view->ClearFocusedElement();
 }
 
-- (void)hideKeyboard {
-  [self resignFirstResponder];
+- (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds {
+  self.frame = bounds;
   [self reloadInputViews];
 }
 

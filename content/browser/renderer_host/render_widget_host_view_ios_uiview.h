@@ -26,9 +26,12 @@ inline constexpr CGFloat kInputAccessoryToolbarBottomMargin = 8;
   id<BETextInputDelegate> be_text_input_delegate_;
   BETextInteraction* text_interaction_;
   BOOL _isEditable;
+  UIView* _emptyInputView;
   UIView* _inputAccessoryContainerView;
   UIBarButtonItem* _previousAccessoryButton;
   UIBarButtonItem* _nextAccessoryButton;
+  NSArray<UIBarButtonItemGroup*>* _defaultLeadingBarButtonGroups;
+  NSArray<UIBarButtonItemGroup*>* _navigationTrailingBarButtonGroups;
   std::u16string _markedText;
   std::optional<input::NativeWebKeyboardEvent> _currentKeyDownEvent;
   std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
@@ -41,7 +44,6 @@ inline constexpr CGFloat kInputAccessoryToolbarBottomMargin = 8;
 - (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
                     withBounds:(CGRect)bounds;
 - (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds;
-- (void)hideKeyboard;
 - (CGFloat)keyboardHeight;
 
 - (BETextInteraction*)textInteraction;

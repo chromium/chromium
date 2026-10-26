@@ -235,6 +235,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
                                  const std::u16string& replacement_text);
   void ExecuteEditCommand(const std::string& command);
   void AdvanceFocusForIME(blink::mojom::FocusType focus_type);
+  void ClearFocusedElement();
   void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
   void ForwardKeyboardEventWithCommands(
       const input::NativeWebKeyboardEvent& key_event,
