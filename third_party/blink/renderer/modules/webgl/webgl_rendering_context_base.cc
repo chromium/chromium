@@ -2075,8 +2075,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     // call.
     must_paint_to_canvas_ = false;
 
-    auto resource = GetDrawingBuffer()->ExportLowLatencyCanvasResource();
-    return resource ? resource->Bitmap() : nullptr;
+    return GetDrawingBuffer()->ExportLowLatencyBitmap();
   }
 
   if (resource_provider_.get() &&

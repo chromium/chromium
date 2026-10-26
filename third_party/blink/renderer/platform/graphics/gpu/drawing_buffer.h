@@ -323,6 +323,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<CanvasResource> ExportCanvasResource();
 
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource();
+  scoped_refptr<StaticBitmapImage> ExportLowLatencyBitmap();
 
   bool IsWebGL2() const {
     return webgl_version_ == Platform::WebGLContextType::kWebGL2ContextType;
