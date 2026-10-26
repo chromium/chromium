@@ -459,7 +459,7 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
   DCHECK(!floating_control_buttons_widget_);
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_CONTROL);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = surface_->GetWindow();
@@ -488,14 +488,16 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
         mouse_enter_exit_handler_.get());
   }
 
-  // Reset |floating_control_buttons_widget_| when |surface_| is changed.
-  floating_control_buttons_widget_.reset();
-
   if (surface_) {
     DCHECK(surface_->GetWindow());
     DCHECK(surface_->GetContentWindow());
     surface_->GetContentWindow()->RemoveObserver(this);
     event_forwarder_->Reset();
+
+    // Reset |floating_control_buttons_widget_| when |surface_| is changed.
+    // This hides its window, which may send a mouse exit to the surface
+    // window, so do it after |event_forwarder_| stops observing it.
+    floating_control_buttons_widget_.reset();
 
     if (surface_->GetAttachedHost() == this) {
       DCHECK_EQ(this, surface_->GetAttachedHost());
