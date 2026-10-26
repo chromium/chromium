@@ -129,14 +129,6 @@ TestContentPaymentRequestDelegate::test_address_normalizer() {
   return core_delegate_.test_address_normalizer();
 }
 
-void TestContentPaymentRequestDelegate::DelayFullCardRequestCompletion() {
-  core_delegate_.DelayFullCardRequestCompletion();
-}
-
-void TestContentPaymentRequestDelegate::CompleteFullCardRequest() {
-  core_delegate_.CompleteFullCardRequest();
-}
-
 const base::WeakPtr<PaymentUIObserver>
 TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
   return nullptr;

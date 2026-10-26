@@ -72,8 +72,6 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   std::string GetInvalidSslCertificateErrorMessage() override;
 
   autofill::TestAddressNormalizer* test_address_normalizer();
-  void DelayFullCardRequestCompletion();
-  void CompleteFullCardRequest();
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
 
   std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;

@@ -12,13 +12,8 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
-#include "components/autofill/core/browser/foundations/test_autofill_client.h"
-#include "components/autofill/core/browser/payments/full_card_request.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/payments/core/payment_request_delegate.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace payments {
 
@@ -50,8 +45,6 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   bool IsBrowserWindowActive() const override;
 
   autofill::TestAddressNormalizer* test_address_normalizer();
-  void DelayFullCardRequestCompletion();
-  void CompleteFullCardRequest();
 
  private:
   std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
@@ -59,16 +52,6 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   std::string locale_;
   const GURL last_committed_url_;
   autofill::TestAddressNormalizer address_normalizer_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  autofill::TestAutofillClient autofill_client_;
-  autofill::payments::PaymentsNetworkInterface payments_network_interface_;
-  autofill::payments::FullCardRequest full_card_request_;
-
-  bool instantaneous_full_card_request_result_ = true;
-  autofill::CreditCard full_card_request_card_;
-  base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-      full_card_result_delegate_;
 };
 
 }  // namespace payments

@@ -6,7 +6,9 @@
 
 #include <list>
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/payments/content/payment_request.h"
