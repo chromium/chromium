@@ -8630,4 +8630,5 @@ crbug.com/571966724 [ Mac Release ] external/wpt/service-workers/service-worker/
 # Gardener 2026-10-26
 crbug.com/412431600 [ Win11 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu [ Failure Pass Timeout ]
 crbug.com/412431600 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Failure Pass Timeout ]
+crbug.com/573469817 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-origin.sub.html [ Failure Pass Timeout ]
 
