@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.LocationProviderManager.Mode"
-    enum="LocationProviderManagerMode" expires_after="2026-11-15">
+    enum="LocationProviderManagerMode" expires_after="2027-05-15">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.LocationProviderManager.Source"
-    enum="LocationProviderManagerSource" expires_after="2026-11-15">
+    enum="LocationProviderManagerSource" expires_after="2027-05-15">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
