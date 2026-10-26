@@ -9,11 +9,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
@@ -78,7 +80,40 @@ class NoBestEffortTasksTest : public PlatformBrowserTest {
     // server).
     host_resolver()->AddRule("*", "127.0.0.1");
     PlatformBrowserTest::SetUpOnMainThread();
+
+    // Post a BEST_EFFORT task that fails if it ever runs, so that every test
+    // using this fixture verifies that BEST_EFFORT tasks stay fenced for the
+    // whole test (the other tests would trivially pass if they were running).
+    // `best_effort_tasks_allowed` is heap-allocated and owned by the task
+    // because, on Android, the task could in theory run after the fixture is
+    // destroyed.
+    auto best_effort_tasks_allowed = std::make_unique<bool>(false);
+    best_effort_tasks_allowed_ptr_ = best_effort_tasks_allowed.get();
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](std::unique_ptr<bool> best_effort_tasks_allowed) {
+              EXPECT_TRUE(*best_effort_tasks_allowed)
+                  << "A BEST_EFFORT task ran during a NoBestEffortTasksTest";
+            },
+            std::move(best_effort_tasks_allowed)));
   }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    // Android doesn't shut down the ThreadPool between tests so the validation
+    // task could run during teardown. On other platforms it shouldn't run at
+    // all.
+    *best_effort_tasks_allowed_ptr_ = true;
+#endif
+    // The task (and the flag it owns) is destroyed when the ThreadPool shuts
+    // down, so don't keep pointing at it.
+    best_effort_tasks_allowed_ptr_ = nullptr;
+    PlatformBrowserTest::TearDownOnMainThread();
+  }
+
+  // Owned by the BEST_EFFORT validation task posted in SetUpOnMainThread().
+  raw_ptr<bool> best_effort_tasks_allowed_ptr_ = nullptr;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -86,37 +121,6 @@ constexpr std::string_view kExtensionId = "ddchlicdkolnonkihahngkmmmjnjlkkf";
 #endif
 
 }  // namespace
-
-// Verify that BEST_EFFORT tasks don't run during these tests.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, ValidatePreconditions) {
-  // `best_effort_tasks_allowed` must be heap-allocated because the validation
-  // task could in theory run after returning from this scope.
-  auto best_effort_tasks_allowed = std::make_unique<bool>(false);
-#if BUILDFLAG(IS_ANDROID)
-  bool* best_effort_tasks_allowed_ptr = best_effort_tasks_allowed.get();
-#endif
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](std::unique_ptr<bool> best_effort_tasks_allowed) {
-            EXPECT_TRUE(*best_effort_tasks_allowed);
-          },
-          std::move(best_effort_tasks_allowed)));
-
-  // Give the validation task a chance to run before continuing, to avoid
-  // false positives.
-  base::RunLoop run_loop;
-  base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                                    TestTimeouts::action_timeout());
-  run_loop.Run();
-
-#if BUILDFLAG(IS_ANDROID)
-  // Android doesn't shut down the ThreadPool between tests so the validation
-  // task could run during teardown. On other platforms it shouldn't run at all.
-  *best_effort_tasks_allowed_ptr = true;
-#endif
-}
 
 // Verify that it is possible to load and paint the initial about:blank page
 // without running BEST_EFFORT tasks.
