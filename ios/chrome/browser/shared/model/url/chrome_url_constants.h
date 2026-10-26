@@ -221,7 +221,9 @@ inline constexpr char kGeminiPreciseLocationURL[] =
 
 // URL for the Gemini Page Content Sharing Settings row.
 inline constexpr char kGeminiPageContentSharingURL[] =
-    "https://support.google.com/gemini?p=chrome_PH#topic=15280100";
+    "https://support.google.com/gemini/answer/"
+    "13594961?hl=en#chrome&zippy=%2Cwhat-happens-to-my-data-when-i-use-"
+    "gemini-in-chrome";
 
 // URL for the Gemini Extensions Settings row.
 inline constexpr char kGeminiExtensionsURL[] = "https://gemini.google.com/apps";
