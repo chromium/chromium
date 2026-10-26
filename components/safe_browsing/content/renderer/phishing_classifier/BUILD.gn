@@ -62,11 +62,20 @@ if (safe_browsing_mode != 0) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "murmurhash3_util_unittest.cc" ]
+    sources = [
+      "murmurhash3_util_unittest.cc",
+      "phishing_model_setter_unittest.cc",
+    ]
     deps = [
       ":phishing_classifier",
       "//base",
+      "//base/test:test_support",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/common/phishing_classifier",
+      "//content/public/renderer",
+      "//mojo/public/cpp/bindings",
       "//testing/gtest",
+      "//third_party/blink/public/common",
     ]
   }
 
