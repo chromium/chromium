@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/buildflags/buildflags.h"
@@ -85,7 +84,8 @@ class TabMenuModel : public ui::SimpleMenuModel {
                        const std::vector<int>& indices);
   void AppendAiModeItems(int index,
                          int num_tabs,
-                         base::span<tabs::TabInterface* const> tabs);
+                         bool show_share,
+                         bool show_unshare);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Support for appending and executing commands for extension items in the

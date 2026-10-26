@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AiModeCreateNewThread"
       summary="the Start New Thread with AI Mode command"/>
   <variant name="AiModeShare" summary="the Share with AI Mode command"/>
+  <variant name="AiModeUnshare" summary="the Unshare with AI Mode command"/>
   <variant name="ArrangeSplit" summary="the Arrange Split command"/>
   <variant name="CloseAllTabs" summary="the Close All Tabs command"/>
   <variant name="CloseOtherTabs" summary="the Close Other Tabs command"/>

@@ -41,6 +41,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -92,6 +94,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -101,6 +104,7 @@
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -2809,6 +2813,23 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       });
     }
 
+    case CommandAiModeUnshare: {
+      if (!contextual_tasks::
+              IsContextualTasksSidePanelRearchitectureEnabled() ||
+          !omnibox::IsTabDeselectionInComposeboxEnabled() ||
+          !contextual_tasks::CanShareTabContext(profile())) {
+        return false;
+      }
+      const std::vector<tabs::TabInterface*> tabs =
+          GetTabsAtIndices(GetIndicesForCommand(context_index));
+      return std::ranges::any_of(tabs, [](tabs::TabInterface* tab) {
+        const auto* alert_controller =
+            tab ? tabs::TabAlertController::From(tab) : nullptr;
+        return alert_controller &&
+               alert_controller->IsAlertActive(tabs::TabAlert::kAiModeSharing);
+      });
+    }
+
     case CommandCopyURL:
       CHECK(delegate()->IsForWebApp(), base::NotFatalUntil::M162);
       return true;
@@ -3179,6 +3200,28 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandAiModeCreateNewThread:
       // Handled by ContextualTasksTabSubMenuModel.
       break;
+    case CommandAiModeUnshare: {
+      base::UmaHistogramCounts1000(
+          "Tab.ContextMenu.AiModeUnshare.SelectedTabsCount",
+          selection_model_.size());
+      BrowserWindowInterface* browser = delegate()->GetBrowserWindowInterface();
+      auto* controller =
+          browser
+              ? contextual_tasks::ContextualTasksPanelController::From(browser)
+              : nullptr;
+      if (!controller) {
+        break;
+      }
+      const std::vector<tabs::TabInterface*> tabs =
+          GetTabsAtIndices(GetIndicesForCommand(context_index));
+      std::vector<tabs::TabHandle> tab_handles;
+      tab_handles.reserve(tabs.size());
+      for (tabs::TabInterface* tab : tabs) {
+        tab_handles.push_back(tab->GetHandle());
+      }
+      controller->UnshareTabs(tab_handles);
+      break;
+    }
     case CommandGlicUnshare: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
       base::UmaHistogramCounts100("Glic.TabContextMenu.UnpinnedTabs",
