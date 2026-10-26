@@ -90,7 +90,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   // ImageBitmap.
   bool IsOpaque() const override { return false; }
   bool IsComposited() const final { return true; }
-  scoped_refptr<CanvasResource> GetResourceForPushFrame(
+  scoped_refptr<ExportedCanvasResource> GetResourceForPushFrame(
       bool& should_call_push_frame) override;
 
   cc::Layer* CcLayer() const final;

@@ -302,7 +302,7 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
   return frame;
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<ExportedCanvasResource>
 OffscreenCanvasRenderingContext2D::GetResourceForPushFrame(
     bool& should_call_push_frame) {
   should_call_push_frame = true;
@@ -310,7 +310,9 @@ OffscreenCanvasRenderingContext2D::GetResourceForPushFrame(
   scoped_refptr<CanvasResource> resource =
       ProduceCanvasResource(FlushReason::kOther);
   GetOffscreenFontCache().PruneLocalFontCache(kMaxCachedFonts);
-  return resource;
+  return resource
+             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
+             : nullptr;
 }
 
 CanvasRenderingContextHost*

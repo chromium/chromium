@@ -1760,7 +1760,7 @@ void WebGLRenderingContextBase::MarkContextChanged(
   }
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<ExportedCanvasResource>
 WebGLRenderingContextBase::GetResourceForPushFrame(
     bool& should_call_push_frame) {
   should_call_push_frame = false;
@@ -1778,7 +1778,8 @@ WebGLRenderingContextBase::GetResourceForPushFrame(
     if (auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource()) {
       should_call_push_frame = true;
       MarkLayerComposited();
-      return canvas_resource;
+      return base::MakeRefCounted<ExportedCanvasResource>(
+          std::move(canvas_resource));
     }
   }
 
@@ -1800,7 +1801,9 @@ WebGLRenderingContextBase::GetResourceForPushFrame(
     should_call_push_frame = true;
   }
   MarkLayerComposited();
-  return resource;
+  return resource
+             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
+             : nullptr;
 }
 
 void WebGLRenderingContextBase::Dispose() {

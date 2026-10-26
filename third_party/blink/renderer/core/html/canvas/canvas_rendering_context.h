@@ -307,7 +307,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual base::ByteSize AllocatedBufferSize() const = 0;
 
   // OffscreenCanvas-specific methods.
-  virtual scoped_refptr<CanvasResource> GetResourceForPushFrame(
+  virtual scoped_refptr<ExportedCanvasResource> GetResourceForPushFrame(
       bool& should_call_push_frame) {
     should_call_push_frame = false;
     return nullptr;

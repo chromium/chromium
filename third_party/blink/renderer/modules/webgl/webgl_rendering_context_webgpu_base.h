@@ -1303,7 +1303,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void Reshape(gfx::Size old_size, gfx::Size new_size) override;
   void Stop() override;
   void FinalizeFrame(FlushReason) override;
-  scoped_refptr<CanvasResource> GetResourceForPushFrame(
+  scoped_refptr<ExportedCanvasResource> GetResourceForPushFrame(
       bool& should_call_push_frame) override;
 
   // **************************************************************************

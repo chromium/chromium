@@ -339,7 +339,7 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
                                          dst_color_space, std::move(callback));
 }
 
-scoped_refptr<CanvasResource> GPUCanvasContext::GetResourceForPushFrame(
+scoped_refptr<ExportedCanvasResource> GPUCanvasContext::GetResourceForPushFrame(
     bool& should_call_push_frame) {
   should_call_push_frame = false;
   DCHECK(Host());
@@ -371,7 +371,8 @@ scoped_refptr<CanvasResource> GPUCanvasContext::GetResourceForPushFrame(
       context_provider_wrapper);
 
   should_call_push_frame = true;
-  return canvas_resource;
+  return base::MakeRefCounted<ExportedCanvasResource>(
+      std::move(canvas_resource));
 }
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(

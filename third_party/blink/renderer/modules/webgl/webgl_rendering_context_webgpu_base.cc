@@ -4413,7 +4413,7 @@ void WebGLRenderingContextWebGPUBase::FinalizeFrame(FlushReason) {
   NOTIMPLEMENTED();
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<ExportedCanvasResource>
 WebGLRenderingContextWebGPUBase::GetResourceForPushFrame(
     bool& should_call_push_frame) {
   should_call_push_frame = false;

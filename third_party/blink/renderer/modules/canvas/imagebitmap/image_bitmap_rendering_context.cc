@@ -402,7 +402,7 @@ void ImageBitmapRenderingContext::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<ExportedCanvasResource>
 ImageBitmapRenderingContext::GetResourceForPushFrame(
     bool& should_call_push_frame) {
   should_call_push_frame = false;
@@ -494,7 +494,9 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
                              SkSamplingOptions(), &paint_flags);
           });
   should_call_push_frame = true;
-  return resource;
+  return resource
+             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
+             : nullptr;
 }
 
 V8RenderingContext* ImageBitmapRenderingContext::AsV8RenderingContext() {

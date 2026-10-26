@@ -778,13 +778,8 @@ bool OffscreenCanvas::BeginFrame() {
 bool OffscreenCanvas::PushFrameIfNeeded() {
   if (needs_push_frame_ && context_) {
     bool should_call_push_frame = false;
-    scoped_refptr<CanvasResource> canvas_resource =
+    scoped_refptr<ExportedCanvasResource> exported_resource =
         context_->GetResourceForPushFrame(should_call_push_frame);
-
-    auto exported_resource = canvas_resource
-                                 ? base::MakeRefCounted<ExportedCanvasResource>(
-                                       std::move(canvas_resource))
-                                 : nullptr;
 
     if (should_call_push_frame) {
       return PushFrame(std::move(exported_resource));
