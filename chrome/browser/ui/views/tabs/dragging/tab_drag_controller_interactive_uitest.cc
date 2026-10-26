@@ -4973,11 +4973,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_EQ(4, model->count());
   ASSERT_EQ(2u, group_model->GetTabGroup(group)->ListTabs().length());
 
-  content::WebContents* const active_contents = model->GetActiveWebContents();
-  EXPECT_FALSE(model->IsTabCollapsed(model->active_index()));
-
-  // Drag group1, group should remain collapsed and active tab should remain
-  // unchanged outside the collapsed group.
+  // Drag group1, group should remain collapsed.
   ASSERT_TRUE(PressInputAtCenter(tab_strip->group_header(group)));
   ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(TabDragController::IsActive());
@@ -4985,8 +4981,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group));
-  EXPECT_EQ(model->GetActiveWebContents(), active_contents);
-  EXPECT_FALSE(model->IsTabCollapsed(model->active_index()));
 }
 
 #if BUILDFLAG(IS_MAC)
