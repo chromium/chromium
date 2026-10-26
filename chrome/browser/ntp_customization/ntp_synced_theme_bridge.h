@@ -10,7 +10,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "components/themes/ntp_custom_background_service_observer.h"
 
 class GURL;
 class NtpAndroidCustomBackgroundService;
@@ -20,9 +19,9 @@ using base::android::JavaRef;
 
 // The C++ counterpart to NtpSyncedThemeBridge.java. This class serves as
 // a bridge to the NTP theme services, handling theme collections and custom
-// backgrounds for the New Tab Page. It observes changes from
+// backgrounds for the New Tab Page. It is notified of synced theme changes by
 // NtpAndroidCustomBackgroundService and communicates with the Java layer.
-class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
+class NtpSyncedThemeBridge {
  public:
   // Creates an instance of NtpSyncedThemeBridge.
   NtpSyncedThemeBridge(JNIEnv* env,
@@ -32,7 +31,7 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   NtpSyncedThemeBridge(const NtpSyncedThemeBridge&) = delete;
   NtpSyncedThemeBridge& operator=(const NtpSyncedThemeBridge&) = delete;
 
-  ~NtpSyncedThemeBridge() override;
+  virtual ~NtpSyncedThemeBridge();
 
   // Fetches the next image for a theme collection with daily refresh enabled.
   void FetchNextThemeCollectionImage(JNIEnv* env);
@@ -41,9 +40,6 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // ID) from the NtpAndroidCustomBackgroundService.
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(
       JNIEnv* env);
-
-  // Exposes whether the underlying service is processing a sync update.
-  bool IsProcessingSyncUpdate(JNIEnv* env);
 
   // Sets the Chrome color ID on NtpAndroidCustomBackgroundService.
   void SetChromeColor(JNIEnv* env, int color_id);
@@ -73,12 +69,14 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // Called when the default theme is restored from Chrome Sync.
   virtual void OnDefaultThemeSynced();
 
+  // Called when the theme collection background in preferences was updated
+  // either by sync (`is_sync` is true) or by the local daily refresh
+  // pre-fetching the next image (`is_sync` is false).
+  virtual void OnThemeCollectionUpdated(bool is_sync);
+
   // Disconnects from the custom background service when the service is
   // destroyed.
   void DisconnectCustomBackgroundService();
-
-  // NtpCustomBackgroundServiceObserver:
-  void OnCustomBackgroundImageUpdated() override;
 
  protected:
   NtpSyncedThemeBridge();

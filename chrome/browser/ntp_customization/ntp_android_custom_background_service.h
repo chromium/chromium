@@ -58,11 +58,6 @@ class NtpAndroidCustomBackgroundService
   // type, or nullptr if sync is disabled.
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
-  // Exposes whether the underlying service is actively processing a sync
-  // update. This is used by observers to route UI behavior differently when
-  // syncing versus local manual updates.
-  bool IsProcessingSyncUpdate() const { return processing_sync_update_; }
-
   // NtpCustomBackgroundServiceBase:
   void SetCustomBackgroundInfo(const GURL& background_url,
                                const GURL& thumbnail_url,
@@ -141,6 +136,12 @@ class NtpAndroidCustomBackgroundService
   // has been reset to default from sync.
   void ApplyDefaultThemeFromSync();
 
+  // Re-delivers the theme collection currently stored in preferences to the
+  // synced theme bridge, as if it had just arrived from sync. Posted from
+  // SetSyncedThemeBridge() so that a theme that was synced before the bridge
+  // attached (e.g. in a previous session) still reaches Java.
+  void ReApplySyncedTheme();
+
   raw_ptr<NtpThemeCollectionBridge> theme_collection_bridge_ = nullptr;
   raw_ptr<NtpSyncedThemeBridge> synced_theme_bridge_ = nullptr;
 
@@ -154,9 +155,13 @@ class NtpAndroidCustomBackgroundService
   std::unique_ptr<ntp_customization::NtpAndroidThemeSyncBridge>
       theme_sync_bridge_;
 
-  // True while processing an incoming sync update. Used to route UI updates
-  // and prevent bouncing events back to sync.
-  bool processing_sync_update_ = false;
+  // True only while ApplyThemeCollectionFromSync() writes the custom
+  // background dictionary and while ReApplySyncedTheme() runs, so that the
+  // resulting NotifyAboutBackgrounds() is routed to the synced theme bridge as
+  // a sync update. The Java callback runs synchronously within that write, so
+  // it must not re-enter this service with a local write, which would be
+  // misrouted as a sync update too.
+  bool applying_sync_update_ = false;
 
   // True while updating the primary color in the background preference
   // dictionary. Used to suppress re-entrant NotifyAboutBackgrounds() calls

@@ -81,13 +81,6 @@ ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
           background->custom_background_main_color.value_or(0)));
 }
 
-bool NtpSyncedThemeBridge::IsProcessingSyncUpdate(JNIEnv* env) {
-  if (!ntp_custom_background_service_) {
-    return false;
-  }
-  return ntp_custom_background_service_->IsProcessingSyncUpdate();
-}
-
 void NtpSyncedThemeBridge::SetChromeColor(JNIEnv* env, int color_id) {
   if (!ntp_custom_background_service_) {
     return;
@@ -137,9 +130,9 @@ void NtpSyncedThemeBridge::OnDefaultThemeSynced() {
   Java_NtpSyncedThemeBridge_onDefaultThemeSynced(env, j_java_obj_);
 }
 
-void NtpSyncedThemeBridge::OnCustomBackgroundImageUpdated() {
+void NtpSyncedThemeBridge::OnThemeCollectionUpdated(bool is_sync) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_NtpSyncedThemeBridge_onCustomBackgroundImageUpdated(env, j_java_obj_);
+  Java_NtpSyncedThemeBridge_onThemeCollectionUpdated(env, j_java_obj_, is_sync);
 }
 
 DEFINE_JNI(NtpSyncedThemeBridge)

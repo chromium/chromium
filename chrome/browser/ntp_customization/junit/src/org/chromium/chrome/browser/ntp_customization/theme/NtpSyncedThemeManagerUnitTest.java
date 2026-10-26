@@ -175,7 +175,7 @@ public class NtpSyncedThemeManagerUnitTest {
                         /* isDailyRefreshEnabled= */ true);
         when(mNatives.getCustomBackgroundInfo(any()))
                 .thenReturn(new SyncedBackgroundInfo(nextInfo, /* primaryColor= */ null));
-        bridge.onCustomBackgroundImageUpdated();
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ false);
 
         // 5. Verify image is fetched.
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
@@ -247,7 +247,8 @@ public class NtpSyncedThemeManagerUnitTest {
 
         mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
         mNtpSyncedThemeManager.onThemeCommitted(/* data= */ null);
-        mNtpSyncedThemeManager.onThemeCollectionSynced(info, /* primaryColor= */ null);
+        mNtpSyncedThemeManager.onThemeCollectionImageAvailable(
+                info, /* primaryColor= */ null, /* isImageFromSync= */ true);
         mNtpSyncedThemeManager.destroy();
 
         verify(mNatives, never()).init(any(), any());
@@ -275,7 +276,7 @@ public class NtpSyncedThemeManagerUnitTest {
     }
 
     @Test
-    public void testOnCustomBackgroundImageUpdated_syncedStaticThemeCollection() {
+    public void testOnThemeCollectionUpdated_syncedStaticThemeCollection() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         NtpBackgroundDataThemeCollection themeCollectionData =
                 applySyncedStaticThemeCollection(/* syncedColor= */ null, bitmap);
@@ -292,7 +293,7 @@ public class NtpSyncedThemeManagerUnitTest {
     }
 
     @Test
-    public void testOnCustomBackgroundImageUpdated_syncedStaticThemeCollectionWithMainColor() {
+    public void testOnThemeCollectionUpdated_syncedStaticThemeCollectionWithMainColor() {
         int syncedColor = 0xFF112233;
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         NtpBackgroundDataThemeCollection themeCollectionData =
@@ -322,9 +323,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         when(mNatives.getCustomBackgroundInfo(any()))
                 .thenReturn(new SyncedBackgroundInfo(syncedInfo, syncedColor));
-        when(mNatives.isProcessingSyncUpdate(any())).thenReturn(true);
 
-        bridge.onCustomBackgroundImageUpdated();
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
@@ -474,9 +474,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         /* isDailyRefreshEnabled= */ true);
         when(mNatives.getCustomBackgroundInfo(any()))
                 .thenReturn(new SyncedBackgroundInfo(dailyInfo, /* primaryColor= */ null));
-        when(mNatives.isProcessingSyncUpdate(any())).thenReturn(false);
 
-        bridge.onCustomBackgroundImageUpdated();
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ false);
 
         assertFalse(mNtpSyncedThemeManager.isImageDownloading());
 
@@ -494,9 +493,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         when(mNatives.getCustomBackgroundInfo(any()))
                 .thenReturn(new SyncedBackgroundInfo(syncedInfo, /* primaryColor= */ null));
-        when(mNatives.isProcessingSyncUpdate(any())).thenReturn(true);
 
-        bridge.onCustomBackgroundImageUpdated();
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
 
         assertTrue(mNtpSyncedThemeManager.isImageDownloading());
 
@@ -600,5 +598,16 @@ public class NtpSyncedThemeManagerUnitTest {
         manager.onFinishNativeInitialization(mProfile);
 
         verify(mNatives, never()).init(any(), any());
+    }
+
+    @Test
+    public void testOnThemeCollectionImageAvailable_nullInfo_isNoOp() {
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+        when(mNatives.getCustomBackgroundInfo(any())).thenReturn(null);
+
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+
+        verify(mImageFetcher, never()).fetchImage(any(), any());
+        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
     }
 }

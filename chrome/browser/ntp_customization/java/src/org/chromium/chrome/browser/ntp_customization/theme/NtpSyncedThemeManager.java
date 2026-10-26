@@ -163,14 +163,19 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
     }
 
     /**
-     * Called when the synced theme collection has been updated.
+     * Called when the theme collection background in native preferences was updated, either by sync
+     * or by the local daily refresh pre-fetching the next image.
      *
      * @param info The {@link CustomBackgroundInfo} containing custom background info.
      * @param primaryColor The synced primary color, or {@code null} if none was provided.
+     * @param isImageFromSync True if the background arrived from sync; false if it is the next
+     *     image pre-fetched for the local daily refresh.
      */
     @Override
-    public void onThemeCollectionSynced(
-            @Nullable CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
+    public void onThemeCollectionImageAvailable(
+            @Nullable CustomBackgroundInfo info,
+            @Nullable @ColorInt Integer primaryColor,
+            boolean isImageFromSync) {
         if (info == null
                 || !info.backgroundUrl.isValid()
                 || info.backgroundUrl.isEmpty()
@@ -179,11 +184,13 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         }
 
         mLatestSyncedBackgroundUrl = info.backgroundUrl.getSpec();
-        mIsImageDownloading = isProcessingSyncUpdate();
+        mIsImageDownloading = isImageFromSync;
         NtpCustomizationUtils.fetchThemeCollectionImage(
                 mImageFetcher,
                 info.backgroundUrl,
-                (bitmap) -> handleFetchedThemeCollectionImage(info, bitmap, primaryColor));
+                (bitmap) ->
+                        handleFetchedThemeCollectionImage(
+                                info, bitmap, primaryColor, isImageFromSync));
     }
 
     /**
@@ -282,15 +289,17 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
      * @param info The {@link CustomBackgroundInfo} containing theme collection metadata.
      * @param bitmap The fetched background image bitmap, or {@code null} if downloading failed.
      * @param syncedPrimaryColor The primary color provided by sync, or {@code null} if not present.
+     * @param isImageFromSync True if the image arrived from sync; false if it was pre-fetched for
+     *     the local daily refresh.
      */
     private void handleFetchedThemeCollectionImage(
             CustomBackgroundInfo info,
             @Nullable Bitmap bitmap,
-            @Nullable @ColorInt Integer syncedPrimaryColor) {
+            @Nullable @ColorInt Integer syncedPrimaryColor,
+            boolean isImageFromSync) {
         mIsImageDownloading = false;
-        boolean isSyncUpdate = isProcessingSyncUpdate();
         if (bitmap == null) {
-            if (isSyncUpdate) {
+            if (isImageFromSync) {
                 notifyDownloadCallbacks(null);
             }
             return;
@@ -304,7 +313,7 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
                 NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
 
         @Nullable NtpBackgroundDataThemeCollection themeCollectionData = null;
-        if (!isSyncUpdate) {
+        if (!isImageFromSync) {
             // Case 1: Local device next-day daily refresh pre-fetch.
             NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(info, bitmap, backgroundImageInfo);
             return;
@@ -345,10 +354,6 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
             callback.onResult(themeCollectionData);
         }
         mDownloadCallbacks.clear();
-    }
-
-    private boolean isProcessingSyncUpdate() {
-        return mNtpSyncedThemeBridge != null && mNtpSyncedThemeBridge.isProcessingSyncUpdate();
     }
 
     /**
