@@ -59,7 +59,6 @@ import org.chromium.net.ConnectivityManagerWrapper.NetworkState;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.RegisterResult;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.RegistrationExceptionCategory;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.SelfHealResult;
-import org.chromium.net.NetworkChangeNotifierAutoDetect.WifiManagerDelegate;
 import org.chromium.net.test.util.NetworkChangeNotifierTestUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -242,6 +241,7 @@ public class NetworkChangeNotifierTest {
         private int mNetworkType;
         private int mNetworkSubtype;
         private boolean mIsMetered;
+        private long mNetId = 1;
         private boolean mIsPrivateDnsActive;
         private String mPrivateDnsServerName;
         private NetworkCallback mLastRegisteredNetworkCallback;
@@ -253,22 +253,20 @@ public class NetworkChangeNotifierTest {
         private int mRemainingNetworkCallbackSecurityExceptions;
 
         @Override
-        public NetworkState getNetworkState(WifiManagerDelegate wifiManagerDelegate) {
+        public NetworkState getNetworkState() {
             return new NetworkState(
                     mActiveNetworkExists,
                     mNetworkType,
                     mNetworkSubtype,
                     mIsMetered,
-                    mNetworkType == ConnectivityManager.TYPE_WIFI
-                            ? wifiManagerDelegate.getWifiSsid()
-                            : null,
+                    mActiveNetworkExists ? mNetId : NetId.INVALID,
                     mIsPrivateDnsActive,
                     mPrivateDnsServerName);
         }
 
         @Override
         protected NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
-            int netId = demungeNetId(ConnectivityManagerWrapper.networkToNetId(network));
+            int netId = demungeNetId(network.getNetworkHandle());
             for (MockNetwork mockNetwork : mMockNetworks) {
                 if (netId == mockNetwork.mNetId) {
                     return mockNetwork.getCapabilities();
@@ -279,7 +277,7 @@ public class NetworkChangeNotifierTest {
 
         @Override
         protected boolean vpnAccessible(Network network) {
-            int netId = demungeNetId(ConnectivityManagerWrapper.networkToNetId(network));
+            int netId = demungeNetId(network.getNetworkHandle());
             for (MockNetwork mockNetwork : mMockNetworks) {
                 if (netId == mockNetwork.mNetId) {
                     return mockNetwork.mVpnAccessible;
@@ -387,6 +385,10 @@ public class NetworkChangeNotifierTest {
             mIsMetered = isMetered;
         }
 
+        public void setNetId(long netId) {
+            mNetId = netId;
+        }
+
         public void setNetworkSubtype(int networkSubtype) {
             mNetworkSubtype = networkSubtype;
         }
@@ -442,28 +444,11 @@ public class NetworkChangeNotifierTest {
         }
     }
 
-    /** Mocks out calls to the WifiManager. */
-    private static class MockWifiManagerDelegate extends WifiManagerDelegate {
-        private String mWifiSSID;
-
-        @Override
-        public String getWifiSsid() {
-            return mWifiSSID;
-        }
-
-        public void setWifiSSID(String wifiSSID) {
-            mWifiSSID = wifiSSID;
-        }
-    }
-
     private static int demungeNetId(long netId) {
-        // On Marshmallow, demunge the NetID to undo munging done in Network.getNetworkHandle().
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            netId >>= 32;
-        }
-        // Now that the NetID has been demunged it is a true NetID which means it's only a 16-bit
-        // value (see ConnectivityService.MAX_NET_ID) so it should be safe to cast to int.
-        return (int) netId;
+        // Undo the munging done in Network.getNetworkHandle() by shifting right 32 bits to
+        // extract the true 16-bit NetID (see ConnectivityService.MAX_NET_ID), which is safe to
+        // cast to int.
+        return (int) (netId >> 32);
     }
 
     // Types of network changes. Each is associated with a NetworkChangeNotifierAutoDetect.Observer
@@ -556,7 +541,6 @@ public class NetworkChangeNotifierTest {
     private TestNetworkChangeNotifier mNotifier;
     private NetworkChangeNotifierAutoDetect mReceiver;
     private MockConnectivityManagerWrapper mConnectivityWrapper;
-    private MockWifiManagerDelegate mWifiDelegate;
 
     private enum WatchForChanges {
         ALWAYS,
@@ -617,10 +601,6 @@ public class NetworkChangeNotifierTest {
         mConnectivityWrapper = new MockConnectivityManagerWrapper();
         mConnectivityWrapper.setActiveNetworkExists(true);
         mReceiver.setConnectivityManagerWrapperForTests(mConnectivityWrapper);
-
-        mWifiDelegate = new MockWifiManagerDelegate();
-        mReceiver.setWifiManagerDelegateForTests(mWifiDelegate);
-        mWifiDelegate.setWifiSSID("foo");
     }
 
     private int getCurrentConnectionSubtype() {
@@ -829,21 +809,17 @@ public class NetworkChangeNotifierTest {
         notifyConnectivityChange();
         Assert.assertFalse(observer.hasReceivedNotification());
 
-        // We shouldn't be notified if we're connected to non-Wifi and the Wifi SSID changes.
-        mWifiDelegate.setWifiSSID("bar");
-        notifyConnectivityChange();
-        Assert.assertFalse(observer.hasReceivedNotification());
         // We should be notified when we change to Wifi.
         mConnectivityWrapper.setNetworkType(ConnectivityManager.TYPE_WIFI);
         notifyConnectivityChange();
         Assert.assertTrue(observer.hasReceivedNotification());
         observer.resetHasReceivedNotification();
-        // We should be notified when the Wifi SSID changes.
-        mWifiDelegate.setWifiSSID("foo");
+        // We should be notified when the network NetId changes.
+        mConnectivityWrapper.setNetId(2);
         notifyConnectivityChange();
         Assert.assertTrue(observer.hasReceivedNotification());
         observer.resetHasReceivedNotification();
-        // We shouldn't be re-notified if the Wifi SSID hasn't actually changed.
+        // We shouldn't be re-notified if the network NetId hasn't actually changed.
         notifyConnectivityChange();
         Assert.assertFalse(observer.hasReceivedNotification());
 
@@ -1530,12 +1506,7 @@ public class NetworkChangeNotifierTest {
     public void testConnectivityManagerWrapperDoesNotCrash() {
         ConnectivityManagerWrapper delegate =
                 new ConnectivityManagerWrapper(InstrumentationRegistry.getTargetContext());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            delegate.getNetworkState(null);
-        } else {
-            delegate.getNetworkState(
-                    new WifiManagerDelegate(InstrumentationRegistry.getTargetContext()));
-        }
+        delegate.getNetworkState();
         // getConnectionType(Network) doesn't crash upon invalid Network argument.
         Network invalidNetwork = Helper.netIdToNetwork(NetId.INVALID);
         Assert.assertEquals(

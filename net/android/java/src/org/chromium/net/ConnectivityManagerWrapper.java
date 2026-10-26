@@ -6,8 +6,6 @@ package org.chromium.net;
 
 import static android.net.ConnectivityManager.TYPE_VPN;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityManager.NetworkCallback;
@@ -104,82 +102,48 @@ public class ConnectivityManagerWrapper {
     }
 
     /** Returns connection type and status information about the current default network. */
-    NetworkState getNetworkState(
-            NetworkChangeNotifierAutoDetect.@Nullable WifiManagerDelegate wifiManagerDelegate) {
-        Network network = null;
+    NetworkState getNetworkState() {
+        Network network = getDefaultNetwork();
         NetworkInfo networkInfo = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            network = getDefaultNetwork();
-            // Skip the getNetworkInfo() IPC when we can derive everything from capabilities.
-            if (getDeriveConnectionTypeFromCapabilities()) {
-                NetworkState state = getNetworkStateFromCapabilities(network);
-                if (state != null) {
-                    return state;
-                }
-            } else {
-                networkInfo = getNetworkInfo(network);
+        // Skip the getNetworkInfo() IPC when we can derive everything from capabilities.
+        if (getDeriveConnectionTypeFromCapabilities()) {
+            NetworkState state = getNetworkStateFromCapabilities(network);
+            if (state != null) {
+                return state;
             }
         } else {
-            networkInfo = mConnectivityManager.getActiveNetworkInfo();
+            networkInfo = getNetworkInfo(network);
         }
         networkInfo = processActiveNetworkInfo(networkInfo);
-        if (networkInfo == null) {
-            return new NetworkState(false, -1, -1, false, null, false, "");
+        if (networkInfo == null || network == null) {
+            return new NetworkState(false, -1, -1, false, NetId.INVALID, false, "");
         }
 
-        if (network != null) {
-            final NetworkCapabilitiesWrapper capabilities = getNetworkCapabilities(network);
-            boolean isMetered =
-                    (capabilities != null
-                            && !capabilities.hasCapability(
-                                    NetworkCapabilities.NET_CAPABILITY_NOT_METERED));
-            DnsStatus dnsStatus = AndroidNetworkLibrary.getDnsStatus(network);
-            if (dnsStatus == null) {
-                return new NetworkState(
-                        true,
-                        networkInfo.getType(),
-                        networkInfo.getSubtype(),
-                        isMetered,
-                        String.valueOf(networkToNetId(network)),
-                        false,
-                        "");
-            } else {
-                return new NetworkState(
-                        true,
-                        networkInfo.getType(),
-                        networkInfo.getSubtype(),
-                        isMetered,
-                        String.valueOf(networkToNetId(network)),
-                        dnsStatus.getPrivateDnsActive(),
-                        dnsStatus.getPrivateDnsServerName());
-            }
-        }
-        assert Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
-        // If Wifi, then fetch SSID also
-        if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-            // Since Android 4.2 the SSID can be retrieved from NetworkInfo.getExtraInfo().
-            if (networkInfo.getExtraInfo() != null && !"".equals(networkInfo.getExtraInfo())) {
-                return new NetworkState(
-                        true,
-                        networkInfo.getType(),
-                        networkInfo.getSubtype(),
-                        false,
-                        networkInfo.getExtraInfo(),
-                        false,
-                        "");
-            }
-            // Fetch WiFi SSID directly from WifiManagerDelegate if not in NetworkInfo.
+        final NetworkCapabilitiesWrapper capabilities = getNetworkCapabilities(network);
+        boolean isMetered =
+                (capabilities != null
+                        && !capabilities.hasCapability(
+                                NetworkCapabilities.NET_CAPABILITY_NOT_METERED));
+        DnsStatus dnsStatus = AndroidNetworkLibrary.getDnsStatus(network);
+        if (dnsStatus == null) {
             return new NetworkState(
                     true,
                     networkInfo.getType(),
                     networkInfo.getSubtype(),
-                    false,
-                    assumeNonNull(wifiManagerDelegate).getWifiSsid(),
+                    isMetered,
+                    network.getNetworkHandle(),
                     false,
                     "");
+        } else {
+            return new NetworkState(
+                    true,
+                    networkInfo.getType(),
+                    networkInfo.getSubtype(),
+                    isMetered,
+                    network.getNetworkHandle(),
+                    dnsStatus.getPrivateDnsActive(),
+                    dnsStatus.getPrivateDnsServerName());
         }
-        return new NetworkState(
-                true, networkInfo.getType(), networkInfo.getSubtype(), false, null, false, "");
     }
 
     // Builds NetworkState from NetworkCapabilities alone, avoiding the getNetworkInfo() IPC.
@@ -187,7 +151,6 @@ public class ConnectivityManagerWrapper {
     // to
     // the NetworkInfo path for the connected/disconnected decision. Does not special-case
     // BLOCKED-but-foreground networks (crbug.com/677365).
-    @RequiresApi(Build.VERSION_CODES.M)
     private @Nullable NetworkState getNetworkStateFromCapabilities(@Nullable Network network) {
         if (network == null) {
             return null;
@@ -209,7 +172,7 @@ public class ConnectivityManagerWrapper {
                 type,
                 subtype,
                 isMetered,
-                String.valueOf(networkToNetId(network)),
+                network.getNetworkHandle(),
                 dnsStatus != null && dnsStatus.getPrivateDnsActive(),
                 dnsStatus == null ? "" : dnsStatus.getPrivateDnsServerName());
     }
@@ -412,19 +375,14 @@ public class ConnectivityManagerWrapper {
     /** Returns the current default {@link Network}, or {@code null} if disconnected. */
     @Nullable
     public Network getDefaultNetwork() {
-        Network defaultNetwork = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            defaultNetwork = mConnectivityManager.getActiveNetwork();
-            // getActiveNetwork() returning null cannot be trusted to indicate disconnected
-            // as it suffers from https://crbug.com/677365.
-            if (defaultNetwork != null) {
-                return defaultNetwork;
-            }
+        Network defaultNetwork = mConnectivityManager.getActiveNetwork();
+        // getActiveNetwork() returning null cannot be trusted to indicate disconnected
+        // as it suffers from https://crbug.com/677365.
+        if (defaultNetwork != null) {
+            return defaultNetwork;
         }
-        // Android Lollipop had no API to get the default network; only an
-        // API to return the NetworkInfo for the default network. To
-        // determine the default network one can find the network with
-        // type matching that of the default network.
+        // Fallback when getActiveNetwork() returns null (e.g. during BLOCKED state): find the
+        // network with type matching that of the default NetworkInfo.
         final NetworkInfo defaultNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
         if (defaultNetworkInfo == null) {
             return null;
@@ -481,9 +439,7 @@ public class ConnectivityManagerWrapper {
         private final int mType;
         private final int mSubtype;
         private final boolean mIsMetered;
-        // WIFI SSID of the connection on pre-Marshmallow, NetID starting with Marshmallow. Always
-        // non-null (i.e. instead of null it'll be an empty string) to facilitate .equals().
-        private final String mNetworkIdentifier;
+        private final long mNetId;
         // Indicates if this network is using DNS-over-TLS.
         private final boolean mIsPrivateDnsActive;
         // Indicates the DNS-over-TLS server in use, if specified.
@@ -494,14 +450,14 @@ public class ConnectivityManagerWrapper {
                 int type,
                 int subtype,
                 boolean isMetered,
-                @Nullable String networkIdentifier,
+                long netId,
                 boolean isPrivateDnsActive,
                 @Nullable String privateDnsServerName) {
             mConnected = connected;
             mType = type;
             mSubtype = subtype;
             mIsMetered = isMetered;
-            mNetworkIdentifier = networkIdentifier == null ? "" : networkIdentifier;
+            mNetId = netId;
             mIsPrivateDnsActive = isPrivateDnsActive;
             mPrivateDnsServerName = privateDnsServerName == null ? "" : privateDnsServerName;
         }
@@ -522,9 +478,12 @@ public class ConnectivityManagerWrapper {
             return mSubtype;
         }
 
-        // Always non-null to facilitate .equals().
-        public String getNetworkIdentifier() {
-            return mNetworkIdentifier;
+        /**
+         * Returns the NetID for this NetworkState, or {@link NetId#INVALID} when disconnected or
+         * unavailable.
+         */
+        public long getNetId() {
+            return mNetId;
         }
 
         /** Returns the connection type for the given NetworkState. */
@@ -653,23 +612,6 @@ public class ConnectivityManagerWrapper {
                 }
             default:
                 return ConnectionType.CONNECTION_UNKNOWN;
-        }
-    }
-
-    /**
-     * Extracts NetID of Network on Lollipop and NetworkHandle (which is munged NetID) on
-     * Marshmallow and newer releases. TODO(crbug.com/40283930): Rename networkToNetId to something
-     * meaningful and update javadoc comment.
-     */
-    static long networkToNetId(Network network) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return network.getNetworkHandle();
-        } else {
-            // NOTE(pauljensen): This depends on Android framework implementation details. These
-            // details cannot change because Lollipop is long since released.
-            // NetIDs are only 16-bit so use parseInt. This function returns a long because
-            // getNetworkHandle() returns a long.
-            return Integer.parseInt(network.toString());
         }
     }
 
