@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host_origins.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
@@ -110,39 +108,9 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       base::SingleThreadTaskRunner::GetCurrentDefault();
 };
 
-namespace {
-
-void CreateNativeHostSession(
-    Profile* profile,
-    drivefs::mojom::ExtensionConnectionParamsPtr params,
-    mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> session,
-    mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) {
-  auto* drive_service = DriveIntegrationServiceFactory::GetForProfile(profile);
-  if (!drive_service || !drive_service->GetDriveFsInterface()) {
-    // Mojo uses unsigned int for disconnect reason, but file errors are
-    // negative, so negate the error to pass as it a positive int.
-    port.ResetWithReason(-FILE_ERROR_SERVICE_UNAVAILABLE,
-                         "Drivefs is unavailable.");
-    return;
-  }
-
-  drive_service->GetDriveFsInterface()->CreateNativeHostSession(
-      drivefs::mojom::ExtensionConnectionParams::New(
-          GURL(kDriveFsNativeMessageHostOrigins[0]).GetHost()),
-      std::move(session), std::move(port));
-}
-
-}  // namespace
-
 std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(
     CreateNativeHostSessionCallback callback) {
   return std::make_unique<DriveFsNativeMessageHost>(std::move(callback));
-}
-
-std::unique_ptr<extensions::NativeMessageHost>
-CreateDriveFsNativeMessageHostAsh(content::BrowserContext* browser_context) {
-  return CreateDriveFsNativeMessageHost(base::BindOnce(
-      CreateNativeHostSession, Profile::FromBrowserContext(browser_context)));
 }
 
 std::unique_ptr<extensions::NativeMessageHost>

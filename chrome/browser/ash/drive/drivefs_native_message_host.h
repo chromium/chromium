@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DRIVE_DRIVEFS_NATIVE_MESSAGE_HOST_H_
 #define CHROME_BROWSER_ASH_DRIVE_DRIVEFS_NATIVE_MESSAGE_HOST_H_
 
-#include <array>
 #include <memory>
 #include <string>
 
@@ -24,12 +23,6 @@ class BrowserContext;
 
 namespace drive {
 
-inline constexpr char kDriveFsNativeMessageHostName[] =
-    "com.google.drive.nativeproxy";
-
-inline constexpr auto kDriveFsNativeMessageHostOrigins =
-    std::to_array({"chrome-extension://lmjegmlicamnimmfhcmpkclmigmmcbeh/"});
-
 // This callback is used by the native message host to initiate a connection
 // with DriveFS.
 using CreateNativeHostSessionCallback = base::OnceCallback<void(
@@ -43,9 +36,6 @@ using CreateNativeHostSessionCallback = base::OnceCallback<void(
 // to DriveFS.
 std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(
     CreateNativeHostSessionCallback callback);
-
-std::unique_ptr<extensions::NativeMessageHost>
-CreateDriveFsNativeMessageHostAsh(content::BrowserContext* browser_context);
 
 // Exposed for testing purposes only. Used internally by
 // `ConnectToDriveFsNativeMessageExtension` to construct a native message host.

@@ -10,7 +10,8 @@
 
 #include "base/containers/span.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
-#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host_ash.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host_origins.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"
 #include "chrome/browser/extensions/api/messaging/native_message_echo_host.h"
