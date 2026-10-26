@@ -326,6 +326,32 @@ void SelectionOverlayController::OnActiveTabChanged(
   UpdateForTabVisibility();
 }
 
+void SelectionOverlayController::ObserveSidePanelState() {
+  GlicSidePanelCoordinator* coordinator =
+      GlicSidePanelCoordinator::GetForTab(tab_);
+  if (!coordinator) {
+    side_panel_state_subscription_ = base::CallbackListSubscription();
+    return;
+  }
+  side_panel_state_subscription_ = coordinator->AddStateCallback(
+      base::BindRepeating(&SelectionOverlayController::OnSidePanelStateChanged,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void SelectionOverlayController::OnSidePanelStateChanged(
+    GlicSidePanelCoordinator::State) {
+  if (page_) {
+    page_->SetSidePanelOpen(IsSidePanelOpen());
+  }
+}
+
+bool SelectionOverlayController::IsSidePanelOpen() const {
+  // A backgrounded panel (its tab isn't in front) isn't closed: it shows again
+  // with the tab. Not `kShown` only, which would flip the overlay to closed and
+  // back on every tab switch.
+  return GlicSidePanelCoordinator::IsShowingOrBackgrounded(tab_);
+}
+
 void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
   if (state() == State::kBackground) {
     return;
@@ -523,6 +549,7 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
     service->TryPreload(GlicWarmingTrigger::kSelectionOverlay);
   }
   ObserveActiveTabChanges();
+  ObserveSidePanelState();
   ShowModalUI();
 }
 
@@ -671,6 +698,7 @@ void SelectionOverlayController::InitializeOverlay() {
 
   CHECK(page_);
   page_->SetInteractionOptions(interaction_options_.Clone());
+  page_->SetSidePanelOpen(IsSidePanelOpen());
   page_->ScreenshotReceived(initial_rgb_screenshot_);
 
   // Forward any pre-existing selections (e.g. from a text selection prompt) to
@@ -1219,6 +1247,7 @@ void SelectionOverlayController::Reset() {
   options_.reset();
   overlay_web_view_focus_subscription_ = {};
   active_tab_subscription_ = {};
+  side_panel_state_subscription_ = {};
   close_reason_.reset();
 }
 

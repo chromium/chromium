@@ -461,6 +461,43 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                         "el => !el.hideHandles && el.disableMultiSelect"));
 }
 
+// The overlay learns whether the Glic side panel is showing when the session
+// starts, and again when the panel opens mid-session.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       SidePanelOpenFollowsPanel) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+                    ShowWithSelection(selection::InteractionOptions::New(
+                        /*hide_handles=*/true, /*disable_multi_select=*/true,
+                        /*skip_intro_animation=*/true));
+                  }),
+                  WaitForShow(OverlayBaseController::kOverlayId),
+                  InstrumentNonTabWebView(kOverlayWebContentsId,
+                                          OverlayBaseController::kOverlayId),
+                  // Started with the panel closed. The region is sent after
+                  // the initial value, so this is not just the default.
+                  WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                                    "el => el.selectedRegions.length === 1"),
+                  CheckJsResultAt(kOverlayWebContentsId, kOverlay,
+                                  "el => el.sidePanelOpen === false"),
+                  // The panel opens mid-session.
+                  OpenGlic(),
+                  WaitForJsResultAt(kOverlayWebContentsId, kOverlay,
+                                    "el => el.sidePanelOpen === true"),
+                  // Closing the panel closes the overlay with it, whichever
+                  // way the session started (`GlicSidePanelUi::Close()`).
+                  ToggleGlicWindow(GlicWindowMode::kAttached),
+                  InAnyContext(WaitForHide(kGlicHostElementId)),
+                  WaitForHide(OverlayBaseController::kOverlayId));
+}
+
 // A session with a pre-selected region opens directly in the post-selection
 // state, without the intro border glow.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -2258,7 +2295,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
       CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                      "el => el.hideHandles && el.disableMultiSelect"));
+                      "el => el.hideHandles && el.disableMultiSelect && "
+                      "el.sidePanelOpen"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,

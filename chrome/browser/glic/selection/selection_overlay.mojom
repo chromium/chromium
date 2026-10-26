@@ -142,4 +142,10 @@ interface SelectionOverlayPage {
   // Sets how the user can interact with the overlay.
   // Called before each screenshot is sent.
   SetInteractionOptions(InteractionOptions options);
+
+  // Tells the overlay whether the Glic side panel is open for its tab: showing,
+  // or backgrounded and showing again once the tab is in front. Called once
+  // before the screenshot is sent, and again whenever that changes during the
+  // session.
+  SetSidePanelOpen(bool open);
 };

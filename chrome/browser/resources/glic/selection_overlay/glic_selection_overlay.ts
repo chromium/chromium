@@ -90,6 +90,7 @@ export class GlicSelectionOverlayElement extends
       disableMultiSelect: {type: Boolean, reflect: true},
       skipIntroAnimation: {type: Boolean, reflect: true},
       hasPromptText: {type: Boolean},
+      sidePanelOpen: {type: Boolean, reflect: true},
     };
   }
 
@@ -111,6 +112,12 @@ export class GlicSelectionOverlayElement extends
   // Whether the prompt input has non-whitespace text, which shows the submit
   // button.
   accessor hasPromptText: boolean = false;
+  // Whether the Glic side panel is open for this tab: showing, or backgrounded
+  // and showing again once the tab is in front. Kept live by the browser for
+  // the length of the session. Separate from the base class's
+  // `sidePanelOpened`, which applies the Lens side panel margins; the Glic
+  // overlay is tab-scoped and never applies them.
+  accessor sidePanelOpen: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -120,6 +127,10 @@ export class GlicSelectionOverlayElement extends
           this.hideHandles = options.hideHandles;
           this.disableMultiSelect = options.disableMultiSelect;
           this.skipIntroAnimation = options.skipIntroAnimation;
+        }));
+    this.listenerIds.push(
+        handlerImpl.addSetSidePanelOpenListener((open: boolean) => {
+          this.sidePanelOpen = open;
         }));
   }
 

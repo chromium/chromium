@@ -75,6 +75,11 @@ export class SelectionOverlayBaseHandlerImpl extends
         .callbackRouter.setInteractionOptions.addListener(callback);
   }
 
+  addSetSidePanelOpenListener(callback: (open: boolean) => void): number {
+    return BrowserProxyImpl.getInstance()
+        .callbackRouter.setSidePanelOpen.addListener(callback);
+  }
+
   addClearRegionSelectionListener(callback: () => void): number {
     return BrowserProxyImpl.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(

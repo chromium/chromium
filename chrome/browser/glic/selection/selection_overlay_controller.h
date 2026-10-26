@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/selection/mojom/action.mojom-forward.h"
 #include "chrome/browser/selection/suggestion_service.h"
@@ -137,6 +138,13 @@ class SelectionOverlayController
   void OnActiveTabChanged(BrowserWindowInterface* window);
   void UpdateForTabVisibility();
   void ObserveActiveTabChanges();
+  // Subscribes to the Glic side panel state for `tab_` for the length of the
+  // session, and forwards changes to the overlay.
+  void ObserveSidePanelState();
+  void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
+  // What `SelectionOverlayPage::SetSidePanelOpen()` sends: the panel is
+  // showing, or backgrounded and comes back with `tab_`.
+  bool IsSidePanelOpen() const;
   // Called when the overlay's WebView takes focus, e.g. when the user clicks
   // on it. In a split view the overlay can be rendered over the inactive tab,
   // in which case `tab_` needs to be activated.
@@ -293,6 +301,9 @@ class SelectionOverlayController
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   // Subscription to the active tab changes of the window that hosts `tab_`.
   base::CallbackListSubscription active_tab_subscription_;
+  // Subscription to the Glic side panel state for `tab_`. Held for the length
+  // of a session so the overlay learns when the panel opens or closes.
+  base::CallbackListSubscription side_panel_state_subscription_;
 
   // Must be the last member.
   base::WeakPtrFactory<SelectionOverlayController> weak_factory_{this};
