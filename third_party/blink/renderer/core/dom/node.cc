@@ -1405,26 +1405,6 @@ Node& Node::ShadowIncludingRoot() const {
   return *root;
 }
 
-bool Node::IsClosedShadowHiddenFrom(const Node& other) const {
-  if (!IsInShadowTree() || GetTreeScope() == other.GetTreeScope())
-    return false;
-
-  const TreeScope* scope = &GetTreeScope();
-  for (; scope->ParentTreeScope(); scope = scope->ParentTreeScope()) {
-    const ContainerNode& root = scope->RootNode();
-    auto* shadow_root = DynamicTo<ShadowRoot>(root);
-    if (shadow_root && !shadow_root->IsOpen())
-      break;
-  }
-
-  for (TreeScope* other_scope = &other.GetTreeScope(); other_scope;
-       other_scope = other_scope->ParentTreeScope()) {
-    if (other_scope == scope)
-      return false;
-  }
-  return true;
-}
-
 void Node::SetIsLink(bool is_link) {
   SetFlag(is_link && !SVGImage::IsInSVGImage(To<Element>(this)), kIsLinkFlag);
 }

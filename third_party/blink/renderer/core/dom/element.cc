@@ -10528,20 +10528,6 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
   setAttribute(html_names::kPseudoAttr, id);
 }
 
-bool Element::IsInDescendantTreeOf(const Element* shadow_host) const {
-  DCHECK(shadow_host);
-  DCHECK(IsShadowHost(shadow_host));
-
-  for (const Element* ancestor_shadow_host = OwnerShadowHost();
-       ancestor_shadow_host;
-       ancestor_shadow_host = ancestor_shadow_host->OwnerShadowHost()) {
-    if (ancestor_shadow_host == shadow_host) {
-      return true;
-    }
-  }
-  return false;
-}
-
 namespace {
 
 HeapVector<Member<Element>> CollectAncestorsToEnsure(Element& element) {

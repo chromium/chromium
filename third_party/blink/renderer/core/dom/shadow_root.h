@@ -112,9 +112,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void RebuildLayoutTree(WhitespaceAttacher&);
   void DetachLayoutTree(bool performing_reattach) override;
 
-  void RegisterScopedHTMLStyleChild();
-  void UnregisterScopedHTMLStyleChild();
-
   SlotAssignment& GetSlotAssignment() {
     DCHECK(slot_assignment_);
     return *slot_assignment_;
@@ -126,8 +123,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void DidAddSlot(HTMLSlotElement&);
   void DidChangeHostChildSlotName(const AtomicString& old_value,
                                   const AtomicString& new_value);
-
-  void DistributeIfNeeded();
 
   String GetInnerHTMLString() const;
   void SetInnerHTMLWithoutTrustedTypes(const String&,

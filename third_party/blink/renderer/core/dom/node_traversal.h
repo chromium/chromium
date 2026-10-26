@@ -130,7 +130,6 @@ class CORE_EXPORT NodeTraversal {
   static Node* PreviousSibling(const Node& node) {
     return node.previousSibling();
   }
-  static Node* PreviousAncestorSibling(const Node&, const Node* stay_within);
   static ContainerNode* Parent(const Node& node) { return node.parentNode(); }
   static Node* CommonAncestor(const Node& node_a, const Node& node_b);
   static unsigned Index(const Node& node) { return node.NodeIndex(); }

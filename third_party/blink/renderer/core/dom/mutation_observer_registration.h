@@ -78,8 +78,6 @@ class CORE_EXPORT MutationObserverRegistration final
     return static_cast<MutationType>(options_ & kMutationTypeAll);
   }
 
-  void AddRegistrationNodesToSet(HeapHashSet<Member<Node>>&) const;
-
   void Dispose();
 
   void Trace(Visitor*) const;

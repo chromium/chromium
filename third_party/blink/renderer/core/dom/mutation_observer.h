@@ -118,8 +118,6 @@ class CORE_EXPORT MutationObserver final
   void EnqueueMutationRecord(MutationRecord*);
   void SetHasTransientRegistration();
 
-  HeapHashSet<Member<Node>> GetObservedNodes() const;
-
   bool HasPendingActivity() const override { return !records_.empty(); }
 
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) final;

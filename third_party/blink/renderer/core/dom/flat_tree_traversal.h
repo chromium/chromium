@@ -178,8 +178,6 @@ class CORE_EXPORT FlatTreeTraversal {
   static void AssertPrecondition(const Node& node);
   static void AssertPostcondition(const Node* node);
 
-  static Node* ResolveDistributionStartingAt(const Node*, TraversalDirection);
-
   static Node* TraverseNext(const Node&);
   static Node* TraverseNext(const Node&, const Node* stay_within);
   static Node* TraverseNextSkippingChildren(const Node&,

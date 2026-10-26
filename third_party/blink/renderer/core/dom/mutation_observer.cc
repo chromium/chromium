@@ -382,13 +382,6 @@ void MutationObserver::SetHasTransientRegistration() {
   ActivateObserver(this);
 }
 
-HeapHashSet<Member<Node>> MutationObserver::GetObservedNodes() const {
-  HeapHashSet<Member<Node>> observed_nodes;
-  for (const auto& registration : registrations_)
-    registration->AddRegistrationNodesToSet(observed_nodes);
-  return observed_nodes;
-}
-
 void MutationObserver::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {
   if (state == mojom::FrameLifecycleState::kRunning)

@@ -541,8 +541,6 @@ class CORE_EXPORT ContainerNode : public Node {
   void AppendChildCommon(Node& child);
   void WillRemoveChildren();
   void WillRemoveChild(Node& child);
-  void RemoveDetachedChildrenInContainer(ContainerNode&);
-  void AddChildNodesToDeletionQueue(Node*&, Node*&, ContainerNode&);
 
   void NotifyNodeInserted(Node&,
                           ChildrenChangeSource = ChildrenChangeSource::kAPI);

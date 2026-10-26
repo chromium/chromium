@@ -165,7 +165,6 @@ HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
     : HTMLElement(tag_name, document),
       should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
   SetHasCustomStyleCallbacks();
-  document.IncrementImmediateChildFrameCreationCount();
 }
 
 const QualifiedName& HTMLFrameOwnerElement::SubResourceAttributeName() const {

@@ -94,7 +94,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_ready_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_import_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
@@ -6665,10 +6664,6 @@ EventListener* Document::GetWindowAttributeEventListener(
   return dom_window->GetAttributeEventListener(event_type);
 }
 
-void Document::EnqueueDisplayLockActivationTask(base::OnceClosure task) {
-  scripted_animation_controller_->EnqueueTask(std::move(task));
-}
-
 void Document::EnqueueAnimationFrameTask(base::OnceClosure task) {
   scripted_animation_controller_->EnqueueTask(std::move(task));
 }
@@ -7963,10 +7958,6 @@ SVGDocumentExtensions& Document::AccessSVGExtensions() {
   return *svg_extensions_;
 }
 
-bool Document::HasSVGRootNode() const {
-  return IsA<SVGSVGElement>(documentElement());
-}
-
 HTMLCollection* Document::images() {
   return EnsureCachedCollection<HTMLCollection>(kDocImages);
 }
@@ -8011,14 +8002,6 @@ DocumentNameCollection* Document::DocumentNamedItems(const AtomicString& name) {
 HTMLCollection* Document::DocumentAllNamedItems(const AtomicString& name) {
   return EnsureCachedCollection<DocumentAllNameCollection>(
       kDocumentAllNamedItems, name);
-}
-
-void Document::IncrementImmediateChildFrameCreationCount() {
-  data_->immediate_child_frame_creation_count_++;
-}
-
-int Document::GetImmediateChildFrameCreationCount() const {
-  return data_->immediate_child_frame_creation_count_;
 }
 
 DOMWindow* Document::defaultView() const {
@@ -9647,7 +9630,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(dialog_pointerdown_target_);
   visitor->Trace(popover_picker_pointerdown_info_);
-  visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
   visitor->Trace(all_open_dialogs_);
   visitor->Trace(elements_with_interest_);

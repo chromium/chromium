@@ -60,10 +60,6 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // To do email regex checks.
   Member<ScriptRegexp> email_regexp_;
 
-  // The number of immediate child frames created within this document so far.
-  // This count doesn't include this document's frame nor descendant frames.
-  int immediate_child_frame_creation_count_ = 0;
-
   // LCPP's LCP ElementLocator was matched against a tag against html
   // during preload scanning.
   bool lcpp_encountered_lcp_in_html = false;

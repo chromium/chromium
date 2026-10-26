@@ -127,18 +127,6 @@ bool MutationObserverRegistration::ShouldReceiveMutationFrom(
   return attribute_filter_.Contains(attribute_name->LocalName());
 }
 
-void MutationObserverRegistration::AddRegistrationNodesToSet(
-    HeapHashSet<Member<Node>>& nodes) const {
-  DCHECK(registration_node_);
-  nodes.insert(registration_node_.Get());
-  if (!transient_registration_nodes_)
-    return;
-  for (NodeHashSet::const_iterator iter =
-           transient_registration_nodes_->begin();
-       iter != transient_registration_nodes_->end(); ++iter)
-    nodes.insert(iter->Get());
-}
-
 void MutationObserverRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   visitor->Trace(registration_node_);
