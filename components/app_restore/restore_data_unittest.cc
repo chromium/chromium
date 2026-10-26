@@ -23,8 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace app_restore {
@@ -156,14 +156,14 @@ class RestoreDataTest : public testing::Test {
   void AddAppLaunchInfos() {
     auto app_launch_info1 = std::make_unique<AppLaunchInfo>(
         kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::kNewWindow, kDisplayId1,
+        ui::mojom::WindowOpenDisposition::kNewWindow, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionSend, kMimeType, kShareText1));
 
     auto app_launch_info2 = std::make_unique<AppLaunchInfo>(
         kAppId1, kWindowId2, apps::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::kNewForegroundTab, kDisplayId2,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionView, kMimeType, kShareText2));
     app_launch_info2->browser_extra_info.app_type_browser = kAppTypeBrower2;
@@ -173,7 +173,7 @@ class RestoreDataTest : public testing::Test {
 
     auto app_launch_info3 = std::make_unique<AppLaunchInfo>(
         kAppId2, kWindowId3, apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::kNewPopup, kDisplayId2,
+        ui::mojom::WindowOpenDisposition::kNewPopup, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         MakeIntent(kIntentActionView, kMimeType, kShareText1));
 
@@ -231,7 +231,7 @@ class RestoreDataTest : public testing::Test {
   void VerifyAppRestoreData(
       const std::unique_ptr<AppRestoreData>& data,
       apps::LaunchContainer container,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       int64_t display_id,
       std::vector<base::FilePath> file_paths,
       apps::IntentPtr intent,
@@ -350,7 +350,7 @@ class RestoreDataTest : public testing::Test {
     VerifyAppRestoreData(
         app_restore_data_it1->second,
         apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::kNewWindow, kDisplayId2,
+        ui::mojom::WindowOpenDisposition::kNewWindow, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionSend, kMimeType, kShareText1), kAppTypeBrower1,
@@ -367,7 +367,7 @@ class RestoreDataTest : public testing::Test {
     VerifyAppRestoreData(
         app_restore_data_it2->second,
         apps::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::kNewForegroundTab, kDisplayId1,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
         kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, desk_guid2_,
@@ -386,7 +386,7 @@ class RestoreDataTest : public testing::Test {
     VerifyAppRestoreData(
         launch_list_it2->second.begin()->second,
         apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::kNewPopup, kDisplayId1,
+        ui::mojom::WindowOpenDisposition::kNewPopup, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         MakeIntent(kIntentActionView, kMimeType, kShareText1), kAppTypeBrower3,
         kActivationIndex3, kFirstNonPinnedTabIndex, kDeskId3, desk_guid3_,
@@ -455,7 +455,7 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
   EXPECT_TRUE(app_restore_data_it4 != launch_list_it1->second.end());
   VerifyAppRestoreData(
       app_restore_data_it4->second, apps::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::kNewForegroundTab, kDisplayId1,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
       kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, desk_guid2_,
@@ -605,9 +605,9 @@ TEST_F(RestoreDataTest, GetAppLaunchInfo) {
   EXPECT_THAT(app_launch_info->container,
               testing::Optional(static_cast<int>(
                   apps::LaunchContainer::kLaunchContainerWindow)));
-  EXPECT_THAT(
-      app_launch_info->disposition,
-      testing::Optional(static_cast<int>(WindowOpenDisposition::kNewWindow)));
+  EXPECT_THAT(app_launch_info->disposition,
+              testing::Optional(static_cast<int>(
+                  ui::mojom::WindowOpenDisposition::kNewWindow)));
   EXPECT_FALSE(app_launch_info->arc_session_id.has_value());
   EXPECT_THAT(app_launch_info->display_id, testing::Optional(kDisplayId1));
 
@@ -748,7 +748,7 @@ TEST_F(RestoreDataTest, HasBrowser) {
 TEST_F(RestoreDataTest, CompareAppRestoreData) {
   auto app_launch_info_1 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, kDisplayId1,
+      ui::mojom::WindowOpenDisposition::kNewWindow, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                   base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionSend, kMimeType, kShareText1));
@@ -761,7 +761,7 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
   // Same as `app_launch_info_1`.
   auto app_launch_info_2 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, kDisplayId1,
+      ui::mojom::WindowOpenDisposition::kNewWindow, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                   base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionSend, kMimeType, kShareText1));
@@ -773,7 +773,7 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
 
   auto app_launch_info_3 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId2, apps::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::kNewForegroundTab, kDisplayId2,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, kDisplayId2,
       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionView, kMimeType, kShareText2));
 
@@ -799,7 +799,7 @@ TEST_F(RestoreDataTest, CompareAppRestoreDataIntent) {
   // Intent is nullptr.
   auto app_launch_info_1 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, kDisplayId1,
+      ui::mojom::WindowOpenDisposition::kNewWindow, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                   base::FilePath(kFilePath2)},
       nullptr);
@@ -807,7 +807,7 @@ TEST_F(RestoreDataTest, CompareAppRestoreDataIntent) {
   // Same as `app_launch_info_1`.
   auto app_launch_info_2 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, kDisplayId1,
+      ui::mojom::WindowOpenDisposition::kNewWindow, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                   base::FilePath(kFilePath2)},
       nullptr);

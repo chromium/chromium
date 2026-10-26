@@ -33,7 +33,6 @@
 #include "ui/aura/test/aura_test_helper.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "url/gurl.h"

@@ -6,12 +6,14 @@
 
 #include <utility>
 
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+
 namespace app_restore {
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              int32_t window_id,
                              apps::LaunchContainer container,
-                             WindowOpenDisposition disposition,
+                             ui::mojom::WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
                              apps::IntentPtr intent)
@@ -28,7 +30,7 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id, int32_t session_id)
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              apps::LaunchContainer container,
-                             WindowOpenDisposition disposition,
+                             ui::mojom::WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
                              apps::IntentPtr intent)

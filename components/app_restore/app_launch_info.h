@@ -13,7 +13,7 @@
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace app_restore {
 
@@ -23,7 +23,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
                 int32_t window_id,
                 apps::LaunchContainer container,
-                WindowOpenDisposition disposition,
+                ui::mojom::WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
                 apps::IntentPtr intent);
@@ -32,7 +32,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
 
   AppLaunchInfo(const std::string& app_id,
                 apps::LaunchContainer container,
-                WindowOpenDisposition disposition,
+                ui::mojom::WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
                 apps::IntentPtr intent);
