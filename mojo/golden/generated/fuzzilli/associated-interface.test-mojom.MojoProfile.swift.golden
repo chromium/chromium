@@ -97,9 +97,13 @@ extension ILType {
         ofGroup: "golden.ReceiverFromBrowserCallbackRouterReceiverHelper",
         withMethods: [
           "close",
+          "bindHandle",
         ])
+    fileprivate static let jsGoldenReceiverFromBrowserReceiverEndpoint: ILType = .object(
+        ofGroup: "golden.ReceiverFromBrowserReceiverEndpoint")
     fileprivate static let jsGoldenReceiverFromBrowserPendingAssociatedReceiver: ILType = .object(
-        ofGroup: "golden.ReceiverFromBrowserPendingAssociatedReceiver")
+        ofGroup: "golden.ReceiverFromBrowserPendingAssociatedReceiver",
+        withProperties: ["handle"])
 }
 
 extension ObjectGroup {
@@ -230,11 +234,18 @@ extension ObjectGroup {
         properties: [:],
         methods: [
             "close": [] => .undefined,
+            "bindHandle": [.plain(.jsGoldenReceiverFromBrowserReceiverEndpoint)] => .undefined,
         ])
+    fileprivate static let goldenReceiverFromBrowserReceiverEndpoint = ObjectGroup(
+        name: "golden.ReceiverFromBrowserReceiverEndpoint",
+        instanceType: .jsGoldenReceiverFromBrowserReceiverEndpoint,
+        properties: [:],
+        methods: [:]
+    )
     fileprivate static let goldenReceiverFromBrowserPendingAssociatedReceiver = ObjectGroup(
         name: "golden.ReceiverFromBrowserPendingAssociatedReceiver",
         instanceType: .jsGoldenReceiverFromBrowserPendingAssociatedReceiver,
-        properties: [:],
+        properties: ["handle": .jsGoldenReceiverFromBrowserReceiverEndpoint],
         methods: [:]
     )
 }
@@ -369,6 +380,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenRemoteFromJsRemoteWrapper,
     .goldenReceiverFromBrowserCallbackRouter,
     .goldenReceiverFromBrowserCallbackRouterReceiverHelper,
+    .goldenReceiverFromBrowserReceiverEndpoint,
     .goldenReceiverFromBrowserPendingAssociatedReceiver,
     .goldenPrimaryReturnRemoteResponseParams,
     .goldenPrimaryReturnReceiverResponseParams,

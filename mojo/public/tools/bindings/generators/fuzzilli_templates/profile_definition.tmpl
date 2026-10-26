@@ -15,6 +15,10 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .{{receiver|format_unique_name|to_camel(True)}}CallbackRouter,
     .{{receiver|format_unique_name|to_camel(True)}}CallbackRouterReceiverHelper,
 {%- if receiver in interface_pending_receivers or
+       receiver in interface_associated_pending_receivers %}
+    .{{receiver|format_unique_name|to_camel(True)}}ReceiverEndpoint,
+{%- endif %}
+{%- if receiver in interface_pending_receivers or
        receiver in interface_pending_remotes %}
     .{{receiver|format_unique_name|to_camel(True)}}PendingReceiver,
 {%- endif %}
