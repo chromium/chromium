@@ -76,7 +76,7 @@ void RecordProfileSessionDuration(Profile* profile,
       base::Hours(24), 50);
 }
 
-void RecordBrowserActivation(const Profile* profile) {
+void RecordBrowserActivation(Profile* profile) {
   CHECK(profile, base::NotFatalUntil::M162);
   int profile_bucket = GetMetricsBucketIndex(profile);
 
@@ -84,6 +84,9 @@ void RecordBrowserActivation(const Profile* profile) {
     UMA_HISTOGRAM_EXACT_LINEAR("Profile.BrowserActive.PerProfile",
                                profile_bucket, kMaxProfileBucket);
   }
+
+  ProfileMetricsServiceFactory::GetForProfile(profile)->UmaHistogramBoolean(
+      "Profile.BrowserActive", true);
 }
 
 void RecordProfileSwitch() {
@@ -93,7 +96,7 @@ void RecordProfileSwitch() {
                            profiles_count);
 }
 
-void RecordUserAction(const Profile* profile) {
+void RecordUserAction(Profile* profile) {
   if (!profile) {
     return;
   }
@@ -104,6 +107,9 @@ void RecordUserAction(const Profile* profile) {
     UMA_HISTOGRAM_EXACT_LINEAR("Profile.UserAction.PerProfile", profile_bucket,
                                kMaxProfileBucket);
   }
+
+  ProfileMetricsServiceFactory::GetForProfile(profile)->UmaHistogramBoolean(
+      "Profile.UserAction", true);
 }
 
 void RecordProfilesState() {

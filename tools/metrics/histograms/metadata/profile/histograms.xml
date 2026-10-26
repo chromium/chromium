@@ -166,6 +166,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.BrowserActive{ProfileIndex}" enum="BooleanHit"
+    expires_after="2027-03-28">
+  <owner>rsult@google.com</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded every time a browser window becomes active. Incognito browser
+    windows count towards the original profile.
+
+    {ProfileIndex}
+  </summary>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
     expires_after="never">
 <!-- expires-never: Used to log the profile deletions actions and their source.
@@ -787,6 +801,26 @@ chromium-metrics-reviews@google.com.
     Note: The guest profile has bucket 0. Regular profiles start at bucket 1.
     Incognito profiles count towards the original profile.
   </summary>
+</histogram>
+
+<histogram name="Profile.UserAction{ProfileIndex}" enum="BooleanHit"
+    expires_after="never">
+<!-- expires-never: Used by the Chrome Profile Metrics dashboard to track user
+      actions per profile, for users with multiple active profiles. -->
+
+  <owner>rsult@google.com</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Helper histogram to track user actions per profile. Recorded when there is
+    an active profile browser instance and a UMA UserAction is recorded, i.e. if
+    there's an active profile, a recording of a UMA UserAction will result in a
+    recording of a sample in this histogram. Incognito profiles count towards
+    the original profile.
+
+    {ProfileIndex}
+  </summary>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Profile.Windows.ProfileLockStatus.{BrowserProfileType}"

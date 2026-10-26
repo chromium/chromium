@@ -5,11 +5,13 @@
 #include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -140,15 +142,28 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     metrics::DesktopSessionDurationTracker::Get()->OnUserEvent(std::nullopt);
   }
 
-  // Method to test the recording of the Profile.UserAction.PerProfile
-  // histogram.
-  void SimulateUserActionAndExpectRecording(int bucket) {
+  // Method to test the recording of the Profile.UserAction.PerProfile and
+  // Profile.UserAction{ProfileIndex} histograms.
+  void SimulateUserActionAndExpectRecording(
+      int bucket,
+      std::string_view profile_suffix = "") {
     // A new |base::HistogramTester| has to be created, because other methods
     // could've already triggered user actions.
     base::HistogramTester histograms;
     base::RecordAction(base::UserMetricsAction("Test_Action"));
     histograms.ExpectBucketCount("Profile.UserAction.PerProfile", bucket,
                                  /*count=*/1);
+    histograms.ExpectUniqueSample("Profile.UserAction", true,
+                                  /*expected_bucket_count=*/1);
+    if (!profile_suffix.empty()) {
+      histograms.ExpectUniqueSample(
+          base::StrCat({"Profile.UserAction", profile_suffix}), true,
+          /*expected_bucket_count=*/1);
+    } else {
+      EXPECT_EQ(histograms.GetTotalCountsForPrefix("Profile.UserAction.Profile")
+                    .size(),
+                0u);
+    }
   }
 
   TestingProfileManager* profile_manager() { return &profile_manager_; }
@@ -172,22 +187,28 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
-  Profile* regular_profile = profile_manager()->CreateTestingProfile("p1");
+  Profile* regular_profile =
+      profile_manager()->CreateTestingProfile("Profile 1");
   Profile* guest_profile = profile_manager()->CreateGuestProfile();
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 0);
+  histograms()->ExpectTotalCount("Profile.BrowserActive", 0);
 
   // Check whether the regular profile is counted in bucket 1. (Bucket 0 is
   // reserved for the guest profile.)
   ActivateBrowser(regular_profile);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/1);
-  SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile1", true, 1);
+  SimulateUserActionAndExpectRecording(/*bucket=*/1, ".Profile1");
   histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
                                  /*count=*/0);
 
   ActivateGuestBrowser(guest_profile);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/0, /*count=*/1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 2);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile1", true, 1);
   SimulateUserActionAndExpectRecording(/*bucket=*/0);
   histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
                                    /*bucket=*/1, /*count=*/1);
@@ -196,16 +217,22 @@ TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
 }
 
 TEST_F(ProfileActivityMetricsRecorderTest, IncognitoProfile) {
-  Profile* regular_profile = profile_manager()->CreateTestingProfile("p1");
+  Profile* regular_profile =
+      profile_manager()->CreateTestingProfile("Profile 1");
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 0);
+  histograms()->ExpectTotalCount("Profile.BrowserActive", 0);
 
   ActivateBrowser(regular_profile);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile1", true, 1);
 
   ActivateIncognitoBrowser(regular_profile);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 2);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile1", true, 2);
 
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 2);
   histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
@@ -218,23 +245,29 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   // Profile 2: Profile is created. This does not affect the histogram.
   Profile* profile2 = profile_manager()->CreateTestingProfile("Profile 2");
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 0);
+  histograms()->ExpectTotalCount("Profile.BrowserActive", 0);
 
   // Profile 1: Browser is activated for the first time. The profile is assigned
   // bucket 1.
   ActivateBrowser(profile1);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/1);
-  SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile1", true, 1);
+  SimulateUserActionAndExpectRecording(/*bucket=*/1, ".Profile1");
 
   // Profile 3: Profile is created. This does not affect the histogram.
   Profile* profile3 = profile_manager()->CreateTestingProfile("Profile 3");
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 1);
+  histograms()->ExpectTotalCount("Profile.BrowserActive", 1);
 
   // Profile 1: Another browser is activated.
   ActivateBrowser(profile1);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
-  SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 2);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile1", true, 2);
+  SimulateUserActionAndExpectRecording(/*bucket=*/1, ".Profile1");
   // No profile switch, so far.
   histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
                                  /*count=*/0);
@@ -247,7 +280,9 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   ActivateBrowser(profile3);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/2, /*count=*/1);
-  SimulateUserActionAndExpectRecording(/*bucket=*/2);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 3);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile3", true, 1);
+  SimulateUserActionAndExpectRecording(/*bucket=*/2, ".Profile3");
   histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
                                    /*bucket=*/3, /*count=*/1);
 
@@ -267,7 +302,9 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   ActivateBrowser(profile2);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/3, /*count=*/1);
-  SimulateUserActionAndExpectRecording(/*bucket=*/3);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive", true, 4);
+  histograms()->ExpectUniqueSample("Profile.BrowserActive.Profile2", true, 1);
+  SimulateUserActionAndExpectRecording(/*bucket=*/3, ".Profile2");
   histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
                                    /*bucket=*/3, /*count=*/2);
 
