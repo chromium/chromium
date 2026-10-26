@@ -50,7 +50,13 @@ def CallAndWriteDepfileIfStale(
     input_strings = list(input_strings or [])
     output_paths = list(output_paths or [])
 
-    input_paths += print_python_deps.ComputePythonDependencies()
+    # Exclude cpython3 stdlib paths because RBE uses linux-amd64 while local
+    # builds use host, which would otherwise show up as changed inputs.
+    input_paths += [
+        p
+        for p in print_python_deps.ComputePythonDependencies()
+        if '/third_party/cpython3/' not in p.replace('\\', '/')
+    ]
 
     CallAndRecordIfStale(
         on_stale_md5,
@@ -463,14 +469,11 @@ class _Metadata:
 
 
 def _ComputeTagForPath(path):
-    stat_result = os.stat(path)
-    if stat_result.st_size > 1 * 1024 * 1024:
-        # Fallback to mtime for large files so that md5_check does not take too long
-        # to run.
-        return int(stat_result.st_mtime)
+    # Always hash file contents because mtime cannot be trusted for RBE builds.
     md5 = hashlib.md5()
     with open(path, 'rb') as f:
-        md5.update(f.read())
+        while chunk := f.read(1024 * 1024):
+            md5.update(chunk)
     return md5.hexdigest()
 
 
