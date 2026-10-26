@@ -13,7 +13,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 class InitialWebUIWindowMetricsManager;
-class Profile;
 class WaapUIMetricsService;
 
 namespace content {
@@ -59,6 +58,9 @@ class InitialWebUIMetricsDispatcher {
  protected:
   InitialWebUIMetricsDispatcher();
 
+  // Returns the service of the profile of the window that metrics are
+  // reported to. Only called while `GetWindowMetricsManager()` returns a
+  // manager, and never returns null then.
   virtual WaapUIMetricsService* GetService() = 0;
   virtual InitialWebUIWindowMetricsManager* GetWindowMetricsManager() = 0;
 
@@ -109,12 +111,13 @@ class InitialWebUIWebContentsMetricsDispatcher
 };
 
 // Dispatcher for native Views (e.g. Views ReloadButton).
-// Directly associated with a Profile and InitialWebUIWindowMetricsManager.
+// Directly associated with a WaapUIMetricsService and
+// InitialWebUIWindowMetricsManager.
 class InitialWebUINativeMetricsDispatcher
     : public InitialWebUIMetricsDispatcher {
  public:
   InitialWebUINativeMetricsDispatcher(
-      Profile* profile,
+      WaapUIMetricsService* metrics_service,
       InitialWebUIWindowMetricsManager* window_metrics_manager);
   ~InitialWebUINativeMetricsDispatcher() override;
 
@@ -124,7 +127,8 @@ class InitialWebUINativeMetricsDispatcher
   InitialWebUIWindowMetricsManager* GetWindowMetricsManager() override;
 
  private:
-  const raw_ptr<Profile> profile_;
+  // Never null.
+  const raw_ptr<WaapUIMetricsService> metrics_service_;
   const raw_ptr<InitialWebUIWindowMetricsManager> window_metrics_manager_;
 };
 

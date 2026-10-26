@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 
-#include "chrome/browser/profiles/profile.h"
+#include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
@@ -59,7 +59,8 @@ void InitialWebUIMetricsDispatcher::OnFirstPaint(base::TimeTicks paint_time) {
   bool is_startup = false;
   if (!manager->should_skip_startup_metrics()) {
     WaapUIMetricsService* service = GetService();
-    if (service && !WaapUIMetricsService::IsStartupFirstPaintRecorded()) {
+    CHECK(service);
+    if (!WaapUIMetricsService::IsStartupFirstPaintRecorded()) {
       is_startup = true;
       service->OnFirstPaint(paint_time);
     }
@@ -83,8 +84,8 @@ void InitialWebUIMetricsDispatcher::OnFirstContentfulPaint(
   bool is_startup = false;
   if (!manager->should_skip_startup_metrics()) {
     WaapUIMetricsService* service = GetService();
-    if (service &&
-        !WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded()) {
+    CHECK(service);
+    if (!WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded()) {
       is_startup = true;
       service->OnFirstContentfulPaint(fcp_time);
     }
@@ -103,11 +104,11 @@ void InitialWebUIMetricsDispatcher::FlushMetricsToManager() {
   if (renderer_process_times_.has_value()) {
     if (!manager->should_skip_latency_metrics() &&
         !manager->should_skip_startup_metrics()) {
-      if (WaapUIMetricsService* service = GetService()) {
-        service->OnReloadButtonRendererProcessCreatedAndLaunched(
-            renderer_process_times_->init_time,
-            renderer_process_times_->launched_time);
-      }
+      WaapUIMetricsService* service = GetService();
+      CHECK(service);
+      service->OnReloadButtonRendererProcessCreatedAndLaunched(
+          renderer_process_times_->init_time,
+          renderer_process_times_->launched_time);
     }
     renderer_process_times_.reset();
   }
@@ -125,8 +126,12 @@ InitialWebUIWebContentsMetricsDispatcher::
     ~InitialWebUIWebContentsMetricsDispatcher() = default;
 
 WaapUIMetricsService* InitialWebUIWebContentsMetricsDispatcher::GetService() {
-  return WaapUIMetricsService::Get(
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  // Use the profile of the window rather than the one of the WebContents,
+  // which can be the shared TopChromeWebUIProfile that has no
+  // `WaapUIMetricsService`.
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(&GetWebContents());
+  return browser ? WaapUIMetricsService::Get(browser->GetProfile()) : nullptr;
 }
 
 InitialWebUIWindowMetricsManager*
@@ -147,15 +152,18 @@ void InitialWebUIWebContentsMetricsDispatcher::OnManagerUnavailable() {
 
 // InitialWebUINativeMetricsDispatcher:
 InitialWebUINativeMetricsDispatcher::InitialWebUINativeMetricsDispatcher(
-    Profile* profile,
+    WaapUIMetricsService* metrics_service,
     InitialWebUIWindowMetricsManager* window_metrics_manager)
-    : profile_(profile), window_metrics_manager_(window_metrics_manager) {}
+    : metrics_service_(metrics_service),
+      window_metrics_manager_(window_metrics_manager) {
+  CHECK(metrics_service_);
+}
 
 InitialWebUINativeMetricsDispatcher::~InitialWebUINativeMetricsDispatcher() =
     default;
 
 WaapUIMetricsService* InitialWebUINativeMetricsDispatcher::GetService() {
-  return profile_ ? WaapUIMetricsService::Get(profile_) : nullptr;
+  return metrics_service_;
 }
 
 InitialWebUIWindowMetricsManager*

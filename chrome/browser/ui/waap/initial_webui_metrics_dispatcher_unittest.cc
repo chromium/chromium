@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/mock_base_window.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -116,6 +121,42 @@ TEST_F(InitialWebUIMetricsDispatcherTest, StartupOnCommitDeferredUntilBound) {
       "InitialWebUI.Startup.ReloadButton.RendererProcessCreated", 1);
   histograms.ExpectTotalCount(
       "InitialWebUI.Startup.ReloadButton.RendererProcessLaunched", 1);
+}
+
+// A WebContents in the shared TopChromeWebUIProfile, which has no
+// `WaapUIMetricsService`, records startup metrics with the service of the
+// profile of its window.
+// TODO(crbug.com/548363252): Add a browser test with
+// `features::kTopChromeWebUISharedRenderer` that checks these metrics end to
+// end, once the WebUI toolbar is created in TopChromeWebUIProfile.
+TEST_F(InitialWebUIMetricsDispatcherTest,
+       StartupMetricsUseWindowProfileForTopChromeWebUIProfile) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_FALSE(WaapUIMetricsService::Get(top_chrome_webui_profile));
+  std::unique_ptr<content::WebContents> contents =
+      content::WebContentsTester::CreateTestWebContents(
+          top_chrome_webui_profile, /*instance=*/nullptr);
+
+  base::HistogramTester histograms;
+  InitialWebUIWindowMetricsManager manager(&browser_window_);
+  webui::SetBrowserWindowInterface(contents.get(), &browser_window_);
+
+  auto* dispatcher =
+      InitialWebUIMetricsDispatcher::GetOrCreateForWebContents(contents.get());
+  ASSERT_TRUE(dispatcher);
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  dispatcher->OnCommit(start_time, start_time + base::Milliseconds(10));
+  dispatcher->OnFirstPaint(start_time + kTestLatency);
+  dispatcher->OnFirstContentfulPaint(start_time + kTestLatency);
+
+  histograms.ExpectTotalCount(
+      "InitialWebUI.Startup.ReloadButton.RendererProcessCreated", 1);
+  histograms.ExpectTotalCount("InitialWebUI.Startup.ReloadButton.FirstPaint",
+                              1);
+  histograms.ExpectTotalCount(
+      "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", 1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -316,7 +357,8 @@ TEST_F(InitialWebUIMetricsDispatcherTest,
 
 TEST_F(InitialWebUIMetricsDispatcherTest, NativeDispatcherCreation) {
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  InitialWebUINativeMetricsDispatcher dispatcher(profile(), &manager);
+  InitialWebUINativeMetricsDispatcher dispatcher(
+      WaapUIMetricsService::Get(profile()), &manager);
 
   base::TimeTicks now = base::TimeTicks::Now();
   dispatcher.OnCreated();
