@@ -290,8 +290,8 @@ std::string CreateCommandLineArgumentFromFeatureList(
 // Returns the synthetic field trial name used to identify a runtime mutation
 // simulated by ScopedFeatureList. In production, this name comes from the
 // runtime-mutable study in the variations seed.
-// TODO(crbug.com/536851701): Let callers specify the study and group names, as
-// well as the params, of the simulated mutation.
+// TODO(crbug.com/536851701): Let callers specify the study and group names of
+// the simulated mutation.
 std::string RuntimeMutationTrialName(const Feature& feature) {
   return StrCat({"RuntimeMutationStudy", feature.name});
 }

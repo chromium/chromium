@@ -75,7 +75,8 @@ typedef std::string (*FieldTrialParamsDecodeStringFunc)(const std::string& str);
 // Getting a param value from a FeatureParam<T> will have the same semantics as
 // GetFieldTrialParamValueByFeature(), see that function's comments for details.
 // `cache_getter` is used to provide a dedicated getter that is used to give a
-// local cache to the FeatureParam. Usually, this is automatically generated and
+// local cache to the FeatureParam (bypassed if `feature` is defined with
+// `BASE_RUNTIME_MUTABLE_FEATURE`). Usually, this is automatically generated and
 // provided via BASE_FEATURE_PARAM() or BASE_FEATURE_ENUM_PARAM() macro.
 //
 // Example to declares a double-valued parameter.
@@ -292,11 +293,13 @@ BASE_EXPORT bool GetFieldTrialParams(const std::string& trial_name,
 
 // Retrieves the set of key-value |params| for the field trial associated with
 // the specified |feature|. A feature is associated with at most one field
-// trial and selected group. See  base/feature_list.h for more information on
+// trial and selected group. See base/feature_list.h for more information on
 // features. If the feature is not enabled, or if there's no associated params,
 // returns false and does not modify |params|. Calling this function will
 // result in the associated field trial being marked as active if found (i.e.
-// group() will be called on it), if it wasn't already. Thread safe.
+// group() will be called on it), if it wasn't already. Thread safe for features
+// defined with BASE_FEATURE; for features defined with
+// BASE_RUNTIME_MUTABLE_FEATURE, may only be called from the main sequence.
 BASE_EXPORT bool GetFieldTrialParamsByFeature(const base::Feature& feature,
                                               FieldTrialParams* params);
 
@@ -315,7 +318,9 @@ BASE_EXPORT std::string GetFieldTrialParamValue(const std::string& trial_name,
 // more information on features. If the feature is not enabled, or the
 // specified parameter does not exist, returns an empty string. Calling this
 // function will result in the associated field trial being marked as active if
-// found (i.e. group() will be called on it), if it wasn't already. Thread safe.
+// found (i.e. group() will be called on it), if it wasn't already. Thread safe
+// for features defined with BASE_FEATURE; for features defined with
+// BASE_RUNTIME_MUTABLE_FEATURE, may only be called from the main sequence.
 BASE_EXPORT std::string GetFieldTrialParamValueByFeature(
     const base::Feature& feature,
     const std::string& param_name);

@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
   // side trials are set up, before initializing the singleton feature list.
   // This must be used to enable features that are runtime mutable with their
   // callbacks, allowing their enabled/disabled state to be changed at runtime.
+  // Subclasses overriding this method should also call the base class
+  // implementation.
   virtual void EnableRuntimeMutableFeatures(base::FeatureList* feature_list) {}
 };
 

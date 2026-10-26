@@ -54,14 +54,16 @@ class FeatureListTest;
 // state is fixed at initialization time, and one for runtime mutable features,
 // whose state may be updated at runtime as new Variations seeds are received.
 //
-// TODO: http://crbug.com/482450632 - Runtime mutable features are not fully
-// implemented or supported; they are not yet ready for general use. Update
-// documentation when they are ready for general use.
+// TODO(crbug.com/482450632): Runtime mutable features are currently only
+// supported in the browser process (see crbug.com/536851532 for child-process
+// support).
 //
 // The feature state of runtime mutable features, and any related parameters,
-// may only be queried from the main thread. Additionally, runtime mutable
+// may only be queried from the main sequence. Additionally, runtime mutable
 // features must have their runtime mutability explicitly enabled via the
-// `FeatureList::EnableRuntimeMutability()` function call.
+// `FeatureList::EnableRuntimeMutability()` function call (see
+// `PlatformFieldTrials::EnableRuntimeMutableFeatures()` and its
+// platform-specific overrides).
 //
 // This macro can be used in two ways:
 //
@@ -123,7 +125,8 @@ class FeatureListTest;
   extern constinit const base::FeatureParam<T> feature_object_name
 
 // Provides a definition for `feature_object_name` with `T`, `feature`, `name`
-// and `default_value`, with an internal parsed value cache.
+// and `default_value`, with an internal parsed value cache (bypassed if
+// `feature` is defined with `BASE_RUNTIME_MUTABLE_FEATURE`).
 //
 // This macro can be used in two ways:
 //

@@ -662,9 +662,7 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdateImpl(
   if (it == runtime_mutable_overrides_.end()) {
     // The feature is not enabled for runtime mutability. This could be because
     // the feature is not runtime mutable, or because EnableRuntimeMutability()
-    // has not been called for the feature, or because runtime mutability
-    // has been disabled due to an early (pre-feature-list-initialization)
-    // access.
+    // has not been called for the feature.
     LogRuntimeMutabilityResult(feature_name,
                                internal::RuntimeMutabilityResult::kFailure);
     return std::nullopt;

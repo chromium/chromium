@@ -295,7 +295,7 @@ TEST_F(RuntimeFieldTrialOverridesTest, GetRuntimeOverride) {
   auto* overrides = RuntimeFieldTrialOverrides::GetInstance();
   auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
 
-  // Initially, looking up a trial should return std::nullopt.
+  // Initially, looking up a trial should return nullptr.
   EXPECT_FALSE(overrides->GetRuntimeOverride("Trial") != nullptr);
 
   // Apply override.
@@ -314,7 +314,7 @@ TEST_F(RuntimeFieldTrialOverridesTest, GetRuntimeOverride) {
   EXPECT_EQ(override_info->group_name(), "Group");
   EXPECT_EQ(override_info->overridden_trial(), trial);
 
-  // Looking up a different trial name should still return std::nullopt.
+  // Looking up a different trial name should still return nullptr.
   EXPECT_FALSE(overrides->GetRuntimeOverride("OtherTrial") != nullptr);
 }
 
