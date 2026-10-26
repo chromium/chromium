@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package browser_actuator;
+
+// Proof that the Chrome profile holding the co-location signing key wrote
+// this value. Carried inside a google.protobuf.Any whose type_url is
+// "type.googleapis.com/browser_actuator.ChromeColocationProof".
+message ChromeColocationProof {
+  // DER ECDSA-P256-SHA256 signature, made with the profile's co-location
+  // signing key, over:
+  //   "Chrome co-location proof v1"  (27 ASCII bytes, no terminator)
+  //   || timestamp_seconds           (8 bytes, big-endian int64)
+  // The label is never transmitted; signer and verifier both hard-code it.
+  bytes signature = 1;
+
+  // When the proof was made, in seconds since the Unix epoch (UTC). This is
+  // the exact value covered by `signature`.
+  int64 timestamp_seconds = 2;
+}
