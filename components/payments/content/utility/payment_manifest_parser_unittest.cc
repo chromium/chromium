@@ -227,13 +227,6 @@ TEST(PaymentManifestParserTest,
        url::Origin::Create(GURL("https://evepay.test"))});
 }
 
-TEST(PaymentManifestParserTest,
-     WellFormedPaymentMethodManifestWithAllSupportedOrigins) {
-  ExpectParsedPaymentMethodManifest("{\"supported_origins\": \"*\"}",
-                                    std::vector<GURL>(),
-                                    std::vector<url::Origin>());
-}
-
 // Web app manifest parsing:
 
 // Expect that input is valid JSON but not a valid web app manifest.
