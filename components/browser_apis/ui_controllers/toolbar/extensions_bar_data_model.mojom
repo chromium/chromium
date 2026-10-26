@@ -36,4 +36,7 @@ struct ExtensionActionInfo {
   // "pinned by default" IPH (kExtensionsPinnedByDefaultElementId). Set only
   // while that IPH is pending or showing for this extension.
   bool is_pinned_by_default_iph_anchor;
+
+  // Should this button appear highlighted?
+  bool highlighted;
 };

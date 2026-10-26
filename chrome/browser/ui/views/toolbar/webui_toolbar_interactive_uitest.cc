@@ -2916,6 +2916,22 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
       ExtensionsContainer::From(*browser()));
   ASSERT_TRUE(container);
 
+  auto wait_for_button_highlighted = [&](const std::string& id) {
+    return base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 web_contents,
+                 base::StringPrintf(
+                     "document.querySelector('toolbar-app').shadowRoot"
+                     ".querySelector('#extensions').shadowRoot"
+                     ".querySelector("
+                     "'webui-toolbar-extension[data-key=\"%s\"]')"
+                     ".shadowRoot.querySelector('toolbar-chip-button')"
+                     ".hasAttribute('is-menu-open')",
+                     id.c_str()))
+          .ExtractBool();
+    });
+  };
+
   // 1. Test onClick plumbing for the extension.
   {
     ExtensionTestMessageListener listener("clicked");
@@ -2939,16 +2955,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
         base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
 
     // Verify button becomes highlighted.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return content::EvalJs(
-                 web_contents,
-                 "document.querySelector('toolbar-app').shadowRoot"
-                 ".querySelector('#extensions').shadowRoot"
-                 ".querySelector('webui-toolbar-extension[data-key=\"\"]')"
-                 ".shadowRoot.querySelector('toolbar-chip-button')"
-                 ".hasAttribute('is-menu-open')")
-          .ExtractBool();
-    }));
+    EXPECT_TRUE(wait_for_button_highlighted(""));
 
     // Toggle it back off.
     LeftClickExtensionButton(web_contents, "");
@@ -2966,6 +2973,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
 
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return container->context_menu_ != nullptr; }));
+
+    // Verify button becomes highlighted.
+    EXPECT_TRUE(wait_for_button_highlighted(extension_id));
   }
 }
 

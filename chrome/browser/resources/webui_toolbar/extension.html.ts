@@ -10,7 +10,8 @@ export function getHtml(this: ExtensionElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
-    ?is-menu-open="${this.trackedHighlighted}" .tooltip="${this.state.tooltip}"
+    ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
+    .tooltip="${this.state.tooltip}"
     .ariaLabel="${this.state.accessibleName || this.state.tooltip}"
     .ariaHasPopup="${'menu'}" draggable="${this.isDraggable()}"
     @dragstart="${this.onDragstart}" @dragend="${this.onDragend}"

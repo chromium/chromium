@@ -47,87 +47,19 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
-class WebUIToolbarExtensionsContainer::ActionInfo {
- public:
-  ActionInfo(WebUIToolbarExtensionsContainer& extensions_container,
-             BrowserWindowInterface& browser,
-             std::unique_ptr<ExtensionActionViewModel> model)
-      : extensions_container_(extensions_container),
-        browser_(browser),
-        model_(std::move(model)),
-        model_subscription_(
-            model_->RegisterIconUpdateObserver(base::BindRepeating(
-                &WebUIToolbarExtensionsContainer::NotifyOfOneAction,
-                base::Unretained(extensions_container_),
-                model_->GetId()))) {}
-
-  ui::TrackedElement* GetAnchor() {
-    return extensions_container_->GetExtensionAnchor(model_->GetId());
-  }
-
-  ExtensionActionViewModel* model() { return model_.get(); }
-
-  // Returns the icon to show in the toolbar for this action on the active tab,
-  // greyed out if the action is disabled there.
-  ui::ImageModel GetIconModel() {
-    content::WebContents* web_contents =
-        browser_->GetTabStripModel()->GetActiveWebContents();
-    ui::ImageModel icon_model =
-        model_->GetIcon(web_contents, gfx::Size(20, 20));
-    if (!model_->IsEnabled(web_contents)) {
-      icon_model = ui::GetDefaultDisabledIconFromImageModel(
-          icon_model, extensions_container_->widget_->GetColorProvider());
-    }
-    return icon_model;
-  }
-
-  extensions_bar::mojom::ExtensionActionInfoPtr ToMojo() {
-    content::WebContents* web_contents =
-        browser_->GetTabStripModel()->GetActiveWebContents();
-    auto result = extensions_bar::mojom::ExtensionActionInfo::New();
-    result->id = model_->GetId();
-    result->accessible_name = model_->GetAccessibleName(web_contents);
-    result->tooltip = model_->GetTooltip(web_contents);
-    result->force_visible =
-        extensions_container_->ShouldForceVisibility(result->id);
-    result->is_visible =
-        extensions_container_->IsActionVisibleOnToolbar(result->id);
-    result->is_pinned_by_default_iph_anchor =
-        extensions_container_->pinned_by_default_iph_extension_id_ ==
-        result->id;
-
-    if (result->is_visible) {
-      icon_handle_ =
-          extensions_container_->icon_table_->RegisterImageModelTryReuse(
-              GetIconModel(), icon_handle_);
-      result->icon = icon_handle_;
-    } else {
-      icon_handle_ = toolbar_ui_api::IconHandle();
-      result->icon = icon_handle_;
-    }
-    return result;
-  }
-
- private:
-  const raw_ref<WebUIToolbarExtensionsContainer> extensions_container_;
-  const raw_ref<BrowserWindowInterface> browser_;
-  std::unique_ptr<ExtensionActionViewModel> model_;
-  base::CallbackListSubscription model_subscription_;
-  toolbar_ui_api::IconHandle icon_handle_;
-};
-
 // This is based on ExtensionContextMenuController.
 class WebUIToolbarExtensionsContainer::ContextMenu {
  public:
   static std::unique_ptr<ContextMenu> MaybeCreate(
       WebUIToolbarExtensionsContainer& extensions_container,
       const std::string& action_id) {
-    auto it = extensions_container.actions_.find(action_id);
-    CHECK(it != extensions_container.actions_.end());
+    ToolbarActionViewModel* action =
+        extensions_container.GetActionForId(action_id);
+    CHECK(action);
 
-    ui::MenuModel* model = it->second->model()->GetContextMenu(
-        extensions::ExtensionContextMenuModel::ContextMenuSource::
-            kToolbarAction);
+    ui::MenuModel* model =
+        action->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                   ContextMenuSource::kToolbarAction);
 
     // It's possible the action doesn't have a context menu.
     if (!model) {
@@ -185,6 +117,78 @@ class WebUIToolbarExtensionsContainer::ContextMenu {
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   base::WeakPtrFactory<ContextMenu> weak_ptr_factory_{this};
+};
+
+class WebUIToolbarExtensionsContainer::ActionInfo {
+ public:
+  ActionInfo(WebUIToolbarExtensionsContainer& extensions_container,
+             BrowserWindowInterface& browser,
+             std::unique_ptr<ExtensionActionViewModel> model)
+      : extensions_container_(extensions_container),
+        browser_(browser),
+        model_(std::move(model)),
+        model_subscription_(
+            model_->RegisterIconUpdateObserver(base::BindRepeating(
+                &WebUIToolbarExtensionsContainer::NotifyOfOneAction,
+                base::Unretained(extensions_container_),
+                model_->GetId()))) {}
+
+  ui::TrackedElement* GetAnchor() {
+    return extensions_container_->GetExtensionAnchor(model_->GetId());
+  }
+
+  ExtensionActionViewModel* model() { return model_.get(); }
+
+  // Returns the icon to show in the toolbar for this action on the active tab,
+  // greyed out if the action is disabled there.
+  ui::ImageModel GetIconModel() {
+    content::WebContents* web_contents =
+        browser_->GetTabStripModel()->GetActiveWebContents();
+    ui::ImageModel icon_model =
+        model_->GetIcon(web_contents, gfx::Size(20, 20));
+    if (!model_->IsEnabled(web_contents)) {
+      icon_model = ui::GetDefaultDisabledIconFromImageModel(
+          icon_model, extensions_container_->widget_->GetColorProvider());
+    }
+    return icon_model;
+  }
+
+  extensions_bar::mojom::ExtensionActionInfoPtr ToMojo() {
+    content::WebContents* web_contents =
+        browser_->GetTabStripModel()->GetActiveWebContents();
+    auto result = extensions_bar::mojom::ExtensionActionInfo::New();
+    result->id = model_->GetId();
+    result->accessible_name = model_->GetAccessibleName(web_contents);
+    result->tooltip = model_->GetTooltip(web_contents);
+    result->force_visible =
+        extensions_container_->ShouldForceVisibility(result->id);
+    result->is_visible =
+        extensions_container_->IsActionVisibleOnToolbar(result->id);
+    result->is_pinned_by_default_iph_anchor =
+        extensions_container_->pinned_by_default_iph_extension_id_ ==
+        result->id;
+    result->highlighted =
+        extensions_container_->context_menu_ &&
+        extensions_container_->context_menu_->action_id() == result->id;
+
+    if (result->is_visible) {
+      icon_handle_ =
+          extensions_container_->icon_table_->RegisterImageModelTryReuse(
+              GetIconModel(), icon_handle_);
+      result->icon = icon_handle_;
+    } else {
+      icon_handle_ = toolbar_ui_api::IconHandle();
+      result->icon = icon_handle_;
+    }
+    return result;
+  }
+
+ private:
+  const raw_ref<WebUIToolbarExtensionsContainer> extensions_container_;
+  const raw_ref<BrowserWindowInterface> browser_;
+  std::unique_ptr<ExtensionActionViewModel> model_;
+  base::CallbackListSubscription model_subscription_;
+  toolbar_ui_api::IconHandle icon_handle_;
 };
 
 WebUIToolbarExtensionsContainer::AnchoredWidget::AnchoredWidget(

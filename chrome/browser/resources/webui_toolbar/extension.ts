@@ -27,6 +27,7 @@ const initialState: ExtensionActionInfo = {
   forceVisible: false,
   icon: {handleId: 0n},
   isPinnedByDefaultIphAnchor: false,
+  highlighted: false,
 };
 
 // Help bubble anchor for the "extension pinned by default" IPH. Registered in

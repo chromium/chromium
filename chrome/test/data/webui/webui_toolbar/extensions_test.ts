@@ -90,6 +90,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: 'action-2',
@@ -99,6 +100,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: '',
@@ -108,6 +110,7 @@ suite('Extensions', function() {
         forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
     ];
     await container.updateComplete;
@@ -155,6 +158,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: 'action-1',
@@ -164,6 +168,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: 'extensions_button',
@@ -173,6 +178,7 @@ suite('Extensions', function() {
         forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
     ];
     await microtasksFinished();
@@ -630,6 +636,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: 'action-2',
@@ -639,6 +646,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: 'action-3',
@@ -648,6 +656,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 4n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: '',
@@ -657,6 +666,7 @@ suite('Extensions', function() {
         forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
     ];
 
@@ -703,6 +713,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 1n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: 'action-2',
@@ -712,6 +723,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 2n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: 'action-3',
@@ -721,6 +733,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 4n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: '',
@@ -730,6 +743,7 @@ suite('Extensions', function() {
             forceVisible: true,
             icon: {handleId: 3n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
         ];
 
@@ -788,6 +802,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 1n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: 'action-2',
@@ -797,6 +812,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 2n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: '',
@@ -806,6 +822,7 @@ suite('Extensions', function() {
             forceVisible: true,
             icon: {handleId: 3n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
         ];
 
@@ -846,6 +863,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: 'action-2',
@@ -855,6 +873,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: '',
@@ -864,6 +883,7 @@ suite('Extensions', function() {
         forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
     ];
 
@@ -923,6 +943,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 2n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: 'action-1',
@@ -932,6 +953,7 @@ suite('Extensions', function() {
             forceVisible: false,
             icon: {handleId: 1n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
           {
             id: '',
@@ -941,6 +963,7 @@ suite('Extensions', function() {
             forceVisible: true,
             icon: {handleId: 3n},
             isPinnedByDefaultIphAnchor: false,
+            highlighted: false,
           },
         ];
 
@@ -1011,6 +1034,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: '',
@@ -1020,6 +1044,7 @@ suite('Extensions', function() {
         forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
     ];
 
@@ -1043,6 +1068,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       ...container.states,
     ];
@@ -1312,6 +1338,7 @@ suite('Extensions', function() {
         forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
       {
         id: '',
@@ -1321,6 +1348,7 @@ suite('Extensions', function() {
         forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
+        highlighted: false,
       },
     ];
   }
