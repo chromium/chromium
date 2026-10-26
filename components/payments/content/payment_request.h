@@ -122,7 +122,8 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   void OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) override;
 
   // Called when the Payment Request is being aborted due to an internal error,
-  // such as the browser window being too small to show the UX.
+  // such as the browser window being too small to show the UX. Posts a task to
+  // notify the client and destroy this object asynchronously.
   void OnInternalError(const std::string& error_message);
 
   // Called when the user wants to authenticate in a different way. This is
@@ -239,6 +240,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
                                            bool warn_localhost_or_file);
 
   void OnAbortResult(bool aborted);
+
+  // Notifies the renderer client of an internal error and destroys `this`.
+  // Posted as a task by `OnInternalError()`.
+  void OnInternalErrorImpl(const std::string& error_message);
 
   // Show an error message in the UI (if available) and abort payment.
   void ShowErrorMessageAndAbortPayment();
