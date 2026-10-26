@@ -14,6 +14,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
@@ -4756,4 +4757,81 @@ TEST_F(ContextualTasksUiTest, TrackedElementsRegistered_PostRearchitecture) {
   EXPECT_NE(handler->context(), ui::ElementContext());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+class MockContextualTasksInternalsPage
+    : public contextual_tasks_internals::mojom::ContextualTasksInternalsPage {
+ public:
+  MockContextualTasksInternalsPage() = default;
+  MockContextualTasksInternalsPage(const MockContextualTasksInternalsPage&) =
+      delete;
+  MockContextualTasksInternalsPage& operator=(
+      const MockContextualTasksInternalsPage&) = delete;
+  ~MockContextualTasksInternalsPage() override = default;
+
+  MOCK_METHOD(void,
+              OnLogMessageAdded,
+              (base::Time event_time,
+               const std::string& source_file,
+               int64_t source_line,
+               const std::string& message),
+              (override));
+
+  mojo::PendingRemote<
+      contextual_tasks_internals::mojom::ContextualTasksInternalsPage>
+  BindAndGetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  mojo::Receiver<
+      contextual_tasks_internals::mojom::ContextualTasksInternalsPage>
+      receiver_{this};
+};
+
+}  // namespace
+
+TEST_F(ContextualTasksUiTest,
+       InternalsPageHandler_PostRearchitectureWithoutContextualTasks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kContextualTasksSidePanelRearchitecture},
+                                {kContextualTasks, kContextualTasksSidePanel,
+                                 kContextualTasksRearchitecture});
+
+  ContextualTasksUIConfig config;
+  EXPECT_TRUE(config.IsWebUIEnabled(profile_));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui,
+                                   GURL("chrome://contextual-tasks/internals"));
+  ASSERT_TRUE(controller);
+  auto* post_rearch_ui =
+      controller
+          ->GetAs<contextual_tasks::ContextualTasksUIPostRearchitecture>();
+  ASSERT_NE(post_rearch_ui, nullptr);
+
+  mojo::Remote<contextual_tasks_internals::mojom::
+                   ContextualTasksInternalsPageHandlerFactory>
+      factory_remote;
+  post_rearch_ui->BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksInternalsPage> mock_page;
+  mojo::Remote<
+      contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
+      handler_remote;
+  factory_remote->CreatePageHandler(
+      mock_page.BindAndGetRemote(),
+      handler_remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<contextual_tasks_internals::mojom::EligibilityStatePtr>
+      future;
+  handler_remote->GetEligibilityState(future.GetCallback());
+  auto state = future.Take();
+  ASSERT_TRUE(state);
+  EXPECT_TRUE(state->is_contextual_tasks_enabled);
+}
+
 }  // namespace contextual_tasks

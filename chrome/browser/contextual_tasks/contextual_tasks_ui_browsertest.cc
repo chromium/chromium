@@ -1548,3 +1548,89 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DISABLED,
             side_panel_inner_zoom_controller->zoom_mode());
 }
+
+class ContextualTasksInternalsLegacyBrowserTest : public InProcessBrowserTest {
+ public:
+  ContextualTasksInternalsLegacyBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks},
+        {contextual_tasks::kContextualTasksSidePanelRearchitecture});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsLegacyBrowserTest,
+                       LoadsWithoutCrash) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://contextual-tasks/internals")));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  ASSERT_FALSE(web_contents->IsCrashed());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               web_contents,
+               "(() => {"
+               "  const app = document.querySelector("
+               "      'contextual-tasks-internals-app');"
+               "  const status = app?.shadowRoot?.querySelector("
+               "      '.eligibility-status');"
+               "  const reasons = app?.shadowRoot?.querySelector("
+               "      '.eligibility-reasons')?.textContent ?? '';"
+               "  return Boolean(status && !reasons.includes("
+               "      'Feature flag (kContextualTasks) is not enabled.'));"
+               "})()")
+        .ExtractBool();
+  }));
+}
+
+class ContextualTasksInternalsPostRearchitectureBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ContextualTasksInternalsPostRearchitectureBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasksSidePanelRearchitecture},
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksSidePanel,
+         contextual_tasks::kContextualTasksRearchitecture});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsPostRearchitectureBrowserTest,
+                       LoadsWithoutCrash) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://contextual-tasks/internals")));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  ASSERT_FALSE(web_contents->IsCrashed());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               web_contents,
+               "(() => {"
+               "  const app = document.querySelector("
+               "      'contextual-tasks-internals-app');"
+               "  const status = app?.shadowRoot?.querySelector("
+               "      '.eligibility-status');"
+               "  const reasons = app?.shadowRoot?.querySelector("
+               "      '.eligibility-reasons')?.textContent ?? '';"
+               "  return Boolean(status && !reasons.includes("
+               "      'Feature flag (kContextualTasks) is not enabled.'));"
+               "})()")
+        .ExtractBool();
+  }));
+
+  // Navigating to the root legacy WebUI path after registering the data source
+  // must fail with an error document rather than instantiating
+  // ContextualTasksUIPostRearchitecture with <contextual-tasks-app>.
+  (void)ui_test_utils::NavigateToURL(browser(),
+                                     GURL("chrome://contextual-tasks/"));
+  EXPECT_FALSE(web_contents->IsCrashed());
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
+  EXPECT_EQ(web_contents->GetWebUI(), nullptr);
+}

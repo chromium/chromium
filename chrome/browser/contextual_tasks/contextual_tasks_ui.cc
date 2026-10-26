@@ -25,9 +25,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -37,7 +35,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -2137,32 +2134,6 @@ void ContextualTasksUI::InnerFrameCreationObvserver::DidFinishNavigation(
 void ContextualTasksUI::ResetEmbeddedPage() {
   embedded_web_contents_ = nullptr;
   nav_observer_.reset();
-}
-
-void ContextualTasksUI::BindInterface(
-    mojo::PendingReceiver<contextual_tasks_internals::mojom::
-                              ContextualTasksInternalsPageHandlerFactory>
-        receiver) {
-  contextual_tasks_internals_page_handler_receiver_.reset();
-  contextual_tasks_internals_page_handler_receiver_.Bind(std::move(receiver));
-}
-
-void ContextualTasksUI::CreatePageHandler(
-    mojo::PendingRemote<
-        contextual_tasks_internals::mojom::ContextualTasksInternalsPage> page,
-    mojo::PendingReceiver<
-        contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
-        receiver) {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  auto* contextual_tasks_service =
-      contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
-          profile);
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  contextual_tasks_internals_page_handler_ =
-      std::make_unique<ContextualTasksInternalsPageHandler>(
-          profile, contextual_tasks_service, optimization_guide_keyed_service,
-          std::move(receiver), std::move(page));
 }
 
 void ContextualTasksUI::PrepareForTaskChange() {

@@ -14,6 +14,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -269,8 +272,18 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
     Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIContextualTasksHost);
-  webui::SetupWebUIDataSource(source, kContextualTasksResources,
-                              IDR_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_HTML);
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    webui::SetJSModuleDefaults(source);
+    webui::EnableTrustedTypesCSP(source);
+    for (const auto& resource : kContextualTasksResources) {
+      if (std::string_view(resource.path) != "contextual_tasks.html") {
+        source->AddResourcePath(resource.path, resource.id);
+      }
+    }
+  } else {
+    webui::SetupWebUIDataSource(source, kContextualTasksResources,
+                                IDR_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_HTML);
+  }
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
@@ -702,6 +715,34 @@ void ContextualTasksUIBase::BindInterface(
         pending_receiver) {
   help_bubble_factory_receiver_.reset();
   help_bubble_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void ContextualTasksUIBase::BindInterface(
+    mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                              ContextualTasksInternalsPageHandlerFactory>
+        pending_receiver) {
+  contextual_tasks_internals_page_handler_receiver_.reset();
+  contextual_tasks_internals_page_handler_receiver_.Bind(
+      std::move(pending_receiver));
+}
+
+void ContextualTasksUIBase::CreatePageHandler(
+    mojo::PendingRemote<
+        contextual_tasks_internals::mojom::ContextualTasksInternalsPage> page,
+    mojo::PendingReceiver<
+        contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
+        receiver) {
+  Profile* profile = GetProfile();
+  auto* context_service =
+      profile ? ContextualTasksContextServiceFactory::GetForProfile(profile)
+              : nullptr;
+  auto* optimization_guide_keyed_service =
+      profile ? OptimizationGuideKeyedServiceFactory::GetForProfile(profile)
+              : nullptr;
+  contextual_tasks_internals_page_handler_ =
+      std::make_unique<ContextualTasksInternalsPageHandler>(
+          profile, context_service, optimization_guide_keyed_service,
+          std::move(receiver), std::move(page));
 }
 
 void ContextualTasksUIBase::CreateHelpBubbleHandler(

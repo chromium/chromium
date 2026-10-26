@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +26,7 @@
 #endif
 
 class BrowserWindowInterface;
+class ContextualTasksInternalsPageHandler;
 class GURL;
 
 namespace content {
@@ -64,6 +66,8 @@ class ContextualTasksUIBase
       public contextual_tasks_toolbar::mojom::PageHandlerFactory,
       public contextual_tasks_toolbar::mojom::PageHandler,
       public contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService,
+      public contextual_tasks_internals::mojom::
+          ContextualTasksInternalsPageHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory
 #if !BUILDFLAG(IS_ANDROID)
     ,
@@ -128,6 +132,23 @@ class ContextualTasksUIBase
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
+
+  // Instantiates the implementor of the
+  // `contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandlerFactory`
+  // mojo interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                                ContextualTasksInternalsPageHandlerFactory>
+          pending_receiver);
+
+  // contextual_tasks_internals::mojom::
+  // ContextualTasksInternalsPageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<
+          contextual_tasks_internals::mojom::ContextualTasksInternalsPage> page,
+      mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                                ContextualTasksInternalsPageHandler> receiver)
+      override;
 
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
@@ -238,6 +259,12 @@ class ContextualTasksUIBase
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_factory_receiver_{this};
+
+  mojo::Receiver<contextual_tasks_internals::mojom::
+                     ContextualTasksInternalsPageHandlerFactory>
+      contextual_tasks_internals_page_handler_receiver_{this};
+  std::unique_ptr<ContextualTasksInternalsPageHandler>
+      contextual_tasks_internals_page_handler_;
 };
 
 }  // namespace contextual_tasks

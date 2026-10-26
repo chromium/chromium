@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
@@ -296,7 +297,8 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks_internals::mojom::
             ContextualTasksInternalsPageHandlerFactory,
-        ContextualTasksUI>(map);
+        ::ContextualTasksUI,
+        contextual_tasks::ContextualTasksUIPostRearchitecture>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<
