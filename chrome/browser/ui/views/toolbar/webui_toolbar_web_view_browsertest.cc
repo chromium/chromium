@@ -2836,7 +2836,8 @@ IN_PROC_BROWSER_TEST_F(WebUIAvatarButtonBrowserTest, AvatarButtonIPHPromo) {
             toolbar_ui_api::mojom::AvatarToolbarButtonState::kNormal);
   EXPECT_TRUE(delegate->GetState().avatar_control_state->text.empty());
 
-  // Trigger IPH promo when in kNormal state; the greeting should not be shown.
+  // Trigger IPH promo when in `kNormal` state; the greeting should not be
+  // shown.
   avatar_button->NotifyIPHPromoChanged(true);
   EXPECT_TRUE(avatar_button->IsShowingIPHPromo());
   EXPECT_EQ(delegate->GetState().avatar_control_state->state,

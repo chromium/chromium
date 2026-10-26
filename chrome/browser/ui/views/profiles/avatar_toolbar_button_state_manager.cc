@@ -781,7 +781,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
       return;
     }
 
-    OnUserIdentityChanged();
+    WaitForImageAndShowIdentityName();
   }
 
   void OnIdentityManagerShutdown(signin::IdentityManager*) override {
@@ -811,30 +811,23 @@ class ShowIdentityNameStateProvider : public StateProvider,
 
   void OnIconUpdated() override {
     // Try to show the name if we were waiting for an image.
-    MaybeShowIdentityName();
+    MaybeShowIdentityNameWhenImageReady();
   }
 
  private:
-  // Initiates showing the identity.
-  void OnUserIdentityChanged() {
+  // Initiates showing the identity once the account image is available.
+  void WaitForImageAndShowIdentityName() {
     signin_ui_util::RecordAnimatedIdentityTriggered(&profile());
     // On any following icon update the name will be attempted to be shown when
     // the image is ready.
     waiting_for_image_ = true;
-    MaybeShowIdentityName();
+    MaybeShowIdentityNameWhenImageReady();
   }
 
   // Should be called when the icon is updated. This may trigger the showing of
-  // the identity name.
-  void MaybeShowIdentityName() {
+  // the identity name if waiting for the account image.
+  void MaybeShowIdentityNameWhenImageReady() {
     if (!waiting_for_image_ || GetGaiaAccountImage(&profile()).IsEmpty()) {
-      return;
-    }
-
-    // Check that the user is still signed in. See https://crbug.com/40107959
-    if (!IdentityManagerFactory::GetForProfile(&profile())
-             ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      Clear();
       return;
     }
 
@@ -844,6 +837,13 @@ class ShowIdentityNameStateProvider : public StateProvider,
   // Shows the name in the identity pill. If the name is already showing, this
   // extends the duration.
   void ShowIdentityName() {
+    // Check that the user is still signed in. See https://crbug.com/40107959
+    if (!IdentityManagerFactory::GetForProfile(&profile())
+             ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      Clear();
+      return;
+    }
+
     active_ = true;
     waiting_for_image_ = false;
 
