@@ -80,6 +80,19 @@ TEST_F(ReadAnythingNodeUtilsTest, GetTextContent_PDF_FiltersReturnCharacters) {
   EXPECT_EQ(text.find('\r'), std::string::npos);
 }
 
+TEST_F(ReadAnythingNodeUtilsTest, GetTextContent_ListMarkerReturnsName) {
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data;
+  data.id = kId;
+  data.role = ax::mojom::Role::kListMarker;
+  data.AddStringAttribute(ax::mojom::StringAttribute::kName, "5. ");
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(u"5. ",
+            a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false));
+}
+
 TEST_F(ReadAnythingNodeUtilsTest,
        GetTextContent_PDF_DoesNotFilterReturnCharactersAtEndOfSentence) {
   const std::u16string sentence =

@@ -216,6 +216,11 @@ std::string GetAltText(const ui::AXNode* ax_node) {
 std::u16string GetTextContent(const ui::AXNode* ax_node,
                               bool is_pdf,
                               bool is_docs) {
+  if (ax_node->GetRole() == ax::mojom::Role::kListMarker &&
+      ax_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    return ax_node->GetString16Attribute(ax::mojom::StringAttribute::kName);
+  }
+
   // For Google Docs, because the content is rendered in canvas, we distill
   // text from the "Annotated Canvas"
   // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)

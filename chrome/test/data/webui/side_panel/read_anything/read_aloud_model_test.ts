@@ -1331,6 +1331,29 @@ suite('ReadAloudModel', () => {
     }
   });
 
+  test('getCurrentText for ordered list uses copied marker', async () => {
+    const ol = document.createElement('ol');
+    const items = ['first', 'second'].map(text => {
+      const li = document.createElement('li');
+      li.textContent = text;
+      return li;
+    });
+    items[0]!.dataset['marker'] = 'a.';
+    items[1]!.dataset['marker'] = 'b.';
+    ol.append(...items);
+    document.body.appendChild(ol);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals('\n', getReadAloudModel().getCurrentTextContent());
+
+    for (const expected of ['a. first', 'b. second']) {
+      getReadAloudModel().moveSpeechForward();
+      assertEquals(
+          expected, getReadAloudModel().getCurrentTextContent().trim());
+    }
+  });
+
   test('getCurrentText numbers nested ordered lists separately', async () => {
     const outer = document.createElement('ol');
     const outer1 = document.createElement('li');

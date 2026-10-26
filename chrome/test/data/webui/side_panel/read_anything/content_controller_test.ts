@@ -652,6 +652,117 @@ suite('ContentController', () => {
       assertEquals(text, root.textContent);
     });
 
+    suite('ordered list markers', () => {
+      const listId = 10;
+      const itemId = 11;
+      const markerId = 12;
+      const textId = 13;
+
+      setup(() => {
+        contentBrowserProxy.rootId = listId;
+        contentBrowserProxy.htmlTagMap = {
+          [listId]: 'ol',
+          [itemId]: 'li',
+          [markerId]: '::marker',
+          [textId]: '',
+        };
+        contentBrowserProxy.childrenMap = {
+          [listId]: [itemId],
+          [itemId]: [markerId, textId],
+        };
+        contentBrowserProxy.textContentMap = {[textId]: 'Item'};
+      });
+
+      function buildListItem(): HTMLLIElement {
+        const root = contentController.updateContent();
+        assertTrue(!!root);
+        const item = root.firstChild;
+        assertTrue(item instanceof HTMLLIElement);
+        return item;
+      }
+
+      test('copies decimal marker onto list item', () => {
+        contentBrowserProxy.textContentMap[markerId] = '5. ';
+
+        const item = buildListItem();
+
+        assertEquals('5.', item.dataset['marker']);
+        assertEquals('"5. "', item.style.listStyleType);
+        assertEquals('Item', item.textContent);
+      });
+
+      test('copies parenthesized marker onto list item', () => {
+        contentBrowserProxy.textContentMap[markerId] = '10) ';
+
+        const item = buildListItem();
+
+        assertEquals('10)', item.dataset['marker']);
+        assertEquals('"10) "', item.style.listStyleType);
+      });
+
+      test('copies alphabetic marker onto list item', () => {
+        contentBrowserProxy.textContentMap[markerId] = 'a. ';
+
+        const item = buildListItem();
+
+        assertEquals('a.', item.dataset['marker']);
+        assertEquals('"a. "', item.style.listStyleType);
+      });
+
+      test('copies roman numeral marker onto list item', () => {
+        contentBrowserProxy.textContentMap[markerId] = 'iv. ';
+
+        const item = buildListItem();
+
+        assertEquals('iv.', item.dataset['marker']);
+        assertEquals('"iv. "', item.style.listStyleType);
+      });
+
+      test('does not copy marker when list item has none', () => {
+        contentBrowserProxy.childrenMap[itemId] = [textId];
+
+        const item = buildListItem();
+
+        assertEquals(undefined, item.dataset['marker']);
+        assertEquals('', item.style.listStyleType);
+      });
+
+      test('does not copy marker onto unordered list item', () => {
+        contentBrowserProxy.htmlTagMap[listId] = 'ul';
+        contentBrowserProxy.textContentMap[markerId] = '• ';
+
+        const item = buildListItem();
+
+        assertEquals(undefined, item.dataset['marker']);
+        assertEquals('', item.style.listStyleType);
+      });
+    });
+
+    test('builds a ::marker as a <span> tag', () => {
+      const parentId = 40;
+      const markerId = 41;
+      const textId = 42;
+      contentBrowserProxy.htmlTagMap = {
+        [parentId]: 'p',
+        [markerId]: '::marker',
+        [textId]: '',
+      };
+      contentBrowserProxy.childrenMap = {
+        [parentId]: [markerId, textId],
+      };
+      contentBrowserProxy.textContentMap = {
+        [markerId]: '• ',
+        [textId]: 'Bullet text',
+      };
+      contentBrowserProxy.rootId = parentId;
+
+      const root = contentController.updateContent();
+
+      assertTrue(!!root);
+      assertTrue(root.firstChild instanceof HTMLSpanElement);
+      assertEquals('Bullet text', root.textContent);
+    });
+
     test('builds a link as an <a> tag when links are shown', () => {
       const childId = 65;
       const url = 'https://www.google.com/';

@@ -79,13 +79,18 @@ function addNodeForListElement(
   // otherwise.
   if (element.tagName === 'LI' && element.parentElement &&
       element.parentElement.tagName === 'OL') {
-    const number = getLiNumber(element as HTMLLIElement, listNumbers);
+    // Prefer the marker copied from the source page (e.g. "a."), if any.
+    let marker = element.dataset['marker'];
+    if (!marker) {
+      const number = getLiNumber(element as HTMLLIElement, listNumbers);
+      marker = number > -1 ? `${number}.` : undefined;
+    }
 
-    if (number > -1) {
+    if (marker) {
       // Create the text node (e.g., "1. "). A newline is added to the
       // beginning of the node to ensure that it is not accidentally
       // grouped with the previous text node for sentence segmentation.
-      return document.createTextNode(`\n${number}. `);
+      return document.createTextNode(`\n${marker} `);
     }
   }
   return null;

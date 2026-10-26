@@ -73,6 +73,9 @@ const SCREEN2X_TAG_TO_RM_TAG: Map<string, string> = new Map([
   // happens, ensure they're converted to divs so that an interactable
   // element isn't shown on the reading mode panel.
   ['input', 'div'],
+  // List markers are rendered via CSS or synthesized for speech, not as
+  // '<::marker>' elements.
+  ['::marker', 'span'],
 ]);
 
 // Readability doesn't need to replace as many tags as Screen2x. If there's
@@ -638,6 +641,10 @@ export class ContentController {
     }
 
     const element = document.createElement(htmlTag);
+    if (element instanceof HTMLLIElement && parentId !== undefined &&
+        this.contentBrowserProxy_.getHtmlTag(parentId) === 'ol') {
+      this.setListMarker_(element, nodeId);
+    }
     const htmlId = this.contentBrowserProxy_.getHtmlId(nodeId);
     if (htmlId) {
       element.id = htmlId;
@@ -691,6 +698,23 @@ export class ContentController {
           this.buildSubtree_(childNodeId, shouldTrackBlocks, blockId, nodeId);
       node.appendChild(childNode);
     }
+  }
+
+  // Copies the source marker (e.g. "5." or "a.") onto the list item so it is
+  // shown and spoken as on the page, rather than renumbered from 1 in decimal.
+  private setListMarker_(li: HTMLLIElement, nodeId: number) {
+    const markerId = this.contentBrowserProxy_.getChildren(nodeId).find(
+        childId =>
+            this.contentBrowserProxy_.getHtmlTag(childId) === '::marker');
+    if (markerId === undefined) {
+      return;
+    }
+    const marker = this.contentBrowserProxy_.getTextContent(markerId).trim();
+    if (!marker) {
+      return;
+    }
+    li.dataset['marker'] = marker;
+    li.style.listStyleType = JSON.stringify(`${marker} `);
   }
 
   private safeParseUrl_(url: string, base?: string): URL|null {
