@@ -454,5 +454,59 @@ TEST_F(MessagePumpEpollTest, RepeatOneShotEvent) {
                   std::make_unique<MessagePumpEpoll>(), sender(), receiver());
 }
 
+class StopBothWatchersOnRead : public BaseWatcher {
+ public:
+  StopBothWatchersOnRead(MessagePumpEpoll::FdWatchController* read_controller,
+                         MessagePumpEpoll::FdWatchController* write_controller,
+                         OnceClosure quit_closure)
+      : read_controller_(read_controller),
+        write_controller_(write_controller),
+        quit_closure_(std::move(quit_closure)) {}
+  ~StopBothWatchersOnRead() override = default;
+
+  void OnFileCanReadWithoutBlocking(int /* fd */) override {
+    read_controller_->StopWatchingFileDescriptor();
+    write_controller_->StopWatchingFileDescriptor();
+    std::move(quit_closure_).Run();
+  }
+
+ private:
+  raw_ptr<MessagePumpEpoll::FdWatchController> read_controller_;
+  raw_ptr<MessagePumpEpoll::FdWatchController> write_controller_;
+  OnceClosure quit_closure_;
+};
+
+// Regression test for b/515435405. Verifies that when two controllers watch the
+// same fd (for read and write respectively) and a single epoll event satisfies
+// both, stopping the second controller from within the first controller's
+// callback without destroying it does not dispatch the event to the stopped
+// controller or access a destroyed EpollEventEntry.
+TEST_F(MessagePumpEpollTest, StopOtherWatcherDuringEvent) {
+  task_environment_.reset();
+
+  auto executor_pump = std::make_unique<MessagePumpEpoll>();
+  MessagePumpEpoll* pump = executor_pump.get();
+  SingleThreadTaskExecutor executor(std::move(executor_pump));
+  RunLoop run_loop;
+
+  MessagePumpEpoll::FdWatchController read_controller(FROM_HERE);
+  MessagePumpEpoll::FdWatchController write_controller(FROM_HERE);
+  StopBothWatchersOnRead delegate(&read_controller, &write_controller,
+                                  run_loop.QuitClosure());
+
+  ASSERT_TRUE(pump->WatchFileDescriptor(receiver(), /*persistent=*/false,
+                                        MessagePumpEpoll::WATCH_READ,
+                                        &read_controller, &delegate));
+  ASSERT_TRUE(pump->WatchFileDescriptor(receiver(), /*persistent=*/false,
+                                        MessagePumpEpoll::WATCH_WRITE,
+                                        &write_controller, &delegate));
+
+  // Make `receiver()` readable in addition to already being writable, so that
+  // a single epoll event triggers both interests.
+  Notify();
+
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace base
