@@ -144,8 +144,6 @@ public class FileUtils {
      * @return URI that points at that file, either as a content:// URI or a file:// URI.
      */
     public static Uri getUriForFile(File file) {
-        // TODO(crbug.com/40514633): Uncomment this when http://crbug.com/709584 has been fixed.
-        // assert !ThreadUtils.runningOnUiThread();
         Uri uri = null;
 
         try {
