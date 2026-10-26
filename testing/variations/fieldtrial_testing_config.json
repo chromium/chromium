@@ -12814,6 +12814,24 @@
             ]
         }
     ],
+    "OnDeviceModelConversationBackend": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261022",
+                    "enable_features": [
+                        "OnDeviceModelConversationBackend"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceModelEviction": [
         {
             "platforms": [
