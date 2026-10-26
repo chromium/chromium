@@ -758,9 +758,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             }
             RecentlyClosedEntry entry = getChild(childPosition);
             assumeNonNull(entry);
-            if (entry instanceof RecentlyClosedTab) {
-                mRecentTabsManager.openRecentlyClosedTab(
-                        (RecentlyClosedTab) entry, WindowOpenDisposition.CURRENT_TAB);
+            if (entry instanceof RecentlyClosedTab tab) {
+                mRecentTabsManager.openRecentlyClosedTab(tab, WindowOpenDisposition.CURRENT_TAB);
                 return true;
             }
             mRecentTabsManager.openRecentlyClosedEntry(entry);

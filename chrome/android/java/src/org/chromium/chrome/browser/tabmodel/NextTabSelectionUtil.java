@@ -159,7 +159,7 @@ public class NextTabSelectionUtil {
      */
     public static @Nullable Tab findNearbyNotClosingTab(
             Iterable<Tab> tabIterable, int closingIndex, List<Tab> closingTabs) {
-        TabModel model = tabIterable instanceof TabModel ? (TabModel) tabIterable : null;
+        TabModel model = (tabIterable instanceof TabModel tabModel) ? tabModel : null;
 
         Tab expandedLeftCandidate = null;
         Tab expandedRightCandidate = null;

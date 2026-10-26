@@ -578,8 +578,8 @@ class TabbedNavigationBarColorController
             return mEnabledBottomChinForTesting == TriState.TRUE;
         }
 
-        return mContext instanceof Activity
-                && EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice((Activity) mContext);
+        return mContext instanceof Activity activity
+                && EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity);
     }
 
     @Override

@@ -120,10 +120,10 @@ public class DragAndDropLauncherActivity extends Activity {
         }
         intent.putExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, sourceWindowId);
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                && sourceActivity instanceof ChromeTabbedActivity) {
+                && sourceActivity instanceof ChromeTabbedActivity tabbedActivity) {
             intent.putExtra(
                     IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB,
-                    /* value= */ ((ChromeTabbedActivity) sourceActivity).getSupportedProfileType()
+                    /* value= */ tabbedActivity.getSupportedProfileType()
                             == SupportedProfileType.OFF_THE_RECORD);
         }
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(SystemClock.elapsedRealtime());

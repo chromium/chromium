@@ -127,8 +127,7 @@ public class StripLayoutUtils {
      * @return Whether the view is the last pinned tab.
      */
     public static boolean isLastPinnedTab(StripLayoutTab[] stripTabs, StripLayoutView view) {
-        StripLayoutTab tab = (view instanceof StripLayoutTab) ? (StripLayoutTab) view : null;
-        if (tab == null) return false;
+        if (!(view instanceof StripLayoutTab tab)) return false;
         for (int i = 0; i < stripTabs.length; i++) {
             if (!stripTabs[i].getIsPinned()) {
                 if (i > 0) {
