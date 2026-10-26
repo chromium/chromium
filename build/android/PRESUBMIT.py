@@ -38,6 +38,7 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
         J('pylib', 'gtest', 'gtest_test_instance_test.py'),
         J('pylib', 'instrumentation', 'instrumentation_parser_test.py'),
         J('pylib', 'instrumentation', 'instrumentation_test_instance_test.py'),
+        J('pylib', 'local', 'device', 'local_device_environment_test.py'),
         J('pylib', 'local', 'device', 'local_device_gtest_run_test.py'),
         J(
             'pylib',

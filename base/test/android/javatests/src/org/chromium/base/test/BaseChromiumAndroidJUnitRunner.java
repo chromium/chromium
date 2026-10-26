@@ -35,7 +35,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.base.test.util.TestAnimations;
 import org.chromium.testing.TestListInstrumentationRunListener;
 
 import java.io.File;
@@ -296,20 +295,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 throw new ClassNotFoundException(name, e);
             }
         }
-    }
-
-    @Override
-    public void finish(int resultCode, Bundle results) {
-        if (sTestListMode) {
-            super.finish(resultCode, results);
-            return;
-        }
-
-        // Leave animations in the default state.
-        TestAnimations.setEnabled(true);
-
-        // This will end up force stopping the package, so code after this line will not run.
-        super.finish(resultCode, results);
     }
 
     // This method clears the data directory for the test apk, but device_utils.py clears the data

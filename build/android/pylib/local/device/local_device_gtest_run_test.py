@@ -335,7 +335,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
                 device = mock.MagicMock()
                 device.serial = 'device_1'
-                device.RunShellCommand.return_value = ['1.0', '0.5', 'null']
                 mock_env.parallel_devices.pMap.side_effect = lambda f, args: [
                     f(device, args[0])
                 ]
@@ -347,9 +346,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
                 run.SetUp()
 
                 expected_cmd = (
-                    'settings get global window_animation_scale && '
-                    'settings get global transition_animation_scale && '
-                    'settings get global animator_duration_scale && '
                     'settings put global window_animation_scale 0 && '
                     'settings put global transition_animation_scale 0 && '
                     'settings put global animator_duration_scale 0'
@@ -357,69 +353,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
                 device.RunShellCommand.assert_called_once_with(
                     expected_cmd, shell=True, check_return=True
                 )
-                self.assertEqual(
-                    run._saved_animation_scales['device_1'],
-                    ['1.0', '0.5', '1.0'],
-                )
-
-    def test_TearDown_restores_saved_animation_scales(self):
-        mock_env = mock.MagicMock(
-            spec=local_device_environment.LocalDeviceEnvironment
-        )
-        mock_ti = mock.MagicMock(spec=gtest_test_instance.GtestTestInstance)
-
-        device = mock.MagicMock()
-        device.serial = 'device_1'
-        mock_env.parallel_devices.pMap.side_effect = lambda f: [f(device)]
-
-        run = local_device_gtest_run.LocalDeviceGtestRun(mock_env, mock_ti)
-        run._saved_animation_scales = {'device_1': ['1.0', '0.5', '1.0']}
-        run.TearDown()
-
-        expected_cmd = (
-            'settings put global window_animation_scale 1.0 && '
-            'settings put global transition_animation_scale 0.5 && '
-            'settings put global animator_duration_scale 1.0'
-        )
-        mock_env.parallel_devices.pMap.assert_called_once()
-        device.RunShellCommand.assert_called_once_with(
-            expected_cmd, shell=True, check_return=True
-        )
-
-    def test_TearDown_skips_when_already_zero(self):
-        mock_env = mock.MagicMock(
-            spec=local_device_environment.LocalDeviceEnvironment
-        )
-        mock_ti = mock.MagicMock(spec=gtest_test_instance.GtestTestInstance)
-
-        device = mock.MagicMock()
-        device.serial = 'device_1'
-        mock_env.parallel_devices.pMap.side_effect = lambda f: [f(device)]
-
-        run = local_device_gtest_run.LocalDeviceGtestRun(mock_env, mock_ti)
-        run._saved_animation_scales = {'device_1': ['0', '0.0', '0']}
-        run.TearDown()
-
-        mock_env.parallel_devices.pMap.assert_called_once()
-        device.RunShellCommand.assert_not_called()
-
-    def test_TearDown_skips_when_sigterm_received(self):
-        mock_env = mock.MagicMock(
-            spec=local_device_environment.LocalDeviceEnvironment
-        )
-        mock_ti = mock.MagicMock(spec=gtest_test_instance.GtestTestInstance)
-
-        device = mock.MagicMock()
-        device.serial = 'device_1'
-        mock_env.parallel_devices.pMap.side_effect = lambda f: [f(device)]
-
-        run = local_device_gtest_run.LocalDeviceGtestRun(mock_env, mock_ti)
-        run._saved_animation_scales = {'device_1': ['1.0', '1.0', '1.0']}
-        run.ReceivedSigterm()
-        run.TearDown()
-
-        mock_env.parallel_devices.pMap.assert_not_called()
-        device.RunShellCommand.assert_not_called()
 
     def test_SetUp_push_test_data_drops_caches_in_force_main_user(self):
         device = mock.MagicMock()
