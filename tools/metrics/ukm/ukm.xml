@@ -2849,7 +2849,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.AiAmountExtraction.ApcFetchResult" singular="true">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the Annotated Page Content (APC) fetch was successful. APC
@@ -2873,7 +2873,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.AiAmountExtraction.Result" singular="true">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the final result of the AI-based checkout amount extraction process.
@@ -2948,8 +2948,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.AmountExtractionComplete" singular="true">
-  <owner>jamessun@google.com</owner>
   <owner>longsheng@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the result of the amount extraction process. This process is to
     search for the final checkout amount from the merchants' checkout page and
@@ -3001,7 +3002,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the AI-based checkout amount is within the issuer's

@@ -2701,7 +2701,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.AiAmountExtraction.ApcFetchResult"
     enum="BooleanSuccess" expires_after="2027-04-30">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the Annotated Page Content (APC) fetch was successful during
@@ -2712,7 +2712,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.AiAmountExtraction.InvalidResponseReason"
     enum="AiAmountExtractionInvalidResponseReason" expires_after="2027-04-30">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the specific reason why the AI-generated checkout amount response
@@ -2728,7 +2728,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.AiAmountExtraction.Latency.{AiAmountExtractionLatencyResult}"
     units="ms" expires_after="2027-04-30">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the duration from when the AI-based amount extraction is initialized
@@ -2746,7 +2746,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.AiAmountExtraction.Result"
     enum="AiAmountExtractionResult" expires_after="2027-04-30">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the final result of the AI-based checkout amount extraction process.
@@ -2772,7 +2772,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.AmountExtraction.Latency2.{AmountExtractionLatencyResult}"
     units="ms" expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the latency of amount extraction process. This latency is measured
@@ -2792,7 +2791,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.AmountExtraction.Result2"
     enum="AmountExtractionResult" expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the result of amount extraction process. Amount extraction process
@@ -3631,7 +3629,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.{Issuer}"
     enum="Boolean" expires_after="2027-04-30">
-  <owner>jamessun@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the AI-based checkout amount is within the issuer's
@@ -3644,7 +3642,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.Bnpl.IssuersSyncedCount.Startup" units="issuers"
     expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The number of BNPL issuers that were successfully synced at startup,
@@ -5391,7 +5388,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.FormEvents.CreditCard.Bnpl" enum="BnplFormEvent"
     expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     This histogram records events related to Buy Now Pay Later (BNPL)
@@ -8396,7 +8392,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.RendererLabeledAmountExtractionLatency.{RendererAmountExtractionLatencyResult}"
     units="ms" expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Recorded after attempting to extract a labeled amount from a web page within
@@ -11177,7 +11172,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.WalletReminderNotice.Interaction"
     enum="AutofillWalletReminderNoticeInteraction" expires_after="2027-04-30">
   <owner>ferny@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the user's interaction on the Wallet Reminder Notice bubble or
@@ -11190,7 +11184,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.WalletReminderNotice.ShowResult"
     enum="AutofillWalletReminderNoticeShowResult" expires_after="2027-04-30">
   <owner>ferny@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the outcome of attempting to show the reminder notice after a credit
@@ -11203,7 +11196,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.WalletReminderNotice.ShowResult.{FlowType}"
     enum="AutofillWalletReminderNoticeShowResult" expires_after="2027-04-30">
   <owner>ferny@google.com</owner>
-  <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the outcome of attempting to show the Wallet Reminder Notice for the
