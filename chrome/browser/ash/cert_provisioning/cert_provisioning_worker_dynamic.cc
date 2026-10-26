@@ -336,7 +336,9 @@ void CertProvisioningWorkerDynamic::DoStep() {
     case CertProvisioningWorkerState::kInconsistentDataError:
     case CertProvisioningWorkerState::kFailed:
     case CertProvisioningWorkerState::kCanceled:
-      CHECK(false, base::NotFatalUntil::M160);
+      // TODO(crbug.com/577170828): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(false);
       return;
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
