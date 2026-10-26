@@ -88,6 +88,7 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
   ~BaseReportingBrowserTest() override = default;
 
   void SetUp() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
   net::EmbeddedTestServer* server() { return &https_server_; }
@@ -192,6 +193,42 @@ void BaseReportingBrowserTest::SetUp() {
   net::ReportingPolicy::UsePolicyForTesting(policy);
 }
 
+void BaseReportingBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  CertVerifierBrowserTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_LINUX)
+  // Disable the sandbox so that renderers do not run as PID 1 inside a Linux
+  // PID namespace (where the kernel marks the process with SIGNAL_UNKILLABLE)
+  // and without seccomp-bpf restrictions during crash handling.
+  //
+  // When simulating an in-renderer crash (e.g. via OOM_CRASH(0) /
+  // PA_IMMEDIATE_CRASH(), which executes `int3` followed by `ud2`), Crashpad
+  // catches `SIGTRAP` (`int3`), records the dump, restores `SIG_DFL`, and
+  // re-raises `SIGTRAP` via `raise(SIGTRAP)` in
+  // `Signals::RestoreHandlerAndReraiseSignalOnReturn()`. When the renderer is
+  // PID 1 of its PID namespace, `SIGNAL_UNKILLABLE` causes the kernel to
+  // ignore `raise(SIGTRAP)` with `SIG_DFL`, allowing execution to continue to
+  // `ud2` (`SIGILL`). `SIGILL` then enters `StackDumpSignalHandler`, which
+  // calls `alarm()` (triggering a seccomp-bpf `SIGSYS` violation) and fails
+  // to terminate the `SIGNAL_UNKILLABLE` process after restoring `SIG_DFL`,
+  // causing `RenderProcessHostWatcher::Wait()` to time out.
+  command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
+#elif BUILDFLAG(IS_WIN)
+  // Disable in-process stack traces in child processes on Windows. In
+  // non-official test builds, `ContentMainRunnerImpl::Initialize()` calls
+  // `base::debug::EnableInProcessStackDumping()` in child processes unless
+  // `kDisableInProcessStackTraces` is set, installing
+  // `StackDumpExceptionFilter` with `SYMOPT_DEFERRED_LOADS`. When simulating
+  // an in-renderer crash (e.g. via `chrome://crash` or `OOM_CRASH(0)`),
+  // `StackDumpExceptionFilter` invokes DbgHelp / DIA (`dbghelp.dll` /
+  // `msdia140.dll`) inside the sandboxed renderer process to lazily load and
+  // parse `browser_tests.exe.pdb` and symbolize the stack trace before the
+  // process can terminate, which can cause `RenderProcessHostWatcher::Wait()`
+  // to time out under load.
+  command_line->AppendSwitch(switches::kDisableInProcessStackTraces);
+#endif
+}
+
 void BaseReportingBrowserTest::SetUpOnMainThread() {
   CertVerifierBrowserTest::SetUpOnMainThread();
 
@@ -241,41 +278,6 @@ class CrashReportingBrowserTest : public ReportingBrowserTest {
       delete;
 
   ~CrashReportingBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ReportingBrowserTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_LINUX)
-    // Disable the sandbox so that renderers do not run as PID 1 inside a Linux
-    // PID namespace (where the kernel marks the process with SIGNAL_UNKILLABLE)
-    // and without seccomp-bpf restrictions during crash handling.
-    //
-    // When simulating an in-renderer crash (e.g. via OOM_CRASH(0) /
-    // PA_IMMEDIATE_CRASH(), which executes `int3` followed by `ud2`), Crashpad
-    // catches `SIGTRAP` (`int3`), records the dump, restores `SIG_DFL`, and
-    // re-raises `SIGTRAP` via `raise(SIGTRAP)` in
-    // `Signals::RestoreHandlerAndReraiseSignalOnReturn()`. When the renderer is
-    // PID 1 of its PID namespace, `SIGNAL_UNKILLABLE` causes the kernel to
-    // ignore `raise(SIGTRAP)` with `SIG_DFL`, allowing execution to continue to
-    // `ud2` (`SIGILL`). `SIGILL` then enters `StackDumpSignalHandler`, which
-    // calls `alarm()` (triggering a seccomp-bpf `SIGSYS` violation) and fails
-    // to terminate the `SIGNAL_UNKILLABLE` process after restoring `SIG_DFL`,
-    // causing `RenderProcessHostWatcher::Wait()` to time out.
-    command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
-#elif BUILDFLAG(IS_WIN)
-    // Disable in-process stack traces in child processes on Windows. In
-    // non-official test builds, `ContentMainRunnerImpl::Initialize()` calls
-    // `base::debug::EnableInProcessStackDumping()` in child processes unless
-    // `kDisableInProcessStackTraces` is set, installing
-    // `StackDumpExceptionFilter` with `SYMOPT_DEFERRED_LOADS`. When simulating
-    // an in-renderer crash (e.g. via `OOM_CRASH(0)`, which raises
-    // `0xe0000008`), `StackDumpExceptionFilter` invokes DbgHelp / DIA
-    // (`dbghelp.dll` / `msdia140.dll`) inside the sandboxed renderer process to
-    // lazily load and parse `browser_tests.exe.pdb` and symbolize the stack
-    // trace before the process can terminate, which can cause
-    // `RenderProcessHostWatcher::Wait()` to time out under load.
-    command_line->AppendSwitch(switches::kDisableInProcessStackTraces);
-#endif
-  }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
