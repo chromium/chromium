@@ -186,14 +186,4 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/java/do-not-rely-on-java-assert-for-production-validation.md"
     rules: "agents/knowledge_base/rules/general/java/include-detail-messages-in-java-assertions.md"
   }
-  capability_groups {
-    path_expression: "(?:.*/)?[^/]*\\.java"
-    content_patterns: "(?:final\\s+)?@Nullable\\s+[^()]*\\w\\s*(?:=|;)"
-    rules: "agents/knowledge_base/rules/general/java/omit-nullable-on-local-variables.md"
-  }
-  capability_groups {
-    path_expression: "(?:.*/)?[^/]*\\.java"
-    content_patterns: "\\bOptional(?:Int|Long|Double)?\\b"
-    rules: "agents/knowledge_base/rules/general/java/avoid-optional-in-java.md"
-  }
 }
