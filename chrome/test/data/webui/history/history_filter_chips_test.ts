@@ -537,4 +537,56 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.actorVisits);
     assertDeepEquals([], eventDetail.clientIds);
   });
+
+  test('ClearAllButtonFocusesFirstAvailableFilter', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: true,
+    });
+    element.devices = [
+      {name: 'Device 1', isLocalDevice: true, ids: ['id1', 'id2']},
+      {name: 'Device 2', isLocalDevice: false, ids: ['id3']},
+    ];
+    element.showActorFilter = true;
+    element.showDeviceFilter = true;
+    await microtasksFinished();
+
+    const actorFilterChip =
+        element.shadowRoot.querySelector<HTMLSelectElement>('#actorFilterChip');
+    const deviceFilterChip =
+        element.shadowRoot.querySelector<HTMLSelectElement>(
+            '#deviceFilterChip');
+    assertTrue(!!actorFilterChip);
+    assertTrue(!!deviceFilterChip);
+
+    // When both filters are shown, focus moves to the actor filter (first).
+    deviceFilterChip.value = '0';
+    deviceFilterChip.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    let clearAllButton =
+        element.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
+    assertTrue(!!clearAllButton);
+    clearAllButton.focus();
+    assertEquals(clearAllButton, element.shadowRoot.activeElement);
+    clearAllButton.click();
+    await microtasksFinished();
+
+    assertEquals(actorFilterChip, element.shadowRoot.activeElement);
+
+    // When the actor filter is hidden, focus moves to the device filter.
+    element.showActorFilter = false;
+    deviceFilterChip.value = '0';
+    deviceFilterChip.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    clearAllButton =
+        element.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
+    assertTrue(!!clearAllButton);
+    clearAllButton.focus();
+    assertEquals(clearAllButton, element.shadowRoot.activeElement);
+    clearAllButton.click();
+    await microtasksFinished();
+
+    assertEquals(deviceFilterChip, element.shadowRoot.activeElement);
+  });
 });

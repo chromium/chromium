@@ -102,12 +102,15 @@ export class HistoryFilterChipsElement extends CrLitElement {
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
-  protected onClearAllClick_() {
+  protected async onClearAllClick_() {
     this.userVisits = true;
     this.actorVisits = true;
     this.clientIds = [];
 
     this.fireChange_(this.userVisits, this.actorVisits);
+
+    await this.updateComplete;
+    this.focusFirstFilter_();
   }
 
   protected onUserVisitsClick_() {
@@ -169,6 +172,10 @@ export class HistoryFilterChipsElement extends CrLitElement {
   private isCriticalActionsEnabled_(): boolean {
     return loadTimeData.valueExists('isCriticalActionsEnabled') &&
         loadTimeData.getBoolean('isCriticalActionsEnabled');
+  }
+
+  private focusFirstFilter_() {
+    this.shadowRoot.querySelector('select')?.focus();
   }
 
   private fireChange_(userVisits: boolean, actorVisits: boolean) {
