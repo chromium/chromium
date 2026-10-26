@@ -52,6 +52,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -1609,6 +1610,35 @@ TEST_F(BubbleFrameViewTest, MainImageUpdatesOnThemeChanged) {
   EXPECT_GT(generation_count, count_before_theme_change);
 
   widget->CloseNow();
+}
+
+// After it is closed, a CLIENT_OWNS_WIDGET Widget keeps its views and keeps
+// observing theme changes until its owner deletes it, but
+// WidgetDelegate::DeleteDelegate() has already detached its client-owned
+// delegate. BubbleFrameView::OnThemeChanged() must still call the base class,
+// or View::PropagateThemeChanged() fails its DCHECK.
+TEST_F(BubbleFrameViewTest, ThemeChangedAfterClientOwnedWidgetClosed) {
+  WidgetDelegate delegate;
+  delegate.SetFrameViewFactory(
+      base::BindRepeating([](Widget* widget) -> std::unique_ptr<FrameView> {
+        auto frame =
+            std::make_unique<BubbleFrameView>(gfx::Insets(), gfx::Insets());
+        frame->SetBubbleBorder(std::make_unique<BubbleBorder>(
+            BubbleBorder::FLOAT, BubbleBorder::NO_SHADOW));
+        return frame;
+      }));
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  widget.Init(std::move(params));
+  ASSERT_TRUE(
+      IsViewClass<BubbleFrameView>(widget.non_client_view()->frame_view()));
+
+  widget.CloseNow();
+  ASSERT_FALSE(widget.widget_delegate());
+
+  widget.ThemeChanged();
 }
 
 namespace {

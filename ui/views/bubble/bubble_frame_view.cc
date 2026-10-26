@@ -699,13 +699,16 @@ void BubbleFrameView::Layout(PassKey) {
 }
 
 void BubbleFrameView::OnThemeChanged() {
+  // Call the base class before the early return below:
+  // View::PropagateThemeChanged() DCHECKs that View::OnThemeChanged() ran.
+  FrameView::OnThemeChanged();
+
   // TODO(crbug.com/445859201): investigate which widget's delegate is null.
   // This seems to happen on ChromeOS on a scheduled change of color mode.
   if (!GetWidget() || !GetWidget()->widget_delegate()) {
     return;
   }
 
-  FrameView::OnThemeChanged();
   UpdateWindowTitle();
   UpdateSubtitle();
   ResetWindowControls();

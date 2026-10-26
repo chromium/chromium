@@ -273,16 +273,8 @@ TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
   EXPECT_FALSE(picker_view());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowDrivePickerHostWithAnchorWidget \
-  DISABLED_ShowDrivePickerHostWithAnchorWidget
-#else
-#define MAYBE_ShowDrivePickerHostWithAnchorWidget \
-  ShowDrivePickerHostWithAnchorWidget
-#endif
 // Verifies Drive Picker host lifecycle when anchored to a widget.
-TEST_F(DrivePickerHostControllerTest,
-       MAYBE_ShowDrivePickerHostWithAnchorWidget) {
+TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostWithAnchorWidget) {
   // Create an anchor widget to simulate Loomnibox
   views::Widget anchor_widget;
   views::Widget::InitParams params(
