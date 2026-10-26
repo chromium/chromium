@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
-
 if (is_android) {
   import("//build/config/android/config.gni")
 }
@@ -81,23 +79,19 @@ source_set("csv_unit_tests") {
     "csv_password_iterator_unittest.cc",
     "csv_password_sequence_unittest.cc",
     "csv_password_unittest.cc",
+    "password_csv_reader_fuzzer.cc",
   ]
   deps = [
     ":csv",
+    "//base",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//url",
   ]
-}
-
-fuzzer_test("csv_reader_fuzzer") {
-  sources = [ "password_csv_reader_fuzzer.cc" ]
-  deps = [
-    ":csv",
-    "//base:i18n",
-    "//components/autofill/core/common",
+  data = [
+    "password_csv_reader_corpus/",
+    "password_csv_reader_fuzzer.dict",
   ]
-  seed_corpus = "password_csv_reader_corpus"
-  dict = "password_csv_reader_fuzzer.dict"
 }

@@ -52,6 +52,9 @@ specific_include_rules = {
   "http_credentials_cleaner_unittest\\.cc": [
     "+services/network",
   ],
+  "password_csv_reader_fuzzer\\.cc": [
+    "+third_party/fuzztest",
+  ],
   "password_manager_blocklist_policy\\.(cc|h)": [
     "+components/keyed_service/content",
     "+components/policy/core/browser",
