@@ -1922,5 +1922,80 @@ class TextureLayerUpdateAfterPaintEventTest : public LayerTreeTest,
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerUpdateAfterPaintEventTest);
+
+class TextureLayerDisposeDuringWillCommitTest : public LayerTreeTest,
+                                                TextureLayerClient {
+ public:
+  bool PrepareTransferableResource(
+      viz::TransferableResource* resource,
+      viz::ReleaseCallback* release_callback) override {
+    ++num_transferred_resources_;
+    *resource = viz::TransferableResource();
+    return true;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(100, 100));
+    LayerTreeTest::SetupTree();
+    texture_layer_ = TextureLayer::Create(
+        this, TextureLayer::PrepareResourceBehavior::kAfterPaintEvent);
+    texture_layer_->SetIsDrawable(true);
+    texture_layer_->SetContentsOpaque(true);
+    texture_layer_->SetBounds(gfx::Size(100, 100));
+    texture_layer_->SetBackgroundColor(SkColors::kRed);
+    layer_tree_host()->root_layer()->AddChild(texture_layer_);
+    texture_layer_id_ = static_cast<uint32_t>(texture_layer_->id());
+    if (layer_tree_host()->IsUsingLayerLists()) {
+      CopyProperties(layer_tree_host()->root_layer(), texture_layer_.get());
+    }
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillBeginMainFrame() override {
+    if (num_commits_ == 0) {
+      texture_layer_->SetNeedsDisplayRect({0, 0, 7, 11});
+    }
+  }
+
+  void WillCommit(const CommitState& cs) override {
+    if (num_commits_ == 0) {
+      EXPECT_TRUE(layer_tree_host()->in_will_commit());
+      ASSERT_TRUE(texture_layer_);
+      TextureLayer* raw_layer = texture_layer_.get();
+      layer_tree_host()->ScheduleLayerForPostCommitDisposal(texture_layer_);
+      texture_layer_->ClearClient();
+      texture_layer_ = nullptr;
+      // Removal from the layer tree is deferred until the commit completes.
+      EXPECT_NE(raw_layer->parent(), nullptr);
+      EXPECT_EQ(raw_layer->layer_tree_host(), layer_tree_host());
+    }
+  }
+
+  void DidCommit() override {
+    ++num_commits_;
+    if (num_commits_ == 1) {
+      EXPECT_EQ(num_transferred_resources_.load(), 0u);
+      EXPECT_EQ(layer_tree_host()->LayerById(texture_layer_id_), nullptr);
+    }
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    if (host_impl->sync_tree()->source_frame_number() == 0) {
+      EXPECT_NE(host_impl->sync_tree()->LayerById(texture_layer_id_), nullptr);
+    } else {
+      EXPECT_EQ(host_impl->sync_tree()->LayerById(texture_layer_id_), nullptr);
+      EndTest();
+    }
+  }
+
+ private:
+  int num_commits_ = 0;
+  uint32_t texture_layer_id_ = 0;
+  scoped_refptr<TextureLayer> texture_layer_;
+  std::atomic<uint32_t> num_transferred_resources_ = 0u;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerDisposeDuringWillCommitTest);
 }  // namespace
 }  // namespace cc

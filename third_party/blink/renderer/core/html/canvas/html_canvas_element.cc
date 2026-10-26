@@ -1779,7 +1779,14 @@ void HTMLCanvasElement::SetNeedsPushProperties() {
 }
 
 void HTMLCanvasElement::DiscardResources() {
-  ResetLayer();
+  if (auto* host = cc_layer_ ? cc_layer_->layer_tree_host() : nullptr;
+      host && host->in_will_commit()) {
+    host->ScheduleLayerForPostCommitDisposal(cc_layer_);
+    cc_layer_->ClearClient();
+    cc_layer_ = nullptr;
+  } else {
+    ResetLayer();
+  }
   UpdateMemoryUsage();
   dirty_rect_ = gfx::Rect();
 }

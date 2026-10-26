@@ -28,7 +28,7 @@ class CC_EXPORT PictureLayer : public Layer {
   PictureLayer(const PictureLayer&) = delete;
   PictureLayer& operator=(const PictureLayer&) = delete;
 
-  void ClearClient();
+  void ClearClient() override;
 
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask);
   bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }

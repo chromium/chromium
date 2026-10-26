@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<title>Garbage-collecting a detached canvas during WillCommit should not crash</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="help" href="https://crbug.com/576097084">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<canvas id="canvas1" width="200" height="200" content="drawable"></canvas>
+<canvas id="canvas2" width="200" height="200" content="drawable"></canvas>
+
+<script>
+  'use strict';
+
+  function waitForOneFrame() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 0);
+      });
+    });
+  }
+
+  promise_test(async t => {
+    let weakRef;
+    (() => {
+      let other_canvas = document.createElement('canvas');
+      other_canvas.setAttribute('content', 'drawable');
+      other_canvas.width = 200;
+      other_canvas.height = 200;
+      document.body.appendChild(other_canvas);
+      let ctx = other_canvas.getContext('2d');
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(0, 0, 200, 200);
+      weakRef = new WeakRef(other_canvas);
+
+      // canvas2 is later in document order, so its paint event fires first.
+      canvas2.onpaint = () => {
+        paintOrder.push('canvas2');
+        if (other_canvas) {
+          other_canvas.remove();
+          other_canvas = null;
+          document.body.offsetTop;
+        }
+      };
+    })();
+
+    // Wait a frame so other_canvas is composited and attached to LayerTreeHost.
+    await waitForOneFrame();
+
+    let paintOrder = [];
+    let collectedDuringOnpaint = false;
+
+    // canvas1 fires second, after canvas2's stack frame has exited.
+    canvas1.onpaint = () => {
+      paintOrder.push('canvas1');
+      self.gc();
+      collectedDuringOnpaint = (weakRef.deref() === undefined);
+    };
+
+    canvas1.requestPaint();
+    canvas2.requestPaint();
+
+    await waitForOneFrame();
+    assert_array_equals(paintOrder, ['canvas2', 'canvas1']);
+    assert_true(collectedDuringOnpaint, 'other_canvas should be collected during onpaint');
+  }, 'Detaching and garbage-collecting a composited canvas during WillCommit does not crash');
+</script>

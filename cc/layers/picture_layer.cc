@@ -174,6 +174,9 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
 
 void PictureLayer::ClearClient() {
   client_ = nullptr;
+  if (IsAttached() && layer_tree_host()->in_will_commit()) {
+    return;
+  }
   UpdateDrawsContent();
 }
 

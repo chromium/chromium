@@ -91,8 +91,10 @@ class CC_EXPORT TextureLayer : public Layer {
   TextureLayer(const TextureLayer&) = delete;
   TextureLayer& operator=(const TextureLayer&) = delete;
 
-  // Resets the client, which also resets the texture.
-  void ClearClient();
+  // Resets the client, which also resets the texture (unless called while
+  // attached during `LayerTreeHost::in_will_commit()`, in which case only the
+  // client pointer is cleared).
+  void ClearClient() override;
 
   // Resets the texture.
   void ClearTexture();
