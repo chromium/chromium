@@ -82,7 +82,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);

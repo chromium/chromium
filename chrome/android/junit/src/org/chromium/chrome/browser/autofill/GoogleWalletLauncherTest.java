@@ -50,7 +50,7 @@ public class GoogleWalletLauncherTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     }
 
     @Test

@@ -98,7 +98,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);

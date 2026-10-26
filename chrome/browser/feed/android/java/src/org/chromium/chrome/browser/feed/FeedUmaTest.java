@@ -30,7 +30,7 @@ public class FeedUmaTest {
 
     @Before
     public void setUpTest() {
-        Robolectric.setupActivity(Activity.class);
+        Robolectric.buildActivity(Activity.class).setup().get();
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
     }
 

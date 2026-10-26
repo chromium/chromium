@@ -93,7 +93,7 @@ public class ScrollCaptureCallbackDelegateTest {
         PaintPreviewCompositorUtilsJni.setInstanceForTesting(mCompositorUtils);
         doReturn(false).when(mCompositorUtils).stopWarmCompositor();
         doNothing().when(mCompositorUtils).warmupCompositor();
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mView = new View(mActivity);
         when(mTab.getContext()).thenReturn(mActivity);
 

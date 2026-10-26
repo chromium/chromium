@@ -41,7 +41,7 @@ public class UmaSessionStatsUnitTest {
     @Before
     public void setUp() {
         UmaSessionStatsJni.setInstanceForTesting(mUmaSessionStatsJniMock);
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mUmaSessionStats = new UmaSessionStats(activity);
 
         when(mTab.getContext()).thenReturn(activity);

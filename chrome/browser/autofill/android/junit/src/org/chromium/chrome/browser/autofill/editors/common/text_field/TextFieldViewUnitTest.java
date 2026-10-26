@@ -68,7 +68,7 @@ public final class TextFieldViewUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mContentView = new LinearLayout(mActivity);
         mOtherFocusableField = new TextInputEditText(mActivity);
         mContentView.addView(mOtherFocusableField);

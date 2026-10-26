@@ -83,7 +83,7 @@ public class ContactEditorTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(BlankUiTestActivity.class);
+        mActivity = Robolectric.buildActivity(BlankUiTestActivity.class).setup().get();
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
     }

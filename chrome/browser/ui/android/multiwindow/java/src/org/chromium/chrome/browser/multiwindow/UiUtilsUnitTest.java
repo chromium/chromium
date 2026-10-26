@@ -84,7 +84,7 @@ public class UiUtilsUnitTest {
 
     @Test
     public void testShowNameWindowDialog_NonEmptyTitle_Success() {
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
         String newTitle = "My Window";
@@ -105,7 +105,7 @@ public class UiUtilsUnitTest {
 
     @Test
     public void testShowNameWindowDialog_EmptyTitle_Success() {
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
         String newTitle = "";
@@ -126,7 +126,7 @@ public class UiUtilsUnitTest {
 
     @Test
     public void testShowNameWindowDialog_SameTitle() {
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
 
@@ -144,7 +144,7 @@ public class UiUtilsUnitTest {
 
     @Test
     public void testShowNameWindowDialog_Cancel() {
-        Activity activity = Robolectric.setupActivity(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
 

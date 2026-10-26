@@ -95,7 +95,7 @@ public class TabListFaviconProviderTest {
         when(mProfile.getPrimaryOtrProfile(anyBoolean())).thenReturn(mOtrProfile);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mUrl1 = JUnitTestGURLs.URL_1;

@@ -42,7 +42,7 @@ public class AutofillFallbackSurfaceLauncherTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
     }
 

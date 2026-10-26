@@ -35,7 +35,7 @@ public class BottomSheetRectProviderUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mAnchorView = new View(mActivity);
         mProvider = new BottomSheetRectProvider(mActivity, mAnchorView);
     }

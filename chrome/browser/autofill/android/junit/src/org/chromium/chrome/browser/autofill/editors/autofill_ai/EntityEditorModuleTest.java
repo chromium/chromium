@@ -322,7 +322,7 @@ public class EntityEditorModuleTest {
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
 
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     }
 
     @Test

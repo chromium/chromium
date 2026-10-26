@@ -67,7 +67,7 @@ public class DateFieldViewTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     }
 
     private PropertyModel getDateFieldModel(@Nullable LocalDate date) {

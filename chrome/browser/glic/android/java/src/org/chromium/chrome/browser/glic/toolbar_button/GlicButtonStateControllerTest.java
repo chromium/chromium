@@ -59,7 +59,7 @@ public class GlicButtonStateControllerTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         ActorKeyedServiceFactory.setForTesting(mActorService);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
 

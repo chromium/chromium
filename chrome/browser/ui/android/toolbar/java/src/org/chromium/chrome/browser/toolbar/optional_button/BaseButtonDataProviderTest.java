@@ -87,7 +87,7 @@ public class BaseButtonDataProviderTest {
     public void setUp() {
         FeatureOverrides.newBuilder().apply();
         mMockTabSupplier = ObservableSuppliers.createMonotonic(mMockTab);
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mMockTab.getContext()).thenReturn(mActivity);

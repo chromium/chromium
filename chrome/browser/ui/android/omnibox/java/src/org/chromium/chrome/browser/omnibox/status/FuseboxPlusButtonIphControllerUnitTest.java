@@ -57,7 +57,7 @@ public class FuseboxPlusButtonIphControllerUnitTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.setupActivity(TestActivity.class);
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mStatusView = new View(activity);
         activity.setContentView(mStatusView);
         mController =

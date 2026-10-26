@@ -85,7 +85,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
 
     @Before
     public void setup() {
-        mContext = Robolectric.setupActivity(Activity.class);
+        mContext = Robolectric.buildActivity(Activity.class).setup().get();
         mLayoutStateProviderSupplierImpl = new OneshotSupplierImpl<>();
         mLayoutStateProviderSupplierImpl.set(mLayoutStateProvider);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);

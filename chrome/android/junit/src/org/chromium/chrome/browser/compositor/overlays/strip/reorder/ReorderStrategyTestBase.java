@@ -109,7 +109,7 @@ public abstract class ReorderStrategyTestBase {
     @Captor ArgumentCaptor<Token> mTokenCaptor;
 
     protected void setup() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         // StripLayoutViews need styles during initializations.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModel = spy(new MockTabModel(mProfile, /* delegate= */ null));

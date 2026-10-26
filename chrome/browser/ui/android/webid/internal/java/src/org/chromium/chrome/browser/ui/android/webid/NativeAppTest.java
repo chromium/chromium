@@ -93,7 +93,7 @@ public class NativeAppTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mShadowActivity = Shadows.shadowOf(mActivity);
         mShadowPackageManager = Shadows.shadowOf(mActivity.getPackageManager());

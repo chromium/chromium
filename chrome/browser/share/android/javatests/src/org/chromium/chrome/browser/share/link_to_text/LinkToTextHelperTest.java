@@ -24,7 +24,7 @@ public class LinkToTextHelperTest {
 
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
     }
 
     @Test

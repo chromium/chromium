@@ -77,7 +77,7 @@ public class ShareSheetUsageRankingHelperTest {
     public void setUp() {
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
 
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mWindow.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))

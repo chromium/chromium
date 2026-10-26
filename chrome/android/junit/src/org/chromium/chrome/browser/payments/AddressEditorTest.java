@@ -192,7 +192,7 @@ public class AddressEditorTest {
         PhoneNumberUtilJni.setInstanceForTesting(mPhoneNumberUtilJni);
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
-        mActivity = Robolectric.setupActivity(BlankUiTestActivity.class);
+        mActivity = Robolectric.buildActivity(BlankUiTestActivity.class).setup().get();
 
         SubKeyRequesterFactory.setInstanceForTesting(mSubKeyRequester);
 

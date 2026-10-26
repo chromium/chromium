@@ -2355,7 +2355,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testShowNameWindowDialog_UsesCustomTitle() {
-        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        Activity realActivity = Robolectric.buildActivity(Activity.class).setup().get();
         var manager = createTestMultiInstanceManager(realActivity);
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
 
@@ -2378,7 +2378,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testShowNameWindowDialog_UsesRegularTitleAsFallback() {
-        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        Activity realActivity = Robolectric.buildActivity(Activity.class).setup().get();
         var manager = createTestMultiInstanceManager(realActivity);
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
 
@@ -2400,7 +2400,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testShowNameWindowDialog_DialogCallbackUpdatesTitle() {
-        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        Activity realActivity = Robolectric.buildActivity(Activity.class).setup().get();
         var manager = createTestMultiInstanceManager(realActivity);
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
         final String defaultTitle = "Default Title";
@@ -2426,7 +2426,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testShowNameWindowDialog_DialogCallbackIgnoresDefaultTitle() {
-        Activity realActivity = Robolectric.setupActivity(Activity.class);
+        Activity realActivity = Robolectric.buildActivity(Activity.class).setup().get();
         var manager = createTestMultiInstanceManager(realActivity);
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
         final String defaultTitle = "Default Title";

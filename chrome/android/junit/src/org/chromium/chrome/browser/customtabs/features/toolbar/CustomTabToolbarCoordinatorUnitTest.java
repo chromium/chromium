@@ -99,7 +99,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mTabController = env.createTabController();
 
         BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate =

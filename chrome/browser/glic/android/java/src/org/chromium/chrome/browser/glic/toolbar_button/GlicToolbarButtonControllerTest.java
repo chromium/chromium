@@ -96,7 +96,7 @@ public class GlicToolbarButtonControllerTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
