@@ -511,7 +511,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
       script->GetUnboundScript()->GetScriptName();
   TRACE_EVENT("v8", "v8.run", "fileName",
               TRACE_STR_COPY(*v8::String::Utf8Value(isolate, script_name)),
-              [&](perfetto::EventContext ctx) {
+              "scriptId", script->ScriptId(), [&](perfetto::EventContext ctx) {
                 AddWorldAnnotations(ctx, script_state->World());
               });
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
@@ -851,6 +851,12 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     v8::Isolate* isolate) {
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
   TRACE_EVENT("v8", "v8.callFunction", [&](perfetto::EventContext ctx) {
+    ctx.AddDebugAnnotation("scriptId", function->ScriptId());
+    ctx.AddDebugAnnotation("startPosition", function->GetScriptStartPosition());
+    ctx.AddDebugAnnotation("data", [&](perfetto::TracedValue trace_context) {
+      inspector_function_call_event::Data(std::move(trace_context), context,
+                                          function);
+    });
     AddFunctionWorldAnnotations(ctx, isolate, function);
   });
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);

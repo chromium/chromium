@@ -7,11 +7,14 @@
 #include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
@@ -788,6 +791,69 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
                             produce_cache_options));
   // Code cache should have been cleared after being rejected.
   EXPECT_FALSE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
+}
+
+TEST_F(V8ScriptRunnerTest, TraceScriptIdAndNestedCallFunctionAttribution) {
+  base::test::TracingEnvironment tracing_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  ScriptState* script_state = scope.GetScriptState();
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+  trace_analyzer::Start("v8");
+
+  String source_code =
+      "function myNestedCallback() { return 42; }\n"
+      "myNestedCallback;\n";
+  ClassicScript* classic_script =
+      ClassicScript::Create(source_code, Url(), Url(), ScriptFetchOptions(),
+                            ScriptSourceLocationType::kInline);
+  ScriptEvaluationResult eval_result =
+      classic_script->RunScriptOnScriptStateAndReturnValue(script_state);
+  ASSERT_EQ(eval_result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
+  ASSERT_TRUE(eval_result.GetSuccessValue()->IsFunction());
+  v8::Local<v8::Function> callback_fn =
+      eval_result.GetSuccessValue().As<v8::Function>();
+  int expected_script_id = callback_fn->ScriptId();
+  EXPECT_GT(expected_script_id, 0);
+
+  // Invoke V8ScriptRunner::CallFunction at nested microtask depth (depth > 0).
+  {
+    v8::MicrotasksScope nested_scope(isolate,
+                                     ToMicrotaskQueue(execution_context),
+                                     v8::MicrotasksScope::kDoNotRunMicrotasks);
+    v8::MaybeLocal<v8::Value> call_result = V8ScriptRunner::CallFunction(
+        callback_fn, execution_context, scope.GetContext()->Global(), 0,
+        nullptr, isolate);
+    EXPECT_FALSE(call_result.IsEmpty());
+  }
+
+  auto analyzer = trace_analyzer::Stop();
+
+  // 1. Verify v8.run has scriptId matching the compiled script.
+  trace_analyzer::TraceEventVector run_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs("v8.run"),
+                       &run_events);
+  ASSERT_FALSE(run_events.empty());
+  EXPECT_EQ(run_events.back()->GetKnownArgAsInt("scriptId"),
+            expected_script_id);
+
+  // 2. Verify nested v8.callFunction (depth > 0) has scriptId, startPosition,
+  // and data.functionName.
+  trace_analyzer::TraceEventVector call_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs("v8.callFunction"),
+                       &call_events);
+  ASSERT_FALSE(call_events.empty());
+  const trace_analyzer::TraceEvent* call_event = call_events.back();
+  EXPECT_EQ(call_event->GetKnownArgAsInt("scriptId"), expected_script_id);
+  EXPECT_EQ(call_event->GetKnownArgAsInt("startPosition"),
+            callback_fn->GetScriptStartPosition());
+  ASSERT_TRUE(call_event->HasDictArg("data"));
+  auto call_data = call_event->GetKnownArgAsDict("data");
+  const std::string* call_fn_name = call_data.FindString("functionName");
+  ASSERT_NE(call_fn_name, nullptr);
+  EXPECT_EQ(*call_fn_name, "myNestedCallback");
 }
 
 }  // namespace
