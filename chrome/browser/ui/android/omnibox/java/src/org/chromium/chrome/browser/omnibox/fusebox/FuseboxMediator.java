@@ -94,6 +94,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.io.ByteArrayOutputStream;
@@ -342,6 +343,11 @@ class FuseboxMediator implements BackPressHandler {
         if (mModelList != null) {
             mModelList.removeObserver(mListObserver);
             mModelList.setAttachmentUploadFailedListener(null);
+        }
+
+        SimpleRecyclerViewAdapter oldAdapter = mModel.get(FuseboxProperties.ADAPTER);
+        if (oldAdapter != null) {
+            oldAdapter.destroy();
         }
 
         mModelList = modelList;

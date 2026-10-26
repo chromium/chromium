@@ -137,6 +137,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -287,6 +288,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private DriveFilePickerClient mDriveFilePickerClient;
     @Mock private DriveDisclaimerBridge.Natives mDriveDisclaimerBridgeNatives;
     @Mock private TabLoadingService mTabLoadingService;
+    @Mock private SimpleRecyclerViewAdapter mMockAdapter;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -614,6 +616,19 @@ public class FuseboxMediatorUnitTest {
 
         assertFalse(mInput.getRequestTypeSupplier().hasObservers());
         verify(mAttachments).removeObserver(any());
+    }
+
+    @Test
+    public void endInput_destroysPreviousAdapter() {
+        when(mFuseboxAttachmentModelList.createAdapter(any())).thenReturn(mMockAdapter);
+        mAttachments = mFuseboxAttachmentModelList;
+        recreateMediator();
+        assertEquals(mMockAdapter, mModel.get(FuseboxProperties.ADAPTER));
+
+        mMediator.endInput();
+
+        verify(mMockAdapter).destroy();
+        assertNull(mModel.get(FuseboxProperties.ADAPTER));
     }
 
     @Test
