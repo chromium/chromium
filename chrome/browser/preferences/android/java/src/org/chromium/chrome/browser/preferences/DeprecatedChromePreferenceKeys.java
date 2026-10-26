@@ -38,6 +38,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.AuxiliarySearch.IsSchemaV2Set",
                 "Chrome.AuxiliarySearchModule.Impression",
                 "Chrome.AuxiliarySearchModule.UserResponded",
+                "Chrome.BottomBar.EducationPendingTooltips",
                 "Chrome.ContinuousSearch.DismissalCount",
                 "Chrome.ContextMenu.SearchWithGoogleLensClicked",
                 "Chrome.ContextMenu.ShopImageWithGoogleLensClicked",
