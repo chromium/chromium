@@ -30,11 +30,13 @@
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -60,8 +62,9 @@ void Length::Initialize() {
       Length(kMinIntrinsic);
 }
 
-class CalculationValueHandleMap
-    : public GarbageCollected<CalculationValueHandleMap> {
+class CalculationValueHandleMap {
+  USING_FAST_MALLOC(CalculationValueHandleMap);
+
  public:
   CalculationValueHandleMap() = default;
   CalculationValueHandleMap(const CalculationValueHandleMap&) = delete;
@@ -79,53 +82,75 @@ class CalculationValueHandleMap
     unsigned count = 1u;
   };
 
-  void Trace(Visitor* visitor) const { visitor->Trace(map_); }
-
   unsigned insert(const CalculationValue* calc_value) {
+    FlushDecrements();
+
     // FIXME calc(): https://bugs.webkit.org/show_bug.cgi?id=80489
     // This monotonically increasing handle generation scheme is potentially
     // wasteful of the handle space. Consider reusing empty handles.
     do {
       index_++;
     } while (IsHashTraitsEmptyOrDeletedValue<HashTraits<unsigned>>(index_) ||
-             !map_.insert(index_, calc_value).is_new_entry);
+             !map_->insert(index_, calc_value).is_new_entry);
     return index_;
   }
 
   const CalculationValue& Get(unsigned index) const {
-    return *map_.at(index).value;
+    return *map_->at(index).value;
   }
 
-  unsigned GetCount(unsigned index) const { return map_.at(index).count; }
+  unsigned GetCount(unsigned index) {
+    FlushDecrements();
+    return map_->at(index).count;
+  }
 
-  wtf_size_t GetMapSize() const { return map_.size(); }
+  wtf_size_t GetMapSize() {
+    FlushDecrements();
+    return map_->size();
+  }
 
   void DecrementCount(unsigned index) {
-    auto iter = map_.find(index);
-    CHECK(iter != map_.end());
+    auto iter = map_->find(index);
+    CHECK(iter != map_->end());
     unsigned count = --iter->value.count;
     if (count == 0u) {
-      map_.erase(iter);
+      map_->erase(iter);
     }
   }
 
+  void DeferredDecrementCount(unsigned index) {
+    // This is called from `~Length()`, which may execute during a GC sweep
+    // when touching `map_` is forbidden.
+    decrements_.push_back(index);
+  }
+
   void IncrementCount(unsigned index) {
-    auto iter = map_.find(index);
-    CHECK(iter != map_.end());
+    FlushDecrements();
+    auto iter = map_->find(index);
+    CHECK(iter != map_->end());
     unsigned count = ++iter->value.count;
     CHECK_GT(count, 0u);
   }
 
  private:
+  void FlushDecrements() {
+    while (!decrements_.empty()) {
+      unsigned index = decrements_.back();
+      decrements_.pop_back();
+      DecrementCount(index);
+    }
+  }
+
   unsigned index_ = 0;
-  HeapHashMap<unsigned, MemberWithCount> map_;
+  Vector<unsigned, 32> decrements_;
+  Persistent<GCedHeapHashMap<unsigned, MemberWithCount>> map_ =
+      MakeGarbageCollected<GCedHeapHashMap<unsigned, MemberWithCount>>();
 };
 
 static CalculationValueHandleMap& CalcHandles() {
   CHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(Persistent<CalculationValueHandleMap>, handle_map,
-                      (MakeGarbageCollected<CalculationValueHandleMap>()));
-  return *handle_map;
+  DEFINE_STATIC_LOCAL(CalculationValueHandleMap, handle_map, ());
+  return handle_map;
 }
 
 Length::Length(const CalculationValue* calc)
@@ -234,6 +259,11 @@ void Length::IncrementCalculatedCount() const {
 void Length::DecrementCalculatedCount() const {
   DCHECK(IsCalculated());
   CalcHandles().DecrementCount(CalculationHandle());
+}
+
+void Length::DeferredDecrementCalculatedCount() const {
+  DCHECK(IsCalculated());
+  CalcHandles().DeferredDecrementCount(CalculationHandle());
 }
 
 Length& Length::AssignSlow(const Length& length) {
