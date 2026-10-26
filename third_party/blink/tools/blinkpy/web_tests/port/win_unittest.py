@@ -167,10 +167,15 @@ class WinPortTest(port_testcase.PortTestCase):
         )
 
     def test_path_to_apache_config_file(self):
-        self.assertEqual(
-            self.make_port().path_to_apache_config_file(),
-            '/mock-checkout/third_party/blink/tools/apache_config/win-httpd.conf',
-        )
+        for port_name in ('win-win11', 'win-win11-arm64'):
+            with self.subTest(port_name=port_name):
+                self.assertEqual(
+                    self.make_port(
+                        port_name=port_name
+                    ).path_to_apache_config_file(),
+                    '/mock-checkout/third_party/blink/tools/'
+                    'apache_config/win-httpd-php8.conf',
+                )
 
     def test_relative_test_filename(self):
         port = self.make_port()

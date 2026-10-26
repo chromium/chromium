@@ -1284,6 +1284,17 @@ deps = {
     'condition': '(host_os == "linux") and non_git_source',
   },
 
+  'src/third_party/apache-win32': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/httpd-php/windows-amd64',
+        'version': 'version:3@httpd2.4.55-php8.4.27.chromium.8',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': 'checkout_win',
+  },
+
   'src/third_party/apache-windows-arm64': {
     'packages': [
         {
@@ -4469,21 +4480,6 @@ hooks = [
                 '-s', 'src/build/toolchain/win/rc/linux64/rc.sha1',
     ]
   },
-  {
-    'name': 'apache_win32',
-    'pattern': '\\.sha1',
-    'condition': 'checkout_win',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--directory',
-                '--recursive',
-                '--num_threads=16',
-                '--bucket', 'chromium-apache-win32',
-                'src/third_party/apache-win32',
-    ],
-  },
-
   # Download Telemetry's binary dependencies via conditionals
   {
     'name': 'checkout_telemetry_binary_dependencies',

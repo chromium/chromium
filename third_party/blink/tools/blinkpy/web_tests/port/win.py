@@ -251,12 +251,8 @@ class WinPort(base.Port):
         )
 
     def path_to_apache_config_file(self):
-        if self._architecture == 'arm64':
-            return self._filesystem.join(
-                self.apache_config_directory(), 'win-httpd-php8.conf'
-            )
         return self._filesystem.join(
-            self.apache_config_directory(), 'win-httpd.conf'
+            self.apache_config_directory(), 'win-httpd-php8.conf'
         )
 
     def path_to_driver(self, target=None):

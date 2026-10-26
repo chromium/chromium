@@ -14,7 +14,7 @@ if (!sys_get_temp_dir()) {
 }
 
 $id = $_GET['id'];
-if (filter_var($id, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-z0-9\-]+$/"))) === false) {
+if (!is_string($id) || !preg_match("/^[a-z0-9-]+$/", $id)) {
     echo "FAIL: invalid id.\n";
     exit();
 }
