@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
-import org.chromium.chrome.browser.preloading.AndroidPrerenderManagerJni;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.ui.base.MotionEventTestUtils;
@@ -95,7 +94,6 @@ public class TileInteractionDelegateTest {
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileRenderer mTileRenderer;
     @Mock private AndroidPrerenderManager mAndroidPrerenderManager;
-    @Mock private AndroidPrerenderManager.Natives mNativeMock;
     @Mock private TileGroup.CustomTileModificationDelegate mCustomTileModificationDelegate;
 
     private SuggestionsTileView mTileView;
@@ -109,7 +107,6 @@ public class TileInteractionDelegateTest {
         new FrameLayout(context).addView(mTileView);
         when(mTile.getUrl()).thenReturn(new GURL("https://example.com"));
         when(mTile.getData()).thenReturn(mData);
-        AndroidPrerenderManagerJni.setInstanceForTesting(mNativeMock);
     }
 
     private void setupForCustomTileTests() {

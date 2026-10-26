@@ -13,25 +13,20 @@
 class NewTabPagePreloadPipelineManager;
 class TabAndroid;
 
-// This object is owned through a Java-side singletone object, and the object
-// can be shared by multiple tabs (WebContents).
 class AndroidPrerenderManager {
  public:
-  explicit AndroidPrerenderManager(JNIEnv* env);
-
+  AndroidPrerenderManager() = delete;
   AndroidPrerenderManager(const AndroidPrerenderManager&) = delete;
   AndroidPrerenderManager& operator=(const AndroidPrerenderManager&) = delete;
 
-  virtual ~AndroidPrerenderManager();
+  static void StartPrerendering(JNIEnv* env,
+                                const GURL& prerender_url,
+                                TabAndroid* tab);
 
-  void StartPrerendering(JNIEnv* env,
-                         const GURL& prerender_url,
-                         TabAndroid* tab);
-
-  void StopPrerendering(JNIEnv* env, TabAndroid* tab);
+  static void StopPrerendering(JNIEnv* env, TabAndroid* tab);
 
  private:
-  NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager(
+  static NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager(
       TabAndroid* tab);
 };
 
