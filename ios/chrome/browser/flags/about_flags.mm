@@ -3094,10 +3094,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableBackgroundContinuedProcessingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableBackgroundContinuedProcessing)},
-    {"remote-actor-credential-sharing",
-     flag_descriptions::kRemoteActorCredentialSharingName,
-     flag_descriptions::kRemoteActorCredentialSharingDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRemoteActorCredentialSharing)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

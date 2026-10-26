@@ -1806,13 +1806,6 @@ inline constexpr char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 inline constexpr char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";
 
-inline constexpr char kRemoteActorCredentialSharingName[] =
-    "Enable password sharing with remote actors";
-inline constexpr char kRemoteActorCredentialSharingDescription[] =
-    "Enables remote actors to request passwords from the signed in Google "
-    "account. When requested, the user will be prompted to select a password "
-    "and authenticate.";
-
 inline constexpr char kRemoveExcessNTPsExperimentName[] =
     "Remove extra New Tab Pages";
 inline constexpr char kRemoveExcessNTPsExperimentDescription[] =
