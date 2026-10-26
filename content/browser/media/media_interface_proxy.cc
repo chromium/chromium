@@ -44,7 +44,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 #if BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
-#include "content/public/browser/provision_fetcher_impl.h"
+#include "content/browser/media/provision_fetcher_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

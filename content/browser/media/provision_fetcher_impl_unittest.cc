@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/provision_fetcher_impl.h"
+#include "content/browser/media/provision_fetcher_impl.h"
 
 #include "base/run_loop.h"
 #include "content/public/browser/back_forward_cache.h"

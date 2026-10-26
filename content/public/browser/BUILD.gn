@@ -564,11 +564,7 @@ source_set("browser_sources") {
   }
 
   if (enable_cdm_provision_fetcher) {
-    sources += [
-      "provision_fetcher_factory.h",
-      "provision_fetcher_impl.cc",
-      "provision_fetcher_impl.h",
-    ]
+    sources += [ "provision_fetcher_factory.h" ]
   }
 
   if (is_linux || is_mac) {

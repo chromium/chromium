@@ -2675,6 +2675,8 @@ source_set("browser") {
 
   if (enable_cdm_provision_fetcher) {
     sources += [
+      "media/provision_fetcher_impl.cc",
+      "media/provision_fetcher_impl.h",
       "media/url_provision_fetcher.cc",
       "media/url_provision_fetcher.h",
     ]
