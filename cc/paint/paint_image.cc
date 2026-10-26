@@ -510,4 +510,21 @@ float PaintImage::GetMaximumRenderedHdrHeadroom() const {
   return gfx::ToneMapUtil::GetMaxHdrHeadroom(color_space(), hdr_metadata_);
 }
 
+bool PaintImage::DecodeCacheColorConversionIsDestructive() const {
+  if (HasGainmapInfo()) {
+    return true;
+  }
+  // An image may need tone mapping or white-level adjustment at draw time,
+  // even if its HDR headroom is 0.
+  if (gfx::ToneMapUtil::UseGlobalToneMapFilter(color_space(), hdr_metadata_)) {
+    return true;
+  }
+  // Extended-range images with a single headroom do not need tone mapping, but
+  // converting them to the target color space would clamp values above white.
+  if (gfx::ToneMapUtil::IsHDR(color_space(), hdr_metadata_)) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace cc

@@ -21,7 +21,6 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 namespace {
@@ -306,9 +305,7 @@ SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
   //   results (and only ever cache one tone mapping for a given image).
   TargetColorParams target_color_params = image.target_color_params();
   target_color_params.hdr_headroom = std::nullopt;
-  if (paint_image.HasGainmapInfo() ||
-      gfx::ToneMapUtil::UseGlobalToneMapFilter(paint_image.color_space(),
-                                               paint_image.GetHDRMetadata())) {
+  if (paint_image.DecodeCacheColorConversionIsDestructive()) {
     if (paint_image.color_space()) {
       target_color_params.color_space =
           gfx::ColorSpace(paint_image.color_space());

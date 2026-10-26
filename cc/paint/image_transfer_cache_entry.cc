@@ -32,9 +32,6 @@
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
-#include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/mojom/hdr_metadata.mojom.h"
-#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 namespace {
@@ -646,17 +643,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     reader.Read(&gainmap_info_);
   }
 
-  // Skip color space conversion if this image will be tone mapped.
-  // TODO(https://crbug.com/395659818): This will inappropriately color convert
-  // SDR images with AGTM metadata. This will not affect the rendering result,
-  // but is odd. All of the caching of the color space conversion here should be
-  // removed.
-  const bool is_tone_mapped =
-      has_gainmap_ || gfx::ToneMapUtil::UseGlobalToneMapFilter(
-                          image_->colorSpace(), gfx::HDRMetadata());
-
-  // Perform color conversion (if no tone mapping is needed).
-  if (target_color_space && !is_tone_mapped) {
+  // Perform color conversion (unless the client opted out).
+  if (target_color_space) {
     if (graphite_recorder_) {
       SkImage::RequiredProperties props{.fMipmapped = needs_mips};
       image_ =

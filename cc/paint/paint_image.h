@@ -409,6 +409,12 @@ class CC_PAINT_EXPORT PaintImage {
   // 0.5f corresponds to 2^0.5 ~= 1.41x SDR white).
   float GetMaximumRenderedHdrHeadroom() const;
 
+  // Returns true if converting this image to the target color space in a
+  // decode cache would clamp values above white, destroying HDR content (from
+  // a gainmap or HDR color space) or content that is white-scaled at draw time.
+  // Decode caches must keep such images in their original color space.
+  bool DecodeCacheColorConversionIsDestructive() const;
+
   std::string ToString() const;
 
  private:
