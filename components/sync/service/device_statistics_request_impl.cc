@@ -207,7 +207,8 @@ void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
   if (http_response_code == net::HTTP_UNAUTHORIZED &&
       !has_retried_authorization_) {
     identity_manager_->RemoveAccessTokenFromCache(
-        account_.account_id, signin::OAuthConsumerId::kWebHistoryService,
+        account_.account_id,
+        signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics,
         access_token_info.token);
     has_retried_authorization_ = true;
     state_ = State::kNotStarted;  // Avoid CHECK() in Start().

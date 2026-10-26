@@ -5,14 +5,17 @@
 #include "components/sync/service/device_statistics_request_impl.h"
 
 #include "base/byte_size.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -21,6 +24,15 @@ namespace {
 
 const char kTestEmail[] = "test@gmail.com";
 const char kTestUrl[] = "https://test.com";
+
+class MockDiagnosticsObserver
+    : public signin::IdentityManager::DiagnosticsObserver {
+ public:
+  MOCK_METHOD(void,
+              OnAccessTokenRemovedFromCache,
+              (const CoreAccountId&, const signin::ScopeSet&),
+              (override));
+};
 
 class DeviceStatisticsRequestImplTest : public testing::Test {
  public:
@@ -164,12 +176,22 @@ TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnlyOnceOnNetworkError) {
 }
 
 TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnUnauthorized) {
+  testing::StrictMock<MockDiagnosticsObserver> diagnostics_observer;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::DiagnosticsObserver>
+      observation(&diagnostics_observer);
+  observation.Observe(identity_test_env_.identity_manager());
+
   DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
                                       shared_url_loader_factory_, "user_agent",
                                       account_info_, GURL(kTestUrl));
 
   // First response is "unauthorized".
   SetUnauthorizedResponse();
+  EXPECT_CALL(diagnostics_observer,
+              OnAccessTokenRemovedFromCache(
+                  account_info_.account_id,
+                  signin::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope}));
 
   base::test::TestFuture<void> future;
   request.Start(future.GetCallback());
