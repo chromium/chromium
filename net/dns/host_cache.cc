@@ -1109,12 +1109,18 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
 
     const base::Value* network_anonymization_key_value =
         entry_dict.Find(kNetworkAnonymizationKey);
-    NetworkAnonymizationKey network_anonymization_key;
     if (!network_anonymization_key_value ||
-        network_anonymization_key_value->type() == base::Value::Type::STRING ||
-        !NetworkAnonymizationKey::FromValue(*network_anonymization_key_value,
-                                            &network_anonymization_key)) {
+        network_anonymization_key_value->type() == base::Value::Type::STRING) {
       return false;
+    }
+    NetworkAnonymizationKey network_anonymization_key;
+    if (!NetworkAnonymizationKey::FromValue(*network_anonymization_key_value,
+                                            &network_anonymization_key)) {
+      // The key may be from an older version of Chrome, and use a format or
+      // values that are no longer supported (e.g., a NetworkIsolationPartition
+      // that has since been removed). Skip just this entry, rather than
+      // failing to restore the whole cache.
+      continue;
     }
 
     bool secure = entry_dict.FindBool(kSecureKey).value_or(false);

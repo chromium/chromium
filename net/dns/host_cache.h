@@ -456,8 +456,10 @@ class NET_EXPORT HostCache {
                bool include_staleness,
                SerializationType serialization_type) const;
   // Takes a base::Value list representing cache entries and stores them in the
-  // cache, skipping any that already have entries. Returns true on success,
-  // false on failure.
+  // cache, skipping any that already have entries. Entries that can no longer
+  // be used (e.g., because their NetworkAnonymizationKey is no longer
+  // supported, or their network interface is unavailable) are also skipped.
+  // Returns true on success, false on failure.
   bool RestoreFromListValue(const base::ListValue& old_cache);
   // Returns the number of entries that were restored in the last call to
   // RestoreFromListValue().
