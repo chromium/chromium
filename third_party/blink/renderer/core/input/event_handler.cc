@@ -664,16 +664,15 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
       CHECK(style_image->CachedImage());
 
       float scale = style_image->ImageScaleFactor();
-      Image* image = style_image->CachedImage()->GetImage();
+      scoped_refptr<Image> image = style_image->CachedImage()->GetImage();
 
       const float device_scale_factor =
           page->GetChromeClient().GetScreenInfo(*frame_).device_scale_factor;
 
-      scoped_refptr<Image> svg_image_holder;
       // If the image is an SVG, then adjust the scale to reflect the device
       // scale factor so that the SVG can be rasterized in the native
       // resolution and scaled down to the correct size for the cursor.
-      if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+      if (auto* svg_image = DynamicTo<SVGImage>(image.get())) {
         // Adjust the total scale factor. The image scale factor doesn't
         // really affect SVG images though (as is evident below), so this
         // should probably be dropped (scale should be set to the DPR).
@@ -689,12 +688,11 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
             kRespectImageOrientation);
 
         // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
-        svg_image_holder = SVGImageForContainer::Create(
+        image = SVGImageForContainer::Create(
             *svg_image, size_in_device_pixels, device_scale_factor, nullptr,
             frame_->GetDocument()
                 ->GetStyleEngine()
                 .ResolveColorSchemeForEmbedding(&style));
-        image = svg_image_holder.get();
       }
 
       // Reject empty and too large cursors.

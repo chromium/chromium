@@ -74,6 +74,7 @@ void AdvanceSVGImageAnimationUntil(SVGImage& image,
 class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
  public:
   SVGImage& GetImage() { return *image_; }
+  void ResetImage() { image_.reset(); }
 
   void Load(base::span<const char> data, bool should_pause) {
     observer_ = MakeGarbageCollected<PauseControlImageObserver>(should_pause);
@@ -1258,6 +1259,45 @@ TEST_F(SVGImageSimTest, SpriteSheetNonDrawingCulling) {
   PaintRecord record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(1U, CountPaintOpType(record, cc::PaintOpType::kDrawOval));
   EXPECT_EQ(0U, CountPaintOpType(record, cc::PaintOpType::kTranslate));
+}
+
+TEST_F(SVGImageTest, SVGImageForContainerRetainsSVGImage) {
+  const bool kShouldPause = false;
+  Load(base::span_from_cstring(R"SVG(
+         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'>
+           <rect width='10' height='10' fill='blue'/>
+         </svg>)SVG"),
+       kShouldPause);
+
+  auto container =
+      SVGImageForContainer::Create(GetImage(), gfx::SizeF(100, 100), 1, nullptr,
+                                   mojom::blink::PreferredColorScheme::kLight);
+  ResetImage();
+  SkBitmap bitmap =
+      container->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
+  ASSERT_EQ(bitmap.width(), 100);
+  ASSERT_EQ(bitmap.height(), 100);
+  EXPECT_EQ(bitmap.getColor(50, 50), SK_ColorBLUE);
+}
+
+TEST_F(SVGImageSimTest, ElementSizeAndDefaultDestinationSizeWithViewSpec) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <img id="image" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='blue' width='100' height='100'/></svg>#svgView(viewBox(0,0,50,25);transform(scale(1)))">
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* image =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("image")));
+  ASSERT_TRUE(image);
+  EXPECT_EQ(gfx::SizeF(300, 150),
+            image->ElementSize(gfx::SizeF(300, 300), kRespectImageOrientation));
+  EXPECT_EQ(gfx::SizeF(300, 150),
+            image->DefaultDestinationSize(gfx::SizeF(300, 300),
+                                          kRespectImageOrientation));
 }
 
 }  // namespace blink

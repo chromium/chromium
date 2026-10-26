@@ -144,9 +144,9 @@ gfx::SizeF StyleFetchedImage::ImageSize(
     RespectImageOrientationEnum respect_orientation) const {
   multiplier = ApplyImageResolution(multiplier);
 
-  Image& image = *image_->GetImage();
+  scoped_refptr<Image> image = image_->GetImage();
   gfx::SizeF size;
-  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+  if (auto* svg_image = DynamicTo<SVGImage>(image.get())) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     const gfx::SizeF unzoomed_default_object_size =
@@ -155,7 +155,7 @@ gfx::SizeF StyleFetchedImage::ImageSize(
         *svg_image, view_info, unzoomed_default_object_size);
   } else {
     size = gfx::SizeF(
-        image.Size(ForceOrientationIfNecessary(respect_orientation)));
+        image->Size(ForceOrientationIfNecessary(respect_orientation)));
   }
   return ApplyZoom(size, multiplier);
 }
@@ -163,9 +163,9 @@ gfx::SizeF StyleFetchedImage::ImageSize(
 NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
-  Image& image = *image_->GetImage();
+  scoped_refptr<Image> image = image_->GetImage();
   NaturalSizingInfo sizing_info;
-  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+  if (auto* svg_image = DynamicTo<SVGImage>(image.get())) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     sizing_info =
@@ -173,7 +173,7 @@ NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
             .value_or(NaturalSizingInfo::None());
   } else {
     gfx::SizeF size(
-        image.Size(ForceOrientationIfNecessary(respect_orientation)));
+        image->Size(ForceOrientationIfNecessary(respect_orientation)));
     sizing_info = NaturalSizingInfo::MakeFixed(size);
   }
 
@@ -183,15 +183,15 @@ NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
-  Image& image = *image_->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+  scoped_refptr<Image> image = image_->GetImage();
+  if (auto* svg_image = DynamicTo<SVGImage>(image.get())) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     std::optional<NaturalSizingInfo> natural_sizing_info =
         SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info);
     return natural_sizing_info && !natural_sizing_info->IsNone();
   }
-  return image.HasIntrinsicSize();
+  return image->HasIntrinsicSize();
 }
 
 void StyleFetchedImage::AddClient(ImageResourceObserver* observer) {
@@ -232,8 +232,8 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
     const Node& node,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
-  Image* image = image_->GetImage();
-  auto* svg_image = DynamicTo<SVGImage>(image);
+  scoped_refptr<Image> image = image_->GetImage();
+  auto* svg_image = DynamicTo<SVGImage>(image.get());
   if (!svg_image) {
     return image;
   }

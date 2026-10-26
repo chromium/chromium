@@ -576,7 +576,7 @@ SkBitmap WebElement::ImageContents() {
     return image->AsSkBitmapForCurrentFrame(kRespectImageOrientation);
   }
 
-  Image* image = GetImage();
+  scoped_refptr<Image> image = GetImage();
   if (!image)
     return {};
   scoped_refptr<SVGImageForContainer> svg_image_for_container;

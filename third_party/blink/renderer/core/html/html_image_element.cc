@@ -1009,8 +1009,8 @@ gfx::SizeF HTMLImageElement::DefaultDestinationSize(
   if (!image_content || !image_content->HasImage())
     return gfx::SizeF();
 
-  Image* image = image_content->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+  scoped_refptr<Image> image = image_content->GetImage();
+  if (auto* svg_image = DynamicTo<SVGImage>(image.get())) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, *this);
     return SVGImageForContainer::ConcreteObjectSize(*svg_image, view_info,
