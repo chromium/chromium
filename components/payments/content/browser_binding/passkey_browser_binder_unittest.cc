@@ -699,7 +699,7 @@ TEST_F(PasskeyBrowserBinderTest, UpdateKeyLastUsedToNow) {
            std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
 
   histograms.ExpectUniqueSample(
-      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetdataUpdate",
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetadataUpdate",
       true, 1);
 }
 

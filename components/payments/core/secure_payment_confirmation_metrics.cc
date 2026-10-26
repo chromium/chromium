@@ -41,7 +41,7 @@ void RecordBrowserBoundKeyRetrieval(
 
 void RecordBrowserBoundKeyMetadataUpdated(bool success) {
   base::UmaHistogramBoolean(
-      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetdataUpdate",
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetadataUpdate",
       success);
 }
 
