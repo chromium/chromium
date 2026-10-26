@@ -164,6 +164,8 @@ private let mojoBuiltins: [String: ILType] = [
     /// of every async function it emits, and `codeSuffix` awaits them all. Typed
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
+    "nestedExternal.PrimaryRemote":
+       .constructor([] => .jsNestedExternalPrimaryRemote),
 ]
 
 private let keepGenerators = [

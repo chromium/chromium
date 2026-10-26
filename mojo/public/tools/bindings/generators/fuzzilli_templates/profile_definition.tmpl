@@ -54,6 +54,16 @@ private let mojoBuiltins: [String: ILType] = [
     /// of every async function it emits, and `codeSuffix` awaits them all. Typed
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
+{%- for remote in interface_remotes %}
+    {#- TODO(crbug.com/522372048): Primary interfaces can also be used as non-primary
+        interfaces. Add support for this use case. #}
+    {%- if remote != primary and
+        (remote in interface_pending_receivers or
+         remote in interface_associated_pending_receivers) %}
+    "{{remote|fully_qualified_name}}Remote":
+       .constructor([] => .{{remote|format_il_type}}),
+    {%- endif %}
+{%- endfor %}
 {%- for receiver in interface_receivers %}
     "{{receiver|fully_qualified_name}}CallbackRouter":
        .constructor([] => .js{{receiver|format_unique_name}}CallbackRouter),
