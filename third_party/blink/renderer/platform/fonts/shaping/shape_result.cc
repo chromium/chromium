@@ -126,14 +126,14 @@ struct SameSizeAsShapeResult {
 ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
 
 bool ShapeResultRun::CanUseMonospaceGlyphCompaction(unsigned num_glyphs) const {
-  // Compact storage requires a fixed-pitch LTR 1:1 run.
+  // Compact storage requires a fixed-pitch horizontal 1:1 run.
   if (num_glyphs != num_characters_) {
     return false;
   }
   // Fixed-pitch metadata is only a prefilter. TryMakeCompactFrom() must still
   // validate every shaped glyph before using compact storage.
   const SimpleFontData* font_data = font_data_.Get();
-  return IsHorizontal() && IsLtr() && font_data && font_data->IsFixedPitch();
+  return IsHorizontal() && font_data && font_data->IsFixedPitch();
 }
 
 wtf_size_t ShapeResultRun::NextSafeToBreakOffset(wtf_size_t offset) const {
@@ -1544,11 +1544,12 @@ bool ShapeResultRun::TryComputeCompactGlyphPositions(
     const unsigned character_index = glyph.cluster - start_index;
     const bool has_offset = position.x_offset != 0 || position.y_offset != 0;
 
-    // Identity clusters make every glyph a boundary; only HarfBuzz's flag
-    // remains. Compact runs are LTR, so glyph 0 is first in reading order.
+    // Forward or reverse identity clusters make every glyph a boundary; only
+    // HarfBuzz's flag remains.
     const bool is_safe_to_break_before =
-        glyph_index == 0 || !(hb_glyph_info_get_glyph_flags(&glyph) &
-                              HB_GLYPH_FLAG_UNSAFE_TO_BREAK);
+        glyph.cluster == start_index ||
+        !(hb_glyph_info_get_glyph_flags(&glyph) &
+          HB_GLYPH_FLAG_UNSAFE_TO_BREAK);
     return GlyphDataCollection::CompactableGlyph{
         .glyph = static_cast<uint16_t>(glyph.codepoint),
         .advance = HarfBuzzPositionToTextLayoutUnit(position.x_advance),

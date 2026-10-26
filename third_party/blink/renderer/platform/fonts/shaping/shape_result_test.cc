@@ -429,6 +429,62 @@ TEST_F(ShapeResultTest, CompactPositionDataRebuildsFullTable) {
   }
 }
 
+TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
+  Font* font = test::CreateTestFont(
+      AtomicString("Noto Mono"),
+      test::BlinkWebTestsDir() +
+          "/third_party/NotoMono-hintedLocalizedFamilyName/"
+          "NotoMono-Regular.subset.ttf",
+      16);
+  ASSERT_TRUE(font->PrimaryFont()->IsFixedPitch());
+  const String string = To16Bit("Thequickbrownfoxjumpsoverthelazydog");
+
+  ShapeResult* full_result;
+  {
+    ScopedMonospaceGlyphCompactionForTest scoped_feature(false);
+    HarfBuzzShaper shaper(string);
+    full_result = shaper.Shape(font, TextDirection::kRtl);
+  }
+  ShapeResult* compact_result;
+  {
+    ScopedMonospaceGlyphCompactionForTest scoped_feature(true);
+    HarfBuzzShaper shaper(string);
+    compact_result = shaper.Shape(font, TextDirection::kRtl);
+  }
+  const auto* compact_test_info =
+      static_cast<const ShapeResultTestInfo*>(compact_result);
+  ASSERT_TRUE(compact_test_info->RunInfoForTesting(0)
+                  .GetGlyphDataRange()
+                  .IsCompactSource());
+
+  full_result->EnsurePositionData();
+  compact_result->EnsurePositionData();
+  ASSERT_EQ(string.length(), PositionDataSize(*full_result));
+  ASSERT_EQ(string.length(), PositionDataSize(*compact_result));
+  for (unsigned offset = 0; offset <= string.length(); ++offset) {
+    EXPECT_EQ(full_result->CachedPositionForOffset(offset),
+              compact_result->CachedPositionForOffset(offset));
+    EXPECT_EQ(full_result->CachedNextSafeToBreakOffset(offset),
+              compact_result->CachedNextSafeToBreakOffset(offset));
+    EXPECT_EQ(full_result->CachedPreviousSafeToBreakOffset(offset),
+              compact_result->CachedPreviousSafeToBreakOffset(offset));
+  }
+  for (unsigned offset = 0; offset < string.length(); ++offset) {
+    const LayoutUnit position = full_result->CachedPositionForOffset(offset);
+    EXPECT_EQ(full_result->CachedOffsetForPosition(position),
+              compact_result->CachedOffsetForPosition(position));
+  }
+  EXPECT_TRUE(compact_test_info->RunInfoForTesting(0)
+                  .GetGlyphDataRange()
+                  .IsCompactSource());
+
+  ShapeResultCursor cursor(compact_result);
+  for (unsigned offset = 0; offset < string.length(); ++offset) {
+    cursor.MoveToCharacter(offset);
+    EXPECT_EQ(offset, cursor.CharacterIndex());
+  }
+}
+
 TEST_F(ShapeResultTest, CompactRunsForceFullPositionData) {
   constexpr unsigned kNumCharacters = 16;
   ShapeResult* result =

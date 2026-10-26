@@ -286,7 +286,8 @@ TEST_F(ShapeResultViewTest, CreateShapeResultMonospaceMaterialized) {
       10);
   ASSERT_TRUE(font->PrimaryFont()->IsFixedPitch());
 
-  auto Measure = [&](bool compaction) -> Vector<float> {
+  auto Measure = [&](bool compaction,
+                     TextDirection direction) -> Vector<float> {
     ScopedMonospaceGlyphCompactionForTest scoped_feature(compaction);
     String string = To16Bit(
         "abcdefghijklmnopqrstuvwxyz"
@@ -294,7 +295,7 @@ TEST_F(ShapeResultViewTest, CreateShapeResultMonospaceMaterialized) {
         "abcdefghijklmnopqrstuvwxyz"
         "abcdefghijklmnopqrstuvwxyz");
     HarfBuzzShaper shaper(string);
-    ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    ShapeResult* result = shaper.Shape(font, direction);
     if (compaction) {
       const ShapeResultTestInfo* const test_info = TestInfo(result);
       EXPECT_EQ(1u, test_info->NumberOfRunsForTesting());
@@ -323,7 +324,9 @@ TEST_F(ShapeResultViewTest, CreateShapeResultMonospaceMaterialized) {
     }
     return out;
   };
-  EXPECT_EQ(Measure(true), Measure(false));
+  for (TextDirection direction : {TextDirection::kLtr, TextDirection::kRtl}) {
+    EXPECT_EQ(Measure(true, direction), Measure(false, direction));
+  }
 }
 
 TEST_F(ShapeResultViewTest, NestedCompactViewCopyAtThreshold) {
@@ -339,63 +342,66 @@ TEST_F(ShapeResultViewTest, NestedCompactViewCopyAtThreshold) {
       "abcdefghijklmnopqrstuvwxyz"
       "abcdefghijklmnopqrstuvwxyz");
   HarfBuzzShaper shaper(string);
-  const ShapeResult* source = shaper.Shape(font, TextDirection::kLtr);
-  ASSERT_EQ(1u, TestInfo(source)->NumberOfRunsForTesting());
-  const ShapeResultRun& source_run = TestInfo(source)->RunInfoForTesting(0);
-  ASSERT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
-
-  const ShapeResultView* outer = ShapeResultView::Create(source, 8, 40);
-  constexpr unsigned kStart = 13;
-  for (unsigned num_glyphs : {7u, 8u, 9u}) {
-    SCOPED_TRACE(num_glyphs);
-    const ShapeResultView* inner =
-        ShapeResultView::Create(outer, kStart, kStart + num_glyphs);
+  for (TextDirection direction : {TextDirection::kLtr, TextDirection::kRtl}) {
+    SCOPED_TRACE(direction);
+    const ShapeResult* source = shaper.Shape(font, direction);
+    ASSERT_EQ(1u, TestInfo(source)->NumberOfRunsForTesting());
+    const ShapeResultRun& source_run = TestInfo(source)->RunInfoForTesting(0);
     ASSERT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
-    const ShapeResult* actual = inner->CreateShapeResult();
-    EXPECT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
 
-    const ShapeResult* expected;
-    {
-      ScopedMonospaceGlyphCompactionForTest disabled(false);
-      expected =
-          shaper.Shape(font, TextDirection::kLtr, kStart, kStart + num_glyphs);
-    }
-    ASSERT_EQ(1u, TestInfo(actual)->NumberOfRunsForTesting());
-    ASSERT_EQ(1u, TestInfo(expected)->NumberOfRunsForTesting());
-    const ShapeResultRun& actual_run = TestInfo(actual)->RunInfoForTesting(0);
-    const ShapeResultRun& expected_run =
-        TestInfo(expected)->RunInfoForTesting(0);
-    EXPECT_EQ(num_glyphs >= 8,
-              actual_run.GetGlyphDataRange().IsCompactSource());
-    EXPECT_FALSE(expected_run.GetGlyphDataRange().IsCompactSource());
-    EXPECT_EQ(kStart, actual->StartIndex());
-    EXPECT_EQ(num_glyphs, actual->NumCharacters());
-    EXPECT_EQ(expected->Width(), actual->Width());
+    const ShapeResultView* outer = ShapeResultView::Create(source, 8, 40);
+    constexpr unsigned kStart = 13;
+    for (unsigned num_glyphs : {7u, 8u, 9u}) {
+      SCOPED_TRACE(num_glyphs);
+      const ShapeResultView* inner =
+          ShapeResultView::Create(outer, kStart, kStart + num_glyphs);
+      ASSERT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
+      const ShapeResult* actual = inner->CreateShapeResult();
+      EXPECT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
 
-    const GlyphDataRange::Reader actual_glyphs(actual_run);
-    const GlyphDataRange::Reader expected_glyphs(expected_run);
-    ASSERT_EQ(num_glyphs, actual_glyphs.size());
-    ASSERT_EQ(num_glyphs, expected_glyphs.size());
-    for (unsigned i = 0; i < num_glyphs; ++i) {
-      const HarfBuzzRunGlyphData actual_glyph = actual_glyphs[i];
-      const HarfBuzzRunGlyphData expected_glyph = expected_glyphs[i];
-      EXPECT_EQ(expected_glyph.glyph, actual_glyph.glyph);
-      EXPECT_EQ(i, actual_glyph.character_index);
-      EXPECT_EQ(expected_glyph.character_index, actual_glyph.character_index);
-      EXPECT_EQ(expected_glyph.advance, actual_glyph.advance);
-      EXPECT_EQ(expected_glyph.IsSafeToBreakBefore(),
-                actual_glyph.IsSafeToBreakBefore());
+      const ShapeResult* expected;
+      {
+        ScopedMonospaceGlyphCompactionForTest disabled(false);
+        expected = shaper.Shape(font, direction, kStart, kStart + num_glyphs);
+      }
+      ASSERT_EQ(1u, TestInfo(actual)->NumberOfRunsForTesting());
+      ASSERT_EQ(1u, TestInfo(expected)->NumberOfRunsForTesting());
+      const ShapeResultRun& actual_run = TestInfo(actual)->RunInfoForTesting(0);
+      const ShapeResultRun& expected_run =
+          TestInfo(expected)->RunInfoForTesting(0);
+      EXPECT_EQ(num_glyphs >= 8,
+                actual_run.GetGlyphDataRange().IsCompactSource());
+      EXPECT_FALSE(expected_run.GetGlyphDataRange().IsCompactSource());
+      EXPECT_EQ(kStart, actual->StartIndex());
+      EXPECT_EQ(num_glyphs, actual->NumCharacters());
+      EXPECT_EQ(expected->Width(), actual->Width());
+
+      const GlyphDataRange::Reader actual_glyphs(actual_run);
+      const GlyphDataRange::Reader expected_glyphs(expected_run);
+      ASSERT_EQ(num_glyphs, actual_glyphs.size());
+      ASSERT_EQ(num_glyphs, expected_glyphs.size());
+      for (unsigned i = 0; i < num_glyphs; ++i) {
+        const HarfBuzzRunGlyphData actual_glyph = actual_glyphs[i];
+        const HarfBuzzRunGlyphData expected_glyph = expected_glyphs[i];
+        EXPECT_EQ(expected_glyph.glyph, actual_glyph.glyph);
+        EXPECT_EQ(direction == TextDirection::kRtl ? num_glyphs - i - 1 : i,
+                  actual_glyph.character_index);
+        EXPECT_EQ(expected_glyph.character_index, actual_glyph.character_index);
+        EXPECT_EQ(expected_glyph.advance, actual_glyph.advance);
+        EXPECT_EQ(expected_glyph.IsSafeToBreakBefore(),
+                  actual_glyph.IsSafeToBreakBefore());
+      }
+      for (unsigned i = 0; i <= num_glyphs; ++i) {
+        EXPECT_EQ(expected->PositionForOffset(i), actual->PositionForOffset(i));
+        EXPECT_EQ(expected->NextSafeToBreakOffset(kStart + i),
+                  actual->NextSafeToBreakOffset(kStart + i));
+        EXPECT_EQ(expected->PreviousSafeToBreakOffset(kStart + i),
+                  actual->PreviousSafeToBreakOffset(kStart + i));
+      }
+      EXPECT_EQ(num_glyphs >= 8,
+                actual_run.GetGlyphDataRange().IsCompactSource());
+      EXPECT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
     }
-    for (unsigned i = 0; i <= num_glyphs; ++i) {
-      EXPECT_EQ(expected->PositionForOffset(i), actual->PositionForOffset(i));
-      EXPECT_EQ(expected->NextSafeToBreakOffset(kStart + i),
-                actual->NextSafeToBreakOffset(kStart + i));
-      EXPECT_EQ(expected->PreviousSafeToBreakOffset(kStart + i),
-                actual->PreviousSafeToBreakOffset(kStart + i));
-    }
-    EXPECT_EQ(num_glyphs >= 8,
-              actual_run.GetGlyphDataRange().IsCompactSource());
-    EXPECT_TRUE(source_run.GetGlyphDataRange().IsCompactSource());
   }
 }
 
@@ -409,51 +415,55 @@ TEST_F(ShapeResultViewTest, ExistingViewSurvivesSourceMaterialization) {
       10);
   ASSERT_TRUE(font->PrimaryFont()->IsFixedPitch());
 
-  String string = To16Bit(
-      "abcdefghijklmnopqrstuvwxyz"
-      "abcdefghijklmnopqrstuvwxyz"
-      "abcdefghijklmnopqrstuvwxyz");
-  HarfBuzzShaper shaper(string);
-  ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
-  ASSERT_TRUE(TestInfo(result)
-                  ->RunInfoForTesting(0)
-                  .GetGlyphDataRange()
-                  .IsCompactSource());
+  for (TextDirection direction : {TextDirection::kLtr, TextDirection::kRtl}) {
+    SCOPED_TRACE(direction);
+    String string = To16Bit(
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz");
+    HarfBuzzShaper shaper(string);
+    ShapeResult* result = shaper.Shape(font, direction);
+    ASSERT_TRUE(TestInfo(result)
+                    ->RunInfoForTesting(0)
+                    .GetGlyphDataRange()
+                    .IsCompactSource());
 
-  const ShapeResultView* view = ShapeResultView::Create(result, 8, 64);
-  Vector<ShapeResultTestGlyphInfo> before;
-  view->ForEachGlyph(0, AddGlyphInfo, &before);
+    const ShapeResultView* view = ShapeResultView::Create(result, 8, 64);
+    Vector<ShapeResultTestGlyphInfo> before;
+    view->ForEachGlyph(0, AddGlyphInfo, &before);
 
-  ShapeResultSpacing spacing(string);
-  FontDescription spacing_font_description;
-  spacing_font_description.SetLetterSpacing(Length::Fixed(1));
-  ASSERT_TRUE(spacing.SetSpacing(spacing_font_description));
-  result->ApplySpacing(spacing);
-  EXPECT_FALSE(TestInfo(result)
-                   ->RunInfoForTesting(0)
-                   .GetGlyphDataRange()
-                   .IsCompactSource());
+    ShapeResultSpacing spacing(string);
+    FontDescription spacing_font_description;
+    spacing_font_description.SetLetterSpacing(Length::Fixed(1));
+    ASSERT_TRUE(spacing.SetSpacing(spacing_font_description));
+    result->ApplySpacing(spacing);
+    EXPECT_FALSE(TestInfo(result)
+                     ->RunInfoForTesting(0)
+                     .GetGlyphDataRange()
+                     .IsCompactSource());
 
-  Vector<ShapeResultTestGlyphInfo> after;
-  view->ForEachGlyph(0, AddGlyphInfo, &after);
-  const ShapeResultView* expected_view = ShapeResultView::Create(result, 8, 64);
-  Vector<ShapeResultTestGlyphInfo> expected;
-  expected_view->ForEachGlyph(0, AddGlyphInfo, &expected);
-  ASSERT_EQ(expected.size(), after.size());
-  for (unsigned i = 0; i < expected.size(); ++i) {
-    EXPECT_EQ(expected[i].character_index, after[i].character_index);
-    EXPECT_EQ(expected[i].glyph, after[i].glyph);
-    EXPECT_EQ(expected[i].advance, after[i].advance);
-  }
+    Vector<ShapeResultTestGlyphInfo> after;
+    view->ForEachGlyph(0, AddGlyphInfo, &after);
+    const ShapeResultView* expected_view =
+        ShapeResultView::Create(result, 8, 64);
+    Vector<ShapeResultTestGlyphInfo> expected;
+    expected_view->ForEachGlyph(0, AddGlyphInfo, &expected);
+    ASSERT_EQ(expected.size(), after.size());
+    for (unsigned i = 0; i < expected.size(); ++i) {
+      EXPECT_EQ(expected[i].character_index, after[i].character_index);
+      EXPECT_EQ(expected[i].glyph, after[i].glyph);
+      EXPECT_EQ(expected[i].advance, after[i].advance);
+    }
 
-  const ShapeResult* copy = view->CreateShapeResult();
-  Vector<ShapeResultTestGlyphInfo> copied;
-  copy->ForEachGlyph(0, AddGlyphInfo, &copied);
-  ASSERT_EQ(after.size(), copied.size());
-  for (unsigned i = 0; i < after.size(); ++i) {
-    EXPECT_EQ(after[i].character_index, copied[i].character_index);
-    EXPECT_EQ(after[i].glyph, copied[i].glyph);
-    EXPECT_EQ(after[i].advance, copied[i].advance);
+    const ShapeResult* copy = view->CreateShapeResult();
+    Vector<ShapeResultTestGlyphInfo> copied;
+    copy->ForEachGlyph(0, AddGlyphInfo, &copied);
+    ASSERT_EQ(after.size(), copied.size());
+    for (unsigned i = 0; i < after.size(); ++i) {
+      EXPECT_EQ(after[i].character_index, copied[i].character_index);
+      EXPECT_EQ(after[i].glyph, copied[i].glyph);
+      EXPECT_EQ(after[i].advance, copied[i].advance);
+    }
   }
 }
 

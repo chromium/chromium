@@ -361,22 +361,25 @@ TEST_F(ShapeResultRunTest, FixedPitchDoesNotGuaranteeConstantAdvances) {
       CreateTestFontData(/*is_fixed_pitch=*/true);
   ASSERT_TRUE(font_data->IsFixedPitch());
   constexpr unsigned kNumGlyphs = 16;
-  ShapeResultRun* uniform_run =
-      CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs, font_data);
-  ASSERT_TRUE(TryMakeCompactIfEligible(uniform_run));
-  EXPECT_TRUE(uniform_run->GetGlyphDataRange().IsCompactSource());
+  for (hb_direction_t direction : {HB_DIRECTION_LTR, HB_DIRECTION_RTL}) {
+    SCOPED_TRACE(direction);
+    ShapeResultRun* uniform_run =
+        CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs, font_data, direction);
+    ASSERT_TRUE(TryMakeCompactIfEligible(uniform_run));
+    EXPECT_TRUE(uniform_run->GetGlyphDataRange().IsCompactSource());
 
-  for (unsigned variable_index : {0u, kNumGlyphs / 2, kNumGlyphs - 1}) {
-    SCOPED_TRACE(variable_index);
-    ShapeResultRun* run =
-        CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs, font_data);
-    run->glyph_data_.MutableGlyphAt(variable_index).SetAdvance(20.0f);
-    run->width_ += 10.0f;
-    ASSERT_TRUE(CanCompact(*run));
-    EXPECT_FALSE(TryMakeCompactIfEligible(run));
-    EXPECT_FALSE(run->GetGlyphDataRange().IsCompactSource());
-    EXPECT_EQ(TextRunLayoutUnit(20),
-              run->glyph_data_.GlyphAt(variable_index).advance);
+    for (unsigned variable_index : {0u, kNumGlyphs / 2, kNumGlyphs - 1}) {
+      SCOPED_TRACE(variable_index);
+      ShapeResultRun* run = CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs,
+                                                     font_data, direction);
+      run->glyph_data_.MutableGlyphAt(variable_index).SetAdvance(20.0f);
+      run->width_ += 10.0f;
+      ASSERT_TRUE(CanCompact(*run));
+      EXPECT_FALSE(TryMakeCompactIfEligible(run));
+      EXPECT_FALSE(run->GetGlyphDataRange().IsCompactSource());
+      EXPECT_EQ(TextRunLayoutUnit(20),
+                run->glyph_data_.GlyphAt(variable_index).advance);
+    }
   }
 }
 
