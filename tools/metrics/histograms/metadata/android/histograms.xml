@@ -8134,7 +8134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HttpCacheQuotaApi.AbsoluteValue.{ProfileType}"
-    units="KiB" expires_after="2026-12-01">
+    units="KiB" expires_after="2027-06-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8151,7 +8151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HttpCacheQuotaApi.ChangeHistory.{ProfileType}"
-    enum="HttpCacheQuotaChangeHistory" expires_after="2026-12-01">
+    enum="HttpCacheQuotaChangeHistory" expires_after="2027-06-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8168,7 +8168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HttpCacheQuotaApi.RelativeValue.{ProfileType}"
-    units="%" expires_after="2026-12-01">
+    units="%" expires_after="2027-06-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8188,7 +8188,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HttpCacheQuotaApi.RestoredFromPrefs.{ProfileType}"
-    enum="Boolean" expires_after="2026-12-01">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8205,7 +8205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HttpCacheQuotaApi.UseDefaultQuota.{ProfileType}"
-    enum="Boolean" expires_after="2026-12-01">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
