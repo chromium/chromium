@@ -48,6 +48,14 @@
             "_bug_id": "crbug.com/536681083"
           },
           {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
+          },
+          {
             "match": "android.webkit.cts.WebViewTest#testLoadUrl",
             "_bug_id": "crbug.com/1450170"
           }
@@ -127,6 +135,14 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
             "_bug_id": "crbug.com/536681083"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
           }
         ]
       },
@@ -257,6 +273,14 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
             "_bug_id": "crbug.com/536681083"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
           }
         ]
       },
@@ -316,6 +340,14 @@
           {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
             "_bug_id": "crbug.com/550556857"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/577195950"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillAndSave",
+            "_bug_id": "crbug.com/577194251"
           }
         ],
         "setup_commands": [
@@ -414,6 +446,14 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
             "_bug_id": "crbug.com/536681083"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
           }
         ]
       },
@@ -473,6 +513,14 @@
           {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
             "_bug_id": "crbug.com/550556857"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/577195950"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillAndSave",
+            "_bug_id": "crbug.com/577194251"
           }
         ],
         "setup_commands": [
@@ -557,6 +605,14 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoading",
             "_bug_id": "crbug.com/536681083"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
           }
         ]
       },
@@ -616,6 +672,14 @@
           {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
             "_bug_id": "crbug.com/550556857"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/577195950"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillAndSave",
+            "_bug_id": "crbug.com/577194251"
           }
         ],
         "setup_commands": [
@@ -702,6 +766,14 @@
             "_bug_id": "crbug.com/536681083"
           },
           {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
+          },
+          {
             "match": "android.webkit.cts.WebViewRenderProcessClientTest#testWebViewRenderProcessClientWithExecutor",
             "_bug_id": "crbug.com/465427114"
           }
@@ -771,6 +843,14 @@
           {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
             "_bug_id": "crbug.com/550556857"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/577195950"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillAndSave",
+            "_bug_id": "crbug.com/577194251"
           }
         ],
         "setup_commands": [
@@ -857,6 +937,14 @@
             "_bug_id": "crbug.com/536681083"
           },
           {
+            "match": "android.webkit.cts.WebViewClientTest#testOnFormResubmission",
+            "_bug_id": "crbug.com/577192953"
+          },
+          {
+            "match": "android.webkit.cts.WebViewSslTest#testClearSslPreferences",
+            "_bug_id": "crbug.com/577196913"
+          },
+          {
             "match": "android.webkit.cts.WebViewRenderProcessClientTest#testWebViewRenderProcessClientWithExecutor",
             "_bug_id": "crbug.com/465427114"
           }
@@ -926,6 +1014,14 @@
           {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
             "_bug_id": "crbug.com/550556857"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/577195950"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillAndSave",
+            "_bug_id": "crbug.com/577194251"
           }
         ],
         "setup_commands": [
