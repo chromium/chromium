@@ -11,13 +11,17 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /**
- * Caches the search provider doodle to avoid unnecessary network requests and animations. Singleton
- * class to maintain state across different NTP instances.
+ * Caches the search provider doodle to avoid unnecessary network requests and animations. Keyed by
+ * {@link Profile} to maintain state across different NTP instances within the same profile.
  */
 @NullMarked
 public class DoodleCache {
+    private static final ProfileKeyedMap<DoodleCache> sProfileMap =
+            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
     private static @Nullable DoodleCache sInstanceForTesting;
 
     private @Nullable Logo mCachedDoodle;
@@ -26,21 +30,16 @@ public class DoodleCache {
     // 1 hour cache validity.
     private static final long CACHE_TTL_MS = 60 * 60 * 1000;
 
-    /** Static class that implements the initialization-on-demand holder idiom. */
-    private static class LazyHolder {
-        static final DoodleCache sInstance = new DoodleCache();
-    }
-
-    /** Returns the singleton instance of DoodleCache. */
-    public static DoodleCache getInstance() {
+    /** Returns the {@link DoodleCache} instance for the given {@link Profile}. */
+    public static DoodleCache getForProfile(Profile profile) {
         if (sInstanceForTesting != null) {
             return sInstanceForTesting;
         }
-        return LazyHolder.sInstance;
+        return sProfileMap.getForProfile(profile, p -> new DoodleCache());
     }
 
     /** Sets a DoodleCache instance for testing. */
-    public static void setInstanceForTesting(DoodleCache instance) {
+    public static void setInstanceForTesting(@Nullable DoodleCache instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }

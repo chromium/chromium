@@ -274,7 +274,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
 
         @Nullable Logo cachedDoodle =
-                DoodleCache.getInstance().getCachedDoodle(mSearchEngineKeyword);
+                DoodleCache.getForProfile(mProfile).getCachedDoodle(mSearchEngineKeyword);
         boolean isCacheHit = cachedDoodle != null;
 
         mHasLogoLoadedForCurrentSearchEngine = true;
@@ -321,7 +321,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                                     getDefaultGoogleLogoDrawable());
                         }
                         updateModelWithLogo(logo);
-                        DoodleCache.getInstance().updateCachedDoodle(logo, mSearchEngineKeyword);
+                        DoodleCache.getForProfile(assumeNonNull(mProfile))
+                                .updateCachedDoodle(logo, mSearchEngineKeyword);
                     }
                 });
     }

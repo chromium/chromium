@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.logo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 import android.graphics.Bitmap;
 
@@ -16,8 +19,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for the {@link DoodleCache}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -49,6 +54,27 @@ public class DoodleCacheUnitTest {
     @After
     public void tearDown() {
         DoodleCache.setInstanceForTesting(null);
+    }
+
+    @Test
+    public void testGetForProfile() {
+        DoodleCache.setInstanceForTesting(null);
+        Profile profile1 = mock(Profile.class);
+        Profile profile2 = mock(Profile.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DoodleCache cache1 = DoodleCache.getForProfile(profile1);
+                    DoodleCache cache2 = DoodleCache.getForProfile(profile2);
+                    assertNotSame(cache1, cache2);
+                    assertSame(cache1, DoodleCache.getForProfile(profile1));
+                    assertSame(cache2, DoodleCache.getForProfile(profile2));
+
+                    String keyword = "keyword";
+                    cache1.updateCachedDoodle(mLogo, keyword);
+                    assertEquals(mLogo, cache1.getCachedDoodle(keyword));
+                    assertNull(cache2.getCachedDoodle(keyword));
+                });
     }
 
     @Test
