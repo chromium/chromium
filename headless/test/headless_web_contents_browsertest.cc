@@ -732,54 +732,44 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsAIPageContentTest, GetAIPageContent) {
   ASSERT_TRUE(web_contents);
   ASSERT_TRUE(WaitForLoad(web_contents));
 
-  content::WebContents* content_web_contents =
-      HeadlessWebContentsImpl::From(web_contents)->web_contents();
-  ASSERT_TRUE(content_web_contents);
+  SimpleDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(
+      HeadlessWebContentsImpl::From(web_contents)->web_contents());
 
-  content::WebContentsDelegate* delegate = content_web_contents->GetDelegate();
-  ASSERT_TRUE(delegate);
+  base::DictValue params;
+  params.Set("includeActionableInformation", true);
+  base::DictValue result = SendCommandSync(
+      devtools_client, "Page.getAnnotatedPageContent", std::move(params));
+  devtools_client.DetachClient();
 
-  base::RunLoop run_loop;
-  delegate->GetAIPageContent(
-      content_web_contents, true,
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             base::expected<std::string, std::string> result) {
-            // Stop before reading the value when extraction returned an error.
-            if (!result.has_value()) {
-              ADD_FAILURE() << "GetAIPageContent failed: " << result.error();
-              run_loop->Quit();
-              return;
-            }
+  // Stop before reading the value when extraction returned an error.
+  ASSERT_FALSE(DictHas(result, "error"))
+      << "Page.getAnnotatedPageContent failed: "
+      << DictString(result, "error.message");
 
-            LOG(INFO) << "GetAIPageContent result size: " << result->size();
-            optimization_guide::proto::AnnotatedPageContent proto;
-            if (proto.ParseFromString(*result)) {
-              bool has_text = false;
-              std::vector<const optimization_guide::proto::ContentNode*> nodes;
-              nodes.push_back(&proto.root_node());
-              while (!nodes.empty()) {
-                const auto* node = nodes.back();
-                nodes.pop_back();
-                if (!node->content_attributes()
-                         .text_data()
-                         .text_content()
-                         .empty()) {
-                  has_text = true;
-                  break;
-                }
-                for (const auto& child : node->children_nodes()) {
-                  nodes.push_back(&child);
-                }
-              }
-              EXPECT_TRUE(has_text);
-            } else {
-              ADD_FAILURE() << "Failed to parse AnnotatedPageContent";
-            }
-            run_loop->Quit();
-          },
-          &run_loop));
-  run_loop.Run();
+  std::string content;
+  ASSERT_TRUE(
+      base::Base64Decode(DictString(result, "result.content"), &content));
+
+  optimization_guide::proto::AnnotatedPageContent proto;
+  ASSERT_TRUE(proto.ParseFromString(content))
+      << "Failed to parse AnnotatedPageContent";
+
+  bool has_text = false;
+  std::vector<const optimization_guide::proto::ContentNode*> nodes;
+  nodes.push_back(&proto.root_node());
+  while (!nodes.empty()) {
+    const auto* node = nodes.back();
+    nodes.pop_back();
+    if (!node->content_attributes().text_data().text_content().empty()) {
+      has_text = true;
+      break;
+    }
+    for (const auto& child : node->children_nodes()) {
+      nodes.push_back(&child);
+    }
+  }
+  EXPECT_TRUE(has_text);
 }
 
 }  // namespace headless

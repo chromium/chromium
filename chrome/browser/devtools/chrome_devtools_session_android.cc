@@ -8,9 +8,7 @@
 
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
-#if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/devtools/protocol/page_handler.h"
-#endif  // BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/devtools/protocol/target_handler_android.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
@@ -20,7 +18,8 @@ namespace {
 
 template <typename Handler>
 bool IsDomainAvailableToUntrustedClient() {
-  return std::disjunction_v<std::is_same<Handler, TargetHandlerAndroid>>;
+  return std::disjunction_v<std::is_same<Handler, PageHandler>,
+                            std::is_same<Handler, TargetHandlerAndroid>>;
 }
 
 }  // namespace
@@ -38,7 +37,6 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
           std::make_unique<AutofillHandler>(dispatcher(), agent_host->GetId());
     }
   }
-#if BUILDFLAG(ENABLE_PRINTING)
   if (agent_host->GetWebContents() &&
       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
     if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
@@ -48,7 +46,6 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
           channel->GetClient()->IsTrusted());
     }
   }
-#endif  // BUILDFLAG(ENABLE_PRINTING)
   if (IsDomainAvailableToUntrustedClient<BrowserHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     browser_handler_ = std::make_unique<BrowserHandlerAndroid>(

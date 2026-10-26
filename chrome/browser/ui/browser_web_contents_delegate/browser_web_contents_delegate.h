@@ -242,11 +242,6 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
                                   blink::mojom::MediaStreamType type) override;
   std::string GetTitleForMediaControls(
       content::WebContents* web_contents) override;
-  void GetAIPageContent(
-      content::WebContents* web_contents,
-      bool include_actionable_elements,
-      base::OnceCallback<void(base::expected<std::string, std::string>)>
-          callback) override;
   void PrintCrossProcessSubframe(
       content::WebContents* web_contents,
       const gfx::Rect& rect,

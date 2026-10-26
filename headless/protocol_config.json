@@ -30,8 +30,8 @@
             },
             {
                 "domain": "Page",
-                "include": ["printToPDF"],
-                "async": ["printToPDF"],
+                "include": ["printToPDF", "getAnnotatedPageContent"],
+                "async": ["printToPDF", "getAnnotatedPageContent"],
                 "include_events": []
             }
         ]

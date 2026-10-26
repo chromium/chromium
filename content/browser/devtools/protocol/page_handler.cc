@@ -1135,45 +1135,6 @@ void PageHandler::Navigate(const std::string& url,
   navigate_callbacks_[navigation_token] = std::move(callback);
 }
 
-namespace optimization_guide::proto {
-class AnnotatedPageContent;
-}
-
-void PageHandler::GetAnnotatedPageContent(
-    std::optional<bool> include_actionable_information,
-    std::unique_ptr<GetAnnotatedPageContentCallback> callback) {
-  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
-  if (std::holds_alternative<Response>(result)) {
-    callback->sendFailure(std::get<Response>(result));
-    return;
-  }
-  WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
-  if (!web_contents) {
-    callback->sendFailure(Response::ServerError("WebContents not found."));
-    return;
-  }
-
-  if (WebContentsDelegate* delegate = web_contents->GetDelegate()) {
-    delegate->GetAIPageContent(
-        web_contents, include_actionable_information.value_or(true),
-        base::BindOnce(
-            [](std::unique_ptr<GetAnnotatedPageContentCallback> callback,
-               base::expected<std::string, std::string> result) {
-              if (result.has_value()) {
-                callback->sendSuccess(protocol::Binary::fromString(*result));
-              } else {
-                callback->sendFailure(Response::ServerError(
-                    base::StrCat({"Failed to get annotated page content: ",
-                                  result.error()})));
-              }
-            },
-            std::move(callback)));
-  } else {
-    callback->sendFailure(Response::ServerError(
-        "No WebContentsDelegate available to get annotated page content"));
-  }
-}
-
 void PageHandler::NavigationReset(NavigationRequest* navigation_request) {
   auto it =
       navigate_callbacks_.find(navigation_request->devtools_navigation_token());

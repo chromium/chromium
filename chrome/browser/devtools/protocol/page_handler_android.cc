@@ -4,24 +4,24 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
-#include "base/check.h"
 #include "content/public/browser/web_contents.h"
 
 PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
                          content::WebContents* web_contents,
                          protocol::UberDispatcher* dispatcher,
                          bool is_trusted)
-    : agent_host_(agent_host), web_contents_(web_contents->GetWeakPtr()) {
-  CHECK(is_trusted, base::NotFatalUntil::M161);
+    : agent_host_(agent_host),
+      web_contents_(web_contents->GetWeakPtr()),
+      is_trusted_(is_trusted) {
   protocol::Page::Dispatcher::wire(dispatcher, this);
 }
 
 PageHandler::~PageHandler() = default;
 
 // Page::Backend requires implementations for every command declared by
-// Chrome's embedder-side Page backend. Android only owns PrintToPDF, so the
-// remaining commands fall through to Content's Page handler or report that a
-// Chrome-only command is unavailable.
+// Chrome's embedder-side Page backend. Android only owns PrintToPDF and
+// GetAnnotatedPageContent, so the remaining commands fall through to Content's
+// Page handler or report that a Chrome-only command is unavailable.
 protocol::Response PageHandler::Enable(
     std::optional<bool> enable_file_chooser_opened_event) {
   return protocol::Response::FallThrough();

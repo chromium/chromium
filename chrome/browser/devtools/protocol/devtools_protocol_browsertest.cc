@@ -3517,6 +3517,55 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetAnnotatedPageContent) {
   EXPECT_TRUE(apc.has_root_node());
 }
 
+class DevToolsProtocolPrerenderTest : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolPrerenderTest()
+      : prerender_helper_(base::BindRepeating(
+            &DevToolsProtocolPrerenderTest::GetActiveWebContents,
+            base::Unretained(this))) {}
+
+ protected:
+  void SetUp() override {
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    DevToolsProtocolTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Page.getAnnotatedPageContent must not return the primary page's content
+// when the session is attached to a prerendered page.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolPrerenderTest,
+                       GetAnnotatedPageContentFailsForPrerenderedPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), initial_url));
+  content::PrerenderHostId host_id =
+      prerender_helper()->AddPrerender(prerendering_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerender_rfh);
+
+  AttachToFrameTreeHost(prerender_rfh);
+  const base::DictValue* result =
+      SendCommandSync("Page.getAnnotatedPageContent");
+  EXPECT_FALSE(result);
+  ASSERT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"), "Not attached to an active page");
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

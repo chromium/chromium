@@ -152,11 +152,6 @@ class TabWebContentsDelegateAndroid
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
   void LostPointerLock() override;
-  void GetAIPageContent(
-      content::WebContents* web_contents,
-      bool include_actionable_elements,
-      base::OnceCallback<void(base::expected<std::string, std::string>)>
-          callback) override;
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
   void CapturePaintPreviewOfSubframe(

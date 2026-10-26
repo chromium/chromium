@@ -78,7 +78,6 @@
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/pdf/common/constants.h"
@@ -819,28 +818,6 @@ TabWebContentsDelegateAndroid::GetInstalledWebappGeolocationContext() {
         std::make_unique<InstalledWebappGeolocationContext>();
   }
   return installed_webapp_geolocation_context_.get();
-}
-
-void TabWebContentsDelegateAndroid::GetAIPageContent(
-    content::WebContents* web_contents,
-    bool include_actionable_elements,
-    base::OnceCallback<void(base::expected<std::string, std::string>)>
-        callback) {
-  auto options = include_actionable_elements
-                     ? optimization_guide::ActionableAIPageContentOptions(
-                           /*on_critical_path=*/false)
-                     : optimization_guide::DefaultAIPageContentOptions(
-                           /*on_critical_path=*/false);
-
-  optimization_guide::GetAIPageContent(
-      web_contents, std::move(options),
-      base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
-                         -> base::expected<std::string, std::string> {
-        if (!result.has_value()) {
-          return base::unexpected(result.error().message);
-        }
-        return base::ok(result->proto.SerializeAsString());
-      }).Then(std::move(callback)));
 }
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)

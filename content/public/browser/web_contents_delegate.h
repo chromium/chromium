@@ -911,15 +911,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback);
 
-  // Gets the page content annotations for the given WebContents.
-  // The callback gets a serialized AnnotatedPageContent proto or an error
-  // message string if extraction failed or is unsupported by the embedder.
-  virtual void GetAIPageContent(
-      WebContents* web_contents,
-      bool include_actionable_elements,
-      base::OnceCallback<void(base::expected<std::string, std::string>)>
-          callback);
-
 #if BUILDFLAG(IS_ANDROID)
   // Allow delegate to override how to take a snapshot of this WebContents into
   // a HardwareBuffer. Return true if the delegate will execute callback with a

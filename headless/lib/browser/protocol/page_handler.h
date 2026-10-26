@@ -57,6 +57,9 @@ class PageHandler : public DomainHandler, public Page::Backend {
                   std::optional<bool> generate_tagged_pdf,
                   std::optional<bool> generate_document_outline,
                   std::unique_ptr<PrintToPDFCallback> callback) override;
+  void GetAnnotatedPageContent(
+      std::optional<bool> include_actionable_information,
+      std::unique_ptr<GetAnnotatedPageContentCallback> callback) override;
 
  private:
 #if BUILDFLAG(ENABLE_PRINTING)

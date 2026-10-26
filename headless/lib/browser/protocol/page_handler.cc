@@ -7,7 +7,11 @@
 #include <variant>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include <optional>
@@ -89,6 +93,48 @@ void PageHandler::PrintToPDF(std::optional<bool> landscape,
   callback->sendFailure(Response::ServerError("Printing is not enabled"));
   return;
 #endif  // BUILDFLAG(ENABLE_PRINTING)
+}
+
+void PageHandler::GetAnnotatedPageContent(
+    std::optional<bool> include_actionable_information,
+    std::unique_ptr<GetAnnotatedPageContentCallback> callback) {
+  if (!web_contents_) {
+    callback->sendFailure(Response::ServerError("WebContents not found."));
+    return;
+  }
+
+  // optimization_guide::GetAIPageContent() extracts content from the primary
+  // main frame of `web_contents_`. Reject sessions attached to a non-primary
+  // page (e.g. a prerendered page) rather than returning the content of a
+  // different page.
+  if (content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get()) !=
+      agent_host_) {
+    callback->sendFailure(
+        Response::ServerError("Not attached to an active page"));
+    return;
+  }
+
+  auto options = include_actionable_information.value_or(true)
+                     ? optimization_guide::ActionableAIPageContentOptions(
+                           /*on_critical_path=*/false)
+                     : optimization_guide::DefaultAIPageContentOptions(
+                           /*on_critical_path=*/false);
+
+  optimization_guide::GetAIPageContent(
+      web_contents_.get(), std::move(options),
+      base::BindOnce(
+          [](std::unique_ptr<GetAnnotatedPageContentCallback> callback,
+             optimization_guide::AIPageContentResultOrError result) {
+            if (!result.has_value()) {
+              callback->sendFailure(Response::ServerError(
+                  base::StrCat({"Failed to get annotated page content: ",
+                                result.error().message})));
+              return;
+            }
+            callback->sendSuccess(
+                Binary::fromString(result->proto.SerializeAsString()));
+          },
+          std::move(callback)));
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

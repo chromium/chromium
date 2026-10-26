@@ -489,15 +489,6 @@ bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
-void WebContentsDelegate::GetAIPageContent(
-    WebContents* web_contents,
-    bool include_actionable_elements,
-    base::OnceCallback<void(base::expected<std::string, std::string>)>
-        callback) {
-  std::move(callback).Run(base::unexpected(
-      "Annotated page content is not available for this browser target."));
-}
-
 bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
     WebContents* web_contents) {
   return false;
