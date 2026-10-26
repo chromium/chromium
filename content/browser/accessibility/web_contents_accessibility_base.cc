@@ -1493,7 +1493,8 @@ int32_t WebContentsAccessibilityBase::GetRootId(JNIEnv* env) {
 }
 
 bool WebContentsAccessibilityBase::IsNodeValid(JNIEnv* env, int32_t unique_id) {
-  return GetAXFromUniqueID(unique_id) != nullptr;
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  return node && !node->IsIgnored();
 }
 
 void WebContentsAccessibilityBase::HitTest(JNIEnv* env, int32_t x, int32_t y) {
