@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/package_id.h"

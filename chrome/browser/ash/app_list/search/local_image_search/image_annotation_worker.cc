@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"

@@ -24,7 +24,6 @@ static_library("common") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/string_matching",
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings",

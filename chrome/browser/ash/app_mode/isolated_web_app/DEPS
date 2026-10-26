@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
-  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h",
   "+chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h",
   "+chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h",

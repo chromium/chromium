@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "components/account_id/account_id.h"
 

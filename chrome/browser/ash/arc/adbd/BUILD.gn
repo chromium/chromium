@@ -13,7 +13,6 @@ static_library("adbd") {
   deps = [
     "//base",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc",

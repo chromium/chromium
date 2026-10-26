@@ -12,7 +12,6 @@
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"

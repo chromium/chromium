@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

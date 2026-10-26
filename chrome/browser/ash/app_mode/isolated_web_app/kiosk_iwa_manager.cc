@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"

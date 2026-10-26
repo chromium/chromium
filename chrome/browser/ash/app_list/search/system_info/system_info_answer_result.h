@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
 

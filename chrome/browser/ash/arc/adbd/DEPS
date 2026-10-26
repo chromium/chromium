@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/profiles",
 ]
 
 specific_include_rules = {

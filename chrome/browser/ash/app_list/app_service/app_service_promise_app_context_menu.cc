@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"

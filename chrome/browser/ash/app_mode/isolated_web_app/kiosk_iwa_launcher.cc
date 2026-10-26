@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_launcher_base.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"  // nogncheck crbug.com/386960384
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

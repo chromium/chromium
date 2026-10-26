@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/search/arc/arc_playstore_search_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/app/arc_playstore_search_request_state.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"

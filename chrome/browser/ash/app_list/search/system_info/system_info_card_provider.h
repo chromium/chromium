@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chromeos/ash/components/launcher_search/system_info/system_info_keyword_input.h"
 #include "chromeos/ash/components/system_info/battery_health.h"

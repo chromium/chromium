@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-#include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
 namespace {
