@@ -554,7 +554,7 @@ bool NeedThreadSafeAndroidMedia() {
 namespace {
 bool IsSkiaGraphiteSupportedByDevice() {
 #if BUILDFLAG(IS_APPLE)
-  return UsePassthroughCommandDecoder();
+  return true;
 #elif BUILDFLAG(IS_ANDROID)
   // Graphite on Android uses the Dawn Vulkan backend. Only enable Graphite if
   // device would already be using Ganesh/Vulkan.
