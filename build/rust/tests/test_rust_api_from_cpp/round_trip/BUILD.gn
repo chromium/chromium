@@ -1,0 +1,98 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Tests for round-tripping types between `rust_api_from_cpp` and
+# `cpp_api_from_rust`.
+#
+# The dependency graphs below (above the `..._unittests` targets) show that
+# round-tripping doesn't cause dependency cycles.  Generated bindings
+# (`..._rs_api` and `..._cpp_api`) depend on the bindings of the types they
+# use (via `bindings_deps`) and on the original libraries.  Original
+# libraries never depend on their own bindings.  The graphs hide the
+# internal targets of `rust_api_from_cpp` and `cpp_api_from_rust`.  `..:foo`
+# stands for `//build/rust/tests/test_rust_api_from_cpp:foo`.
+
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
+
+# Tests round-tripping a C++ type: C++ => `rust_api_from_cpp` => Rust =>
+# `cpp_api_from_rust` => C++.
+#
+#   :cpp_unittests                      (unittests.cc)
+#   +-- :rust_lib_using_cpp_type_cpp_api  (generated .h)
+#       +-- :rust_lib_using_cpp_type      (rust_lib_using_cpp_type.rs)
+#           +-- ..:self_contained_target_rs_api  (generated .rs)
+#               +-- ..:self_contained_target     (self_contained_target_*.h)
+source_set("cpp_unittests") {
+  testonly = true
+  sources = [ "unittests.cc" ]
+  deps = [
+    ":rust_lib_using_cpp_type_cpp_api",
+    "//build/rust/tests/test_rust_api_from_cpp:self_contained_target",
+    "//testing/gtest",
+  ]
+}
+
+# Rust library with public APIs that use a C++ type.
+rust_static_library("rust_lib_using_cpp_type") {
+  testonly = true
+  crate_root = "rust_lib_using_cpp_type.rs"
+  sources = [ crate_root ]
+  deps = [
+    "//build/rust/tests/test_rust_api_from_cpp:self_contained_target_rs_api",
+  ]
+  cpp_api_from_rust = {
+    target_name = "rust_lib_using_cpp_type_cpp_api"
+    cpp_namespace = "rust_lib_using_cpp_type"
+    bindings_deps = [
+      "//build/rust/tests/test_rust_api_from_cpp:self_contained_target_rs_api",
+    ]
+  }
+}
+
+# Tests round-tripping a Rust type: Rust => `cpp_api_from_rust` => C++ =>
+# `rust_api_from_cpp` => Rust.
+#
+#   :rust_unittests                     (unittests.rs)
+#   +-- :cpp_lib_using_rust_type_rs_api   (generated .rs)
+#       +-- :cpp_lib_using_rust_type      (cpp_lib_using_rust_type.h)
+#           +-- :rust_lib_with_rust_type_cpp_api  (generated .h)
+#               +-- :rust_lib_with_rust_type      (rust_lib_with_rust_type.rs)
+rust_static_library("rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":cpp_lib_using_rust_type_rs_api",
+    ":rust_lib_with_rust_type",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+# Rust library with a Rust type that is used in public C++ APIs.
+rust_static_library("rust_lib_with_rust_type") {
+  testonly = true
+  crate_root = "rust_lib_with_rust_type.rs"
+  sources = [ crate_root ]
+  cpp_api_from_rust = {
+    target_name = "rust_lib_with_rust_type_cpp_api"
+    cpp_namespace = "rust_lib_with_rust_type"
+  }
+}
+
+rust_api_from_cpp("cpp_lib_using_rust_type_rs_api") {
+  testonly = true
+  bindings_target = ":cpp_lib_using_rust_type"
+  public_headers = [ "cpp_lib_using_rust_type.h" ]
+
+  # Parallels `public_deps` of `cpp_lib_using_rust_type`.
+  bindings_deps = [ ":rust_lib_with_rust_type_cpp_api" ]
+}
+
+source_set("cpp_lib_using_rust_type") {
+  testonly = true
+  sources = [ "cpp_lib_using_rust_type.h" ]
+  public_deps = [ ":rust_lib_with_rust_type_cpp_api" ]
+}

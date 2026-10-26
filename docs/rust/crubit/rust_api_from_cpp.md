@@ -62,7 +62,7 @@ rust_api_from_cpp("self_contained_target_rs_api") {
   ]
 }
 
-rust_static_library("test_rust_api_from_cpp") {
+rust_static_library("rust_api_from_cpp_unittests") {
   crate_root = "tests.rs"
   sources = [ crate_root ]
   deps = [ ":self_contained_target_rs_api" ]
@@ -137,7 +137,7 @@ rust_api_from_cpp("target_depending_on_another_rs_api") {
   bindings_deps = [ ":self_contained_target_rs_api" ]
 }
 
-rust_static_library("test_rust_api_from_cpp") {
+rust_static_library("rust_api_from_cpp_unittests") {
   crate_root = "tests.rs"
   sources = [ crate_root ]
   deps = [
@@ -169,6 +169,14 @@ Notes:
 * `bindings_deps` only need to cover the C++ targets whose types appear in the
   public APIs from `public_headers`.  Other `deps` of the `bindings_target`
   (e.g. ones used only by its `.cc` files) do not need Rust bindings.
+
+### Types from Rust crates
+
+If public APIs from `public_headers` use Rust types (from a `.h` file generated
+by [`cpp_api_from_rust`](cpp_api_from_rust.md)), then `bindings_deps` should
+list the `cpp_api_from_rust` target.  The Rust bindings will then refer to the
+original Rust types.  See `cpp_lib_using_rust_type_rs_api` in
+`build/rust/tests/test_rust_api_from_cpp/round_trip/BUILD.gn` for an example.
 
 ## References and lifetimes
 

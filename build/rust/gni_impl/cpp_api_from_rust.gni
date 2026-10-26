@@ -122,6 +122,27 @@ template("cpp_api_from_rust") {
       crate_header =
           [ "--crate-header=${_crate_name}=${_gen_dir_relative_h_out}" ]
       crate_namespace = [ "--crate-namespace=${_crate_name}=${_cpp_namespace}" ]
+
+      # The data below is consumed by `rust_api_from_cpp` when this target is
+      # listed in `rust_api_from_cpp.bindings_deps` (of a C++ target that uses
+      # Rust types from `_rust_target` in its public APIs).  This lets Rust
+      # bindings of such C++ APIs refer to the original Rust types.  See
+      # `crubit_target_and_args` in `//build/rust/rust_api_from_cpp.gni` for
+      # the meaning of the `t`, `h`, `f`, and `c` fields.
+      crubit_target_and_args = [
+        {
+          t = get_label_info(_rust_target, "label_no_toolchain")
+          h = [ rebase_path(_h_out, root_build_dir) ]
+
+          # `rs_bindings_from_cc` only uses types from targets that enable the
+          # Crubit features required by these types.  `rs_bindings_from_cc`
+          # never runs on this target, but all its types already exist in Rust
+          # (where they were originally defined).  Therefore it is okay to
+          # treat all features as enabled (as Crubit's Bazel rules also do).
+          f = [ "all" ]
+          c = _crate_name
+        },
+      ]
     }
   }
 
@@ -321,6 +342,12 @@ template("cpp_api_from_rust") {
     # `**public**_deps` to propagate `include_dirs` for including Crubit
     # support libraries.
     public_deps = [ "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps" ]
+
+    # The generated `.h` file exposes types from `_rust_target`.  Rust bindings
+    # of C++ APIs that use these types (see `rust_api_from_cpp.bindings_deps`)
+    # refer to the original Rust types, and therefore need `_rust_target` as
+    # a (transitive, public) dependency.
+    public_deps += [ _rust_target ]
 
     # Used by Cronet's gn2bp when translating this target into a Soong
     # `crubit_cpp_from_rust` module.

@@ -81,6 +81,11 @@ _globally_enabled_crubit_features = [
 #     `rust_api_from_cpp` targets that generate bindings for types from these
 #     other targets.
 #
+#     This may also list `cpp_api_from_rust` targets (i.e. C++ bindings of Rust
+#     crates; see the `cpp_api_from_rust` parameter of `rust_static_library`).
+#     This way, Rust types used in `public_headers` are exposed to Rust as the
+#     original Rust types.
+#
 #   extra_rust_sources: (optional)
 #     A list of hand-written `.rs` files to merge into the generated bindings
 #     crate.  This can be used to implement traits for the types from the
@@ -318,7 +323,10 @@ template("rust_api_from_cpp") {
 
     metadata = {
       # The data below corresponds to a single-target entry inside
-      # `--target_args` cmdline argument of `rs_bindings_from_cc`.
+      # `--target_args` cmdline argument of `rs_bindings_from_cc`.  The field
+      # names (`t` = target, `h` = headers, `f` = features, `c` = crate name)
+      # are defined by Crubit - see `--target_args` in
+      # https://github.com/google/crubit/blob/main/rs_bindings_from_cc/cmdline.cc
       crubit_target_and_args = [
         {
           t = _current_lib_target_full_label
@@ -327,6 +335,17 @@ template("rust_api_from_cpp") {
           c = _lib_target_crate_name
         },
       ]
+
+      # The data below is consumed by `cpp_api_from_rust` when this target is
+      # listed in `cpp_api_from_rust.bindings_deps` (of a Rust library that
+      # uses C++ types from this target in its public APIs).  This lets C++
+      # bindings of such Rust APIs refer to the original C++ types (and
+      # `#include` the original C++ headers).
+      crate_header = []
+      foreach(_hdr, invoker.public_headers) {
+        crate_header += [ "--crate-header=${_lib_target_crate_name}=" +
+                          rebase_path(_hdr, "//") ]
+      }
     }
   }
 

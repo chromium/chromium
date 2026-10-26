@@ -5,7 +5,16 @@
 import("//build/rust/rust_api_from_cpp.gni")
 import("//build/rust/rust_static_library.gni")
 
-rust_static_library("test_rust_api_from_cpp") {
+group("test_rust_api_from_cpp") {
+  testonly = true
+  deps = [
+    ":rust_api_from_cpp_unittests",
+    "round_trip:cpp_unittests",
+    "round_trip:rust_unittests",
+  ]
+}
+
+rust_static_library("rust_api_from_cpp_unittests") {
   testonly = true
   is_gtest_unittests = true
   crate_root = "tests.rs"

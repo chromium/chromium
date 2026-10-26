@@ -130,6 +130,10 @@ import("//build/rust/gni_impl/rust_target.gni")
 #         "Specifying binding dependencies" section in
 #         `//docs/rust/crubit/cpp_api_from_rust.md` for more details.
 #
+#         This may also list `rust_api_from_cpp` targets (i.e. Rust bindings
+#         of C++ targets).  This way, C++ types used in the public API of
+#         this crate are exposed to C++ as the original C++ types.
+#
 #       features (optional)
 #         Not implemented yet.  A list of strings that may enable additional,
 #         experimental Crubit features - see
