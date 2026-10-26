@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstdint>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -42,6 +43,25 @@ struct EntitySuppressionEntry {
 // whose attributes are all non-empty.
 std::vector<EntitySuppressionEntry> GetEntitySuppressionEntries(
     const EntityInstance& entity);
+
+// The leading 20 bits of a SHA-256 hash of an `EntitySuppressionEntry`.
+using EntitySuppressionHash =
+    base::StrongAlias<struct EntitySuppressionHashTag, uint32_t>;
+
+// An entry that older clients synced with full attribute value hashes.
+// TODO(crbug.com/501036619): Remove once these entries are no longer supported.
+using LegacyEntitySuppressionEntry =
+    base::StrongAlias<struct LegacyEntitySuppressionEntryTag,
+                      EntitySuppressionEntry>;
+
+// Identifies a stored suppression.
+using EntitySuppressionKey =
+    std::variant<EntitySuppressionHash, LegacyEntitySuppressionEntry>;
+
+// Returns the hash of the entity type and the attribute value hashes of
+// `entry`.
+EntitySuppressionHash GetEntitySuppressionHash(
+    const EntitySuppressionEntry& entry);
 
 }  // namespace autofill
 

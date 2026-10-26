@@ -164,9 +164,9 @@ TEST_F(EntitySuppressionManagerImplTest, MaskedEntitySuppression) {
 }
 
 // Tests that entities matching different attribute types with identical values
-// do not falsely match.
+// match, since suppression hashes don't cover attribute types.
 TEST_F(EntitySuppressionManagerImplTest,
-       DoesNotSuppressDifferentAttributeTypesWithSameValue) {
+       SuppressesDifferentAttributeTypesWithSameValue) {
   EntityInstance vehicle1 = test::GetVehicleEntityInstance(
       test::VehicleOptions{.plate = u"12345", .number = nullptr});
   EntityInstance vehicle2 = test::GetVehicleEntityInstance(
@@ -174,7 +174,7 @@ TEST_F(EntitySuppressionManagerImplTest,
 
   ASSERT_TRUE(manager().SuppressEntity(vehicle1));
 
-  EXPECT_FALSE(manager().IsSuppressed(vehicle2));
+  EXPECT_TRUE(manager().IsSuppressed(vehicle2));
 }
 
 // Tests that an entity is considered suppressed if any of its satisfied merge

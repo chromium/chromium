@@ -115,5 +115,51 @@ TEST(EntitySuppressionEntryTest, Equality) {
   EXPECT_NE(passport_a, drivers_license_a);
 }
 
+// Tests that the hash covers the entity type and the attribute value hashes.
+// Since hashes are synced, they must not change.
+TEST(EntitySuppressionEntryTest, GetEntitySuppressionHash) {
+  const AttributeValueHash value_hash(crypto::hash::Sha256("P123456"));
+  EntitySuppressionEntry passport{
+      .type = EntityType(EntityTypeName::kPassport),
+      .attribute_hashes = {{AttributeType(AttributeTypeName::kPassportNumber),
+                            value_hash}},
+  };
+  EntitySuppressionEntry drivers_license{
+      .type = EntityType(EntityTypeName::kDriversLicense),
+      .attribute_hashes = {{AttributeType(
+                                AttributeTypeName::kDriversLicenseNumber),
+                            value_hash}},
+  };
+
+  // The leading 20 bits of SHA-256("Passport" + SHA-256("P123456")).
+  EXPECT_EQ(GetEntitySuppressionHash(passport), EntitySuppressionHash(0xCB8CB));
+  // The leading 20 bits of SHA-256("Driver's license" + SHA-256("P123456")).
+  EXPECT_EQ(GetEntitySuppressionHash(drivers_license),
+            EntitySuppressionHash(0xD1384));
+}
+
+// Tests that the hash of an entry with multiple attributes covers their value
+// hashes in ascending order, independently of the attribute types.
+TEST(EntitySuppressionEntryTest, GetEntitySuppressionHash_MultipleAttributes) {
+  const AttributeType name(AttributeTypeName::kPassportName);
+  const AttributeType number(AttributeTypeName::kPassportNumber);
+  const AttributeValueHash jane_doe(crypto::hash::Sha256("Jane Doe"));
+  const AttributeValueHash p123456(crypto::hash::Sha256("P123456"));
+  EntitySuppressionEntry passport{
+      .type = EntityType(EntityTypeName::kPassport),
+      .attribute_hashes = {{name, jane_doe}, {number, p123456}},
+  };
+  EntitySuppressionEntry passport_with_swapped_values{
+      .type = EntityType(EntityTypeName::kPassport),
+      .attribute_hashes = {{name, p123456}, {number, jane_doe}},
+  };
+
+  // The leading 20 bits of
+  // SHA-256("Passport" + SHA-256("Jane Doe") + SHA-256("P123456")).
+  EXPECT_EQ(GetEntitySuppressionHash(passport), EntitySuppressionHash(0xBF075));
+  EXPECT_EQ(GetEntitySuppressionHash(passport_with_swapped_values),
+            EntitySuppressionHash(0xBF075));
+}
+
 }  // namespace
 }  // namespace autofill

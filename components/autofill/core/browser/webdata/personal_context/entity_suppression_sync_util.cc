@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -36,9 +37,9 @@ void TrimEntitySuppressionKey(sync_pb::EntitySuppressionKey& key) {
 }  // namespace
 
 sync_pb::AutofillEntitySuppressionSpecifics
-CreateSpecificsFromEntitySuppressionEntry(
+CreateSpecificsFromEntitySuppressionKey(
     const std::string& guid,
-    const EntitySuppressionEntry& entry,
+    const EntitySuppressionKey& suppression_key,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics = base_specifics;
@@ -48,6 +49,16 @@ CreateSpecificsFromEntitySuppressionEntry(
 
   // TODO(crbug.com/501036619): Set `schema_version`.
 
+  if (const EntitySuppressionHash* hash =
+          std::get_if<EntitySuppressionHash>(&suppression_key)) {
+    specifics.set_entity_suppression_hash(hash->value());
+    return specifics;
+  }
+
+  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
+  // supported.
+  const EntitySuppressionEntry& entry =
+      std::get<LegacyEntitySuppressionEntry>(suppression_key).value();
   sync_pb::EntitySuppressionKey* key =
       specifics.mutable_entity_suppression_key();
   key->set_entity_type_name(std::string(entry.type.name_as_string()));
@@ -60,14 +71,14 @@ CreateSpecificsFromEntitySuppressionEntry(
   return specifics;
 }
 
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionEntry(
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionKey(
     const std::string& guid,
-    const EntitySuppressionEntry& entry,
+    const EntitySuppressionKey& suppression_key,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
   return CreateEntityDataFromEntitySuppressionSpecifics(
-      CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time,
-                                                base_specifics));
+      CreateSpecificsFromEntitySuppressionKey(guid, suppression_key,
+                                              creation_time, base_specifics));
 }
 
 std::unique_ptr<syncer::EntityData>
@@ -81,7 +92,17 @@ CreateEntityDataFromEntitySuppressionSpecifics(
 
 bool AreEntitySuppressionSpecificsValid(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
-  if (specifics.guid().empty() || !specifics.has_entity_suppression_key()) {
+  if (specifics.guid().empty()) {
+    return false;
+  }
+
+  if (specifics.has_entity_suppression_hash()) {
+    return true;
+  }
+
+  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
+  // supported.
+  if (!specifics.has_entity_suppression_key()) {
     return false;
   }
 
@@ -109,12 +130,18 @@ bool AreEntitySuppressionSpecificsValid(
   return true;
 }
 
-std::optional<EntitySuppressionEntry> CreateEntitySuppressionEntryFromSpecifics(
+std::optional<EntitySuppressionKey> CreateEntitySuppressionKeyFromSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
   if (!AreEntitySuppressionSpecificsValid(specifics)) {
     return std::nullopt;
   }
 
+  if (specifics.has_entity_suppression_hash()) {
+    return EntitySuppressionHash(specifics.entity_suppression_hash());
+  }
+
+  // TODO(crbug.com/501036619): Remove once legacy entries are no longer
+  // supported.
   const sync_pb::EntitySuppressionKey& key = specifics.entity_suppression_key();
   std::optional<EntityType> entity_type =
       StringToEntityType(key.entity_type_name());
@@ -132,11 +159,11 @@ std::optional<EntitySuppressionEntry> CreateEntitySuppressionEntryFromSpecifics(
         return std::make_pair(*attr_type, AttributeValueHash(hash_array));
       });
 
-  return EntitySuppressionEntry{
+  return LegacyEntitySuppressionEntry(EntitySuppressionEntry{
       .type = *entity_type,
       .attribute_hashes = base::flat_map<AttributeType, AttributeValueHash>(
           std::move(attribute_hashes)),
-  };
+  });
 }
 
 // LINT.IfChange(TrimAutofillEntitySuppressionSpecificsDataForCaching)
@@ -154,6 +181,7 @@ TrimAutofillEntitySuppressionSpecificsDataForCaching(
   }
   trimmed_specifics.clear_schema_version();
   trimmed_specifics.clear_creation_time_windows_epoch_micros();
+  trimmed_specifics.clear_entity_suppression_hash();
   return trimmed_specifics;
 }
 // LINT.ThenChange(//components/sync/protocol/autofill_entity_suppression_specifics.proto:AutofillEntitySuppressionSpecifics)

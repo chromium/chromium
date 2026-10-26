@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -19,6 +21,9 @@
 namespace autofill {
 
 namespace {
+
+// Changing this breaks matching against previously synced hashes.
+constexpr int kEntitySuppressionHashBitLength = 20;
 
 // Computes the SHA-256 hash of the complete raw info of the given attribute.
 AttributeValueHash HashAttributeValue(const AttributeInstance& attribute) {
@@ -57,6 +62,27 @@ std::vector<EntitySuppressionEntry> GetEntitySuppressionEntries(
     });
   }
   return entries;
+}
+
+EntitySuppressionHash GetEntitySuppressionHash(
+    const EntitySuppressionEntry& entry) {
+  // Sorted, so that the hash doesn't depend on the order of the attribute types
+  // within the merge constraint, which follows the schema.
+  std::vector<AttributeValueHash> value_hashes;
+  for (const auto& [attribute_type, value_hash] : entry.attribute_hashes) {
+    value_hashes.push_back(value_hash);
+  }
+  std::ranges::sort(value_hashes);
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  hasher.Update(entry.type.name_as_string());
+  for (const AttributeValueHash& value_hash : value_hashes) {
+    hasher.Update(value_hash.value());
+  }
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  hasher.Finish(digest);
+  return EntitySuppressionHash(
+      base::U32FromBigEndian(base::span(digest).first<4>()) >>
+      (32 - kEntitySuppressionHashBitLength));
 }
 
 }  // namespace autofill
