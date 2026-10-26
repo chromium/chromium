@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 
+#import <algorithm>
+#import <vector>
+
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/not_fatal_until.h"
@@ -13,6 +16,17 @@
 // TODO(crbug.com/458081684): Move to using the ios/web frame id system.
 
 namespace {
+
+// Returns whether `target` is inside the `root` subtree.
+bool SubtreeContainsNode(const optimization_guide::proto::ContentNode& root,
+                         const optimization_guide::proto::ContentNode* target) {
+  if (&root == target) {
+    return true;
+  }
+  return std::ranges::any_of(root.children_nodes(), [&](const auto& child) {
+    return SubtreeContainsNode(child, target);
+  });
+}
 
 // Merges the content from `content` into the `placeholder`.
 //
@@ -135,13 +149,23 @@ void FrameGrafter::ResolveUnregisteredContent(
     unresolved_placeholder_handler.Run(remote_token, placeholder);
   }
 
+  // Nested placeholders inside un-grafted frames point into
+  // `unregistered_content_`; clear `placeholders_` before `placer` destroys
+  // that content to avoid dangling pointers.
+  placeholders_.clear();
+
   // TODO(crbug.com/473796618): Add a metric for when content has to be placed.
-  // Place the remaining unregistered content using the `placer`.
-  for (auto& [_, o] : unregistered_content_) {
-    placer.Run(std::move(o));
+  // Place the remaining unregistered content using the `placer`. First remove
+  // any `cross_site_iframe_records_` pointing into `frame_content` so their
+  // `raw_ptr`s don't dangle when `placer` destroys `frame_content`.
+  for (auto& [_, frame_content] : unregistered_content_) {
+    std::erase_if(
+        cross_site_iframe_records_, [&](const CrossSiteIframeRecord& record) {
+          return SubtreeContainsNode(frame_content.content, record.node.get());
+        });
+    placer.Run(std::move(frame_content));
   }
   unregistered_content_.clear();
-  placeholders_.clear();
 }
 
 namespace {

@@ -493,6 +493,63 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
             "Main Frame Paragraph");
 }
 
+// Tests that dropping an unregistered orphan frame that contains a nested
+// cross-site iframe placeholder does not leave dangling pointers when
+// `ResolveCrossSiteFrameContent` records cross-site placeholders.
+TEST_F(
+    AnnotatedPageContentExtractionUtilsTest,
+    ResolveCrossSiteFrameContent_UnregisteredOrphanWithNestedCrossSiteIframe) {
+  web::FakeWebState web_state;
+  web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::FromWebState(&web_state);
+  FrameGrafter grafter;
+
+  autofill::LocalFrameToken orphan_token =
+      autofill::LocalFrameToken(base::UnguessableToken::Create());
+  FrameGrafter::FrameContent* orphan_content =
+      grafter.DeclareContent(orphan_token);
+  orphan_content->content.mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  optimization_guide::proto::ContentNode* nested_placeholder =
+      orphan_content->content.add_children_nodes();
+  nested_placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  auto* nested_box = nested_placeholder->mutable_content_attributes()
+                         ->mutable_geometry()
+                         ->mutable_visible_bounding_box();
+  nested_box->set_x(10);
+  nested_box->set_y(10);
+  nested_box->set_width(100);
+  nested_box->set_height(50);
+  auto* nested_frame_data = nested_placeholder->mutable_content_attributes()
+                                ->mutable_iframe_data()
+                                ->mutable_frame_data();
+  nested_frame_data->set_url("https://cross-site.example/ad");
+  nested_frame_data->mutable_security_origin()->set_value(
+      "https://cross-site.example");
+  grafter.RegisterPlaceholder(
+      autofill::RemoteFrameToken(base::UnguessableToken::Create()),
+      nested_placeholder);
+
+  optimization_guide::proto::AnnotatedPageContent apc;
+  apc.mutable_main_frame_data()->set_url("https://example.com");
+  apc.mutable_root_node()->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  ResolveCrossSiteFrameContent(
+      grafter, registrar, /*include_same_site_only=*/true, &apc,
+      web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
+
+  EXPECT_EQ(apc.root_node().children_nodes_size(), 0);
+  EXPECT_FALSE(apc.has_gemini_in_chrome_page_metadata());
+}
+
 // Tests that PopulateAPCNodeFromContentTree handles CssPosition in geometry.
 TEST_F(AnnotatedPageContentExtractionUtilsTest, CssPositionPopulated) {
   optimization_guide::proto::ContentNode node;
