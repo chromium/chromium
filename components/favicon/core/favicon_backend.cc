@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -50,8 +51,7 @@ bool AreIconTypesEquivalent(favicon_base::IconType type_a,
       favicon_base::IconType::kTouchPrecomposedIcon,
       favicon_base::IconType::kWebManifestIcon};
 
-  if (equivalent_types.count(type_a) != 0 &&
-      equivalent_types.count(type_b) != 0) {
+  if (equivalent_types.Has(type_a) && equivalent_types.Has(type_b)) {
     return true;
   }
   return false;
@@ -91,26 +91,29 @@ void FaviconBackend::Commit() {
 
 favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
     const GURL& page_url,
-    const std::vector<favicon_base::IconTypeSet>& icon_types_list,
+    base::span<const favicon_base::IconTypeSet> icon_types_list,
     int minimum_size_in_pixels) {
   base::TimeTicks beginning_time = base::TimeTicks::Now();
 
   std::vector<IconMapping> icon_mappings;
   if (!db_->GetIconMappingsForPageURL(page_url, &icon_mappings) ||
-      icon_mappings.empty())
+      icon_mappings.empty()) {
     return {};
+  }
 
   favicon_base::IconTypeSet required_icon_types;
-  for (const favicon_base::IconTypeSet& icon_types : icon_types_list)
-    required_icon_types.insert(icon_types.begin(), icon_types.end());
+  for (const favicon_base::IconTypeSet& icon_types : icon_types_list) {
+    required_icon_types.PutAll(icon_types);
+  }
 
   // Find the largest bitmap for each IconType placing in
   // `largest_favicon_bitmaps`.
   std::map<favicon_base::IconType, FaviconBitmap> largest_favicon_bitmaps;
   for (std::vector<IconMapping>::const_iterator i = icon_mappings.begin();
        i != icon_mappings.end(); ++i) {
-    if (required_icon_types.count(i->icon_type) == 0)
+    if (!required_icon_types.Has(i->icon_type)) {
       continue;
+    }
     std::vector<FaviconBitmapIDSize> bitmap_id_sizes;
     db_->GetFaviconBitmapIDSizes(i->icon_id, &bitmap_id_sizes);
     FaviconBitmap& largest = largest_favicon_bitmaps[i->icon_type];
@@ -126,8 +129,9 @@ favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
       }
     }
   }
-  if (largest_favicon_bitmaps.empty())
+  if (largest_favicon_bitmaps.empty()) {
     return {};
+  }
 
   // Find an icon which is larger than minimum_size_in_pixels in the order of
   // icon_types.
@@ -136,7 +140,7 @@ favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
     for (std::map<favicon_base::IconType, FaviconBitmap>::const_iterator f =
              largest_favicon_bitmaps.begin();
          f != largest_favicon_bitmaps.end(); ++f) {
-      if (icon_types.count(f->first) != 0 &&
+      if (icon_types.Has(f->first) &&
           (largest_icon.bitmap_id == 0 ||
            (largest_icon.pixel_size.height() < f->second.pixel_size.height() &&
             largest_icon.pixel_size.width() < f->second.pixel_size.width()))) {
@@ -144,8 +148,9 @@ favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
       }
     }
     if (largest_icon.pixel_size.width() > minimum_size_in_pixels &&
-        largest_icon.pixel_size.height() > minimum_size_in_pixels)
+        largest_icon.pixel_size.height() > minimum_size_in_pixels) {
       break;
+    }
   }
 
   GURL icon_url;

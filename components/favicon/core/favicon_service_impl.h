@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -75,7 +76,7 @@ class FaviconServiceImpl : public FaviconService {
       base::CancelableTaskTracker* tracker) override;
   base::CancelableTaskTracker::TaskId GetLargestRawFaviconForPageURL(
       const GURL& page_url,
-      const std::vector<favicon_base::IconTypeSet>& icon_types,
+      base::span<const favicon_base::IconTypeSet> icon_types,
       int minimum_size_in_pixels,
       favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) override;

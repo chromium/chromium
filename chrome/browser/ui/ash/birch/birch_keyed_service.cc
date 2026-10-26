@@ -9,6 +9,7 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

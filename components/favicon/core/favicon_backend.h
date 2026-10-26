@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -60,7 +61,7 @@ class FaviconBackend {
   // See function of same name in HistoryService for details.
   favicon_base::FaviconRawBitmapResult GetLargestFaviconForUrl(
       const GURL& page_url,
-      const std::vector<favicon_base::IconTypeSet>& icon_types_list,
+      base::span<const favicon_base::IconTypeSet> icon_types_list,
       int minimum_size_in_pixels);
 
   // See function of same name in HistoryService for details.

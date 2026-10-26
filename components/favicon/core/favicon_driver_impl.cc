@@ -80,8 +80,7 @@ void FaviconDriverImpl::OnUpdateCandidates(
     // icons override inline touch icons).
     handler->OnUpdateCandidates(
         page_url, candidates,
-        (handler->icon_types().count(
-             favicon_base::IconType::kWebManifestIcon) != 0)
+        handler->icon_types().Has(favicon_base::IconType::kWebManifestIcon)
             ? manifest_url
             : GURL());
   }

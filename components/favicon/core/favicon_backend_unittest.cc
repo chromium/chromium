@@ -596,9 +596,8 @@ TEST_F(FaviconBackendTest, SetOnDemandFaviconsForEmptyDB) {
 
   // The raw bitmap result is marked as fetched on-demand.
   favicon_base::FaviconRawBitmapResult result =
-      backend_->GetLargestFaviconForUrl(
-          page_url, std::vector<IconTypeSet>({{IconType::kFavicon}}),
-          kSmallEdgeSize);
+      backend_->GetLargestFaviconForUrl(page_url, {{IconType::kFavicon}},
+                                        kSmallEdgeSize);
   EXPECT_FALSE(result.fetched_because_of_page_visit);
 }
 
@@ -635,9 +634,8 @@ TEST_F(FaviconBackendTest, SetOnDemandFaviconsForPageInDB) {
 
   // The raw bitmap result is not marked as fetched on-demand.
   favicon_base::FaviconRawBitmapResult result =
-      backend_->GetLargestFaviconForUrl(
-          page_url, std::vector<IconTypeSet>({{IconType::kFavicon}}),
-          kSmallEdgeSize);
+      backend_->GetLargestFaviconForUrl(page_url, {{IconType::kFavicon}},
+                                        kSmallEdgeSize);
   EXPECT_TRUE(result.fetched_because_of_page_visit);
 }
 
@@ -675,9 +673,8 @@ TEST_F(FaviconBackendTest, SetOnDemandFaviconsForIconInDB) {
 
   // The raw bitmap result is not marked as fetched on-demand.
   favicon_base::FaviconRawBitmapResult result =
-      backend_->GetLargestFaviconForUrl(
-          page_url, std::vector<IconTypeSet>({{IconType::kFavicon}}),
-          kSmallEdgeSize);
+      backend_->GetLargestFaviconForUrl(page_url, {{IconType::kFavicon}},
+                                        kSmallEdgeSize);
   EXPECT_TRUE(result.fetched_because_of_page_visit);
 }
 

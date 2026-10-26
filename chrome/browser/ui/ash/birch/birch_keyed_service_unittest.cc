@@ -17,6 +17,7 @@
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/webui/help_app_ui/help_app_prefs.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -156,7 +157,7 @@ class FaviconServiceMock : public favicon::MockFaviconService {
  private:
   base::CancelableTaskTracker::TaskId DefaultGetLargestRawFaviconForPageURL(
       const GURL& page_url,
-      const std::vector<favicon_base::IconTypeSet>& icon_types,
+      base::span<const favicon_base::IconTypeSet> icon_types,
       int minimum_size_in_pixels,
       favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) {

@@ -22,6 +22,8 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -967,7 +969,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetFaviconsForURL(
 
 base::CancelableTaskTracker::TaskId HistoryService::GetLargestFaviconForURL(
     const GURL& page_url,
-    const std::vector<favicon_base::IconTypeSet>& icon_types,
+    base::span<const favicon_base::IconTypeSet> icon_types,
     int minimum_size_in_pixels,
     favicon_base::FaviconRawBitmapCallback callback,
     base::CancelableTaskTracker* tracker) {
@@ -976,7 +978,8 @@ base::CancelableTaskTracker::TaskId HistoryService::GetLargestFaviconForURL(
   return tracker->PostTaskAndReplyWithResult(
       GetBackendTaskRunner(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetLargestFaviconForURL, history_backend_,
-                     page_url, icon_types, minimum_size_in_pixels),
+                     page_url, base::ToVector(icon_types),
+                     minimum_size_in_pixels),
       std::move(callback));
 }
 

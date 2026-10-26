@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_SERVICE_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_SERVICE_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/core_favicon_service.h"
@@ -88,7 +89,7 @@ class FaviconService : public CoreFaviconService {
   // of icon is preferred as long as its size is larger than a specific value.
   virtual base::CancelableTaskTracker::TaskId GetLargestRawFaviconForPageURL(
       const GURL& page_url,
-      const std::vector<favicon_base::IconTypeSet>& icon_types,
+      base::span<const favicon_base::IconTypeSet> icon_types,
       int minimum_size_in_pixels,
       favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) = 0;

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"

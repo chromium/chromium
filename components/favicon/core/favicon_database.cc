@@ -690,10 +690,11 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
 
   bool result = false;
   for (auto m = mapping_data.begin(); m != mapping_data.end(); ++m) {
-    if (required_icon_types.count(m->icon_type) != 0) {
+    if (required_icon_types.Has(m->icon_type)) {
       result = true;
-      if (!filtered_mapping_data)
+      if (!filtered_mapping_data) {
         return result;
+      }
 
       filtered_mapping_data->push_back(*m);
     }
@@ -768,7 +769,7 @@ FaviconDatabase::FindBestPageURLForHost(
     favicon_base::IconType icon_type =
         FaviconDatabase::FromPersistedIconType(statement.ColumnInt(1));
 
-    if (required_icon_types.count(icon_type) != 0) {
+    if (required_icon_types.Has(icon_type)) {
       return std::make_optional(std::make_pair(
           GURL(statement.ColumnStringView(0)),
           FaviconDatabase::FromPersistedPageUrlType(statement.ColumnInt64(2))));

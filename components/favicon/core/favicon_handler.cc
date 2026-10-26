@@ -455,7 +455,7 @@ void FaviconHandler::OnGotFinalIconURLCandidates(
   std::vector<FaviconCandidate> sorted_candidates;
   for (const FaviconURL& candidate : candidates) {
     if (!candidate.icon_url.is_empty() &&
-        (icon_types_.count(candidate.icon_type) != 0)) {
+        icon_types_.Has(candidate.icon_type)) {
       sorted_candidates.push_back(FaviconCandidate::FromFaviconURL(
           candidate, desired_pixel_sizes, download_largest_icon_));
     }

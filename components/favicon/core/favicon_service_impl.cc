@@ -5,9 +5,11 @@
 #include "components/favicon/core/favicon_service_impl.h"
 
 #include <stddef.h>
+
 #include <cmath>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/task/single_thread_task_runner.h"
@@ -136,7 +138,7 @@ base::CancelableTaskTracker::TaskId FaviconServiceImpl::GetRawFaviconForPageURL(
 base::CancelableTaskTracker::TaskId
 FaviconServiceImpl::GetLargestRawFaviconForPageURL(
     const GURL& page_url,
-    const std::vector<favicon_base::IconTypeSet>& icon_types,
+    base::span<const favicon_base::IconTypeSet> icon_types,
     int minimum_size_in_pixels,
     favicon_base::FaviconRawBitmapCallback callback,
     base::CancelableTaskTracker* tracker) {

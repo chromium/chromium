@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
@@ -62,7 +63,7 @@ class MockFaviconService : public FaviconService {
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,
               GetLargestRawFaviconForPageURL,
               (const GURL& page_url,
-               const std::vector<favicon_base::IconTypeSet>& icon_types,
+               base::span<const favicon_base::IconTypeSet> icon_types,
                int minimum_size_in_pixels,
                favicon_base::FaviconRawBitmapCallback callback,
                base::CancelableTaskTracker* tracker),

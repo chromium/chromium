@@ -5,14 +5,13 @@
 #include "components/favicon/core/large_icon_worker.h"
 
 #include <algorithm>
-#include <vector>
+#include <array>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/favicon/core/favicon_service.h"
@@ -188,18 +187,19 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
   int max_size_in_pixel =
       std::max(size_in_pixel_to_resize_to, min_source_size_in_pixel);
 
-  static const base::NoDestructor<std::vector<favicon_base::IconTypeSet>>
-      large_icon_types({{favicon_base::IconType::kWebManifestIcon},
-                        {favicon_base::IconType::kFavicon},
-                        {favicon_base::IconType::kTouchIcon},
-                        {favicon_base::IconType::kTouchPrecomposedIcon}});
+  static constexpr std::array<favicon_base::IconTypeSet, 4> kLargeIconTypes = {{
+      {favicon_base::IconType::kWebManifestIcon},
+      {favicon_base::IconType::kFavicon},
+      {favicon_base::IconType::kTouchIcon},
+      {favicon_base::IconType::kTouchPrecomposedIcon},
+  }};
 
   // TODO(beaudoin): For now this is just a wrapper around
   //   GetLargestRawFaviconForPageURL. Add the logic required to select the
   //   best possible large icon. Also add logic to fetch-on-demand when the
   //   URL of a large icon is known but its bitmap is not available.
   return favicon_service->GetLargestRawFaviconForPageURL(
-      page_url, *large_icon_types, max_size_in_pixel,
+      page_url, kLargeIconTypes, max_size_in_pixel,
       base::BindOnce(&LargeIconWorker::OnIconLookupComplete, worker), tracker);
 }
 
