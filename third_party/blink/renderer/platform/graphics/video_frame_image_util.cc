@@ -87,16 +87,16 @@ sk_sp<SkSurface> CreateSoftwareSurface(const CanvasSnapshotInfo& info) {
 
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProvider* snapshot_provider,
+    VideoFrameAcceleratedSnapshotPool* snapshot_pool,
     std::optional<CanvasSnapshotInfo> sw_draw_info,
     media::PaintCanvasVideoRenderer* video_renderer,
     VideoOrientationBehavior orientation_behavior,
     VideoColorSpaceInterpretation color_space_interpretation) {
-  CHECK(sw_draw_info || snapshot_provider);
-  CHECK(!sw_draw_info || !snapshot_provider);
+  CHECK(sw_draw_info || snapshot_pool);
+  CHECK(!sw_draw_info || !snapshot_pool);
 
   auto raster_context_provider = GetRasterContextProvider();
-  bool is_accelerated = snapshot_provider && !snapshot_provider->IsSoftware();
+  bool is_accelerated = snapshot_pool != nullptr;
   if (is_accelerated) {
     orientation_behavior = VideoOrientationBehavior::kHardFlip;
   }
@@ -136,8 +136,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
   media::PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect = gfx::RectF(snapshot_provider ? snapshot_provider->Size()
-                                                  : sw_draw_info->size);
+  params.dest_rect = gfx::RectF(
+      snapshot_pool ? snapshot_pool->provider()->Size() : sw_draw_info->size);
   params.transformation =
       orientation_behavior == VideoOrientationBehavior::kTagOrientation
           ? media::kNoTransformation
@@ -158,8 +158,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
                                   orientation);
   }
 
-  return static_cast<CanvasNon2DResourceProvider*>(snapshot_provider)
-      ->DoExternalOverdrawAndSnapshot(draw_callback, orientation);
+  return snapshot_pool->provider()->DoExternalOverdrawAndSnapshot(draw_callback,
+                                                                  orientation);
 }
 
 }  // namespace
@@ -298,26 +298,14 @@ bool WillCreateAcceleratedImagesFromVideoFrame() {
 
 scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProvider* snapshot_provider,
-    media::PaintCanvasVideoRenderer* video_renderer,
-    VideoOrientationBehavior orientation_behavior,
-    VideoColorSpaceInterpretation color_space_interpretation) {
-  CHECK(snapshot_provider);
-  return CreateImageFromVideoFrame(
-      std::move(frame), snapshot_provider, /*sw_draw_info=*/std::nullopt,
-      video_renderer, orientation_behavior, color_space_interpretation);
-}
-
-scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
-    scoped_refptr<media::VideoFrame> frame,
     VideoFrameAcceleratedSnapshotPool* snapshot_pool,
     media::PaintCanvasVideoRenderer* video_renderer,
     VideoOrientationBehavior orientation_behavior,
     VideoColorSpaceInterpretation color_space_interpretation) {
   CHECK(snapshot_pool);
-  return CreateAcceleratedImageFromVideoFrame(
-      std::move(frame), snapshot_pool->provider(), video_renderer,
-      orientation_behavior, color_space_interpretation);
+  return CreateImageFromVideoFrame(
+      std::move(frame), snapshot_pool, /*sw_draw_info=*/std::nullopt,
+      video_renderer, orientation_behavior, color_space_interpretation);
 }
 
 scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(

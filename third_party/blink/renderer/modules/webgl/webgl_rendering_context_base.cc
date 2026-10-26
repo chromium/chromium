@@ -6816,7 +6816,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       *media_video_frame, dest_rect.size(), color_space_interpretation,
       VideoOrientationBehavior::kHardFlip);
 
-  CanvasNon2DResourceProvider* provider = nullptr;
+  VideoFrameAcceleratedSnapshotPool* pool = nullptr;
   if (can_upload_via_gpu) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -6824,8 +6824,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
           wrapper->ContextProvider().RasterContextProvider();
     }
     if (ShouldCreateAcceleratedImages(raster_context_provider)) {
-      provider = generated_video_cache_.GetCanvasNon2DResourceProvider(info);
-      if (!provider) {
+      pool = generated_video_cache_.GetVideoFrameAcceleratedSnapshotPool(info);
+      if (!pool) {
         return;
       }
     }
@@ -6834,13 +6834,13 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we use VideoOrientationBehavior::kHardFlip.
   scoped_refptr<StaticBitmapImage> image;
-  if (!provider) {
+  if (!pool) {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), info, video_renderer,
         VideoOrientationBehavior::kHardFlip, color_space_interpretation);
   } else {
     image = CreateAcceleratedImageFromVideoFrame(
-        std::move(media_video_frame), provider, video_renderer,
+        std::move(media_video_frame), pool, video_renderer,
         VideoOrientationBehavior::kHardFlip, color_space_interpretation);
   }
 
@@ -9205,48 +9205,48 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   }
 }
 
-WebGLRenderingContextBase::LRUCanvasNon2DResourceProviderCache::
-    LRUCanvasNon2DResourceProviderCache(wtf_size_t capacity)
-    : capacity_(capacity), providers_(capacity) {}
+WebGLRenderingContextBase::LRUVideoFrameAcceleratedSnapshotPoolCache::
+    LRUVideoFrameAcceleratedSnapshotPoolCache(wtf_size_t capacity)
+    : capacity_(capacity), pools_(capacity) {}
 
-CanvasNon2DResourceProvider* WebGLRenderingContextBase::
-    LRUCanvasNon2DResourceProviderCache::GetCanvasNon2DResourceProvider(
-        const CanvasSnapshotInfo& info) {
+WebGLRenderingContextBase::LRUVideoFrameAcceleratedSnapshotPoolCache::
+    ~LRUVideoFrameAcceleratedSnapshotPoolCache() = default;
+
+VideoFrameAcceleratedSnapshotPool*
+WebGLRenderingContextBase::LRUVideoFrameAcceleratedSnapshotPoolCache::
+    GetVideoFrameAcceleratedSnapshotPool(const CanvasSnapshotInfo& info) {
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
-    CanvasNon2DResourceProvider* provider = providers_[i].get();
-    if (!provider) {
+    VideoFrameAcceleratedSnapshotPool* pool = pools_[i].get();
+    if (!pool) {
       break;
     }
-    if (!provider->IsValid() || !info.Matches(provider->GetInfo())) {
+    if (!pool->IsValid() || !info.Matches(pool->GetInfo())) {
       continue;
     }
     BubbleToFront(i);
-    return provider;
+    return pool;
   }
 
-  std::unique_ptr<CanvasNon2DResourceProvider> temp =
-      CanvasNon2DResourceProvider::Create(
-          info.size, info.format, info.alpha_type, info.color_space,
-          info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+  std::unique_ptr<VideoFrameAcceleratedSnapshotPool> temp =
+      VideoFrameAcceleratedSnapshotPool::Create(info);
 
   if (!temp) {
     return nullptr;
   }
 
   i = std::min(capacity_ - 1, i);
-  providers_[i] = std::move(temp);
+  pools_[i] = std::move(temp);
 
-  CanvasNon2DResourceProvider* provider = providers_[i].get();
+  VideoFrameAcceleratedSnapshotPool* pool = pools_[i].get();
   BubbleToFront(i);
-  return provider;
+  return pool;
 }
 
-void WebGLRenderingContextBase::LRUCanvasNon2DResourceProviderCache::
+void WebGLRenderingContextBase::LRUVideoFrameAcceleratedSnapshotPoolCache::
     BubbleToFront(wtf_size_t idx) {
   for (wtf_size_t i = idx; i > 0; --i) {
-    providers_[i].swap(providers_[i - 1]);
+    pools_[i].swap(pools_[i - 1]);
   }
 }
 

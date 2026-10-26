@@ -85,7 +85,7 @@ enum class VideoColorSpaceInterpretation {
 PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 
 // Returns an accelerated StaticBitmapImage for the given frame.
-// `snapshot_provider` should have a size equal to frame->natural_size() and
+// `snapshot_pool` should have a size equal to frame->natural_size() and
 // color space equal to frame->CompatRGBColorSpace().
 //
 // `video_renderer` may optionally be provided in cases where the same frame may
@@ -99,15 +99,6 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 // reinterpreted as being originally having been in sRGB.
 //
 // Returns nullptr if a StaticBitmapImage can't be created.
-PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
-CreateAcceleratedImageFromVideoFrame(
-    scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProvider* snapshot_provider,
-    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-    VideoOrientationBehavior orientation_behavior =
-        VideoOrientationBehavior::kTagOrientation,
-    VideoColorSpaceInterpretation color_space_interpretation =
-        VideoColorSpaceInterpretation::kPreserve);
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
 CreateAcceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,

@@ -94,6 +94,7 @@ class ScriptState;
 class V8PredefinedColorSpace;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
+class VideoFrameAcceleratedSnapshotPool;
 class WebGLActiveInfo;
 class WebGLBuffer;
 class WebGLCompressedTextureASTC;
@@ -903,21 +904,22 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   Vector<GLenum> compressed_texture_formats_;
 
-  // Fixed-size cache of reusable snapshot providers for image and video
+  // Fixed-size cache of reusable snapshot pools for image and video
   // texImage2D calls.
-  class LRUCanvasNon2DResourceProviderCache {
+  class LRUVideoFrameAcceleratedSnapshotPoolCache {
    public:
-    LRUCanvasNon2DResourceProviderCache(wtf_size_t capacity);
+    explicit LRUVideoFrameAcceleratedSnapshotPoolCache(wtf_size_t capacity);
+    ~LRUVideoFrameAcceleratedSnapshotPoolCache();
     // The pointer returned is owned by the image buffer map.
-    CanvasNon2DResourceProvider* GetCanvasNon2DResourceProvider(
+    VideoFrameAcceleratedSnapshotPool* GetVideoFrameAcceleratedSnapshotPool(
         const CanvasSnapshotInfo& info);
 
    private:
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
-    Vector<std::unique_ptr<CanvasNon2DResourceProvider>> providers_;
+    Vector<std::unique_ptr<VideoFrameAcceleratedSnapshotPool>> pools_;
   };
-  LRUCanvasNon2DResourceProviderCache generated_video_cache_{4};
+  LRUVideoFrameAcceleratedSnapshotPoolCache generated_video_cache_{4};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;
