@@ -17,21 +17,18 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/frame/frame_view_ash.h"
-#include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
-#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
-#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
@@ -39,14 +36,9 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_palette_controller.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
-#include "ash/system/model/system_tray_model.h"
-#include "ash/system/power/battery_saver_controller.h"
-#include "ash/system/power/power_status.h"
-#include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
@@ -57,16 +49,11 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_util.h"
-#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
-#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -74,7 +61,6 @@
 #include "chromeos/ui/wm/window_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "extensions/common/constants.h"
-#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -372,12 +358,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     game_dashboard_utils::SetShowWelcomeDialog(false);
     game_dashboard_utils::SetShowToolbar(false);
     GetContext()->AddPostTargetHandler(&post_target_event_capturer_);
-    cros_network_ =
-        std::make_unique<chromeos::network_config::FakeCrosNetworkConfig>();
   }
 
   void TearDown() override {
-    cros_network_.reset();
     GetContext()->RemovePostTargetHandler(&post_target_event_capturer_);
     CloseGameWindow();
     GameDashboardTestBase::TearDown();
@@ -860,34 +843,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void UpdatePowerStatus(double battery_percent,
-                         base::TimeDelta time_to_empty) {
-    power_manager::PowerSupplyProperties props;
-
-    // Determine battery state.
-    auto external_power =
-        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
-    auto battery_state =
-        power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
-
-    // Set battery percentage.
-    props.set_battery_percent(battery_percent);
-
-    // Set battery state.
-    props.set_external_power(external_power);
-    props.set_battery_state(battery_state);
-
-    // Set time.
-    props.set_is_calculating_battery_time(false);
-    props.set_battery_time_to_empty_sec(time_to_empty.InSecondsF());
-
-    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
-  }
-
-  chromeos::network_config::FakeCrosNetworkConfig* cros_network() {
-    return cros_network_.get();
-  }
-
   std::unique_ptr<aura::Window> game_window_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
   int frame_header_height_ = 0;
@@ -895,8 +850,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   EventCapturer post_target_event_capturer_;
 
  private:
-  std::unique_ptr<chromeos::network_config::FakeCrosNetworkConfig>
-      cros_network_;
   gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
 };
 
@@ -1517,144 +1470,6 @@ TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
   RecordGameAndVerifyButtons(
       /*recording_window_test_api=*/&gfn_window_test_api,
       /*other_window_test_api=*/test_api_.get());
-}
-
-// Verifies that the battery view in the Main Menu has desired functionality in
-// terms of visibility, responsiveness and formatting.
-TEST_F(GameDashboardContextTest, MainMenuBatteryView) {
-  // Enable Game Dashboard utilities flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
-
-  // Create an ARC game window.
-  CreateGameWindow(/*is_arc_window=*/true);
-
-  test_api_->OpenTheMainMenu();
-  auto* battery_view = test_api_->GetMainMenuBatteryView();
-
-  // Ensure that the battery view is visible.
-  ASSERT_TRUE(battery_view);
-  ASSERT_TRUE(battery_view->GetVisible());
-
-  // Ensure that the battery view updates accordingly when the theme changes.
-  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
-  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
-  const auto light_theme_image = battery_view->GetImageModel();
-  dark_light_mode_controller->SetDarkModeEnabledForTest(true);
-  const auto dark_theme_image = battery_view->GetImageModel();
-  ASSERT_NE(light_theme_image, dark_theme_image);
-
-  // Ensure that the battery view updates when the power status changes.
-  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
-  UpdatePowerStatus(features::kBatterySaverActivationChargePercent.Get(),
-                    base::Hours(8));
-  EXPECT_TRUE(PowerStatus::Get()->IsBatterySaverActive());
-  ASSERT_NE(dark_theme_image, battery_view->GetImageModel());
-}
-
-// Verifies that the clock view in the Main Menu has desired functionality in
-// terms of visibility, responsiveness and formatting.
-TEST_F(GameDashboardContextTest, MainMenuClockView) {
-  // Enable Game Dashboard utilities flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
-
-  // Create an ARC game window.
-  CreateGameWindow(/*is_arc_window=*/true);
-
-  // Set current time to 08:00.
-  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
-                                   base::Hours(32) - base::Time::Now());
-
-  test_api_->OpenTheMainMenu();
-  auto* clock_view = test_api_->GetMainMenuClockView();
-  // Ensure that the time and "AM/PM" text is visible and that a 12 hour clock
-  // is used by default.
-  ASSERT_TRUE(clock_view);
-  ASSERT_TRUE(clock_view->GetVisible());
-  ASSERT_EQ(clock_view->GetAmPmClockTypeForTesting(),
-            base::AmPmClockType::kKeepAmPm);
-  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
-            base::HourClockType::k12HourClock);
-
-  const auto* horizontal_time_label =
-      clock_view->GetHorizontalTimeLabelForTesting();
-  const std::u16string current_time(horizontal_time_label->GetText());
-  // Verify that the "AM/PM" text is visible.
-  ASSERT_NE(current_time.ends_with(u"AM"), current_time.ends_with(u"PM"));
-  // Ensure that the clock increments as the time changes.
-  AdvanceClock(base::Hours(12));
-  const std::u16string_view next_time = horizontal_time_label->GetText();
-  const std::u16string next_am_pm =
-      current_time.ends_with(u"AM") ? u"PM" : u"AM";
-  ASSERT_NE(current_time, next_time);
-  // Verify that the "AM/PM" text changes after advancing 12 hours.
-  ASSERT_TRUE(next_time.ends_with(next_am_pm));
-
-  // Change the clock to a 24 hour view.
-  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
-  // Verify that the clock is still visible.
-  ASSERT_TRUE(clock_view->GetVisible());
-  // Verify that the clock view is 24 hours.
-  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
-            base::HourClockType::k24HourClock);
-  const auto hour_24_current_time = horizontal_time_label->GetText();
-  // Verify that the "AM/PM" text is not visible.
-  ASSERT_FALSE(hour_24_current_time.ends_with(u"AM") ||
-               hour_24_current_time.ends_with(u"PM"));
-
-  // Revert to the default 12 hour view.
-  Shell::Get()->system_tray_model()->SetUse24HourClock(false);
-  // Verify that the clock is still visible.
-  ASSERT_TRUE(clock_view->GetVisible());
-  // Verify that the clock view is 12 hours.
-  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
-            base::HourClockType::k12HourClock);
-  const auto reverted_current_time = horizontal_time_label->GetText();
-  // Verify that the "AM/PM" text is visible.
-  ASSERT_NE(reverted_current_time.ends_with(u"AM"),
-            reverted_current_time.ends_with(u"PM"));
-}
-
-TEST_F(GameDashboardContextTest, MainMenuNetworkView) {
-  // Enable Game Dashboard utilities flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
-
-  auto network = network_config::CrosNetworkConfigTestHelper::
-      CreateStandaloneNetworkProperties(
-          "wifi", chromeos::network_config::mojom::NetworkType::kWiFi,
-          chromeos::network_config::mojom::ConnectionStateType::kNotConnected);
-
-  cros_network()->AddNetworkAndDevice(mojo::Clone(network));
-
-  // Create an ARC game window.
-  CreateGameWindow(/*is_arc_window=*/true);
-
-  test_api_->OpenTheMainMenu();
-  auto* network_view = test_api_->GetMainMenuNetworkView();
-  ASSERT_TRUE(network_view);
-
-  // Ensure that the network view updates during an animation.
-  auto network_icon = gfx::Image(network_view->GetImage());
-  network_view->NetworkIconChanged();
-  EXPECT_NE(network_icon, gfx::Image(network_view->GetImage()));
-
-  // Ensure that the network view updates when the active network state changes.
-  network_icon = gfx::Image(network_view->GetImage());
-  network_view->ActiveNetworkStateChanged();
-  EXPECT_NE(network_icon, gfx::Image(network_view->GetImage()));
-
-  // Ensure that the network view updates when the connection type changes.
-  network_icon = gfx::Image(network_view->GetImage());
-  cros_network()->ClearNetworksAndDevices();
-  network = network_config::CrosNetworkConfigTestHelper::
-      CreateStandaloneNetworkProperties(
-          "ethernet", chromeos::network_config::mojom::NetworkType::kEthernet,
-          chromeos::network_config::mojom::ConnectionStateType::kOnline);
-  cros_network()->AddNetworkAndDevice(mojo::Clone(network));
-  EXPECT_NE(network_icon,
-            gfx::Image(test_api_->GetMainMenuNetworkView()->GetImage()));
 }
 
 TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {

@@ -5486,15 +5486,6 @@
     "expiry_milestone": 158
   },
   {
-    "name": "game-dashboard-utilities",
-    "owners": [
-      "khayak@google.com",
-      "phshah@chromium.org",
-      "arc-gaming@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "gamepad-raw-input-change-event",
     "owners": ["gabrielbrito@microsoft.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 152

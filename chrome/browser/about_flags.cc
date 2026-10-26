@@ -8509,10 +8509,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kEnableWebGPUDeveloperFeatures)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"game-dashboard-utilities", flag_descriptions::kGameDashboardUtilities,
-     flag_descriptions::kGameDashboardUtilitiesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kGameDashboardUtilities)},
-
     {"gesture-properties-dbus-service",
      flag_descriptions::kEnableGesturePropertiesDBusServiceName,
      flag_descriptions::kEnableGesturePropertiesDBusServiceDescription, kOsCrOS,

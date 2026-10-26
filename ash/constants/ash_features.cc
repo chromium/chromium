@@ -737,9 +737,6 @@ BASE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks,
 // Enables logging new Gaia account creation event.
 BASE_FEATURE(kGaiaRecordAccountCreation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Game Dashboard Main Menu utility views.
-BASE_FEATURE(kGameDashboardUtilities, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Game Dashboard's Record Game feature. This flag is to be enabled
 // by the feature management module.
 BASE_FEATURE(kFeatureManagementGameDashboardRecordGame,
@@ -2408,10 +2405,6 @@ bool IsLobsterEnabledForManagedUsers() {
   return base::FeatureList::IsEnabled(kLobsterForManagedUsers);
 }
 
-bool AreGameDashboardUtilitiesEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboardUtilities);
-}
-
 bool IsProductivityLauncherImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
 }
@@ -2419,7 +2412,6 @@ bool IsProductivityLauncherImageSearchEnabled() {
 bool IsMacAddressRandomizationEnabled() {
   return base::FeatureList::IsEnabled(kMacAddressRandomization);
 }
-
 
 bool IsEcheShorterScanningDutyCycleEnabled() {
   return base::FeatureList::IsEnabled(kEcheShorterScanningDutyCycle);

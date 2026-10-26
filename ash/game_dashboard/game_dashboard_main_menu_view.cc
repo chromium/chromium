@@ -10,11 +10,9 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
-#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
@@ -33,13 +31,9 @@
 #include "ash/style/style_util.h"
 #include "ash/style/switch.h"
 #include "ash/style/typography.h"
-#include "ash/system/model/system_tray_model.h"
-#include "ash/system/power/power_status.h"
-#include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -118,10 +112,6 @@ constexpr gfx::Insets kCompactTileIconPadding = gfx::Insets::TLBR(12, 8, 4, 8);
 constexpr gfx::Insets kPrimaryTileIconPadding = gfx::Insets::TLBR(8, 20, 8, 8);
 // Primary Feature Tile Label Padding.
 constexpr gfx::Insets kPrimaryTileLabelPadding = gfx::Insets::TLBR(0, 0, 0, 15);
-// Clock View Padding.
-constexpr gfx::Insets kClockViewPadding = gfx::Insets::VH(10, 0);
-// Network View Padding.
-constexpr gfx::Insets kNetworkViewPadding = gfx::Insets::TLBR(10, 6, 10, 0);
 
 // Row corners used for the top row of a multi-feature row collection.
 constexpr gfx::RoundedCornersF kTopMultiRowCorners =
@@ -1202,25 +1192,6 @@ void GameDashboardMainMenuView::AddScreenSizeSettingsRow(
       /*resize_lock_type=*/game_window->GetProperty(kArcResizeLockTypeKey)));
 }
 
-void GameDashboardMainMenuView::AddUtilityFeatureViews(views::View* container) {
-  // Add clock view.
-  clock_view_ = container->AddChildView(std::make_unique<TimeView>(
-      TimeView::ClockLayout::HORIZONTAL_CLOCK,
-      Shell::Get()->system_tray_model()->clock(), TimeView::kTime));
-  clock_view_->SetAmPmClockType(base::AmPmClockType::kKeepAmPm);
-  clock_view_->SetProperty(views::kMarginsKey, kClockViewPadding);
-
-  network_view_ =
-      container->AddChildView(std::make_unique<GameDashboardNetworkView>());
-  network_view_->SetProperty(views::kMarginsKey, kNetworkViewPadding);
-
-  // Add battery view.
-  battery_view_ =
-      container->AddChildView(std::make_unique<GameDashboardBatteryView>());
-  battery_view_->SetProperty(views::kMarginsKey, gfx::Insets::VH(10, 0));
-  battery_view_->SetTooltipText(PowerStatus::Get()->GetInlinedStatusString());
-}
-
 void GameDashboardMainMenuView::AddUtilityClusterRow() {
   DCHECK(main_menu_container_);
   auto* container =
@@ -1229,11 +1200,6 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
       views::BoxLayout::Orientation::kHorizontal,
       /*inside_border_insets=*/gfx::Insets(),
       /*between_child_spacing=*/16));
-
-  // The clock and battery icons increase the height of the utility cluster row.
-  // Centering the elements inside the row prevents them from stretching or
-  // sticking to the boundaries of the row as its size changes.
-  layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
   auto* feedback_button =
       container->AddChildView(std::make_unique<ash::PillButton>(
@@ -1248,11 +1214,6 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
   // should be right aligned. So add an empty view to fill the empty space.
   auto* empty_view = container->AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(empty_view, /*flex=*/1);
-
-  if (features::AreGameDashboardUtilitiesEnabled()) {
-    AddUtilityFeatureViews(
-        container->AddChildView(std::make_unique<views::BoxLayoutView>()));
-  }
 
   auto* help_button = container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnHelpButtonPressed,

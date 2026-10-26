@@ -20,13 +20,10 @@ class BoxLayoutView;
 namespace ash {
 
 class AnchoredNudge;
-class GameDashboardBatteryView;
 class GameDashboardContext;
-class GameDashboardNetworkView;
 class IconButton;
 class PillButton;
 class Switch;
-class TimeView;
 
 // GameDashboardMainMenuView is the expanded menu view attached to the game
 // dashboard button.
@@ -126,9 +123,6 @@ class ASH_EXPORT GameDashboardMainMenuView
   // buttons) to the `main_menu_container_`.
   void AddUtilityClusterRow();
 
-  // Adds utility features to the utility `container` in the Main Menu.
-  void AddUtilityFeatureViews(views::View* container);
-
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
@@ -192,15 +186,6 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Back button in the `settings_view_container_`. Visible for testing.
   raw_ptr<IconButton> settings_view_back_button_ = nullptr;
-
-  // The clock displayed in the utility cluster row. Visible for testing.
-  raw_ptr<TimeView> clock_view_ = nullptr;
-
-  // The battery displayed in the utility cluster row. Visible for testing.
-  raw_ptr<GameDashboardBatteryView> battery_view_ = nullptr;
-
-  // The network icon displayed in the utility cluster row. Visible for testing.
-  raw_ptr<GameDashboardNetworkView> network_view_ = nullptr;
 };
 
 }  // namespace ash

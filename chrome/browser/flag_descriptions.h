@@ -7928,10 +7928,6 @@ inline constexpr char kFocusFollowsCursorName[] = "Focus follows cursor";
 inline constexpr char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";
 
-inline constexpr char kGameDashboardUtilities[] = "Game Dashboard Utilities";
-inline constexpr char kGameDashboardUtilitiesDescription[] =
-    "Enables utility features in the Game Dashboard.";
-
 inline constexpr char kGlanceablesTimeManagementClassroomStudentViewName[] =
     "Glanceables > Time Management > Classroom Student";
 inline constexpr char
