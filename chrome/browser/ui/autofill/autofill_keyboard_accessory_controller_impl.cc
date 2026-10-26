@@ -1118,11 +1118,7 @@ void AutofillKeyboardAccessoryControllerImpl::
     std::rotate(suggestions_.begin(), it, it + 1);
   }
 
-  labels_.clear();
-  labels_.reserve(suggestions_.size());
-  for (const Suggestion& suggestion : suggestions_) {
-    labels_.push_back(CreateLabel(suggestion));
-  }
+  labels_ = base::ToVector(suggestions_, &CreateLabel);
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
