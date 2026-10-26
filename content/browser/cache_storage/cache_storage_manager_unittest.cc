@@ -1758,6 +1758,49 @@ TEST_F(CacheStorageManagerTest, CachePaddingUnderflowRecalculatedAfterReopen) {
   EXPECT_EQ(kOpaqueResponsePadding, index.cache(0).padding());
 }
 
+// Check that an index entry missing `cache_dir` is treated as invalid so
+// `CacheStorage` starts fresh rather than migrating a legacy directory name.
+TEST_F(CacheStorageManagerTest, IndexMissingCacheDirStartsFresh) {
+  const std::u16string kCacheName = u"foo";
+  const GURL kFooURL = storage_key1_.origin().GetURL().Resolve("foo");
+
+  ASSERT_TRUE(Open(bucket_locator1_, kCacheName));
+  ASSERT_TRUE(CachePut(callback_cache_handle_.value(), kFooURL));
+  const base::FilePath cache_path =
+      CacheStorageCache::From(callback_cache_handle_)->path();
+  const base::FilePath storage_dir = cache_path.DirName();
+  const base::FilePath index_path =
+      storage_dir.AppendASCII(CacheStorage::kIndexFileName);
+  ASSERT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+  DestroyStorageManager();
+  disk_cache::FlushCacheThreadForTesting();
+
+  // Move the cache directory to the legacy SHA-1 hex path for "foo" and clear
+  // `cache_dir` from the index entry.
+  const base::FilePath legacy_cache_path =
+      storage_dir.AppendASCII("0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33");
+  ASSERT_TRUE(base::Move(cache_path, legacy_cache_path));
+
+  std::string serialized_index;
+  proto::CacheStorageIndex index;
+  ASSERT_TRUE(base::ReadFileToString(index_path, &serialized_index));
+  ASSERT_TRUE(index.ParseFromString(serialized_index));
+  ASSERT_EQ(1, index.cache_size());
+  ASSERT_TRUE(index.cache(0).has_cache_dir());
+  index.mutable_cache(0)->clear_cache_dir();
+  ASSERT_TRUE(index.SerializeToString(&serialized_index));
+  ASSERT_TRUE(base::WriteFile(index_path, serialized_index));
+
+  // Reopen the manager and verify `CacheStorage` starts fresh and cleans up the
+  // unreferenced legacy directory.
+  CreateStorageManager();
+  EXPECT_EQ(0u, Keys(bucket_locator1_));
+  EXPECT_FALSE(Has(bucket_locator1_, kCacheName));
+  disk_cache::FlushCacheThreadForTesting();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !base::PathExists(legacy_cache_path); }));
+}
+
 TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {
   const std::u16string kCacheName = u"foo";
 

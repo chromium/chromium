@@ -22,14 +22,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
-#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,15 +61,6 @@
 using blink::mojom::CacheStorageError;
 
 namespace content {
-
-namespace {
-
-std::string HexedHash(const std::string& value) {
-  std::string value_hash = base::SHA1HashString(value);
-  return base::HexEncodeLower(value_hash);
-}
-
-}  // namespace
 
 const char CacheStorage::kIndexFileName[] = "index.txt";
 constexpr char16_t kReplacementCharacter = 0xFFFD;
@@ -533,7 +522,6 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
   }
 
  private:
-  friend class MigratedLegacyCacheDirectoryNameTest;
   ~SimpleCacheLoader() override = default;
 
   // Iterates over the caches and deletes any directory not found in
@@ -577,50 +565,28 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
       index_last_modified = file_info.last_modified;
     bool index_modified = false;
 
-    // Look for caches that have no cache_dir. Give any such caches a directory
-    // with a random name and move them there. Then, rewrite the index file.
-    // Additionally invalidate the size of any index entries where the cache was
-    // modified after the index (making it out-of-date). We'll assume that any
-    // unmigrated index files predate the buckets integration and leave them in
-    // the directory for first-party Cache Storage instances in the default
-    // bucket.
+    // Invalidate the size of any index entries where the cache was modified
+    // after the index (making it out-of-date). We'll assume that any unmigrated
+    // index files predate the buckets integration and leave them in the
+    // directory for first-party Cache Storage instances in the default bucket.
 
     for (int i = 0, max = index.cache_size(); i < max; ++i) {
       const proto::CacheStorageIndex::Cache& cache = index.cache(i);
-      if (cache.has_cache_dir()) {
-        if (cache.has_size()) {
-          base::FilePath cache_dir =
-              directory_path.AppendASCII(cache.cache_dir());
-          if (!GetFileInfo(cache_dir, &file_info) ||
-              index_last_modified <= file_info.last_modified) {
-            // Index is older than this cache, so invalidate index entries that
-            // may change as a result of cache operations.
-            index.mutable_cache(i)->clear_size();
-          }
+      if (!cache.has_cache_dir()) {
+        // If `cache_dir` is missing, the index is in a bad state. Return an
+        // empty index so that the `CacheStorage` can start fresh. The
+        // unreferenced caches will be discarded later in initialization.
+        return proto::CacheStorageIndex();
+      }
+      if (cache.has_size()) {
+        base::FilePath cache_dir =
+            directory_path.AppendASCII(cache.cache_dir());
+        if (!GetFileInfo(cache_dir, &file_info) ||
+            index_last_modified <= file_info.last_modified) {
+          // Index is older than this cache, so invalidate index entries that
+          // may change as a result of cache operations.
+          index.mutable_cache(i)->clear_size();
         }
-      } else {
-        // Find a new home for the caches that don't have a directory (legacy
-        // caches) since they predate the change where u16string `cache_names`
-        // were added.
-        base::FilePath legacy_cache_path =
-            directory_path.AppendASCII(HexedHash(cache.name()));
-        std::string cache_dir;
-        base::FilePath cache_path;
-        do {
-          cache_dir = base::Uuid::GenerateRandomV4().AsLowercaseString();
-          cache_path = directory_path.AppendASCII(cache_dir);
-        } while (base::PathExists(cache_path));
-
-        if (!base::Move(legacy_cache_path, cache_path)) {
-          // If the move fails then the cache is in a bad state. Return an empty
-          // index so that the CacheStorage can start fresh. The unreferenced
-          // caches will be discarded later in initialization.
-          return proto::CacheStorageIndex();
-        }
-
-        index.mutable_cache(i)->set_cache_dir(cache_dir);
-        index.mutable_cache(i)->clear_size();
-        index_modified = true;
       }
     }
 
