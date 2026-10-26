@@ -576,6 +576,17 @@ class ContextualSearchSessionHandle {
       const GURL& current_url,
       const std::string& current_title);
 
+  // Removes attached, uploaded, submitted, or restored context for
+  // `tab_session_id` when the tab is closed (`current_url` is `std::nullopt`)
+  // or navigates to a non-equivalent URL (`current_url` is present). Submitted
+  // tabs are retained in `displaced_submitted_tabs_` so `TakeRemovedContexts()`
+  // reports their `request_id` on the next query submission. Returns the
+  // context tokens that were removed, if any.
+  std::vector<base::UnguessableToken> OnTabClosedOrNavigated(
+      SessionID tab_session_id,
+      std::optional<GURL> current_url,
+      std::optional<std::string> current_title);
+
  private:
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
