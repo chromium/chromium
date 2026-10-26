@@ -68,11 +68,6 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
-    public void testIsNewTabSearchEngineUrlAndroidEnabled() {
-        assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
-    }
-
-    @Test
     public void testGetDseNewTabUrl() {
         String newTabUrl = DseNewTabUrlManager.getDseNewTabUrl(null);
         assertNull(newTabUrl);

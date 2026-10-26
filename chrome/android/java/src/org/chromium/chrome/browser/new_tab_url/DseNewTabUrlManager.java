@@ -22,9 +22,9 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 
 /**
- * A central class for feature NewTabSearchEngineUrlAndroid which swaps out NTP if the default
- * search engine isn't Google. It holds a reference of {@link TemplateUrlService} and observes the
- * DSE changes to update the cached values in the SharedPreference.
+ * A central class which swaps out NTP if the default search engine isn't Google. It holds a
+ * reference of {@link TemplateUrlService} and observes the DSE changes to update the cached values
+ * in the SharedPreference.
  */
 @NullMarked
 public class DseNewTabUrlManager {
@@ -51,11 +51,6 @@ public class DseNewTabUrlManager {
             mTemplateUrlServiceObserver = null;
             mTemplateUrlService = null;
         }
-    }
-
-    /** Returns whether the feature NewTabSearchEngineUrlAndroid is enabled. */
-    public static boolean isNewTabSearchEngineUrlAndroidEnabled() {
-        return true;
     }
 
     /**
