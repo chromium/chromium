@@ -50,9 +50,11 @@ class SurfaceEmbedBackgroundTabCaptureInteractiveUiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 // TODO(crbug.com/451876195): Enable this test for CrOS once WebUIBrowser
 // window management is fixed on CrOS.
+// TODO(crbug.com/577758485): Flaky timeout starting video source on sanitizers.
 #define MAYBE_KeepAliveWorksForCapturedBackgroundTab \
   DISABLED_KeepAliveWorksForCapturedBackgroundTab
 #else
