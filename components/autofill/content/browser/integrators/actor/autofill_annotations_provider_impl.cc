@@ -89,13 +89,9 @@ uint32_t SectionMapping::GetOrCreateSectionIdentifier(
   const std::string section_id = FormGlobalIdToString(form_id) + section;
 
   // Find the current section or create a new one.
-  auto iter = autofill_section_numbers_.find(section_id);
-  if (iter == autofill_section_numbers_.end()) {
-    iter = autofill_section_numbers_
-               .emplace(section_id, autofill_section_numbers_.size())
-               .first;
-  }
-  return iter->second;
+  return autofill_section_numbers_
+      .try_emplace(section_id, autofill_section_numbers_.size())
+      .first->second;
 }
 
 const FormStructure* GetAutofillForm(
