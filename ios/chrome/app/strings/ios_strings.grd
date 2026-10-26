@@ -5780,10 +5780,10 @@ Handoff must also be enabled in the General section of Settings, and your device
         The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale and sharing of your data or its use for personalized ads. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_IPAD" desc="Error message displayed in the Universal Opt-Out settings screen when the web extension fails to load on iPad. [iOS only]">
-        Something went wrong with this setting. Update and restart Chrome and iPadOS, and try again. If this error keeps happening, your iPad might not support this setting.
+        Something went wrong with this setting. Update Chrome and iPadOS, then restart your device to try again. If this keeps happening, your iPad might not support this setting.
       </message>
       <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_IPHONE" desc="Error message displayed in the Universal Opt-Out settings screen when the web extension fails to load on iPhone. [iOS only]">
-        Something went wrong with this setting. Update and restart Chrome and iOS, and try again. If this error keeps happening, your iPhone might not support this setting.
+        Something went wrong with this setting. Update Chrome and iOS, then restart your device to try again. If this keeps happening, your iPhone might not support this setting.
       </message>
       <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_LEARN_MORE" desc="Button label allowing the user to learn more about the Universal Opt-Out error. [iOS only]">
         Learn more
@@ -9478,10 +9478,10 @@ Handoff must also be enabled in the General section of Settings, and your device
           Unit type selector
       </message>
       <message name="IDS_IOS_UNIVERSAL_OPT_OUT_SNACKBAR_ACTION" desc="Button text on the snackbar allowing the user to manage their data use setting. [iOS only]">
-        Manage
+        Review
       </message>
       <message name="IDS_IOS_UNIVERSAL_OPT_OUT_SNACKBAR_MESSAGE" desc="Text displayed in a snackbar when loading the data use setting extension fails. [iOS only]">
-        Data use setting encountered an error.
+        Something went wrong with your data opt-out request
       </message>
       <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE" desc="This string is on a sign-in page, shown several weeks after the user has installed Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Get your bookmarks, passwords, and more on all your devices.
