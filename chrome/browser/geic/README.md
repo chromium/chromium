@@ -14,4 +14,5 @@ for the active Glic-based GEiC module, Mojo handlers
 - **`OWNERS`**: Shared ownership definition referenced by
   `//chrome/browser/glic/gemini_enterprise/OWNERS` and
   `//chrome/browser/resources/settings/geic_page/OWNERS`.
-- **`DIR_METADATA`**: Buganizer component metadata for GEiC.
+- **`COMMON_METADATA` / `DIR_METADATA`**: Shared Buganizer component and
+  agentic code review metadata referenced across GEiC directories.

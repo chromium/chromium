@@ -7,3 +7,29 @@ buganizer {
     component_id: 1227364
 }
 team_email: "chromium-enterprise@chromium.org"
+agentic_review {
+  capability_groups {
+    path_expression: ".*"
+    review_capability_skills: "agents/skills/multi-agent-code-review/SKILL.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm|m|java)"
+    rules: "components/enterprise/knowledge_base/fail-closed-and-check-preconditions-uniformly.md"
+    rules: "components/enterprise/knowledge_base/avoid-duplicate-policy-handler-errors.md"
+    rules: "components/enterprise/knowledge_base/respect-keyed-service-shutdown.md"
+    rules: "components/enterprise/knowledge_base/gate-new-enterprise-features.md"
+    rules: "components/enterprise/knowledge_base/keep-cross-platform-delegates-pure-virtual.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*policy[^/]*\\.(?:h|cc)|components/policy/resources/templates/.*"
+    review_capability_skills: "agents/skills/policy-creation/SKILL.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*(?:gemini_enterprise|GeminiEnterprise)[^/]*\\.(?:h|cc|yaml|json)"
+    rules: "chrome/browser/glic/gemini_enterprise/knowledge_base/enforce-https-and-origin-allowlist-for-urls.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?knowledge_base/.*\\.md|(?:.*/)?(?:DIR|COMMON)_METADATA"
+    rules: "components/enterprise/knowledge_base/keep-knowledge-base-rules-atomic-and-scoped.md"
+  }
+}

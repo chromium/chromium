@@ -3,3 +3,9 @@ buganizer: {
 }
 os: CHROME_OS
 team_email: "cros-reporting-team@google.com"
+agentic_review: {
+  capability_groups: {
+    path_expression: ".*"
+    review_capability_skills: "agents/skills/multi-agent-code-review/SKILL.md"
+  }
+}

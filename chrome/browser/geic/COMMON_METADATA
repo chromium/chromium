@@ -1,0 +1,24 @@
+buganizer: {
+  component_id: 1734782
+}
+team_email: "cbe-productivity@google.com"
+agentic_review: {
+  capability_groups: {
+    path_expression: ".*"
+    review_capability_skills: "agents/skills/multi-agent-code-review/SKILL.md"
+  }
+  capability_groups: {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm|mojom|ts)"
+    rules: "chrome/browser/glic/gemini_enterprise/knowledge_base/enforce-https-and-origin-allowlist-for-urls.md"
+    rules: "chrome/browser/glic/gemini_enterprise/knowledge_base/verify-tab-ownership-and-focus-before-reuse-or-close.md"
+    rules: "chrome/browser/glic/gemini_enterprise/knowledge_base/keep-mojom-enums-and-geic-histograms-synced.md"
+  }
+  capability_groups: {
+    path_expression: "(?:.*/)?[^/]*policy[^/]*\\.(?:h|cc)|components/policy/resources/templates/.*"
+    review_capability_skills: "agents/skills/policy-creation/SKILL.md"
+  }
+  capability_groups: {
+    path_expression: "(?:.*/)?knowledge_base/.*\\.md|(?:.*/)?(?:DIR|COMMON)_METADATA"
+    rules: "components/enterprise/knowledge_base/keep-knowledge-base-rules-atomic-and-scoped.md"
+  }
+}
