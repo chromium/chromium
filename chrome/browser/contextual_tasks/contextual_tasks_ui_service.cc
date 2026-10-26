@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -2929,8 +2930,16 @@ void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
         "NavigatedFromSidePanelToFullTab",
         true);
 
-    content::WebContents* side_panel_contents =
-        controller->GetActiveWebContents();
+    // `MoveTaskUiToNewTab()` may synchronously destroy the side panel
+    // `WebContents` (e.g. when the panel is not showing an AI page, the page is
+    // opened in a new tab and the panel is closed, which frees the cached
+    // `WebContents`). Hold a `base::WeakPtr` so that it is not used after being
+    // freed.
+    base::WeakPtr<content::WebContents> side_panel_contents;
+    if (content::WebContents* active_contents =
+            controller->GetActiveWebContents()) {
+      side_panel_contents = active_contents->GetWeakPtr();
+    }
     controller->MoveTaskUiToNewTab();
     auto* tab_strip_model = browser->GetTabStripModel();
     if (tab_strip_model) {

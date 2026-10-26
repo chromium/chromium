@@ -71,6 +71,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -4436,6 +4437,87 @@ TEST_F(ContextualTasksUiServiceTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.BackButton.UserAction.NavigatedFromSidePanelToFullTab",
       true, 1);
+}
+
+// Regression test for crbug.com/576958456: `MoveTaskUiToNewTab()` may destroy
+// the side panel `WebContents` synchronously (e.g. when the panel is showing a
+// non-AI page). The back button handler must not use it afterwards.
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_BackButtonExpandsSidePanel_SidePanelContentsDestroyed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksBackButtonExpandsSidePanel);
+
+  tabs::TabModel::PreventFeatureInitializationForTesting prevent_feature_init;
+
+  NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ON_CALL(testing::Const(mock_browser_window), GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  auto tab_list_registration =
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+          unowned_user_data_host, mock_tab_list);
+
+  TestTabStripModelDelegate delegate;
+  delegate.SetBrowserWindowInterface(&mock_browser_window);
+  TabStripModel tab_strip_model(&delegate, profile_.get());
+  ON_CALL(mock_browser_window, GetTabStripModel())
+      .WillByDefault(Return(&tab_strip_model));
+
+  std::unique_ptr<content::WebContents> side_panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(side_panel_contents.get())
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+
+  NiceMock<MockContextualTasksPanelController> mock_controller(
+      &mock_browser_window);
+  ON_CALL(mock_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  ON_CALL(mock_controller, GetActiveWebContents())
+      .WillByDefault(
+          [&side_panel_contents]() { return side_panel_contents.get(); });
+  // Simulate the non-AI branch of `MoveTaskUiToNewTab()`, which closes the
+  // panel and frees the cached side panel `WebContents`.
+  EXPECT_CALL(mock_controller, MoveTaskUiToNewTab())
+      .WillOnce([&side_panel_contents]() { side_panel_contents.reset(); });
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("https://example.com"));
+  tab_strip_model.AppendWebContents(std::move(web_contents), true);
+  ASSERT_EQ(tab_strip_model.count(), 1);
+  tabs::TabInterface* tab = tab_strip_model.GetTabAtIndex(0);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(
+          GURL("chrome://contextual-tasks"), false,
+          ui::PageTransitionFromInt(
+              ui::PageTransition::PAGE_TRANSITION_LINK |
+              ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
+      tab->GetContents(), tab,
+      /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The side panel `WebContents` was destroyed, and the original tab is still
+  // closed as part of expanding the side panel.
+  EXPECT_FALSE(side_panel_contents);
+  EXPECT_EQ(tab_strip_model.count(), 0);
 }
 #endif
 
