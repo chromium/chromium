@@ -28,13 +28,12 @@ bool GeminiAllowedByEnterprise(PrefService* prefs);
 
 // Functions that interact with the Gemini consent.
 void ResetGeminiConsent(PrefService* prefs);
-// TODO(crbug.com/568034294): Other clients should avoid using this method until
-// the first run state logic is fixed.
-FirstRunState CurrentFirstRunState(PrefService* prefs);
+// Returns the current `FirstRunState` for Gemini based on user prefs.
+FirstRunState CurrentFirstRunState(const PrefService* prefs);
 bool DidUserConsentToGemini(const PrefService* prefs);
-bool DidUserConsentToGeminiLive(PrefService* prefs);
-bool DidUserSeeGeminiPromo(PrefService* prefs);
-bool DidGeminiLiveIntroPlay(PrefService* prefs);
+bool DidUserConsentToGeminiLive(const PrefService* prefs);
+bool DidUserSeeGeminiPromo(const PrefService* prefs);
+bool DidGeminiLiveIntroPlay(const PrefService* prefs);
 void SetGeminiLiveIntroPlayed(PrefService* prefs);
 void UpdateUserConsentPrefs(bool consent, PrefService* prefs);
 

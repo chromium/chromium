@@ -65,12 +65,14 @@ void ResetGeminiConsent(PrefService* prefs) {
   UpdateUserConsentPrefs(false, prefs);
 }
 
-FirstRunState CurrentFirstRunState(PrefService* prefs) {
-  if (DidUserSeeGeminiPromo(prefs)) {
-    return DidUserConsentToGemini(prefs) ? FirstRunState::kCompleted
-                                         : FirstRunState::kStarted;
+FirstRunState CurrentFirstRunState(const PrefService* prefs) {
+  // Check consent first as converged FRE flows skip the separate promo step.
+  if (DidUserConsentToGemini(prefs)) {
+    return FirstRunState::kCompleted;
   }
-
+  if (DidUserSeeGeminiPromo(prefs)) {
+    return FirstRunState::kStarted;
+  }
   return FirstRunState::kPending;
 }
 
@@ -78,15 +80,15 @@ bool DidUserConsentToGemini(const PrefService* prefs) {
   return prefs->GetBoolean(::prefs::kIOSBwgConsent);
 }
 
-bool DidUserConsentToGeminiLive(PrefService* prefs) {
+bool DidUserConsentToGeminiLive(const PrefService* prefs) {
   return prefs->GetBoolean(::prefs::kIOSGeminiLiveConsent);
 }
 
-bool DidUserSeeGeminiPromo(PrefService* prefs) {
+bool DidUserSeeGeminiPromo(const PrefService* prefs) {
   return prefs->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
 }
 
-bool DidGeminiLiveIntroPlay(PrefService* prefs) {
+bool DidGeminiLiveIntroPlay(const PrefService* prefs) {
   return prefs->GetBoolean(::prefs::kIOSGeminiLiveIntroPlayed);
 }
 
@@ -94,12 +96,12 @@ void SetGeminiLiveIntroPlayed(PrefService* prefs) {
   prefs->SetBoolean(::prefs::kIOSGeminiLiveIntroPlayed, true);
 }
 
-void UpdateUserConsentPrefs(bool value, PrefService* prefs) {
-  prefs->SetBoolean(::prefs::kIOSBwgConsent, value);
+void UpdateUserConsentPrefs(bool consent, PrefService* prefs) {
+  prefs->SetBoolean(::prefs::kIOSBwgConsent, consent);
 }
 
-void UpdateUserConsentToLivePrefs(bool value, PrefService* prefs) {
-  prefs->SetBoolean(::prefs::kIOSGeminiLiveConsent, value);
+void UpdateUserConsentToLivePrefs(bool consent, PrefService* prefs) {
+  prefs->SetBoolean(::prefs::kIOSGeminiLiveConsent, consent);
 }
 
 void CreateOrUpdateConversationIdPrefs(const std::string& conversation_id,

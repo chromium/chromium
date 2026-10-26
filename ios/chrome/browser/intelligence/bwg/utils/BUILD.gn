@@ -116,6 +116,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":availability",
+    ":constants",
     ":feature_availability",
     ":prefs",
     ":test_support",
