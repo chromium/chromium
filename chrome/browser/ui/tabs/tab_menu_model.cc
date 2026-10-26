@@ -319,6 +319,13 @@ void TabMenuModel::Build(int index) {
   }
 
   int num_tabs = indices.size();
+  const std::vector<tabs::TabInterface*> tabs =
+      tab_strip_->GetTabsAtIndices(indices);
+  std::vector<tabs::TabHandle> tab_handles;
+  tab_handles.reserve(tabs.size());
+  for (tabs::TabInterface* tab : tabs) {
+    tab_handles.push_back(tab->GetHandle());
+  }
 
   auto* controller = tabs::VerticalTabStripStateController::From(
       tab_strip_->delegate()->GetBrowserWindowInterface());
@@ -408,7 +415,7 @@ void TabMenuModel::Build(int index) {
       std::ranges::none_of(
           indices, [&](int idx) { return tab_strip_->IsTabPinned(idx); })) {
     if (std::optional<tab_groups::TabGroupId> group =
-            tab_strip_->GetCommonGroupForIndices(indices)) {
+            tab_strip_->GetCommonGroupForTabs(tab_handles)) {
       const bool is_focused = tab_strip_->GetFocusedGroup() == group;
       if (tab_strip_->IsEphemeralTabGroup(*group)) {
         const size_t group_tab_count =
@@ -430,7 +437,7 @@ void TabMenuModel::Build(int index) {
         }
       }
     } else if (base::FeatureList::IsEnabled(features::kNonGroupFocus) &&
-               tab_strip_->AreAllUngrouped(indices)) {
+               tab_strip_->AreAllUngrouped(tab_handles)) {
       AddItem(TabStripModel::CommandToggleFocusGroup,
               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_FOCUS_TABS,
                                                num_tabs));

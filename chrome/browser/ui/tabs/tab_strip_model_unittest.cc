@@ -4261,6 +4261,103 @@ TEST_F(TabStripModelTest, HasTabsClosedByCommand) {
       tabs::TabHandle::Null(), TabStripModel::CommandCloseOtherTabs));
 }
 
+TEST_F(TabStripModelTest, GetCommonGroupForTabs) {
+  // Empty vector returns nullopt.
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({}), std::nullopt);
+
+  // Vector with null handle returns nullopt without crashing.
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tabs::TabHandle::Null()}),
+            std::nullopt);
+
+  // Append four tabs.
+  for (int i = 0; i < 4; ++i) {
+    tabstrip()->AppendWebContents(CreateWebContents(), true);
+  }
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+  tabs::TabHandle tab3 = tabstrip()->GetTabAtIndex(3)->GetHandle();
+
+  // Ungrouped tabs return nullopt.
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, tab1}), std::nullopt);
+
+  // Group tab0 and tab1 together.
+  tab_groups::TabGroupId group1 = tabstrip()->AddToNewGroup({0, 1});
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0}), group1);
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, tab1}), group1);
+
+  // Group tab2 into a distinct group.
+  tab_groups::TabGroupId group2 = tabstrip()->AddToNewGroup({2});
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab2}), group2);
+
+  // Tabs from different groups return nullopt.
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, tab2}), std::nullopt);
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, tab1, tab2}),
+            std::nullopt);
+
+  // Mixture of grouped and ungrouped tabs returns nullopt.
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, tab3}), std::nullopt);
+
+  // Vector with a valid tab and a null handle returns nullopt.
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, tabs::TabHandle::Null()}),
+            std::nullopt);
+
+  // Tabs belonging to a different TabStripModel return nullopt.
+  TestTabStripModelDelegate other_delegate;
+  TabStripModel other_model(&other_delegate, profile());
+  other_model.AppendWebContents(CreateWebContents(), true);
+  other_model.AddToNewGroup({0});
+  tabs::TabHandle other_tab = other_model.GetTabAtIndex(0)->GetHandle();
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({other_tab}), std::nullopt);
+  EXPECT_EQ(tabstrip()->GetCommonGroupForTabs({tab0, other_tab}), std::nullopt);
+  other_model.CloseAllTabs();
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, AreAllUngrouped) {
+  // Empty vector returns false.
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({}));
+
+  // Append three tabs (all initially ungrouped).
+  for (int i = 0; i < 3; ++i) {
+    tabstrip()->AppendWebContents(CreateWebContents(), true);
+  }
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+
+  // All ungrouped tabs return true.
+  EXPECT_TRUE(tabstrip()->AreAllUngrouped({tab0}));
+  EXPECT_TRUE(tabstrip()->AreAllUngrouped({tab0, tab1, tab2}));
+
+  // Group tab0.
+  tabstrip()->AddToNewGroup({0});
+
+  // Since tab0 is grouped, sets containing tab0 return false.
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({tab0}));
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({tab0, tab1}));
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({tab0, tab1, tab2}));
+
+  // The remaining ungrouped tabs still return true.
+  EXPECT_TRUE(tabstrip()->AreAllUngrouped({tab1, tab2}));
+
+  // Vector with null handle or tab from a different TabStripModel returns
+  // false.
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({tabs::TabHandle::Null()}));
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({tab1, tabs::TabHandle::Null()}));
+
+  TestTabStripModelDelegate other_delegate;
+  TabStripModel other_model(&other_delegate, profile());
+  other_model.AppendWebContents(CreateWebContents(), true);
+  tabs::TabHandle other_tab = other_model.GetTabAtIndex(0)->GetHandle();
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({other_tab}));
+  EXPECT_FALSE(tabstrip()->AreAllUngrouped({tab1, other_tab}));
+  other_model.CloseAllTabs();
+
+  tabstrip()->CloseAllTabs();
+}
+
 // Tests whether or not WebContentses are inserted in the correct position
 // using this "smart" function with a simulated middle click action on a series
 // of links on the home page.

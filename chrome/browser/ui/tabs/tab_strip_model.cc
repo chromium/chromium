@@ -2759,23 +2759,26 @@ bool TabStripModel::IsContextMenuCommandEnabled(
         return false;
       }
 
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      if (indices.empty()) {
+      std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
+      if (tabs.empty()) {
         return false;
       }
 
-      for (int index : indices) {
-        if (IsTabPinned(index)) {
+      for (tabs::TabHandle tab : tabs) {
+        tabs::TabInterface* tab_ptr = tab.Get();
+        if (!tab_ptr ||
+            static_cast<tabs::TabModel*>(tab_ptr)->owning_model() != this ||
+            tab_ptr->IsPinned()) {
           return false;
         }
       }
 
-      if (GetCommonGroupForIndices(indices).has_value()) {
+      if (GetCommonGroupForTabs(tabs).has_value()) {
         return true;
       }
 
       return base::FeatureList::IsEnabled(features::kNonGroupFocus) &&
-             AreAllUngrouped(indices);
+             AreAllUngrouped(tabs);
     }
 
     case CommandMoveToExistingWindow:
@@ -3598,29 +3601,43 @@ bool TabStripModel::WillContextMenuGroup(int index) {
   return false;
 }
 
-std::optional<tab_groups::TabGroupId> TabStripModel::GetCommonGroupForIndices(
-    const std::vector<int>& indices) const {
-  if (indices.empty()) {
+std::optional<tab_groups::TabGroupId> TabStripModel::GetCommonGroupForTabs(
+    const std::vector<tabs::TabHandle>& tabs) const {
+  if (tabs.empty() || !tabs.front().Get()) {
+    return std::nullopt;
+  }
+  tabs::TabInterface* first_tab = tabs.front().Get();
+  if (static_cast<tabs::TabModel*>(first_tab)->owning_model() != this) {
     return std::nullopt;
   }
   const std::optional<tab_groups::TabGroupId> first_group =
-      GetTabGroupForTab(indices.front());
+      first_tab->GetGroup();
   if (!first_group.has_value()) {
     return std::nullopt;
   }
   return std::ranges::all_of(
-             indices,
-             [&](int index) { return GetTabGroupForTab(index) == first_group; })
+             tabs,
+             [&](tabs::TabHandle tab) {
+               tabs::TabInterface* tab_ptr = tab.Get();
+               return tab_ptr &&
+                      static_cast<tabs::TabModel*>(tab_ptr)->owning_model() ==
+                          this &&
+                      tab_ptr->GetGroup() == first_group;
+             })
              ? first_group
              : std::nullopt;
 }
 
-bool TabStripModel::AreAllUngrouped(const std::vector<int>& indices) const {
-  if (indices.empty()) {
+bool TabStripModel::AreAllUngrouped(
+    const std::vector<tabs::TabHandle>& tabs) const {
+  if (tabs.empty()) {
     return false;
   }
-  for (int index : indices) {
-    if (GetTabGroupForTab(index).has_value()) {
+  for (tabs::TabHandle tab : tabs) {
+    tabs::TabInterface* tab_ptr = tab.Get();
+    if (!tab_ptr ||
+        static_cast<tabs::TabModel*>(tab_ptr)->owning_model() != this ||
+        tab_ptr->GetGroup().has_value()) {
       return false;
     }
   }
