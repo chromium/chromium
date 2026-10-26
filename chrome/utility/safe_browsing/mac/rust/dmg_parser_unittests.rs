@@ -24,8 +24,9 @@ use dmg_parser::hfs::{
     VOLUME_HEADER_SIZE,
 };
 use dmg_parser::mach_o::{
-    MachOError, MachOImage, FAT_CIGAM, FAT_MAGIC, LC_CODE_SIGNATURE, MACH_HEADER_64_SIZE,
-    MACH_HEADER_SIZE, MH_CIGAM, MH_CIGAM_64, MH_MAGIC, MH_MAGIC_64,
+    MachOError, MachOImage, FAT_ARCH_SIZE, FAT_CIGAM, FAT_HEADER_SIZE, FAT_MAGIC,
+    LC_CODE_SIGNATURE, MACH_HEADER_64_SIZE, MACH_HEADER_SIZE, MH_CIGAM, MH_CIGAM_64, MH_MAGIC,
+    MH_MAGIC_64,
 };
 use dmg_parser::udif::{
     parse_partition_type, UdifBlock, UdifBlockChunk, UdifBlockChunkReadStream, UdifBlockChunkType,
@@ -2406,6 +2407,7 @@ fn test_thin_64_with_code_signature() {
     let raw = build_thin_64_with_code_signature(sig);
     let parsed = MachOImage::parse(&raw).expect("valid 64-bit Mach-O should parse");
 
+    expect_false!(parsed.is_fat());
     expect_true!(parsed.is_64_bit());
     expect_eq!(parsed.file_type(), 2);
     expect_eq!(parsed.mach_header_bytes().len(), MACH_HEADER_SIZE);
@@ -2432,12 +2434,72 @@ fn test_byte_swapped_thin_32_and_small_cmdsize() {
     }
 
     let parsed = MachOImage::parse(&image).expect("byte-swapped 32-bit Mach-O should parse");
+    expect_false!(parsed.is_fat());
     expect_false!(parsed.is_64_bit());
     expect_eq!(parsed.mach_header_64_bytes().len(), 0);
     expect_eq!(parsed.load_commands().len(), 2);
     expect_eq!(parsed.load_commands()[0].data.len(), 8);
     expect_eq!(parsed.load_commands()[0].cmdsize(), 5u32.swap_bytes());
     expect_eq!(parsed.load_commands()[1].cmd(), 0x1u32.swap_bytes());
+}
+
+fn build_single_arch_fat(magic: u32, arch_offset: u32, arch_size: u32, payload: &[u8]) -> Vec<u8> {
+    let maybe_swap = |val: u32| if magic == FAT_CIGAM { val.swap_bytes() } else { val };
+    let nfat_arch = 1;
+    let cputype = 0;
+    let cpusubtype = 0;
+    let align = 0;
+
+    let mut image = Vec::new();
+    push_ne_u32(&mut image, magic);
+    for val in [nfat_arch, cputype, cpusubtype, arch_offset, arch_size, align] {
+        push_ne_u32(&mut image, maybe_swap(val));
+    }
+    image.extend_from_slice(payload);
+    image
+}
+
+#[gtest(RustMachOImageReaderTest, FatBinary)]
+fn test_fat_binary() {
+    let thin64 = build_thin_64_with_code_signature(b"sig64");
+
+    // Valid FAT_CIGAM archive with 1 architecture slice immediately after the
+    // 28-byte header + fat_arch table.
+    let arch_offset = (FAT_HEADER_SIZE + FAT_ARCH_SIZE) as u32;
+    let fat = build_single_arch_fat(FAT_CIGAM, arch_offset, thin64.len() as u32, &thin64);
+
+    let mut parsed_fat = MachOImage::parse(&fat).expect("valid fat Mach-O should parse");
+    expect_true!(parsed_fat.is_fat());
+    expect_false!(parsed_fat.is_64_bit());
+    expect_eq!(parsed_fat.load_commands().len(), 0);
+    expect_eq!(parsed_fat.code_signature(), None);
+    expect_eq!(parsed_fat.fat_images().len(), 1);
+    expect_true!(parsed_fat.fat_images()[0].is_64_bit());
+    expect_eq!(parsed_fat.fat_images()[0].code_signature(), Some(b"sig64".as_slice()));
+    expect_eq!(parsed_fat.take_fat_images().len(), 1);
+    expect_true!(parsed_fat.is_fat());
+    expect_eq!(parsed_fat.fat_images().len(), 0);
+}
+
+#[gtest(RustMachOImageReaderTest, FatBinaryAntiRecursionChecks)]
+fn test_fat_binary_anti_recursion_checks() {
+    let first_arch_offset = (FAT_HEADER_SIZE + FAT_ARCH_SIZE) as u32;
+
+    // Backward fat_arch offset (< current table offset) must fail with
+    // InvalidFatArch.
+    let backward_offset = 4;
+    let backward_size = first_arch_offset - backward_offset;
+    let backward_fat = build_single_arch_fat(FAT_MAGIC, backward_offset, backward_size, &[]);
+    expect_eq!(MachOImage::parse(&backward_fat).err(), Some(MachOError::InvalidFatArch));
+
+    // Nested fat-in-fat at a forward offset (>= FAT_HEADER_SIZE +
+    // FAT_ARCH_SIZE) must also fail with InvalidFatArch.
+    let thin64 = build_thin_64_with_code_signature(b"sig64");
+    let inner_fat =
+        build_single_arch_fat(FAT_CIGAM, first_arch_offset, thin64.len() as u32, &thin64);
+    let nested_fat =
+        build_single_arch_fat(FAT_MAGIC, first_arch_offset, inner_fat.len() as u32, &inner_fat);
+    expect_eq!(MachOImage::parse(&nested_fat).err(), Some(MachOError::InvalidFatArch));
 }
 
 #[gtest(RustMachOImageReaderTest, RejectsInvalidAndTruncatedInputs)]
@@ -2451,6 +2513,17 @@ fn test_rejects_invalid_and_truncated_inputs() {
         MachOImage::parse(&MH_MAGIC_64.to_ne_bytes()).err(),
         Some(MachOError::TruncatedHeader)
     );
+    expect_eq!(
+        MachOImage::parse(&FAT_MAGIC.to_ne_bytes()).err(),
+        Some(MachOError::TruncatedHeader)
+    );
+
+    // Fat header claiming nfat_arch = 1 with no fat_arch entry following.
+    let mut truncated_fat = Vec::new();
+    for val in [FAT_MAGIC, 1] {
+        push_ne_u32(&mut truncated_fat, val);
+    }
+    expect_eq!(MachOImage::parse(&truncated_fat).err(), Some(MachOError::InvalidFatArch));
 
     // 64-bit header claiming ncmds = 1 with no load command bytes following.
     let mut truncated_cmd = Vec::new();

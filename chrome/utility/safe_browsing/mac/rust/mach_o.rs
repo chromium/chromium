@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Pure-Rust parser for macOS Mach-O binary images.
+//! Pure-Rust parser for thin and fat (universal) macOS Mach-O binary images.
 //!
 //! Rust port of `chrome/common/safe_browsing/mach_o_image_reader_mac.{h,cc}`.
 //! Kept free of `unsafe` code; all C++ FFI glue lives in `ffi.rs`.
@@ -15,6 +15,8 @@ pub const FAT_MAGIC: u32 = 0xcafebabe;
 pub const FAT_CIGAM: u32 = 0xbebafeca;
 pub const LC_CODE_SIGNATURE: u32 = 0x1d;
 
+pub const FAT_HEADER_SIZE: usize = 8;
+pub const FAT_ARCH_SIZE: usize = 20;
 pub const MACH_HEADER_SIZE: usize = 28;
 pub const MACH_HEADER_64_SIZE: usize = 32;
 pub const LOAD_COMMAND_SIZE: usize = 8;
@@ -68,11 +70,13 @@ pub enum MachOError {
     EmptyImage,
     InvalidMagic,
     TruncatedHeader,
+    InvalidFatArch,
     TruncatedLoadCommand,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum MachOImageKind {
+    Fat(Vec<MachOImage>),
     Thin {
         is_64_bit: bool,
         header: AlignedMachHeader,
@@ -81,7 +85,7 @@ enum MachOImageKind {
     },
 }
 
-/// Parsed representation of a Mach-O binary image.
+/// Parsed representation of a thin or fat Mach-O binary image.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MachOImage {
     kind: MachOImageKind,
@@ -94,14 +98,65 @@ impl MachOImage {
         matches!(magic, FAT_MAGIC | FAT_CIGAM | MH_MAGIC | MH_CIGAM | MH_MAGIC_64 | MH_CIGAM_64)
     }
 
-    /// Parses and validates a Mach-O binary image from `image`.
+    /// Parses and validates a thin or fat Mach-O binary image from `image`.
     pub fn parse(image: &[u8]) -> Result<Self, MachOError> {
         if image.is_empty() {
             return Err(MachOError::EmptyImage);
         }
 
         let magic = read_ne_u32(image, 0).ok_or(MachOError::TruncatedHeader)?;
-        Self::parse_thin(image, magic)
+        if magic == FAT_MAGIC || magic == FAT_CIGAM {
+            Self::parse_fat(image, magic)
+        } else {
+            Self::parse_thin(image, magic)
+        }
+    }
+
+    fn parse_fat(image: &[u8], magic: u32) -> Result<Self, MachOError> {
+        if slice_checked(image, 0, FAT_HEADER_SIZE).is_none() {
+            return Err(MachOError::TruncatedHeader);
+        }
+        let do_swap = magic == FAT_CIGAM;
+        let raw_nfat = read_ne_u32(image, 4).ok_or(MachOError::TruncatedHeader)?;
+        let nfat_arch = if do_swap { raw_nfat.swap_bytes() } else { raw_nfat };
+
+        let mut offset = FAT_HEADER_SIZE;
+        let mut fat_images = Vec::new();
+        for _ in 0..nfat_arch {
+            let arch_bytes =
+                slice_checked(image, offset, FAT_ARCH_SIZE).ok_or(MachOError::InvalidFatArch)?;
+            let raw_arch_offset = read_ne_u32(arch_bytes, 8).ok_or(MachOError::InvalidFatArch)?;
+            let raw_arch_size = read_ne_u32(arch_bytes, 12).ok_or(MachOError::InvalidFatArch)?;
+            let arch_offset =
+                if do_swap { raw_arch_offset.swap_bytes() } else { raw_arch_offset } as usize;
+            let arch_size =
+                if do_swap { raw_arch_size.swap_bytes() } else { raw_arch_size } as usize;
+
+            // Cannot refer back to headers of previous arches to cause
+            // recursive processing (https://crbug.com/40459221).
+            if arch_offset < offset {
+                return Err(MachOError::InvalidFatArch);
+            }
+
+            let slice =
+                slice_checked(image, arch_offset, arch_size).ok_or(MachOError::InvalidFatArch)?;
+            if slice.is_empty() {
+                return Err(MachOError::InvalidFatArch);
+            }
+
+            // Fat binaries may only contain thin Mach-O slices, never nested
+            // fat binaries.
+            let child_magic = read_ne_u32(slice, 0).ok_or(MachOError::TruncatedHeader)?;
+            if child_magic == FAT_MAGIC || child_magic == FAT_CIGAM {
+                return Err(MachOError::InvalidFatArch);
+            }
+            let child = Self::parse_thin(slice, child_magic)?;
+            fat_images.push(child);
+
+            offset = offset.checked_add(FAT_ARCH_SIZE).ok_or(MachOError::InvalidFatArch)?;
+        }
+
+        Ok(Self { kind: MachOImageKind::Fat(fat_images) })
     }
 
     fn parse_thin(image: &[u8], magic: u32) -> Result<Self, MachOError> {
@@ -170,15 +225,40 @@ impl MachOImage {
         None
     }
 
+    /// Returns true if this image is a fat (universal) Mach-O binary.
+    pub fn is_fat(&self) -> bool {
+        matches!(self.kind, MachOImageKind::Fat(_))
+    }
+
+    /// Returns the architecture slices contained in this fat binary, or an
+    /// empty slice for a thin binary.
+    pub fn fat_images(&self) -> &[MachOImage] {
+        match &self.kind {
+            MachOImageKind::Fat(images) => images,
+            MachOImageKind::Thin { .. } => &[],
+        }
+    }
+
+    /// Moves and returns the architecture slices from this fat binary, leaving
+    /// `self.fat_images()` empty while `self.is_fat()` remains true.
+    pub fn take_fat_images(&mut self) -> Vec<MachOImage> {
+        match &mut self.kind {
+            MachOImageKind::Fat(images) => std::mem::take(images),
+            MachOImageKind::Thin { .. } => Vec::new(),
+        }
+    }
+
     pub fn is_64_bit(&self) -> bool {
         match &self.kind {
             MachOImageKind::Thin { is_64_bit, .. } => *is_64_bit,
+            MachOImageKind::Fat(_) => false,
         }
     }
 
     pub fn mach_header_bytes(&self) -> &[u8] {
         match &self.kind {
             MachOImageKind::Thin { header, .. } => &header.bytes[..MACH_HEADER_SIZE],
+            MachOImageKind::Fat(_) => &[],
         }
     }
 
@@ -187,25 +267,28 @@ impl MachOImage {
             MachOImageKind::Thin { is_64_bit: true, header, .. } => {
                 &header.bytes[..MACH_HEADER_64_SIZE]
             }
-            MachOImageKind::Thin { is_64_bit: false, .. } => &[],
+            _ => &[],
         }
     }
 
     pub fn file_type(&self) -> u32 {
         match &self.kind {
             MachOImageKind::Thin { header, .. } => read_ne_u32(&header.bytes, 12).unwrap_or(0),
+            MachOImageKind::Fat(_) => 0,
         }
     }
 
     pub fn load_commands(&self) -> &[LoadCommand] {
         match &self.kind {
             MachOImageKind::Thin { commands, .. } => commands,
+            MachOImageKind::Fat(_) => &[],
         }
     }
 
     pub fn code_signature(&self) -> Option<&[u8]> {
         match &self.kind {
             MachOImageKind::Thin { code_signature, .. } => code_signature.as_deref(),
+            MachOImageKind::Fat(_) => None,
         }
     }
 }
