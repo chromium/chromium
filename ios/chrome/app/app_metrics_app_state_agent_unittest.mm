@@ -4,10 +4,13 @@
 
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
+#import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -41,13 +44,20 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   AppMetricsAppStateAgentTest() {
     agent_ = [[AppMetricsAppStateAgent alloc] init];
 
-    app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
+    startup_information_ = [[FakeStartupInformation alloc] init];
+    app_state_ =
+        [[FakeAppState alloc] initWithStartupInformation:startup_information_];
   }
 
   void SetUp() override {
     PlatformTest::SetUp();
     app_state_.initStageForTesting = GetMinimalInitStageThatAllowsLogging();
     [agent_ setAppState:app_state_];
+  }
+
+  void TearDown() override {
+    [app_state_.deferredRunner cancelAllBlocks];
+    PlatformTest::TearDown();
   }
 
   void SimulateTransitionToCurrentStage() {
@@ -58,6 +68,8 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
     [agent_ appState:app_state_ didTransitionFromInitStage:previousStage];
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  FakeStartupInformation* startup_information_;
   AppMetricsAppStateAgent* agent_;
   FakeAppState* app_state_;
 };
@@ -65,11 +77,10 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
 // Tests that -logStartupDuration: and -createStartupTrackingTask are called
 // once and in the right order for a regular startup (no safe mode).
 TEST_F(AppMetricsAppStateAgentTest, LogStartupDuration) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
   [[metricsMediator expect] createStartupTrackingTask];
-  [[metricsMediator expect] logStartupDuration:nil];
+  [[metricsMediator expect] logStartupDuration:startup_information_];
   [metricsMediator setExpectationOrderMatters:YES];
 
   SceneState* sceneA = [[SceneState alloc] init];
@@ -100,13 +111,36 @@ TEST_F(AppMetricsAppStateAgentTest, LogStartupDuration) {
   EXPECT_OCMOCK_VERIFY(metricsMediator);
 }
 
+// Tests that the `TakeStartupMemorySnapshot` deferred block captures the
+// physical memory footprint in `StartupInformation` and logs to UMA.
+TEST_F(AppMetricsAppStateAgentTest, CapturesStartupMemoryFootprint) {
+  base::HistogramTester histogram_tester;
+
+  SceneState* scene = [[SceneState alloc] init];
+  app_state_.connectedScenes = @[ scene ];
+  [agent_ appState:app_state_ sceneConnected:scene];
+
+  AppInitStage previousInitStage = PreviousAppInitStage(app_state_.initStage);
+  [agent_ appState:app_state_ didTransitionFromInitStage:previousInitStage];
+
+  scene.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_EQ(startup_information_.startupMemoryFootprintBytes, 0u);
+  histogram_tester.ExpectTotalCount("Memory.Browser.MemoryFootprint.Startup",
+                                    0);
+
+  [app_state_.deferredRunner runBlockNamed:kTakeStartupMemorySnapshot];
+  EXPECT_GT(startup_information_.startupMemoryFootprintBytes, 0u);
+  histogram_tester.ExpectTotalCount("Memory.Browser.MemoryFootprint.Startup",
+                                    1);
+}
+
 // Tests that -logStartupDuration: and  and -createStartupTrackingTask are not
 // called when there is safe mode during startup.
 TEST_F(AppMetricsAppStateAgentTest, LogStartupDurationWhenSafeMode) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
   [[metricsMediator reject] createStartupTrackingTask];
-  [[metricsMediator reject] logStartupDuration:nil];
+  [[metricsMediator reject] logStartupDuration:startup_information_];
 
   app_state_.initStageForTesting = GetMaximalInitStageThatDontAllowLogging();
 

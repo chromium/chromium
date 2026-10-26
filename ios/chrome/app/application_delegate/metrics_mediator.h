@@ -6,6 +6,7 @@
 #define IOS_CHROME_APP_APPLICATION_DELEGATE_METRICS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
+#import <stdint.h>
 
 #include "base/containers/span.h"
 
@@ -55,8 +56,9 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // Logs the duration of the cold start startup. Does nothing if there isn't a
 // cold start.
 + (void)logStartupDuration:(id<StartupInformation>)startupInformation;
-// Logs memory usage to UMA given a histogram name.
-+ (void)logMemoryToUMA:(const std::string&)histogramName;
+// Logs memory usage to UMA given a histogram name. Returns the physical memory
+// footprint in bytes on success, or 0 on failure.
++ (uint64_t)logMemoryToUMA:(const std::string&)histogramName;
 // Creates a MetricKit extended launch task to track startup duration. This must
 // be called before the first scene becomes active.
 + (void)createStartupTrackingTask;

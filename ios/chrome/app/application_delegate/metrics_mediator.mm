@@ -884,14 +884,16 @@ BOOL _credentialExtensionWasUsed = NO;
   [self logMemoryToUMA:"Memory.Browser.MemoryFootprint.OnBackground"];
 }
 
-+ (void)logMemoryToUMA:(const std::string&)histogramName {
++ (uint64_t)logMemoryToUMA:(const std::string&)histogramName {
   auto result = ios::device_util::GetTaskVMInfo();
   if (result.has_value()) {
     task_vm_info task_vm_info_data = result.value();
     mach_vm_size_t footprint_mb =
         task_vm_info_data.phys_footprint / 1024 / 1024;
     base::UmaHistogramMemoryLargeMB(histogramName, footprint_mb);
+    return task_vm_info_data.phys_footprint;
   }
+  return 0;
 }
 
 - (void)saveCredentialExtensionWasUsed {

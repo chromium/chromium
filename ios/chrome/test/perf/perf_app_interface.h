@@ -20,6 +20,11 @@
 // - `Startup.TimeFromMainToSceneConnection`: `main()` to first scene connection
 + (NSDictionary<NSString*, NSNumber*>*)currentStartupTimingsInMilliseconds;
 
+// Returns the browser process Mach `TASK_VM_INFO` `phys_footprint` in bytes
+// captured by the `TakeStartupMemorySnapshot` deferred initialization block, or
+// `-1.0` if the snapshot has not been captured yet.
++ (double)startupMemoryFootprintBytes;
+
 // Returns the browser process Mach `TASK_VM_INFO` `phys_footprint` in bytes,
 // or `0.0` on error.
 + (double)currentProcessPhysFootprintBytes;

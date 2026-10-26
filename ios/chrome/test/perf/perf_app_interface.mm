@@ -51,6 +51,18 @@
   return timings;
 }
 
++ (double)startupMemoryFootprintBytes {
+  id<StartupInformation> startupInfo = chrome_test_util::GetMainController();
+  if (!startupInfo) {
+    return -1.0;
+  }
+  const uint64_t footprintBytes = [startupInfo startupMemoryFootprintBytes];
+  if (footprintBytes == 0) {
+    return -1.0;
+  }
+  return static_cast<double>(footprintBytes);
+}
+
 + (double)currentProcessPhysFootprintBytes {
   const auto memoryInfo =
       base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMemoryInfo();

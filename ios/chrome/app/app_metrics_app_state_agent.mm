@@ -13,9 +13,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
-namespace {
-// Constant for deferring snapshotting startup memory usage
+// Constant for deferring snapshotting startup memory usage.
 NSString* const kTakeStartupMemorySnapshot = @"TakeStartupMemorySnapshot";
+
+namespace {
 // Constant for naming the startup memory snapshot
 NSString* const kDeferredInitializationBlocksComplete =
     @"DeferredInitializationBlocksComplete";
@@ -93,6 +94,8 @@ NSString* const kDeferredInitializationBlocksComplete =
   if (ios::provider::IsPrimesSupported()) {
     ios::provider::PrimesAppReady();
   }
+  __weak id<StartupInformation> startupInformation =
+      self.appState.startupInformation;
   [self.appState.deferredRunner
       enqueueBlockNamed:kTakeStartupMemorySnapshot
                   block:^{
@@ -101,9 +104,10 @@ NSString* const kDeferredInitializationBlocksComplete =
                           kDeferredInitializationBlocksComplete);
                       tests_hook::SignalAppLaunched();
                     }
-                    [MetricsMediator
-                        logMemoryToUMA:
-                            "Memory.Browser.MemoryFootprint.Startup"];
+                    startupInformation.startupMemoryFootprintBytes =
+                        [MetricsMediator
+                            logMemoryToUMA:
+                                "Memory.Browser.MemoryFootprint.Startup"];
                   }];
 }
 

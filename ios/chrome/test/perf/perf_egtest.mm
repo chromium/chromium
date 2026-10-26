@@ -46,16 +46,20 @@
 
 #pragma mark - Tests
 
-// Measures cold startup latency across cold process relaunches using unbucketed
-// millisecond timings from StartupInformation.
+// Measures cold startup latency and startup memory footprint across cold
+// process relaunches using unbucketed values from StartupInformation.
 - (void)testStartup {
   static constexpr int kColdLaunchIterations = 5;
   static constexpr base::TimeDelta kStartupMetricsTimeout = base::Seconds(10);
+  // Deferred initialization blocks wait 3 seconds after first scene activation
+  // and run sequentially with a 200ms inter-block delay.
+  static constexpr base::TimeDelta kStartupMemoryTimeout = base::Seconds(15);
   NSMutableArray<NSNumber*>* preMainSamples = [[NSMutableArray alloc] init];
   NSMutableArray<NSNumber*>* fromMainSamples = [[NSMutableArray alloc] init];
   NSMutableArray<NSNumber*>* sceneConnectSamples =
       [[NSMutableArray alloc] init];
   NSMutableArray<NSNumber*>* pageInsSamples = [[NSMutableArray alloc] init];
+  NSMutableArray<NSNumber*>* footprintSamples = [[NSMutableArray alloc] init];
 
   for (int i = 0; i < kColdLaunchIterations; ++i) {
     AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -92,6 +96,24 @@
     if (pageIns >= 0.0) {
       [pageInsSamples addObject:@(pageIns)];
     }
+
+    // Avoid eDO polling during the 3-second quiet window before deferred
+    // blocks begin executing.
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(3));
+
+    __block double footprintBytes = -1.0;
+    GREYCondition* waitForMemoryFootprint = [GREYCondition
+        conditionWithName:@"Wait for Startup.MemoryFootprint metric"
+                    block:^BOOL {
+                      footprintBytes =
+                          [PerfAppInterface startupMemoryFootprintBytes];
+                      return footprintBytes > 0.0;
+                    }];
+    GREYAssertTrue(
+        [waitForMemoryFootprint
+            waitWithTimeout:kStartupMemoryTimeout.InSecondsF()],
+        @"Timed out waiting for Startup.MemoryFootprint on iteration %d.", i);
+    [footprintSamples addObject:@(footprintBytes)];
   }
 
   GREYAssertEqual(fromMainSamples.count,
@@ -106,6 +128,9 @@
   GREYAssertEqual(pageInsSamples.count,
                   static_cast<NSUInteger>(kColdLaunchIterations),
                   @"Expected ColdStartPageIns samples from all iterations.");
+  GREYAssertEqual(footprintSamples.count,
+                  static_cast<NSUInteger>(kColdLaunchIterations),
+                  @"Expected MemoryFootprint samples from all iterations.");
   chrome_test_util::GREYAssertErrorNil([PerfAppInterface
       recordPerfSamples:fromMainSamples
               forMetric:@"Startup.ColdStartFromMain"
@@ -125,6 +150,11 @@
       recordPerfSamples:pageInsSamples
               forMetric:@"Startup.ColdStartPageIns"
                    unit:@"count_smallerIsBetter"
+              benchmark:@"bling.startup"]);
+  chrome_test_util::GREYAssertErrorNil([PerfAppInterface
+      recordPerfSamples:footprintSamples
+              forMetric:@"Startup.MemoryFootprint"
+                   unit:@"sizeInBytes_smallerIsBetter"
               benchmark:@"bling.startup"]);
 }
 
