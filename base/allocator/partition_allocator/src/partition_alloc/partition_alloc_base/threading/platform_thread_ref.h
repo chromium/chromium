@@ -10,6 +10,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_REF_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_REF_H_
 
+#include <cstdint>
 #include <iosfwd>
 
 #include "partition_alloc/build_config.h"
@@ -46,6 +47,18 @@ class PlatformThreadRef {
   bool operator!=(PlatformThreadRef other) const { return id_ != other.id_; }
 
   bool is_null() const { return id_ == 0; }
+
+#if PA_BUILDFLAG(IS_APPLE)
+  template <typename Hasher>
+  size_t hash_value() const {
+    return Hasher()(reinterpret_cast<uintptr_t>(id_));
+  }
+#else
+  template <typename Hasher>
+  size_t hash_value() const {
+    return Hasher()(static_cast<uintptr_t>(id_));
+  }
+#endif
 
  private:
   RefType id_ = 0;

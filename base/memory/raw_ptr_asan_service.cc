@@ -36,9 +36,11 @@
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
+#include "base/memory/reentrancy_guard.h"
 #include "base/no_destructor.h"
 #include "build/sanitizers/sanitizer_shared_hooks.h"  // nogncheck
 #include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_lock.h"
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 
@@ -94,11 +96,13 @@ using AllocationMetadataMapArray =
                      RawPtrAsanService::AllocationMetadata,
                      RawPtrAsanService::kSizeOfMapWithLockArray>;
 
+NO_SANITIZE("address")
 AllocationMetadataMapArray& GetAllocationMetadataMapArray() {
   static base::NoDestructor<AllocationMetadataMapArray> s_map;
   return *s_map.get();
 }
 
+NO_SANITIZE("address")
 internal::RawPtrAsanEventLog& GetEventLog() {
   static base::NoDestructor<internal::RawPtrAsanEventLog> s_event_log;
   return *s_event_log.get();
@@ -107,6 +111,7 @@ internal::RawPtrAsanEventLog& GetEventLog() {
 }  // namespace
 
 // static
+NO_SANITIZE("address")
 RawPtrAsanService::AllocationMetadataMap&
 RawPtrAsanService::GetAllocationMetadataMap(uintptr_t address) {
   return GetAllocationMetadataMapArray().Get(address);
@@ -205,10 +210,12 @@ NO_SANITIZE("address")
 void RawPtrAsanService::MallocHook(const volatile void* ptr, size_t size) {
   uint8_t* header = UNSAFE_TODO(static_cast<uint8_t*>(const_cast<void*>(ptr)) -
                                 kChunkHeaderSize);
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+  ALLOC_REENTRANCY_GUARD();
+
   *RawPtrAsanService::GetInstance().GetShadow(header) =
       kAsanUserPoisonedMemoryMagic;
 
-#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
   auto alloc_thread_id = internal::GetCurrentRawPtrAsanThreadId();
   {
     auto& map = GetAllocationMetadataMap(reinterpret_cast<uintptr_t>(ptr));
@@ -219,6 +226,9 @@ void RawPtrAsanService::MallocHook(const volatile void* ptr, size_t size) {
           internal::RawPtrAsanThreadId()}});
     PA_DCHECK(result.second);
   }
+#else
+  *RawPtrAsanService::GetInstance().GetShadow(header) =
+      kAsanUserPoisonedMemoryMagic;
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 }
 
@@ -234,6 +244,8 @@ bool RawPtrAsanService::IsSupportedAllocation(
 // static
 NO_SANITIZE("address")
 int RawPtrAsanService::IgnoreFreeHook(const volatile void* ptr) {
+  IGNORE_FREE_REENTRANCY_GUARD();
+
   uint8_t* header = UNSAFE_TODO(static_cast<uint8_t*>(const_cast<void*>(ptr)) -
                                 kChunkHeaderSize);
 
@@ -365,6 +377,8 @@ void RawPtrAsanService::Configure(
 
     debug::AsanService* asan_service = debug::AsanService::GetInstance();
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+    internal::ReentrancyState::InitializeKey();
+
     // There is no way to see `asan::flags()->halt_on_error`.
     asan_service->AddErrorCallback(ErrorReportCallback);
     AtExitManager::RegisterCallback(ExitCallback, nullptr);

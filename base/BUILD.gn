@@ -212,6 +212,10 @@ source_set("asan_raw_ptr_service") {
     if (use_asan_backup_ref_ptr_v2) {
       deps += [ "//build/config/sanitizers:sanitizer_shared_hooks" ]
       configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
+      sources += [
+        "memory/reentrancy_guard.cc",
+        "memory/reentrancy_guard.h",
+      ]
     }
 
     deps += [
@@ -4316,7 +4320,10 @@ test("base_unittests") {
   }
 
   if (is_asan) {
-    sources += [ "memory/raw_ptr_asan_unittest.cc" ]
+    sources += [
+      "memory/raw_ptr_asan_unittest.cc",
+      "memory/reentrancy_guard_unittest.cc",
+    ]
   }
 
   if (is_ios) {

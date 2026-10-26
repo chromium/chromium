@@ -9,6 +9,7 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base {
@@ -22,9 +23,15 @@ namespace partition_alloc::internal::base {
 // ScopedClearLastError instead.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastErrorBase {
  public:
+  // To use ScopedClearLastError inside Asan allocator hooks, need
+  // NO_SANITIZE("address") because accessing `errno` causes accessing thread
+  // local variable internally. It may cause access violation if asan is
+  // enabled.
+  PA_NO_SANITIZE("address")
   ScopedClearLastErrorBase() : last_errno_(errno) { errno = 0; }
   ScopedClearLastErrorBase(const ScopedClearLastErrorBase&) = delete;
   ScopedClearLastErrorBase& operator=(const ScopedClearLastErrorBase&) = delete;
+  PA_NO_SANITIZE("address")
   ~ScopedClearLastErrorBase() { errno = last_errno_; }
 
  private:
@@ -37,9 +44,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastErrorBase {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastError
     : public ScopedClearLastErrorBase {
  public:
+  PA_NO_SANITIZE("address")
   ScopedClearLastError();
   ScopedClearLastError(const ScopedClearLastError&) = delete;
   ScopedClearLastError& operator=(const ScopedClearLastError&) = delete;
+  PA_NO_SANITIZE("address")
   ~ScopedClearLastError();
 
  private:
