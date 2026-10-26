@@ -2101,9 +2101,13 @@ IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest, SameOrigin) {
   EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
   EXPECT_TRUE(content::ExecJs(
       web_contents(), "document.querySelector('iframe').src += '#foo';"));
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest, SameSite) {
@@ -2112,13 +2116,14 @@ IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest, SameSite) {
   EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
   EXPECT_TRUE(content::ExecJs(
       web_contents(), "document.querySelector('iframe').src += '#foo';"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  // TODO(crbug.com/40062719) It seems the initiator origin is wrong,
-  // e.g. `child_url` instead of `parent_url`, causing the metrics not to be
-  // recorded.
-  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 1);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 1);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest, CrossOrigin) {
@@ -2127,10 +2132,14 @@ IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest, CrossOrigin) {
   EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
   EXPECT_TRUE(content::ExecJs(
       web_contents(), "document.querySelector('iframe').src += '#foo';"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 1);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest,
@@ -2140,11 +2149,101 @@ IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
   EXPECT_TRUE(
       content::ExecJs(GetChild(*(web_contents()->GetPrimaryMainFrame())),
                       "location.href += '#foo';"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
+}
+
+// Regression test for https://crbug.com/40057534: self-initiated same-document
+// navigations inside a sandboxed iframe (opaque origin) should not record
+// `SameDocumentCrossOriginInitiator`.
+IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest,
+                       SandboxedIframeSelfInitiated) {
+  const GURL parent_url = https_server().GetURL("a.test", "/empty.html");
+  const GURL child_url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(), content::JsReplace(R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.sandbox = "allow-scripts";
+      iframe.src = $1;
+      iframe.onload = () => resolve(true);
+      document.body.appendChild(iframe);
+    });
+  )",
+                                                               child_url)));
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
+
+  content::RenderFrameHost* child =
+      GetChild(*(web_contents()->GetPrimaryMainFrame()));
+  EXPECT_TRUE(content::ExecJs(child, "history.pushState({}, '', '#foo');"));
+  EXPECT_TRUE(content::ExecJs(child, "location.hash = 'bar';"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
+}
+
+// Regression test for https://crbug.com/40057534: self-initiated same-document
+// navigations inside a `data:` URL iframe (opaque origin) should not record
+// `SameDocumentCrossOriginInitiator`.
+IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest,
+                       DataUrlIframeSelfInitiated) {
+  const GURL parent_url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
+  LoadIFrame(GURL("data:text/html,<html><body>hello</body></html>"));
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
+
+  content::RenderFrameHost* child =
+      GetChild(*(web_contents()->GetPrimaryMainFrame()));
+  EXPECT_TRUE(content::ExecJs(child, "location.hash = '#foo';"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
+}
+
+// Navigating a sandboxed iframe from its parent is a cross-origin (and
+// cross-site, since the sandboxed iframe has an opaque origin) same-document
+// navigation and should record both `kSameDocumentCrossOriginInitiator` and
+// `kSameDocumentCrossSiteInitiator`.
+IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest,
+                       SandboxedIframeParentInitiated) {
+  const GURL parent_url = https_server().GetURL("a.test", "/empty.html");
+  const GURL child_url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), parent_url));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(), content::JsReplace(R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.sandbox = "allow-scripts";
+      iframe.src = $1;
+      iframe.onload = () => resolve(true);
+      document.body.appendChild(iframe);
+    });
+  )",
+                                                               child_url)));
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 0);
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), "document.querySelector('iframe').src += '#foo';"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 1);
+  CheckCounter(WebFeature::kSameDocumentSameSiteCrossOriginInitiator, 0);
+  CheckCounter(WebFeature::kSameDocumentCrossSiteInitiator, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,

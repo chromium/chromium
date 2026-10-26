@@ -6865,6 +6865,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6044" label="MulticastControllerJoinGroupWithSourceAddress"/>
   <int value="6045" label="CSSGridLanesLayout"/>
   <int value="6046" label="SmartCardContextRelease"/>
+  <int value="6047" label="SameDocumentSameSiteCrossOriginInitiator"/>
+  <int value="6048" label="SameDocumentCrossSiteInitiator"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

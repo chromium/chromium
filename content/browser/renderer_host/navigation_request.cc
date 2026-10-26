@@ -166,6 +166,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -2278,21 +2279,37 @@ NavigationRequest::NavigationRequest(
     CHECK(commit_params_->not_restored_reasons.is_null());
   }
 
-  // Record `SameDocumentCrossOriginInitiator` metric. It happens in the
-  // NavigationRequest constructor, to catch every kind of same-document
-  // navigation: the one initiated from the navigating frame's process, and the
-  // others.
+  // Record `SameDocumentCrossOriginInitiator` metrics. It happens in the
+  // NavigationRequest constructor, to catch same-document navigations that go
+  // through the browser process before committing (same-process cross-origin
+  // fragment navigations that commit synchronously in the renderer are recorded
+  // in `blink::DocumentLoader::CommitSameDocumentNavigation`).
+  //
+  // Compare `GetInitiatorOrigin()` against `frame_tree_node_->current_origin()`
+  // rather than `GetTentativeOriginAtRequestTime()`, because a same-document
+  // navigation keeps the current document and its origin, whereas
+  // `GetTentativeOriginAtRequestTime()` computes a new origin (which derives a
+  // fresh opaque origin for sandboxed or `data:` frames, falsely appearing
+  // cross-origin to `last_committed_origin_` on self-initiated `history` API or
+  // fragment navigations).
+  const std::optional<url::Origin>& initiator_origin = GetInitiatorOrigin();
   if (common_params_->navigation_type ==
           blink::mojom::NavigationType::SAME_DOCUMENT &&
-      GetInitiatorOrigin() &&
-      !GetInitiatorOrigin()->IsSameOriginWith(
-          GetTentativeOriginAtRequestTime())) {
+      initiator_origin &&
+      !initiator_origin->IsSameOriginWith(frame_tree_node_->current_origin())) {
     // This is reported to navigating frame's current document, because this is
     // the document that behave differently if this navigation was turned into a
     // cross-document one.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         frame_tree_node_->current_frame_host(),
         blink::mojom::WebFeature::kSameDocumentCrossOriginInitiator);
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        frame_tree_node_->current_frame_host(),
+        net::SchemefulSite::IsSameSite(*initiator_origin,
+                                       frame_tree_node_->current_origin())
+            ? blink::mojom::WebFeature::
+                  kSameDocumentSameSiteCrossOriginInitiator
+            : blink::mojom::WebFeature::kSameDocumentCrossSiteInitiator);
   }
 
   if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {

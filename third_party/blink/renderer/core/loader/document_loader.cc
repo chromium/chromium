@@ -176,6 +176,7 @@
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -1783,6 +1784,22 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
       // https://crbug.com/1209772.
       return mojom::blink::CommitResult::RestartCrossDocument;
     }
+  }
+
+  const SecurityOrigin* current_origin =
+      frame_->DomWindow()->GetSecurityOrigin();
+  if (is_synchronously_committed && initiator_origin &&
+      !initiator_origin->IsSameOriginWith(current_origin)) {
+    // Record `SameDocumentCrossOriginInitiator` metrics for cross-origin
+    // same-document navigations that commit synchronously in the renderer
+    // without going through a browser-side `NavigationRequest` before commit
+    // (e.g., when a same-process cross-origin frame navigates this frame's
+    // fragment).
+    CountUse(WebFeature::kSameDocumentCrossOriginInitiator);
+    CountUse(BlinkSchemefulSite(initiator_origin) ==
+                     BlinkSchemefulSite(current_origin)
+                 ? WebFeature::kSameDocumentSameSiteCrossOriginInitiator
+                 : WebFeature::kSameDocumentCrossSiteInitiator);
   }
 
   // If this is a continuation of a script-initiated navigation, e.g.
