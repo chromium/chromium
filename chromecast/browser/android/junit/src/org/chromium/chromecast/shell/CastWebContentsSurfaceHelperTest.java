@@ -102,7 +102,7 @@ public class CastWebContentsSurfaceHelperTest {
 
     @Before
     public void setUp() {
-        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
+        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.getApplication());
         when(mMediaSessionGetter.get(any())).thenReturn(mMediaSession);
         when(mWebContentsView.open(any())).thenReturn(mock(Scope.class));
         mSurfaceHelper =

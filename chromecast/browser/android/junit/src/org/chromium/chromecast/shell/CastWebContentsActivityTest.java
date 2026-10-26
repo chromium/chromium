@@ -141,15 +141,15 @@ public class CastWebContentsActivityTest {
         mShadowActivityManager =
                 Shadows.shadowOf(
                         (ActivityManager)
-                                RuntimeEnvironment.application.getSystemService(
-                                        Context.ACTIVITY_SERVICE));
+                                RuntimeEnvironment.getApplication()
+                                        .getSystemService(Context.ACTIVITY_SERVICE));
         mShadowPowerManager =
                 Shadows.shadowOf(
                         (PowerManager)
-                                RuntimeEnvironment.application.getSystemService(
-                                        Context.POWER_SERVICE));
+                                RuntimeEnvironment.getApplication()
+                                        .getSystemService(Context.POWER_SERVICE));
         mShadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         mActivityLifecycle =
                 Robolectric.buildActivity(CastWebContentsActivity.class, defaultIntent);
         mActivity = mActivityLifecycle.get();
@@ -194,7 +194,7 @@ public class CastWebContentsActivityTest {
                 new Intent(
                         Intent.ACTION_VIEW,
                         null,
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         CastWebContentsActivity.class);
         mActivityLifecycle.newIntent(intent);
         Intent next = mShadowActivity.getNextStartedActivity();
@@ -301,7 +301,7 @@ public class CastWebContentsActivityTest {
         Assert.assertTrue(shadowActivity.getShowWhenLocked());
 
         Intent intent = new Intent(Intent.ACTION_SCREEN_OFF);
-        RuntimeEnvironment.application.sendBroadcast(intent);
+        RuntimeEnvironment.getApplication().sendBroadcast(intent);
         ShadowLooper.idleMainLooper();
 
         Assert.assertFalse(shadowActivity.getTurnScreenOn());
@@ -687,7 +687,7 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create().start().resume();
 
         updateMediaState(true, true);
-        RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
+        RuntimeEnvironment.getApplication().sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
 
         Shadows.shadowOf(getMainLooper()).idle();
 
@@ -700,7 +700,7 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create().start().resume();
 
         updateMediaState(false, false);
-        RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
+        RuntimeEnvironment.getApplication().sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
 
         Shadows.shadowOf(getMainLooper()).idle();
 
@@ -734,7 +734,7 @@ public class CastWebContentsActivityTest {
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mActivityLifecycle.create();
-        // RuntimeEnvironment.application
+        // RuntimeEnvironment.getApplication()
         updateDockState(false);
         updateMediaState(false, false);
         // State: Undocked & No Media Playing
@@ -775,7 +775,7 @@ public class CastWebContentsActivityTest {
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mActivityLifecycle.create();
-        // RuntimeEnvironment.application
+        // RuntimeEnvironment.getApplication()
         updateDockState(false);
         updateMediaState(false, false);
         // State: Undocked & No Media Playing
@@ -848,9 +848,10 @@ public class CastWebContentsActivityTest {
         BroadcastReceiver mockReceiver = mock(BroadcastReceiver.class);
         IntentFilter filter = new IntentFilter();
         filter.addAction(CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE);
-        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication())
                 .registerReceiver(mockReceiver, filter);
-        Intent intent = new Intent(RuntimeEnvironment.application, CastWebContentsActivity.class);
+        Intent intent =
+                new Intent(RuntimeEnvironment.getApplication(), CastWebContentsActivity.class);
         intent.putExtra(CastWebContentsIntentUtils.INTENT_EXTRA_FROM_CAST_CORE, true);
         mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class, intent);
         mActivity = mActivityLifecycle.get();
@@ -868,7 +869,7 @@ public class CastWebContentsActivityTest {
         BroadcastReceiver mockReceiver = mock(BroadcastReceiver.class);
         IntentFilter filter = new IntentFilter();
         filter.addAction(CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE);
-        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication())
                 .registerReceiver(mockReceiver, filter);
         mActivityLifecycle.create().start().resume();
 
@@ -878,7 +879,7 @@ public class CastWebContentsActivityTest {
         verify(mockReceiver, times(0)).onReceive(any(Context.class), any(Intent.class));
 
         Intent castCoreIntent =
-                new Intent(RuntimeEnvironment.application, CastWebContentsActivity.class);
+                new Intent(RuntimeEnvironment.getApplication(), CastWebContentsActivity.class);
         castCoreIntent.putExtra(CastWebContentsIntentUtils.INTENT_EXTRA_FROM_CAST_CORE, true);
         mActivityLifecycle.newIntent(castCoreIntent);
         verify(mockReceiver, times(1)).onReceive(any(Context.class), mIntentCaptor.capture());
@@ -898,9 +899,9 @@ public class CastWebContentsActivityTest {
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mActivityLifecycle.create();
-        //  RuntimeEnvironment.application
+        //  RuntimeEnvironment.getApplication()
         Intent serviceIntent =
-                Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService();
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedService();
         assertNotNull(serviceIntent);
         assertEquals(
                 TaskRemovedMonitorService.class.getName(),
@@ -922,9 +923,9 @@ public class CastWebContentsActivityTest {
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mActivityLifecycle.create();
-        //  RuntimeEnvironment.application
+        //  RuntimeEnvironment.getApplication()
         Intent serviceIntent =
-                Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService();
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedService();
         assertNotNull(serviceIntent);
         assertEquals(
                 TaskRemovedMonitorService.class.getName(),
@@ -939,7 +940,8 @@ public class CastWebContentsActivityTest {
                 CastWebContentsIntentUtils.requestStartCastActivity(
                         mWebContents, true, false, true, false, newSessionId);
         mActivityLifecycle.newIntent(newIntent);
-        serviceIntent = Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService();
+        serviceIntent =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedService();
         assertNotNull(serviceIntent);
         assertEquals(
                 TaskRemovedMonitorService.class.getName(),
@@ -956,7 +958,7 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create();
         mActivity.finishForTesting();
         Intent serviceIntent =
-                Shadows.shadowOf(RuntimeEnvironment.application).getNextStoppedService();
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStoppedService();
         assertNotNull(serviceIntent);
         assertEquals(
                 TaskRemovedMonitorService.class.getName(),
@@ -1007,7 +1009,7 @@ public class CastWebContentsActivityTest {
         Intent intent = new Intent(Intent.ACTION_DOCK_EVENT);
         intent.putExtra(
                 Intent.EXTRA_DOCK_STATE, Intent.EXTRA_DOCK_STATE_UNDOCKED + (docked ? 1 : 0));
-        RuntimeEnvironment.application.sendStickyBroadcast(intent);
+        RuntimeEnvironment.getApplication().sendStickyBroadcast(intent);
         Shadows.shadowOf(getMainLooper()).idle();
     }
 
@@ -1028,12 +1030,12 @@ public class CastWebContentsActivityTest {
     private void verifyBroadcastedIntent(
             IntentFilter filter, Runnable runnable, boolean shouldExpect) {
         BroadcastReceiver receiver = mock(BroadcastReceiver.class);
-        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication())
                 .registerReceiver(receiver, filter);
         try {
             runnable.run();
         } finally {
-            LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+            LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication())
                     .unregisterReceiver(receiver);
             if (shouldExpect) {
                 verify(receiver).onReceive(any(Context.class), any(Intent.class));

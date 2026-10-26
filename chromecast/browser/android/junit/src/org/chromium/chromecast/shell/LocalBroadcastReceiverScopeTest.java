@@ -33,7 +33,7 @@ public class LocalBroadcastReceiverScopeTest {
         filter.addAction(action);
         List<String> result = new ArrayList<>();
         LocalBroadcastManager broadcastManager =
-                LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
+                LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication());
         new LocalBroadcastReceiverScope(
                 broadcastManager,
                 filter,
@@ -52,7 +52,7 @@ public class LocalBroadcastReceiverScopeTest {
         filter.addAction(helloAction);
         List<String> result = new ArrayList<>();
         LocalBroadcastManager broadcastManager =
-                LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
+                LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication());
         new LocalBroadcastReceiverScope(
                 broadcastManager,
                 filter,
@@ -69,7 +69,7 @@ public class LocalBroadcastReceiverScopeTest {
         filter.addAction(action);
         List<String> result = new ArrayList<>();
         LocalBroadcastManager broadcastManager =
-                LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
+                LocalBroadcastManager.getInstance(RuntimeEnvironment.getApplication());
         // Wrap scope in try-with-resources to call close() on it.
         try (AutoCloseable scope =
                 new LocalBroadcastReceiverScope(
