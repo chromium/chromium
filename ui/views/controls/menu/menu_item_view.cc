@@ -66,6 +66,7 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_guard.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -133,10 +134,6 @@ MenuItemView::MenuItemView(MenuDelegate* delegate)
                    delegate) {}
 
 MenuItemView::~MenuItemView() {
-  CHECK(!inserting_into_menu_)
-      << "A menu item was synchronously destroyed while being inserted into a "
-         "menu, possibly by some consumer of the accessibility API. This "
-         "should never happen.";
   SetAnchorView(nullptr);
   // Only the root item holds `controller_`, so walk up to the root to also
   // cover destruction of a non-root subtree (e.g. via RemoveMenuItem()). This
@@ -480,7 +477,12 @@ MenuItemView* MenuItemView::AddMenuItemViewImpl(
     item->SetVisible(false);
   }
 
-  base::AutoReset inserting_auto_reset(&item->inserting_into_menu_, true);
+  // There are cases where menu insertions can lead to synchronous accessibility
+  // events, which can in turn lead to a miscalibrated or malicious
+  // accessibility tool attempting to close the menu mid-insertion. Guard
+  // against the item being destroyed while it is being added.
+  ViewGuard item_guard(*item);
+
   auto* added_item = submenu_->AddChildViewAt(std::move(item), insert_index);
 
   added_item->UpdateTooltipText();
