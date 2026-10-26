@@ -57,7 +57,6 @@ interface EnterpriseEnrollmentScreenData {
   gaiaPath: string|undefined;
   gaia_buttons_type: string|undefined;
   clientId: string|undefined;
-  clientVersion: string|undefined;
   hl: string|undefined;
   management_domain: string|undefined;
   email: string|undefined;
@@ -358,9 +357,6 @@ export class EnterpriseEnrollmentElement extends
         // will in fact be modifiable.
         gaiaParams.readOnlyEmail = true;
         gaiaParams.email = data.email;
-      }
-      if (data.clientVersion) {
-        gaiaParams.clientVersion = data.clientVersion;
       }
 
       assert(this.authenticator);

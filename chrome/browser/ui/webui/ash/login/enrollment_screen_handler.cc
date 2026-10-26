@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
@@ -20,7 +19,6 @@
 #include "base/system/sys_info.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -875,10 +873,6 @@ base::DictValue EnrollmentScreenHandler::ScreenDataCommon() {
   // auto-enrollment.
   screen_data.Set("attestationBased", config_.is_automatic_enrollment());
   screen_data.Set("flow", GetFlowString(flow_type_));
-
-  if (ash::features::IsOobeAddUserDuringEnrollmentEnabled()) {
-    screen_data.Set("clientVersion", version_info::GetVersionNumber());
-  }
 
   if (ShouldSpecifyLicenseType(config_)) {
     screen_data.Set("license", GetLicenseString(config_.license_type));

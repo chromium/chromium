@@ -1169,10 +1169,6 @@ BASE_FEATURE(kOneDriveUploadImmediateReauth, base::FEATURE_ENABLED_BY_DEFAULT);
 // up.
 BASE_FEATURE(kOngoingProcesses, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, enrollment screen will allow for automatically adding the
-// authenticated user to the device.
-BASE_FEATURE(kOobeAddUserDuringEnrollment, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, CHOOBE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2494,10 +2490,6 @@ bool IsOobeAiIntroEnabled() {
 
 bool IsBootAnimationEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementOobeSimon);
-}
-
-bool IsOobeAddUserDuringEnrollmentEnabled() {
-  return base::FeatureList::IsEnabled(kOobeAddUserDuringEnrollment);
 }
 
 bool IsOobeChoobeEnabled() {
