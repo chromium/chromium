@@ -5,7 +5,10 @@
 #ifndef UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_H_
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/types/event_type.h"
@@ -243,6 +246,25 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   void HideHandles();
 
+  // Client notifications are queued while a public entry point runs and are
+  // delivered after the outermost one has finished its state changes. The
+  // client may synchronously destroy `this` or call back into it, so it must
+  // not run in the middle of a transition.
+  class ScopedNotificationBatch {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ScopedNotificationBatch(TouchSelectionController& controller);
+    ~ScopedNotificationBatch();
+
+   private:
+    TouchSelectionController& controller_;
+  };
+
+  void NotifySelectionEvent(SelectionEventType event);
+  // Delivers queued notifications in order. May destroy `this`.
+  void DispatchNotifications();
+
   gfx::Vector2dF GetStartLineOffset() const;
   gfx::Vector2dF GetEndLineOffset() const;
   bool GetStartVisible() const;
@@ -301,6 +323,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   // Whether a swipe-to-move-cursor gesture is activated.
   bool swipe_to_move_cursor_activated_ = false;
+
+  std::vector<SelectionEventType> pending_notifications_;
+  int notification_batch_depth_ = 0;
 
   base::WeakPtrFactory<TouchSelectionController> weak_factory_{this};
 };
