@@ -187,6 +187,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Clears the session country code.
   void ClearSessionCountry();
 
+  // Updates the session country code and administrative area (geo_level1)
+  // if `country_code` is non-empty. Returns true if either stored value
+  // changed.
+  bool SetSessionCountryAndGeoLevel1(std::string_view country_code,
+                                     std::string_view geo_level1);
+
   // Returns stored seed-related info. Contrary to the seed data, the data is
   // stored in memory, so it can be read synchronously.
   SeedInfo GetSeedInfo() const;

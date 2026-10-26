@@ -392,9 +392,13 @@ class VariationsService
 
   // Records a 304 response from the variations server. Updates the client fetch
   // time and clears failure streaks. If `response_date` has a value (present on
-  // secure HTTPS responses), updates the stored seed date.
+  // secure HTTPS responses), updates the stored seed date. If `country_code` is
+  // non-empty (present on secure HTTPS responses), updates the stored session
+  // country and administrative area.
   void RecordSuccessfulFetchSeedNotModified(
-      std::optional<base::Time> response_date);
+      std::optional<base::Time> response_date,
+      std::string_view country_code = std::string_view(),
+      std::string_view geo_level1 = std::string_view());
 
   // Performs a simulation of the given `seed` to find any runtime mutable
   // changes that need to be applied to the current session, and apply them.

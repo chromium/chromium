@@ -227,6 +227,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // different day.
   void UpdateSeedDateAndLogDayChange(base::Time seed_date);
 
+  // Updates the latest country code and administrative area code (geo_level1)
+  // if `country_code` is non-empty. Returns true if either stored value
+  // changed.
+  bool UpdateSessionCountryAndGeoLevel1(std::string_view country_code,
+                                        std::string_view geo_level1);
+
   // Returns the serial number of the most recently received seed, or an empty
   // string if there is no seed (or if it could not be read).
   // Side-effect: If there is a failure while attempting to read the latest seed

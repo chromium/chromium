@@ -1267,6 +1267,8 @@ TEST_F(VariationsServiceTest,
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
   head->headers->SetHeader("Date", net::HttpUtil::TimeFormatHTTP(new_date));
+  head->headers->SetHeader("X-Country", "us");
+  head->headers->SetHeader("X-Geo-Level-1", "us-ca");
   network::URLLoaderCompletionStatus status;
   service.test_url_loader_factory()->AddResponse(service.interception_url(),
                                                  std::move(head), "", status);
@@ -1276,6 +1278,10 @@ TEST_F(VariationsServiceTest,
 
   EXPECT_EQ(new_date, prefs_.GetTime(prefs::kVariationsSeedDate));
   EXPECT_NE(initial_time, prefs_.GetTime(prefs::kVariationsLastFetchTime));
+  EXPECT_EQ("us", prefs_.GetString(prefs::kVariationsCountry));
+  EXPECT_EQ("us-ca", prefs_.GetString(prefs::kVariationsGeoLevel1));
+  EXPECT_EQ("us", service.GetLatestCountry());
+  EXPECT_EQ("us-ca", service.GetLatestGeoLevel1());
   histogram_tester.ExpectUniqueSample("Variations.SeedDateChange",
                                       UpdateSeedDateResult::kNewDay, 1);
 }
@@ -1289,6 +1295,8 @@ TEST_F(VariationsServiceTest, NotModifiedOverHttpRetryDoesNotUpdateState) {
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 1);
   prefs_.SetTime(prefs::kVariationsSeedDate, initial_time);
   prefs_.SetTime(prefs::kVariationsLastFetchTime, initial_time);
+  prefs_.SetString(prefs::kVariationsCountry, "us");
+  prefs_.SetString(prefs::kVariationsGeoLevel1, "us-ca");
   VariationsService::EnableFetchForTesting();
 
   TestVariationsService service(
@@ -1301,9 +1309,11 @@ TEST_F(VariationsServiceTest, NotModifiedOverHttpRetryDoesNotUpdateState) {
   auto head = network::mojom::URLResponseHead::New();
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
-  // Set a spoofed Date header in the future relative to initial_time.
+  // Set a spoofed Date and geo headers on the insecure HTTP response.
   head->headers->SetHeader(
       "Date", net::HttpUtil::TimeFormatHTTP(initial_time + base::Days(30)));
+  head->headers->SetHeader("X-Country", "spoofed-country");
+  head->headers->SetHeader("X-Geo-Level-1", "spoofed-geo");
   network::URLLoaderCompletionStatus status;
   service.test_url_loader_factory()->AddResponse(service.interception_url(),
                                                  std::move(head), "", status);
@@ -1323,6 +1333,8 @@ TEST_F(VariationsServiceTest, NotModifiedOverHttpRetryDoesNotUpdateState) {
   EXPECT_EQ(0, prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
   EXPECT_EQ(initial_time, prefs_.GetTime(prefs::kVariationsSeedDate));
   EXPECT_NE(initial_time, prefs_.GetTime(prefs::kVariationsLastFetchTime));
+  EXPECT_EQ("us", prefs_.GetString(prefs::kVariationsCountry));
+  EXPECT_EQ("us-ca", prefs_.GetString(prefs::kVariationsGeoLevel1));
   // The untrusted Date header is ignored, so the fetch records "No new date".
   histogram_tester.ExpectUniqueSample("Variations.SeedDateChange",
                                       UpdateSeedDateResult::kNoNewDate, 1);

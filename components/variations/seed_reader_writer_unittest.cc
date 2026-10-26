@@ -572,6 +572,32 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, UpdateStoredSeedInfoFields) {
               IsEmpty());
   EXPECT_THAT(seed_info_after_clear_perm.permanent_country_code(), IsEmpty());
   EXPECT_THAT(seed_info_after_clear_perm.permanent_version(), IsEmpty());
+
+  // 5. Verify SetSessionCountryAndGeoLevel1 skips writes when unchanged or
+  // empty, and writes when changed.
+  EXPECT_FALSE(seed_reader_writer.SetSessionCountryAndGeoLevel1("", "us-ca"));
+  EXPECT_FALSE(timer_.IsRunning());
+  EXPECT_FALSE(seed_reader_writer.SetSessionCountryAndGeoLevel1("us", "us-ny"));
+  EXPECT_FALSE(timer_.IsRunning());
+
+  EXPECT_TRUE(seed_reader_writer.SetSessionCountryAndGeoLevel1("ca", "ca-on"));
+  EXPECT_TRUE(timer_.IsRunning());
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_set_session = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().session_country_code, "ca");
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().session_geo_level1, "ca-on");
+  EXPECT_EQ(seed_info_after_set_session.session_country_code(), "ca");
+  EXPECT_EQ(seed_info_after_set_session.session_geo_level1(), "ca-on");
+  EXPECT_EQ(
+      local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
+      "ca");
+  if (GetParam().HasGeoLevel1Pref()) {
+    EXPECT_EQ(
+        local_state_.GetString(GetParam().seed_fields_prefs.session_geo_level1),
+        "ca-on");
+  }
 }
 
 // Verifies that stored_seed_info_ field updates are written to the seed file,

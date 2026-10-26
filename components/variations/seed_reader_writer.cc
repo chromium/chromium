@@ -503,6 +503,38 @@ void SeedReaderWriter::ClearSessionCountry() {
   }
 }
 
+bool SeedReaderWriter::SetSessionCountryAndGeoLevel1(
+    std::string_view country_code,
+    std::string_view geo_level1) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (country_code.empty()) {
+    return false;
+  }
+  SeedInfo current_info = GetSeedInfo();
+  const bool country_changed =
+      current_info.session_country_code != country_code;
+  // `session_geo_level1` is nullptr for safe seeds (`kSafeSeedFieldsPrefs`),
+  // which do not store geo level 1 in Local State or in the seed file.
+  const bool geo_level1_changed =
+      fields_prefs_->session_geo_level1 != nullptr &&
+      current_info.session_geo_level1 != geo_level1;
+  if (!country_changed && !geo_level1_changed) {
+    return false;
+  }
+  if (ShouldUseSeedFile()) {
+    stored_seed_info_.set_session_country_code(country_code);
+    stored_seed_info_.set_session_geo_level1(geo_level1);
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  }
+  // Always update Local State, even when using a seed file, as the session
+  // country code is still read directly from Local State by other features
+  // (and geo level 1 is kept in sync alongside it). See
+  // ScheduleSeedFileWrite() for details.
+  local_state_->SetString(fields_prefs_->session_country_code, country_code);
+  SetGeoLevel1Pref(*fields_prefs_, *local_state_, geo_level1);
+  return true;
+}
+
 SeedInfo SeedReaderWriter::GetSeedInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
@@ -812,8 +844,8 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   local_state_->SetTime(fields_prefs_->client_fetch_time,
                         seed_info.client_fetch_time);
 
-  // Only update the latest country code and geo level if country code is not
-  // empty.
+  // Only update the latest country code and administrative area
+  // if country code is not empty.
   if (!seed_info.session_country_code.empty()) {
     stored_seed_info_.set_session_country_code(seed_info.session_country_code);
     stored_seed_info_.set_session_geo_level1(seed_info.session_geo_level1);
@@ -837,7 +869,8 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   // We still need to update the session country code in local state as it is
   // used by hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs() and
-  // for some platform experience features.
+  // for some platform experience features. Keep geo level 1 in local state in
+  // sync with the session country code as well.
   // Note: It is possible for the country code to be empty, e.g. if the seed was
   // fetched over HTTP (and hence untrusted). Keep the existing values in this
   // case.
