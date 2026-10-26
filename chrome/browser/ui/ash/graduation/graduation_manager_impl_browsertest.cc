@@ -14,7 +14,9 @@
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -372,6 +374,37 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
   run_loop.Run();
 
   EXPECT_EQ("es", GetLanguageCode());
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest, DoesNotLoopOnDstFallBackDay) {
+  // In US Pacific time (America/Los_Angeles), DST ended on Sunday 2024-11-03,
+  // making that local calendar day 25 hours long.
+  base::test::ScopedRestoreDefaultTimezone pacific_tz("America/Los_Angeles");
+  base::test::ScopedLibcTimezoneOverride libc_tz("America/Los_Angeles");
+
+  // Advance from kSessionStartTime (2024-09-30) to 2024-11-03 (the 25-hour DST
+  // fall-back day).
+  AdvanceTimeBy(base::Days(34));
+
+  // Schedule an upcoming enablement start date on the following day
+  // (2024-11-04). Without a DST-safe next-midnight calculation,
+  // GetNextDayLocalMidnight() on 2024-11-03 would round back down to
+  // 2024-11-03 00:00 (in the past) and cause midnight_timer_ to tight-loop.
+  SetGraduationEnablementWithStartDate(true, 4, 11, 2024);
+  WaitForAppRegistryCommands(browser()->GetProfile());
+
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
+            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
+
+  // Advancing across the 25-hour day to 2024-11-04 should reach the start date
+  // and pin the app.
+  AdvanceTimeBy(base::Days(1));
+  WaitForAppRegistryCommands(browser()->GetProfile());
+  WaitForShelfItemAdd();
+
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
 }
 
 class GraduationManagerWithConsumerUserTest

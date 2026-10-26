@@ -39,8 +39,12 @@
 namespace ash::graduation {
 
 namespace {
+// Add 28 hours to `date`'s local midnight before rounding down to local
+// midnight so that 25-hour DST fall-back days still advance to the next
+// calendar day (and 23-hour spring-forward days do not skip a day).
 base::Time GetNextDayLocalMidnight(base::Time date) {
-  return (date.LocalMidnight() + base::Days(1)).LocalMidnight();
+  return (date.LocalMidnight() + base::Days(1) + base::Hours(4))
+      .LocalMidnight();
 }
 }  // namespace
 
