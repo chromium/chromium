@@ -97,50 +97,9 @@ PhysicalNaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
   return PhysicalNaturalSizingInfo::None();
 }
 
-AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
-  NOT_DESTROYED();
-  const PhysicalOffset content_box_offset = PhysicalContentBoxRect().offset;
-  return AffineTransform().Translate(content_box_offset.left,
-                                     content_box_offset.top);
-}
-
 bool LayoutEmbeddedContent::ShowsUnavailablePluginIndicator() const {
   NOT_DESTROYED();
   return false;
-}
-
-PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
-    const PhysicalOffset& offset) const {
-  NOT_DESTROYED();
-  gfx::PointF point(offset);
-  return PhysicalOffset::FromPointFRound(
-      EmbeddedContentTransform().Inverse().MapPoint(point));
-}
-
-gfx::PointF LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
-    const gfx::PointF& point) const {
-  NOT_DESTROYED();
-  return EmbeddedContentTransform().Inverse().MapPoint(point);
-}
-
-gfx::Rect LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
-    const gfx::Rect& rect) const {
-  NOT_DESTROYED();
-  return EmbeddedContentTransform().Inverse().MapRect(rect);
-}
-
-PhysicalOffset LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
-    const PhysicalOffset& offset) const {
-  NOT_DESTROYED();
-  gfx::PointF point(offset);
-  return PhysicalOffset::FromPointFRound(
-      EmbeddedContentTransform().MapPoint(point));
-}
-
-gfx::Rect LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
-    const gfx::Rect& rect) const {
-  NOT_DESTROYED();
-  return EmbeddedContentTransform().MapRect(rect);
 }
 
 PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {

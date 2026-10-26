@@ -58,14 +58,6 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   WebPluginContainerImpl* Plugin() const;
   EmbeddedContentView* GetEmbeddedContentView() const;
 
-  // Subtracts border/padding, and other offsets if they exist.
-  PhysicalOffset EmbeddedContentFromBorderBox(const PhysicalOffset&) const;
-  gfx::PointF EmbeddedContentFromBorderBox(const gfx::PointF&) const;
-  gfx::Rect EmbeddedContentFromBorderBox(const gfx::Rect&) const;
-  // Adds border/padding, and other offsets if they exist.
-  PhysicalOffset BorderBoxFromEmbeddedContent(const PhysicalOffset&) const;
-  gfx::Rect BorderBoxFromEmbeddedContent(const gfx::Rect&) const;
-
   PhysicalRect ReplacedContentRectFrom(
       const PhysicalRect& base_content_rect) const override;
 
@@ -78,10 +70,6 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   }
 
   bool IsThrottledFrameView() const;
-
-  // A transform mapping from the coordinate space of the embedded content
-  // rendered by this object to the object's border-box.
-  AffineTransform EmbeddedContentTransform() const;
 
   virtual bool ShowsUnavailablePluginIndicator() const;
 

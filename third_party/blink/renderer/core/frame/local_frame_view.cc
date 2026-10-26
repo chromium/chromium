@@ -3963,9 +3963,9 @@ gfx::Rect LocalFrameView::ConvertToContainingEmbeddedContentView(
       return local_rect;
 
     // Add borders and padding etc.
-    gfx::Rect rect = layout_object->BorderBoxFromEmbeddedContent(local_rect);
-    return ToPixelSnappedRect(
-        layout_object->LocalToAbsoluteRect(PhysicalRect(rect)));
+    PhysicalRect rect(local_rect);
+    rect.offset += layout_object->PhysicalContentBoxRect().offset;
+    return ToPixelSnappedRect(layout_object->LocalToAbsoluteRect(rect));
   }
 
   return local_rect;
@@ -3980,8 +3980,10 @@ gfx::Rect LocalFrameView::ConvertFromContainingEmbeddedContentView(
         return parent_rect;
       }
 
-      return layout_object->EmbeddedContentFromBorderBox(ToEnclosingRect(
-          layout_object->AbsoluteToLocalRect(PhysicalRect(parent_rect))));
+      PhysicalRect local_rect =
+          layout_object->AbsoluteToLocalRect(PhysicalRect(parent_rect));
+      local_rect.offset -= layout_object->PhysicalContentBoxRect().offset;
+      return ToEnclosingRect(local_rect);
     }
 
     gfx::Rect local_rect = parent_rect;
@@ -4000,7 +4002,7 @@ PhysicalOffset LocalFrameView::ConvertToContainingEmbeddedContentView(
 
     PhysicalOffset point(local_offset);
     // Add borders and padding etc.
-    point = layout_object->BorderBoxFromEmbeddedContent(point);
+    point += layout_object->PhysicalContentBoxRect().offset;
     return layout_object->LocalToAbsolutePoint(point);
   }
 
@@ -4016,7 +4018,7 @@ gfx::PointF LocalFrameView::ConvertToContainingEmbeddedContentView(
 
     PhysicalOffset point = PhysicalOffset::FromPointFRound(local_point);
     // Add borders and padding etc.
-    point = layout_object->BorderBoxFromEmbeddedContent(point);
+    point += layout_object->PhysicalContentBoxRect().offset;
     return static_cast<gfx::PointF>(layout_object->LocalToAbsolutePoint(point));
   }
 
@@ -4039,7 +4041,7 @@ gfx::PointF LocalFrameView::ConvertFromContainingEmbeddedContentView(
 
     gfx::PointF point = layout_object->AbsoluteToLocalPoint(parent_point);
     // Subtract borders and padding etc.
-    point = layout_object->EmbeddedContentFromBorderBox(point);
+    point -= gfx::Vector2dF(layout_object->PhysicalContentBoxRect().offset);
     return point;
   }
 
