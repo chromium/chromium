@@ -11,7 +11,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,6 +22,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
@@ -789,7 +789,7 @@ public class BrowserStartupControllerTest {
 
     @Test
     @SmallTest
-    @Ignore("https://crbug.com/425929053")
+    @DisabledTest(message = "https://crbug.com/425929053")
     // The code does not do what this test expects. The test setup was incorrect that's why it
     // wasn't caught. When a full browser startup is triggered as below, the minimal browser
     // contentStart has not started yet because the posted task has not run, leading to the full

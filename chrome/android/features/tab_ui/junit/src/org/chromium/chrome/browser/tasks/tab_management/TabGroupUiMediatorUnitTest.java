@@ -39,7 +39,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +60,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -587,8 +587,8 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     // TODO(crbug.com/40637854): Ignore this test until we have a conclusion from the attached bug.
-    @Ignore
     @Test
+    @DisabledTest(message = "https://crbug.com/40637854")
     public void tabClosure_LastTabInGroup_GroupUiVisible() {
         initAndAssertProperties(mTab2);
 

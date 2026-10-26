@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.runner.Description.createTestDescription;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -99,7 +98,7 @@ public class AnnotationProcessingUtilsTest {
     }
 
     @Test
-    @Ignore("Rules not supported yet.")
+    @DisabledTest(message = "Rules not supported yet. https://crbug.com/40549002")
     public void testGetTargetAnnotation_OnRuleButNotOnMethod() {
         TargetAnnotation retrievedAnnotation;
 
@@ -112,7 +111,7 @@ public class AnnotationProcessingUtilsTest {
     }
 
     @Test
-    @Ignore("Rules not supported yet.")
+    @DisabledTest(message = "Rules not supported yet. https://crbug.com/40549002")
     public void testGetTargetAnnotation_OnRuleAndMethod() {
         TargetAnnotation retrievedAnnotation;
 

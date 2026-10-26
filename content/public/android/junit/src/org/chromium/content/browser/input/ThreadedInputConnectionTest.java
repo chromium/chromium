@@ -26,7 +26,6 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputContentInfo;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +40,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -187,7 +187,7 @@ public class ThreadedInputConnectionTest {
     @Test
     @Feature({"TextInput"})
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT})
-    @Ignore("crbug/632792")
+    @DisabledTest(message = "https://crbug.com/40478529")
     public void testFailToRequestToRenderer() {
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(false);
         // Should not hang here. Return null to indicate failure.
@@ -197,7 +197,7 @@ public class ThreadedInputConnectionTest {
     @Test
     @Feature({"TextInput"})
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT})
-    @Ignore("crbug/632792")
+    @DisabledTest(message = "https://crbug.com/40478529")
     public void testRendererCannotUpdateState() {
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(true);
         // We found that renderer cannot update state, e.g., due to a crash.

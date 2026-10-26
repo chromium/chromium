@@ -21,7 +21,6 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,6 +31,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -203,9 +203,9 @@ public class FileUtilsTest {
         }
     }
 
-    // Enable or delete once https://crbug.com/1066733 is fixed.
-    @Ignore
+    // Enable or delete once https://crbug.com/40124663 is fixed.
     @Test
+    @DisabledTest(message = "https://crbug.com/40124663")
     public void testRecursivelyDeleteFileWithCanDelete() throws IOException {
         Function<String, Boolean> canDeleteIfEndsWith1 =
                 (String filepath) -> {

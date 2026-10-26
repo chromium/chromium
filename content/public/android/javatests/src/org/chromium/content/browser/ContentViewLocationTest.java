@@ -11,7 +11,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.Visibility;
@@ -171,7 +171,7 @@ public class ContentViewLocationTest {
     @Test
     @MediumTest
     @Feature({"Location"})
-    @Ignore("https://crbug.com/447442632")
+    @DisabledTest(message = "https://crbug.com/447442632")
     public void testWatchHideNewWatchShow() throws Throwable {
         startGeolocationWatchPosition();
         pollForPositionCallback();

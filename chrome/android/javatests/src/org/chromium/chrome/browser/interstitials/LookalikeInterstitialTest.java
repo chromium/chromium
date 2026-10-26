@@ -8,7 +8,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,7 +59,7 @@ public class LookalikeInterstitialTest {
     }
 
     @Test
-    @Ignore("crbug.com/41446661")
+    @DisabledTest(message = "https://crbug.com/41446661")
     public void testBasicInterstitialShown() throws Exception {
         Tab tab = mPage.getTab();
         ChromeTabUtils.loadUrlOnUiThread(
