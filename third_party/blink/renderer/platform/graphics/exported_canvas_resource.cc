@@ -75,4 +75,8 @@ ExportedCanvasResource::PrepareTransferableResource() {
   return resource_->PrepareTransferableResource();
 }
 
+void ExportedCanvasResource::SetOriginClean(bool clean) {
+  resource_->SetOriginClean(clean);
+}
+
 }  // namespace blink
