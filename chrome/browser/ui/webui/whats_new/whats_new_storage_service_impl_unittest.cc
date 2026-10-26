@@ -140,3 +140,27 @@ TEST_F(WhatsNewStorageServiceTest, StoresEditionsDataWithPreviousData) {
   storage_service_->Reset();
   EXPECT_TRUE(storage_service_->ReadEditionData().empty());
 }
+
+TEST_F(WhatsNewStorageServiceTest, ResetsVersionData) {
+  auto* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  EXPECT_FALSE(storage_service_->WasVersionPageUsedForCurrentMilestone());
+  EXPECT_EQ(0, storage_service_->ReadVersionData());
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kWhatsNewVersionUsed));
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kLastWhatsNewVersion));
+
+  storage_service_->SetVersionUsed();
+  local_state->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+  EXPECT_EQ(CHROME_VERSION_MAJOR, storage_service_->ReadVersionData());
+  EXPECT_TRUE(storage_service_->WasVersionPageUsedForCurrentMilestone());
+  EXPECT_TRUE(local_state->HasPrefPath(prefs::kWhatsNewVersionUsed));
+  EXPECT_TRUE(local_state->HasPrefPath(prefs::kLastWhatsNewVersion));
+  EXPECT_EQ(CHROME_VERSION_MAJOR,
+            local_state->GetInteger(prefs::kLastWhatsNewVersion));
+
+  storage_service_->Reset();
+  EXPECT_FALSE(storage_service_->WasVersionPageUsedForCurrentMilestone());
+  EXPECT_EQ(0, storage_service_->ReadVersionData());
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kWhatsNewVersionUsed));
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kLastWhatsNewVersion));
+  EXPECT_EQ(0, local_state->GetInteger(prefs::kLastWhatsNewVersion));
+}

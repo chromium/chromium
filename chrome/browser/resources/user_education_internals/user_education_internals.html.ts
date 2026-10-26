@@ -215,6 +215,15 @@ export function getHtml(this: UserEducationInternalsElement) {
                   staging environment for the duration of the browser session.
                 </p>
               </div>
+              <h3>Reset Data</h3>
+              <p>
+                Clicking the button below will reset all What's New preference
+                data (module order, edition usage, and version history).
+              </p>
+              <cr-button id="clearWhatsNewData"
+                  @click="${this.onClearWhatsNewDataClick_}">
+                Clear All What's New Data
+              </cr-button>
               <h3>Debug Info</h3>
               <p>
                 To view debug information for What's New, open the page and run

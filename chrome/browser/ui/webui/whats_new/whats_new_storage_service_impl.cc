@@ -118,6 +118,10 @@ void WhatsNewStorageServiceImpl::ClearEditions(
 void WhatsNewStorageServiceImpl::Reset() {
   GetEnabledOrder()->clear();
   GetUsedEditions()->clear();
+  g_browser_process->local_state()->ClearPref(prefs::kWhatsNewVersionUsed);
+  // Set in whats_new_util.cc; cleared here so Reset() wipes all What's New
+  // prefs.
+  g_browser_process->local_state()->ClearPref(prefs::kLastWhatsNewVersion);
 }
 
 ScopedListPrefUpdate WhatsNewStorageServiceImpl::GetEnabledOrder() {
