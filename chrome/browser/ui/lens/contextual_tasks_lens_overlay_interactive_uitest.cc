@@ -2402,8 +2402,16 @@ class ContextualTasksLensRegionChipInteractiveUiTest
   }
 };
 
+// TODO(crbug.com/577352347): Flaky timeouts on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_OpenOverlaySelectRegionMountChipAndDismiss \
+  DISABLED_OpenOverlaySelectRegionMountChipAndDismiss
+#else
+#define MAYBE_OpenOverlaySelectRegionMountChipAndDismiss \
+  OpenOverlaySelectRegionMountChipAndDismiss
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
-                       OpenOverlaySelectRegionMountChipAndDismiss) {
+                       MAYBE_OpenOverlaySelectRegionMountChipAndDismiss) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
@@ -2468,8 +2476,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
       VerifyLensChipMetrics(&histogram_tester, &user_action_tester));
 }
 
+// TODO(crbug.com/577352347): Flaky timeouts on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_OpenOverlaySelectRegionSubmitQueryAndDismissChip \
+  DISABLED_OpenOverlaySelectRegionSubmitQueryAndDismissChip
+#else
+#define MAYBE_OpenOverlaySelectRegionSubmitQueryAndDismissChip \
+  OpenOverlaySelectRegionSubmitQueryAndDismissChip
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
-                       OpenOverlaySelectRegionSubmitQueryAndDismissChip) {
+                       MAYBE_OpenOverlaySelectRegionSubmitQueryAndDismissChip) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
