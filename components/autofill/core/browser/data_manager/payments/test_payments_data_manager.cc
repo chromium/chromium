@@ -249,7 +249,7 @@ bool TestPaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
   return IsAutofillPaymentMethodsEnabled() && IsAutofillWalletImportEnabled();
 }
 
-bool TestPaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() const {
+bool TestPaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   if (payment_methods_mandatory_reauth_enabled_.has_value()) {
     return payment_methods_mandatory_reauth_enabled_.value();
   }

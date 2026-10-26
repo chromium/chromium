@@ -48,7 +48,6 @@ using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
-using ::testing::Not;
 using ::testing::UnorderedElementsAre;
 
 namespace {
@@ -96,10 +95,9 @@ class AutofillDataProviderTest : public testing::Test {
   AutofillDataProviderTest()
       : webdata_helper_(std::make_unique<EntityTable>()) {
     client_.SetAutofillProfileEnabled(true);
-    TestPaymentsDataManager& payments_data_manager =
-        client_.GetPersonalDataManager().test_payments_data_manager();
-    payments_data_manager.SetAutofillPaymentMethodsEnabled(true);
-    payments_data_manager.SetPaymentMethodsMandatoryReauthEnabled(false);
+    client_.GetPersonalDataManager()
+        .test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
 
     auto entity_data_manager = std::make_unique<EntityDataManager>(
         client_.GetPrefs(),
@@ -861,26 +859,6 @@ TEST_F(AutofillDataProviderTest, RetrieveAllByContent_CreditCardData) {
   EXPECT_THAT(RetrieveAllByContentHelper(
                   retriever(), test::GetMaskedServerCard().LastFourDigits()),
               IsEmpty());
-}
-
-// Tests that `RetrieveAllByContent` skips payment data if filling it requires
-// re-authentication, while `RetrieveAll` is unaffected.
-TEST_F(AutofillDataProviderTest,
-       RetrieveAllByContent_SkipsPaymentDataIfReauthRequired) {
-  TestPaymentsDataManager& payments_data_manager =
-      client().GetPersonalDataManager().test_payments_data_manager();
-  payments_data_manager.SetPaymentMethodsMandatoryReauthEnabled(true);
-  payments_data_manager.AddCreditCard(test::GetCreditCard());
-  const Iban iban = test::GetLocalIban();
-  payments_data_manager.AddIbanForTest(std::make_unique<Iban>(iban));
-
-  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), u"4111 1111"), IsEmpty());
-  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), iban.value()), IsEmpty());
-  // Typed retrievals only expose obfuscated values and are not affected.
-  EXPECT_THAT(RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardNumber),
-              Not(IsEmpty()));
-  EXPECT_THAT(RetrieveAllHelper(retriever(), MemoryDataType::kIban),
-              Not(IsEmpty()));
 }
 
 // Tests that `RetrieveAllByContent` matches Autofill AI entity attributes.

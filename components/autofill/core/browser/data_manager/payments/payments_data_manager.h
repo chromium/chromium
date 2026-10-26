@@ -468,7 +468,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Only checks if the user has enabled the feature. For the purposes of
   // checking if Mandatory Reauth is enabled, use
   // PaymentsAutofillClient::IsMandatoryReauthEnabled().
-  virtual bool IsPaymentMethodsMandatoryReauthEnabled() const;
+  virtual bool IsPaymentMethodsMandatoryReauthEnabled();
   bool ShouldShowPaymentMethodsMandatoryReauthPromo();
   void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 
