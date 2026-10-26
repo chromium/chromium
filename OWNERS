@@ -228,7 +228,6 @@ per-file third_party/libpfm4/src=*
 per-file third_party/libphonenumber/src=*
 per-file third_party/libprotobuf-mutator/src=*
 per-file third_party/libsrtp=*
-per-file third_party/libsync/upstream=*
 per-file third_party/libunwind/src=*
 per-file third_party/libunwindstack=*
 per-file third_party/libva-fake-driver/src=*

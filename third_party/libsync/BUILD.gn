@@ -16,8 +16,8 @@ declare_args() {
 if (!use_system_libsync) {
   config("libsync_config") {
     include_dirs = [
-      "upstream",
-      "upstream/include",
+      "src",
+      "src/include",
     ]
     if (!is_android) {
       defines = [ "__INTRODUCED_IN(x)=" ]
@@ -31,11 +31,11 @@ if (!use_system_libsync) {
 
   source_set("libsync") {
     sources = [
+      "src/include/ndk/sync.h",
+      "src/include/sync/sync.h",
+      "src/sw_sync.h",
+      "src/sync.c",
       "strlcpy.c",
-      "upstream/include/ndk/sync.h",
-      "upstream/include/sync/sync.h",
-      "upstream/sw_sync.h",
-      "upstream/sync.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]

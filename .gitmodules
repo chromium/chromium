@@ -399,10 +399,6 @@
 [submodule "third_party/libsrtp"]
 	path = third_party/libsrtp
 	url = https://chromium.googlesource.com/chromium/deps/libsrtp
-[submodule "third_party/libsync/upstream"]
-	path = third_party/libsync/upstream
-	url = https://chromium.googlesource.com/aosp/platform/system/core/libsync
-	gclient-condition = checkout_linux or checkout_android
 [submodule "third_party/libunwindstack"]
 	path = third_party/libunwindstack
 	url = https://chromium.googlesource.com/chromium/src/third_party/libunwindstack

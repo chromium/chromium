@@ -10,8 +10,15 @@ License File: LICENSE
 
 Modifications:
 - Added strlcpy.c
+- src/ has only the upstream files Chromium builds, plus NOTICE; Android.bp,
+  libsync.map.txt, OWNERS and tests/ are not imported.
+- src/include/sync/sync.h is a copy of src/include/android/sync.h; upstream
+  has a symlink there, which Crowbar cannot import.
 
 To import a new snapshot of libsync:
-- Checkout the latest version: git checkout 074e053f159602aa7558cfb2ae2f3c67878d90e0
-- Change the DEPS entry to the newly checked out commit.
+- Copy NOTICE, sync.c, sw_sync.h, include/android/sync.h and
+  include/ndk/sync.h of
+  https://chromium.googlesource.com/aosp/platform/system/core/libsync at the
+  new commit into src/, and include/android/sync.h to
+  src/include/sync/sync.h.
 - Update this README to reflect the new version.
