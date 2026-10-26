@@ -1213,7 +1213,7 @@ xrReleaseSwapchainImage(XrSwapchain swapchain,
   RETURN_IF(release_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainImageReleaseInfo next is not nullptr");
 
-  return XR_SUCCESS;
+  return GetTestHelper().ReleaseSwapchainImage(swapchain);
 }
 
 XrResult XRAPI_PTR xrSuggestInteractionProfileBindings(

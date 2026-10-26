@@ -140,6 +140,7 @@ class OpenXrTestHelper {
 #endif
 
   uint32_t NextSwapchainImageIndex(XrSwapchain swapchain);
+  XrResult ReleaseSwapchainImage(XrSwapchain swapchain);
   XrTime NextPredictedDisplayTime();
 
   void UpdateEventQueue();
@@ -275,10 +276,12 @@ class OpenXrTestHelper {
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
   uint32_t acquired_swapchain_texture_ = 0;
+  uint32_t released_swapchain_texture_ = 0;
   std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> textures_arr_;
 #elif BUILDFLAG(IS_ANDROID)
-  // Acquired swapchain texture per swapchain.
+  // Acquired and last released swapchain texture per swapchain.
   absl::flat_hash_map<XrSwapchain, uint32_t> acquired_swapchain_textures_;
+  absl::flat_hash_map<XrSwapchain, uint32_t> released_swapchain_textures_;
   absl::flat_hash_map<XrSwapchain, std::vector<uint32_t>>
       opengl_es_textures_arrays_;
 #elif BUILDFLAG(IS_LINUX)

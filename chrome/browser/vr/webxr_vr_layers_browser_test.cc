@@ -45,9 +45,6 @@ void MockForLayers::ProcessSubmittedFrameUnlocked(
     const std::vector<device::ViewData>& views,
     const std::vector<device::LayerData>& layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  if (views.empty() && layers.empty()) {
-    return;
-  }
   base::AutoLock lock(lock_);
   last_submitted_views_ = views;
   last_submitted_layers_ = layers;
@@ -169,7 +166,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
   t->EndTest();
 }
 
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestMediaLayers) {
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMediaLayers) {
   UiUtils::DisableOverlayForTesting();
   MockForLayers mock;
 

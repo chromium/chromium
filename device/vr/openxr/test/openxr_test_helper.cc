@@ -141,9 +141,11 @@ void OpenXrTestHelper::Reset() {
   d3d_device_ = nullptr;
   textures_arr_.clear();
   acquired_swapchain_texture_ = 0;
+  released_swapchain_texture_ = 0;
 #elif BUILDFLAG(IS_ANDROID)
   opengl_es_textures_arrays_.clear();
   acquired_swapchain_textures_.clear();
+  released_swapchain_textures_.clear();
 #endif
   next_handle_ = 0;
   next_predicted_display_time_ = 0;
@@ -340,7 +342,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   D3D11_BOX box{x_start, 0, 0, x_start + 1, 1, 1};
   context->CopySubresourceRegion(
       texture_destination.Get(), 0, 0, 0, 0,
-      textures_arr_[acquired_swapchain_texture_].Get(), 0, &box);
+      textures_arr_[released_swapchain_texture_].Get(), 0, &box);
 
   D3D11_MAPPED_SUBRESOURCE map_data = {};
   hr = context->Map(texture_destination.Get(), 0, D3D11_MAP_READ, 0, &map_data);
@@ -362,7 +364,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(
   // In some build environment, XR_NULL_HANDLE is a signed integer
   // while XrSwapchain is unsigned.
   DCHECK_NE(sub_image.swapchain, static_cast<XrSwapchain>(XR_NULL_HANDLE));
-  auto texture_index = acquired_swapchain_textures_[sub_image.swapchain];
+  auto texture_index = released_swapchain_textures_[sub_image.swapchain];
   DCHECK_LT(texture_index,
             opengl_es_textures_arrays_[sub_image.swapchain].size());
   uint8_t pixel[4];
@@ -402,7 +404,7 @@ SkColor OpenXrTestHelper::ReadTextureColor(
     const XrSwapchainSubImage& sub_image) {
   SkColor color = SK_ColorTRANSPARENT;
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  auto texture_index = acquired_swapchain_textures_[sub_image.swapchain];
+  auto texture_index = released_swapchain_textures_[sub_image.swapchain];
   DCHECK_LT(texture_index,
             opengl_es_textures_arrays_[sub_image.swapchain].size());
 
@@ -439,7 +441,7 @@ std::vector<SkColor> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
     XrSwapchain swapchain) {
   std::vector<SkColor> colors;
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  auto texture_index = acquired_swapchain_textures_[swapchain];
+  auto texture_index = released_swapchain_textures_[swapchain];
   DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
 
   GLuint fbo = 0;
@@ -1278,6 +1280,17 @@ uint32_t OpenXrTestHelper::NextSwapchainImageIndex(XrSwapchain swapchain) {
   // Linux: swapchain image management is not yet implemented.
   return 0;
 #endif
+}
+
+XrResult OpenXrTestHelper::ReleaseSwapchainImage(XrSwapchain swapchain) {
+  RETURN_IF_XR_FAILED(ValidateSwapchain(swapchain));
+#if BUILDFLAG(IS_WIN)
+  released_swapchain_texture_ = acquired_swapchain_texture_;
+#elif BUILDFLAG(IS_ANDROID)
+  released_swapchain_textures_[swapchain] =
+      acquired_swapchain_textures_[swapchain];
+#endif
+  return XR_SUCCESS;
 }
 
 XrTime OpenXrTestHelper::NextPredictedDisplayTime() {
