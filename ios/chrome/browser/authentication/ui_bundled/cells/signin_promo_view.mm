@@ -24,7 +24,7 @@
 
 namespace {
 
-typedef struct {
+struct PromoStyleValues {
   // Vertical spacing between stackView and cell contentView.
   const CGFloat kStackViewTopPadding;
   const CGFloat kStackViewBottomPadding;
@@ -44,7 +44,7 @@ typedef struct {
   const CGFloat kCloseButtonTopMargin;
   const CGFloat kMainPromoSubViewSpacing;
   const CGFloat kButtonStackViewSubViewSpacing;
-} PromoStyleValues;
+};
 
 const PromoStyleValues kStandardPromoStyle = {
     11.0,  // kStackViewTopPadding

@@ -33,10 +33,10 @@ namespace {
 const CGFloat kOverScrollSymbolPointSize = 22.;
 
 // Represents a simple min/max range.
-typedef struct {
+struct FloatRange {
   CGFloat min;
   CGFloat max;
-} FloatRange;
+};
 
 // The threshold at which the refresh actions will start to be visible.
 const CGFloat kRefreshThreshold = 48.0;

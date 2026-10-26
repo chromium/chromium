@@ -22,10 +22,10 @@
 
 class TemplateURL;
 
-typedef struct {
+struct SearchEngineTest {
   const std::string short_name;
   const GURL searchable_url;
-} SearchEngineTest;
+};
 
 // Unit tests for SearchEngineTableViewController when the choice screen feature
 // is disabled (using `kDisableSearchEngineChoiceScreen`).

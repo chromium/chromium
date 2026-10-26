@@ -54,7 +54,7 @@ class TabUsageRecorderBrowserAgent;
 class UrlLoadingBrowserAgent;
 @protocol VoiceSearchController;
 
-typedef struct {
+struct BrowserViewControllerDependencies {
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
@@ -79,7 +79,7 @@ typedef struct {
   raw_ptr<SnapshotBrowserAgent> snapshotBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
-} BrowserViewControllerDependencies;
+};
 
 // The top-level view controller for the browser UI. Manages other controllers
 // which implement the interface.

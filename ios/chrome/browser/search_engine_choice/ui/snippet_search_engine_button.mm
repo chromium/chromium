@@ -48,12 +48,12 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 constexpr NSTimeInterval kCheckedBackgroundColorAlpha = .1;
 
 // List of values according to the style.
-typedef struct {
+struct ButtonLayout {
   // Upper vertical margin for name label in the button.
   const CGFloat upper_vertical_margin;
   // Lower vertical margin for the snippet label in the button.
   const CGFloat lower_vertical_margin;
-} ButtonLayout;
+};
 
 // Style with no current default pill.
 const ButtonLayout kNoCurrentDefaultButtonLayout = {

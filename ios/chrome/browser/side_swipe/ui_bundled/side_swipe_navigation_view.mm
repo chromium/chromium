@@ -22,10 +22,10 @@ namespace {
 
 enum class SwipeType { CHANGE_TABS, NAVIGATION };
 
-typedef struct {
+struct FloatRange {
   CGFloat min;
   CGFloat max;
-} FloatRange;
+};
 
 CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
   DCHECK(from.min < from.max);

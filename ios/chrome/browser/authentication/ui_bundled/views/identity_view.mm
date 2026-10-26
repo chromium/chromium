@@ -16,14 +16,14 @@
 namespace {
 
 // List of constants related to the IdentityViewStyle.
-typedef struct {
+struct StyleValues {
   const CGFloat avatarLeadingMargin;
   const CGFloat avatarSize;
   const CGFloat managementIconTrailingMargin;
   const CGFloat titleOffset;
   const CGFloat minimumTopMargin;
   const CGFloat minimumBottomMargin;
-} StyleValues;
+};
 
 const StyleValues kDefaultStyle = {
     16., /* avatarLeadingMargin */

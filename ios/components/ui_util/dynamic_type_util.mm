@@ -21,10 +21,10 @@ UIContentSizeCategory SystemPreferredContentSizeCategory() {
 }
 
 // Structure that describes a content size category.
-typedef struct {
+struct ContentSizeCategoryDescription {
   const ui_util::IOSContentSizeCategory category;
   const float multiplier;
-} ContentSizeCategoryDescription;
+};
 
 // Value for the unspecified ContentSizeCategoryDescription.
 constexpr ContentSizeCategoryDescription kUnspecifiedContentSizeCategory = {

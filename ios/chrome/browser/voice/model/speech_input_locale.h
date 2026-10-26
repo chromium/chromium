@@ -10,12 +10,12 @@
 namespace voice {
 
 // Struct describing a valid speech input locale.
-typedef struct {
+struct SpeechInputLocale {
   // The locale code in canonical form (e.g. "en-US", "fr-FR").
   std::string code;
   // The display name (e.g. "English U.S.", "Français (France)").
   std::u16string display_name;
-} SpeechInputLocale;
+};
 
 }  // namespace voice
 
