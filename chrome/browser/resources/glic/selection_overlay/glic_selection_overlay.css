@@ -240,7 +240,7 @@
 }
 
 #floatingPromptContainer {
-  align-items: center;
+  align-items: flex-start;
   animation: promptFadeIn 200ms cubic-bezier(0, 0, 0.2, 1);
   box-sizing: border-box;
   display: flex;
@@ -249,6 +249,7 @@
   max-width: calc(100vw - 32px);
   pointer-events: auto;
   position: fixed;
+  width: max-content;
   z-index: 100;
 }
 
@@ -334,6 +335,11 @@
   gap: 4px;
   justify-content: center;
   max-width: 100%;
+}
+
+.searchbox-pill + .action-chips-row {
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .action-chip,
