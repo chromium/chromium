@@ -682,4 +682,44 @@ TEST_F(SelectionControllerTest, ClickOnPseudoElementLockedByItsOwnFocus) {
   EXPECT_EQ(sub, GetDocument().FocusedElement());
 }
 
+TEST_F(SelectionControllerTest, HandleGestureLongPressOnNonSelectable) {
+  SetBodyContent(
+      "<div id='sample' style='user-select: none;'>Non-selectable text</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  HitTestLocation location((gfx::Point(8, 8)));
+  HitTestResult hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+
+  // Dirty style/layout AFTER the hit test to simulate a JS handler modifying
+  // the page
+  GetDocument()
+      .getElementById(AtomicString("sample"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("user-select: none; color: blue;"));
+
+  // This should not crash when the fix is applied.
+  Controller().HandleGestureLongPress(hit_test_result);
+}
+
+TEST_F(SelectionControllerTest, HandleGestureLongPressWithSelectStartMutation) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyContent("<span id='sample'>Selectable text</span>");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->SetInnerHTMLWithoutTrustedTypes(
+      "document.addEventListener('selectstart', (e) => {"
+      "  document.getElementById('sample').style.fontSize = '20px';"
+      "  e.preventDefault();"
+      "});");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  HitTestLocation location((gfx::Point(8, 8)));
+  HitTestResult hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+
+  // This should not crash when the fix is applied.
+  Controller().HandleGestureLongPress(hit_test_result);
+}
+
 }  // namespace blink

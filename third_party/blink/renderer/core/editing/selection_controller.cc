@@ -1049,6 +1049,12 @@ void SelectionController::SetCaretAtHitTestResult(
     const HitTestResult& hit_test_result) {
   Node* inner_node = hit_test_result.InnerPossiblyPseudoNode();
   DCHECK(inner_node);
+  // TODO(crbug.com/570656468): Compute the position upfront before dispatching
+  // 'selectstart' in HandleGestureLongPress() and avoid re-querying layout here
+  // or falling back to caret placement when 'selectstart' is canceled by JS.
+  if (LocalFrameView* view = inner_node->GetDocument().View()) {
+    view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSelection);
+  }
   const PositionInFlatTreeWithAffinity visible_hit_pos =
       CreateVisiblePosition(
           PositionWithAffinityOfHitTestResult(hit_test_result))
@@ -1352,7 +1358,10 @@ bool SelectionController::HandleGestureLongPress(
   }
 
   Node* inner_node = hit_test_result.InnerPossiblyPseudoNode();
-  inner_node->GetDocument().UpdateStyleAndLayoutTree();
+  if (LocalFrameView* view = inner_node->GetDocument().View()) {
+    view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSelection);
+  }
+
   bool inner_node_is_selectable = IsEditable(*inner_node) ||
                                   inner_node->IsTextNode() ||
                                   inner_node->CanStartSelection();
