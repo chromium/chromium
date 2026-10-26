@@ -454,6 +454,15 @@ class GlicInstanceImpl : public GlicInstance,
 
   mojom::PanelState ComputePanelState();
 
+  void OnActuatingChanged(bool actuating);
+  void UpdateOffscreenRenderingState();
+  void StopOffscreenRendering();
+  // Returns the WebContents to attach for offscreen rendering: the WebUI
+  // contents in webview mode, or the guest contents in NoWebview mode.
+  // TODO(b/534807813): Remove once webview is deleted; callers should use
+  // host_.web_client_contents() directly.
+  content::WebContents* GetOffscreenRenderingContents() const;
+
   using ConversationInfoChangedCallbackList =
       base::RepeatingCallbackList<void(const mojom::ConversationInfo&)>;
   ConversationInfoChangedCallbackList conversation_info_changed_callback_list_;
@@ -529,10 +538,6 @@ class GlicInstanceImpl : public GlicInstance,
   bool suppress_show_on_tab_added_to_task_ = false;
 
   std::optional<TabGroupBinding> tab_group_binding_;
-
-  void OnActuatingChanged(bool actuating);
-  void UpdateOffscreenRenderingState();
-  void StopOffscreenRendering();
 
   bool is_hidden_initializing_ = false;
 #if BUILDFLAG(IS_ANDROID)

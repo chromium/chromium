@@ -63,6 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/android/background_tabs/offscreen_rendering_manager_android.h"
 #include "chrome/browser/glic/android/settings/glic_navigation_utils_android.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -679,7 +680,14 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
   UpdateForProfileReadyState(/*is_initial=*/true);
 }
 
-GlicNoWebviewContentsManager::~GlicNoWebviewContentsManager() = default;
+GlicNoWebviewContentsManager::~GlicNoWebviewContentsManager() {
+#if BUILDFLAG(IS_ANDROID)
+  if (guest_contents() &&
+      base::FeatureList::IsEnabled(features::kGlicAndroidOffscreenRendering)) {
+    actor::StopOffscreenRenderingForWebContents(guest_contents());
+  }
+#endif
+}
 
 content::WebContents* GlicNoWebviewContentsManager::guest_contents() const {
   return privileged_guest_contents_ ? privileged_guest_contents_->web_contents()

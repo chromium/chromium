@@ -983,7 +983,9 @@ void GlicInstanceImpl::UpdateOffscreenRenderingState() {
 
   if (should_render_offscreen) {
     EnsureHostAwake();
-    if (content::WebContents* contents = host_.webui_contents()) {
+    // TODO(b/572001459): Re-attach offscreen rendering when the host contents
+    // are recreated (e.g. Host::Reload()) while offscreen rendering is active.
+    if (content::WebContents* contents = GetOffscreenRenderingContents()) {
       actor::StartOffscreenRenderingForWebContents(contents);
       is_offscreen_rendering_active_ = true;
     }
@@ -993,10 +995,19 @@ void GlicInstanceImpl::UpdateOffscreenRenderingState() {
 #endif
 }
 
+// Returns the WebContents to render offscreen: the WebUI contents in webview
+// mode, or the guest contents that hosts the web client in NoWebview mode.
+// TODO(b/534807813): Remove this helper once webview is deleted and have
+// callers use host_.web_client_contents() directly.
+content::WebContents* GlicInstanceImpl::GetOffscreenRenderingContents() const {
+  return service_->IsNoWebviewEnabled() ? host_.web_client_contents()
+                                        : host_.webui_contents();
+}
+
 void GlicInstanceImpl::StopOffscreenRendering() {
 #if BUILDFLAG(IS_ANDROID)
   if (is_offscreen_rendering_active_) {
-    if (content::WebContents* contents = host_.webui_contents()) {
+    if (content::WebContents* contents = GetOffscreenRenderingContents()) {
       actor::StopOffscreenRenderingForWebContents(contents);
     }
     is_offscreen_rendering_active_ = false;
