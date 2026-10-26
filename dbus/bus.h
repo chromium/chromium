@@ -802,7 +802,8 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   ServiceOwnerChangedListenerMap service_owner_changed_listener_map_;
 
   bool async_operations_set_up_;
-  bool shutdown_completed_;
+  bool shutting_down_ = false;
+  bool shutdown_completed_ = false;
 
   // Counters to make sure that OnAddWatch()/OnRemoveWatch() and
   // OnAddTimeout()/OnRemoveTimeout() are balanced.

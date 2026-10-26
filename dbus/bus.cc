@@ -174,7 +174,6 @@ Bus::Bus(Options options)
       connection_(nullptr),
       origin_thread_id_(base::PlatformThread::CurrentId()),
       async_operations_set_up_(false),
-      shutdown_completed_(false),
       num_pending_watches_(0),
       num_pending_timeouts_(0),
       address_(options.address),
@@ -446,6 +445,8 @@ void Bus::ShutdownAndBlock() {
 
   if (shutdown_completed_)
     return;  // Already shutdowned, just return.
+
+  shutting_down_ = true;
 
   // Unregister the exported objects.
   for (ExportedObjectTable::iterator iter = exported_object_table_.begin();
@@ -772,11 +773,15 @@ bool Bus::RemoveMatch(const std::string& match_rule, Error* error) {
   iter->second--;
   if (iter->second == 0) {
     internal::ScopedDBusError dbus_error;
-    dbus_bus_remove_match(connection_, match_rule.c_str(), dbus_error.get());
+    // Passing a non-null DBusError* makes dbus_bus_remove_match() block on a
+    // synchronous round-trip to dbus-daemon. During shutdown, pass nullptr so
+    // libdbus sends RemoveMatch without waiting for a reply.
+    dbus_bus_remove_match(connection_, match_rule.c_str(),
+                          shutting_down_ ? nullptr : dbus_error.get());
     if (dbus_error.is_set()) {
       *error = Error(dbus_error.name(), dbus_error.message());
     }
-    match_rules_added_.erase(match_rule);
+    match_rules_added_.erase(iter);
   }
   return true;
 }
