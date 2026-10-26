@@ -181,6 +181,7 @@ class ContextualTasksSidePanelCoordinator
       const std::vector<tabs::TabHandle>& tab_handles,
       omnibox::ChromeAimEntryPoint entry_point) override;
   std::vector<RecentThreadInfo> GetRecentThreads() const override;
+  void UnshareTabs(const std::vector<tabs::TabHandle>& tab_handles) override;
   bool IsPanelOpenForContextualTask() const override;
   bool IsShowingResults() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()

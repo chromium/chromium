@@ -836,6 +836,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/side_panel:test_support",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
@@ -879,7 +880,6 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/feature_engagement",
       "//chrome/browser/ui:browser_actions",
-      "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",

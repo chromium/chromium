@@ -122,6 +122,10 @@ class ContextualTasksPanelController {
   // recently active threads.
   virtual std::vector<RecentThreadInfo> GetRecentThreads() const = 0;
 
+  // Removes `tab_handles` from every contextual task thread in this browser
+  // window and clears their tab underlines.
+  virtual void UnshareTabs(const std::vector<tabs::TabHandle>& tab_handles) = 0;
+
   // State checks.
   // Check if the panel is currently opening for ContextualTask as another
   // feature might also show panel.

@@ -50,6 +50,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
@@ -60,7 +61,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "extensions/buildflags/buildflags.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/contextual_tasks/contextual_tasks_extensions_container.h"
 #endif
@@ -94,6 +94,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1038,6 +1039,62 @@ ContextualTasksSidePanelCoordinator::GetRecentThreads() const {
     });
   }
   return result;
+}
+
+void ContextualTasksSidePanelCoordinator::UnshareTabs(
+    const std::vector<tabs::TabHandle>& tab_handles) {
+  if (tab_handles.empty()) {
+    return;
+  }
+
+  // 1. Collect all cached side-panel thread WebContents and include the active
+  // panel WebContents if it is not already in the cache list.
+  std::vector<content::WebContents*> target_web_contents =
+      GetPanelWebContentsList();
+  if (content::WebContents* active_contents = GetActiveWebContents();
+      active_contents &&
+      !std::ranges::contains(target_web_contents, active_contents)) {
+    target_web_contents.push_back(active_contents);
+  }
+
+  // 2. Also include any open browser tabs hosting a full-tab AI Mode thread.
+  if (browser_window_) {
+    if (auto* tab_list = TabListInterface::From(browser_window_)) {
+      for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+        content::WebContents* tab_contents = tab ? tab->GetContents() : nullptr;
+        auto* user_data =
+            tab_contents ? ContextualTasksWebContentsUserData::FromWebContents(
+                               tab_contents)
+                         : nullptr;
+        if (user_data && user_data->GetEffectiveTaskId().has_value() &&
+            !std::ranges::contains(target_web_contents, tab_contents)) {
+          target_web_contents.push_back(tab_contents);
+        }
+      }
+    }
+  }
+
+  // 3. For each unshared tab, remove its local underline and delete its tab
+  // context from every collected thread WebContents.
+  for (tabs::TabHandle tab_handle : tab_handles) {
+    if (tab_handle == tabs::TabHandle::Null()) {
+      continue;
+    }
+    if (active_task_context_provider_) {
+      active_task_context_provider_->RemoveLocalTabUnderline(tab_handle);
+    }
+    for (content::WebContents* web_contents : target_web_contents) {
+      if (!web_contents) {
+        continue;
+      }
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents)
+          ->DeleteTabContext(tab_handle.raw_value());
+    }
+  }
+
+  // 4. Refresh the active task context provider to update tab strip underlines.
+  NotifyActiveTaskContextProvider();
 }
 
 bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
@@ -2424,6 +2481,11 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
           user_data->AssociateTabWithTask(session_id);
           user_data->OnTabContextUploadStarted(*result);
         }
+      }
+      if (omnibox::IsTabDeselectionInComposeboxEnabled() ||
+          IsContextualTasksRearchitectureEnabled() ||
+          IsContextualTasksSidePanelRearchitectureEnabled()) {
+        session_handle->RemoveDeselectedTab(session_id);
       }
       session_handle->AttachTabPendingUpload(
           token, session_id.id(), url,

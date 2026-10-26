@@ -61,6 +61,10 @@ class MockContextualTasksPanelController
               GetRecentThreads,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              UnshareTabs,
+              (const std::vector<tabs::TabHandle>&),
+              (override));
   MOCK_METHOD(bool, IsPanelOpenForContextualTask, (), (const, override));
   MOCK_METHOD(bool, IsShowingResults, (), (const, override));
   MOCK_METHOD(ContextualTasksPanelController::EntrySource,
