@@ -18,7 +18,6 @@ const LayoutUnit kRight{5};
 const LayoutUnit kTop{7};
 const LayoutUnit kBottom{9};
 const LayoutUnit kAuto{-1};
-const LayoutUnit kZero{0};
 
 class RelativeUtilsTest : public testing::Test {
  protected:
@@ -48,92 +47,34 @@ class RelativeUtilsTest : public testing::Test {
 };
 
 TEST_F(RelativeUtilsTest, HorizontalTB) {
-  LogicalOffset offset;
+  PhysicalBoxStrut insets;
 
-  // Everything auto defaults to kZero,kZero
+  // Everything auto defaults to 0
   const ComputedStyle* style = CreateStyle(kAuto, kAuto, kAuto, kAuto);
-  offset = ComputeRelativeOffset(
+  insets = ComputeRelativeInsets(
       *style, {WritingMode::kHorizontalTb, TextDirection::kLtr},
       container_size_);
-  EXPECT_EQ(offset.inline_offset, kZero);
-  EXPECT_EQ(offset.block_offset, kZero);
+  EXPECT_EQ(insets, PhysicalBoxStrut());
 
   // Set all sides
   style = CreateStyle(kTop, kRight, kBottom, kLeft);
-
-  // kLtr
-  offset = ComputeRelativeOffset(
+  insets = ComputeRelativeInsets(
       *style, {WritingMode::kHorizontalTb, TextDirection::kLtr},
       container_size_);
-  EXPECT_EQ(offset.inline_offset, kLeft);
-  EXPECT_EQ(offset.block_offset, kTop);
+  EXPECT_EQ(insets, PhysicalBoxStrut(kTop, kRight, kBottom, kLeft));
 
-  // kRtl
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kHorizontalTb, TextDirection::kRtl},
-      container_size_);
-  EXPECT_EQ(offset.inline_offset, kRight);
-  EXPECT_EQ(offset.block_offset, kTop);
-
-  // Set only non-default sides
+  // Set only opposing sides
   style = CreateStyle(kAuto, kRight, kBottom, kAuto);
-  offset = ComputeRelativeOffset(
+  insets = ComputeRelativeInsets(
       *style, {WritingMode::kHorizontalTb, TextDirection::kLtr},
       container_size_);
-  EXPECT_EQ(offset.inline_offset, -kRight);
-  EXPECT_EQ(offset.block_offset, -kBottom);
-}
+  EXPECT_EQ(insets, PhysicalBoxStrut(-kBottom, kRight, kBottom, -kRight));
 
-TEST_F(RelativeUtilsTest, VerticalRightLeft) {
-  LogicalOffset offset;
-
-  // Set all sides
-  const ComputedStyle* style = CreateStyle(kTop, kRight, kBottom, kLeft);
-
-  // kLtr
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kVerticalRl, TextDirection::kLtr}, container_size_);
-  EXPECT_EQ(offset.inline_offset, kTop);
-  EXPECT_EQ(offset.block_offset, kRight);
-
-  // kRtl
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kVerticalRl, TextDirection::kRtl}, container_size_);
-  EXPECT_EQ(offset.inline_offset, kBottom);
-  EXPECT_EQ(offset.block_offset, kRight);
-
-  // Set only non-default sides
-  style = CreateStyle(kAuto, kAuto, kBottom, kLeft);
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kVerticalRl, TextDirection::kLtr}, container_size_);
-  EXPECT_EQ(offset.inline_offset, -kBottom);
-  EXPECT_EQ(offset.block_offset, -kLeft);
-}
-
-TEST_F(RelativeUtilsTest, VerticalLeftRight) {
-  LogicalOffset offset;
-
-  // Set all sides
-  const ComputedStyle* style = CreateStyle(kTop, kRight, kBottom, kLeft);
-
-  // kLtr
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kVerticalLr, TextDirection::kLtr}, container_size_);
-  EXPECT_EQ(offset.inline_offset, kTop);
-  EXPECT_EQ(offset.block_offset, kLeft);
-
-  // kRtl
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kVerticalLr, TextDirection::kRtl}, container_size_);
-  EXPECT_EQ(offset.inline_offset, kBottom);
-  EXPECT_EQ(offset.block_offset, kLeft);
-
-  // Set only non-default sides
-  style = CreateStyle(kAuto, kRight, kBottom, kAuto);
-  offset = ComputeRelativeOffset(
-      *style, {WritingMode::kVerticalLr, TextDirection::kLtr}, container_size_);
-  EXPECT_EQ(offset.inline_offset, -kBottom);
-  EXPECT_EQ(offset.block_offset, -kRight);
+  style = CreateStyle(kTop, kAuto, kAuto, kLeft);
+  insets = ComputeRelativeInsets(
+      *style, {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      container_size_);
+  EXPECT_EQ(insets, PhysicalBoxStrut(kTop, -kLeft, -kTop, kLeft));
 }
 
 }  // namespace

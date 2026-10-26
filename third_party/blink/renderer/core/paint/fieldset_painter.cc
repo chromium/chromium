@@ -57,8 +57,11 @@ FieldsetPaintInfo FieldsetPainter::CreateFieldsetPaintInfo() const {
                           PhysicalSize(fragment.Padding().HorizontalSum(),
                                        fragment.Padding().VerticalSum()),
                       writing_direction.GetWritingMode());
-    LogicalOffset relative_offset = ComputeRelativeOffset(
-        (*legend)->Style(), writing_direction, logical_fieldset_content_size);
+    LogicalOffset relative_offset =
+        ComputeRelativeInsets((*legend)->Style(), writing_direction,
+                              logical_fieldset_content_size)
+            .ConvertToLogical(writing_direction)
+            .StartOffset();
     LogicalOffset legend_logical_offset =
         WritingModeConverter(writing_direction, fieldset_size)
             .ToLogical(legend->Offset(), (*legend)->Size()) -

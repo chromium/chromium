@@ -15,12 +15,13 @@
 
 namespace blink {
 
-LogicalOffset ComputeRelativeOffset(
+PhysicalBoxStrut ComputeRelativeInsets(
     const ComputedStyle& child_style,
     WritingDirectionMode container_writing_direction,
     const LogicalSize& available_size) {
-  if (child_style.GetPosition() != EPosition::kRelative)
-    return LogicalOffset();
+  if (child_style.GetPosition() != EPosition::kRelative) {
+    return PhysicalBoxStrut();
+  }
 
   const PhysicalSize physical_size = ToPhysicalSize(
       available_size, container_writing_direction.GetWritingMode());
@@ -45,10 +46,6 @@ LogicalOffset ComputeRelativeOffset(
   std::optional<LayoutUnit> bottom =
       ResolveInset(child_style.Bottom(), physical_size.height);
 
-  // Common case optimization.
-  if (!left && !right && !top && !bottom)
-    return LogicalOffset();
-
   // Conflict resolution rules: https://www.w3.org/TR/css-position-3/#rel-pos
   if (!left && !right) {
     left = LayoutUnit();
@@ -68,25 +65,7 @@ LogicalOffset ComputeRelativeOffset(
     bottom = -*top;
   }
 
-  switch (container_writing_direction.GetWritingMode()) {
-    case WritingMode::kHorizontalTb:
-      return container_writing_direction.IsLtr() ? LogicalOffset(*left, *top)
-                                                 : LogicalOffset(*right, *top);
-    case WritingMode::kVerticalRl:
-    case WritingMode::kSidewaysRl:
-      return container_writing_direction.IsLtr()
-                 ? LogicalOffset(*top, *right)
-                 : LogicalOffset(*bottom, *right);
-    case WritingMode::kVerticalLr:
-      return container_writing_direction.IsLtr()
-                 ? LogicalOffset(*top, *left)
-                 : LogicalOffset(*bottom, *left);
-    case WritingMode::kSidewaysLr:
-      return container_writing_direction.IsLtr() ? LogicalOffset(*bottom, *left)
-                                                 : LogicalOffset(*top, *left);
-    default:
-      NOTREACHED();
-  }
+  return PhysicalBoxStrut(*top, *right, *bottom, *left);
 }
 
 LogicalOffset ComputeRelativeOffsetForBoxFragment(
@@ -96,8 +75,10 @@ LogicalOffset ComputeRelativeOffsetForBoxFragment(
   const auto& child_style = fragment.Style();
   DCHECK_EQ(child_style.GetPosition(), EPosition::kRelative);
 
-  return ComputeRelativeOffset(child_style, container_writing_direction,
-                               available_size);
+  return ComputeRelativeInsets(child_style, container_writing_direction,
+                               available_size)
+      .ConvertToLogical(container_writing_direction)
+      .StartOffset();
 }
 
 LogicalOffset ComputeRelativeOffsetForInline(const ConstraintSpace& space,
@@ -112,8 +93,11 @@ LogicalOffset ComputeRelativeOffsetForInline(const ConstraintSpace& space,
   // </span>
   // In the above example "left" wins.
   const WritingDirectionMode writing_direction = space.GetWritingDirection();
-  LogicalOffset relative_offset = ComputeRelativeOffset(
-      child_style, writing_direction, space.AvailableSize());
+  LogicalOffset relative_offset =
+      ComputeRelativeInsets(child_style, writing_direction,
+                            space.AvailableSize())
+          .ConvertToLogical(writing_direction)
+          .StartOffset();
 
   // Lines are built in a line-logical coordinate system:
   // https://drafts.csswg.org/css-writing-modes-3/#line-directions
@@ -139,8 +123,11 @@ LogicalOffset ComputeRelativeOffsetForOOFInInline(
   // </span>
   // In the above example "left" wins.
   const WritingDirectionMode writing_direction = space.GetWritingDirection();
-  LogicalOffset relative_offset = ComputeRelativeOffset(
-      child_style, writing_direction, space.AvailableSize());
+  LogicalOffset relative_offset =
+      ComputeRelativeInsets(child_style, writing_direction,
+                            space.AvailableSize())
+          .ConvertToLogical(writing_direction)
+          .StartOffset();
 
   // Lines are built in a line-logical coordinate system:
   // https://drafts.csswg.org/css-writing-modes-3/#line-directions
