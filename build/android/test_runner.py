@@ -432,6 +432,13 @@ def AddDeviceOptions(parser):
         help='List files pushed to device and exit.',
     )
     parser.add_argument(
+        '--device-data-filter',
+        action='append',
+        dest='device_data_filters',
+        default=[],
+        help='Device data filter (e.g. +//chrome/test/data/*)',
+    )
+    parser.add_argument(
         '--skip-clear-data',
         action='store_true',
         help='Do not wipe app data between tests. Use this to '
@@ -753,13 +760,6 @@ def AddInstrumentationTestOptions(parser):
         dest='additional_locales',
         help='Specify locales in addition to the device locale to install splits '
         'for when --apk-under-test is an Android App Bundle.',
-    )
-    parser.add_argument(
-        '--device-data-filter',
-        action='append',
-        dest='device_data_filters',
-        default=[],
-        help='Device data filter (e.g. +//chrome/test/data/*)',
     )
     parser.add_argument(
         '--coverage-dir',

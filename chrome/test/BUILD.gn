@@ -940,6 +940,22 @@ if (is_android) {
       "//content/test/data/",
     ]
 
+    # Exclude large test asset directories (WebGL conformance, WebVR samples,
+    # desktop perf/import/PDF suites) unreferenced by Android browser tests.
+    device_data_filters = [
+      "-//chrome/test/data/dromaeo/*",
+      "-//chrome/test/data/gpu/*",
+      "-//chrome/test/data/import/*",
+      "-//chrome/test/data/page_cycler/*",
+      "-//chrome/test/data/pdf_private/*",
+      "-//chrome/test/data/perf/*",
+      "-//chrome/test/data/pyauto_private/*",
+      "-//chrome/test/data/safari_import/*",
+      "-//chrome/test/data/xr/webvr_info/*",
+      "-//content/test/data/gpu/*",
+      "-//content/test/data/plugin/*",
+    ]
+
     extra_args = []
 
     # TODO(crbug.com/473636857): Include once all Android builds correctly use

@@ -51,29 +51,6 @@ RUN_IN_SUB_THREAD_TEST_SUITES = [
 ]
 
 
-# Used for filtering large data deps at a finer grain than what's allowed in
-# isolate files since pushing deps to devices is expensive.
-# Wildcards are allowed.
-_DEPS_EXCLUSION_LIST = [
-    'chrome/test/data/extensions/api_test',
-    'chrome/test/data/extensions/secure_shell',
-    'chrome/test/data/firefox*',
-    'chrome/test/data/gpu',
-    'chrome/test/data/image_decoding',
-    'chrome/test/data/import',
-    'chrome/test/data/page_cycler',
-    'chrome/test/data/perf',
-    'chrome/test/data/pyauto_private',
-    'chrome/test/data/safari_import',
-    'chrome/test/data/scroll',
-    'chrome/test/data/third_party',
-    'third_party/hunspell_dictionaries/*.dic',
-    # crbug.com/258690
-    'webkit/data/bmp_decoder',
-    'webkit/data/ico_decoder',
-]
-
-
 _EXTRA_NATIVE_TEST_ACTIVITY = (
     'org.chromium.native_test.NativeTestInstrumentationTestRunner.'
     'NativeTestActivity'
@@ -539,6 +516,7 @@ class GtestTestInstance(test_instance.TestInstance):
 
         self._data_deps_delegate = data_deps_delegate
         self._runtime_deps_path = args.runtime_deps_path
+        self._device_data_filters = args.device_data_filters
         if not self._runtime_deps_path:
             logging.warning('No data dependencies will be pushed.')
 
@@ -716,7 +694,10 @@ class GtestTestInstance(test_instance.TestInstance):
                     'debuggable_apks = true in GN args'
                 )
         self._data_deps.extend(
-            self._data_deps_delegate(self._runtime_deps_path)
+            self._data_deps_delegate(
+                self._runtime_deps_path,
+                device_data_filters=self._device_data_filters,
+            )
         )
         if self._proguard_mapping_path:
             self._deobfuscator = deobfuscator.DeobfuscatorPool(

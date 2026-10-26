@@ -5,9 +5,10 @@
 
 
 import os
-import unittest
-
 import sys
+import tempfile
+import unittest
+from unittest import mock
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
@@ -531,6 +532,47 @@ class GtestTestInstanceTests(unittest.TestCase):
         )
         expected = ['Other.Test']
         self.assertEqual(expected, actual)
+
+    def testSetUp_passesDeviceDataFilters(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            exe_dist_dir = os.path.join(temp_dir, 'crashpad_tests__dist')
+            os.makedirs(exe_dist_dir)
+            args = mock.MagicMock()
+            args.suite_name = ['crashpad_tests']
+            args.executable_dist_dir = exe_dist_dir
+            args.test_launcher_batch_limit = None
+            args.additional_apks = []
+            args.app_data_files = None
+            args.command_line_flags = None
+            args.device_flags_file = None
+            args.run_disabled = False
+            args.gtest_filter = None
+            args.test_filter_files = None
+            args.wait_for_java_debugger = False
+            args.proguard_mapping_path = None
+            args.runtime_deps_path = os.path.join(temp_dir, 'test.runtime_deps')
+            args.device_data_filters = ['-//content/test/data/gpu/*']
+            delegate = mock.MagicMock(return_value=[('host/a', 'dev/a')])
+            with (
+                mock.patch(
+                    'pylib.constants.GetOutDirectory', return_value=temp_dir
+                ),
+                mock.patch(
+                    'pylib.utils.test_filter.InitializeFiltersFromArgs',
+                    return_value=[],
+                ),
+            ):
+                instance = gtest_test_instance.GtestTestInstance(
+                    args, delegate, lambda msg: self.fail(msg)
+                )
+                instance.SetUp()
+            delegate.assert_called_once_with(
+                args.runtime_deps_path,
+                device_data_filters=['-//content/test/data/gpu/*'],
+            )
+            self.assertEqual(
+                instance.GetDataDependencies(), [('host/a', 'dev/a')]
+            )
 
 
 if __name__ == '__main__':
