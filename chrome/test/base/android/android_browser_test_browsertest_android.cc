@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
-#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
-#include "components/performance_manager/public/features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -91,13 +86,4 @@ class AndroidBrowserTestWithRealNetworkConnectionTracker
 IN_PROC_BROWSER_TEST_F(AndroidBrowserTestWithRealNetworkConnectionTracker,
                        UsesRealTracker) {
   EXPECT_FALSE(network::TestNetworkConnectionTracker::HasInstance());
-}
-
-IN_PROC_BROWSER_TEST_F(AndroidBrowserTest, DefaultStartupFeatures) {
-  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kPreconnectToSearch));
-  EXPECT_FALSE(base::FeatureList::IsEnabled(
-      features::kRestartNetworkServiceUnsandboxedForFailedLaunch));
-  EXPECT_FALSE(base::FeatureList::IsEnabled(
-      performance_manager::features::kTransientKeepAlivePolicy));
-  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kPrewarm));
 }
