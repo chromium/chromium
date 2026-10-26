@@ -1004,7 +1004,10 @@
   },
   {
     "name": "autofill-ai-based-amount-extraction-ignore-seen-terms-for-testing",
-    "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
+    "owners": [
+      "vinnypersky@google.com",
+      "payments-autofill-team@google.com"
+    ],
     "expiry_milestone": 155
   },
   {
@@ -1112,7 +1115,10 @@
   },
   {
     "name": "autofill-enable-ai-based-amount-extraction",
-    "owners": [ "jamessun@google.com", "viplavkadam@google.com", "payments-autofill-team@google.com" ],
+    "owners": [
+      "viplavkadam@google.com",
+      "payments-autofill-team@google.com"
+    ],
     "expiry_milestone": 155
   },
   {
@@ -1126,12 +1132,18 @@
   },
   {
     "name": "autofill-enable-amount-extraction",
-    "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
+    "owners": [
+      "vinnypersky@google.com",
+      "payments-autofill-team@google.com"
+    ],
     "expiry_milestone": 150
   },
   {
     "name": "autofill-enable-amount-extraction-testing",
-    "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
+    "owners": [
+      "vinnypersky@google.com",
+      "payments-autofill-team@google.com"
+    ],
     "expiry_milestone": 155
   },
   {
@@ -1317,7 +1329,6 @@
   {
     "name": "autofill-enable-wallet-reminder-notice",
     "owners": [
-      "jamessun@google.com",
       "ferny@google.com",
       "payments-autofill-team@google.com"
     ],
@@ -1371,7 +1382,7 @@
   {
     "name": "autofill-save-card-bottom-sheet-strike-limit-ios",
     "owners": [
-      "jamessun@google.com",
+      "qihuizhao@google.com",
       "payments-autofill-team@google.com"
     ],
     "expiry_milestone": 160
