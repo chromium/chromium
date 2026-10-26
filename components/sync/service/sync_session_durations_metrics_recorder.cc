@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/sync/base/features.h"
 
 namespace syncer {
 
@@ -264,18 +263,11 @@ void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
   if (cookie_status_to_log == FeatureState::UNKNOWN) {
     base::UmaHistogramLongTimes(
         "Signin.SessionWithCookieSigninStatusUnknown.Duration", session_length);
-    if (base::FeatureList::IsEnabled(
-            kSyncFixWebSigninSessionDurationForShortLivedSessions)) {
-      // Compute the cookie signin status even if the accounts in the cookie jar
-      // are stale. This ensures that we log the last known cookie signin status
-      // for short-lived sessions.
-      cookie_status_to_log = DetermineCookieSigninStatus(
-          identity_manager_->GetCachedAccountsInCookieJar());
-    } else {
-      // Since the feature wasn't working for the user if we didn't know its
-      // state, log the status as off.
-      cookie_status_to_log = FeatureState::OFF;
-    }
+    // Compute the cookie signin status even if the accounts in the cookie jar
+    // are stale. This ensures that we log the last known cookie signin status
+    // for short-lived sessions.
+    cookie_status_to_log = DetermineCookieSigninStatus(
+        identity_manager_->GetCachedAccountsInCookieJar());
   }
 
   switch (cookie_status_to_log) {
