@@ -1,1 +1,10 @@
 mixins: "//build/android/COMMON_METADATA"
+
+# Opt-in to the Chromium AI Code Review Agent.
+agentic_review {
+  capability_groups {
+    path_expression: "build/android/(?:.*/)?[^/]*\\.py"
+    content_patterns: "RunShellCommand|\\.Shell\\(|shell=True"
+    rules: "build/android/knowledge_base/prefer-deviceutils-helpers-over-raw-shell-commands.md"
+  }
+}
