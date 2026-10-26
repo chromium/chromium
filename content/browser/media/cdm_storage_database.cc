@@ -114,6 +114,9 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
          "cdm_storage(storage_key,cdm_type,file_name,data,file_size,last_modified) "
          "VALUES(?,?,?,?,?,?) ";
   // clang-format on
+  // TODO(crbug.com/577198003): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_.IsSQLValid(kInsertSql));
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, storage_key.Serialize());
