@@ -108,18 +108,31 @@ void MemoryConsumerRegistry::RemoveMemoryConsumer(
 void MemoryConsumerRegistry::AddDestructionObserver(
     PassKey<MemoryConsumerRegistration>,
     MemoryConsumerRegistryDestructionObserver* observer) {
-  destruction_observers_.AddObserver(observer);
+  CHECK(!is_notifying_destruction_);
+  bool inserted = destruction_observers_.insert(observer).second;
+  CHECK(inserted);
 }
 
 void MemoryConsumerRegistry::RemoveDestructionObserver(
     PassKey<MemoryConsumerRegistration>,
     MemoryConsumerRegistryDestructionObserver* observer) {
-  destruction_observers_.RemoveObserver(observer);
+  size_t removed = destruction_observers_.erase(observer);
+  CHECK_EQ(removed, 1u);
 }
 
 void MemoryConsumerRegistry::NotifyDestruction() {
-  destruction_observers_.Notify(&MemoryConsumerRegistryDestructionObserver::
-                                    OnBeforeMemoryConsumerRegistryDestroyed);
+  AutoReset<bool> is_notifying_destruction(&is_notifying_destruction_, true);
+  for (auto it = destruction_observers_.begin();
+       it != destruction_observers_.end();) {
+    // Advance the iterator before notifying, as the observer removes itself.
+    // Erasing from a flat_hash_set never rehashes, so `it` remains valid.
+    MemoryConsumerRegistryDestructionObserver* observer = *it++;
+    const size_t size_before = destruction_observers_.size();
+    observer->OnBeforeMemoryConsumerRegistryDestroyed();
+    // Each observer must remove exactly itself and nothing else, otherwise `it`
+    // could be invalidated.
+    CHECK_EQ(destruction_observers_.size(), size_before - 1);
+  }
   destruction_observers_notified_ = true;
 }
 

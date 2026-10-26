@@ -14,9 +14,9 @@
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 
@@ -69,9 +69,18 @@ class BASE_EXPORT MemoryConsumerRegistry {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  ObserverList<MemoryConsumerRegistryDestructionObserver>
+  // A hash set is used instead of an ObserverList because every
+  // MemoryConsumerRegistration in the process is added, making the linear
+  // add/remove of ObserverList costly. Erasing never rehashes, so observers can
+  // safely remove themselves during NotifyDestruction().
+  absl::flat_hash_set<MemoryConsumerRegistryDestructionObserver*>
       destruction_observers_;
   bool destruction_observers_notified_ = false;
+
+  // True while NotifyDestruction() is iterating over `destruction_observers_`.
+  // Adding an observer during that time could rehash the set and invalidate
+  // the iteration.
+  bool is_notifying_destruction_ = false;
 };
 
 // Helper class for creating and registering a singleton registry. This is

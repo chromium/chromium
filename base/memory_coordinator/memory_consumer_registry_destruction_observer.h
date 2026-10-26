@@ -5,13 +5,14 @@
 #ifndef BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_DESTRUCTION_OBSERVER_H_
 #define BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_DESTRUCTION_OBSERVER_H_
 
-#include "base/observer_list_types.h"
-
 namespace base {
 
-class MemoryConsumerRegistryDestructionObserver : public CheckedObserver {
+class MemoryConsumerRegistryDestructionObserver {
  public:
   virtual void OnBeforeMemoryConsumerRegistryDestroyed() = 0;
+
+ protected:
+  virtual ~MemoryConsumerRegistryDestructionObserver() = default;
 };
 
 }  // namespace base
