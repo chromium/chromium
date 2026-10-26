@@ -57,8 +57,8 @@ public class AutofillPersonalContextSettingsRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setRevision(4)
+                    .setDescription("Vectorize expand_more and expand_less icons")
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_AUTOFILL)
                     .build();
 

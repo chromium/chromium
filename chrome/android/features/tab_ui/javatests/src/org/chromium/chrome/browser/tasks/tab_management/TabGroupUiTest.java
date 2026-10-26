@@ -98,7 +98,7 @@ public class TabGroupUiTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
-                    .setRevision(5)
+                    .setRevision(6)
                     .build();
 
     private RegularNewTabPageStation mNtp;

@@ -22,11 +22,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.ui.UiUtils;
 
 /**
  * Header view shown above each group of items on the Recent Tabs page. Shows the name of the group
@@ -37,9 +39,9 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 public class RecentTabsGroupView extends RelativeLayout {
 
     /** Drawable levels for the device type icon and the expand/collapse arrow. */
-    private static final int DRAWABLE_LEVEL_COLLAPSED = 0;
+    @VisibleForTesting static final int DRAWABLE_LEVEL_COLLAPSED = 0;
 
-    private static final int DRAWABLE_LEVEL_EXPANDED = 1;
+    @VisibleForTesting static final int DRAWABLE_LEVEL_EXPANDED = 1;
 
     private boolean mIsExpanded;
     private RecentTabsGroupView mRow;
@@ -70,12 +72,17 @@ public class RecentTabsGroupView extends RelativeLayout {
         collapseIcon.addLevel(
                 DRAWABLE_LEVEL_COLLAPSED,
                 DRAWABLE_LEVEL_COLLAPSED,
-                TintedDrawable.constructTintedDrawable(
-                        getContext(), R.drawable.ic_expand_more_black_24dp));
-        TintedDrawable collapse =
-                TintedDrawable.constructTintedDrawable(
-                        getContext(), R.drawable.ic_expand_less_black_24dp);
-        collapseIcon.addLevel(DRAWABLE_LEVEL_EXPANDED, DRAWABLE_LEVEL_EXPANDED, collapse);
+                UiUtils.getTintedDrawable(
+                        getContext(),
+                        R.drawable.ic_expand_more_black_24dp,
+                        R.color.default_icon_color_tint_list));
+        collapseIcon.addLevel(
+                DRAWABLE_LEVEL_EXPANDED,
+                DRAWABLE_LEVEL_EXPANDED,
+                UiUtils.getTintedDrawable(
+                        getContext(),
+                        R.drawable.ic_expand_less_black_24dp,
+                        R.color.default_icon_color_tint_list));
         mExpandCollapseIcon.setImageDrawable(collapseIcon);
     }
 

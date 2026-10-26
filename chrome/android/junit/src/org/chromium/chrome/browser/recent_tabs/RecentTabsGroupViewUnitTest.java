@@ -12,9 +12,14 @@ import static android.view.accessibility.AccessibilityNodeInfo.EXPANDED_STATE_FU
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LevelListDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -368,5 +374,45 @@ public class RecentTabsGroupViewUnitTest {
                 mGroupView.performAccessibilityAction(
                         ACTION_DISMISS.getId(), /* arguments= */ null);
         assertFalse(handled);
+    }
+
+    @Test
+    public void testExpandCollapseIcon_NotBitmapDrawable() {
+        ImageView iconView = mGroupView.getExpandCollapseIcon();
+        assertNotNull("Expand/collapse icon view should not be null", iconView);
+        Drawable drawable = iconView.getDrawable();
+        assertNotNull("Expand/collapse icon drawable should not be null", drawable);
+        assertTrue(
+                "Expand/collapse icon drawable should be a LevelListDrawable",
+                drawable instanceof LevelListDrawable);
+        LevelListDrawable levelList = (LevelListDrawable) drawable;
+
+        levelList.setLevel(RecentTabsGroupView.DRAWABLE_LEVEL_COLLAPSED);
+        Drawable collapsed = levelList.getCurrent();
+        assertNotNull("Collapsed drawable should not be null", collapsed);
+        assertFalse(
+                "Collapsed icon should not use BitmapDrawable (raster PNG)",
+                collapsed instanceof BitmapDrawable);
+        assertEquals(
+                R.drawable.ic_expand_more_black_24dp, shadowOf(collapsed).getCreatedFromResId());
+        assertTrue(collapsed.getIntrinsicWidth() > 0);
+        assertTrue(collapsed.getIntrinsicHeight() > 0);
+
+        levelList.setLevel(RecentTabsGroupView.DRAWABLE_LEVEL_EXPANDED);
+        Drawable expanded = levelList.getCurrent();
+        assertNotNull("Expanded drawable should not be null", expanded);
+        assertFalse(
+                "Expanded icon should not use BitmapDrawable (raster PNG)",
+                expanded instanceof BitmapDrawable);
+        assertEquals(
+                R.drawable.ic_expand_less_black_24dp, shadowOf(expanded).getCreatedFromResId());
+        assertTrue(expanded.getIntrinsicWidth() > 0);
+        assertTrue(expanded.getIntrinsicHeight() > 0);
+
+        mGroupView.configureForRecentlyClosedTabs(/* isExpanded= */ true);
+        assertEquals(RecentTabsGroupView.DRAWABLE_LEVEL_EXPANDED, levelList.getLevel());
+
+        mGroupView.configureForRecentlyClosedTabs(/* isExpanded= */ false);
+        assertEquals(RecentTabsGroupView.DRAWABLE_LEVEL_COLLAPSED, levelList.getLevel());
     }
 }

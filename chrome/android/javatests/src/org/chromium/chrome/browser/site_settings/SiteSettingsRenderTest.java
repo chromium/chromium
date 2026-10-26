@@ -85,7 +85,7 @@ public class SiteSettingsRenderTest {
         return new WebsiteGroup(origin1.getAddress().getOrigin(), Arrays.asList(origin1, origin2));
     }
 
-    private static final int RENDER_TEST_REVISION = 6;
+    private static final int RENDER_TEST_REVISION = 7;
 
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();

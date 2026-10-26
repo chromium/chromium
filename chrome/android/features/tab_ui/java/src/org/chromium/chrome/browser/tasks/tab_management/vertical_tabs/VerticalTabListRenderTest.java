@@ -146,7 +146,7 @@ public class VerticalTabListRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     private final boolean mIsIncognito;

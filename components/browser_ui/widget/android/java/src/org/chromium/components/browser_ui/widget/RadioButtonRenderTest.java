@@ -47,9 +47,9 @@ public class RadioButtonRenderTest {
     private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
-    private static final int REVISION = 3;
+    private static final int REVISION = 4;
     private static final String REVISION_DESCRIPTION =
-            "Use Google standard colors as the background.";
+            "Vectorize expand_more and expand_less icons";
 
     @ClassRule
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

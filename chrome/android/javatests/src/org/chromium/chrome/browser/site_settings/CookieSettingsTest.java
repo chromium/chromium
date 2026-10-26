@@ -52,7 +52,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.RELATED_WEBSITE_SETS_UI})
 public class CookieSettingsTest {
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 4;
 
     @Rule
     public SettingsTestRule<SingleCategorySettings> mSettingsTestRule =
@@ -62,7 +62,7 @@ public class CookieSettingsTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setDescription("Vectorize expand_more and expand_less icons")
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 

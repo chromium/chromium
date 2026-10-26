@@ -104,8 +104,8 @@ public class TouchToFillPaymentMethodRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(18)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setRevision(19)
+                    .setDescription("Vectorize expand_more and expand_less icons")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

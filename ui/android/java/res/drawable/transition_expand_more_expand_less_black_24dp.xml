@@ -11,13 +11,14 @@ found in the LICENSE file.
         <vector
             android:width="24dp"
             android:height="24dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24">
+            android:viewportWidth="960"
+            android:viewportHeight="960"
+            android:tint="?attr/colorControlNormal">
 
             <path
                 android:name="arrow"
-                android:fillColor="#000000"
-                android:pathData="M12,8L6,14L7.41,15.41L12,10.83L16.59,15.41L18,14z"/>
+                android:fillColor="@android:color/white"
+                android:pathData="M480,616L240,376L296,320L480,504L664,320L720,376L480,616Z"/>
         </vector>
     </aapt:attr>
 
@@ -26,8 +27,8 @@ found in the LICENSE file.
             <objectAnimator
                 android:duration="250"
                 android:propertyName="pathData"
-                android:valueFrom="M12,13.17L7.41,8.59L6,10L12,16L18,10L16.59,8.59z"
-                android:valueTo="M12,8L6,14L7.41,15.41L12,10.83L16.59,15.41L18,14z"
+                android:valueFrom="M480,616L240,376L296,320L480,504L664,320L720,376L480,616Z"
+                android:valueTo="M480,432L296,616L240,560L480,320L720,560L664,616L480,432Z"
                 android:valueType="pathType"/>
         </aapt:attr>
     </target>

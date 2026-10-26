@@ -18,6 +18,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -342,5 +345,21 @@ public class RecentTabsCoordinatorUnitTest {
         // buttons.
         int promoGroupPos = adapter.getGroupCount() - 1;
         assertFalse(adapter.isChildSelectable(promoGroupPos, 0));
+    }
+
+    @Test
+    public void testListSelector_Transparent() {
+        ExpandableListView listView = mCoordinator.getListViewForTesting();
+        assertNotNull("ListView should not be null", listView);
+        Drawable selector = listView.getSelector();
+        assertNotNull("List selector should not be null", selector);
+        assertTrue(
+                "List selector should be a ColorDrawable, but was: "
+                        + selector.getClass().getName(),
+                selector instanceof ColorDrawable);
+        assertEquals(
+                "List selector should be transparent",
+                Color.TRANSPARENT,
+                ((ColorDrawable) selector).getColor());
     }
 }
