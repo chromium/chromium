@@ -478,8 +478,13 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   raw_ptr<FullscreenController> _fullscreenController;
   BookmarksCoordinator* _bookmarksCoordinator;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
-  // Used to display the Voice Search UI.  Nil if not visible.
+  // Used to display the legacy Voice Search UI.
+  // TODO(crbug.com/549858749): Remove once the legacy Voice Search UI is
+  // removed.
   id<VoiceSearchController> _voiceSearchController;
+  // Coordinator presenting the Voice Search UI. Nil if Voice Search isn't
+  // started.
+  ChromeCoordinator* _voiceSearchCoordinator;
   raw_ptr<UrlLoadingNotifierBrowserAgent> _urlLoadingNotifierBrowserAgent;
   id<OmniboxCommands> _omniboxCommandsHandler;
   LayoutGuideCenter* _layoutGuideCenter;
@@ -1110,7 +1115,10 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
   _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:browser];
 
-  _voiceSearchController = ios::provider::CreateVoiceSearchController(browser);
+  if (!IsVoiceSearchEvolutionPhase1Enabled()) {
+    _voiceSearchController =
+        ios::provider::CreateVoiceSearchController(browser);
+  }
 
   _viewControllerDependencies.toolbarAccessoryPresenter =
       _toolbarAccessoryPresenter;
@@ -1451,6 +1459,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self dismissNotificationsOptIn];
   [self hideComposeboxImmediately:YES completion:nil];
   [self dismissMultimodalActionsMenu];
+  [self stopVoiceSearchCoordinator];
 
   [_readerModeCoordinator stop];
   _readerModeCoordinator = nil;
@@ -1808,6 +1817,9 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 }
 
 - (void)preloadVoiceSearch {
+  if (IsVoiceSearchEvolutionPhase1Enabled()) {
+    return;
+  }
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
   [_voiceSearchController prepareToAppear];
@@ -1817,10 +1829,31 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler stopAllVoiceSearch];
-  [_viewController startVoiceSearch];
+
+  if (!IsVoiceSearchEvolutionPhase1Enabled()) {
+    [_viewController startVoiceSearch];
+    return;
+  }
+
+  [IntentDonationHelper donateIntent:IntentType::kOpenVoiceSearch];
+
+  // Voice Search shouldn't be covered by other UI. The composebox is dismissed
+  // asynchronously, so wait for it before presenting Voice Search.
+  [self closeFindInPage];
+  __weak __typeof(self) weakSelf = self;
+  [self hideComposeboxImmediately:NO
+                       completion:^{
+                         [weakSelf startVoiceSearchCoordinator];
+                       }];
 }
 
 - (void)stopVoiceSearch {
+  if (IsVoiceSearchEvolutionPhase1Enabled()) {
+    // TODO(crbug.com/571184218): Stop spoken result playback.
+    [self stopVoiceSearchCoordinator];
+    return;
+  }
+
   if (!_voiceSearchController.audioPlaying) {
     return;
   }
@@ -2064,6 +2097,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
   [self dismissMultimodalActionsMenu];
+  [self stopVoiceSearchCoordinator];
   // The composebox replaces the omnibox.
   if (dismissOmnibox) {
     [self hideComposebox];
@@ -2076,6 +2110,24 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       clearPresentedStateWithCompletion:completion
                          dismissOmnibox:dismissOmnibox
          dismissPresentedViewController:dismissPresentedViewController];
+}
+
+#pragma mark - Voice Search helpers
+
+// Starts the Voice Search coordinator on the browser view.
+- (void)startVoiceSearchCoordinator {
+  [self stopVoiceSearchCoordinator];
+  // TODO(crbug.com/571184218): Implement `VoiceSearchCoordinatorDelegate` to
+  // load recognized queries and stop the coordinator on dismissal.
+  _voiceSearchCoordinator = ios::provider::CreateVoiceSearchCoordinator(
+      self.viewController, self.browser, /*delegate=*/nil);
+  [_voiceSearchCoordinator start];
+}
+
+// Stops the Voice Search coordinator, if any.
+- (void)stopVoiceSearchCoordinator {
+  [_voiceSearchCoordinator stop];
+  _voiceSearchCoordinator = nil;
 }
 
 #pragma mark - ReaderModeCommands

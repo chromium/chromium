@@ -148,7 +148,8 @@ typedef struct {
 // with.
 - (void)appendTabAddedCompletion:(ProceduralBlock)tabAddedCompletion;
 
-// Shows the voice search UI.
+// Shows the legacy Voice Search UI.
+// TODO(crbug.com/549858749): Remove once the legacy Voice Search UI is removed.
 - (void)startVoiceSearch;
 
 // Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is

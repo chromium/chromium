@@ -138,7 +138,13 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 @implementation ComposeboxInputPlateCoordinator {
   ComposeboxInputPlateViewController* _viewController;
   ComposeboxInputPlateMediator* _mediator;
+  // Used to display the legacy Voice Search UI.
+  // TODO(crbug.com/549858749): Remove once the legacy Voice Search UI is
+  // removed.
   id<VoiceSearchController> _voiceSearchController;
+  // Coordinator presenting the Voice Search UI. Nil if Voice Search isn't
+  // started.
+  ChromeCoordinator* _voiceSearchCoordinator;
   /// The entrypoing from which the coordinator was invoked.
   ComposeboxEntrypoint _entrypoint;
   /// Optional query inserted into the omnibox at start.
@@ -207,8 +213,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
         recordAiModeActivationSource:AiModeActivationSource::kNTPButton];
   }
 
-  _voiceSearchController =
-      ios::provider::CreateVoiceSearchController(self.browser);
+  if (!IsVoiceSearchEvolutionPhase1Enabled()) {
+    _voiceSearchController =
+        ios::provider::CreateVoiceSearchController(self.browser);
+  }
 
   _contextualService =
       ContextualSearchServiceFactory::GetForProfile(self.profile);
@@ -275,8 +283,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _mediator.assistantMetricsRecorder = _focusParams.assistantMetricsRecorder;
 
   _viewController.mutator = _mediator;
-  // Mediator is the voice search delegate to load queries in composebox.
-  _voiceSearchController.delegate = _mediator;
+  if (!IsVoiceSearchEvolutionPhase1Enabled()) {
+    // Mediator is the voice search delegate to load queries in composebox.
+    _voiceSearchController.delegate = _mediator;
+  }
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
@@ -340,6 +350,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   _metricsRecorder.contextualSearchMetricsRecorder = nullptr;
 
+  [self stopVoiceSearchCoordinator];
   _viewController.mutator = nil;
   _viewController = nil;
   _pickerPresenter = nil;
@@ -408,6 +419,16 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
             (ComposeboxInputPlateViewController*)composeboxViewController
                  didTapMicButton:(UIButton*)micButton {
   [_metricsRecorder recordVoiceSearchButtonUsed];
+
+  if (IsVoiceSearchEvolutionPhase1Enabled()) {
+    [self stopVoiceSearchCoordinator];
+    // TODO(crbug.com/571184218): Implement `VoiceSearchCoordinatorDelegate` to
+    // submit recognized queries and stop the coordinator on dismissal.
+    _voiceSearchCoordinator = ios::provider::CreateVoiceSearchCoordinator(
+        _viewController, self.browser, /*delegate=*/nil);
+    [_voiceSearchCoordinator start];
+    return;
+  }
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (!webStateList) {
@@ -693,6 +714,12 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 #pragma mark - Private helpers
+
+// Stops the Voice Search coordinator, if any.
+- (void)stopVoiceSearchCoordinator {
+  [_voiceSearchCoordinator stop];
+  _voiceSearchCoordinator = nil;
+}
 
 /// Updates the active tool mode in the composebox, toggling it off if it's
 /// already active, and records associated metrics.
