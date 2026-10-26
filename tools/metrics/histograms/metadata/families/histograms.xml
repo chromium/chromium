@@ -1141,7 +1141,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.ValidationResult.{Action}"
-    enum="ParentAccessCodeValidationResult" expires_after="2026-11-10">
+    enum="ParentAccessCodeValidationResult" expires_after="2027-04-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
