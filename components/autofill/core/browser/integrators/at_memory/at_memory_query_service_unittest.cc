@@ -1727,6 +1727,45 @@ TEST_F(AtMemoryQueryServiceTest,
                                 SearchResultWithValue(u"123 Main St Home")));
 }
 
+// Tests that a record is shown once if several of its types are requested,
+// under the first type whose fetch specification it matches.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_FiltersLocalDataUsingFetchSpecifications_OneEntryPerRecord) {
+  AtMemoryQueryResponse response = CreateQueryResponse();
+  auto add_spec = [&](personal_context::proto::MemoryDataType type,
+                      std::string_view filter) {
+    auto* spec =
+        response.mutable_autofill_fetch_plan()->add_fetch_specifications();
+    spec->set_data_type(type);
+    spec->add_filters()->mutable_string_filter()->set_value(filter);
+  };
+  add_spec(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY, "paris");
+  add_spec(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_ZIP, "94043");
+  StubFetchContextResponse(std::move(response));
+
+  auto entry = [](MemoryDataType type, std::u16string_view value,
+                  std::string_view guid) {
+    MemorySearchResult result(type, u"Type", std::u16string(value));
+    result.identifier = std::string(guid);
+    return result;
+  };
+  // Profile 1 matches both specifications, profile 2 only the second one.
+  std::unique_ptr<AtMemoryQueryService> service =
+      CreateQueryProviderWithResults(
+          {entry(MemoryDataType::kAddressCity, u"Paris", "guid-1"),
+           entry(MemoryDataType::kAddressCity, u"Mountain View", "guid-2"),
+           entry(MemoryDataType::kAddressZip, u"94043", "guid-1"),
+           entry(MemoryDataType::kAddressZip, u"94043", "guid-2")});
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"address", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+
+  EXPECT_THAT(future.Get(),
+              SuccessfulSearchResults(SearchResultWithValue(u"Paris"),
+                                      SearchResultWithValue(u"94043")));
+}
+
 // Tests that exact string filter mode requires the full string to match
 // case-insensitively.
 TEST_F(AtMemoryQueryServiceTest,

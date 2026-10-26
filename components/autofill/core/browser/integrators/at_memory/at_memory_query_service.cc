@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/extend.h"
@@ -55,6 +56,7 @@
 #include "components/prefs/pref_service.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
@@ -459,8 +461,8 @@ bool MatchesStringFilter(
     case AutofillFetchSpecification::StringFilter::
         STRING_FILTER_MODE_UNSPECIFIED:
     default:
-      return FuzzyMatchesOrderedTokens(normalized_target_tokens,
-                                       normalized_filter_tokens);
+      return TokenizeAndFuzzyMatchOrderedTokens(normalized_target_tokens,
+                                                normalized_filter_tokens);
   }
 }
 
@@ -832,6 +834,17 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
       !fetch_specifications.empty()
           ? FilterResults(std::move(local_results), fetch_specifications)
           : std::move(local_results);
+
+  // Keep only the first entry of each record, identified by
+  // `MemorySearchResult::identifier`. `AutofillDataProvider` yields an entry
+  // per requested type a record has a value for, but a record should be shown
+  // once.
+  absl::flat_hash_set<decltype(MemorySearchResult::identifier)>
+      seen_identifiers;
+  std::erase_if(filtered_local_results, [&](const MemorySearchResult& entry) {
+    return !std::holds_alternative<std::monostate>(entry.identifier) &&
+           !seen_identifiers.insert(entry.identifier).second;
+  });
 
   LOG_AF(*log_manager_) << LoggingScope::kAtMemory << LogMessage::kAtMemory
                         << "Filtered local data results:" << Br{}

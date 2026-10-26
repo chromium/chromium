@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -78,6 +79,14 @@ std::vector<MemorySearchResult> RetrieveAllHelper(
     MemoryDataType type) {
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   retriever.RetrieveAll({type}, future.GetCallback());
+  return future.Take();
+}
+
+std::vector<MemorySearchResult> RetrieveAllByContentHelper(
+    AutofillDataProvider& retriever,
+    std::u16string_view query) {
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  retriever.RetrieveAllByContent(query, future.GetCallback());
   return future.Take();
 }
 
@@ -281,6 +290,22 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_IbanData) {
                            UnorderedElementsAre(IsMetadata(
                                MemoryDataType::kIbanNickname, u"My IBAN")),
                            /*is_obfuscated=*/true, iban.guid())));
+}
+
+// Tests that RetrieveAll returns server IBANs, whose full value is unknown.
+TEST_F(AutofillDataProviderTest, RetrieveAll_ServerIbanData) {
+  const Iban iban = test::GetServerIban();
+  client().GetPersonalDataManager().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(iban));
+
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kIban);
+  EXPECT_THAT(results,
+              UnorderedElementsAre(IsMemorySearchResult(
+                  iban.GetIdentifierStringForAutofillDisplay(), u"IBAN",
+                  UnorderedElementsAre(IsMetadata(MemoryDataType::kIbanNickname,
+                                                  iban.nickname())),
+                  /*is_obfuscated=*/true, iban.instrument_id())));
 }
 
 // Tests that RetrieveAll correctly fetches and formats credit card data.
@@ -618,7 +643,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressFull_PartialAddress) {
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 }
 
-// Tests that RetrieveAll can fetch multiple types at once (e.g. City and Zip).
+// Tests that `RetrieveAll` yields an entry per requested type of a record, so
+// that each entry can be filtered against its own fetch specification.
 TEST_F(AutofillDataProviderTest, RetrieveAll_MultipleTypes) {
   AutofillProfile profile = test::GetFullProfile();
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
@@ -627,13 +653,36 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_MultipleTypes) {
   retriever().RetrieveAll(
       {MemoryDataType::kAddressCity, MemoryDataType::kAddressZip},
       future.GetCallback());
-  std::vector<MemorySearchResult> results = future.Take();
 
   EXPECT_THAT(
-      results,
-      testing::UnorderedElementsAre(
+      future.Take(),
+      UnorderedElementsAre(
           Field(&MemorySearchResult::type, Eq(MemoryDataType::kAddressCity)),
           Field(&MemorySearchResult::type, Eq(MemoryDataType::kAddressZip))));
+}
+
+// Tests that `RetrieveAll` yields the records of all requested types if the
+// types belong to unrelated records, e.g. of different backends.
+TEST_F(AutofillDataProviderTest, RetrieveAll_UnrelatedTypes) {
+  client().GetPersonalDataManager().address_data_manager().AddProfile(
+      test::GetFullProfile());
+  entity_data_manager().AddOrUpdateEntityInstance(
+      test::GetPassportEntityInstance({.name = u"Marge Simpson"}));
+  WaitForDatabase();
+
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  retriever().RetrieveAll(
+      {MemoryDataType::kPassportName, MemoryDataType::kNameFull},
+      future.GetCallback());
+
+  EXPECT_THAT(
+      future.Take(),
+      UnorderedElementsAre(
+          AllOf(Field(&MemorySearchResult::type,
+                      Eq(MemoryDataType::kPassportName)),
+                Field(&MemorySearchResult::value, Eq(u"Marge Simpson"))),
+          AllOf(Field(&MemorySearchResult::type, Eq(MemoryDataType::kNameFull)),
+                Field(&MemorySearchResult::value, Eq(u"John H. Doe")))));
 }
 
 // Tests that RetrieveAll populates typed_value on entity instance metadata.
@@ -729,6 +778,127 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_LoyaltyCardData) {
                       IsMetadata(MemoryDataType::kLoyaltyMembershipProgram,
                                  u"Program")),
                   /*is_obfuscated=*/false, *loyalty_card.id())));
+}
+
+// Tests that `RetrieveAllByContent` returns an entry per matching attribute of
+// a record, with the matching attribute as the primary value, ordered by the
+// attributes' priority.
+TEST_F(AutofillDataProviderTest, RetrieveAllByContent_AddressData) {
+  AutofillProfile profile = test::GetFullProfile();
+  profile.set_guid(test::MakeGuid(1));
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"91111");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"91111 Elysium Street");
+  client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
+
+  // The query is contained in both the zip code and the street address. The
+  // zip code comes first since codes precede free text.
+  EXPECT_THAT(
+      RetrieveAllByContentHelper(retriever(), u"91111"),
+      ElementsAre(
+          IsMemorySearchResult(
+              u"91111", u"Zip",
+              Contains(IsMetadata(MemoryDataType::kAddressCity, u"Elysium")),
+              /*is_obfuscated=*/false, test::MakeGuid(1)),
+          IsMemorySearchResult(u"91111 Elysium Street", u"Street address", _,
+                               /*is_obfuscated=*/false, test::MakeGuid(1))));
+  // Both the street address and the city contain "Elysium". The street address
+  // comes first since its type precedes the city's in `MemoryDataType`.
+  EXPECT_THAT(
+      RetrieveAllByContentHelper(retriever(), u"Elysium"),
+      ElementsAre(
+          IsMemorySearchResult(u"91111 Elysium Street", u"Street address", _,
+                               /*is_obfuscated=*/false, test::MakeGuid(1)),
+          IsMemorySearchResult(u"Elysium", u"City", _,
+                               /*is_obfuscated=*/false, test::MakeGuid(1))));
+  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), u""), IsEmpty());
+}
+
+// Tests that `RetrieveAllByContent` matches local IBANs by their full value,
+// but not by their nickname, and never returns server IBANs.
+TEST_F(AutofillDataProviderTest, RetrieveAllByContent_IbanData) {
+  Iban local_iban = test::GetLocalIban2();
+  local_iban.set_nickname(u"My savings");
+  client().GetPersonalDataManager().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
+  client().GetPersonalDataManager().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(test::GetServerIban()));
+
+  EXPECT_THAT(
+      RetrieveAllByContentHelper(retriever(), local_iban.value().substr(0, 6)),
+      UnorderedElementsAre(IsMemorySearchResult(
+          GetObfuscatedIban(local_iban.value()), u"IBAN",
+          UnorderedElementsAre(
+              IsMetadata(MemoryDataType::kIbanNickname, u"My savings")),
+          /*is_obfuscated=*/true, local_iban.guid())));
+  // Nicknames are not searchable.
+  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), u"savings"), IsEmpty());
+  // The server IBAN's prefix does not match.
+  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), u"FR76"), IsEmpty());
+}
+
+// Tests that `RetrieveAllByContent` matches local credit cards by their full
+// number, but not by their nickname, and never returns server cards.
+TEST_F(AutofillDataProviderTest, RetrieveAllByContent_CreditCardData) {
+  CreditCard local_card = test::GetCreditCard();
+  local_card.SetNickname(u"My Credit Card");
+  client().GetPersonalDataManager().test_payments_data_manager().AddCreditCard(
+      local_card);
+  client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddServerCreditCard(test::GetMaskedServerCard());
+
+  EXPECT_THAT(
+      RetrieveAllByContentHelper(retriever(), u"4111 1111"),
+      UnorderedElementsAre(IsMemorySearchResult(
+          local_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+          u"Card number", _, /*is_obfuscated=*/true, local_card.guid())));
+  // Nicknames are not searchable.
+  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), u"credit card"),
+              IsEmpty());
+  EXPECT_THAT(RetrieveAllByContentHelper(
+                  retriever(), test::GetMaskedServerCard().LastFourDigits()),
+              IsEmpty());
+}
+
+// Tests that `RetrieveAllByContent` matches Autofill AI entity attributes.
+TEST_F(AutofillDataProviderTest, RetrieveAllByContent_AutofillAiEntityData) {
+  EntityInstance vehicle = test::GetVehicleEntityInstance({.use_count = 1});
+  entity_data_manager().AddOrUpdateEntityInstance(vehicle);
+  WaitForDatabase();
+
+  // Both the license plate and the VIN contain the query. The license plate
+  // comes first since its type precedes the VIN's in `MemoryDataType`.
+  EXPECT_THAT(
+      RetrieveAllByContentHelper(retriever(), u"1234"),
+      ElementsAre(
+          IsMemorySearchResult(
+              u"123456", u"License plate",
+              Contains(IsMetadata(MemoryDataType::kVehicleMake, u"BMW")),
+              /*is_obfuscated=*/false, vehicle.guid().value()),
+          IsMemorySearchResult(
+              u"12312345", u"VIN (Vehicle Identification Number)", _,
+              /*is_obfuscated=*/false, vehicle.guid().value())));
+}
+
+// Tests that `RetrieveAllByContent` matches loyalty cards.
+TEST_F(AutofillDataProviderTest, RetrieveAllByContent_LoyaltyCardData) {
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  test_api(*client().GetValuablesDataManager()).AddLoyaltyCard(loyalty_card);
+
+  // Both the program and the provider contain the query. The program comes
+  // first since its type precedes the provider's in `MemoryDataType`.
+  EXPECT_THAT(RetrieveAllByContentHelper(retriever(), u"Bahn"),
+              ElementsAre(IsMemorySearchResult(
+                              u"BahnBonus",
+                              GetMemoryDataTypeNameForI18n(
+                                  MemoryDataType::kLoyaltyMembershipProgram),
+                              _, /*is_obfuscated=*/false, *loyalty_card.id()),
+                          IsMemorySearchResult(
+                              u"Deutsche Bahn",
+                              GetMemoryDataTypeNameForI18n(
+                                  MemoryDataType::kLoyaltyMembershipProvider),
+                              _, /*is_obfuscated=*/false, *loyalty_card.id())));
 }
 
 }  // namespace
