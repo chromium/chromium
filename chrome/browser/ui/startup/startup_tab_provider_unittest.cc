@@ -107,13 +107,13 @@ TEST(StartupTabProviderTest, GetPinnedTabsForState) {
       pref_default, pinned, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.GetHost());
+  EXPECT_EQ("www.google.com", output[0].url.host());
 
   output =
       StartupTabProviderImpl::GetPinnedTabsForState(pref_urls, pinned, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.GetHost());
+  EXPECT_EQ("www.google.com", output[0].url.host());
 }
 
 TEST(StartupTabProviderTest, GetPinnedTabsForState_Negative) {
@@ -147,14 +147,14 @@ TEST(StartupTabProviderTest, GetPreferencesTabsForState) {
       StartupTabProviderImpl::GetPreferencesTabsForState(pref_urls, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.GetHost());
+  EXPECT_EQ("www.google.com", output[0].url.host());
   EXPECT_EQ(StartupTab::Type::kNormal, output[0].type);
 
   output = StartupTabProviderImpl::GetPreferencesTabsForState(
       pref_last_and_urls, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.GetHost());
+  EXPECT_EQ("www.google.com", output[0].url.host());
   EXPECT_EQ(StartupTab::Type::kFromLastAndUrlsStartupPref, output[0].type);
 }
 

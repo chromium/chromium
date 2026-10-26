@@ -192,9 +192,10 @@ IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,
   ShowSigninDialog(command_line);
   WaitForDialogToLoad();
 
-  EXPECT_TRUE(web_contents()->GetVisibleURL().has_query());
-  std::string query_parameters = web_contents()->GetVisibleURL().GetQuery();
-  EXPECT_TRUE(query_parameters.find("show_tos=1") != std::string::npos);
+  const GURL& url = web_contents()->GetVisibleURL();
+  EXPECT_TRUE(url.has_query());
+  std::string_view query_parameters = url.query();
+  EXPECT_TRUE(query_parameters.find("show_tos=1") != std::string_view::npos);
 
   web_view_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);

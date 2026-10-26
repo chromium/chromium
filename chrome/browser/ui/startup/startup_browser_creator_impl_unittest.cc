@@ -185,7 +185,7 @@ class DuplicateFakeStartupTabProvider : public StartupTabProvider {
 // `testing::ElementsAreArray`.
 bool operator==(const StartupTab& actual_tab,
                 const std::string& expected_host) {
-  return actual_tab.url.GetHost() == expected_host;
+  return actual_tab.url.host() == expected_host;
 }
 
 class StartupBrowserCreatorImplTest : public testing::Test {
@@ -226,9 +226,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
 
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
-  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
-  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
+  EXPECT_EQ("prefs", output.tabs[1].url.host());
+  EXPECT_EQ("pinned", output.tabs[2].url.host());
 
   // No onboarding if not enabled even if promo is allowed.
   output = impl.DetermineStartupTabs(
@@ -238,9 +238,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
 
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
-  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
-  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
+  EXPECT_EQ("prefs", output.tabs[1].url.host());
+  EXPECT_EQ("pinned", output.tabs[2].url.host());
 }
 
 TEST_F(StartupBrowserCreatorImplTest,
@@ -261,7 +261,7 @@ TEST_F(StartupBrowserCreatorImplTest,
   // Duplicated URL is expected to appear only once.
   ASSERT_EQ(1U, output.tabs.size());
   EXPECT_EQ(DuplicateFakeStartupTabProvider::kDuplicateHost,
-            output.tabs[0].url.GetHost());
+            output.tabs[0].url.host());
   EXPECT_EQ(StartupTab::Type::kPinned, output.tabs[0].type);
 }
 
@@ -328,7 +328,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_InitialPrefs) {
       /*promotional_tabs_enabled=*/true, /*whats_new_enabled=*/true);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(1U, output.tabs.size());
-  EXPECT_EQ("distribution", output.tabs[0].url.GetHost());
+  EXPECT_EQ("distribution", output.tabs[0].url.host());
 }
 
 // URLs specified on the command line should always appear, and should block
@@ -351,9 +351,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
 
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
-  EXPECT_EQ("cmd-line", output.tabs[1].url.GetHost());
-  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
+  EXPECT_EQ("cmd-line", output.tabs[1].url.host());
+  EXPECT_EQ("pinned", output.tabs[2].url.host());
 
   // Also test that both incognito and crash recovery don't interfere with
   // command line tabs.
@@ -366,7 +366,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
 
   ASSERT_EQ(1U, output.tabs.size());
-  EXPECT_EQ("cmd-line", output.tabs[0].url.GetHost());
+  EXPECT_EQ("cmd-line", output.tabs[0].url.host());
 
   // Crash Recovery
   output = impl.DetermineStartupTabs(
@@ -376,7 +376,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
 
   ASSERT_EQ(1U, output.tabs.size());
-  EXPECT_EQ("cmd-line", output.tabs[0].url.GetHost());
+  EXPECT_EQ("cmd-line", output.tabs[0].url.host());
 }
 
 // New Tab Page should appear alongside pinned tabs and the reset trigger, but
@@ -395,9 +395,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewTabPage) {
       /*whats_new_enabled=*/false);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
-  EXPECT_EQ("new-tab", output.tabs[1].url.GetHost());
-  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
+  EXPECT_EQ("new-tab", output.tabs[1].url.host());
+  EXPECT_EQ("pinned", output.tabs[2].url.host());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -417,8 +417,8 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
       /*promotional_tabs_enabled=*/true, /*whats_new_enabled=*/true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(2U, output.tabs.size());
-  EXPECT_EQ("whats-new", output.tabs[0].url.GetHost());
-  EXPECT_EQ("new-tab", output.tabs[1].url.GetHost());
+  EXPECT_EQ("whats-new", output.tabs[0].url.host());
+  EXPECT_EQ("new-tab", output.tabs[1].url.host());
 
   // New features can appear with prefs/pinned.
   FakeStartupTabProvider provider_with_pinned(
@@ -430,9 +430,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
       /*whats_new_enabled=*/true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("whats-new", output.tabs[0].url.GetHost());
-  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
-  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
+  EXPECT_EQ("whats-new", output.tabs[0].url.host());
+  EXPECT_EQ("prefs", output.tabs[1].url.host());
+  EXPECT_EQ("pinned", output.tabs[2].url.host());
 
   // Onboarding overrides What's New.
   base::CommandLine first_run_command_line(base::CommandLine::NO_PROGRAM);

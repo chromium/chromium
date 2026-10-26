@@ -504,8 +504,8 @@ class CredentialProviderWebDialogView : public views::WebDialogView {
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace)
       override {
-    VLOG(0) << "Suppressed window creation for  " << target_url.GetHost()
-            << target_url.GetPath();
+    VLOG(0) << "Suppressed window creation for  " << target_url.host()
+            << target_url.path();
     return nullptr;
   }
 };

@@ -77,8 +77,8 @@ CredentialProviderWebDialogViewWithModal::CreateCustomWebContents(
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespaceHandle* session_storage_namespace) {
-  VLOG(0) << "Suppressed window creation for  " << target_url.GetHost()
-          << target_url.GetPath();
+  VLOG(0) << "Suppressed window creation for  " << target_url.host()
+          << target_url.path();
   return nullptr;
 }
 

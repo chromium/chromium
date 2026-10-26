@@ -1711,7 +1711,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
   TabStripModel* tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/empty.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile2)->GetSize());
   new_browser = FindOneOtherBrowserForProfile(&profile2, nullptr);
@@ -1719,7 +1719,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
   tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/form.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
@@ -1832,7 +1832,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   tab_strip = new_browser->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/empty.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   // profile_home2 was not launched since it would've only opened the home page.
   ASSERT_EQ(0u,
@@ -2672,14 +2672,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   ASSERT_TRUE(new_browser);
   TabStripModel* tab_strip = new_browser->GetTabStripModel();
   EXPECT_EQ("/title1.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile2)->GetSize());
   new_browser = FindOneOtherBrowserForProfile(&profile2, nullptr);
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->GetTabStripModel();
   EXPECT_EQ("/title2.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
 class StartupBrowserCreatorTestWithGuestParam
