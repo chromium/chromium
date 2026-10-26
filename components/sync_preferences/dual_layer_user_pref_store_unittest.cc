@@ -227,8 +227,6 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
  public:
   DualLayerUserPrefStoreTest() : DualLayerUserPrefStoreTestBase(true) {
-    // TODO(crbug.com/40256875): Add proper test setup to enable and disable
-    // data types appropriately.
     dual_layer_store_->EnableType(syncer::PREFERENCES);
     dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
 #if BUILDFLAG(IS_CHROMEOS)
