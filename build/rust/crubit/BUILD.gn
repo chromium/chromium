@@ -131,6 +131,7 @@ if (enable_rust_api_from_cpp) {
     # `std::input_iterator_tag` without including their public header).
     internal_headers = [
       "${libcxx_prefix}/include/__memory/unique_ptr.h",
+      "${libcxx_prefix}/include/__optional/optional.h",
       "${libcxx_prefix}/include/__vector/vector.h",
     ]
 
