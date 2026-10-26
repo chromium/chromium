@@ -210,7 +210,6 @@ public class TabGridDialogTest {
     private static final ActivityLifecycleMonitor sMonitor =
             ActivityLifecycleMonitorRegistry.getInstance();
 
-    private boolean mHasReceivedSourceRect;
     private final TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
     private ModalDialogManager mModalDialogManager;
     private PrefService mPrefService;
@@ -470,64 +469,6 @@ public class TabGridDialogTest {
 
         // Verify TabGroupsContinuation related functionality is exposed.
         verifyTabGroupDialogUi(cta);
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/565472116")
-    public void testTabGridDialogAnimation() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Add 400px top margin to the recyclerView.
-        RecyclerView recyclerView = getRecyclerView(cta);
-        assertNotNull(recyclerView);
-        float tabGridCardPadding = TabUiThemeProvider.getTabGridCardMargin(cta);
-        int deltaTopMargin = 400;
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
-        params.topMargin += deltaTopMargin;
-        try {
-            ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
-            CriteriaHelper.pollUiThread(() -> !recyclerView.isComputingLayout());
-
-            // Calculate expected values of animation source rect.
-            mHasReceivedSourceRect = false;
-            View parentView = cta.getCompositorViewHolderForTesting();
-            Rect parentRect = new Rect();
-            parentView.getGlobalVisibleRect(parentRect);
-            Rect sourceRect = new Rect();
-            recyclerView.getChildAt(0).getGlobalVisibleRect(sourceRect);
-            // TODO(yuezhanggg): Figure out why the sourceRect.left is wrong after setting the
-            // margin.
-            float expectedTop =
-                    sourceRect.top - parentRect.top + tabGridCardPadding + deltaTopMargin;
-            float expectedWidth = sourceRect.width() - 2 * tabGridCardPadding;
-            float expectedHeight = sourceRect.height() - 2 * tabGridCardPadding;
-
-            // Setup the callback to verify the animation source Rect.
-            TabGridDialogView.setSourceRectCallbackForTesting(
-                    result -> {
-                        mHasReceivedSourceRect = true;
-                        assertEquals("Top mismatch", expectedTop, result.top, 0.0);
-                        assertEquals("Height mismatch", expectedHeight, result.height(), 0.0);
-                        assertEquals("Width mismatch", expectedWidth, result.width(), 0.0);
-                    });
-
-            TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
-            CriteriaHelper.pollUiThread(() -> mHasReceivedSourceRect);
-            CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
-        } finally {
-            TabGridDialogView.setSourceRectCallbackForTesting(/* callback= */ null);
-            params.topMargin -= deltaTopMargin;
-            ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
-        }
     }
 
     @Test
