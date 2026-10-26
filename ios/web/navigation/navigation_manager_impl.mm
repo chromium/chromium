@@ -826,14 +826,17 @@ NavigationItem* NavigationManagerImpl::GetVisibleItem() const {
   }
 
   // Only return pending_item_ for new (non-history), user-initiated
-  // navigations in order to prevent URL spoof attacks.
+  // navigations in order to prevent URL spoof attacks. The pending item is
+  // also ignored while the last committed item is the empty window open item,
+  // because the initial empty document remains the current document and can
+  // still be scripted by its opener until the pending navigation commits.
   NavigationItemImpl* pending_item = GetPendingItemImpl();
   if (pending_item) {
     bool is_user_initiated = pending_item->NavigationInitiationType() ==
                              NavigationInitiationType::BROWSER_INITIATED;
-    bool safe_to_show_pending = is_user_initiated &&
-                                pending_item_index_ == -1 &&
-                                GetWebState()->IsLoading();
+    bool safe_to_show_pending =
+        is_user_initiated && pending_item_index_ == -1 &&
+        GetWebState()->IsLoading() && !empty_window_open_item_;
     if (safe_to_show_pending) {
       return pending_item;
     }

@@ -15,7 +15,37 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
+@interface WKWebView (CRWTesting)
+- (void)_close;
+@end
+
 namespace web {
+
+namespace {
+
+// Ensures a hung `WKWebView` is closed before `WebIntTest::TearDown()` attempts
+// to clear website data and wait on unresponsive WebContent process callbacks.
+class ScopedForceCloseWebView {
+ public:
+  explicit ScopedForceCloseWebView(WebState* web_state)
+      : web_state_(web_state) {}
+  ~ScopedForceCloseWebView() {
+    if (!web_state_) {
+      return;
+    }
+    CRWWebController* web_controller = web::test::GetWebController(web_state_);
+    WKWebView* web_view = [web_controller ensureWebViewCreated];
+    if ([web_view respondsToSelector:@selector(_close)]) {
+      [web_view _close];
+    }
+    [web_controller removeWebView];
+  }
+
+ private:
+  raw_ptr<WebState> web_state_;
+};
+
+}  // namespace
 
 // Test fixture for navigation manager tests requiring a real webview (for
 // example, those involving session restoration).
@@ -438,6 +468,87 @@ TEST_F(NavigationManagerImplTest, LoadURLFromDetachedStateWithEmptyHistory) {
 
   // Verify that restore was skipped when history was empty.
   histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 0);
+}
+
+// Tests that when an opener opens a blank child window (`window.open('',
+// '_blank')`), injects content via `document.write`, starts a cross-origin
+// navigation, stops it, and stalls the shared WebContent process, neither
+// reloading nor starting a user-initiated navigation in the child window
+// spoofs the pending URL as the visible URL before the navigation commits.
+TEST_F(NavigationManagerImplTest,
+       StalledEmptyWindowOpenChildTabDoesNotSpoofVisibleURL) {
+  net::EmbeddedTestServer target_server;
+  net::test_server::RegisterDefaultHandlers(&target_server);
+  ASSERT_TRUE(target_server.Start());
+
+  const GURL opener_url = test_server_->GetURL("/echo");
+  const GURL slow_target_url = target_server.GetURL("localhost", "/hung");
+  const GURL trusted_url = target_server.GetURL("localhost", "/echo");
+
+  web_state_delegate_.allow_popups(opener_url.DeprecatedGetOriginAsURL());
+  ASSERT_TRUE(LoadUrl(opener_url));
+
+  ScopedForceCloseWebView close_opener(web_state());
+
+  // Open an initial empty window and write attacker-controlled HTML into it.
+  web::test::ExecuteJavaScript(@"window.__childTab = window.open('', '_blank');"
+                                "window.__childTab.document.open();"
+                                "window.__childTab.document.write("
+                                "'<html><body>Attacker Content</body></html>');"
+                                "window.__childTab.document.close(); 0;",
+                               web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return web_state_delegate_.child_windows().size() == 1;
+      }));
+
+  WebState* child_web_state = web_state_delegate_.child_windows()[0].get();
+  ASSERT_TRUE(child_web_state);
+  ScopedForceCloseWebView close_child(child_web_state);
+  ASSERT_TRUE(
+      test::WaitForWebViewContainingText(child_web_state, "Attacker Content"));
+  EXPECT_EQ(opener_url, child_web_state->GetLastCommittedURL());
+
+  // Start a cross-origin navigation in the child tab, then stop it and stall
+  // the shared WebContent process synchronously.
+  NSString* start_nav_script =
+      [NSString stringWithFormat:@"window.__childTab.location.href = '%s'; 0;",
+                                 slow_target_url.spec().c_str()];
+  web::test::ExecuteJavaScript(start_nav_script, web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return child_web_state->GetNavigationManager()->GetPendingItem() !=
+               nullptr;
+      }));
+  EXPECT_EQ(opener_url, child_web_state->GetVisibleURL());
+
+  WKWebView* opener_web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  [opener_web_view evaluateJavaScript:@"setTimeout(function() {"
+                                       "  window.__childTab.stop();"
+                                       "  while (true) {}"
+                                       "}, 0);"
+                    completionHandler:nil];
+
+  // Wait until the shared WebContent process has entered the infinite loop.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(100));
+
+  // Reloading promotes the pending item to `BROWSER_INITIATED`, but the visible
+  // URL must remain the committed empty window open item (`opener_url`).
+  child_web_state->GetNavigationManager()->Reload(ReloadType::NORMAL,
+                                                  /*check_for_repost=*/true);
+  EXPECT_EQ(opener_url, child_web_state->GetVisibleURL());
+
+  // Starting a manual user-initiated navigation while the empty window open
+  // item is still the last committed item must also not expose the uncommitted
+  // pending URL as the visible URL.
+  NavigationManager::WebLoadParams manual_params(trusted_url);
+  manual_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  child_web_state->GetNavigationManager()->LoadURLWithParams(manual_params);
+  EXPECT_EQ(opener_url, child_web_state->GetLastCommittedURL());
+  EXPECT_EQ(opener_url, child_web_state->GetVisibleURL());
 }
 
 }  // namespace web

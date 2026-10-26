@@ -1656,6 +1656,63 @@ TEST_P(NavigationManagerTest, PendingItemIsNotVisibleIfNotUserInitiated) {
   EXPECT_EQ(nullptr, navigation_manager()->GetVisibleItem());
 }
 
+// Tests that a user-initiated pending item is not visible while the last
+// committed item is the empty window open item, and becomes visible for
+// subsequent navigations once a real navigation commits.
+TEST_P(NavigationManagerTest, PendingItemIsNotVisibleForEmptyWindowOpenItem) {
+  delegate_.SetWebState(&web_state_);
+  web_state_.SetLoading(true);
+
+  __block NSURL* web_view_url = net::NSURLWithGURL(GURL(url::kAboutBlankURL));
+  OCMStub([mock_web_view_ URL]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&web_view_url];
+  });
+  mock_wk_list_.currentItem = nil;
+
+  navigation_manager()->AddPendingItem(
+      GURL(url::kAboutBlankURL), Referrer(), ui::PAGE_TRANSITION_LINK,
+      web::NavigationInitiationType::RENDERER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+  navigation_manager()->CommitPendingItem();
+
+  const NavigationItem* empty_window_open_item =
+      navigation_manager()->GetLastCommittedItem();
+  ASSERT_TRUE(empty_window_open_item);
+  EXPECT_EQ(empty_window_open_item, navigation_manager()->GetVisibleItem());
+
+  // Start a new user-initiated navigation while on the empty window open item.
+  // The visible item must remain the empty window open item until the
+  // navigation commits.
+  navigation_manager()->AddPendingItem(
+      GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_EQ(empty_window_open_item, navigation_manager()->GetVisibleItem());
+
+  // Once the navigation commits and clears `empty_window_open_item_`, a
+  // subsequent user-initiated pending item is visible while loading.
+  web_view_url = [NSURL URLWithString:@"http://www.url.com/0"];
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
+  navigation_manager()->CommitPendingItem();
+  ASSERT_TRUE(navigation_manager()->GetVisibleItem());
+  EXPECT_EQ("http://www.url.com/0",
+            navigation_manager()->GetVisibleItem()->GetURL().spec());
+
+  navigation_manager()->AddPendingItem(
+      GURL("http://www.url.com/1"), Referrer(), ui::PAGE_TRANSITION_TYPED,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+
+  ASSERT_TRUE(navigation_manager()->GetVisibleItem());
+  EXPECT_EQ("http://www.url.com/1",
+            navigation_manager()->GetVisibleItem()->GetURL().spec());
+}
+
 TEST_P(NavigationManagerTest, PendingItemIsNotVisibleIfNotNewNavigation) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
