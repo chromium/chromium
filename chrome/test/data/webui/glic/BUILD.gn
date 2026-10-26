@@ -40,6 +40,7 @@ ts_library("build_extra_ts") {
     "browser_tests/glic_android_browsertest.ts",
     "browser_tests/glic_mic_permission_android_browsertest.ts",
     "browser_tests/glic_browser_test_android.ts",
+    "browser_tests/failing_init_client.ts",
     "browser_tests/minimal_client.ts",
     "api_boot.ts",
     "test_client/client.ts",

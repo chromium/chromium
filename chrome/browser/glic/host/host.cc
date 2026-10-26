@@ -373,6 +373,14 @@ void Host::NotifyWindowIntentToShow() {
   }
 }
 
+void Host::WaitForLoad(base::OnceCallback<void(bool failed)> callback) {
+  if (!contents_) {
+    std::move(callback).Run(/*failed=*/true);
+    return;
+  }
+  contents_->WaitForLoad(std::move(callback));
+}
+
 void Host::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
   if (glic_service().IsNoWebviewEnabled()) {
     if (contents_) {
@@ -545,6 +553,7 @@ void Host::OnGuestWebClientCleared(bool had_web_client) {
     instance_delegate().OnWebClientCleared();
   }
   client_state_ = {};
+  UpdateClientLoadState();
   observers_.Notify(&Observer::WebClientDisconnected);
 }
 

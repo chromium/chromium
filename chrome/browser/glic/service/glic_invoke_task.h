@@ -239,12 +239,14 @@ class WaitForClientReadyTask : public GlicInvokeTask, public Host::Observer {
   void ClientLoadStateChanged(ClientLoadState state) override;
 
  private:
+  void OnWaitForLoadComplete(bool failed);
   void CheckState(ClientLoadState state);
 
   const base::raw_ref<Host> host_;
   base::OnceCallback<void(GlicInvokeError)> error_callback_;
   base::ScopedObservation<Host, Host::Observer> observation_{this};
   base::OnceClosure done_callback_;
+  base::WeakPtrFactory<WaitForClientReadyTask> weak_ptr_factory_{this};
 };
 
 // Task that posts a callback asynchronously.

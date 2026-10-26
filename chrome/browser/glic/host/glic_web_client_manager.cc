@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
@@ -580,10 +581,13 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
   if (web_client_owned_) {
     UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnProcessGone);
   }
-  if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
-    if (delegate_) {
-      delegate_->OnGuestProcessGone(status);
-    }
+  // On Android, termination of a background/hidden renderer process is reported
+  // as TERMINATION_STATUS_NORMAL_TERMINATION because waitpid is not used for
+  // Android service processes without a visible/strong binding. Any process
+  // exit while the guest WebContents is still alive (outside browser shutdown)
+  // leaves the guest unusable and must notify the delegate.
+  if (!browser_shutdown::HasShutdownStarted() && delegate_) {
+    delegate_->OnGuestProcessGone(status);
   }
 }
 

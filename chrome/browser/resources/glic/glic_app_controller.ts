@@ -144,6 +144,7 @@ export class GlicAppController implements WebviewDelegate {
 
   state: WebUiState|undefined;
   private clientLoadFailed: boolean|undefined;
+  private loadWaiters: Array<(result: {failed: boolean}) => void> = [];
 
   // When entering loading state, this represents the earliest timestamp at
   // which the UI can transition to the ready state. This ensures that the
@@ -375,6 +376,7 @@ export class GlicAppController implements WebviewDelegate {
       this.clientLoadFailed = failed;
       this.browserProxy.pageHandler.onClientLoadFailed(failed);
     }
+    this.maybeResolveLoadWaiters();
   }
 
   // Whether `state` is one the client cannot leave without being reloaded.
@@ -428,6 +430,29 @@ export class GlicAppController implements WebviewDelegate {
     this.clientLoadErrorReported = true;
     this.browserProxy.pageHandler.notifyClientLoadError(
         this.clientLoadErrorReason);
+  }
+
+  private isClientLoaded(): boolean {
+    if (this.state === undefined || this.hasClientLoadFailed(this.state)) {
+      return false;
+    }
+    const webClientState = this.webview?.getWebClientState().getCurrentValue();
+    return webClientState === WebClientState.kResponsive ||
+        webClientState === WebClientState.kUnresponsive;
+  }
+
+  private maybeResolveLoadWaiters(): void {
+    if (this.state === undefined || this.loadWaiters.length === 0) {
+      return;
+    }
+    const loaded = this.isClientLoaded();
+    const failed = this.hasClientLoadFailed(this.state);
+    if (!loaded && !failed) {
+      return;
+    }
+    for (const resolve of this.loadWaiters.splice(0)) {
+      resolve({failed});
+    }
   }
 
   // `clientLoadErrorReason` is null for the rare transition into kError that
@@ -891,6 +916,7 @@ export class GlicAppController implements WebviewDelegate {
         if (this.state === WebUiState.kUnresponsive) {
           this.setState(WebUiState.kReady);
         }
+        this.maybeResolveLoadWaiters();
         break;
       case WebClientState.kUnresponsive:
         break;
@@ -992,6 +1018,13 @@ export class GlicAppController implements WebviewDelegate {
     } else if (this.clientLoadFailed) {
       this.browserProxy.pageHandler.onClientLoadFailed(true);
     }
+  }
+
+  waitForLoad(): Promise<{failed: boolean}> {
+    const {promise, resolve} = Promise.withResolvers<{failed: boolean}>();
+    this.loadWaiters.push(resolve);
+    this.maybeResolveLoadWaiters();
+    return promise;
   }
 
   setProfileReadyState(state: ProfileReadyState) {

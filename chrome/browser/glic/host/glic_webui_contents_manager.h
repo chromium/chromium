@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_WEBUI_CONTENTS_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_WEBUI_CONTENTS_MANAGER_H_
 
+#include <cstdint>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
@@ -18,6 +21,7 @@
 class Profile;
 
 namespace glic {
+class GlicPageHandler;
 class Host;
 
 // Implementation of GlicWebContentsManager that hosts the guest client inside
@@ -47,8 +51,15 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   GlicWebClientManager& web_client_manager() override;
   bool ShouldReloadOnShow() const override;
   bool IsCrashed() const override;
+  void WaitForLoad(base::OnceCallback<void(bool failed)> callback) override;
+
+  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
+  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
 
  private:
+  void OnWebUiLoadComplete(GlicPageHandler* page_handler,
+                           uint64_t request_id,
+                           bool failed);
   // content::WebContentsObserver:
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
@@ -74,6 +85,12 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
 
   bool is_actuating_ = false;
   bool is_actuating_on_visible_tab_ = false;
+
+  raw_ptr<GlicPageHandler> page_handler_ = nullptr;
+  uint64_t next_wait_for_load_id_ = 0;
+  base::flat_map<uint64_t, base::OnceCallback<void(bool)>>
+      pending_wait_for_load_callbacks_;
+  base::WeakPtrFactory<GlicWebUIContentsManager> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

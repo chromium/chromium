@@ -247,6 +247,10 @@ class Host : public GlicSharingManagerProvider {
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();
 
+  // Waits for the client load to finish, or runs `callback` immediately if
+  // loading has already succeeded or failed.
+  void WaitForLoad(base::OnceCallback<void(bool failed)> callback);
+
   // Signals the glic WebUI to adjust the zoom level of its hosted webview.
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source);
 

@@ -64,6 +64,11 @@ void FakeWebContentsManager::SetErrorCallback(base::RepeatingClosure callback) {
   error_callback_ = std::move(callback);
 }
 
+void FakeWebContentsManager::WaitForLoad(
+    base::OnceCallback<void(bool failed)> callback) {
+  std::move(callback).Run(ShouldReloadOnShow());
+}
+
 void FakeWebContentsManager::TriggerErrorCallback() {
   if (error_callback_) {
     error_callback_.Run();
