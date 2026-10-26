@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -54,9 +55,9 @@ std::optional<RendererForms> RendererFormsFromBrowserForm(
       token_rfh_map;
   for (FormData& form : renderer_forms) {
     content::GlobalRenderFrameHostId rfh_id;
-    if (auto it = token_rfh_map.find(form.host_frame());
-        it != token_rfh_map.end()) {
-      rfh_id = it->second;
+    if (const content::GlobalRenderFrameHostId* existing_rfh_id =
+            base::FindOrNull(token_rfh_map, form.host_frame())) {
+      rfh_id = *existing_rfh_id;
     } else {
       if (content::RenderFrameHost* host = FindRenderFrameHostByToken(
               client.GetWebContents(), form.host_frame())) {
