@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -16,13 +17,15 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/user_charging_event.pb.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "ui/aura/env.h"
@@ -369,11 +372,25 @@ void SmartChargingManager::OnUserSessionStarted(bool /* is_primary_user */) {
   // ignore |is_primary_user|.
   if (loaded_from_disk_)
     return;
-  if (!ProfileManager::GetPrimaryUserProfile()) {
+  // Only the directory is needed, so it is derived from the primary user
+  // rather than from a Profile: asking ProfileManager for the profile would
+  // create it as a side effect if it did not exist yet. "Primary" is a
+  // property of the session, so the account is taken from the primary
+  // session.
+  const session_manager::Session* const primary_session =
+      session_manager_observation_.GetSource()->GetPrimarySession();
+  if (!primary_session) {
     LogSmartChargingMessage(SmartChargingMessage::kGetPrimaryProfileError);
     return;
   }
-  profile_path_ = ProfileManager::GetPrimaryUserProfile()->GetPath();
+  // SessionManager keeps the primary session and the primary User in step, so
+  // the User exists whenever the session does.
+  const user_manager::User& primary_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  profile_path_ =
+      BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          primary_user.username_hash());
   MaybeLoadFromDisk(profile_path_.value());
 }
 

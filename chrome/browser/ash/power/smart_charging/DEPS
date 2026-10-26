@@ -15,12 +15,13 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/power/ml",
-  "+chrome/browser/profiles",
-  "+chrome/test/base",
 ]
 
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
+  ".*unittest\\.cc": [
+    "+chrome/test/base",
+  ],
   "smart_charging_ukm_logger_unittest\\.cc": [
     "+chrome/browser/ui/tabs",
   ],
