@@ -100,7 +100,14 @@ TEST_F(GlicSelectionWidgetTest, CopyButtonsHiddenByDefault) {
 
   auto pill_children = children[0]->children();
   ASSERT_EQ(pill_children.size(), 2u);
-  EXPECT_TRUE(views::AsViewClass<views::MdTextButton>(pill_children[0]));
+  auto* ask_gemini_btn =
+      views::AsViewClass<views::MdTextButton>(pill_children[0]);
+  ASSERT_TRUE(ask_gemini_btn);
+  EXPECT_TRUE(ask_gemini_btn->HasImage(views::Button::STATE_NORMAL));
+  EXPECT_FALSE(
+      ask_gemini_btn->GetImageModel(views::Button::STATE_HOVERED).has_value());
+  EXPECT_FALSE(
+      ask_gemini_btn->GetImageModel(views::Button::STATE_PRESSED).has_value());
 
   auto close_children = pill_children[1]->children();
   ASSERT_EQ(close_children.size(), 1u);
@@ -223,6 +230,11 @@ TEST_F(GlicSelectionWidgetTest, SmallChip) {
   ASSERT_TRUE(ask_gemini_btn);
   EXPECT_TRUE(ask_gemini_btn->GetText().empty());
   EXPECT_EQ(ask_gemini_btn->GetPreferredSize(), gfx::Size(30, 30));
+  EXPECT_TRUE(ask_gemini_btn->HasImage(views::Button::STATE_NORMAL));
+  EXPECT_FALSE(
+      ask_gemini_btn->GetImageModel(views::Button::STATE_HOVERED).has_value());
+  EXPECT_FALSE(
+      ask_gemini_btn->GetImageModel(views::Button::STATE_PRESSED).has_value());
 
   views::test::ButtonTestApi(ask_gemini_btn)
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),

@@ -23,7 +23,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -31,8 +30,6 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -156,7 +153,8 @@ class GlicSelectionContentsView : public views::View {
             base::BindRepeating(
                 &GlicSelectionContentsView::OnAskGeminiButtonClicked,
                 base::Unretained(this)),
-            cta_label));
+            cta_label, views::style::CONTEXT_BUTTON_MD,
+            /*use_text_color_for_icon=*/false));
     ask_gemini_btn->SetProperty(
         views::kElementIdentifierKey,
         GlicSelectionWidgetDelegate::kAskGeminiButtonElementId);
@@ -181,56 +179,22 @@ class GlicSelectionContentsView : public views::View {
 
     ask_gemini_btn_ = ask_gemini_btn;
 
-    gfx::ImageSkia* icon_skia =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_GLIC_BUTTON_ALT_ICON);
-    gfx::ImageSkia resized_icon = gfx::ImageSkiaOperations::CreateResizedImage(
-        *icon_skia, skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(kIconSize, kIconSize));
-    active_icon_model_ = ui::ImageModel::FromImageSkia(resized_icon);
-
-    auto inactive_generator = base::BindRepeating(
-        [](bool is_small_chip,
-           const ui::ColorProvider* color_provider) -> gfx::ImageSkia {
-          if (!color_provider) {
-            return gfx::ImageSkia();
-          }
-          const gfx::VectorIcon& vector_icon =
-              is_small_chip ? GetSmallChipIcon()
-                            : GlicVectorIconManager::GetVectorIcon(
-                                  IDR_GLIC_BUTTON_VECTOR_ICON);
-          return gfx::CreateVectorIcon(
-              vector_icon, kIconSize,
-              color_provider->GetColor(ui::kColorSysOnSurfaceSubtle));
-        },
-        is_small_chip);
-
-    inactive_icon_model_ = ui::ImageModel::FromImageGenerator(
-        std::move(inactive_generator), gfx::Size(kIconSize, kIconSize));
-
-    ask_gemini_btn->SetImageModel(views::Button::STATE_NORMAL,
-                                  inactive_icon_model_);
+    const gfx::VectorIcon& vector_icon =
+        is_small_chip
+            ? GetSmallChipIcon()
+            : GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
+    ask_gemini_btn->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            vector_icon, ui::kColorSysOnSurfaceSubtle, kIconSize));
 
     if (is_small_chip) {
       ask_gemini_btn->GetViewAccessibility().SetName(ask_gemini_tooltip);
-      if (!base::FeatureList::IsEnabled(
-              features::kGlicSelectionOverlayPromptBox)) {
-        ask_gemini_btn->SetImageModel(views::Button::STATE_HOVERED,
-                                      active_icon_model_);
-        ask_gemini_btn->SetImageModel(views::Button::STATE_PRESSED,
-                                      active_icon_model_);
-      }
       ask_gemini_btn->SetShowInkDropWhenHotTracked(false);
       ask_gemini_btn->SetHasInkDropActionOnClick(false);
       views::InkDrop::Get(ask_gemini_btn)
           ->SetMode(views::InkDropHost::InkDropMode::OFF);
     } else {
-      ask_gemini_btn->SetImageModel(views::Button::STATE_HOVERED,
-                                    active_icon_model_);
-      ask_gemini_btn->SetImageModel(views::Button::STATE_PRESSED,
-                                    active_icon_model_);
-      ask_gemini_btn->SetImageModel(views::Button::STATE_DISABLED,
-                                    inactive_icon_model_);
       views::InkDrop::Get(ask_gemini_btn)
           ->SetMode(views::InkDropHost::InkDropMode::ON);
       ask_gemini_btn->SetHasInkDropActionOnClick(true);
@@ -357,8 +321,6 @@ class GlicSelectionContentsView : public views::View {
  private:
   const raw_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
   raw_ptr<views::MdTextButton> ask_gemini_btn_ = nullptr;
-  ui::ImageModel inactive_icon_model_;
-  ui::ImageModel active_icon_model_;
   raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
   raw_ptr<views::ImageButton> close_btn_ = nullptr;
   base::CallbackListSubscription close_btn_subscription_;
