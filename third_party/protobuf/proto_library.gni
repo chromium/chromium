@@ -452,7 +452,9 @@ template("proto_library") {
           _import_dirs_abspaths = rebase_path(invoker.import_dirs, "//")
           foreach(_abspath, _import_dirs_abspaths) {
             _rebased_root_gen_dir = rebase_path(root_gen_dir, "//") + "/"
-            _base_path = string_replace(_abspath, _rebased_root_gen_dir, "")
+
+            # Append "/" so an entry naming root_gen_dir itself also matches.
+            _base_path = string_replace("$_abspath/", _rebased_root_gen_dir, "")
             include_dirs += [ "$root_gen_dir/$_base_path" ]
           }
         }
