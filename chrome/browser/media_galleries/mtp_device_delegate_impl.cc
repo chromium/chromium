@@ -1410,7 +1410,9 @@ void MTPDeviceDelegateImpl::EnsureInitAndRunTask(PendingTaskInfo task_info) {
 
 void MTPDeviceDelegateImpl::RunTask(PendingTaskInfo task_info) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  CHECK_EQ(kInitialized, init_state_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/575998360): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(kInitialized, init_state_);
   CHECK(!task_in_progress_, base::NotFatalUntil::M161);
   task_in_progress_ = true;
 
@@ -1965,8 +1967,9 @@ base::FilePath MTPDeviceDelegateImpl::NextUncachedPathComponent(
     const base::FilePath& path,
     const base::FilePath& cached_path) const {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  CHECK(cached_path.empty() || cached_path.IsParent(path),
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/575998360): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(cached_path.empty() || cached_path.IsParent(path));
 
   base::FilePath uncached_path;
   std::string device_relpath = GetDeviceRelativePath(device_path_, path);
