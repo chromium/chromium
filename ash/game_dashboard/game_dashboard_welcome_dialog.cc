@@ -67,7 +67,7 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
   SetBorder(views::CreateRoundedRectBorder(
       game_dashboard::kWelcomeDialogBorderThickness, kDialogCornerRadius,
       ui::kColorCrosSystemHighlight));
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kDialogCornerRadius));
 

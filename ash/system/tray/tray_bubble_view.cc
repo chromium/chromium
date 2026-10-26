@@ -376,8 +376,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   if (params_.has_shadow) {
-    shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
-        this, params_.shadow_type);
+    shadow_ = SystemDecoration::CreateForView(this, params_.shadow_type);
     shadow_->SetRoundedCorners(gfx::RoundedCornersF(params_.corner_radius));
   }
 

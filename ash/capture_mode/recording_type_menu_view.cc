@@ -55,7 +55,7 @@ RecordingTypeMenuView::RecordingTypeMenuView(
     base::RepeatingClosure on_option_selected_callback)
     : CaptureModeMenuGroup(this, kMenuPadding),
       on_option_selected_callback_(std::move(on_option_selected_callback)),
-      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation12)) {
   SetPaintToLayer();

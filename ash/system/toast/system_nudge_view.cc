@@ -182,7 +182,7 @@ SystemNudgeView::SystemNudgeView(
     const AnchoredNudgeData& nudge_data,
     base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
         hover_or_focus_changed_callback)
-    : shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+    : shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation4)),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),

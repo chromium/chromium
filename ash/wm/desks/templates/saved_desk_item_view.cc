@@ -234,7 +234,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   layer()->SetFillsBoundsOpaquely(false);
 
   // Create a shadow for the view.
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kSaveDeskCornerRadius));
 

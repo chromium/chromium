@@ -707,8 +707,8 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   CreateScrollableAppsGrid(tablet_mode);
 
   // Create a shadow under `background_view_`.
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(
-      SystemDecoration::ShadowType::kElevation12);
+  shadow_ =
+      SystemDecoration::Create(SystemDecoration::ShadowType::kElevation12);
   background_view_->AddLayerToRegion(shadow_->GetLayer(),
                                      views::LayerRegion::kBelow);
 

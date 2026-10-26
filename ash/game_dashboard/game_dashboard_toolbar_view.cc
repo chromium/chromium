@@ -246,7 +246,7 @@ GameDashboardToolbarView::GameDashboardToolbarView(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kCornerRadius));
   SetBorder(views::CreateRoundedRectBorder(
       1, kCornerRadius, ui::ColorIds::kColorCrosSystemHighlightBorder));
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
 

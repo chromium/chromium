@@ -177,7 +177,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   SetBorder(std::make_unique<views::HighlightBorder>(
       kLocalAuthenticationRequestViewRoundedCornerRadiusDp,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(
       kLocalAuthenticationRequestViewRoundedCornerRadiusDp));

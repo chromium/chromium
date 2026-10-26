@@ -88,8 +88,8 @@ SearchResultPageView::SearchResultPageView() {
   SetPaintToLayer();
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
-      this, kSearchBoxSearchResultShadowType);
+  shadow_ =
+      SystemDecoration::CreateForView(this, kSearchBoxSearchResultShadowType);
   shadow_->SetRoundedCorners(
       gfx::RoundedCornersF(kSearchBoxBorderCornerRadiusSearchResult));
 
@@ -300,8 +300,8 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
 }
 
 void SearchResultPageView::OnAnimationBetweenBoundsEnded() {
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
-      this, kSearchBoxSearchResultShadowType);
+  shadow_ =
+      SystemDecoration::CreateForView(this, kSearchBoxSearchResultShadowType);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(
       GetCornerRadiusForSearchResultsState(current_search_results_state_)));
 

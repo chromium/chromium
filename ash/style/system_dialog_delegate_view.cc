@@ -222,7 +222,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
                                                    kRoundedCornerRadius));
 
   // Set shadow.
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kRoundedCornerRadius));
 

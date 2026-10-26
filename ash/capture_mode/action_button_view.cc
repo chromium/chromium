@@ -93,8 +93,8 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   // The container should adjust its bounds if we collapse to an icon button.
   ink_drop_container_->SetAutoMatchParentBounds(true);
 
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(
-      SystemDecoration::ShadowType::kElevation12);
+  shadow_ =
+      SystemDecoration::Create(SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kActionButtonRadius));
 
   if (icon) {

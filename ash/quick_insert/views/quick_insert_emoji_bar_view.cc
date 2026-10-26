@@ -266,8 +266,8 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
   SetBorder(std::make_unique<views::HighlightBorder>(
       kQuickInsertContainerBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
-      this, kQuickInsertContainerShadowType);
+  shadow_ =
+      SystemDecoration::CreateForView(this, kQuickInsertContainerShadowType);
   shadow_->SetRoundedCorners(
       gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
 

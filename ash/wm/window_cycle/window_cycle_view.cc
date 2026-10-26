@@ -262,7 +262,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   mirror_container_->SetBetweenChildSpacing(kBetweenChildPaddingDp -
                                             cycle_item_insets.width());
 
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation4);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kBackgroundCornerRadius));
 }

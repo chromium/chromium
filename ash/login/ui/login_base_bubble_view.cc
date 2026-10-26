@@ -164,7 +164,7 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   // Set shadow
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kBubbleBorderRadius));
 

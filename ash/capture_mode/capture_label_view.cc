@@ -151,7 +151,7 @@ CaptureLabelView::CaptureLabelView(
     views::Button::PressedCallback on_capture_button_pressed,
     views::Button::PressedCallback on_drop_down_button_pressed)
     : capture_mode_session_(capture_mode_session),
-      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation12)) {
   SetPaintToLayer();

@@ -42,7 +42,7 @@ class SplitViewSetupViewSettingsButton : public IconButton {
                    IconButton::Type::kLarge,
                    &kOverviewSettingsIcon,
                    IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL),
-        shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+        shadow_(SystemDecoration::CreateForView(
             this,
             SystemDecoration::ShadowType::kElevation4)) {
     SetPaintToLayer();

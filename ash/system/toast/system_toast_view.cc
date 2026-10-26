@@ -168,7 +168,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
       rounded_corner_radius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayerForView(
+  shadow_ = SystemDecoration::CreateForView(
       this, SystemDecoration::ShadowType::kElevation4);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(rounded_corner_radius));
 

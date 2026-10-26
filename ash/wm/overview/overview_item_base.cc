@@ -112,7 +112,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
   if (shadow_) {
-    shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+    shadow_->SetShadow(is_dragging ? kDraggedShadowType : kDefaultShadowType);
   }
 }
 
@@ -342,7 +342,7 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
 }
 
 void OverviewItemBase::CreateShadow() {
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(kDefaultShadowType);
+  shadow_ = SystemDecoration::Create(kDefaultShadowType);
   auto* shadow_layer = shadow_->GetLayer();
   auto* widget_layer = item_widget_->GetLayer();
   widget_layer->Add(shadow_layer);

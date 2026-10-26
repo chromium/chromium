@@ -93,7 +93,7 @@ constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
 }  // namespace
 
 ActionButtonContainerView::ErrorView::ErrorView()
-    : shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+    : shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation12)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);

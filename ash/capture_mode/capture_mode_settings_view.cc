@@ -120,7 +120,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
     : ScrollView(views::ScrollView::ScrollWithLayers::kEnabled),
       capture_mode_session_(session),
       active_behavior_(active_behavior),
-      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation12)) {
   auto* controller = CaptureModeController::Get();

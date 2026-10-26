@@ -514,8 +514,8 @@ void HotseatWidgetDelegateView::Init(ScrollableShelfView* scrollable_shelf_view,
       "HotseatWidget:TranslucentBackground");
 
   // Create a shadow and stack at the bottom.
-  shadow_ = SystemDecoration::CreateShadowOnNinePatchLayer(
-      SystemDecoration::ShadowType::kElevation12);
+  shadow_ =
+      SystemDecoration::Create(SystemDecoration::ShadowType::kElevation12);
   auto* parent_layer = translucent_background_->layer()->parent();
   auto* shadow_layer = shadow_->GetLayer();
   parent_layer->Add(shadow_layer);

@@ -52,7 +52,7 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
 
 OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
     : pod_controller_(pod_controller),
-      shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+      shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation4)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);

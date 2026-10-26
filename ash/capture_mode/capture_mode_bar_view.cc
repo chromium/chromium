@@ -71,7 +71,7 @@ bool CaptureModeBarView::IsEventOnSettingsButton(
 // TODO(hewer): Add a check and/or test so that the behavior sets
 // `ShouldShowUserNudge()` to false if the `settings_button_` doesn't exist.
 CaptureModeBarView::CaptureModeBarView()
-    : shadow_(SystemDecoration::CreateShadowOnNinePatchLayerForView(
+    : shadow_(SystemDecoration::CreateForView(
           this,
           SystemDecoration::ShadowType::kElevation12)) {
   SetPaintToLayer();
