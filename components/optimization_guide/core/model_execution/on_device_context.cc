@@ -6,10 +6,14 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -178,6 +182,9 @@ void OnDeviceContext::CloneSession(
   auto& session = GetOrCreateSession();
   if (input_ && !ignore_context && logged_request) {
     logged_request->set_input_context_string(OnDeviceInputToString(*input_));
+    // TODO(crbug.com/406585895): This does not account for tokens in
+    // outstanding Append() calls.
+    logged_request->set_input_context_num_tokens_processed(tokens_processed_);
   }
   session->Clone(std::move(clone));
 }
@@ -223,12 +230,26 @@ void OnDeviceContext::Append(on_device_model::mojom::InputPtr input) {
 void OnDeviceContext::OnComplete(uint32_t tokens_processed) {
   tokens_processed_ += tokens_processed;
   clients_.Remove(clients_.current_receiver());
-  if (clients_.empty() && callback_) {
-    // TODO(crbug.com/406585895): tokens_processed_ will not include tokens that
-    // were processed when this OnDeviceContext was created by calling Clone().
-    // Ideally, OnComplete would receive the size of the remaining buffer
-    // instead.
-    std::move(callback_).Run(tokens_processed_);
+  if (clients_.empty()) {
+    // Log once all pending Append() calls have completed, so that prefill (e.g.
+    // from SetInput() at session creation) is visible in
+    // chrome://on-device-internals separately from later executions.
+    if (opts_.logger && opts_.logger->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+          opts_.logger.get())
+          << "Processed input context of "
+          << base::NumberToString(tokens_processed_) << " tokens for "
+          << base::ToString(feature_) << ":\n"
+          << OnDeviceInputToString(*input_);
+    }
+    if (callback_) {
+      // TODO(crbug.com/406585895): tokens_processed_ will not include tokens
+      // that were processed when this OnDeviceContext was created by calling
+      // Clone(). Ideally, OnComplete would receive the size of the remaining
+      // buffer instead.
+      std::move(callback_).Run(tokens_processed_);
+    }
   }
   base::UmaHistogramCounts10000(
       base::StrCat({"OptimizationGuide.ModelExecution."

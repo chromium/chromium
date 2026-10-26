@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -81,8 +82,10 @@ using ::on_device_model::mojom::PerformanceClass;
 using ExecuteModelResult = ::optimization_guide::OnDeviceExecution::Result;
 
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::ResultOf;
 
@@ -93,6 +96,24 @@ auto SimpleComposeConfigForTesting() {
   sampling->set_temperature(0);
   return cfg;
 }
+
+// Records messages logged to chrome://on-device-internals. Observing a logger
+// also enables its debug logs.
+class TestLoggerObserver : public OptimizationGuideLogger::Observer {
+ public:
+  void OnLogMessageAdded(base::Time event_time,
+                         optimization_guide_common::mojom::LogSource log_source,
+                         const std::string& source_file,
+                         int source_line,
+                         const std::string& message) override {
+    messages_.push_back(message);
+  }
+
+  const std::vector<std::string>& messages() const { return messages_; }
+
+ private:
+  std::vector<std::string> messages_;
+};
 
 }  // namespace
 
@@ -429,6 +450,46 @@ TEST_F(SessionImplTest, AddContextMultipleSessions) {
       ("ctx:foo max:8192"
        "execute:foo1 max:1024");
   EXPECT_EQ(*response2.value(), expected_response2);
+}
+
+TEST_F(SessionImplTest, LogsInputContextTokensProcessed) {
+  Initialize();
+  // Observing the logger enables debug logs and captures their output.
+  TestLoggerObserver logger_observer;
+  base::ScopedObservation<OptimizationGuideLogger,
+                          OptimizationGuideLogger::Observer>
+      logger_observation(&logger_observer);
+  logger_observation.Observe(&logger_);
+
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>>
+      set_input_future;
+  session->SetInput(MultimodalMessage(UserInputRequest("foo")),
+                    set_input_future.GetCallback());
+  // The fake service counts one token per character of "ctx:foo".
+  ASSERT_EQ(*set_input_future.Take(), 7ul);
+  EXPECT_THAT(logger_observer.messages(),
+              Contains(AllOf(HasSubstr("Processed input context of 7 tokens"),
+                             HasSubstr("ctx:foo"))));
+
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  ASSERT_TRUE(response_.model_execution_info());
+  ASSERT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  const auto& logged_request = response_.model_execution_info()
+                                   ->on_device_model_execution_info()
+                                   .execution_infos(0)
+                                   .request()
+                                   .on_device_model_service_request();
+  EXPECT_EQ(logged_request.input_context_string(), "ctx:foo");
+  EXPECT_EQ(logged_request.input_context_num_tokens_processed(), 7u);
+  EXPECT_EQ(logged_request.execution_string(), "execute:foobar");
 }
 
 TEST_F(SessionImplTest, FailsOnGpuBlockedService) {
