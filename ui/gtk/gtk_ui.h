@@ -165,10 +165,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   raw_ptr<NativeThemeGtk> native_theme_;
 
-  // Colors calculated by LoadGtkValues() that are given to the
-  // caller while |use_gtk_| is true.
-  ColorMap colors_;
-
   // Frame colors (and colors that depend on frame colors) when using
   // Chrome-rendered borders and titlebar.
   ColorMap custom_frame_colors_;

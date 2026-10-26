@@ -380,14 +380,12 @@ ui::NativeTheme* GtkUi::GetNativeTheme() const {
 }
 
 bool GtkUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
-  for (const ColorMap& color_map :
-       {colors_,
-        use_custom_frame ? custom_frame_colors_ : native_frame_colors_}) {
-    auto it = color_map.find(id);
-    if (it != color_map.end()) {
-      *color = it->second;
-      return true;
-    }
+  const ColorMap& color_map =
+      use_custom_frame ? custom_frame_colors_ : native_frame_colors_;
+  auto it = color_map.find(id);
+  if (it != color_map.end()) {
+    *color = it->second;
+    return true;
   }
 
   return false;
@@ -773,7 +771,6 @@ gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   ClearStyleColorCache();
-  colors_.clear();
   custom_frame_colors_.clear();
   native_frame_colors_.clear();
   LoadGtkValues();
@@ -863,29 +860,14 @@ void GtkUi::LoadGtkValues() {
   // the prefs system from here.
   UpdateDeviceScaleFactor();
 
-  // TODO(tluk): The below code sets various ThemeProvider colors for GTK. Some
-  // of these definitions leverage colors that were previously defined by
-  // NativeThemeGtk and are now defined as GTK ColorMixers. These ThemeProvider
-  // color definitions should be added as recipes to a browser ColorMixer once
-  // the Color Pipeline project begins rollout into c/b/ui. In the meantime
-  // use the ColorProvider instance from the ColorProviderManager corresponding
-  // to the theme bits associated with the NativeThemeGtk instance to ensure
-  // we do not regress existing behavior during the transition.
   ui::ColorProviderKey key;
   // Match `NativeThemeGtk::CalculatePreferredColorScheme()`.
   if (IsGtkThemeDark()) {
     key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
   }
-  // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color provider
-  // colors. We assume that those sources' colors won't change with frame type.
   key.system_theme = ui::SystemTheme::kGtk;
   const auto* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(key);
-
-  SkColor location_bar_border = GetBorderColor("entry");
-  if (SkColorGetA(location_bar_border)) {
-    colors_[ThemeProperties::COLOR_LOCATION_BAR_BORDER] = location_bar_border;
-  }
 
   inactive_selection_bg_color_ = GetBgColor(
       "textview.view:backdrop "
@@ -893,27 +875,6 @@ void GtkUi::LoadGtkValues() {
   inactive_selection_fg_color_ = GetFgColor(
       "textview.view:backdrop "
       "text:backdrop selection:backdrop");
-
-  SkColor tab_border = GetBorderColor("button");
-  // Separates the toolbar from the bookmark bar or butter bars.
-  colors_[ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR] = tab_border;
-  // Separates entries in the downloads bar.
-  colors_[ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR] = tab_border;
-
-  colors_[ThemeProperties::COLOR_NTP_BACKGROUND] =
-      color_provider->GetColor(ui::kColorTextfieldBackground);
-  colors_[ThemeProperties::COLOR_NTP_TEXT] =
-      color_provider->GetColor(ui::kColorTextfieldForeground);
-  colors_[ThemeProperties::COLOR_NTP_HEADER] = GetBorderColor("button");
-
-  SkColor tab_text_color = GetFgColor("label");
-  colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON] = tab_text_color;
-  colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED] = tab_text_color;
-  colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED] = tab_text_color;
-  colors_[ThemeProperties::COLOR_TOOLBAR_TEXT] = tab_text_color;
-
-  colors_[ThemeProperties::COLOR_NTP_LINK] =
-      color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
 
   // Generate the colors that we pass to Blink.
   focus_ring_color_ =
@@ -926,8 +887,8 @@ void GtkUi::LoadGtkValues() {
   active_selection_fg_color_ =
       color_provider->GetColor(ui::kColorTextfieldSelectionForeground);
 
-  // Generate colors that depend on whether or not a custom window frame is
-  // used.  These colors belong in |color_map| below, not |colors_|.
+  // Generate tab-strip colors that depend on whether or not a custom window
+  // frame is used.
   for (bool custom_frame : {false, true}) {
     ColorMap& color_map =
         custom_frame ? custom_frame_colors_ : native_frame_colors_;
@@ -936,81 +897,21 @@ void GtkUi::LoadGtkValues() {
     const std::string header_selector_inactive = header_selector + ":backdrop";
     const SkColor frame_color =
         SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
-    const SkColor frame_color_inactive =
-        SkColorSetA(GetBgColor(header_selector_inactive), SK_AlphaOPAQUE);
-
-    color_map[ThemeProperties::COLOR_FRAME_ACTIVE] = frame_color;
-    color_map[ThemeProperties::COLOR_FRAME_INACTIVE] = frame_color_inactive;
-    color_map[ThemeProperties::COLOR_FRAME_ACTIVE_INCOGNITO] = frame_color;
-    color_map[ThemeProperties::COLOR_FRAME_INACTIVE_INCOGNITO] =
-        frame_color_inactive;
 
     // Compose the window color on the frame color to ensure the resulting tab
     // color is opaque.
     SkColor tab_color =
         color_utils::GetResultingPaintColor(GetBgColor(""), frame_color);
 
-    color_map[ThemeProperties::COLOR_TOOLBAR] = tab_color;
     color_map[ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE] =
         tab_color;
     color_map[ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE] =
         tab_color;
 
-    const SkColor background_tab_text_color =
-        GetFgColor(header_selector + " label.title");
-    const SkColor background_tab_text_color_inactive =
-        GetFgColor(header_selector_inactive + " label.title");
-
     color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE] =
-        background_tab_text_color;
-    color_map[ThemeProperties::
-                  COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO] =
-        background_tab_text_color;
+        GetFgColor(header_selector + " label.title");
     color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE] =
-        background_tab_text_color_inactive;
-    color_map[ThemeProperties::
-                  COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO] =
-        background_tab_text_color_inactive;
-
-    // These colors represent the border drawn around tabs and between
-    // the tabstrip and toolbar.
-    SkColor toolbar_top_separator =
-        GetBorderColor(header_selector + " separator.vertical.titlebutton");
-    SkColor toolbar_top_separator_inactive = GetBorderColor(
-        header_selector + ":backdrop separator.vertical.titlebutton");
-
-    auto toolbar_top_separator_has_good_contrast = [&]() {
-      // This constant is copied from chrome/browser/themes/theme_service.cc.
-      const float kMinContrastRatio = 2.f;
-
-      SkColor active = color_utils::GetResultingPaintColor(
-          toolbar_top_separator, frame_color);
-      SkColor inactive = color_utils::GetResultingPaintColor(
-          toolbar_top_separator_inactive, frame_color_inactive);
-      return color_utils::GetContrastRatio(frame_color, active) >=
-                 kMinContrastRatio &&
-             color_utils::GetContrastRatio(frame_color_inactive, inactive) >=
-                 kMinContrastRatio;
-    };
-
-    if (!toolbar_top_separator_has_good_contrast()) {
-      toolbar_top_separator = GetBorderColor(header_selector + " button");
-      toolbar_top_separator_inactive =
-          GetBorderColor(header_selector + ":backdrop button");
-    }
-
-    // If we can't get a contrasting stroke from the theme, have ThemeService
-    // provide a stroke color for us.
-    if (toolbar_top_separator_has_good_contrast()) {
-      color_map[ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE] =
-          toolbar_top_separator;
-      color_map[ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE] =
-          toolbar_top_separator_inactive;
-      color_map[ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE] =
-          toolbar_top_separator;
-      color_map[ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE] =
-          toolbar_top_separator_inactive;
-    }
+        GetFgColor(header_selector_inactive + " label.title");
   }
 }
 
