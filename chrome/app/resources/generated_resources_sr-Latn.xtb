@@ -1835,6 +1835,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2423506062824112361">Preuzimanje sadržaja nije uspelo iz nepoznatog razloga.</translation>
 <translation id="2423578206845792524">Sa&amp;čuvaj sliku kao...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gost}one{Gost (#)}few{Gost (#)}other{Gost (#)}}</translation>
+<translation id="2424762488607770568">Podrazumevano (prati sistem)</translation>
 <translation id="2426805022920575512">Izaberite drugi nalog</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 nalog, lozinka je sačuvana samo na ovom uređaju. Još detalja}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} nalog, lozinka je sačuvana samo na ovom uređaju. Još detalja}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} naloga, lozinka je sačuvana samo na ovom uređaju. Još detalja}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} naloga, lozinka je sačuvana samo na ovom uređaju. Još detalja}}</translation>
@@ -5646,6 +5647,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5280426389926346830">Želite li da napravite prečicu?</translation>
 <translation id="5280966903879030278">Koristite svakodnevni jezik da biste pretraživali istoriju pregledanja i pronalazili sajtove koje ste posetili. Ovo podešavanje je isključeno.</translation>
 <translation id="5281013262333731149">Otvara se u:<ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Boje stranica</translation>
 <translation id="5284107433515104664">Tokom promene lozinke, sadržaj stranice i srodne informacije šalju se Google-u i mogu da ih pregledaju ljudi radi poboljšanja ove funkcije. Lozinka je šifrovana i niko ne može da je vidi.</translation>
 <translation id="5284445933715251131">Nastavi preuzimanje</translation>
 <translation id="5285635972691565180">Ekran <ph name="DISPLAY_ID" /></translation>
@@ -6535,6 +6537,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5989497858237037960">Dok pregledate sajtove, sadržaj njihovih stranica se šifruje i čuva na uređaju. To može da utiče na performanse Chrome-a</translation>
 <translation id="5990266201903445068">Samo WiFi</translation>
 <translation id="5990386583461751448">Prevedeno</translation>
+<translation id="5991039386730545918">Izabrana šema boja stranice koristi se samo dok je uključen visok kontrast sistema</translation>
 <translation id="5992225669837656567">Veza sa svim miševima je prekinuta</translation>
 <translation id="5992652489368666106">Bez ivica</translation>
 <translation id="5996490984199062729">Profil nije podešen</translation>
@@ -9324,6 +9327,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8118362518458010043">Chrome je onemogućio dodatak. Ovaj dodatak možda nije bezbedan.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# obeleživač}one{# obeleživač}few{# obeleživača}other{# obeleživača}}</translation>
 <translation id="8118488170956489476">Organizacija <ph name="BEGIN_LINK" />upravlja pregledačem<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Zamenite boje veb-stranica temama sa jakim kontrastom ili isključite nametnute boje</translation>
 <translation id="8118515372935001629">Učestalost osvežavanja ekrana</translation>
 <translation id="8118860139461251237">Upravljanje preuzimanjima</translation>
 <translation id="8119438628456698432">Generišu se datoteke evidencije...</translation>
@@ -10001,6 +10005,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8648408795949963811">Toplina boja Noćnog svetla</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> želi da: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> i drugo</translation>
 <translation id="8648889679430451455">Obriši podatke za personalizaciju</translation>
+<translation id="8649290269169747916">Koristite podrazumevane boje stranica kada je visok kontrast sistema isključen</translation>
 <translation id="8651585100578802546">Prinudno ponovo učitaj ovu stranicu</translation>
 <translation id="8651806635673244884">Možete da vratite kartice u vrh tako što ćete kliknuti desnim tasterom na bilo koju karticu i izabrati Prikaži kartice horizontalno</translation>
 <translation id="8652400352452647993">Greška u vezi sa pakovanjem dodatka</translation>

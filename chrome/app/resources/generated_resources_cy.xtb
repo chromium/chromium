@@ -1849,6 +1849,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2423506062824112361">Wedi methu â lawrlwytho cynnwys oherwydd rheswm anhysbys.</translation>
 <translation id="2423578206845792524">Ca&amp;dw'r llun fel...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gwestai}zero{Gwestai (#)}two{Gwestai (#)}few{Gwestai (#)}many{Gwestai (#)}other{Gwestai (#)}}</translation>
+<translation id="2424762488607770568">Diofyn (cyfateb i'r system)</translation>
 <translation id="2426805022920575512">Dewis cyfrif arall</translation>
 <translation id="2427507373259914951">Clic chwith</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 cyfrif, cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Rhagor o fanylion}zero{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} cyfrifon, cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Rhagor o fanylion}two{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} gyfrif, cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Rhagor o fanylion}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} chyfrif, cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Rhagor o fanylion}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} chyfrif, cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Rhagor o fanylion}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} cyfrif, cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Rhagor o fanylion}}</translation>
@@ -5660,6 +5661,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5280426389926346830">Creu Llwybr Byr?</translation>
 <translation id="5280966903879030278">Defnyddiwch iaith bob dydd i chwilio eich hanes pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="5281013262333731149">Yn agor yn: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Lliwiau tudalen</translation>
 <translation id="5284107433515104664">Yn ystod y newid cyfrinair, anfonir cynnwys tudalen a gwybodaeth gysylltiedig at Google a gellir eu hadolygu gan bobl i wella'r nodwedd hon. Mae'ch cyfrinair wedi'i amgryptio ac ni fydd neb byth yn ei weld.</translation>
 <translation id="5284445933715251131">Parhau i Lawrlwytho</translation>
 <translation id="5285635972691565180">Sgrîn <ph name="DISPLAY_ID" /></translation>
@@ -6550,6 +6552,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5989497858237037960">Wrth i chi bori gwefannau, mae cynnwys eu tudalen yn cael ei amgryptio a'i gadw i'ch dyfais. Gall hyn effeithio ar berfformiad Chrome</translation>
 <translation id="5990266201903445068">Wi-Fi yn unig</translation>
 <translation id="5990386583461751448">Cyfieithwyd</translation>
+<translation id="5991039386730545918">Defnyddir eich thema lliw tudalen dewisol dim ond tra bod cyferbyniad uchel y system ymlaen</translation>
 <translation id="5992225669837656567">Mae pob llygoden wedi'i ddatgysylltu</translation>
 <translation id="5992652489368666106">Dim ffin</translation>
 <translation id="5996490984199062729">Nid yw eich proffil wedi'i osod</translation>
@@ -9342,6 +9345,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8118362518458010043">Diffoddwyd gan Chrome. Gallai'r estyniad hwn fod yn anniogel.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# nod tudalen}zero{# nod tudalen}two{# nod tudalen}few{# nod tudalen}many{# nod tudalen}other{# nod tudalen}}</translation>
 <translation id="8118488170956489476">Mae eich <ph name="BEGIN_LINK" />porwr yn cael ei reoli<ph name="END_LINK" /> gan eich sefydliad</translation>
+<translation id="8118496140027032067">Diystyru lliwiau tudalen we gyda themâu cyferbyniad uchel neu ddiffodd lliwiau gorfodol</translation>
 <translation id="8118515372935001629">Cyfradd ail-lwytho'r sgrîn</translation>
 <translation id="8118860139461251237">Rheoli eich lawrlwythiadau</translation>
 <translation id="8119438628456698432">Wrthi'n cynhyrchu ffeiliau log...</translation>
@@ -10019,6 +10023,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8648408795949963811">Tymheredd lliw golau nos</translation>
 <translation id="8648544143274677280">Mae <ph name="SITE_NAME" /> eisiau: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, a rhagor</translation>
 <translation id="8648889679430451455">Clirio data personoleiddio</translation>
+<translation id="8649290269169747916">Defnyddio lliwiau tudalen diofyn pan fydd cyferbyniad uchel y system wedi'i ddiffodd</translation>
 <translation id="8651585100578802546">Gorfodi Ail-lwytho'r Dudalen Hon</translation>
 <translation id="8651806635673244884">Gallwch symud eich tabiau yn ôl i'r brig trwy dde-glicio unrhyw dab a dewis “Dangos tabiau'n llorweddol”</translation>
 <translation id="8652400352452647993">Gwall estyniad pecyn</translation>

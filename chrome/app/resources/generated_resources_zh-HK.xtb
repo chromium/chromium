@@ -1848,7 +1848,7 @@
 <translation id="2423506062824112361">因不明原因而無法下載內容。</translation>
 <translation id="2423578206845792524">另存圖片為(&amp;V)…</translation>
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
-<translation id="2424762488607770568">預設 (與系統一致)</translation>
+<translation id="2424762488607770568">預設 (與系統相符)</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427507373259914951">按一下左鍵</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 個帳戶，密碼只會儲存喺呢部裝置。了解詳情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 個帳戶，密碼只會儲存喺呢部裝置。了解詳情}}</translation>
@@ -5657,7 +5657,7 @@
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
 <translation id="5280966903879030278">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。此設定已關閉。</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
-<translation id="5283747245540449968">網頁色彩</translation>
+<translation id="5283747245540449968">網頁顏色</translation>
 <translation id="5284107433515104664">變更密碼期間，頁面內容和相關資料會傳送至 Google，並可能送交人手審核以改善此功能。你的密碼會加密，不會向任何人顯示。</translation>
 <translation id="5284445933715251131">繼續下載</translation>
 <translation id="5285635972691565180">顯示屏 <ph name="DISPLAY_ID" /></translation>
@@ -6544,7 +6544,7 @@
 <translation id="5989497858237037960">當你瀏覽網站時，其網頁內容會加密並儲存至你的裝置。這可能會影響 Chrome 的效能。</translation>
 <translation id="5990266201903445068">只限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
-<translation id="5991039386730545918">系統高對比模式開啟時，才會使用所選網頁色彩主題</translation>
+<translation id="5991039386730545918">所選網頁顏色主題只會在開啟了系統高對比度時使用</translation>
 <translation id="5992225669837656567">已經解除連接所有滑鼠</translation>
 <translation id="5992652489368666106">無邊框</translation>
 <translation id="5996490984199062729">你的工作設定檔尚未完成設定</translation>
@@ -9326,7 +9326,7 @@
 <translation id="8118362518458010043">Chrome 已停用這個擴充程式。這個擴充程式可能不安全。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 個書籤}other{# 個書籤}}</translation>
 <translation id="8118488170956489476">您的<ph name="BEGIN_LINK" />瀏覽器由您的組織管理<ph name="END_LINK" /></translation>
-<translation id="8118496140027032067">使用高對比主題覆寫網頁色彩，或關閉強制色彩模式</translation>
+<translation id="8118496140027032067">使用高對比主題覆寫網頁顏色，或關閉強制顏色</translation>
 <translation id="8118515372935001629">螢幕重新整理頻率</translation>
 <translation id="8118860139461251237">管理下載內容</translation>
 <translation id="8119438628456698432">正在產生記錄檔案…</translation>
@@ -10004,7 +10004,7 @@
 <translation id="8648408795949963811">「夜燈模式」色溫</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 需要你批准：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />等等</translation>
 <translation id="8648889679430451455">清除個人化資料</translation>
-<translation id="8649290269169747916">系統高對比模式關閉時，使用預設網頁色彩</translation>
+<translation id="8649290269169747916">關閉了系統高對比度時使用預設網頁顏色</translation>
 <translation id="8651585100578802546">強制重新載入這個網頁</translation>
 <translation id="8651806635673244884">如要將分頁移回頂部，請在任何分頁按一下右鍵，然後選取 [橫向顯示分頁]</translation>
 <translation id="8652400352452647993">封裝擴充程式錯誤</translation>

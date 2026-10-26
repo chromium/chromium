@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">C5 封筒</translation>
 <translation id="2119505898009119320">発行先: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">パンチ（右下）</translation>
+<translation id="2121418473709291357">Chrome ブラウザ クラウド管理が無効になっているため、無視されました。</translation>
 <translation id="2122214041802369259">高価格</translation>
 <translation id="2122719317867821810">このポリシーは想定どおり動作していますが、競合する値が設定されている別のポリシーによってオーバーライドされています。</translation>
 <translation id="2124081665399116863">Google ウォレットの車両情報を更新</translation>
@@ -2916,6 +2917,7 @@
 <translation id="5843987376989109187">この言語はまだサポートされていません。
     <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">注文の確認が完了したら、<ph name="BNPL_ISSUER_NAME" /> のアカウントにログインするか、アカウントを作成する必要があります。このアカウントは Google ウォレットに自動的にリンクされます。</translation>
+<translation id="5848916806551637625">Pix アカウントは <ph name="ACCOUNT_EMAIL" /> にリンクされます。Pix コードの検出をオフにするには、<ph name="BEGIN_LINK1" />Chrome の設定<ph name="END_LINK1" />に移動してください。</translation>
 <translation id="5851548754964597211">タブ リスト</translation>
 <translation id="5851868085455377790">発行元</translation>
 <translation id="5852909432155870672">RA4</translation>

@@ -1835,6 +1835,7 @@
 <translation id="2423506062824112361">Преузимање садржаја није успело из непознатог разлога.</translation>
 <translation id="2423578206845792524">Са&amp;чувај слику као...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гост}one{Гост (#)}few{Гост (#)}other{Гост (#)}}</translation>
+<translation id="2424762488607770568">Подразумевано (прати систем)</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="2427507373259914951">Леви клик</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 налог, лозинка је сачувана само на овом уређају. Још детаља}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налог, лозинка је сачувана само на овом уређају. Још детаља}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налога, лозинка је сачувана само на овом уређају. Још детаља}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налога, лозинка је сачувана само на овом уређају. Још детаља}}</translation>
@@ -5646,6 +5647,7 @@
 <translation id="5280426389926346830">Желите ли да направите пречицу?</translation>
 <translation id="5280966903879030278">Користите свакодневни језик да бисте претраживали историју прегледања и проналазили сајтове које сте посетили. Ово подешавање је искључено.</translation>
 <translation id="5281013262333731149">Отвара се у:<ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Боје страница</translation>
 <translation id="5284107433515104664">Током промене лозинке, садржај странице и сродне информације шаљу се Google-у и могу да их прегледају људи ради побољшања ове функције. Лозинка је шифрована и нико не може да је види.</translation>
 <translation id="5284445933715251131">Настави преузимање</translation>
 <translation id="5285635972691565180">Екран <ph name="DISPLAY_ID" /></translation>
@@ -6535,6 +6537,7 @@
 <translation id="5989497858237037960">Док прегледате сајтове, садржај њихових страница се шифрује и чува на уређају. То може да утиче на перформансе Chrome-а</translation>
 <translation id="5990266201903445068">Само WiFi</translation>
 <translation id="5990386583461751448">Преведено</translation>
+<translation id="5991039386730545918">Изабрана шема боја странице користи се само док је укључен висок контраст система</translation>
 <translation id="5992225669837656567">Веза са свим мишевима је прекинута</translation>
 <translation id="5992652489368666106">Без ивица</translation>
 <translation id="5996490984199062729">Профил није подешен</translation>
@@ -9324,6 +9327,7 @@
 <translation id="8118362518458010043">Chrome је онемогућио додатак. Овај додатак можда није безбедан.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# обележивач}one{# обележивач}few{# обележивача}other{# обележивача}}</translation>
 <translation id="8118488170956489476">Организација <ph name="BEGIN_LINK" />управља прегледачем<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Замените боје веб-страница темама са јаким контрастом или искључите наметнуте боје</translation>
 <translation id="8118515372935001629">Учесталост освежавања екрана</translation>
 <translation id="8118860139461251237">Управљање преузимањима</translation>
 <translation id="8119438628456698432">Генеришу се датотеке евиденције...</translation>
@@ -10001,6 +10005,7 @@
 <translation id="8648408795949963811">Топлина боја Ноћног светла</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> жели да: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
 <translation id="8648889679430451455">Обриши податке за персонализацију</translation>
+<translation id="8649290269169747916">Користите подразумеване боје страница када је висок контраст система искључен</translation>
 <translation id="8651585100578802546">Принудно поново учитај ову страницу</translation>
 <translation id="8651806635673244884">Можете да вратите картице у врх тако што ћете кликнути десним тастером на било коју картицу и изабрати Прикажи картице хоризонтално</translation>
 <translation id="8652400352452647993">Грешка у вези са паковањем додатка</translation>

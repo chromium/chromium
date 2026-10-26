@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Коверта C5</translation>
 <translation id="2119505898009119320">Издато за: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Бушење у доњем десном углу</translation>
+<translation id="2121418473709291357">Занемарује се јер је управљање Chrome прегледачем у клауду онемогућено.</translation>
 <translation id="2122214041802369259">Цена је висока</translation>
 <translation id="2122719317867821810">Ове смернице раде као што је предвиђено, али неусаглашена вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="2124081665399116863">Ажурирајте возило у Google новчанику</translation>
@@ -2918,6 +2919,7 @@
 <translation id="5843987376989109187">Овај језик још није подржан.
     <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Када прегледате поруџбину, морате да се пријавите на <ph name="BNPL_ISSUER_NAME" /> налог или да га отворите. Тај налог ће се аутоматски повезати у Google новчанику.</translation>
+<translation id="5848916806551637625">Pix налог ће се повезати са налогом <ph name="ACCOUNT_EMAIL" />. Да бисте искључили откривање Pix кода, идите у <ph name="BEGIN_LINK1" />Подешавања Chrome-а<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Листа картица</translation>
 <translation id="5851868085455377790">Издавалац</translation>
 <translation id="5852909432155870672">RA4</translation>

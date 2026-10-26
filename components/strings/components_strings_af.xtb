@@ -661,6 +661,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2118132148597630479">Koevert C5</translation>
 <translation id="2119505898009119320">Uitgereik aan: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Pons regs onder</translation>
+<translation id="2121418473709291357">Geïgnoreer omdat Chrome-blaaierwolkbestuur gedeaktiveer is.</translation>
 <translation id="2122214041802369259">Prys is hoog</translation>
 <translation id="2122719317867821810">Hierdie beleid werk soos bedoel, maar 'n teenstrydige waarde is elders gestel en word deur hierdie beleid geïgnoreer.</translation>
 <translation id="2124081665399116863">Dateer voertuig in Google Wallet op</translation>
@@ -2916,6 +2917,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5843987376989109187">Hierdie taal word nog nie gesteun nie.
     <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Jy moet aanmeld by <ph name="BNPL_ISSUER_NAME" /> of ’n rekening by hulle skep nadat jy jou bestelling nagegaan het. Hierdie rekening sal outomaties in Google Wallet gekoppel word.</translation>
+<translation id="5848916806551637625">Pix-rekening sal aan <ph name="ACCOUNT_EMAIL" /> gekoppel word. Gaan na <ph name="BEGIN_LINK1" />Chrome-instellings<ph name="END_LINK1" /> om Pix-kodebespeuring af te skakel.</translation>
 <translation id="5851548754964597211">Oortjielys</translation>
 <translation id="5851868085455377790">Uitreiker</translation>
 <translation id="5852909432155870672">RA4</translation>

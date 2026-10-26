@@ -8117,7 +8117,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7212097698621322584">Zadajte svoj aktuálny kód PIN a zmeňte ho. Ak ho nepoznáte, musíte resetovať bezpečnostný kľúč a potom vytvoriť nový PIN.</translation>
 <translation id="7214047272988222011">Povolený – <ph name="PERMISSION_DETAILS" />. Zapnite <ph name="LINK_BEGIN" />systémový prístup ku kamere<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nová karta v 1 karte}few{Nová karta v # kartách}many{New Tab in # Tabs}other{Nová karta v # kartách}}</translation>
-<translation id="721490496276866468">Importovať heslá</translation>
+<translation id="721490496276866468">Import hesiel</translation>
 <translation id="7216638029417040861">Ak chcete získať históriu zo svojich ostatných zariadení, prihláste sa a synchronizujte si históriu a karty s účtom <ph name="EMAIL" />. Navyše budete mať k dispozícii záložky a ďalšie položky vo všetkých svojich zariadeniach. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="7217208603285112910">Výber nie je v jazyku <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Pridávajte text, komentáre a poznámky pomocou nového nástroja Textové poznámky</translation>

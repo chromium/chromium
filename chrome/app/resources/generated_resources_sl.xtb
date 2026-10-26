@@ -289,6 +289,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1195210374336998651">V nastavitve aplikacije</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1195558154361252544">Obvestila so samodejno blokirana za vsa spletna mesta, razen za tista z vašim dovoljenjem</translation>
+<translation id="1196850329140740621">Kliknite gumb za preklic osredotočenosti, če želite znova prikazati druge zavihke</translation>
 <translation id="1197088940767939838">Oranžna</translation>
 <translation id="11978075283960463">Podatki, shranjeni v aplikaciji: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Orodja za govor pri slabovidnosti</translation>
@@ -770,6 +771,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1586075235463145108">Najprej vklopite samodejno brskanje v Chromu za to napravo</translation>
 <translation id="1587275751631642843">&amp;Konzola JavaScript</translation>
 <translation id="1588438908519853928">Običajen</translation>
+<translation id="1588626416445753732">Priljubljeno v vaši regiji (v naključnem vrstnem redu)</translation>
 <translation id="1588772269240419305">Pregled posodobitev logotipa in imena</translation>
 <translation id="1588870296199743671">Odpri povezavo z ...</translation>
 <translation id="1588919647604819635">Desni klik kartice</translation>
@@ -1257,6 +1259,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1944921356641260203">Najdena je bila posodobitev</translation>
 <translation id="1947136734041527201">Omogoča prijavo na spletnih mestih z računom, ki ga imate pri storitvi za identiteto.</translation>
 <translation id="1948528728718281125">Dostop do fotoaparata je dovoljen aplikacijam, spletnim mestom, ki imajo dovoljenje za kamero, in sistemskim storitvam</translation>
+<translation id="1949054568937504107">Priljubljeno v vaši regiji</translation>
 <translation id="1949332606889020901">ID-ji zrušitev</translation>
 <translation id="1949584741547056205">Hitri odgovori</translation>
 <translation id="1949980990364952348">Ime aplikacije</translation>
@@ -3407,6 +3410,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3577178956237526436">Vklop zvoka levega spletnega mesta</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="3577487026101678864">Sinhronizacija datotek je vklopljena</translation>
+<translation id="3578100826941720337">Več iskalnikov</translation>
 <translation id="3578230582111850125">izberite besedilo, če želite vprašati Geminija</translation>
 <translation id="3581605050355435601">Samodejno konfiguriranje naslova IP</translation>
 <translation id="3581861561942370740">Iskanje po zgodovini prenosov</translation>
@@ -3574,6 +3578,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3699920817649120894">Želite izklopiti sinhronizacijo in prilagajanje?</translation>
 <translation id="3700888195348409686">Predstavljanje (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Spletnim mestom ni dovoljeno spremljati položaja kamere.</translation>
+<translation id="3701028563242674350">Hitro premakni kazalec miške, da ga povečaš</translation>
 <translation id="3701167022068948696">Odpravite težavo</translation>
 <translation id="3701515417135397388">Posvari, če je bilo geslo razkrito zaradi podatkovne kršitve</translation>
 <translation id="3701778844313851487">Odpri razširitve</translation>
@@ -4836,6 +4841,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4663373278480897665">Kamera je dovoljena</translation>
 <translation id="4664375726751122009">Preklopi na vizualni pogled</translation>
 <translation id="4665014895760275686">Proizvajalec</translation>
+<translation id="4665035764476941598">Kliknite tukaj, če želite znova prikazati druge zavihke</translation>
 <translation id="4665446389743427678">Vsi podatki, ki jih shrani <ph name="SITE" />, bodo izbrisani.</translation>
 <translation id="4666472247053585787">Oglejte si obvestila iz telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4666911709726371538">Več aplikacij</translation>
@@ -5825,6 +5831,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5425042808445046667">Nadaljuj prenašanje</translation>
 <translation id="542570217857307910">Zavihke lahko zdaj razširite tako, da premaknete miškin kazalec nanje. Če želite to izklopiti, kliknite z desnim gumbom tukaj.</translation>
 <translation id="5425863515030416387">Preprosta prijava v napravah</translation>
+<translation id="542606797693939821">Poiščite kazalec miške</translation>
 <translation id="5427278936122846523">Vedno prevedi</translation>
 <translation id="5427459444770871191">&amp;Zasukaj v smeri urinega kazalca</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (posodobitev je na voljo)</translation>
@@ -6689,6 +6696,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6104929924898022309">Spreminjanje delovanja funkcijskih tipk s tipko za iskanje</translation>
 <translation id="6108952804512516814">Ustvarjanje z umetno inteligenco</translation>
 <translation id="6110794992500777605">Moje bližnjice in spletna mesta</translation>
+<translation id="611080676871930948">Pošljite povratne informacije o načinu za branje</translation>
 <translation id="6111718295497931251">Odstrani dostop do Googla Drive</translation>
 <translation id="6112197885362646874">Vprašajte Google o tem: »<ph name="SEARCH_TERMS" />«</translation>
 <translation id="6112727384379533756">Dodaj kartonček</translation>
@@ -6706,6 +6714,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6124698108608891449">To spletno mesto potrebuje več dovoljenj.</translation>
 <translation id="6125202119952209826">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Luna</translation>
+<translation id="6125649408655762488">Fokus na skupini</translation>
 <translation id="6126601353087978360">Tukaj vnesite povratne informacije:</translation>
 <translation id="6127292407256937949">Glasnost zvoka je vklopljena. Izklop glasnosti zvoka.</translation>
 <translation id="6127598727646973981">Varne povezave</translation>
@@ -7058,6 +7067,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6402042774506839496">Če želite izvedeti, zakaj, se obrnite na razvijalca aplikacije</translation>
 <translation id="6402921224457714577">Spletna mesta lahko zahtevajo upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="6404511346730675251">Uredi zaznamek</translation>
+<translation id="6405999530973682789">Izgubljen kazalec miške</translation>
 <translation id="6406303162637086258">Posnemaj vnovični zagon brskalnika</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
 <translation id="6406571339342621375">Ne prikaži Geminija v menijski vrstici</translation>
@@ -8006,6 +8016,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7113314569799918830">Gemini v Chromu se širi na različne lokacije, vendar ni na voljo povsod</translation>
 <translation id="7113502843173351041">Poznati morate svoj e-poštni naslov</translation>
 <translation id="7115361495406486998">Ni dosegljivih stikov</translation>
+<translation id="7116931001458704701">Hitro premakni za iskanje kazalca</translation>
 <translation id="7117228822971127758">Poskusite znova pozneje</translation>
 <translation id="7118268675952955085">posnetek zaslona</translation>
 <translation id="711840821796638741">Prikaz upravljanih zaznamkov</translation>
@@ -8679,6 +8690,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7634337648687970851">Obnovitev lokalnih podatkov trenutno ni podprta.</translation>
 <translation id="7634566076839829401">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="7635048370253485243">Pripel skrbnik</translation>
+<translation id="7636175154537919400">Z desnim gumbom kliknite, če želite začasno skriti druge zavihke</translation>
 <translation id="7636346903338549690">Spletna mesta, ki jim je dovoljena uporaba piškotkov tretjih oseb</translation>
 <translation id="7636919061354591437">Namesti v to napravo</translation>
 <translation id="7637593984496473097">Premalo prostora na disku.</translation>
@@ -9639,6 +9651,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8345099007452202761">Na voljo je nova različica (<ph name="VERSION" />) za aplikacijo <ph name="APP_NAME" />. Ali jo želite uporabiti zdaj?</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
+<translation id="8347654878156675116">Iskanje</translation>
 <translation id="8347728744337089388">Pošlji v &amp;napravo</translation>
 <translation id="8348430946834215779">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo.</translation>
 <translation id="8348896480272971199">Preverite internetno povezavo in poskusite znova.</translation>

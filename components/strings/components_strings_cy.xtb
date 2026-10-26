@@ -661,6 +661,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2118132148597630479">Amlen C5</translation>
 <translation id="2119505898009119320">Cyhoeddwyd i: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Twll ar y dde isaf</translation>
+<translation id="2121418473709291357">Anwybyddwyd oherwydd bod Rheoli Cwmwl Porwr Chrome wedi'i analluogi.</translation>
 <translation id="2122214041802369259">Pris yn Uchel</translation>
 <translation id="2122719317867821810">Mae'r polisi hwn yn gweithio yn ôl y bwriad ond gosodir gwerth sy'n gwrthdaro mewn man arall ac mae'n cael ei ddiystyru gan y polisi hwn.</translation>
 <translation id="2124081665399116863">Diweddarwch gerbyd yn Google Wallet</translation>
@@ -2918,6 +2919,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5843987376989109187">Nid yw'r iaith hon yn cael ei chefnogi eto.
     <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Ar ôl i chi adolygu'ch archeb, rhaid i chi fewngofnodi neu greu cyfrif gyda <ph name="BNPL_ISSUER_NAME" />. Bydd y cyfrif hwn yn cael ei gysylltu'n awtomatig yn Google Wallet.</translation>
+<translation id="5848916806551637625">Bydd cyfrif Pix yn cael ei gysylltu â <ph name="ACCOUNT_EMAIL" />. I ddiffodd canfod cod Pix, ewch i'r <ph name="BEGIN_LINK1" />Gosodiadau Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Rhestr tabiau</translation>
 <translation id="5851868085455377790">Cyhoeddwr</translation>
 <translation id="5852909432155870672">RA4</translation>

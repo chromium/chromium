@@ -1835,6 +1835,7 @@
 <translation id="2423506062824112361">不明な理由により、コンテンツをダウンロードできませんでした。</translation>
 <translation id="2423578206845792524">名前を付けて画像を保存(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{ゲスト}other{ゲスト（#）}}</translation>
+<translation id="2424762488607770568">デフォルト（システムに合わせる）</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
 <translation id="2427507373259914951">左クリック</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> の 1 個のアカウントとパスワードはこのデバイスのみに保存されました。詳細}other{<ph name="DOMAIN_LINK" /> の {NUM_PASSWORDS} 個のアカウントとパスワードはこのデバイスのみに保存されました。詳細}}</translation>
@@ -5642,6 +5643,7 @@
 <translation id="5280426389926346830">ショートカットを作成しますか？</translation>
 <translation id="5280966903879030278">普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。この設定はオフになっています。</translation>
 <translation id="5281013262333731149">次で開く: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">ページの色</translation>
 <translation id="5284107433515104664">パスワードの変更中、ページのコンテンツと関連情報が Google に送信され、この機能を改善する目的で人間のレビュアーによって確認される場合があります。パスワードは暗号化され、誰にも表示されません。</translation>
 <translation id="5284445933715251131">ダウンロードを続行</translation>
 <translation id="5285635972691565180">ディスプレイ <ph name="DISPLAY_ID" /></translation>
@@ -6530,6 +6532,7 @@
 <translation id="5989497858237037960">サイトを閲覧すると、そのページのコンテンツが暗号化されてデバイスに保存されます（この処理は Chrome のパフォーマンスに影響する可能性があります）</translation>
 <translation id="5990266201903445068">Wi-Fi のみ</translation>
 <translation id="5990386583461751448">翻訳済み</translation>
+<translation id="5991039386730545918">選択したページのカラーテーマは、システムの高コントラストがオンになっている場合にのみ使用されます</translation>
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
 <translation id="5992652489368666106">余白なし</translation>
 <translation id="5996490984199062729">プロフィールが設定されていません</translation>
@@ -9313,6 +9316,7 @@
 <translation id="8118362518458010043">Chrome によって無効にされました。この拡張機能は安全ではない可能性があります。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 件のブックマーク}other{# 件のブックマーク}}</translation>
 <translation id="8118488170956489476">お使いの<ph name="BEGIN_LINK" />ブラウザは組織によって管理<ph name="END_LINK" />されています</translation>
+<translation id="8118496140027032067">高コントラストのテーマでウェブページの色を上書きするか、強制色をオフにします</translation>
 <translation id="8118515372935001629">ディスプレイのリフレッシュ レート</translation>
 <translation id="8118860139461251237">ダウンロードの管理</translation>
 <translation id="8119438628456698432">ログファイルを生成しています...</translation>
@@ -9990,6 +9994,7 @@
 <translation id="8648408795949963811">夜間モードの色温度</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" /> など</translation>
 <translation id="8648889679430451455">入力履歴を消去</translation>
+<translation id="8649290269169747916">システムの高コントラストがオフのときにデフォルトのページの色を使用する</translation>
 <translation id="8651585100578802546">ページを再読み込み</translation>
 <translation id="8651806635673244884">任意のタブを右クリックして [タブを横方向に表示] を選択すると、タブを上部に戻すことができます</translation>
 <translation id="8652400352452647993">拡張機能のパッケージ化のエラー</translation>

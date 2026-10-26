@@ -1849,6 +1849,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2423506062824112361">Kon weens ’n onbekende rede nie inhoud aflaai nie.</translation>
 <translation id="2423578206845792524">Stoor prent as …</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gas}other{Gas (#)}}</translation>
+<translation id="2424762488607770568">Verstek (pas by stelsel)</translation>
 <translation id="2426805022920575512">Kies 'n ander rekening</translation>
 <translation id="2427507373259914951">Linksklik</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 rekening, wagwoord net op hierdie toestel gestoor. Meer besonderhede}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} rekeninge, wagwoord net op hierdie toestel gestoor. Meer besonderhede}}</translation>
@@ -5660,6 +5661,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5280426389926346830">Skep kortpad?</translation>
 <translation id="5280966903879030278">Gebruik alledaagse taal om jou blaaigeskiedenis te deursoek en die werwe wat jy besoek het, te kry. Hierdie instelling is af.</translation>
 <translation id="5281013262333731149">Maak oop in: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Bladsykleure</translation>
 <translation id="5284107433515104664">Bladsyinhoud en verwante inligting word tydens wagwoordverandering na Google toe gestuur en kan deur mense gekontroleer word om hierdie kenmerk te verbeter. Jou wagwoord word geënkripteer en niemand sal dit ooit sien nie.</translation>
 <translation id="5284445933715251131">Gaan voort met aflaai</translation>
 <translation id="5285635972691565180">Vertoon <ph name="DISPLAY_ID" /></translation>
@@ -6551,6 +6553,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5989497858237037960">Terwyl jy deur werwe blaai, word hul bladsy-inhoud geënkripteer en op jou toestel gestoor. Dit kan Chrome se werkverrigting affekteer</translation>
 <translation id="5990266201903445068">Net Wi-Fi</translation>
 <translation id="5990386583461751448">Vertaal</translation>
+<translation id="5991039386730545918">Jou gekose bladsykleurtema word net gebruik terwyl stelselhoëkontras aan is</translation>
 <translation id="5992225669837656567">Alle muise is ontkoppel</translation>
 <translation id="5992652489368666106">Geen rand nie</translation>
 <translation id="5996490984199062729">Jou profiel is nie opgestel nie</translation>
@@ -9334,6 +9337,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8118362518458010043">Deur Chrome gedeaktiveer. Hierdie uitbreiding kan onveilig wees.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# boekmerk}other{# boekmerke}}</translation>
 <translation id="8118488170956489476">Jou <ph name="BEGIN_LINK" />blaaier word bestuur<ph name="END_LINK" /> deur jou organisasie</translation>
+<translation id="8118496140027032067">Ignoreer webbladsykleure met hoëkontrastemas of skakel verpligte kleure af</translation>
 <translation id="8118515372935001629">Vertoonskermherlaaitempo</translation>
 <translation id="8118860139461251237">Bestuur jou aflaaie</translation>
 <translation id="8119438628456698432">Genereer tans loglêers …</translation>
@@ -10011,6 +10015,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8648408795949963811">Aandbeligting-kleurtemperatuur</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wil: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> en meer</translation>
 <translation id="8648889679430451455">Vee personaliseringdata uit</translation>
+<translation id="8649290269169747916">Gebruik verstekbladsykleure wanneer stelselhoëkontras af is</translation>
 <translation id="8651585100578802546">Dwing hierdie bladsy om te herlaai</translation>
 <translation id="8651806635673244884">Jy kan jou oortjies terugskuif na die bokant deur enige oortjie te regsklik en “Wys oortjies horisontaal” te kies</translation>
 <translation id="8652400352452647993">Pakketuitbreidingfout</translation>

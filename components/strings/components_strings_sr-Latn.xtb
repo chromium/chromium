@@ -661,6 +661,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2118132148597630479">Koverta C5</translation>
 <translation id="2119505898009119320">Izdato za: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Bušenje u donjem desnom uglu</translation>
+<translation id="2121418473709291357">Zanemaruje se jer je upravljanje Chrome pregledačem u klaudu onemogućeno.</translation>
 <translation id="2122214041802369259">Cena je visoka</translation>
 <translation id="2122719317867821810">Ove smernice rade kao što je predviđeno, ali neusaglašena vrednost je podešena na drugom mestu i zamenjuju je ove smernice.</translation>
 <translation id="2124081665399116863">Ažurirajte vozilo u Google novčaniku</translation>
@@ -2918,6 +2919,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5843987376989109187">Ovaj jezik još nije podržan.
     <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Kada pregledate porudžbinu, morate da se prijavite na <ph name="BNPL_ISSUER_NAME" /> nalog ili da ga otvorite. Taj nalog će se automatski povezati u Google novčaniku.</translation>
+<translation id="5848916806551637625">Pix nalog će se povezati sa nalogom <ph name="ACCOUNT_EMAIL" />. Da biste isključili otkrivanje Pix koda, idite u <ph name="BEGIN_LINK1" />Podešavanja Chrome-a<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5851868085455377790">Izdavalac</translation>
 <translation id="5852909432155870672">RA4</translation>

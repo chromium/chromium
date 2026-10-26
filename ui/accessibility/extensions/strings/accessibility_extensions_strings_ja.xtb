@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">Image Alt Text Viewer</translation>
 <translation id="381767806621926835">「longdesc」または「aria-describedat」属性が指定された要素を右クリックすると、詳しい説明が表示されます。</translation>
 <translation id="4023902424053835668">矢印キーを使ってウェブページのテキストを閲覧します。</translation>
+<translation id="4384008284958619421">最新のスクリーン リーダーと Google Chrome で、アクセシビリティに配慮した要素の説明と ARIA 標準がネイティブでサポートされるようになりました。</translation>
 <translation id="4388820049312272371">カーソルの位置を短い点滅で強調表示する。</translation>
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="4769065380738716500">画像の代わりに代替（alt）テキストを表示しています。</translation>
@@ -62,6 +63,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="786423340267544509">aria-describedat または longdesc 属性が指定された要素を枠線付きで表示する</translation>
 <translation id="7942349550061667556">赤</translation>
+<translation id="8081200409424070383">Long Descriptions は 2026 年 11 月 20 日にサポートを終了します。</translation>
 <translation id="8260673944985561857">カーソル ブラウジングのオプション</translation>
 <translation id="8321034316479930120">アニメーションのポリシー</translation>
 <translation id="8480209185614411573">ハイ コントラスト</translation>
