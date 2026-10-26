@@ -11,6 +11,9 @@
 
 using PasteboardCallback = base::OnceCallback<void(UIPasteboard*)>;
 
+// Asynchronously retrieves `UIPasteboard.generalPasteboard` on a
+// `base::MayBlock()` sequenced task runner and invokes `callback` with the
+// pasteboard on the calling sequence.
 void GetGeneralPasteboard(PasteboardCallback callback);
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_ASYNC_WRAPPER_IOS_H_

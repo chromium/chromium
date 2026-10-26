@@ -232,8 +232,7 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   }
 };
 
-// TODO(crbug.com/40275048): Deflake the test.
-TEST_F(ClipboardRecentContentIOSTest, DISABLED_SchemeFiltering) {
+TEST_F(ClipboardRecentContentIOSTest, SchemeFiltering) {
   // Test unrecognized URL.
   SetPasteboardContent(kUnrecognizedURL);
   VerifiyClipboardURLIsInvalid();
@@ -279,9 +278,8 @@ TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
   VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 }
 
-// TODO(crbug.com/40275048): Deflake the test.
 TEST_F(ClipboardRecentContentIOSTest,
-       DISABLED_CacheClipboardContentTypesUpdatesForCopiedURL) {
+       CacheClipboardContentTypesUpdatesForCopiedURL) {
   SetPasteboardContent(kRecognizedURL);
   ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
 
@@ -292,9 +290,8 @@ TEST_F(ClipboardRecentContentIOSTest,
       VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
 }
 
-// TODO(crbug.com/40275048): Deflake the test.
 TEST_F(ClipboardRecentContentIOSTest,
-       DISABLED_CacheClipboardContentTypesUpdatesForCopiedImage) {
+       CacheClipboardContentTypesUpdatesForCopiedImage) {
   SetPasteboardImage(TestUIImage());
   ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
 
@@ -306,9 +303,8 @@ TEST_F(ClipboardRecentContentIOSTest,
       VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
 }
 
-// TODO(crbug.com/40275048): Deflake the test.
 TEST_F(ClipboardRecentContentIOSTest,
-       DISABLED_CacheClipboardContentTypesUpdatesForCopiedText) {
+       CacheClipboardContentTypesUpdatesForCopiedText) {
   SetPasteboardContent("foobar");
   ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
 
@@ -368,10 +364,9 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardContent) {
   VerifyClipboardURLExists(kRecognizedURL2);
 }
 
-// TODO(crbug.com/40275048): This test is flaky.
 // Checks that if the user suppresses content, no image will be returned,
 // and if the image changes, the new image will be returned again.
-TEST_F(ClipboardRecentContentIOSTest, DISABLED_SuppressedPasteboardImage) {
+TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardImage) {
   SetPasteboardImage(TestUIImage());
 
   // Test that recent pasteboard data is provided.
@@ -400,11 +395,9 @@ TEST_F(ClipboardRecentContentIOSTest, DISABLED_SuppressedPasteboardImage) {
   VerifyClipboardTypeExists(ClipboardContentType::Image, true);
 }
 
-// TODO(crbug.com/40275048): This test is flaky.
 // Checks that if user copies something other than a string we don't cache the
 // string in pasteboard.
-TEST_F(ClipboardRecentContentIOSTest,
-       DISABLED_AddingNonStringRemovesCachedString) {
+TEST_F(ClipboardRecentContentIOSTest, AddingNonStringRemovesCachedString) {
   SetPasteboardContent(kRecognizedURL);
 
   // Test that recent pasteboard data is provided as url.

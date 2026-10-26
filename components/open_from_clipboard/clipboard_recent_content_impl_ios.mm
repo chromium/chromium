@@ -87,7 +87,12 @@ NSString* const kDefaultScheme = @"https";
 
 @end
 
-@implementation ClipboardRecentContentImplIOS
+@implementation ClipboardRecentContentImplIOS {
+  // Monotonically increasing identifier for in-flight
+  // `-updateCachedClipboardState` requests, used to discard completions from
+  // superseded refreshes.
+  NSUInteger _cachedContentTypesRefreshID;
+}
 
 - (instancetype)initWithMaxAge:(NSTimeInterval)maxAge
              authorizedSchemes:(NSSet<NSString*>*)authorizedSchemes
@@ -217,14 +222,37 @@ NSString* const kDefaultScheme = @"https";
 
 - (void)updateCachedClipboardState {
   self.cachedContentTypes = nil;
+  // `-hasContentMatchingTypes:completionHandler:` retrieves the pasteboard
+  // asynchronously via `GetGeneralPasteboard` and then checks each content
+  // type across multiple asynchronous main-queue hops via
+  // `[UIPasteboard detectPatternsForPatterns:completionHandler:]`, over which
+  // Chrome has no ordering control. If the pasteboard changes while an earlier
+  // refresh is mid-flight, the earlier refresh can observe a mix of old and
+  // new pasteboard contents on the shared `UIPasteboard` singleton and finish
+  // before or after the newer refresh. In practice this is not realistic for a
+  // human copying manually on a device, unless an external script/shortcut or
+  // app writes multiple items to the pasteboard in rapid succession; it
+  // primarily occurs in automated environments such as unit tests where
+  // pasteboard mutations happen immediately after `-initWithMaxAge:` or back to
+  // back. Track `_cachedContentTypesRefreshID` so that only the latest refresh
+  // updates `cachedContentTypes`.
+  NSUInteger refreshID = ++_cachedContentTypesRefreshID;
 
   NSSet<ContentType>* desiredContentTypes = [NSSet
       setWithArray:@[ ContentTypeImage, ContentTypeURL, ContentTypeText ]];
   __weak __typeof(self) weakSelf = self;
   [self hasContentMatchingTypes:desiredContentTypes
               completionHandler:^(NSSet<ContentType>* results) {
-                weakSelf.cachedContentTypes = results;
+                [weakSelf setCachedContentTypes:results forRefreshID:refreshID];
               }];
+}
+
+- (void)setCachedContentTypes:(NSSet<ContentType>*)results
+                 forRefreshID:(NSUInteger)refreshID {
+  if (refreshID != _cachedContentTypesRefreshID) {
+    return;
+  }
+  self.cachedContentTypes = results;
 }
 
 // Checks for if the given `pasteboard` has content matching the provided
