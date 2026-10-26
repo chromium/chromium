@@ -1,0 +1,79 @@
+{
+  "benchmark_version": "3.0",
+  "actions_file": "speedometer3_actions.hjson",
+  "browser": {
+    "package": "org.chromium.chrome",
+    "http_port": 8080,
+    "https_port": 8081,
+    "flags": [
+      "--disable-quic",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-fre",
+      "--disable-field-trial-config",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-component-update",
+      "--disable-extensions",
+      "--disable-search-engine-choice-screen",
+      "--enable-automation",
+      "--ignore-certificate-errors-spki-list=YOUR_CERTIFICATE_SPKI_HASH"
+    ]
+  },
+  "files": [
+    {
+      "name": "wpr",
+      "path": "path/to/wpr_go",
+      "executable": true
+    },
+    {
+      "name": "archive",
+      "path": "path/to/speedometer_3_0.wprgo"
+    },
+    {
+      "name": "certificate",
+      "path": "path/to/ecdsa_cert.pem"
+    },
+    {
+      "name": "key",
+      "path": "path/to/ecdsa_key.pem"
+    }
+  ],
+  "wpr": {
+    "command": [
+      "{wpr}",
+      "replay",
+      "--http_port={http_port}",
+      "--https_port={https_port}",
+      "--https_cert_file={certificate}",
+      "--https_key_file={key}",
+      "--serve_response_in_chronological_sequence",
+      "--inject_scripts=",
+      "{archive}"
+    ],
+    "ready_timeout_ms": 60000
+  },
+  "trace_processor": {
+    "enabled": false
+  },
+  "output_processing": [
+    {
+      "action": "js",
+      "script": "return {benchmark: 'Speedometer3.0', pageUrl: String(location.href), score: window.benchmarkClient.metrics.Score.mean, metrics: window.benchmarkClient.metrics};",
+      "output": "speedometer_results"
+    },
+    {
+      "action": "dump_to_syslog",
+      "input": "speedometer_results"
+    }
+  ],
+  "file_output": {
+    "enabled": true,
+    "files": [
+      {
+        "input": "speedometer_results",
+        "filename": "speedometer3.json"
+      }
+    ]
+  }
+}

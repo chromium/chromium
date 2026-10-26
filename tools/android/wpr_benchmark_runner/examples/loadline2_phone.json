@@ -1,0 +1,137 @@
+{
+  "benchmark_version": "2.5.0",
+  "actions_file": "//third_party/crossbench/config/benchmark/loadline2/page_config_phone.hjson",
+  "browser": {
+    "package": "org.chromium.chrome",
+    "http_port": 8080,
+    "https_port": 8081,
+    "flags": [
+      "--disable-quic",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-fre",
+      "--disable-field-trial-config",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-component-update",
+      "--disable-extensions",
+      "--disable-search-engine-choice-screen",
+      "--enable-automation",
+      "--site-per-process",
+      "--disable-features=SpareRendererForSitePerProcess",
+      "--disable-back-forward-cache",
+      "--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ="
+    ]
+  },
+  "files": [
+    {
+      "name": "wpr",
+      "path": "//third_party/crossbench/cache/webpagereplay/android/arm64/wpr",
+      "executable": true
+    },
+    {
+      "name": "archive",
+      "path": "//third_party/crossbench/cache/wpr/archive_phone_20260331_JQWtNqSpdnDVuE0n_WyoSg__.wprgo"
+    },
+    {
+      "name": "certificate",
+      "path": "//third_party/webpagereplay/ecdsa_cert.pem"
+    },
+    {
+      "name": "key",
+      "path": "//third_party/webpagereplay/ecdsa_key.pem"
+    },
+    {
+      "name": "deterministic",
+      "path": "//third_party/webpagereplay/deterministic.js"
+    },
+    {
+      "name": "rules",
+      "path": "//third_party/crossbench/config/benchmark/loadline2/webpagereplay_script_injections_phone.json"
+    },
+    {
+      "name": "amazon_instrumentation",
+      "path": "//third_party/crossbench/config/benchmark/loadline2/amazon_instrumentation.js"
+    },
+    {
+      "name": "cnn_instrumentation",
+      "path": "//third_party/crossbench/config/benchmark/loadline2/cnn_instrumentation.js"
+    },
+    {
+      "name": "wikipedia_instrumentation",
+      "path": "//third_party/crossbench/config/benchmark/loadline2/wikipedia_instrumentation.js"
+    },
+    {
+      "name": "globo_instrumentation",
+      "path": "//third_party/crossbench/config/benchmark/loadline2/globo_instrumentation.js"
+    },
+    {
+      "name": "google_search_instrumentation",
+      "path": "//third_party/crossbench/config/benchmark/loadline2/google_search_instrumentation.js"
+    },
+    {
+      "name": "stages_query",
+      "path": "loadline2_stages.sql"
+    }
+  ],
+  "wpr": {
+    "command": [
+      "{wpr}",
+      "replay",
+      "--http_port={http_port}",
+      "--https_port={https_port}",
+      "--https_cert_file={certificate}",
+      "--https_key_file={key}",
+      "--serve_response_in_chronological_sequence",
+      "--inject_scripts={deterministic}",
+      "--rules_file={rules}",
+      "{archive}"
+    ],
+    "ready_timeout_ms": 60000
+  },
+  "probe": {
+    "enabled": true,
+    "trace_config": {
+      "recordMode": "recordUntilFull",
+      "traceBufferSizeInKb": 300000,
+      "includedCategories": [
+        "benchmark",
+        "blink.user_timing",
+        "navigation",
+        "loading",
+        "v8",
+        "__metadata"
+      ]
+    }
+  },
+  "trace_processor": {
+    "enabled": true,
+    "output": "llp2_trace"
+  },
+  "output_processing": [
+    {
+      "action": "process_llp2_trace",
+      "input": "llp2_trace",
+      "query_file": "stages_query",
+      "version": "2.5.0",
+      "output": "llp2_results"
+    },
+    {
+      "action": "dump_to_syslog",
+      "input": "llp2_results"
+    }
+  ],
+  "file_output": {
+    "enabled": true,
+    "files": [
+      {
+        "input": "llp2_trace",
+        "filename": "loadline2-phone.trace.pb"
+      },
+      {
+        "input": "llp2_results",
+        "filename": "loadline2-phone.json"
+      }
+    ]
+  }
+}

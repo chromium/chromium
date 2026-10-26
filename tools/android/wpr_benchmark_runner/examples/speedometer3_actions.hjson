@@ -1,0 +1,71 @@
+{
+  pages: {
+    speedometer_3: {
+      blocks: {
+        run: [
+          {
+            action: get
+            url: https://browserbench.org/Speedometer3.0/
+            target: _new_tab
+            timeout: 15s
+          }
+          {
+            action: wait_for_condition
+            condition: return !!window.benchmarkClient && typeof window.benchmarkClient.start === 'function';
+            timeout: 15s
+          }
+          {
+            action: js
+            script: '''
+              window.testDone = false;
+              const client = window.benchmarkClient;
+              const didFinish = client.didFinishLastIteration;
+              client.didFinishLastIteration = function(...args) {
+                didFinish.apply(this, args);
+                window.testDone = true;
+              };
+              '''
+          }
+          {
+            action: wait
+            duration: 0.5s
+          }
+          {
+            action: wait_for_condition
+            condition: return !!document.querySelector('#runSuites, start-tests-button, .buttons button');
+            timeout: 15s
+          }
+          {
+            action: js
+            script: '''
+              const button = document.querySelector('#runSuites, start-tests-button, .buttons button');
+              Object.assign(button.style, {
+                position: 'absolute', top: '0px', left: '0px',
+                width: '100%', height: '100%',
+              });
+              return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+              '''
+          }
+          {
+            action: tap
+            position: {
+              x: 540
+              y: 1200
+            }
+          }
+          {
+            action: wait
+            duration: 35s
+          }
+          {
+            action: wait_for_condition
+            condition: return window.testDone === true && !!window.benchmarkClient.metrics.Score;
+            poll_interval_ms: 500
+            command_timeout_ms: 60000
+            timeout: 1800s
+          }
+        ]
+      }
+    }
+  }
+}

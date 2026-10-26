@@ -1,0 +1,147 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/vpython.gni")
+
+declare_args() {
+  wpr_benchmark_runner_benchmark_config = ""
+}
+
+executable("wpr_cdp_relay") {
+  testonly = true
+  sources = [ "cdp_relay.cc" ]
+
+  output_name = "libcdp_relay.so"
+}
+
+android_library("wpr_benchmark_runner_java") {
+  testonly = true
+  min_sdk_version = 34
+  sources = [
+    "src/org/chromium/wpr_benchmark_runner/Action.java",
+    "src/org/chromium/wpr_benchmark_runner/ActionFactory.java",
+    "src/org/chromium/wpr_benchmark_runner/BrowserController.java",
+    "src/org/chromium/wpr_benchmark_runner/CdpSocket.java",
+    "src/org/chromium/wpr_benchmark_runner/Deadline.java",
+    "src/org/chromium/wpr_benchmark_runner/DumpToFile.java",
+    "src/org/chromium/wpr_benchmark_runner/DumpToSyslog.java",
+    "src/org/chromium/wpr_benchmark_runner/Get.java",
+    "src/org/chromium/wpr_benchmark_runner/Js.java",
+    "src/org/chromium/wpr_benchmark_runner/NativeTool.java",
+    "src/org/chromium/wpr_benchmark_runner/ProcessLlp2Trace.java",
+    "src/org/chromium/wpr_benchmark_runner/RunArtifacts.java",
+    "src/org/chromium/wpr_benchmark_runner/RunTraceProcessor.java",
+    "src/org/chromium/wpr_benchmark_runner/ShellProcess.java",
+    "src/org/chromium/wpr_benchmark_runner/StartProbe.java",
+    "src/org/chromium/wpr_benchmark_runner/StopProbe.java",
+    "src/org/chromium/wpr_benchmark_runner/Tap.java",
+    "src/org/chromium/wpr_benchmark_runner/TraceProcessor.java",
+    "src/org/chromium/wpr_benchmark_runner/Wait.java",
+    "src/org/chromium/wpr_benchmark_runner/WaitForCondition.java",
+    "src/org/chromium/wpr_benchmark_runner/WprBenchmarkInstrumentation.java",
+    "src/org/chromium/wpr_benchmark_runner/WprBenchmarkRunner.java",
+    "src/org/chromium/wpr_benchmark_runner/WprReplayController.java",
+  ]
+  deps = [
+    "//base:log_java",
+    "//build/android:build_java",
+  ]
+}
+
+_config_path = wpr_benchmark_runner_benchmark_config
+if (_config_path != "") {
+  _config = {
+  }
+  _config = read_file(_config_path, "json")
+  _trace_processor_enabled = false
+  if (defined(_config.trace_processor)) {
+    _trace_processor = _config.trace_processor
+    _trace_processor_enabled = _trace_processor.enabled
+  }
+
+  _archive = "$target_gen_dir/wpr_benchmark.zip"
+
+  action("package_benchmark") {
+    testonly = true
+    script = "package_benchmarks.py"
+    inputs = [ _config_path ]
+    outputs = [ _archive ]
+    if (filter_include([ _config.actions_file ], [ "/*" ]) != []) {
+      inputs += [ _config.actions_file ]
+    } else {
+      inputs +=
+          [ get_path_info(_config_path, "dir") + "/" + _config.actions_file ]
+    }
+    foreach(_file, _config.files) {
+      if (filter_include([ _file.path ], [ "/*" ]) != []) {
+        _source_path = _file.path
+      } else {
+        _source_path = get_path_info(_config_path, "dir") + "/" + _file.path
+      }
+      inputs += [ _source_path ]
+      if (defined(_file.executable) && _file.executable) {
+        _library_name = "libwpr_" + _file.name + ".so"
+        outputs += [ "$target_gen_dir/$_library_name" ]
+      }
+    }
+    inputs += vpython_spec_files
+    args = [
+      "--root",
+      rebase_path("//", root_build_dir),
+      "--config",
+      _config_path,
+      "--output",
+      rebase_path(target_gen_dir, root_build_dir),
+    ]
+  }
+
+  _manifest = "$target_gen_dir/AndroidManifest.xml"
+
+  jinja_template("manifest") {
+    testonly = true
+    input = "AndroidManifest.xml.jinja2"
+    output = _manifest
+    _browser = _config.browser
+    variables = [ "browser_package_name=" + _browser.package ]
+  }
+
+  android_assets("benchmark_assets") {
+    testonly = true
+    sources = [ _archive ]
+    disable_compression = true
+    deps = [ ":package_benchmark" ]
+  }
+
+  if (_trace_processor_enabled) {
+    copy("trace_processor_binary") {
+      testonly = true
+      sources = [ "$root_out_dir/trace_processor_shell" ]
+      outputs = [ "$target_gen_dir/libtrace_processor_shell.so" ]
+      deps =
+          [ "//third_party/perfetto/src/trace_processor:trace_processor_shell" ]
+    }
+  }
+
+  android_apk("wpr_benchmark_runner") {
+    testonly = true
+    min_sdk_version = 34
+    apk_name = "WprBenchmarkRunner"
+    android_manifest = _manifest
+    android_manifest_dep = ":manifest"
+    deps = [
+      ":benchmark_assets",
+      ":package_benchmark",
+      ":wpr_benchmark_runner_java",
+      ":wpr_cdp_relay",
+    ]
+    loadable_modules =
+        filter_include(get_target_outputs(":package_benchmark"), [ "*.so" ]) +
+        [ "$root_out_dir/libcdp_relay.so" ]
+    if (_trace_processor_enabled) {
+      deps += [ ":trace_processor_binary" ]
+      loadable_modules += get_target_outputs(":trace_processor_binary")
+    }
+  }
+}

@@ -24,6 +24,8 @@ group("android_tools") {
     "//tools/android/ps_ext",
     "//tools/android/push_apps_to_background:push_apps_to_background_apk",
     "//tools/android/touch_replay",
+    "//tools/android/wpr_benchmark_runner:wpr_benchmark_runner_java",
+    "//tools/android/wpr_benchmark_runner:wpr_cdp_relay",
     "//tools/perf:run_benchmark_wrapper",
     "//tools/perf/clear_system_cache",
   ]

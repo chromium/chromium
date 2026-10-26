@@ -1,0 +1,48 @@
+{
+  pages: {
+    jetstream_3: {
+      blocks: {
+        run: [
+          {
+            action: get
+            url: https://browserbench.org/JetStream3.0/
+            target: _new_tab
+            timeout: 15s
+          }
+          {
+            action: js
+            script: '''
+              window.jetStreamError = null;
+
+              addEventListener('error', event => {
+                window.jetStreamError = String(event.error || event.message);
+              });
+
+              addEventListener('unhandledrejection', event => {
+                window.jetStreamError = String(event.reason);
+              });
+              '''
+          }
+          {
+            action: wait_for_condition
+            condition: return !!globalThis.JetStream && JetStream.isReady === true && globalThis.allIsGood !== false && typeof JetStream.start === 'function';
+            failure_condition: return globalThis.allIsGood === false || !!window.jetStreamError;
+            timeout: 15s
+          }
+          {
+            action: js
+            script: JetStream.start();
+          }
+          {
+            action: wait_for_condition
+            condition: return !!document.getElementById('result-summary') && document.getElementById('result-summary').classList.contains('done');
+            failure_condition: return globalThis.allIsGood === false || !!window.jetStreamError;
+            poll_interval_ms: 500
+            command_timeout_ms: 60000
+            timeout: 1800s
+          }
+        ]
+      }
+    }
+  }
+}
