@@ -164,9 +164,17 @@ public class MultiWindowAppMenuTest {
         WebPageStation window2Page =
                 Journeys.prepareTabs(
                         pageInSecondWindow, 2, 0, "about:blank", WebPageStation::newBuilder);
-        RegularTabSwitcherStation tabSwitcher2 = window2Page.openRegularTabSwitcher();
-        TabSwitcherGroupCardFacility groupCardWindow2 =
-                Journeys.mergeAllTabsToNewGroup(tabSwitcher2);
+
+        // Group Window 2's tabs programmatically rather than through Window 2's UI. On Android
+        // 12L split-screen, Window 2's app menu can be cropped out by the platform when the IME
+        // belongs to Window 1 (crbug.com/576757597).
+        TabModel tabModel2 = window2Page.getTabModel();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabs2 = TabModelUtils.convertTabListToListOfTabs(tabModel2);
+                    tabModel2.mergeListOfTabsToGroup(
+                            tabs2, tabs2.get(0), TabGroupMergeNotificationType.DONT_NOTIFY);
+                });
 
         MultiWindowTestHelper.moveActivityToFront(page1InFirstWindow.getActivity());
 
@@ -175,9 +183,8 @@ public class MultiWindowAppMenuTest {
 
         RegularWebPageAppMenuFacility appMenu = page2InFirstWindow.openRegularTabAppMenu();
         appMenu.openTabGroupsSubmenu(
-                /* expectedGroups= */ List.of(groupCardWindow2.getTitle()),
-                /* excludedGroups= */ List.of());
-        TransitAsserts.assertFinalDestinations(page2InFirstWindow, tabSwitcher2);
+                /* expectedGroups= */ List.of("2 tabs"), /* excludedGroups= */ List.of());
+        TransitAsserts.assertFinalDestinations(page2InFirstWindow, window2Page);
     }
 
     @Test
