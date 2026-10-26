@@ -184,7 +184,9 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/background/background_contents_service.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -1573,8 +1575,7 @@ TEST_F(ExtensionServiceTest, UninstallingNotLoadedExtension) {
 }
 
 // Test that external extensions with incorrect IDs are not installed.
-// TODO(b/300670172): This test is extremely flaky.
-TEST_F(ExtensionServiceTest, DISABLED_FailOnWrongId) {
+TEST_F(ExtensionServiceTest, FailOnWrongId) {
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("good.crx");
 
@@ -1597,6 +1598,7 @@ TEST_F(ExtensionServiceTest, DISABLED_FailOnWrongId) {
   ASSERT_FALSE(registry()->enabled_extensions().GetByID(kGoodCrx));
 
   // Try again with the right ID. Expect success.
+  provider->RemoveExtension(wrong_id);
   info = CreateExternalExtension(correct_id, version_str, path,
                                  ManifestLocation::kExternalPref,
                                  Extension::NO_FLAGS);
@@ -2536,8 +2538,8 @@ TEST_F(ExtensionServiceTest, TestInstallThemeWithExtensionsDisabled) {
                       static_cast<int>(ManifestLocation::kInternal));
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Flaky on these platforms. http://crbug.com/40157248
+#if BUILDFLAG(IS_WIN)
+// Flaky on Windows. http://crbug.com/40157248
 #define MAYBE_InstallTheme DISABLED_InstallTheme
 #else
 #define MAYBE_InstallTheme InstallTheme
@@ -2545,10 +2547,24 @@ TEST_F(ExtensionServiceTest, TestInstallThemeWithExtensionsDisabled) {
 TEST_F(ExtensionServiceTest, MAYBE_InstallTheme) {
   InitializeEmptyExtensionService();
   service()->Init();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  ThemeService::DisableThemePackForTesting();
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  std::unique_ptr<ThemeService::ThemeReinstaller> reinstaller =
+      theme_service->BuildReinstallerForCurrentTheme();
+#endif
 
   // A theme.
   base::FilePath path = data_dir().AppendASCII("theme.crx");
-  InstallCRX(path, INSTALL_NEW);
+  {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    ::test::ThemeServiceChangedWaiter waiter(theme_service);
+#endif
+    InstallCRX(path, INSTALL_NEW);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    waiter.WaitForThemeChanged();
+#endif
+  }
   int pref_count = 0;
   ValidatePrefKeyCount(++pref_count);
   EXPECT_FALSE(prefs()->IsExtensionDisabled(kThemeCrx));
@@ -2556,7 +2572,15 @@ TEST_F(ExtensionServiceTest, MAYBE_InstallTheme) {
                       static_cast<int>(ManifestLocation::kInternal));
 
   path = data_dir().AppendASCII("theme2.crx");
-  InstallCRX(path, INSTALL_NEW);
+  {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    ::test::ThemeServiceChangedWaiter waiter(theme_service);
+#endif
+    InstallCRX(path, INSTALL_NEW);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    waiter.WaitForThemeChanged();
+#endif
+  }
   ValidatePrefKeyCount(++pref_count);
   EXPECT_FALSE(prefs()->IsExtensionDisabled(kTheme2Crx));
   ValidateIntegerPref(kTheme2Crx, "location",
@@ -2566,7 +2590,13 @@ TEST_F(ExtensionServiceTest, MAYBE_InstallTheme) {
   // so any such elements (like content scripts) should be ignored.
   {
     path = data_dir().AppendASCII("theme_with_extension.crx");
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    ::test::ThemeServiceChangedWaiter waiter(theme_service);
+#endif
     const Extension* extension = InstallCRX(path, INSTALL_NEW);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    waiter.WaitForThemeChanged();
+#endif
     ValidatePrefKeyCount(++pref_count);
     ASSERT_TRUE(extension);
     EXPECT_TRUE(extension->is_theme());
