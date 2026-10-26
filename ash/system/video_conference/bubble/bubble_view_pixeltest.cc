@@ -430,7 +430,8 @@ TEST_P(BubbleViewPixelTest, ThreeToggleEffects) {
       GetToggleEffectsView()));
 }
 
-TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
+// TODO(crbug.com/575795234, crbug.com/542230794): Re-enable flaky test.
+TEST_P(BubbleViewPixelTest, DISABLED_DLCUIInErrorShowsWarningLabelSingleError) {
   // Create a toggle effect so the warning label is available.
   controller()->GetEffectsManager().RegisterDelegate(office_bunny());
 
@@ -467,7 +468,8 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
       bubble_view()));
 }
 
-TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
+// TODO(crbug.com/575795234, crbug.com/542230794): Re-enable flaky test.
+TEST_P(BubbleViewPixelTest, DISABLED_DLCUIInErrorShowsWarningLabelMaxErrors) {
   // Create a toggle effect so the warning label is available.
   controller()->GetEffectsManager().RegisterDelegate(office_bunny());
 
