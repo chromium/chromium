@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -22,6 +23,10 @@
 
 class Profile;
 class BrowserWindowInterface;
+
+namespace base {
+class Uuid;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -47,6 +52,7 @@ class Page;
 }  // namespace mojom
 
 class ContextualTasksUIInterface;
+class ContextualTasksService;
 class AimMessagePoster;
 struct SiteExclusionDetail;
 
@@ -180,6 +186,17 @@ bool IsAndroidDesktopFormFactor();
 
 // Returns whether the provided URL is to a contextual tasks WebUI page.
 bool IsContextualTasksUrl(const GURL& url);
+
+// Returns the AI Mode thread id of `url` (its `mtid` param), or `std::nullopt`
+// if `url` has none.
+std::optional<std::string> GetAiModeThreadId(const GURL& url);
+
+// Adds the AI Mode thread `thread_id` to `task_id`, along with the thread's
+// latest turn (`mstk`) and title (`q`) from `url`, the thread's AI Mode URL.
+void UpdateAiModeThreadForTask(ContextualTasksService& service,
+                               const base::Uuid& task_id,
+                               const std::string& thread_id,
+                               const GURL& url);
 
 // Returns true if the given URL is valid for sharing as tab context with AI
 // Mode (matches the composebox '+' menu tab picker eligibility).

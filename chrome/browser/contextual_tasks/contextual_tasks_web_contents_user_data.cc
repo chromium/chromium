@@ -993,6 +993,9 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
 }
 
 void ContextualTasksWebContentsUserData::OnPageChanged(bool is_zero_state) {
+  if (is_zero_state) {
+    zero_state_callbacks_.Notify();
+  }
   if (!std::exchange(preserve_prestaged_context_, false) || !is_zero_state) {
     ClearInputPlateState();
   }
@@ -1815,6 +1818,12 @@ ContextualTasksWebContentsUserData::GetEffectiveTaskId() const {
     return helper->task_id();
   }
   return std::nullopt;
+}
+
+base::CallbackListSubscription
+ContextualTasksWebContentsUserData::RegisterZeroStateCallback(
+    base::RepeatingClosure callback) {
+  return zero_state_callbacks_.Add(std::move(callback));
 }
 
 void ContextualTasksWebContentsUserData::RefreshActiveTaskContext() {

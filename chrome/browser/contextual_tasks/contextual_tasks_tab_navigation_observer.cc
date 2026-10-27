@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -23,7 +24,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -67,10 +67,11 @@ void ContextualTasksTabNavigationObserver::UpdateTaskForUrl(const GURL& url) {
 
   // The AI Mode page has its thread's server id in `mtid`, except in zero
   // state and before the first response of a new thread.
-  std::string thread_id;
-  if (!ui_service->IsAiUrl(url) ||
-      !net::GetValueForKeyInQuery(url, "mtid", &thread_id) ||
-      thread_id.empty()) {
+  std::optional<std::string> thread_id;
+  if (ui_service->IsAiUrl(url)) {
+    thread_id = GetAiModeThreadId(url);
+  }
+  if (!thread_id) {
     if (thread_id_) {
       ClearThreadTask(contents);
       if (auto* user_data =
@@ -82,17 +83,10 @@ void ContextualTasksTabNavigationObserver::UpdateTaskForUrl(const GURL& url) {
   }
 
   std::optional<ContextualTask> task =
-      service->GetTaskFromServerId(ThreadType::kAiMode, thread_id);
+      service->GetTaskFromServerId(ThreadType::kAiMode, *thread_id);
   const base::Uuid task_id =
       task ? task->GetTaskId() : service->CreateTaskFromUrl(url).GetTaskId();
-  std::string query;
-  std::string mstk;
-  net::GetValueForKeyInQuery(url, "q", &query);
-  service->UpdateThreadForTask(
-      task_id, ThreadType::kAiMode, thread_id,
-      net::GetValueForKeyInQuery(url, "mstk", &mstk) ? std::make_optional(mstk)
-                                                     : std::nullopt,
-      query.empty() ? std::nullopt : std::make_optional(query));
+  UpdateAiModeThreadForTask(*service, task_id, *thread_id, url);
   if (thread_id_ == thread_id) {
     return;
   }

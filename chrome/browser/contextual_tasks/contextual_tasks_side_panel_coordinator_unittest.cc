@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_thread_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
@@ -1288,6 +1289,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       GetWebContentsForTaskForTesting(old_task.GetTaskId());
   ASSERT_TRUE(rebuilt_contents);
   EXPECT_NE(panel_contents, rebuilt_contents);
+  EXPECT_TRUE(
+      ContextualTasksPanelThreadObserver::FromWebContents(rebuilt_contents));
   std::string thread_id;
   EXPECT_TRUE(net::GetValueForKeyInQuery(rebuilt_contents->GetVisibleURL(),
                                          "mtid", &thread_id));
@@ -2583,6 +2586,75 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   GURL expected_url(
       "https://www.google.com/search?udm=50&aep=46&cs=0&gsc=2&hl=en");
   EXPECT_EQ(cached_wc->GetVisibleURL(), expected_url);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       PanelThreadObserver_AttachedAndRemovedOnDetach_WithRearchitectureFlag) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_ui_service, GetInitialUrlForTask(task.GetTaskId()))
+      .WillByDefault(
+          Return(GURL("https://www.google.com/search?udm=50&q=test")));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  content::WebContents* cached_wc =
+      GetWebContentsForTaskForTesting(task.GetTaskId());
+  ASSERT_TRUE(cached_wc);
+  EXPECT_TRUE(ContextualTasksPanelThreadObserver::FromWebContents(cached_wc));
+
+  // Moving the `WebContents` to a tab removes the observer.
+  std::unique_ptr<content::WebContents> detached_wc =
+      coordinator_->DetachWebContentsForTask(task.GetTaskId());
+  ASSERT_EQ(detached_wc.get(), cached_wc);
+  EXPECT_FALSE(
+      ContextualTasksPanelThreadObserver::FromWebContents(detached_wc.get()));
+}
+
+// Post-rearchitecture, a panel `WebContents` reporting its own task change
+// (see `ContextualTasksPanelThreadObserver`) is re-keyed, even if it isn't the
+// active panel `WebContents`.
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnTaskChanged_RekeysReportingWebContents_WithRearchitectureFlag) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  base::Uuid active_task_id = base::Uuid::GenerateRandomV4();
+  ON_CALL(*mock_controller_,
+          GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(active_tab->GetContents())))
+      .WillByDefault(Return(ContextualTask(active_task_id)));
+  CreateCachedWebContentsForTesting(active_task_id, /*is_open=*/true);
+  base::Uuid other_task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(other_task_id, /*is_open=*/false);
+  UpdateWebContentsForActiveTab();
+
+  content::WebContents* active_wc =
+      GetWebContentsForTaskForTesting(active_task_id);
+  content::WebContents* other_wc =
+      GetWebContentsForTaskForTesting(other_task_id);
+  ASSERT_TRUE(active_wc);
+  ASSERT_TRUE(other_wc);
+  ASSERT_EQ(coordinator_->GetActiveWebContents(), active_wc);
+
+  base::Uuid new_task_id = base::Uuid::GenerateRandomV4();
+  coordinator_->OnTaskChanged(other_wc, new_task_id);
+
+  EXPECT_EQ(GetWebContentsForTaskForTesting(new_task_id), other_wc);
+  EXPECT_EQ(GetWebContentsForTaskForTesting(active_task_id), active_wc);
+  EXPECT_FALSE(GetWebContentsForTaskForTesting(other_task_id));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

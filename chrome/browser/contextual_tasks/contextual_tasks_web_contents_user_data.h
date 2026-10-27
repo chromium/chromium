@@ -118,6 +118,12 @@ class ContextualTasksWebContentsUserData
   // `ContextualTasksTabNavigationObserver`).
   std::optional<base::Uuid> GetEffectiveTaskId() const;
 
+  // Registers `callback` to run when the AI Mode page reports zero state
+  // (`OnPageChanged`), before the input state is updated for it. See
+  // `ContextualTasksPanelThreadObserver`.
+  base::CallbackListSubscription RegisterZeroStateCallback(
+      base::RepeatingClosure callback);
+
   void RegisterExtensionFrame(const void* handler_id);
   void UpdateExtensionFrameBound(
       const void* handler_id,
@@ -314,6 +320,7 @@ class ContextualTasksWebContentsUserData
   std::optional<ImplicitTab> implicit_tab_;
   base::flat_set<GURL> dismissed_implicit_urls_;
   bool preserve_prestaged_context_ = false;
+  base::RepeatingClosureList zero_state_callbacks_;
 
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<contextual_search::InputStateModel>>
