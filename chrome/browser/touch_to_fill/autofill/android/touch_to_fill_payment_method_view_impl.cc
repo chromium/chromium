@@ -131,7 +131,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
       base::ToVector(suggestions, [&](const Suggestion& suggestion) {
         CHECK_GT(suggestion.labels.size(), 0U);
         CHECK_EQ(suggestion.labels[0].size(), 1U);
-        std::u16string secondarySubLabel =
+        std::u16string secondary_sub_label =
             suggestion.labels.size() > 1 && suggestion.labels[1].size() > 0 &&
                     !suggestion.labels[1][0].value.empty()
                 ? suggestion.labels[1][0].value
@@ -151,7 +151,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
         }
         return Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
             env, suggestion.main_text.value, minor_text,
-            suggestion.labels[0][0].value, secondarySubLabel,
+            suggestion.labels[0][0].value, secondary_sub_label,
             std::to_underlying(suggestion.type),
             custom_icon_url ? url::GURLAndroid::FromNativeGURL(
                                   env, custom_icon_url->value())

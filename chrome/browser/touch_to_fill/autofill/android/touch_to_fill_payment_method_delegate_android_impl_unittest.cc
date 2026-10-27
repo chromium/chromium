@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -734,13 +733,6 @@ TEST_P(TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest,
 
 class TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest
     : public TouchToFillPaymentMethodDelegateAndroidImplUnitTest {
- public:
-  static std::vector<CreditCard> GetCardsToSuggest(
-      std::vector<const CreditCard*> credit_cards) {
-    return base::ToVector(credit_cards,
-                          [](const CreditCard* card) { return *card; });
-  }
-
  protected:
   void SetUp() override {
     TouchToFillPaymentMethodDelegateAndroidImplUnitTest::SetUp();

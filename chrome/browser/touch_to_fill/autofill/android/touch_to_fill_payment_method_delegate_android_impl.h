@@ -228,13 +228,6 @@ class TouchToFillPaymentMethodDelegateAndroidImpl
   // or an error reason if TTF should not be triggered.
   DryRunResult DryRunForAffiliatedLoyaltyCard();
 
-  // Creates a list of booleans which denotes if credit cards are acceptable by
-  // the merchant. The returned list has the same size as `credit_cards`, and
-  // the indices match (the acceptability of credit_cards[i] ==
-  // card_acceptability[i]).
-  std::vector<bool> GetCardAcceptabilities(
-      base::span<const CreditCard> credit_cards);
-
   void LogTriggerOutcomeMetrics(const FormGlobalId& form_id,
                                 const FieldGlobalId& field_id,
                                 TriggerOutcome outcome);
