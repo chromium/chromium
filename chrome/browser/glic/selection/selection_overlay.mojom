@@ -125,6 +125,10 @@ interface SelectionOverlayPageHandler {
   // Opens the inline cue menu settings page in a new tab, dismissing the
   // selection overlay and closing this Mojo pipe.
   OpenSettings();
+
+  // Opens the dogfood feedback URL in a new tab, dismissing the selection
+  // overlay and closing this Mojo pipe.
+  OpenDogfoodFeedback();
 };
 
 // `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives
@@ -133,8 +137,7 @@ interface SelectionOverlayPage {
   // Pass the screenshot from the browser to the WebUI. `screenshot` is captured
   // against the current page and is not annotated. `screenshot` should not be
   // used for anything else than the selection overlay.
-  ScreenshotReceived(
-      skia.mojom.BitmapMappedFromTrustedProcess screenshot);
+  ScreenshotReceived(skia.mojom.BitmapMappedFromTrustedProcess screenshot);
 
   // Sets post selection regions to be rendered as selected on the page.
   SetPostRegionSelections(array<SelectedRegion> regions);

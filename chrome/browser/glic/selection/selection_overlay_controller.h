@@ -35,7 +35,7 @@
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace views {
 class WebView;
@@ -196,6 +196,7 @@ class SelectionOverlayController
       const base::UnguessableToken& action_id,
       mojo::GenericPendingAssociatedReceiver channel) override;
   void OpenSettings() override;
+  void OpenDogfoodFeedback() override;
 
  private:
   void OnScreenshotTaken(const SkBitmap& bitmap);

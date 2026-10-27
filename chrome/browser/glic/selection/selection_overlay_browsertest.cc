@@ -1440,4 +1440,64 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, AskGeminiOpensGlic) {
             SelectionOverlayController::State::kOff);
 }
 
+class SelectionOverlayDogfoodFeedbackBrowserTest
+    : public SelectionOverlayBrowserTest {
+ public:
+  SelectionOverlayDogfoodFeedbackBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicSelectionOverlayDogfoodFeedback,
+        {{features::kGlicSelectionOverlayDogfoodFeedbackUrl.name,
+          "https://example.com/feedback"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayDogfoodFeedbackBrowserTest,
+                       OpenDogfoodFeedbackOpensUrlInNewTab) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* tabs = GetTabListInterface();
+  const int initial_tab_count = tabs->GetTabCount();
+
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->OpenDogfoodFeedback();
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_EQ(tabs->GetTabCount(), initial_tab_count + 1);
+  EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetVisibleURL(),
+            GURL("https://example.com/feedback"));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
+                       OpenDogfoodFeedbackIgnoredWhenDisabled) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* tabs = GetTabListInterface();
+  const int initial_tab_count = tabs->GetTabCount();
+
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->OpenDogfoodFeedback();
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOverlay);
+  EXPECT_EQ(tabs->GetTabCount(), initial_tab_count);
+}
+
 }  // namespace glic

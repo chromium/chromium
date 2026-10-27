@@ -86,6 +86,7 @@ export class GlicSelectionOverlayElement extends
       suggestedActions: {type: Array},
       enableSelectionOverlayPrompt: {type: Boolean},
       enableSelectionOverlayPromptBox: {type: Boolean},
+      enableSelectionOverlayDogfoodFeedback: {type: Boolean},
       hideHandles: {type: Boolean},
       disableMultiSelect: {type: Boolean, reflect: true},
       skipIntroAnimation: {type: Boolean, reflect: true},
@@ -106,6 +107,8 @@ export class GlicSelectionOverlayElement extends
       loadTimeData.getBoolean('enableSelectionOverlayPrompt');
   accessor enableSelectionOverlayPromptBox: boolean =
       loadTimeData.getBoolean('enableSelectionOverlayPromptBox');
+  accessor enableSelectionOverlayDogfoodFeedback: boolean =
+      loadTimeData.getBoolean('enableSelectionOverlayDogfoodFeedback');
   accessor hideHandles: boolean = false;
   accessor disableMultiSelect: boolean = false;
   accessor skipIntroAnimation: boolean = false;
@@ -646,6 +649,11 @@ export class GlicSelectionOverlayElement extends
 
   protected onSettingsClick(event: Event) {
     (this.baseHandler as SelectionOverlayBaseHandlerImpl).openSettings();
+    event.stopPropagation();
+  }
+
+  protected onDogfoodFeedbackClick(event: Event) {
+    (this.baseHandler as SelectionOverlayBaseHandlerImpl).openDogfoodFeedback();
     event.stopPropagation();
   }
 

@@ -2375,6 +2375,116 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
           GURL("chrome://settings/ai/inlineCueMenu")));
 }
 
+class SelectionOverlayInteractiveTestWithDogfoodFeedback
+    : public SelectionOverlayInteractiveTestWithInlineFulfillment {
+ public:
+  SelectionOverlayInteractiveTestWithDogfoodFeedback() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicSelectionOverlayDogfoodFeedback,
+        {{features::kGlicSelectionOverlayDogfoodFeedbackUrl.name,
+          "https://example.com/feedback"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithDogfoodFeedback,
+                       ClickDogfoodFeedbackButtonOpensUrlInNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kDogfoodFeedbackButton = {"selection-overlay-app",
+                                            "glic-selection-overlay",
+                                            "#dogfoodFeedbackButton"};
+
+  RunTestSequence(
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      WaitForElementVisible(kOverlayWebContentsId, kDogfoodFeedbackButton),
+      ClickElement(kOverlayWebContentsId, kDogfoodFeedbackButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL();
+          },
+          GURL("https://example.com/feedback")));
+}
+
+class SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback
+    : public SelectionOverlayInteractiveTestWithPrompt {
+ public:
+  SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicSelectionOverlayDogfoodFeedback,
+        {{features::kGlicSelectionOverlayDogfoodFeedbackUrl.name,
+          "https://example.com/feedback"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback,
+    ClickDogfoodFeedbackButtonOpensUrlInNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+  const DeepQuery kDogfoodFeedbackButton = {"selection-overlay-app",
+                                            "glic-selection-overlay",
+                                            "#dogfoodFeedbackButton"};
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      WaitForElementVisible(kOverlayWebContentsId, kDogfoodFeedbackButton),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
+          "  const btn = el.shadowRoot.querySelector('#dogfoodFeedbackButton');"
+          "  if (!pill || !btn) return false;"
+          "  const pillRect = pill.getBoundingClientRect();"
+          "  const btnRect = btn.getBoundingClientRect();"
+          "  const pillCenterY = (pillRect.top + pillRect.bottom) / 2;"
+          "  const btnCenterY = (btnRect.top + btnRect.bottom) / 2;"
+          "  return Math.abs(pillCenterY - btnCenterY) <= 1 && "
+          "      btnRect.left >= pillRect.right;"
+          "}"),
+      ClickElement(kOverlayWebContentsId, kDogfoodFeedbackButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL();
+          },
+          GURL("https://example.com/feedback")));
+}
+
 namespace {
 
 class SelectionOverlayInteractiveScreenshotSizeCapTest

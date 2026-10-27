@@ -9,6 +9,7 @@ build_webui("build") {
 
   static_files = [
     "arrow_upward.svg",
+    "dogfood.svg",
     "explain.svg",
     "prompt_suggestion.svg",
     "selection_overlay.html",

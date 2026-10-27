@@ -65,25 +65,37 @@ export function getHtml(this: GlicSelectionOverlayElement) {
           ?hidden="${!this.showFloatingPrompt}"
           style="${this.floatingPromptStyle}">
         ${this.enableSelectionOverlayPromptBox ? html`
-          <div class="searchbox-pill">
-            <div class="sparkle-icon">
-              <img src="/spark.svg" width="20" height="20">
+          <div class="searchbox-row">
+            <div class="searchbox-pill">
+              <div class="sparkle-icon">
+                <img src="/spark.svg" width="20" height="20">
+              </div>
+              <input id="promptInput"
+                  type="text"
+                  placeholder="$i18n{askGemini}"
+                  aria-label="$i18n{askGemini}"
+                  @input="${this.onPromptInput}"
+                  @keydown="${this.onInputKeydown}"
+                  @pointerdown="${this.onPromptPointerdown}"
+                  autocomplete="off">
+              <cr-icon-button id="submitPromptButton"
+                  ?hidden="${!this.hasPromptText}"
+                  title="$i18n{submitPrompt}"
+                  aria-label="$i18n{submitPrompt}"
+                  @click="${this.onSubmitPromptClick}"
+                  @pointerdown="${this.onPromptPointerdown}">
+              </cr-icon-button>
             </div>
-            <input id="promptInput"
-                type="text"
-                placeholder="$i18n{askGemini}"
-                aria-label="$i18n{askGemini}"
-                @input="${this.onPromptInput}"
-                @keydown="${this.onInputKeydown}"
-                @pointerdown="${this.onPromptPointerdown}"
-                autocomplete="off">
-            <cr-icon-button id="submitPromptButton"
-                ?hidden="${!this.hasPromptText}"
-                title="$i18n{submitPrompt}"
-                aria-label="$i18n{submitPrompt}"
-                @click="${this.onSubmitPromptClick}"
-                @pointerdown="${this.onPromptPointerdown}">
-            </cr-icon-button>
+            ${this.enableSelectionOverlayDogfoodFeedback ? html`
+              <cr-button id="dogfoodFeedbackButton"
+                  class="dogfood-feedback-button"
+                  title="$i18n{sendFeedback}"
+                  aria-label="$i18n{sendFeedback}"
+                  @click="${this.onDogfoodFeedbackClick}"
+                  @pointerdown="${this.onPromptPointerdown}">
+                <div class="dogfood-feedback-icon"></div>
+              </cr-button>
+            ` : ''}
           </div>
         ` : ''}
 
@@ -109,6 +121,15 @@ export function getHtml(this: GlicSelectionOverlayElement) {
                 @click="${this.onSettingsClick}">
               <div class="settings-icon"></div>
             </cr-button>
+            ${this.enableSelectionOverlayDogfoodFeedback ? html`
+              <cr-button id="dogfoodFeedbackButton"
+                  class="dogfood-feedback-button"
+                  title="$i18n{sendFeedback}"
+                  aria-label="$i18n{sendFeedback}"
+                  @click="${this.onDogfoodFeedbackClick}">
+                <div class="dogfood-feedback-icon"></div>
+              </cr-button>
+            ` : ''}
           ` : ''}
         </div>
 

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -56,6 +57,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
        IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
       {"close", IDS_CLOSE},
       {"settings", IDS_SETTINGS_SETTINGS},
+      {"sendFeedback", IDS_LENS_SEND_FEEDBACK},
       {"askGemini", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
       {"askGeminiMore", IDS_GLIC_SELECTION_ASK_GEMINI_MORE},
       {"submitPrompt", IDS_GLIC_SELECTION_SUBMIT_PROMPT},
@@ -110,6 +112,13 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSelectionOverlayPromptBox",
       base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox));
+  const GURL dogfood_feedback_url(
+      features::kGlicSelectionOverlayDogfoodFeedbackUrl.Get());
+  html_source->AddBoolean("enableSelectionOverlayDogfoodFeedback",
+                          base::FeatureList::IsEnabled(
+                              features::kGlicSelectionOverlayDogfoodFeedback) &&
+                              dogfood_feedback_url.is_valid() &&
+                              dogfood_feedback_url.SchemeIsHTTPOrHTTPS());
 
   // TODO(b/489801993): Refactor shared resources into a common directory to
   // avoid manual path concatenation for Lens and the Glic selection overlay.

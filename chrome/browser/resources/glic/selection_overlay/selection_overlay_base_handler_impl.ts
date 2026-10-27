@@ -193,4 +193,9 @@ export class SelectionOverlayBaseHandlerImpl extends
     const proxy = BrowserProxyImpl.getInstance();
     proxy.handler.openSettings();
   }
+
+  openDogfoodFeedback(): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.openDogfoodFeedback();
+  }
 }

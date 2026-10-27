@@ -268,6 +268,14 @@
   }
 }
 
+.searchbox-row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  max-width: 100%;
+}
+
 .searchbox-pill {
   align-items: center;
   background-color: #FFF;
@@ -337,13 +345,14 @@
   max-width: 100%;
 }
 
-.searchbox-pill + .action-chips-row {
+.searchbox-row + .action-chips-row {
   align-items: flex-start;
   flex-direction: column;
 }
 
 .action-chip,
-.settings-button {
+.settings-button,
+.dogfood-feedback-button {
   --cr-button-background-color: var(--cr-fallback-color-surface);
   --cr-button-border: none;
   --cr-button-height: 30px;
@@ -361,21 +370,24 @@
   padding-inline-start: 5px;
 }
 
-.settings-button {
+.settings-button,
+.dogfood-feedback-button {
   padding: 5px;
   width: 30px;
 }
 
 /* The hover background is a capsule inset from the edge of the button. */
 .action-chip::part(hoverBackground),
-.settings-button::part(hoverBackground) {
+.settings-button::part(hoverBackground),
+.dogfood-feedback-button::part(hoverBackground) {
   background: var(--cr-hover-on-subtle-background-color);
   border-radius: inherit;
   inset: 2px;
 }
 
 .chip-icon,
-.settings-icon {
+.settings-icon,
+.dogfood-feedback-icon {
   background-color: var(--cr-fallback-color-on-surface-subtle);
   flex-shrink: 0;
   height: var(--cr-icon-size);
@@ -395,6 +407,10 @@
 
 .settings-icon {
   mask-image: url('/settings.svg');
+}
+
+.dogfood-feedback-icon {
+  mask-image: url('/dogfood.svg');
 }
 
 #inlineFulfillmentHost {
@@ -500,7 +516,8 @@
   #cursorImg,
   #inlineFulfillmentHost .ask-gemini-icon,
   .chip-icon,
-  .settings-icon {
+  .settings-icon,
+  .dogfood-feedback-icon {
     /* Set the icon color to hcm (high contrast mode) value. */
     background-color: ButtonText;
   }
@@ -508,7 +525,8 @@
   /* Add a border since the shadow is not visible in hcm. */
   #inlineFulfillmentHost,
   .action-chip,
-  .settings-button {
+  .settings-button,
+  .dogfood-feedback-button {
     border: 1px solid ButtonBorder;
   }
 }

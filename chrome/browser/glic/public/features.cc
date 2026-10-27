@@ -57,6 +57,12 @@ base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites() {
 
 BASE_FEATURE(kGlicSelectionOverlayPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSelectionOverlayPromptBox, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicSelectionOverlayDogfoodFeedback,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kGlicSelectionOverlayDogfoodFeedbackUrl,
+                   &kGlicSelectionOverlayDogfoodFeedback,
+                   "");
 BASE_FEATURE(kGlicSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kGlicSelectionSuggestionsCapabilities,
