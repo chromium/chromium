@@ -9168,6 +9168,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.ScanCreditCard.GetAvailableInputTypes.TimedOut"
+    enum="BooleanTimedOut" expires_after="2027-08-31">
+  <owner>benphillips@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Credit card scanning allows users to capture card details from a physical
+    card using their device camera (OCR) or NFC to autofill checkout forms or
+    save a card in settings (chrome://settings/payments).
+
+    Tracks whether the GMS Core WalletOcr getAvailableInputTypes request timed
+    out when checking which card scanning input types are available on the
+    device. Logged each time Chrome waits for the getAvailableInputTypes task.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ScanCreditCardPrompt"
     enum="AutofillScanCreditCardPrompt" expires_after="2027-04-18">
   <owner>battre@chromium.org</owner>
