@@ -215,7 +215,6 @@ allow_circular_includes_from_untriaged = [
   "//content/public/renderer:renderer_sources",
   "//content/web_test:web_test_renderer",
   "//extensions/browser/api/app_runtime:app_runtime",
-  "//extensions/browser/api/clipboard:clipboard",
   "//extensions/common:common",
   "//gpu/config:config",
   "//ios/chrome/app:app_internal",

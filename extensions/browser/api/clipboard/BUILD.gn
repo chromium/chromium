@@ -24,8 +24,6 @@ source_set("clipboard") {
     "//extensions/common/api",
     "//ui/base/clipboard",
   ]
-
-  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }
 
 source_set("clipboard_types") {
