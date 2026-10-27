@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -21,6 +22,10 @@ class Profile;
 namespace content {
 class WebContents;
 }
+
+namespace features {
+BASE_DECLARE_FEATURE(kDeferScriptFontPrefResolution);
+}  // namespace features
 
 namespace user_prefs {
 class PrefRegistrySyncable;

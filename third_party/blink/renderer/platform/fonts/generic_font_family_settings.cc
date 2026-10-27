@@ -62,21 +62,24 @@ GenericFontFamilySettings& GenericFontFamilySettings::operator=(
 }
 
 // Sets the entry in the font map for the given script. If family is the empty
-// string, removes the entry instead.
-void GenericFontFamilySettings::SetGenericFontFamilyMap(
+// string, removes the entry instead. Returns true if the font map was modified.
+bool GenericFontFamilySettings::SetGenericFontFamilyMap(
     ScriptFontFamilyMap& font_map,
     const AtomicString& family,
     UScriptCode script) {
   ScriptFontFamilyMap::iterator it = font_map.find(static_cast<int>(script));
   if (family.empty()) {
-    if (it == font_map.end())
-      return;
+    if (it == font_map.end()) {
+      return false;
+    }
     font_map.erase(it);
-  } else if (it != font_map.end() && it->value == family) {
-    return;
-  } else {
-    font_map.Set(static_cast<int>(script), family);
+    return true;
   }
+  if (it != font_map.end() && !ShouldUpdateFontFamily(it->value, family)) {
+    return false;
+  }
+  font_map.Set(static_cast<int>(script), family);
+  return true;
 }
 
 const AtomicString& GenericFontFamilySettings::GenericFontFamilyForScript(
@@ -115,10 +118,10 @@ const AtomicString& GenericFontFamilySettings::GenericFontFamilyForScript(
 }
 
 bool GenericFontFamilySettings::ShouldUpdateFontFamily(
-    const AtomicString& old_first_available_family,
+    const AtomicString& old_family,
     const AtomicString& new_family) const {
   // If the two font families are already the same.
-  if (new_family == old_first_available_family) {
+  if (new_family == old_family) {
     return false;
   }
   // Then if the new family is not a list, this should update the setting.
@@ -127,11 +130,18 @@ bool GenericFontFamilySettings::ShouldUpdateFontFamily(
   }
 
   // If the list of new specified families' first available font has already
-  // been cached and it is the same as 'old_first_available_family`, we do not
-  // need ot update font setting.
+  // been cached and it is the same as `old_family`, we do not need to update
+  // the font setting.
   if (auto it = first_available_font_for_families_.find(new_family);
       it != first_available_font_for_families_.end()) {
-    return it->value != old_first_available_family;
+    const AtomicString* effective_old_family = &old_family;
+    if (!old_family.empty() && old_family[0] == ',') {
+      if (auto old_it = first_available_font_for_families_.find(old_family);
+          old_it != first_available_font_for_families_.end()) {
+        effective_old_family = &old_it->value;
+      }
+    }
+    return it->value != *effective_old_family;
   }
   return true;
 }
@@ -143,12 +153,7 @@ const AtomicString& GenericFontFamilySettings::Standard(
 
 bool GenericFontFamilySettings::UpdateStandard(const AtomicString& family,
                                                UScriptCode script) {
-  auto& old_family =  Standard(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(standard_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(standard_font_family_map_, family, script);
 }
 
 const AtomicString& GenericFontFamilySettings::Fixed(UScriptCode script) const {
@@ -166,12 +171,7 @@ const AtomicString& GenericFontFamilySettings::Fixed(UScriptCode script) const {
 
 bool GenericFontFamilySettings::UpdateFixed(const AtomicString& family,
                                             UScriptCode script) {
-  const AtomicString& old_family = Fixed(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(fixed_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(fixed_font_family_map_, family, script);
 }
 
 const AtomicString& GenericFontFamilySettings::Serif(UScriptCode script) const {
@@ -180,12 +180,7 @@ const AtomicString& GenericFontFamilySettings::Serif(UScriptCode script) const {
 
 bool GenericFontFamilySettings::UpdateSerif(const AtomicString& family,
                                             UScriptCode script) {
-  const AtomicString& old_family = Serif(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(serif_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(serif_font_family_map_, family, script);
 }
 
 const AtomicString& GenericFontFamilySettings::SansSerif(
@@ -195,12 +190,7 @@ const AtomicString& GenericFontFamilySettings::SansSerif(
 
 bool GenericFontFamilySettings::UpdateSansSerif(const AtomicString& family,
                                                 UScriptCode script) {
-  const AtomicString& old_family = SansSerif(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(sans_serif_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(sans_serif_font_family_map_, family, script);
 }
 
 const AtomicString& GenericFontFamilySettings::Cursive(
@@ -210,12 +200,7 @@ const AtomicString& GenericFontFamilySettings::Cursive(
 
 bool GenericFontFamilySettings::UpdateCursive(const AtomicString& family,
                                               UScriptCode script) {
-  const AtomicString& old_family = Cursive(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(cursive_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(cursive_font_family_map_, family, script);
 }
 
 const AtomicString& GenericFontFamilySettings::Fantasy(
@@ -225,12 +210,7 @@ const AtomicString& GenericFontFamilySettings::Fantasy(
 
 bool GenericFontFamilySettings::UpdateFantasy(const AtomicString& family,
                                               UScriptCode script) {
-  const AtomicString& old_family = Fantasy(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(fantasy_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(fantasy_font_family_map_, family, script);
 }
 
 const AtomicString& GenericFontFamilySettings::Math(UScriptCode script) const {
@@ -239,12 +219,7 @@ const AtomicString& GenericFontFamilySettings::Math(UScriptCode script) const {
 
 bool GenericFontFamilySettings::UpdateMath(const AtomicString& family,
                                            UScriptCode script) {
-  const AtomicString& old_family = Math(script);
-  if (!ShouldUpdateFontFamily(old_family, family)) {
-    return false;
-  }
-  SetGenericFontFamilyMap(math_font_family_map_, family, script);
-  return true;
+  return SetGenericFontFamilyMap(math_font_family_map_, family, script);
 }
 
 void GenericFontFamilySettings::Reset() {

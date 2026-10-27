@@ -29,5 +29,6 @@ source_set("font_settings") {
     "//extensions/common",
     "//extensions/common:mojom",
     "//extensions/common/api",
+    "//ui/gfx",
   ]
 }

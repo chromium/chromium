@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
@@ -241,4 +245,48 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, ArabicNastaliqFontFamilies) {
   EXPECT_EQ(u"CustomAranSansSerif",
             web_prefs.sans_serif_font_family_map["Aran"]);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+class PrefsTabHelperDeferredFontListBrowserTest
+    : public PrefsTabHelperBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrefsTabHelperDeferredFontListBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kDeferScriptFontPrefResolution, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that per-script comma-separated font family default lists remain
+// unresolved in `PrefService` when `features::kDeferScriptFontPrefResolution`
+// is enabled (or are resolved eagerly when disabled) and propagate to Blink's
+// `WebPreferences`.
+IN_PROC_BROWSER_TEST_P(PrefsTabHelperDeferredFontListBrowserTest,
+                       PerScriptFontListResolution) {
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  const std::string common_serif =
+      prefs->GetString(prefs::kWebKitSerifFontFamily);
+  ASSERT_FALSE(common_serif.empty());
+  EXPECT_FALSE(common_serif.starts_with(','));
+
+  const std::string simplified_han_sans_serif =
+      prefs->GetString(prefs::kWebKitSansSerifFontFamilySimplifiedHan);
+  ASSERT_FALSE(simplified_han_sans_serif.empty());
+  EXPECT_EQ(GetParam(), simplified_han_sans_serif.starts_with(','));
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  blink::web_pref::WebPreferences web_prefs =
+      web_contents->GetOrCreateWebPreferences();
+  EXPECT_EQ(base::UTF8ToUTF16(simplified_han_sans_serif),
+            web_prefs.sans_serif_font_family_map["Hans"]);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrefsTabHelperDeferredFontListBrowserTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #endif

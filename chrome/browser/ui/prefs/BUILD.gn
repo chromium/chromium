@@ -78,7 +78,9 @@ if (!is_android || enable_desktop_android_extensions) {
     sources = [ "prefs_tab_helper_browsertest.cc" ]
 
     deps = [
+      ":prefs",
       "//base",
+      "//base/test:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",

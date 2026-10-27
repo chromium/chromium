@@ -39,6 +39,7 @@
 #include "extensions/common/api/types.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "ui/gfx/font_list.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/direct_write.h"
@@ -101,6 +102,15 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
     *font_name = std::move(localized_font_name.value());
   }
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+// Resolves a comma-separated default font list (starting with ',') to the first
+// available font on the system.
+std::string ResolveFontNameIfNeeded(std::string font_name) {
+  if (font_name.starts_with(',')) {
+    return gfx::FontList::FirstAvailableOrFirst(font_name);
+  }
+  return font_name;
 }
 
 }  // namespace
@@ -244,7 +254,8 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
   if (!pref->GetValue()->is_string()) {
     NOTREACHED();
   }
-  std::string font_name = pref->GetValue()->GetString();
+  std::string font_name =
+      ResolveFontNameIfNeeded(pref->GetValue()->GetString());
   base::ListValue args;
   base::DictValue dict;
   dict.Set(kFontIdKey, font_name);
@@ -327,7 +338,8 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
       prefs->FindPreference(pref_path);
 
   EXTENSION_FUNCTION_VALIDATE(pref && pref->GetValue()->is_string());
-  std::string font_name = pref->GetValue()->GetString();
+  std::string font_name =
+      ResolveFontNameIfNeeded(pref->GetValue()->GetString());
 
   // Legacy code was using the localized font name for fontId. These values may
   // have been stored in prefs. For backward compatibility, we are converting
