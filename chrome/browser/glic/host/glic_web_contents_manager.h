@@ -34,6 +34,7 @@ class GlicWebContentsManager {
  public:
   using WebContentsChangedCallback =
       base::RepeatingCallback<void(content::WebContents*)>;
+  using NativeLoadingChangedCallback = base::RepeatingCallback<void(bool)>;
 
   virtual ~GlicWebContentsManager() = default;
 
@@ -53,9 +54,21 @@ class GlicWebContentsManager {
   // loading/error overlay).
   //
   // Returns nullptr when no WebContents is currently active for display (i.e.
-  // while warming in the background pool, or when attached to a host but
-  // hidden). Once about to be shown or showing, this is guaranteed non-null.
+  // while warming in the background pool, when attached to a host but hidden,
+  // or while presenting the native loading placeholder).
   virtual content::WebContents* active_web_contents() const = 0;
+
+  // Returns whether the manager is currently presenting the native loading
+  // placeholder instead of an active `WebContents`.
+  virtual bool IsShowingNativeLoading() const;
+
+  // Registers a callback invoked whenever `IsShowingNativeLoading()` changes.
+  virtual base::CallbackListSubscription RegisterNativeLoadingChangedCallback(
+      NativeLoadingChangedCallback callback);
+
+  // Notifies the manager when `Host::IsShowingNativeLoading()` changes so it
+  // can synchronize `active_web_contents()` and guest mount state.
+  virtual void OnHostNativeLoadingChanged(bool is_showing);
 
   // Returns the WebClient (guest) WebContents, or nullptr if none exists (e.g.
   // before the guest is attached in WebUI mode).

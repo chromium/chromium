@@ -172,6 +172,9 @@ class Host : public GlicSharingManagerProvider {
     // Called when the client load state changes.
     virtual void ClientLoadStateChanged(ClientLoadState state) {}
 
+    // Called when the native loading placeholder visibility changes.
+    virtual void NativeLoadingStateChanged(bool is_showing) {}
+
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
@@ -283,6 +286,9 @@ class Host : public GlicSharingManagerProvider {
   // Sets the visibility override of the WebUI web contents.
   void SetWebContentsVisibilityOverride(
       std::optional<content::Visibility> visibility_override);
+  content::Visibility web_contents_visibility() const {
+    return web_contents_visibility_;
+  }
 
   // Returns the WebClient web contents. May be null.
   content::WebContents* web_client_contents() const;
@@ -342,6 +348,10 @@ class Host : public GlicSharingManagerProvider {
   // The load state of the glic client. `kReady` if and only if
   // `web_client_state()` is `kResponsive` or `kUnresponsive`.
   ClientLoadState client_load_state() const { return client_load_state_; }
+
+  // Returns whether the embedder should currently display the native loading
+  // placeholder view.
+  virtual bool IsShowingNativeLoading() const;
 
   // Called by whatever is hosting the client (the glic WebUI, or
   // `GlicNoWebviewContentsManager`) when the client enters or leaves a state it
@@ -482,6 +492,11 @@ class Host : public GlicSharingManagerProvider {
   // connectivity, notifying observers if it changed.
   void UpdateClientLoadState();
 
+  void UpdateNativeLoadingState();
+  bool ComputeIsShowingNativeLoading() const;
+  void OnNativeLoadingChanged(bool is_showing);
+  void OnGuestNavigationStarted();
+
   void OnActiveWebContentsChanged(content::WebContents* new_contents);
 
   raw_ptr<Profile> profile_;
@@ -518,6 +533,9 @@ class Host : public GlicSharingManagerProvider {
 
   std::unique_ptr<GlicWebContentsManager> contents_;
   base::CallbackListSubscription contents_changed_subscription_;
+  base::CallbackListSubscription native_loading_changed_subscription_;
+  bool is_showing_native_loading_ = false;
+  bool login_page_committed_ = false;
   raw_ptr<GlicPageHandler> page_handler_ = nullptr;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;

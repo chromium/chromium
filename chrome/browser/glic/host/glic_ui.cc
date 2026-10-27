@@ -351,6 +351,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   source->AddBoolean(
       "noLoader", base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader) ||
+                      features::IsGlicNativeLoadingPlaceholderEnabled() ||
                       (base::FeatureList::IsEnabled(features::kGlicSsr) &&
                        !features::kGlicShowLoaderUntilMainPageOnload.Get()));
 

@@ -215,7 +215,14 @@ class GlicNoWebviewContentsManager::Metrics {
                        std::optional<mojom::ErrorPanelType> active_error) {
     base::TimeTicks now = base::TimeTicks::Now();
 
-    if (prev_state == DisplayState::kShowingOverlay) {
+    const bool was_showing_overlay_or_loading =
+        prev_state == DisplayState::kShowingOverlay ||
+        prev_state == DisplayState::kShowingNativeLoading;
+    const bool is_showing_overlay_or_loading =
+        next_state == DisplayState::kShowingOverlay ||
+        next_state == DisplayState::kShowingNativeLoading;
+
+    if (was_showing_overlay_or_loading && !is_showing_overlay_or_loading) {
       if (total_overlay_show_start_time_) {
         base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration",
                                       now - *total_overlay_show_start_time_,
@@ -256,17 +263,32 @@ class GlicNoWebviewContentsManager::Metrics {
         active_error_type_.reset();
         break;
 
+      case DisplayState::kShowingNativeLoading:
+        if (!total_overlay_show_start_time_) {
+          total_overlay_show_start_time_ = now;
+        }
+        active_error_type_.reset();
+        if (!loading_show_start_time_) {
+          loading_show_start_time_ = now;
+        }
+        error_show_start_time_.reset();
+        break;
+
       case DisplayState::kShowingOverlay:
         if (!total_overlay_show_start_time_) {
           total_overlay_show_start_time_ = now;
         }
         if (active_error.has_value()) {
           active_error_type_ = active_error;
-          error_show_start_time_ = now;
+          if (!error_show_start_time_) {
+            error_show_start_time_ = now;
+          }
           loading_show_start_time_.reset();
         } else {
           active_error_type_.reset();
-          loading_show_start_time_ = now;
+          if (!loading_show_start_time_) {
+            loading_show_start_time_ = now;
+          }
           error_show_start_time_.reset();
         }
         break;
@@ -764,6 +786,16 @@ GlicNoWebviewContentsManager::RegisterWebContentsChangedCallback(
   return web_contents_changed_callbacks_.Add(std::move(callback));
 }
 
+bool GlicNoWebviewContentsManager::IsShowingNativeLoading() const {
+  return state_ == DisplayState::kShowingNativeLoading;
+}
+
+base::CallbackListSubscription
+GlicNoWebviewContentsManager::RegisterNativeLoadingChangedCallback(
+    NativeLoadingChangedCallback callback) {
+  return native_loading_changed_callbacks_.Add(std::move(callback));
+}
+
 GlicWebClientManager& GlicNoWebviewContentsManager::web_client_manager() {
   return web_client_manager_;
 }
@@ -823,10 +855,12 @@ void GlicNoWebviewContentsManager::ApplySizeToGuest() {
     target_size = cached_overlay_size_;
   }
   if (target_size.IsEmpty() &&
-      base::FeatureList::IsEnabled(features::kGlicGuestInitialSize)) {
+      (base::FeatureList::IsEnabled(features::kGlicGuestInitialSize) ||
+       features::IsGlicNativeLoadingPlaceholderEnabled())) {
     // Give the guest WebContents a non-zero initial viewport while warming in
-    // the background so Blink layout, ResizeObserver/IntersectionObserver
-    // callbacks, and async UI island hydration complete before the panel opens.
+    // the background (or while native loading skips overlay WebContents
+    // creation) so Blink layout, ResizeObserver/IntersectionObserver callbacks,
+    // and async UI island hydration complete before the panel swaps to guest.
     // The exact dimensions are not critical as long as the viewport is
     // non-empty; 384x675 DIPs matches the default side panel width and lands in
     // the same narrow-column CSS breakpoint (~352-412 DIPs) used across desktop
@@ -889,6 +923,9 @@ GlicNoWebviewContentsManager::CalculateDesiredState() const {
   if (guest_state_.get() != GuestState::kLoading ||
       ShouldDisableLoadingOverlay(guest_main_page_loaded_.get())) {
     return DisplayState::kShowingGuest;
+  }
+  if (features::IsGlicNativeLoadingPlaceholderEnabled()) {
+    return DisplayState::kShowingNativeLoading;
   }
   return DisplayState::kShowingOverlay;
 }
@@ -1074,7 +1111,9 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
   if (state_ == next_state) {
     return;
   }
-  metrics_->SetDisplayState(state_, next_state, overlay_manager_.error_type());
+  const DisplayState prev_state = state_;
+  metrics_->SetDisplayState(prev_state, next_state,
+                            overlay_manager_.error_type());
   state_ = next_state;
 
   switch (state_) {
@@ -1089,6 +1128,19 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
       } else {
         ScheduleOverlayDeletion(base::Milliseconds(100));
       }
+      break;
+
+    case DisplayState::kShowingNativeLoading:
+      // Notify native loading observers before `NotifyWebContentsChanged()`
+      // clears `active_web_contents()` so embedders suppress inactive
+      // placeholders and hide native web views prior to detaching
+      // `WebContents`.
+      native_loading_changed_callbacks_.Notify(true);
+      // Do not call `EnsureOverlayContents()` for loading when the native
+      // placeholder is active. Reclaim any prior error overlay immediately.
+      ScheduleOverlayDeletion(base::Milliseconds(0));
+      NotifyWebContentsChanged();
+      loading_timer_.Stop();
       break;
 
     case DisplayState::kShowingOverlay:
@@ -1112,6 +1164,12 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
       // Destroy the loading overlay once the guest is ready and swapped.
       ScheduleOverlayDeletion(base::Milliseconds(0));
       break;
+  }
+
+  // When leaving native loading, notify after attaching the replacement
+  // `WebContents` (guest or error overlay) so embedders seamlessly transition.
+  if (prev_state == DisplayState::kShowingNativeLoading) {
+    native_loading_changed_callbacks_.Notify(false);
   }
 
   // The guest is mounted only while it's the WebContents shown in the panel.
@@ -1226,6 +1284,7 @@ content::WebContents* GlicNoWebviewContentsManager::active_web_contents()
       return guest_contents();
     case DisplayState::kShowingOverlay:
       return overlay_contents();
+    case DisplayState::kShowingNativeLoading:
     case DisplayState::kAttachedHidden:
     case DisplayState::kWarming:
       return nullptr;

@@ -270,6 +270,12 @@ BASE_FEATURE(kGlicShowForSignedOut,
 BASE_FEATURE(kGlicProcessCounterAbuseVerdict,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicNoWebUiLoader, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicNativeLoadingPlaceholder, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGlicNativeLoadingPlaceholderEnabled() {
+  return base::FeatureList::IsEnabled(kGlicNativeLoadingPlaceholder) &&
+         !base::FeatureList::IsEnabled(kGlicNoWebUiLoader);
+}
 
 BASE_FEATURE(kGeic, base::FEATURE_DISABLED_BY_DEFAULT);
 

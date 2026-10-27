@@ -1636,4 +1636,349 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
       manager->unconnected_hibernation_timer_for_testing().IsRunning());
   EXPECT_FALSE(instance->IsHibernated());
 }
+
+class GlicNoWebviewNativeLoadingPlaceholderOverlayBrowserTest
+    : public GlicNoWebviewOverlayBrowserTest {
+ public:
+  GlicNoWebviewNativeLoadingPlaceholderOverlayBrowserTest() {
+    native_loading_feature_list_.InitAndEnableFeature(
+        features::kGlicNativeLoadingPlaceholder);
+  }
+
+ private:
+  base::test::ScopedFeatureList native_loading_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicNoWebviewNativeLoadingPlaceholderOverlayBrowserTest,
+    ShowsNativePlaceholderWithoutAllocatingOverlayAndLazyCreatesOnError) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingNativeLoading);
+  EXPECT_TRUE(manager->IsShowingNativeLoading());
+  EXPECT_TRUE(instance->host().IsShowingNativeLoading());
+  EXPECT_EQ(manager->overlay_contents(), nullptr);
+  EXPECT_EQ(manager->active_web_contents(), nullptr);
+
+  // Triggering a client error lazily creates the WebUI overlay WebContents and
+  // dismisses the native loading placeholder.
+  manager->OnWebClientStateChanged(mojom::WebClientState::kError);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_FALSE(manager->IsShowingNativeLoading());
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+  ASSERT_NE(manager->overlay_contents(), nullptr);
+  EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+  histogram_tester.ExpectTotalCount("Glic.Overlay.DisplayDuration.Loading", 1);
+
+  // Clearing the error returns to kShowingNativeLoading and schedules cleanup
+  // of the previously allocated error overlay WebContents.
+  manager->ClearErrorState();
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingNativeLoading);
+  EXPECT_TRUE(instance->host().IsShowingNativeLoading());
+  EXPECT_EQ(manager->active_web_contents(), nullptr);
+  ASSERT_OK(RunUntilNull([&]() { return manager->overlay_contents(); }));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+class GlicLegacyWebviewNativeLoadingPlaceholderBrowserTest
+    : public GlicBrowserTest {
+ public:
+  GlicLegacyWebviewNativeLoadingPlaceholderBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlicNativeLoadingPlaceholder},
+                                   {features::kGlicNoWebview});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicLegacyWebviewNativeLoadingPlaceholderBrowserTest,
+                       SuppressesWebUiLoaderAndTransitionsToReady) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  ASSERT_NE(webui_contents, nullptr);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                webui_contents,
+                "(async () => (await "
+                "import('//resources/js/load_time_data.js')).loadTimeData."
+                "getBoolean('noLoader'))()"));
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+}
+
+class GlicLegacyWebviewNativeLoadingTimeoutBrowserTest
+    : public GlicBrowserTest {
+ public:
+  GlicLegacyWebviewNativeLoadingTimeoutBrowserTest() {
+    SetGlicPagePath("/title1.html");
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicNativeLoadingPlaceholder, {}},
+         {features::kGlicWebClientLoadTimes,
+          {{features::kGlicPreLoadingTimeMs.name, "0"},
+           {features::kGlicMinLoadingTimeMs.name, "10"},
+           {features::kGlicMaxLoadingTimeMs.name, "100"}}}},
+        {features::kGlicNoWebview});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicLegacyWebviewNativeLoadingTimeoutBrowserTest,
+    ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+
+  // Because /title1.html never initializes a Glic web client, `noLoader` must
+  // still advance through `kFinishLoading` and fire `TIMEOUT_LOADING_CLIENT`,
+  // dismissing the native loading placeholder to reveal `#errorPanel`.
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  ASSERT_NE(webui_contents, nullptr);
+  EXPECT_EQ(true,
+            content::EvalJs(webui_contents,
+                            "!document.getElementById('errorPanel').hidden"));
+  EXPECT_EQ(true,
+            content::EvalJs(webui_contents,
+                            "document.getElementById('loadingPanel').hidden"));
+
+  // Also verify that if `prepareForClient()` resolves after
+  // `TIMEOUT_LOADING_CLIENT` has already transitioned the controller to
+  // `kError` (e.g. slow cookie sync on loaded bots), the stale `load()`
+  // continuation aborts instead of creating a `<webview>` and hiding
+  // `#errorPanel` behind `#guestPanel`.
+  EXPECT_EQ(true, content::EvalJs(webui_contents, R"js(
+    (async () => {
+      const proxy = window.appRouter.browserProxy;
+      const handler = proxy.glicPreloadHandler ?? proxy.pageHandler;
+      const origPrepare = handler.prepareForClient.bind(handler);
+      const errorPanel = document.getElementById('errorPanel');
+      const delayedResolved = Promise.withResolvers();
+      handler.prepareForClient = async () => {
+        const res = await origPrepare();
+        while (errorPanel.hidden) {
+          await new Promise(r => setTimeout(r, 10));
+        }
+        delayedResolved.resolve();
+        return res;
+      };
+      try {
+        // Hide `#errorPanel` before reloading (`noLoader` skips `kShowLoading`,
+        // leaving the previous panel unhidden until `kError` re-enters).
+        errorPanel.hidden = true;
+        window.appRouter.reload();
+        await delayedResolved.promise;
+        await new Promise(r => setTimeout(r, 0));
+        return !errorPanel.hidden &&
+               document.getElementById('guestPanel').hidden &&
+               document.querySelectorAll('#webviewContainer webview').length === 0;
+      } finally {
+        handler.prepareForClient = origPrepare;
+      }
+    })()
+  )js"));
+  EXPECT_EQ(instance->host().GetPrimaryWebUiState(), mojom::WebUiState::kError);
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+}
+
+class GlicLegacyWebviewNativeLoadingSlowStartBrowserTest
+    : public GlicBrowserTest {
+ public:
+  GlicLegacyWebviewNativeLoadingSlowStartBrowserTest() {
+    SetGlicPagePath("/hung");
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicNativeLoadingPlaceholder, {}},
+         {features::kGlicWebClientLoadTimes,
+          {{features::kGlicPreLoadingTimeMs.name, "5000"},
+           {features::kGlicMinLoadingTimeMs.name, "5000"},
+           {features::kGlicMaxLoadingTimeMs.name, "30000"}}}},
+        {features::kGlicNoWebview});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicLegacyWebviewNativeLoadingSlowStartBrowserTest,
+                       ReloadDuringBeginLoadRecreatesWebviewAndReachesReady) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kBeginLoad));
+  EXPECT_TRUE(instance->host().IsShowingNativeLoading());
+
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  ASSERT_NE(webui_contents, nullptr);
+
+  // Override guestUrl in chrome://glic to the real test client and invoke
+  // `window.appRouter.reload()` while still in `WebUiState::kBeginLoad`
+  // (`noLoader: true`, `/hung` has not committed). `GlicAppController.reload()`
+  // must recreate the `<webview>` via `beginLoad()` rather than early-returning
+  // after `destroyWebview()`.
+  const GURL test_client_url =
+      embedded_https_test_server().GetURL("/glic/test_client/index.html");
+  ASSERT_TRUE(content::ExecJs(
+      webui_contents,
+      content::JsReplace(
+          "import('//resources/js/load_time_data.js').then(({loadTimeData}) => "
+          "{ loadTimeData.overrideValues({glicGuestURL: $1}); "
+          "window.appRouter.reload(); });",
+          test_client_url.spec())));
+
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+}
+
+class GlicLegacyWebviewWarmedNativeLoadingBrowserTest : public GlicBrowserTest {
+ public:
+  GlicLegacyWebviewWarmedNativeLoadingBrowserTest() {
+    SetGlicPagePath("/hung");
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicNativeLoadingPlaceholder, {}},
+         {features::kGlicWebClientLoadTimes,
+          {{features::kGlicPreLoadingTimeMs.name, "0"},
+           {features::kGlicMinLoadingTimeMs.name, "10"},
+           {features::kGlicMaxLoadingTimeMs.name, "30000"}}}},
+        {features::kGlicNoWebview});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicLegacyWebviewWarmedNativeLoadingBrowserTest,
+    ShowsNativePlaceholderWhenOpenedInWarmedStateBeforeClientConnects) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  PreventBlankDeletionOnClose(instance);
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+
+  // While hidden, GlicAppController.finishLoading() transitions to kWarmed once
+  // kPreLoadingTimeMs + kMinLoadingTimeMs elapses even though /hung has not
+  // created a web client yet.
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kWarmed));
+  EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kLoading);
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+
+  // Re-opening the panel while still uninitialized in kWarmed must display the
+  // native loading placeholder rather than exposing a blank guest panel.
+  ASSERT_OK_AND_ASSIGN(instance, OpenGlicForActiveTab());
+  EXPECT_EQ(instance->host().GetPrimaryWebUiState(),
+            mojom::WebUiState::kWarmed);
+  EXPECT_TRUE(instance->host().IsShowingNativeLoading());
+
+  // Reloading to a real client transitions cleanly out of native loading.
+  const GURL test_client_url =
+      embedded_https_test_server().GetURL("/glic/test_client/index.html");
+  ASSERT_TRUE(content::ExecJs(
+      instance->host().webui_contents(),
+      content::JsReplace(
+          "import('//resources/js/load_time_data.js').then(({loadTimeData}) => "
+          "{ loadTimeData.overrideValues({glicGuestURL: $1}); "
+          "window.appRouter.reload(); });",
+          test_client_url.spec())));
+
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+}
+#endif
+
+class GlicNoWebviewNativeLoadingPlaceholderBrowserTest
+    : public GlicNoWebviewContentsManagerBrowserTest {
+ public:
+  GlicNoWebviewNativeLoadingPlaceholderBrowserTest() {
+    native_loading_feature_list_.InitAndEnableFeature(
+        features::kGlicNativeLoadingPlaceholder);
+  }
+
+ private:
+  base::test::ScopedFeatureList native_loading_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewNativeLoadingPlaceholderBrowserTest,
+                       TransitionsFromNativeLoadingToGuestWithoutOverlay) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(manager->overlay_contents(), nullptr);
+
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_FALSE(manager->IsShowingNativeLoading());
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+  EXPECT_EQ(manager->overlay_contents(), nullptr);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  histogram_tester.ExpectTotalCount(
+      "Glic.Overlay.DisplayDuration.LoadingAndCompleted", 1);
+  histogram_tester.ExpectTotalCount("Glic.Overlay.DisplayDuration", 1);
+}
+
+class GlicNoWebviewNativeLoadingWithoutGuestInitialSizeBrowserTest
+    : public GlicNoWebviewContentsManagerBrowserTest {
+ public:
+  GlicNoWebviewNativeLoadingWithoutGuestInitialSizeBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlicNativeLoadingPlaceholder},
+                                   {features::kGlicGuestInitialSize});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicNoWebviewNativeLoadingWithoutGuestInitialSizeBrowserTest,
+    SizesAndShowsGuestWhenGuestInitialSizeFeatureDisabled) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(manager->overlay_contents(), nullptr);
+
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+  EXPECT_EQ(manager->overlay_contents(), nullptr);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+}
+
+class GlicNoWebviewNoWebUiLoaderOverridesNativeLoadingBrowserTest
+    : public GlicNoWebviewOverlayBrowserTest {
+ public:
+  GlicNoWebviewNoWebUiLoaderOverridesNativeLoadingBrowserTest() {
+    override_feature_list_.InitWithFeatures(
+        {features::kGlicNativeLoadingPlaceholder, features::kGlicNoWebUiLoader},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList override_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicNoWebviewNoWebUiLoaderOverridesNativeLoadingBrowserTest,
+    NoWebUiLoaderTakesPrecedenceOverNativeLoadingPlaceholder) {
+  EXPECT_FALSE(features::IsGlicNativeLoadingPlaceholderEnabled());
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_FALSE(manager->IsShowingNativeLoading());
+  EXPECT_FALSE(instance->host().IsShowingNativeLoading());
+  ASSERT_NE(manager->overlay_contents(), nullptr);
+  EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+}
 }  // namespace glic

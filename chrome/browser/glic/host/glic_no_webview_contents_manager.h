@@ -172,6 +172,9 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
       ScopedModalDialogManagerDelegate& delegate) override;
   void SetVisibility(content::Visibility visibility) override;
   content::WebContents* active_web_contents() const override;
+  bool IsShowingNativeLoading() const override;
+  base::CallbackListSubscription RegisterNativeLoadingChangedCallback(
+      NativeLoadingChangedCallback callback) override;
   content::WebContents* guest_contents() const override;
   void OnActuatingChanged(bool actuating) override;
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override;
@@ -203,7 +206,11 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     kWarming,
     // Attached to Host, but hidden; overlay not created.
     kAttachedHidden,
-    // Visible to user, guest not yet ready; overlay is created and showing.
+    // Visible to user, guest not yet ready; native loading placeholder is
+    // showing and WebUI overlay is not created.
+    kShowingNativeLoading,
+    // Visible to user, guest not yet ready or error active; overlay is created
+    // and showing.
     kShowingOverlay,
     // Guest connected and active; overlay is destroyed.
     kShowingGuest,
@@ -392,6 +399,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   base::RepeatingCallbackList<void(content::WebContents*)>
       web_contents_changed_callbacks_;
+  base::RepeatingCallbackList<void(bool)> native_loading_changed_callbacks_;
 
   base::CallbackListSubscription profile_ready_subscription_;
 
@@ -411,6 +419,8 @@ inline std::ostream& operator<<(
       return os << "kWarming";
     case GlicNoWebviewContentsManager::DisplayState::kAttachedHidden:
       return os << "kAttachedHidden";
+    case GlicNoWebviewContentsManager::DisplayState::kShowingNativeLoading:
+      return os << "kShowingNativeLoading";
     case GlicNoWebviewContentsManager::DisplayState::kShowingOverlay:
       return os << "kShowingOverlay";
     case GlicNoWebviewContentsManager::DisplayState::kShowingGuest:

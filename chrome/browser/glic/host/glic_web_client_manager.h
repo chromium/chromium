@@ -90,6 +90,10 @@ class GlicWebClientManager : public content::WebContentsObserver {
 
   content::RenderFrameHost* GetGuestMainFrame() const;
   content::WebContents* web_client_contents() const;
+  std::optional<mojom::GuestPageType> last_committed_page_type() const {
+    return last_committed_page_type_;
+  }
+  bool guest_main_page_loaded() const { return guest_main_page_loaded_; }
 
   GlicWebClientAccess* web_client_access() const { return web_client_; }
   bool has_pending_web_client_receiver_for_testing() const {
@@ -146,6 +150,7 @@ class GlicWebClientManager : public content::WebContentsObserver {
   bool current_navigation_blocked_ = false;
   std::optional<mojom::GuestPageType> last_committed_page_type_;
   bool last_committed_is_api_allowed_ = false;
+  bool guest_main_page_loaded_ = false;
 
   mojo::PendingReceiver<glic::mojom::WebClientHandler>
       pending_web_client_receiver_;

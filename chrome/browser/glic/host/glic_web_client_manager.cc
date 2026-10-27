@@ -317,6 +317,7 @@ void GlicWebClientManager::AttachGuestContents(
   current_navigation_blocked_ = false;
   last_committed_page_type_.reset();
   last_committed_is_api_allowed_ = false;
+  guest_main_page_loaded_ = false;
   if (base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
     // Ensure SecurityInterstitialTabHelper is registered as a
     // WebContentsObserver before GlicWebClientManager so its
@@ -378,6 +379,9 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   // active web client.
   guest_presentation_tracker_->Reset();
   pending_web_client_receiver_.reset();
+  last_committed_page_type_ = page_type;
+  last_committed_is_api_allowed_ = false;
+  guest_main_page_loaded_ = false;
   metrics_->OnGuestNavigation(page_type, /*is_api_allowed=*/false);
   if (delegate_) {
     delegate_->OnGuestNavigated(
@@ -386,6 +390,9 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   }
   if (web_client_owned_) {
     UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnNavigation);
+  }
+  if (host_) {
+    host_->UpdateNativeLoadingState();
   }
 }
 
@@ -472,11 +479,15 @@ void GlicWebClientManager::DidStartNavigation(
   current_navigation_blocked_ = false;
   last_committed_page_type_.reset();
   last_committed_is_api_allowed_ = false;
+  guest_main_page_loaded_ = false;
   if (!base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
     pending_web_client_receiver_.reset();
   }
   if (delegate_) {
     delegate_->OnGuestNavigationStarted();
+  }
+  if (host_) {
+    host_->OnGuestNavigationStarted();
   }
 }
 
@@ -543,6 +554,7 @@ void GlicWebClientManager::DidFinishNavigation(
   }
   last_committed_page_type_ = page_type;
   last_committed_is_api_allowed_ = is_api_allowed;
+  guest_main_page_loaded_ = false;
   metrics_->OnGuestNavigation(page_type, is_api_allowed);
   bool is_initial_commit = !has_navigation_committed_;
   has_navigation_committed_ = true;
@@ -556,14 +568,23 @@ void GlicWebClientManager::DidFinishNavigation(
   if (web_client_owned_) {
     UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnNavigation);
   }
+  if (host_) {
+    host_->UpdateNativeLoadingState();
+  }
 }
 
 void GlicWebClientManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (base::FeatureList::IsEnabled(features::kGlicSsr) &&
       features::kGlicShowLoaderUntilMainPageOnload.Get() &&
       last_committed_page_type_ == mojom::GuestPageType::kRegular &&
-      last_committed_is_api_allowed_ && delegate_) {
-    delegate_->OnGuestMainPageLoaded();
+      last_committed_is_api_allowed_) {
+    guest_main_page_loaded_ = true;
+    if (delegate_) {
+      delegate_->OnGuestMainPageLoaded();
+    }
+    if (host_) {
+      host_->UpdateNativeLoadingState();
+    }
   }
 }
 
@@ -571,6 +592,7 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   last_committed_page_type_.reset();
   last_committed_is_api_allowed_ = false;
+  guest_main_page_loaded_ = false;
   metrics_->OnProcessGone(status);
   DVLOG(1)
       << "Glic [WebClientManager] PrimaryMainFrameRenderProcessGone, status="
@@ -584,6 +606,9 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
     if (delegate_) {
       delegate_->OnGuestProcessGone(status);
     }
+  }
+  if (host_) {
+    host_->UpdateNativeLoadingState();
   }
 }
 

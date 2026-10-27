@@ -38,6 +38,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   void AttachModalDialogManagerDelegate(
       ScopedModalDialogManagerDelegate& delegate) override;
   void SetVisibility(content::Visibility visibility) override;
+  void OnHostNativeLoadingChanged(bool is_showing) override;
   content::WebContents* active_web_contents() const override;
   content::WebContents* guest_contents() const override;
   void OnActuatingChanged(bool actuating) override;
@@ -57,6 +58,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   void PrimaryMainDocumentElementAvailable() override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void UpdateActuationTracker();
+  void UpdateGuestMounted();
 
   const base::TimeTicks creation_time_ = base::TimeTicks::Now();
   base::TimeTicks navigation_commit_time_;
@@ -68,6 +70,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   // by GlicUI. Its lifetime is managed by GlicInstanceImpl (multi-instance),
   // which owns Host.
   raw_ptr<Host> host_ = nullptr;
+  content::Visibility last_visibility_ = content::Visibility::HIDDEN;
 
   base::ScopedClosureRunner webui_capture_runner_;
   base::ScopedClosureRunner guest_capture_runner_;
