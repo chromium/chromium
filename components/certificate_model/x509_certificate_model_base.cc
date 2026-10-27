@@ -244,6 +244,7 @@ std::optional<int> GetCommonOidStringId(bssl::der::Input oid) {
           {bssl::der::Input(kOidAlgMldsa44), IDS_CERT_OID_ML_DSA_44},
           {bssl::der::Input(kOidAlgMldsa65), IDS_CERT_OID_ML_DSA_65},
           {bssl::der::Input(kOidAlgMldsa87), IDS_CERT_OID_ML_DSA_87},
+          {bssl::der::Input(kOidAlgMtcProof), IDS_CERT_OID_MTC_PROOF},
           {bssl::der::Input(kOidAlgMtcProofDraft), IDS_CERT_OID_MTC_PROOF},
 
           // Extended Key Usage fields:
