@@ -4,6 +4,7 @@
 
 #include "extensions/browser/app_window/app_window.h"
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -13,12 +14,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -338,3 +343,80 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInSetNativeWindowFullscreen) {
   extensions::AppWindowClient::Set(nullptr);
   extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
 }
+
+// Regression test for crbug.com/569650568: when `chrome.app.window.create()`
+// is called with `state: "fullscreen"`, `AppWindow::Init()` calls
+// `Fullscreen()`. If `SetFullscreen()` synchronously closes the native window
+// and deletes `AppWindow`, `Init()` and `AppWindowCreateFunction::Run()` must
+// not continue accessing the destroyed `AppWindow`.
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInAppWindowInitFullscreenState) {
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
+  ASSERT_TRUE(extension);
+
+  TestAppWindowClient test_client;
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(&test_client);
+
+  extensions::ProcessManager* process_manager =
+      extensions::ProcessManager::Get(browser()->GetProfile());
+  extensions::ExtensionHost* background_host =
+      process_manager->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(background_host);
+
+  EXPECT_EQ("App window is closed before ready to commit first navigation.",
+            content::EvalJs(background_host->host_contents(), R"(
+              new Promise(resolve => {
+                chrome.app.window.create(
+                    'test.html', {state: 'fullscreen'}, () => {
+                      resolve(chrome.runtime.lastError
+                                  ? chrome.runtime.lastError.message
+                                  : 'ok');
+                    });
+              })
+            )"));
+  EXPECT_EQ(0u, GetAppWindowCount());
+
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+}
+
+// Regression test for crbug.com/569650568: in forced app mode,
+// `AppWindowCreateFunction::Run()` calls `app_window->ForcedFullscreen()` after
+// `app_window->Init()`. If `ForcedFullscreen()` synchronously closes the native
+// window and deletes `AppWindow`, `Run()` must not continue accessing the
+// destroyed `AppWindow`.
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInAppWindowCreateForcedFullscreen) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kForceAppMode);
+
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
+  ASSERT_TRUE(extension);
+
+  TestAppWindowClient test_client;
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(&test_client);
+
+  extensions::ProcessManager* process_manager =
+      extensions::ProcessManager::Get(browser()->GetProfile());
+  extensions::ExtensionHost* background_host =
+      process_manager->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(background_host);
+
+  EXPECT_EQ("App window is closed before ready to commit first navigation.",
+            content::EvalJs(background_host->host_contents(), R"(
+              new Promise(resolve => {
+                chrome.app.window.create('test.html', {}, () => {
+                  resolve(chrome.runtime.lastError
+                              ? chrome.runtime.lastError.message
+                              : 'ok');
+                });
+              })
+            )"));
+  EXPECT_EQ(0u, GetAppWindowCount());
+
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+}
+
