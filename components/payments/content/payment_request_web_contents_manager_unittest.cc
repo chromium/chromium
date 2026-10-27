@@ -5,15 +5,20 @@
 #include "components/payments/content/payment_request_web_contents_manager.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/test_content_payment_request_delegate.h"
+#include "components/payments/core/features.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace payments {
 
@@ -110,15 +115,43 @@ TEST_F(PaymentRequestWebContentsManagerTest, HadActivationlessShow) {
   manager_->RecordActivationlessShow();
   ASSERT_TRUE(manager_->HadActivationlessShow());
 
-  // A browser reload should not reset the activationless show state.
+  // A browser reload on a non-error document should reset the activationless
+  // show state.
+  content::NavigationSimulator::Reload(web_contents());
+  ASSERT_FALSE(manager_->HadActivationlessShow());
+
+  manager_->RecordActivationlessShow();
+  ASSERT_TRUE(manager_->HadActivationlessShow());
+
+  // When the killswitch is disabled, a browser reload on a non-error document
+  // should not reset the activationless show state.
   {
-    auto navigation_simulator =
-        content::NavigationSimulator::CreateBrowserInitiated(
-            GURL("http://example2.test"), web_contents());
-    navigation_simulator->Start();
-    navigation_simulator->Commit();
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kPaymentRequestResetActivationlessShowOnReload);
+    content::NavigationSimulator::Reload(web_contents());
     ASSERT_TRUE(manager_->HadActivationlessShow());
   }
+
+  // However, a browser reload of an error document (e.g. triggered
+  // automatically by NetErrorAutoReloader after an unactivated navigation fails
+  // with a network error, see crbug.com/40072274) should not reset the
+  // activationless show state.
+  {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateRendererInitiated(
+            GURL("http://example2.test/redirect-loop"),
+            web_contents()->GetPrimaryMainFrame());
+    navigation_simulator->SetHasUserGesture(false);
+    navigation_simulator->Start();
+    navigation_simulator->Fail(net::ERR_TOO_MANY_REDIRECTS);
+    navigation_simulator->CommitErrorPage();
+    ASSERT_TRUE(web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
+    ASSERT_TRUE(manager_->HadActivationlessShow());
+  }
+  content::NavigationSimulator::Reload(web_contents());
+  ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  ASSERT_TRUE(manager_->HadActivationlessShow());
 
   // A browser initiated navigation should reset the activationless show state.
   {

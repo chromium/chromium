@@ -4,8 +4,16 @@
 
 #include "components/payments/content/payment_request_web_contents_manager.h"
 
+#include <string_view>
+
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "components/payments/core/features.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/reload_type.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace payments {
 
@@ -47,8 +55,18 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
 
   // Reset the activationless show tracker at the next user-initiated
   // navigation, which is defined as either a renderer-initiated navigation with
-  // a user gesture, or a non-reload browser-initiated navigation.
-  // TODO(crbug.com/40282980): Reset the bit for user-initiated browser reloads.
+  // a user gesture, or a browser-initiated navigation other than an error-page
+  // reload.
+  //
+  // Browser-initiated reloads of error pages are excluded because
+  // error_page::NetErrorAutoReloader (and other error-page reloaders) trigger
+  // automatic browser-initiated reloads when a page fails to load. Because a
+  // website can intentionally navigate without user activation to a URL that
+  // fails with a network error (e.g., net::ERR_TOO_MANY_REDIRECTS) and then
+  // succeeds on the subsequent auto-reload, treating error-page reloads as
+  // user-initiated would allow websites to bypass the 'user-initiated' guard
+  // and repeatedly trigger activationless show() calls (a security
+  // vulnerability; see crbug.com/40072274).
   //
   // TODO(crbug.com/40622940): This check has to be done at DidStartNavigation
   // time, the HasUserGesture state is lost by the time the navigation
@@ -56,12 +74,21 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
   const bool is_renderer_initiated = navigation_handle->IsRendererInitiated();
   const content::ReloadType reload_type = navigation_handle->GetReloadType();
   const bool has_user_gesture = navigation_handle->HasUserGesture();
+  const bool is_error_document =
+      web_contents()->GetPrimaryMainFrame()->IsErrorDocument();
   VLOG(2) << "PaymentRequestWebContentsManager::DidStartNavigation(): "
           << "IsRendererInitiated()=" << is_renderer_initiated
           << ", GetReloadType()=" << GetReloadTypeString(reload_type)
-          << ", HasUserGesture()= " << has_user_gesture;
-  if ((!is_renderer_initiated && reload_type == content::ReloadType::NONE) ||
-      has_user_gesture) {
+          << ", HasUserGesture()=" << has_user_gesture
+          << ", IsErrorDocument()=" << is_error_document;
+  const bool is_reload = reload_type != content::ReloadType::NONE;
+  const bool can_reset_on_reload =
+      !is_error_document &&
+      base::FeatureList::IsEnabled(
+          features::kPaymentRequestResetActivationlessShowOnReload);
+  const bool is_allowable_browser_navigation =
+      !is_renderer_initiated && (!is_reload || can_reset_on_reload);
+  if (has_user_gesture || is_allowable_browser_navigation) {
     VLOG(2) << "PaymentRequestWebContentsManager::DidStartNavigation(): "
             << "Resetting had_activationless_show_";
     had_activationless_show_ = false;

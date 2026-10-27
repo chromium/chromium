@@ -103,5 +103,11 @@ BASE_FEATURE(kPaymentHandlerModalDialogHost, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPaymentRequestEnforceLNAWithClientSecurityState,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Used to control whether user-initiated browser reloads on non-error
+// documents reset the once-per-navigation activationless PaymentRequest.show()
+// allowance.
+BASE_FEATURE(kPaymentRequestResetActivationlessShowOnReload,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments
