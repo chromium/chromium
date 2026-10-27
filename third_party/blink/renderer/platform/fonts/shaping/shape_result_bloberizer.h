@@ -33,13 +33,34 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
  public:
   enum class Type { kNormal, kTextIntercepts, kTextInterceptsAll, kEmitText };
 
-  struct FillGlyphsNG;
-  struct FillTextEmphasisGlyphsNG;
+  static ShapeResultBloberizer FillGlyphs(
+      const FontDescription& font_description,
+      const StringView& text,
+      wtf_size_t from,
+      wtf_size_t to,
+      const ShapeResultView* result,
+      Type type) {
+    return ShapeResultBloberizer(font_description, text, from, to, result,
+                                 type);
+  }
+  // This doesn't work for RTL. See PlainTextPainter::DrawWithBidiReorder().
+  static ShapeResultBloberizer FillGlyphs(
+      const FontDescription& font_description,
+      const PlainTextNode& node,
+      Type type) {
+    return ShapeResultBloberizer(font_description, node, type);
+  }
+  static ShapeResultBloberizer FillTextEmphasisGlyphs(
+      const FontDescription& font_description,
+      const StringView& text,
+      wtf_size_t from,
+      wtf_size_t to,
+      const ShapeResultView* result,
+      const GlyphData& emphasis_data) {
+    return ShapeResultBloberizer(font_description, text, from, to, result,
+                                 emphasis_data);
+  }
 
-  struct FillGlyphs;
-  struct FillTextEmphasisGlyphs;
-
-  explicit ShapeResultBloberizer(const FontDescription&, Type);
   ShapeResultBloberizer(const ShapeResultBloberizer&) = delete;
   ShapeResultBloberizer& operator=(const ShapeResultBloberizer&) = delete;
 
@@ -56,6 +77,21 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
  private:
   friend class ShapeResultBloberizerTest;
+
+  ShapeResultBloberizer(const FontDescription&, Type);
+  ShapeResultBloberizer(const FontDescription&,
+                        const StringView&,
+                        wtf_size_t from,
+                        wtf_size_t to,
+                        const ShapeResultView*,
+                        Type);
+  ShapeResultBloberizer(const FontDescription&, const PlainTextNode&, Type);
+  ShapeResultBloberizer(const FontDescription&,
+                        const StringView&,
+                        wtf_size_t from,
+                        wtf_size_t to,
+                        const ShapeResultView*,
+                        const GlyphData& emphasis_data);
 
   void Add(Glyph glyph,
            const SimpleFontData* font_data,
@@ -132,6 +168,12 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
                                                  CanvasRotationInVertical,
                                                  const SimpleFontData*);
 
+  template <typename ShapeList>
+  void FillGlyphsSlow(StringView text,
+                      TextDirection direction,
+                      const ShapeList& list,
+                      wtf_size_t from,
+                      wtf_size_t to);
   float FillGlyphsForResult(const ShapeResult*,
                             const StringView&,
                             wtf_size_t from,
@@ -202,41 +244,6 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   // Constructed blobs.
   BlobBuffer blobs_;
   float advance_ = 0;
-};
-
-struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphsNG
-    : public ShapeResultBloberizer {
-  FillGlyphsNG(const FontDescription&,
-               const StringView&,
-               wtf_size_t from,
-               wtf_size_t to,
-               const ShapeResultView*,
-               Type);
-};
-struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphsNG
-    : public ShapeResultBloberizer {
-  FillTextEmphasisGlyphsNG(const FontDescription&,
-                           const StringView&,
-                           wtf_size_t from,
-                           wtf_size_t to,
-                           const ShapeResultView*,
-                           const GlyphData& emphasis_data);
-};
-
-struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
-    : public ShapeResultBloberizer {
-  // This doesn't work for RTL. See PlainTextPainter::DrawWithBidiReorder().
-  FillGlyphs(const FontDescription& font_description,
-             const PlainTextNode& node,
-             Type type);
-
- private:
-  template <typename ShapeList>
-  void FillGlyphsSlow(StringView text,
-                      TextDirection direction,
-                      const ShapeList& list,
-                      wtf_size_t from,
-                      wtf_size_t to);
 };
 
 void DrawTextBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,

@@ -104,12 +104,13 @@ void Font::DrawText(cc::PaintCanvas* canvas,
     return;
 
   // For performance avoid stack initialization on this large object.
-  STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphsNG bloberizer(
-      GetFontDescription(), text_info.text, text_info.from, text_info.to,
-      text_info.shape_result,
-      draw_type == Font::DrawType::kGlyphsOnly
-          ? ShapeResultBloberizer::Type::kNormal
-          : ShapeResultBloberizer::Type::kEmitText);
+  STACK_UNINITIALIZED ShapeResultBloberizer bloberizer =
+      ShapeResultBloberizer::FillGlyphs(
+          GetFontDescription(), text_info.text, text_info.from, text_info.to,
+          text_info.shape_result,
+          draw_type == Font::DrawType::kGlyphsOnly
+              ? ShapeResultBloberizer::Type::kNormal
+              : ShapeResultBloberizer::Type::kEmitText);
   DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
 }
 
@@ -125,9 +126,10 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   if (!emphasis_glyph_data.font_data)
     return;
 
-  ShapeResultBloberizer::FillTextEmphasisGlyphsNG bloberizer(
-      GetFontDescription(), text_info.text, text_info.from, text_info.to,
-      text_info.shape_result, emphasis_glyph_data);
+  ShapeResultBloberizer bloberizer =
+      ShapeResultBloberizer::FillTextEmphasisGlyphs(
+          GetFontDescription(), text_info.text, text_info.from, text_info.to,
+          text_info.shape_result, emphasis_glyph_data);
   DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags);
 }
 
@@ -214,7 +216,7 @@ void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
       ink_skip_cjk_handling == InkSkipCjkHandling::kIncludeCjk
           ? ShapeResultBloberizer::Type::kTextInterceptsAll
           : ShapeResultBloberizer::Type::kTextIntercepts;
-  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+  ShapeResultBloberizer bloberizer = ShapeResultBloberizer::FillGlyphs(
       GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, intercept_type);
 

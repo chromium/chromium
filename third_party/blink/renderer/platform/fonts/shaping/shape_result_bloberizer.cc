@@ -444,7 +444,7 @@ class ClusterStarts {
 };
 }  // namespace
 
-ShapeResultBloberizer::FillGlyphs::FillGlyphs(
+ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
     const PlainTextNode& node,
     const Type type)
@@ -468,11 +468,11 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
 }
 
 template <typename ShapeList>
-void ShapeResultBloberizer::FillGlyphs::FillGlyphsSlow(StringView text,
-                                                       TextDirection direction,
-                                                       const ShapeList& list,
-                                                       wtf_size_t from,
-                                                       wtf_size_t to) {
+void ShapeResultBloberizer::FillGlyphsSlow(StringView text,
+                                           TextDirection direction,
+                                           const ShapeList& list,
+                                           wtf_size_t from,
+                                           wtf_size_t to) {
   if (type_ == Type::kEmitText) [[unlikely]] {
     wtf_size_t word_offset = 0;
     ClusterStarts cluster_starts;
@@ -519,7 +519,7 @@ void ShapeResultBloberizer::FillGlyphs::FillGlyphsSlow(StringView text,
   advance_ = advance;
 }
 
-ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
+ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
     const StringView& text,
     wtf_size_t from,
@@ -531,7 +531,7 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
   DCHECK(to <= text.length());
   float initial_advance = 0;
   if (CanUseFastPath(from, to, result)) {
-    DVLOG(4) << "FillGlyphsNG fast path";
+    DVLOG(4) << "FillGlyphs fast path";
     DCHECK(!result->HasVerticalOffsets());
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kEmitText);
@@ -541,7 +541,7 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
     return;
   }
 
-  DVLOG(4) << "FillGlyphsNG slow path";
+  DVLOG(4) << "FillGlyphs slow path";
   wtf_size_t run_offset = 0;
   if (type_ == Type::kEmitText) [[unlikely]] {
     ClusterStarts cluster_starts;
@@ -562,7 +562,7 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
   }
 }
 
-ShapeResultBloberizer::FillTextEmphasisGlyphsNG::FillTextEmphasisGlyphsNG(
+ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
     const StringView& text,
     wtf_size_t from,

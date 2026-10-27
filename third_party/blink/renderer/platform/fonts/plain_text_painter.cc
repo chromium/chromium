@@ -89,7 +89,7 @@ void PlainTextPainter::DrawWithoutBidi(const TextRun& run,
   const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
   gfx::PointF point = location;
   for (const auto& item : node.ItemList()) {
-    ShapeResultBloberizer::FillGlyphsNG bloberizer(
+    ShapeResultBloberizer bloberizer = ShapeResultBloberizer::FillGlyphs(
         font.GetFontDescription(), item.Text(), 0, item.Length(),
         item.EnsureView(),
         draw_type == Font::DrawType::kGlyphsOnly
@@ -132,8 +132,8 @@ bool PlainTextPainter::DrawWithBidiReorder(
   const FontDescription& font_desc = font.GetFontDescription();
 
   if (!is_sub_run && !node.ContainsRtlItems()) [[likely]] {
-    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
-        font_desc, node, blob_type);
+    STACK_UNINITIALIZED ShapeResultBloberizer bloberizer =
+        ShapeResultBloberizer::FillGlyphs(font_desc, node, blob_type);
     DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
     return true;
   }
@@ -158,9 +158,10 @@ bool PlainTextPainter::DrawWithBidiReorder(
 
     // STACK_UNINITIALIZED fixes regression with
     // -ftrivial-auto-var-init=pattern. See crbug.com/1055652.
-    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphsNG bloberizer(
-        font_desc, item.Text(), subrun_from, subrun_to, item.EnsureView(),
-        blob_type);
+    STACK_UNINITIALIZED ShapeResultBloberizer bloberizer =
+        ShapeResultBloberizer::FillGlyphs(font_desc, item.Text(), subrun_from,
+                                          subrun_to, item.EnsureView(),
+                                          blob_type);
     if (is_sub_run) [[unlikely]] {
       // Align the subrun with the point given.
       curr_point.Offset(-range.start, 0);

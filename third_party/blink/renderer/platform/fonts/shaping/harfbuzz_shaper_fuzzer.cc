@@ -53,16 +53,16 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
-  // BloberizeNG
+  // Bloberize ShapeResultView
   ShapeResultView* result_view = ShapeResultView::Create(result);
   TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
                                   result_view};
-  ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
+  ShapeResultBloberizer bloberizer = ShapeResultBloberizer::FillGlyphs(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
-  bloberizer_ng.Blobs();
+  bloberizer.Blobs();
 
-  // Bloberize
+  // Bloberize PlainTextNode
   constexpr wtf_size_t word_length = 7;
   uint32_t state = 0;
   for (wtf_size_t from = 0; from < string.length(); from += word_length) {
@@ -79,16 +79,17 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         subrun, /* normalize_space */ false, font, /* supports_bidi */ true,
         nullptr);
     if (!node->ContainsRtlItems()) {
-      ShapeResultBloberizer::FillGlyphs bloberizer(
+      ShapeResultBloberizer node_bloberizer = ShapeResultBloberizer::FillGlyphs(
           font.GetFontDescription(), *node,
           ShapeResultBloberizer::Type::kEmitText);
-      bloberizer.Blobs();
+      node_bloberizer.Blobs();
     } else {
       for (const PlainTextItem& item : node->ItemList()) {
-        ShapeResultBloberizer::FillGlyphsNG bloberizer(
-            font.GetFontDescription(), item.Text(), 0, item.Length(),
-            item.EnsureView(), ShapeResultBloberizer::Type::kEmitText);
-        bloberizer.Blobs();
+        ShapeResultBloberizer item_bloberizer =
+            ShapeResultBloberizer::FillGlyphs(
+                font.GetFontDescription(), item.Text(), 0, item.Length(),
+                item.EnsureView(), ShapeResultBloberizer::Type::kEmitText);
+        item_bloberizer.Blobs();
       }
     }
   }
