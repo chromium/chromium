@@ -13,8 +13,7 @@
 
 namespace content {
 
-// TODO(crbug.com/438118294): Re-enable this test.
-TEST(TtsMacTest, DISABLED_CachedVoiceData) {
+TEST(TtsMacTest, CachedVoiceData) {
   base::test::TaskEnvironment task_environment;
   TtsPlatformImplMac* tts = TtsPlatformImplMac::GetInstance();
 
@@ -27,10 +26,13 @@ TEST(TtsMacTest, DISABLED_CachedVoiceData) {
   tts->GetVoices(&voices);
   EXPECT_EQ(voices.size(), AVSpeechSynthesisVoice.speechVoices.count);
 
-  AVSpeechSynthesisVoice* defaultVoice =
-      [AVSpeechSynthesisVoice voiceWithLanguage:nil];
-  if (defaultVoice && !voices.empty()) {
-    EXPECT_EQ(voices[0].name, base::SysNSStringToUTF8(defaultVoice.name));
+  AVSpeechSynthesisVoice* default_voice =
+      TtsPlatformImplMacBackgroundWorker().GetSystemDefaultVoice();
+  if (default_voice && !voices.empty()) {
+    EXPECT_EQ(voices[0].native_voice_identifier,
+              base::SysNSStringToUTF8(default_voice.identifier));
+    EXPECT_TRUE(voices[0].name.starts_with(
+        base::SysNSStringToUTF8(default_voice.name)));
   }
 
   // A refresh reloads in the background and keeps serving the cached list in
