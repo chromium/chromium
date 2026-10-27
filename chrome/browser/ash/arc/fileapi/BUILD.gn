@@ -130,6 +130,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",

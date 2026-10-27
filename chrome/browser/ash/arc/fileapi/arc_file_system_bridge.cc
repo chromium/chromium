@@ -487,8 +487,14 @@ void ArcFileSystemBridge::CreateMoniker(const GURL& content_uri,
     DestroyMoniker(oldest_moniker, base::DoNothing());
   }
 
+  // `ChromeContentProvider` only supports read access (matching
+  // `OpenFileToRead()`), so always create a read-only Moniker rather than
+  // trusting the guest-supplied `read_only` flag.
+  LOG_IF(WARNING, !read_only)
+      << "Creating a read-only Fusebox Moniker although ARC requested a "
+         "writable one";
   const fusebox::Moniker moniker =
-      fusebox_server->CreateMoniker(fs_url, read_only);
+      fusebox_server->CreateMoniker(fs_url, /*read_only=*/true);
   const int index =
       moniker_indices_.empty() ? 0 : (moniker_indices_.rbegin()->first + 1);
   shared_monikers_.insert({moniker, index});
