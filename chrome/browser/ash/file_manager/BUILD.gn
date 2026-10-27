@@ -572,6 +572,8 @@ source_set("browser_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/aura",
     "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/data_transfer_policy",
     "//ui/events",
     "//ui/events:event_constants",
     "//ui/events/types:headers",

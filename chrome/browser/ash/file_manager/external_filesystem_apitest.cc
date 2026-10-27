@@ -13,8 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
+#include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -54,6 +57,11 @@
 #include "google_apis/common/test_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -820,6 +828,26 @@ IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, RetainEntry) {
 
 IN_PROC_BROWSER_TEST_F(MultiProfileDriveFileSystemExtensionApiTest,
                        CrossProfileCopy) {
+  // Simulate the secondary profile's Drive volume being placed on the system
+  // clipboard by the Files app so cross-profile grantAccess is permitted.
+  {
+    ui::ScopedClipboardWriter clipboard_writer(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>(
+            file_manager::util::GetFileManagerURL()));
+    base::Pickle pickle;
+    ui::WriteCustomDataToPickle(
+        std::unordered_map<std::u16string, std::u16string>{
+            {u"fs/sources",
+             base::UTF8ToUTF16(base::StrCat({"filesystem:chrome-extension://"
+                                             "pkplfbidichfdicaijlchgnapepdginl"
+                                             "/external/drive-",
+                                             kSecondProfileHash}))}},
+        &pickle);
+    clipboard_writer.WritePickledData(
+        pickle, ui::ClipboardFormatType::DataTransferCustomType());
+  }
+
   // IOTask only sends progress update to JS/renderer when there is a Files app
   // window open, so we need to force it to send progress in the test.
   auto* event_router =
