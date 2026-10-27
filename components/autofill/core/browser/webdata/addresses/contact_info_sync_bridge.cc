@@ -53,7 +53,7 @@ static int kContactInfoSyncBridgeUserDataKey = 0;
 
 // Different types of account profiles exist, all of which are synced through
 // CONTACT_INFO.
-DenseSet<AutofillProfile::RecordType> kAccountRecordTypes = {
+constexpr DenseSet<AutofillProfile::RecordType> kAccountRecordTypes = {
     AutofillProfile::RecordType::kAccount,
     AutofillProfile::RecordType::kAccountHome,
     AutofillProfile::RecordType::kAccountWork};
