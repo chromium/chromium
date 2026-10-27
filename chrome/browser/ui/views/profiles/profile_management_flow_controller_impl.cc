@@ -52,7 +52,9 @@ void ProfileManagementFlowControllerImpl::
         signin_metrics::AccessPoint access_point,
         base::FilePath profile_path,
         const std::string& initial_email) {
-  CHECK_NE(Step::kAccountSelection, current_step(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/577950735): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(Step::kAccountSelection, current_step());
   CHECK_NE(Step::kPostSignInFlow, current_step(), base::NotFatalUntil::M162);
 
   bool step_needs_registration = !IsStepInitialized(Step::kAccountSelection);
