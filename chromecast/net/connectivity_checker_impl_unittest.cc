@@ -26,7 +26,6 @@
 
 namespace chromecast {
 
-using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 
 constexpr const char* kDefaultConnectivityCheckUrls[] = {
@@ -158,8 +157,7 @@ class ConnectivityCheckerImplBaseTest : public ::testing::Test {
     EXPECT_CALL(cast_metrics_helper_,
                 RecordEventWithValue("Network.ConnectivityChecking.ErrorType",
                                      static_cast<int>(error_type)))
-        .WillOnce(
-            InvokeWithoutArgs([quit = run_loop.QuitClosure()] { quit.Run(); }));
+        .WillOnce([quit = run_loop.QuitClosure()] { quit.Run(); });
     checker_->Check();
     run_loop.Run();
   }
