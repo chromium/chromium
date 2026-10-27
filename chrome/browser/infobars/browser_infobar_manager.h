@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/infobars/infobar_spec.h"
@@ -140,7 +141,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // Tab-scoped instances added by Show() or Replace() that are still in their
   // InfoBarManager. An instance leaves when it is removed or replaced, before
   // it can be destroyed.
-  std::set<infobars::InfoBar*> active_tab_infobars_;
+  std::set<raw_ptr<infobars::InfoBar>> active_tab_infobars_;
 
   // Track the last active tab's InfoBarManager for each browser.
   std::map<BrowserWindowInterface*, infobars::InfoBarManager*>
