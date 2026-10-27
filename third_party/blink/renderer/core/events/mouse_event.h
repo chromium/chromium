@@ -205,6 +205,7 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   double offset_x_ = 0;
   double offset_y_ = 0;
 
+  Member<EventTarget> related_target_;
   bool has_cached_relative_position_ = false;
 
  private:
@@ -236,7 +237,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   PositionType position_type_;
   int16_t button_;
   uint16_t buttons_;
-  Member<EventTarget> related_target_;
   SyntheticEventType synthetic_event_type_;
 
   // Only used for contextmenu events.

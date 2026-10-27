@@ -24,10 +24,12 @@
 
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -134,7 +136,6 @@ MouseEvent::MouseEvent()
     : position_type_(PositionType::kPosition),
       button_(0),
       buttons_(0),
-      related_target_(nullptr),
       synthetic_event_type_(kRealOrIndistinguishable) {}
 
 MouseEvent::MouseEvent(const AtomicString& event_type,
@@ -146,13 +147,13 @@ MouseEvent::MouseEvent(const AtomicString& event_type,
     : UIEventWithKeyState(event_type, initializer, platform_time_stamp),
       screen_x_(initializer->screenX()),
       screen_y_(initializer->screenY()),
+      related_target_(initializer->relatedTarget()),
       movement_delta_(initializer->movementX(), initializer->movementY()),
       position_type_(synthetic_event_type == kPositionless
                          ? PositionType::kPositionless
                          : PositionType::kPosition),
       button_(initializer->button()),
       buttons_(initializer->buttons()),
-      related_target_(initializer->relatedTarget()),
       synthetic_event_type_(synthetic_event_type),
       menu_source_type_(menu_source_type) {
   InitCoordinates(initializer->clientX(), initializer->clientY(),
@@ -388,6 +389,7 @@ void MouseEvent::Trace(Visitor* visitor) const {
 }
 
 DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
+  ClearCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
   // TODO(mustaq): Move click-specific code to `PointerEvent::DispatchEvent`.
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
