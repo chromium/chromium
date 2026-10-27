@@ -5,3 +5,27 @@ team_email: "chrome-autofill@google.com"
 buganizer_public: {
   component_id: 1456764
 }
+
+# Opt in to agentic code review with the Autofill-specific review rules.
+# Rules live in components/autofill/agents/knowledge_base/.
+agentic_review {
+  capability_groups {
+    path_expression: "(?:.*/)?(?:(?:browser_)?autofill_manager|autofill_popup_controller_impl)[^/]*\\.(?:h|cc)"
+    rules: "components/autofill/agents/knowledge_base/keep-feature-logic-out-of-browser-autofill-manager.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    content_patterns: "\\bGetExistingDrivers\\b"
+    rules: "components/autofill/agents/knowledge_base/select-outermost-active-driver-with-shared-predicate.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.h"
+    content_patterns: "\\b(?:Profile)?KeyedService(?:Factory)?\\b"
+    rules: "components/autofill/agents/knowledge_base/own-tab-scoped-managers-in-autofill-client.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.h"
+    content_patterns: "\\bclass \\w+(?:Manager|Client|Driver|Delegate|Controller)\\b"
+    rules: "components/autofill/agents/knowledge_base/document-lifetime-and-owner-of-manager-and-client-classes.md"
+  }
+}
