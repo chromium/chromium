@@ -539,7 +539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
-    expires_after="2026-11-29">
+    expires_after="2027-11-29">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4152,13 +4152,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.InitialAttemptState2"
-    enum="HttpStreamPoolInitialAttemptState" expires_after="2026-04-05">
+    enum="HttpStreamPoolInitialAttemptState" expires_after="2027-10-26">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Record the initial attempt state (whether known to support QUIC/SPDY,
     attempt QUIC first, etc). Recorded the first time a
-    HttpStreamPool::AttemptManager attempts a TCP connection.
+    HttpStreamPool::AttemptManager attempts a TCP connection. Warning: this
+    histogram was expired from 2026-04-05 to 2026-10-26; data may be missing.
   </summary>
 </histogram>
 
@@ -4702,12 +4703,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.InitializeStreamBlocked{HostType}.{Protocol}"
-    enum="Boolean" expires_after="2026-09-20">
+    enum="Boolean" expires_after="2027-10-26">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Records whether HTTP stream initialization is blocked or not. Recorded every
-    time HttpStream::InitializeStream() is called.
+    time HttpStream::InitializeStream() is called. Warning: this histogram was
+    expired from 2026-09-20 to 2026-10-26; data may be missing.
   </summary>
   <token key="HostType" variants="NetworkTransactionBlockedHostType"/>
   <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
@@ -4715,7 +4717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.InitializeStreamBlockTime{HostType}.{Protocol}"
-    units="ms" expires_after="2026-11-29">
+    units="ms" expires_after="2027-11-29">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -7843,12 +7845,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSessionAttempt.CompleteTime.{SuccessOrFailure}"
-    units="ms" expires_after="2026-09-20">
+    units="ms" expires_after="2027-10-26">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Record the time that a QuicSessionAttempt takes to invoke the completion
     callback. Recorded when a QuicSessionAttempt called the completion callback.
+    Warning: this histogram was expired from 2026-09-20 to 2026-10-26; data may
+    be missing.
   </summary>
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
@@ -8885,11 +8889,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.GoAwayReceived" enum="Http2WireErrorCodes"
-    expires_after="2026-09-02">
+    expires_after="2027-10-26">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Records the error code value received in each HTTP/2 GOAWAY frame.
+    Records the error code value received in each HTTP/2 GOAWAY frame. Warning:
+    this histogram was expired from 2026-09-02 to 2026-10-26; data may be
+    missing.
   </summary>
 </histogram>
 
