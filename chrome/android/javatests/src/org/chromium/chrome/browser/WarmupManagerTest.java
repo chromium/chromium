@@ -507,6 +507,9 @@ public class WarmupManagerTest {
         // UI scaling is turned off by default in integration tests, so it needs to explicitly be
         // applied here.
         DisplayUtil.setUiScalingFactorForAutomotiveForTesting(1.34f);
+        // Tests opt in to display compatibility by default, which skips Chrome's UI scaling on
+        // CaRMA-compliant devices. Opt out so this test exercises Chrome's UI scaling.
+        DisplayUtil.setIsDisplayCompatAppForTesting(false);
 
         Context baseContext = mContext.getApplicationContext();
         int baseDensityDpi = baseContext.getResources().getDisplayMetrics().densityDpi;

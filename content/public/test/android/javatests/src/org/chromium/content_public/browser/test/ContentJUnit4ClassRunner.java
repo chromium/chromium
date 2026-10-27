@@ -24,10 +24,12 @@ import java.util.List;
 
 /** A custom runner for //content JUnit4 tests. */
 public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
-    // Display ui scale-up on auto for tests by default, individual tests can restore this scaling.
+    // Disable Chrome's UI scale-up on automotive for tests by default, and opt-into display
+    // compatibility; individual tests can restore this scaling.
     private final ClassHook mSetUiScalingFactorForAutomotiveHook =
             (targetContext, testClass) -> {
                 DisplayUtil.setUiScalingFactorForAutomotiveForTesting(1.0f);
+                DisplayUtil.setIsDisplayCompatAppForTesting(true);
             };
 
     /**
