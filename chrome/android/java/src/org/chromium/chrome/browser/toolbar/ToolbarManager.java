@@ -1498,8 +1498,8 @@ public class ToolbarManager
                         if (mLocationBarModel.getTab() == null) return;
 
                         assert tab == mLocationBarModel.getTab();
+                        mLocationBarModel.notifyUrlChanged(/* isTabChanging= */ false);
                         mLocationBarModel.notifySecurityStateChanged();
-                        mLocationBarModel.notifyUrlChanged(false);
                     }
 
                     @Override
@@ -3863,12 +3863,12 @@ public class ToolbarManager
     private void updateTabLoadingState(boolean updateUrl) {
         if (mIsDestroyed) return;
 
-        mLocationBarModel.notifySecurityStateChanged();
         if (updateUrl) {
             mLocationBarModel.notifyUrlChanged(false);
             updateButtonStatus();
             checkIfNtpShowingWithNoPendingLoad();
         }
+        mLocationBarModel.notifySecurityStateChanged();
     }
 
     /**

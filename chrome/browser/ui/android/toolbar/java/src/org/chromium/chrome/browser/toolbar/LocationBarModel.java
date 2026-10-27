@@ -846,7 +846,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             return Resources.ID_NULL;
         }
 
-        boolean skipIconForNeutralState = mNtpDelegate.isCurrentlyVisible();
+        boolean skipIconForNeutralState =
+                mNtpDelegate.isCurrentlyVisible() && UrlUtilities.isNtpUrl(getCurrentGurl());
         boolean isShowingHttpsFirstWarning =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HTTPS_FIRST_DIALOG_UI)
                         && SecurityStateModel.isHttpsOnlyModeUpgradedForWebContents(

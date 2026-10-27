@@ -128,12 +128,21 @@ public class LocationBarModelUnitTest {
         ConnectionMaliciousContentStatus.MANAGED_POLICY_BLOCK,
     };
 
+    private boolean mIsNtpVisible;
+    private final NewTabPageDelegate mNtpDelegate =
+            new NewTabPageDelegate() {
+                @Override
+                public boolean isCurrentlyVisible() {
+                    return mIsNtpVisible;
+                }
+            };
+
     @Spy
     public LocationBarModel mLocationBarModel =
             new LocationBarModel(
                     new ContextThemeWrapper(
                             ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
-                    NewTabPageDelegate.EMPTY,
+                    mNtpDelegate,
                     url -> url.getSpec(),
                     OFFLINE_STATUS,
                     ObservableSuppliers.createNonNull(ControlsPosition.TOP));
@@ -544,6 +553,32 @@ public class LocationBarModelUnitTest {
     }
 
     @Test
+    public void getSecurityIconResource_ntpVisibleAndNtpUrl_returnsNoIconOnPhone() {
+        setUpNtpVisibleWithTabUrl(UrlConstants.NTP_URL);
+
+        assertPhoneResourceIdIs(Resources.ID_NULL, ConnectionSecurityLevel.NONE);
+    }
+
+    @Test
+    public void getSecurityIconResource_ntpVisibleButNavigatingToChromeUrl_returnsOmniboxInfo() {
+        // NewTabPage stays attached to the tab until the chrome:// navigation commits.
+        setUpNtpVisibleWithTabUrl("chrome://flags");
+
+        assertResourceIdIs(
+                R.drawable.omnibox_info,
+                ConnectionSecurityLevel.NONE,
+                ConnectionMaliciousContentStatus.NONE);
+    }
+
+    private void setUpNtpVisibleWithTabUrl(String tabUrl) {
+        mIsNtpVisible = true;
+        mLocationBarModel.initializeWithNative();
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        doReturn(new GURL(tabUrl)).when(mRegularTabMock).getUrl();
+        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
+    }
+
+    @Test
     public void getSecurityIconResource_connectionWarning_returnsNotSecureWarning() {
         mLocationBarModel.initializeWithNative();
 
@@ -664,6 +699,20 @@ public class LocationBarModelUnitTest {
                         isOfflinePage,
                         isPaintPreview,
                         pageType));
+    }
+
+    private void assertPhoneResourceIdIs(
+            @DrawableRes int expectedResourceId, @ConnectionSecurityLevel int securityLevel) {
+        assertEquals(
+                "Wrong phone resource on smallDevice",
+                expectedResourceId,
+                mLocationBarModel.getSecurityIconResource(
+                        securityLevel,
+                        () -> ConnectionMaliciousContentStatus.NONE,
+                        /* isSmallDevice= */ true,
+                        /* isOfflinePage= */ false,
+                        /* isPaintPreview= */ false,
+                        PdfPageType.NONE));
     }
 
     @Test
