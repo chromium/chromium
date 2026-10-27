@@ -107,9 +107,8 @@ import {                           //
   WebClientMode,                   //
 } from '../glic_api/glic_api.js';
 
-import {rgbaImageToBlob} from './client/image_utils.js';
-import type {RgbaImage} from './request_types.js';
-import {ImageAlphaType, ImageColorType} from './request_types.js';
+import type {RgbaImage} from './image_utils.js';
+import {ImageAlphaType, ImageColorType, rgbaImageToBlob} from './image_utils.js';
 
 export const conversionSettings = {
   platform: undefined as Platform | undefined,

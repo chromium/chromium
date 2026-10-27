@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/client/glic_api_client.js';
-import type {ClientStorageHandler} from '//webui-test/glic/glic_api_impl/client/glic_api_client.js';
-import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
+import {GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
+import type {ClientStorageHandler} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
+import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/observable_set_by_tab_id.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {sleep, waitUntilEqual} from './test_helpers.js';

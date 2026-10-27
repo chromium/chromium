@@ -70,7 +70,6 @@ import {                      //
   PerformActionsErrorReason,  //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
-import {rgbaImageToBlob} from '../client/image_utils.js';
 import {                        //
   bitmapN32ToRGBAImage,         //
   byteArrayFromClient,          //
@@ -84,10 +83,10 @@ import {                        //
   tabContextToClient,           //
   urlToClient,                  //
 } from '../conversions.js';
+import {assertNever, ErrorWithReasonImpl} from '../glic_client_common.js';
+import {rgbaImageToBlob} from '../image_utils.js';
 import type {CheckEnumCompatibility} from '../legacy_enum_check.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
-import {ErrorWithReasonImpl} from '../request_types.js';
-import {assertNever} from '../transport/messaging.js';
 
 // Implements actor-specific methods on GlicBrowserHost.
 export class GlicBrowserHostActor implements ActorClientInterface,

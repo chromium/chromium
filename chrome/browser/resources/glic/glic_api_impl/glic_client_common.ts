@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ErrorReasonTypes, ErrorWithReason} from '../glic_api/glic_api.js';
+
+/* eslint-disable-next-line @typescript-eslint/naming-convention */
+export function assertNever<_T extends never>() {}
+
+export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error
+    implements ErrorWithReason<T> {
+  constructor(
+      public reasonType: T,
+      public reason: ErrorReasonTypes[T],
+      message?: string,
+  ) {
+    super(message ?? `${reasonType} Error: ${reason}`);
+  }
+}
+
 // --- Compile-Time Type-Safe Delegation Check Infrastructure ---
 
 type ExcludedKeys = 'initialize'|'constructor';

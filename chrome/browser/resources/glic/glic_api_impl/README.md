@@ -4,10 +4,9 @@ This directory contains the implementation of `../glic_api`. This code is
 bundled into a single `.js` file and injected into the web client at startup,
 where it communicates directly with the browser via Mojo.
 
-### client/
-
-Contains the core web client API implementation (`GlicHostRegistryImpl` and
-`GlicBrowserHostImpl`).
+The core web client API implementation (`GlicHostRegistryImpl` and
+`GlicBrowserHostImpl`) lives in `glic_api_client.ts`, with feature-specific
+delegates in subdirectories:
 
 ### actor/
 

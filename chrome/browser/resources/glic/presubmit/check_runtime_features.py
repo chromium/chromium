@@ -71,9 +71,9 @@ def _Main():
     error = False
     # Find methods marked as checked in *_client.ts files.
     client_files_pattern = os.path.join(
-        SRC_ROOT, 'chrome/browser/resources/glic/glic_api_impl/*/*_client.ts'
+        SRC_ROOT, 'chrome/browser/resources/glic/glic_api_impl/**/*_client.ts'
     )
-    client_files = glob.glob(client_files_pattern)
+    client_files = glob.glob(client_files_pattern, recursive=True)
 
     checked_methods = set()
     for client_file in client_files:

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ObservableValue as ObservableValueImpl} from '../../observable.js';
-import {OneShotTimer} from '../../timer.js';
+import {ObservableValue as ObservableValueImpl} from '../observable.js';
+import {OneShotTimer} from '../timer.js';
 
 // Manages a set of observables which each observe a tab.
 // When a tab is closed, the corresponding observable is completed, and

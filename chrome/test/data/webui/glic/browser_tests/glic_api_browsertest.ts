@@ -44,7 +44,7 @@ import type {                               //
              UserConfirmationDialogRequest, //
              UserProfileInfo,               //
 } from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHostImpl} from '/glic/glic_api_impl/client/glic_api_client.js';
+import type {GlicBrowserHostImpl} from '/glic/glic_api_impl/glic_api_client.js';
 import {Subject} from '/glic/observable.js';
 
 import {               //

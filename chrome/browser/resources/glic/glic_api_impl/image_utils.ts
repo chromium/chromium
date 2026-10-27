@@ -2,8 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImageColorType} from '../request_types.js';
-import type {RgbaImage} from '../request_types.js';
+// A bitmap, used to store data from a BitmapN32 without conversion.
+export declare interface RgbaImage {
+  dataRGBA: ArrayBuffer;
+  width: number;
+  height: number;
+  alphaType: ImageAlphaType;
+  colorType: ImageColorType;
+}
+
+export enum ImageAlphaType {
+  // RGB values are unmodified.
+  UNPREMUL = 0,
+  // RGB values have been premultiplied by alpha.
+  PREMUL = 1,
+}
+
+// Chromium currently only uses a single color type for BitmapN32.
+export enum ImageColorType {
+  BGRA = 0,
+  RGBA = 1,
+}
 
 class BitmapHeaderGenerator {
   template: ArrayBuffer;

@@ -105,7 +105,6 @@ export class WebviewPersistentState {
 export class WebviewController {
   webview: WebViewType;
 
-  private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
   private webClientState =
       ObservableValue.withValue(WebClientState.kUninitialized);
@@ -151,7 +150,7 @@ export class WebviewController {
                   this.persistentState.onClientReady();
                   break;
                 case WebClientState.kError:
-                  this.destroyHost(WebClientState.kError);
+                  this.resetWebClientState(WebClientState.kError);
                   break;
                 default:
                   break;
@@ -220,17 +219,15 @@ export class WebviewController {
       this.glicRequestHeaderInjector = undefined;
     }
 
-    this.destroyHost(
+    this.resetWebClientState(
         this.webClientState.getCurrentValue() === WebClientState.kError ?
             WebClientState.kError :
             WebClientState.kUninitialized);
     this.eventTracker.removeAll();
-    this.onDestroy.forEach(f => f());
-    this.onDestroy = [];
     this.webview.remove();
   }
 
-  private destroyHost(webClientState?: WebClientState) {
+  private resetWebClientState(webClientState?: WebClientState) {
     this.stopBootstrapPing();
     if (webClientState !== undefined) {
       this.webClientState.assignAndSignal(webClientState);
@@ -296,7 +293,7 @@ export class WebviewController {
 
   private onExit(event: chrome.webviewTag.ExitEvent): void {
     if (event.reason !== 'normal') {
-      this.destroyHost(WebClientState.kError);
+      this.resetWebClientState(WebClientState.kError);
       chrome.histograms.recordUserAction('GlicSessionWebClientCrash');
       console.warn(`webview exit. processId: ${event.processId}, reason: ${
           event.reason}`);
@@ -315,7 +312,7 @@ export class WebviewController {
     const wasResponsive = this.getWebClientState().getCurrentValue() ===
         WebClientState.kResponsive;
 
-    this.destroyHost();
+    this.resetWebClientState();
 
     if (pageType !== GuestPageType.kRegular || !isApiAllowed) {
       this.delegate.webviewPageCommit(

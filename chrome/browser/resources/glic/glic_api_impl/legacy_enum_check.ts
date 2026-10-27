@@ -6,7 +6,7 @@ import type * as mojom from '../glic.mojom-webui.js';
 import type * as api from '../glic_api/glic_api.js';
 import type * as mojomEnums from '../glic_enums.mojom-webui.js';
 
-import {assertNever} from './transport/messaging.js';
+import {assertNever} from './glic_client_common.js';
 
 // LEGACY: New enums added to glic should usually be shared with Mojo and
 // their typescript entries in glic_api.ts are automatically generated.

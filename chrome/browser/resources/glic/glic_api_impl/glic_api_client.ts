@@ -5,9 +5,9 @@
 import {assertNotReached} from '//resources/js/assert.js';
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
-import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
-import {enumFromClient, enumToClient} from '../../enum_conversions.js';
+import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
+import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
+import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {                                       //
   CaptureRegionObserverReceiver,               //
   PinCandidatesObserverReceiver,               //
@@ -18,7 +18,7 @@ import {                                       //
   TabFaviconHandlerReceiver,                   //
   WebClientHandlerRemote,                      //
   WebClientReceiver,                           //
-} from '../../glic.mojom-webui.js';
+} from '../glic.mojom-webui.js';
 import type {                                                          //
              AdditionalContext as AdditionalContextMojo,               //
              CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, //
@@ -37,13 +37,8 @@ import type {                                                          //
              TabDataHandlerInterface,                                  //
              TabFaviconHandlerInterface,                               //
              WebClientInterface,                                       //
-} from '../../glic.mojom-webui.js';
-import {                     //
-  CaptureRegionErrorReason,  //
-  ClientCapabilities,        //
-  HostCapability,            //
-  ResponseStopCause,         //
-} from '../../glic_api/glic_api.js';
+} from '../glic.mojom-webui.js';
+import {CaptureRegionErrorReason, ClientCapabilities, HostCapability, ResponseStopCause} from '../glic_api/glic_api.js';
 import type {                            //
              ActivateTabOptions,         //
              AdditionalContext,          //
@@ -89,10 +84,11 @@ import type {                            //
              UserProfileInfo,            //
              WebClientMode,              //
              ZeroStateSuggestions,       //
-} from '../../glic_api/glic_api.js';
-import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
-import {GlicBrowserHostActor} from '../actor/actor_client.js';
-import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
+} from '../glic_api/glic_api.js';
+import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
+
+import {GlicBrowserHostActor} from './actor/actor_client.js';
+import {GlicBrowserHostAnnotation} from './annotation/annotation_client.js';
 import {                              //
   additionalContextToClient,          //
   bitmapN32ToRGBAImage,               //
@@ -126,20 +122,21 @@ import {                              //
   urlFromClient,                      //
   urlToClient,                        //
   webClientModeToMojo,                //
-} from '../conversions.js';
-import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
-import {GlicBrowserHostGeic} from '../geic/geic_client.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
-import {ErrorWithReasonImpl} from '../request_types.js';
-import {GlicBrowserHostSkills} from '../skills/skills_client.js';
-import {GlicBrowserHostTools} from '../tools/tools_client.js';
-import {assertNever} from '../transport/messaging.js';
-import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
-
-import {createDelegationProxy} from './glic_client_common.js';
+} from './conversions.js';
+import {GlicBrowserHostExperimentalTriggering} from './experimental_triggering/experimental_triggering_client.js';
+import {GlicBrowserHostGeic} from './geic/geic_client.js';
+import {assertNever, createDelegationProxy, ErrorWithReasonImpl} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
+import {maybeWrapWithLogging} from './mojo_logging.js';
 import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';
-import {PanelOpenState} from './types.js';
+import {GlicBrowserHostSkills} from './skills/skills_client.js';
+import {GlicBrowserHostTools} from './tools/tools_client.js';
+import {GlicBrowserHostZeroStateSuggestions} from './zero_state_suggestions/zero_state_suggestions_client.js';
+
+enum PanelOpenState {
+  OPEN,
+  CLOSED,
+}
 
 // Web client side of the Glic API.
 
@@ -1059,7 +1056,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     return this.geicClient;
   }
 
-
   setSyntheticExperimentState(trialName: string, groupName: string): void {
     this.handler.setSyntheticExperimentState(trialName, groupName);
   }
@@ -1114,7 +1110,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     return unpinnedAll;
   }
 
-
   unpinAllTabs?(options?: UnpinTabsOptions): void {
     this.handler.unpinAllTabs(unpinTabsOptionsToMojo(options));
   }
@@ -1149,7 +1144,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
       suggestions: zeroStateData.suggestions,
     };
   }
-
 
   maybeRefreshUserStatus?(): void {
     this.cachedUserProfile = undefined;
@@ -1192,7 +1186,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.pageMetadataObservers.set(tabId, observableValue);
     return observableValue;
   }
-
 
   setOnboardingCompleted?(): void {
     this.handler.setOnboardingCompleted();
