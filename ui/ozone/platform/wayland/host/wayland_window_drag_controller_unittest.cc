@@ -1880,6 +1880,59 @@ TEST_P(WaylandWindowDragControllerTest, CancelDuringAttaching) {
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
+// Regression test for crbug.com/568781983. Ensures that requesting a move loop
+// when the window drag session failed to start (e.g: no pointer focus/serial
+// available) fails gracefully rather than crashing.
+TEST_P(WaylandWindowDragControllerTest, RunMoveLoopWithoutDragSession) {
+  window_manager()->SetPointerFocusedWindow(nullptr);
+  window_manager()->SetTouchFocusedWindow(nullptr);
+  serial_tracker().ClearForTesting();
+
+  auto* wayland_extension = GetWaylandToplevelExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  EXPECT_FALSE(move_loop_handler->RunMoveLoop({}));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+  EXPECT_FALSE(drag_controller()->IsDragInProgress());
+
+  // Verify that subsequent window dragging sessions can start cleanly.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+  SendDndDropAndFinished();
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
+// Regression test for crbug.com/568781983. Ensures that requesting a move loop
+// after the window drag session has been cancelled by the compositor, but
+// before the move loop is started, fails gracefully rather than crashing.
+TEST_P(WaylandWindowDragControllerTest, RunMoveLoopAfterDragSessionCancelled) {
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+
+  auto* wayland_extension = GetWaylandToplevelExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  SendDndCancelled();
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  EXPECT_FALSE(move_loop_handler->RunMoveLoop({}));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+  EXPECT_FALSE(drag_controller()->IsDragInProgress());
+}
+
 // Regression test for crbug.com/532860184. Ensures that when dragging with a
 // tablet pen, lifting the pen (which causes proximity_out) and hovering it
 // back (proximity_in) does not cancel/destroy the active drag session and cause

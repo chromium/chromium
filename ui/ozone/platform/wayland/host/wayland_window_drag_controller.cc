@@ -241,9 +241,19 @@ bool WaylandWindowDragController::StartDragSession(
 
 bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
                                        const gfx::Vector2d& offset) {
-  DCHECK_GE(state_, State::kAttached);
   DCHECK(window);
-  CHECK(data_source_);
+
+  // There may be no active window drag session at this point, e.g: if
+  // StartDragSession() failed because no valid serial was available (such as
+  // when the pointer is not focused on the origin window), or if the session
+  // was terminated (e.g: cancelled by the compositor) before the move loop was
+  // requested. Fail gracefully in such cases instead of running the loop.
+  if (!IsActiveDragAndDropSession()) {
+    LOG(ERROR) << "Window drag requested without an active drag session. "
+               << "state=" << state_;
+    return false;
+  }
+  DCHECK_NE(state_, State::kIdle);
 
   SetDraggedWindow(window, offset);
   state_ = State::kDetached;

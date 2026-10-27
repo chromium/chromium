@@ -864,6 +864,32 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
   EXPECT_FALSE(IsDragSessionActive(tab_strip));
 }
 
+namespace {
+
+// Reports `window` as the topmost window at every point, unless it is ignored.
+// Tests that drive TabDragController directly with synthesized events use this
+// to avoid depending on the platform's real pointer state, e.g: on Wayland,
+// the window under a point is determined by the current pointer focus.
+class FixedWindowFinder : public WindowFinder {
+ public:
+  explicit FixedWindowFinder(gfx::NativeWindow window) : window_(window) {}
+  FixedWindowFinder(const FixedWindowFinder&) = delete;
+  FixedWindowFinder& operator=(const FixedWindowFinder&) = delete;
+  ~FixedWindowFinder() override = default;
+
+  // WindowFinder:
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& screen_point,
+      const std::set<gfx::NativeWindow>& ignore) override {
+    return ignore.contains(window_) ? gfx::NativeWindow() : window_;
+  }
+
+ private:
+  gfx::NativeWindow window_;
+};
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
                        DetachToNewBrowserWindowDestroyedDuringShow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -885,6 +911,9 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
   TabDragController* controller =
       tab_strip->GetDragContext()->GetDragController();
   ASSERT_NE(controller, nullptr);
+  SetWindowFinderForTabStrip(tab_strip,
+                             std::make_unique<FixedWindowFinder>(
+                                 tab_strip->GetWidget()->GetNativeWindow()));
 
   // First drag movement starts the drag session.
   ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
@@ -930,6 +959,9 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
   TabDragController* controller =
       tab_strip->GetDragContext()->GetDragController();
   ASSERT_NE(controller, nullptr);
+  SetWindowFinderForTabStrip(tab_strip,
+                             std::make_unique<FixedWindowFinder>(
+                                 tab_strip->GetWidget()->GetNativeWindow()));
 
   ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
             TabDragController::Liveness::kAlive);
