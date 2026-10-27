@@ -152,17 +152,16 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     video_renderer->Paint(frame.get(), &canvas, media_flags, params,
                           raster_context_provider.get());
   };
-  auto orientation =
-      orientation_behavior == VideoOrientationBehavior::kTagOrientation
-          ? VideoTransformationToImageOrientation(transform)
-          : ImageOrientationEnum::kDefault;
   if (sw_draw_info) {
+    auto orientation =
+        orientation_behavior == VideoOrientationBehavior::kTagOrientation
+            ? VideoTransformationToImageOrientation(transform)
+            : ImageOrientationEnum::kDefault;
     return DrawAndSnapshotToImage(sw_draw_info.value(), draw_callback,
                                   orientation);
   }
 
-  return snapshot_pool->DoExternalOverdrawAndSnapshot(draw_callback,
-                                                      orientation);
+  return snapshot_pool->DoExternalOverdrawAndSnapshot(draw_callback);
 }
 
 }  // namespace
@@ -228,8 +227,7 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
 
 scoped_refptr<StaticBitmapImage>
 VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-    ImageOrientation orientation) {
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   provider_->cached_snapshot_.reset();
 
   if (!IsValid()) {

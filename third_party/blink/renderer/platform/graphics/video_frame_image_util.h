@@ -55,8 +55,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
   CanvasSnapshotInfo GetInfo() const;
 
   scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation);
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
  private:
   explicit VideoFrameAcceleratedSnapshotPool(
