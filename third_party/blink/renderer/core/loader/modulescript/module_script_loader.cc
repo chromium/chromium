@@ -203,10 +203,8 @@ void ModuleScriptLoader::FetchInternal(
   // metadata, ...</spec>
   fetch_params.SetIntegrityMetadata(options_.GetIntegrityMetadata());
 
-  const FeatureContext* feature_context =
-      ExecutionContext::From(modulator_->GetScriptState());
   fetch_params.MutableResourceRequest().SetFetchIntegrity(
-      options_.GetIntegrityAttributeValue(), feature_context);
+      options_.GetIntegrityAttributeValue());
 
   // <spec label="SMSR">Set request's cryptographic nonce metadata to options's
   // cryptographic nonce, ...</spec>

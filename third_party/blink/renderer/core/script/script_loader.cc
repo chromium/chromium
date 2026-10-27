@@ -640,7 +640,7 @@ PendingScript* ScriptLoader::PrepareScript(
       !element_->IntegrityAttributeValue().empty()) {
     IntegrityMetadataSet metadata;
     SubresourceIntegrity::ParseIntegrityAttribute(
-        element_->IntegrityAttributeValue(), metadata, context_window);
+        element_->IntegrityAttributeValue(), metadata);
     if (!metadata.empty()) {
       UseCounter::Count(*context_window,
                         WebFeature::kSRIIntegrityAttributeOnInlineScript);
@@ -656,8 +656,7 @@ PendingScript* ScriptLoader::PrepareScript(
                                           position, source_text) ||
        !SubresourceIntegrity::VerifyInlineIntegrity(
            element_->IntegrityAttributeValue(),
-           element_->SignatureAttributeValue(), source_text,
-           element_->GetExecutionContext()))) {
+           element_->SignatureAttributeValue(), source_text))) {
     return nullptr;
   }
 
@@ -690,8 +689,7 @@ PendingScript* ScriptLoader::PrepareScript(
   if (!integrity_attr.empty()) {
     IntegrityReport integrity_report;
     SubresourceIntegrity::ParseIntegrityAttribute(
-        integrity_attr, integrity_metadata, element_->GetExecutionContext(),
-        &integrity_report);
+        integrity_attr, integrity_metadata, &integrity_report);
     integrity_report.SendReports(element_->GetExecutionContext());
   }
 

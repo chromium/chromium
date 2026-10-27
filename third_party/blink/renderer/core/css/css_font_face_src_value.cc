@@ -214,10 +214,9 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     if (!modifiers.integrity.IsNull()) {
       IntegrityMetadataSet metadata_set;
       SubresourceIntegrity::ParseIntegrityAttribute(modifiers.integrity,
-                                                    metadata_set, context);
+                                                    metadata_set);
       params.SetIntegrityMetadata(metadata_set);
-      params.MutableResourceRequest().SetFetchIntegrity(modifiers.integrity,
-                                                        context);
+      params.MutableResourceRequest().SetFetchIntegrity(modifiers.integrity);
     }
 
     resource = FontResource::Fetch(params, fetcher, client);

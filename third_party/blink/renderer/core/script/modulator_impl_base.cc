@@ -247,8 +247,8 @@ IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
   IntegrityMetadataSet integrity_metadata;
   if (!value.IsNull()) {
     IntegrityReport integrity_report;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        value, integrity_metadata, GetExecutionContext(), &integrity_report);
+    SubresourceIntegrity::ParseIntegrityAttribute(value, integrity_metadata,
+                                                  &integrity_report);
     integrity_report.SendReports(GetExecutionContext());
   }
   return integrity_metadata;

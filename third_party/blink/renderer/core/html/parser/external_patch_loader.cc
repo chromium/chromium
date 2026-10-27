@@ -74,7 +74,7 @@ ExternalPatchLoader::ExternalPatchLoader(Patch* owner,
   if (!integrity_attr.empty()) {
     IntegrityMetadataSet integrity_metadata;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attr,
-                                                  integrity_metadata, context);
+                                                  integrity_metadata);
     params.SetIntegrityMetadata(integrity_metadata);
   }
 

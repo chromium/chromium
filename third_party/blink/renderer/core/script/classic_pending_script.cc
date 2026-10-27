@@ -102,7 +102,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       url, context->GetSecurityOrigin(), context->GetCurrentWorld(),
-      cross_origin, encoding, defer, context));
+      cross_origin, encoding, defer));
 
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(

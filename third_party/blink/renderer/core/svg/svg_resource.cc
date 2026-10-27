@@ -313,11 +313,10 @@ void ExternalSVGResourceDocumentContent::Load(
 
   if (!modifiers_.integrity.IsNull()) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        modifiers_.integrity, metadata_set, execution_context);
+    SubresourceIntegrity::ParseIntegrityAttribute(modifiers_.integrity,
+                                                  metadata_set);
     params.SetIntegrityMetadata(metadata_set);
-    params.MutableResourceRequest().SetFetchIntegrity(modifiers_.integrity,
-                                                      execution_context);
+    params.MutableResourceRequest().SetFetchIntegrity(modifiers_.integrity);
   }
 
   document_content_ = SVGResourceDocumentContent::Fetch(params, document);

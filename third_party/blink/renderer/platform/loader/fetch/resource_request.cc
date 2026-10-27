@@ -443,14 +443,11 @@ const CacheControlHeader& ResourceRequestHead::GetCacheControlHeader() const {
   return cache_control_header_cache_;
 }
 
-void ResourceRequestHead::SetFetchIntegrity(
-    const String& integrity,
-    const FeatureContext* feature_context) {
+void ResourceRequestHead::SetFetchIntegrity(const String& integrity) {
   fetch_integrity_ = integrity;
 
   IntegrityMetadataSet metadata;
-  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata,
-                                                feature_context);
+  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata);
   SetExpectedPublicKeys(metadata);
 }
 

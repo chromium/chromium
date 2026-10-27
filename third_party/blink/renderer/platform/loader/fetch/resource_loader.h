@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
@@ -63,6 +62,7 @@ class UnguessableToken;
 
 namespace blink {
 
+class FetchContext;
 class ResourceError;
 class ResourceFetcher;
 class ResponseBodyLoader;
@@ -167,10 +167,6 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void CancelIfWebBundleTokenMatches(
       const base::UnguessableToken& web_bundle_token);
-
-  const FeatureContext* GetFeatureContext() const {
-    return Context().GetFeatureContext();
-  }
 
  private:
   friend class SubresourceIntegrityTest;

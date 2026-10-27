@@ -285,9 +285,6 @@ void Resource::CheckResourceIntegrity() {
     return;
   }
 
-  const FeatureContext* feature_context =
-      loader_ ? loader_->GetFeatureContext() : nullptr;
-
   HashMap<HashAlgorithm, String> integrity_hashes;
   bool is_cors_same_origin = response_.IsCorsSameOrigin();
   HashSet<HashAlgorithm> csp_hash_reports_needed;
@@ -299,8 +296,8 @@ void Resource::CheckResourceIntegrity() {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     if (SubresourceIntegrity::CheckSubresourceIntegrity(
-            GetIntegrityMetadata(), Data(), Url(), *this, feature_context,
-            integrity_report_, &integrity_hashes)) {
+            GetIntegrityMetadata(), Data(), Url(), *this, integrity_report_,
+            &integrity_hashes)) {
       integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
     } else {
       integrity_disposition_ =

@@ -548,8 +548,7 @@ class FetchManager::Loader final
           IntegrityReport integrity_report;
           IntegrityMetadataSet metadata_set;
           SubresourceIntegrity::ParseIntegrityAttribute(
-              integrity_metadata_, metadata_set, loader_->GetExecutionContext(),
-              &integrity_report);
+              integrity_metadata_, metadata_set, &integrity_report);
 
           const FetchResponseData* data = response_->GetResponse();
           String raw_headers = data->InternalHeaderList()->GetAsRawString(
@@ -558,7 +557,7 @@ class FetchManager::Loader final
               !updater_ ? FetchResponseType::kError : data->GetType();
           integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
               metadata_set, &buffer_, url_, type, raw_headers,
-              loader_->GetExecutionContext(), integrity_report);
+              integrity_report);
           integrity_report.SendReports(loader_->GetExecutionContext());
           error_message = "SRI's integrity checks failed.";
         }
@@ -1199,8 +1198,7 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   }
   request.SetCacheMode(fetch_request_data_->CacheMode());
   request.SetRedirectMode(fetch_request_data_->Redirect());
-  request.SetFetchIntegrity(fetch_request_data_->Integrity(),
-                            execution_context_);
+  request.SetFetchIntegrity(fetch_request_data_->Integrity());
   request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   request.SetUseStreamOnResponse(true);

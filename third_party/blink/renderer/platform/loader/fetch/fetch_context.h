@@ -63,6 +63,7 @@ class PermissionsPolicy;
 namespace blink {
 
 enum class ResourceType : uint8_t;
+class FeatureContext;
 class KURL;
 class Resource;
 struct ResourceLoaderOptions;

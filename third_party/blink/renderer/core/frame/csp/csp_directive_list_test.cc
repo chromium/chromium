@@ -421,8 +421,7 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
 
     IntegrityMetadataSet integrity_metadata;
     SubresourceIntegrity::ParseIntegrityAttribute(test.integrity,
-                                                  integrity_metadata,
-                                                  /*feature_context=*/nullptr);
+                                                  integrity_metadata);
 
     // Report-only 'script-src'
     network::mojom::blink::ContentSecurityPolicyPtr directive_list = CreateList(

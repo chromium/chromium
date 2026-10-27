@@ -118,11 +118,10 @@ FetchParameters CSSImageValue::PrepareFetch(
 
   if (!modifiers.integrity.IsNull()) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        modifiers.integrity, metadata_set, execution_context);
+    SubresourceIntegrity::ParseIntegrityAttribute(modifiers.integrity,
+                                                  metadata_set);
     params.SetIntegrityMetadata(metadata_set);
-    params.MutableResourceRequest().SetFetchIntegrity(modifiers.integrity,
-                                                      execution_context);
+    params.MutableResourceRequest().SetFetchIntegrity(modifiers.integrity);
   }
 
   if (!url_data.IsFromOriginCleanStyleSheet()) {

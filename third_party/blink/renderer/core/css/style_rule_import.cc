@@ -212,11 +212,10 @@ void StyleRuleImport::RequestStyleSheet() {
   }
   if (!modifiers_.integrity.IsNull()) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        modifiers_.integrity, metadata_set, document->GetExecutionContext());
+    SubresourceIntegrity::ParseIntegrityAttribute(modifiers_.integrity,
+                                                  metadata_set);
     params.SetIntegrityMetadata(metadata_set);
-    params.MutableResourceRequest().SetFetchIntegrity(
-        modifiers_.integrity, document->GetExecutionContext());
+    params.MutableResourceRequest().SetFetchIntegrity(modifiers_.integrity);
   }
   loading_ = true;
   DCHECK(!style_sheet_client_->GetResource());

@@ -61,7 +61,6 @@
 
 namespace blink {
 
-class FeatureContext;
 class EncodedFormData;
 struct IntegrityMetadataSet;
 
@@ -386,7 +385,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   const String& GetFetchIntegrity() const { return fetch_integrity_; }
-  void SetFetchIntegrity(const String& integrity, const FeatureContext*);
+  void SetFetchIntegrity(const String& integrity);
 
   // This is also called as a side-effect of `SetFetchIntegrity()`.
   void SetExpectedPublicKeys(const IntegrityMetadataSet&);
