@@ -244,15 +244,8 @@ message ChipBag {
 
 // Information about the syncer's state.
 message ClientStatus {
-  // Flag to indicate if the client has detected hierarchy conflcits.  The flag
-  // is left unset if update application has not been attempted yet.
-  //
-  // The server should attempt to resolve any hierarchy conflicts when this flag
-  // is set.  The client may not assume that any particular action will be
-  // taken.  There is no guarantee the problem will be addressed in a reasonable
-  // amount of time.
-  // TODO(crbug.com/40833583): Deprecated in M103.
-  optional bool hierarchy_conflict_detected = 1 [deprecated = true];
+  reserved 1;
+  reserved "hierarchy_conflict_detected";
 
   // Whether the client has full sync (or, sync the feature) enabled or not.
   optional bool is_sync_feature_enabled = 2;

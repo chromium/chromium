@@ -511,7 +511,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ClientConfigParams& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ClientStatus& proto) {
-  VISIT(hierarchy_conflict_detected);
   VISIT(is_sync_feature_enabled);
 }
 
@@ -1542,11 +1541,8 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncCycleCompletedEventInfo& proto) {
-  VISIT(num_encryption_conflicts);
-  VISIT(num_hierarchy_conflicts);
   VISIT(num_server_conflicts);
   VISIT(num_updates_downloaded);
-  VISIT(num_reflected_updates_downloaded);
   VISIT(caller_info);
   VISIT_ENUM(get_updates_origin);
 }
