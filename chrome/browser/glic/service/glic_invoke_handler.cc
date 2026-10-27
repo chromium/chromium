@@ -282,9 +282,8 @@ void GlicInvokeHandler::Invoke() {
       options_.GetInvocationSource());
 
   timeout_timer_.Start(FROM_HERE, options_.timeout.value_or(kDefaultTimeout),
-                       base::BindOnce(&GlicInvokeHandler::OnError,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      GlicInvokeError::kTimeout));
+                       base::BindOnce(&GlicInvokeHandler::OnTimeout,
+                                      weak_ptr_factory_.GetWeakPtr()));
 
   if (auto_submit_options_.on_conversation_id_ready) {
     if (auto conv_id = instance_->conversation_id()) {
@@ -366,9 +365,16 @@ void GlicInvokeHandler::Invoke() {
   // `client_load_state()` is `kReady` exactly while the client is connected and
   // responsive. Unlike a bare connection wait, this fails the invocation if the
   // client never loads instead of hanging until the invocation times out.
+  //
+  // A client stopped on the sign-in panel is the exception: an invocation
+  // that only shows the panel is done at that point, while one that needs the
+  // client waits for the user to sign in (see SignInBehavior and OnTimeout()).
   tasks.push_back(std::make_unique<WaitForClientReadyTask>(
-      instance_->host(), base::BindOnce(&GlicInvokeHandler::OnError,
-                                        weak_ptr_factory_.GetWeakPtr())));
+      instance_->host(),
+      requires_client_invoke_ ? SignInBehavior::kWaits
+                              : SignInBehavior::kCompletes,
+      base::BindOnce(&GlicInvokeHandler::OnError,
+                     weak_ptr_factory_.GetWeakPtr())));
   if (options_.on_client_connected) {
     tasks.push_back(std::make_unique<PostCallbackTask>(base::BindOnce(
         [](base::WeakPtr<GlicInstanceImpl> instance,
@@ -504,6 +510,18 @@ void GlicInvokeHandler::OnSuccess() {
   if (completion_callback_) {
     std::move(completion_callback_).Run(&*instance_, this);
   }
+}
+
+void GlicInvokeHandler::OnTimeout() {
+  // An invocation that needed the client and spent its time on the sign-in
+  // panel (SignInBehavior::kWaits) did not run out of time for anything the
+  // product did; the user did not sign in. Report that rather than a timeout.
+  const Host& host = instance_->host();
+  OnError(host.client_load_state() == ClientLoadState::kError &&
+                  host.client_load_error_reason() ==
+                      ClientLoadErrorReason::kSignIn
+              ? GlicInvokeError::kSignInRequired
+              : GlicInvokeError::kTimeout);
 }
 
 void GlicInvokeHandler::OnError(GlicInvokeError error) {
