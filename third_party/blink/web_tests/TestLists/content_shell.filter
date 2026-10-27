@@ -435,6 +435,7 @@ external/wpt/css/CSS2/stacking-context/composite-change-after-scroll-preserves-s
 external/wpt/css/css-contain/content-visibility/content-visibility-096.html
 external/wpt/css/css-contain/content-visibility/content-visibility-097.html
 external/wpt/css/css-flexbox/scrollbars-auto.html
+external/wpt/css/css-flexbox/scrollbars.html
 external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-001.html
 external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-002.html
 external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-004.html
