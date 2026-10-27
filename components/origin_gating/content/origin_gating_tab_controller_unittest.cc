@@ -20,8 +20,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace origin_gating {
@@ -75,7 +75,8 @@ class OriginGatingTabControllerTest
                                 content::WebContents* new_contents) {
     observer->DidOpenRequestedURL(
         new_contents, main_rfh(), GURL("https://example.com/"),
-        content::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+        content::Referrer(),
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui::PAGE_TRANSITION_LINK, /*started_from_context_menu=*/false,
         /*renderer_initiated=*/true);
   }
