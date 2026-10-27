@@ -11,7 +11,10 @@
 #include "chrome/browser/ash/lobster/lobster_client_impl.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 LobsterClientFactoryImpl::LobsterClientFactoryImpl(
     ash::LobsterController* controller)
@@ -24,8 +27,16 @@ LobsterClientFactoryImpl::~LobsterClientFactoryImpl() {
 }
 
 std::unique_ptr<ash::LobsterClient> LobsterClientFactoryImpl::CreateClient() {
-  LobsterService* service = LobsterServiceProvider::GetForProfile(
-      ProfileManager::GetActiveUserProfile());
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    return nullptr;
+  }
+  LobsterService* service =
+      LobsterServiceProvider::GetForProfile(Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              active_session->account_id())));
   return service != nullptr ? std::make_unique<LobsterClientImpl>(service)
                             : nullptr;
 }

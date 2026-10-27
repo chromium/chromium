@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/style/typography.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/focus_search.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/typography.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -37,6 +38,8 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -641,9 +644,14 @@ void QuickAnswersView::GenerateTts(const PhoneticsInfo& phonetics_info) {
   }
 
   if (!phonetics_audio_web_view_) {
+    // TODO(crbug.com/278643115): Take the account_id from the callers.
+    const auto* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
     // Setup an invisible WebView to play phonetics audio.
     std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
-        ProfileManager::GetActiveUserProfile());
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
     web_view->SetVisible(false);
     phonetics_audio_web_view_.SetView(AddChildView(std::move(web_view)));
   }
