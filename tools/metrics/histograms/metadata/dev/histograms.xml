@@ -124,6 +124,16 @@ chromium-metrics-reviews@google.com.
   <summary>The number of comments created in one turn.</summary>
 </histogram>
 
+<histogram name="DevTools.Comments.CommentQueued" units="count"
+    expires_after="2027-08-12">
+  <owner>nroscino@google.com</owner>
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>
+    The number of comments queued (saved without being sent to the AI agent).
+  </summary>
+</histogram>
+
 <histogram name="DevTools.Comments.CommentResolvedBy{Resolver}" units="count"
     expires_after="2027-08-12">
   <owner>nharshunova@google.com</owner>
