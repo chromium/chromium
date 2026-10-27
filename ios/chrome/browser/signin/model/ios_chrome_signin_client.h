@@ -10,7 +10,6 @@
 #import "base/memory/raw_ptr.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/signin/public/base/signin_client.h"
-#import "net/cookies/cookie_change_dispatcher.h"
 
 class ProfileIOS;
 class WaitForNetworkCallbackHelperIOS;

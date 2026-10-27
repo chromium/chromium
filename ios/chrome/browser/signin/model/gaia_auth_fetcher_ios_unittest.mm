@@ -15,7 +15,6 @@
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {

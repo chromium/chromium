@@ -9,7 +9,6 @@
 
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#import "base/scoped_observation.h"
 #import "components/signin/internal/identity_manager/account_info_fetcher.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "google_apis/gaia/gaia_id.h"

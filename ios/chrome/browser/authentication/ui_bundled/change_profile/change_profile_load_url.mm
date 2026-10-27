@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "url/gurl.h"
 
 namespace {

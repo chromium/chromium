@@ -36,7 +36,6 @@ source_set("card_unmask_authentication_selection_view_controller") {
   deps = [
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
-    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",

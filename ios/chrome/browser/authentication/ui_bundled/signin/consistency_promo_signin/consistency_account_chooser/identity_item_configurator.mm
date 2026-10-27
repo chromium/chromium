@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
 
-#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 
 @implementation IdentityItemConfigurator

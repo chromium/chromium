@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/trusted_vault/trusted_vault_client_backend.h"
 
-#import "base/functional/callback.h"
-
 TrustedVaultClientBackend::TrustedVaultClientBackend() = default;
 
 TrustedVaultClientBackend::~TrustedVaultClientBackend() = default;

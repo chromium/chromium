@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
-#import "ios/testing/earl_grey/earl_grey_test.h"
 
 @interface AuthenticationServiceTestCase : ChromeTestCase
 @end

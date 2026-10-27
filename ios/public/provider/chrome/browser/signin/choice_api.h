@@ -7,10 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-
 namespace ios {
 namespace provider {
 

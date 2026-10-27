@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_view_controller.h"
 
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_ui_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/common/string_util.h"

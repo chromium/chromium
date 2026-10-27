@@ -6,10 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/files/file.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/signin/public/identity_manager/tribool.h"

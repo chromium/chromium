@@ -6,7 +6,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/ios/device_accounts_provider.h"

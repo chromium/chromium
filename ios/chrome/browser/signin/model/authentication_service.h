@@ -9,13 +9,11 @@
 #import <vector>
 
 #import "base/functional/callback_helpers.h"
-#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/ios/browser/signin_enabled_datasource.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

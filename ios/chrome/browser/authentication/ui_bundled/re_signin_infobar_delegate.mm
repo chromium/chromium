@@ -9,20 +9,17 @@
 #import <memory>
 #import <utility>
 
-#import "base/logging.h"
 #import "base/memory/ptr_util.h"
-#import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
+#import "ui/gfx/image/image.h"
 
 // static
 std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(

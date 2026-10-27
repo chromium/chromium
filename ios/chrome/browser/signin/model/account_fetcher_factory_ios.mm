@@ -11,7 +11,6 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/account_info_fetcher_ios.h"
-#import "ios/chrome/browser/signin/model/system_identity.h"
 
 namespace ios {
 

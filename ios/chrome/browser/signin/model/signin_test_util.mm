@@ -7,7 +7,6 @@
 #import <utility>
 
 #import "base/check.h"
-#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"

@@ -7,7 +7,6 @@
 #import "base/check.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
 @implementation FakeSystemIdentityDetails {

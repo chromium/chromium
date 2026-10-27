@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
-#import "base/check.h"
 #import "base/check_is_test.h"
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -15,19 +13,13 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
-#import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util_internal.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
-#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
 namespace {
 

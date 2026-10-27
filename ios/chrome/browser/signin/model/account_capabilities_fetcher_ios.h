@@ -7,7 +7,6 @@
 
 #import "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/signin/model/system_identity.h"
 
 class ChromeAccountManagerService;
 

@@ -7,7 +7,6 @@
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/time/time.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"

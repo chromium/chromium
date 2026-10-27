@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 
-#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_selection_coordinator.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/otp_input_dialog_coordinator.h"
-#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"

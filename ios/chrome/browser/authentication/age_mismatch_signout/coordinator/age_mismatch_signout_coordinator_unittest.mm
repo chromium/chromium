@@ -9,12 +9,10 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_constants.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_ui_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 

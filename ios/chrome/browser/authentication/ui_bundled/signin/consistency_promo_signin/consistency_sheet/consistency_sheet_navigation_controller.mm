@@ -7,7 +7,6 @@
 #import <algorithm>
 
 #import "base/check.h"
-#import "base/notreached.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"

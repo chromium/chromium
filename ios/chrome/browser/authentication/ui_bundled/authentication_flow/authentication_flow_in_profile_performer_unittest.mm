@@ -7,8 +7,6 @@
 #import <objc/runtime.h>
 
 #import "base/test/metrics/histogram_tester.h"
-#import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_HISTORY_SYNC_COORDINATOR_HISTORY_SYNC_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_HISTORY_SYNC_COORDINATOR_HISTORY_SYNC_COORDINATOR_H_
 
-#import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/history_sync/public/history_sync_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 

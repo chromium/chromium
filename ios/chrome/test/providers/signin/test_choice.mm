@@ -4,8 +4,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/notreached.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace ios {

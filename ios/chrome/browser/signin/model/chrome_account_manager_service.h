@@ -13,12 +13,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
-#import "base/scoped_observation.h"
 #import "base/types/pass_key.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
-#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 

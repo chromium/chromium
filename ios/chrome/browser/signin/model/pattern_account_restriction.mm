@@ -6,7 +6,6 @@
 
 #import <string_view>
 
-#import "base/strings/string_util.h"
 #import "base/values.h"
 
 Pattern::Pattern(std::vector<std::string> chunks) : chunks_(chunks) {}

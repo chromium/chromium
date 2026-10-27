@@ -8,8 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
-#import "ios/chrome/browser/signin/model/capabilities_dict.h"
-#import "url/gurl.h"
 
 @class FakeSystemIdentity;
 @protocol GREYMatcher;

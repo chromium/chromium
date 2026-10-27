@@ -7,7 +7,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
-#import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_selection_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/authentication/ui/card_unmask_authentication_selection_mutator_bridge.h"
 
 namespace {

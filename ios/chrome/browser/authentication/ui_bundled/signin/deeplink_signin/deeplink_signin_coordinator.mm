@@ -8,9 +8,7 @@
 
 #import <utility>
 
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_deep_link_metrics.h"
 #import "components/signin/public/base/signin_deep_link_payload.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -19,9 +17,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
-#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"

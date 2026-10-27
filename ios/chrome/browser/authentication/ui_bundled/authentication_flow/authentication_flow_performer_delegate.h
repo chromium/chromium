@@ -7,13 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/functional/callback_forward.h"
-#import "base/ios/block_types.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base_delegate.h"
-#import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
 class Browser;

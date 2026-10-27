@@ -6,7 +6,6 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#import "base/metrics/field_trial.h"
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -22,7 +21,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace ios {

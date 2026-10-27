@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"

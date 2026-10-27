@@ -4,14 +4,11 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/cells_swift.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h"

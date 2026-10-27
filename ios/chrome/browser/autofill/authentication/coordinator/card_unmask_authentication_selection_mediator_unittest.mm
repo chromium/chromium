@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_selection_mediator.h"
 
-#import "base/functional/callback_helpers.h"
 #import "base/test/mock_callback.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
@@ -13,7 +12,6 @@
 #import "ios/chrome/browser/autofill/authentication/ui/card_unmask_authentication_selection_consumer.h"
 #import "ios/chrome/browser/autofill/authentication/ui/card_unmask_authentication_selection_mutator.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"

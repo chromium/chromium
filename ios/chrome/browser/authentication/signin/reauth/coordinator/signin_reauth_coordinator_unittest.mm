@@ -7,7 +7,6 @@
 #import <concepts>
 #import <type_traits>
 
-#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
@@ -21,14 +20,12 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity_interaction_manager.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"

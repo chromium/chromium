@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"
 
-#import "base/strings/utf_string_conversions.h"
-#import "components/metrics/metrics_service.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -21,7 +19,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios.h"
-#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 

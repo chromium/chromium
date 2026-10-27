@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
-
 @protocol SystemIdentity;
 
 // Callback for the signin operation methods.

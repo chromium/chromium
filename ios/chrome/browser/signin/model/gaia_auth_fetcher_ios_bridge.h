@@ -9,9 +9,7 @@
 #include <string>
 
 #import "base/memory/raw_ptr.h"
-#include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "net/base/net_errors.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 
 class GURL;
 @class NSURLRequest;

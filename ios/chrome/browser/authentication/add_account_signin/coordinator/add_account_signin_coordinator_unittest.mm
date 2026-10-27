@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"

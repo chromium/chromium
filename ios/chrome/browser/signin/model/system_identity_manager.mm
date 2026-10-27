@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
-#import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "google_apis/gaia/gaia_id.h"
 
 namespace {
 

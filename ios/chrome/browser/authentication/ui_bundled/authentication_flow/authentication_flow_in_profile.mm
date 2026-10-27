@@ -9,7 +9,6 @@
 #import "base/check_op.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"

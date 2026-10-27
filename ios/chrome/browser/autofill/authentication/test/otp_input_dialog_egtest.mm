@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/authentication/public/otp_input_dialog_view_constants.h"
 #import "ios/chrome/browser/autofill/authentication/test/authentication_egtest_util.h"
@@ -14,9 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/default_handlers.h"
-#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 

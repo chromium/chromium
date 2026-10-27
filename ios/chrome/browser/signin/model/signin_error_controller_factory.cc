@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/ptr_util.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"

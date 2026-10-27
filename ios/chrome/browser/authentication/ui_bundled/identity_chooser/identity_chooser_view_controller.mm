@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_header_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

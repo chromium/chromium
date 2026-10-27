@@ -8,7 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "components/signin/ios/browser/signin_enabled_datasource.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 

@@ -14,7 +14,6 @@
 #import "components/infobars/core/infobar.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer.h"
-#import "ui/gfx/image/image.h"
 
 class AuthenticationService;
 @protocol ReSigninPresenter;

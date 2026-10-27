@@ -8,7 +8,6 @@
 
 #import "base/files/file.h"
 #import "base/files/file_util.h"
-#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
@@ -16,7 +15,6 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "base/time/time.h"
 #import "base/version_info/channel.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/app/tests_hook.h"

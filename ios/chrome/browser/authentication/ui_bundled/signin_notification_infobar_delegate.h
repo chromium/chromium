@@ -11,7 +11,6 @@
 #import <string>
 
 #import "components/infobars/core/confirm_infobar_delegate.h"
-#import "components/sync/service/sync_service_observer.h"
 #import "ui/gfx/image/image.h"
 
 class ProfileIOS;

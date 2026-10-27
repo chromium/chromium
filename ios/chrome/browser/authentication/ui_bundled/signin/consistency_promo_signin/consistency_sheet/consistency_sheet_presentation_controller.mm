@@ -7,9 +7,6 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
-#import "ios/chrome/browser/shared/ui/util/accessibility_close_menu_button.h"
-#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {

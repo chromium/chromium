@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/autofill/authentication/coordinator/otp_input_dialog_mediator.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/otp_input_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/authentication/ui/otp_input_dialog_view_controller.h"
-#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

@@ -4,11 +4,7 @@
 
 source_set("choice_api") {
   sources = [ "choice_api.h" ]
-  deps = [
-    "//ios/chrome/browser/first_run/public:screen_delegate",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/browser",
-  ]
+  deps = []
   frameworks = [ "UIKit.framework" ]
 }
 

@@ -7,9 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/add_account_signin/public/add_account_signin_enums.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 namespace signin {
 class IdentityManager;

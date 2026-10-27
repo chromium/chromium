@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator/managed_profile_learn_more_coordinator.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/managed_profile_learn_more_view_controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface ManagedProfileLearnMoreCoordinator () <
     ManagedProfileLearnMoreViewControllerPresentationDelegate,

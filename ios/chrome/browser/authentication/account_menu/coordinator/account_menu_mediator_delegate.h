@@ -11,7 +11,6 @@
 #import <string_view>
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
 @class AccountMenuMediator;

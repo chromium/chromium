@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_mediator.h"
 
 #import "base/check.h"
-#import "base/check_op.h"
-#import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
@@ -17,10 +15,10 @@
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/authentication/history_sync/ui/history_sync_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

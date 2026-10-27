@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_consumer.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @protocol AccountMenuDataSource;
 @protocol AccountMenuMutator;

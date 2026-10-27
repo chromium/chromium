@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 
 @interface SaveToPhotosSettingsMediator () <IdentityManagerObserving,
                                             PrefObserverDelegate>

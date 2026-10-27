@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
-#import "components/sync/service/sync_service_utils.h"
-#import "components/sync/test/test_sync_service.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -23,13 +21,10 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#import "third_party/ocmock/ocmock_extensions.h"
 
 class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
  public:

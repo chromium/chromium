@@ -6,7 +6,6 @@
 
 #import "google_apis/gaia/gaia_auth_consumer.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace ios_web_view {

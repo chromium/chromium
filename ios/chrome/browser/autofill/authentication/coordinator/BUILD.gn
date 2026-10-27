@@ -14,7 +14,6 @@ source_set("otp_input_dialog") {
     "//base",
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/authentication/ui:otp_input_dialog_ui",
-    "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -31,8 +30,6 @@ source_set("card_unmask_authentication_coordinator") {
   deps = [
     ":card_unmask_authentication_selection_coordinator",
     ":otp_input_dialog",
-    "//ios/chrome/browser/autofill/authentication/ui:otp_input_dialog_ui",
-    "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/ui_bundled:bridges",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

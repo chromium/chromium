@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ui/base/l10n/l10n_util.h"
 

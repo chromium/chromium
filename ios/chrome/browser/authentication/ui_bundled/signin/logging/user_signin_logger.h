@@ -8,7 +8,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 namespace metrics {
 class ProfileMetricsService;

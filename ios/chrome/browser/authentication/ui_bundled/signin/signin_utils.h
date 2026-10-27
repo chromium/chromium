@@ -13,8 +13,6 @@
 #import <utility>
 
 #import "base/functional/callback.h"
-#import "base/ios/block_types.h"
-#import "base/time/time.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/app/change_profile_continuation.h"
@@ -126,7 +124,6 @@ void RecordFullscreenSigninPromoStarted(
     signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);
-
 
 // Returns the list of all accounts on the device, in the order provided by the
 // system, including the ones that are assigned to other profiles.

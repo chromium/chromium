@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 
 #import "base/check.h"
-#import "base/format_macros.h"
 #import "base/i18n/number_formatting.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"

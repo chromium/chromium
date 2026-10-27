@@ -4,15 +4,11 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/ios/ios_util.h"
 #import "base/notreached.h"
-#import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

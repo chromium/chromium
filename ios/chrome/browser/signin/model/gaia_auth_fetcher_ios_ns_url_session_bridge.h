@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios_bridge.h"
 #include "net/cookies/canonical_cookie.h"
+#include "url/gurl.h"
 
 class GaiaAuthFetcherIOSNSURLSessionBridge;
 @class GaiaAuthFetcherIOSURLSessionDelegate;

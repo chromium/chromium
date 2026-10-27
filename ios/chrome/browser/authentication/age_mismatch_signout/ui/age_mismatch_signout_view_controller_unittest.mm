@@ -4,16 +4,13 @@
 
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_view_controller.h"
 
-#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_prompt_mode.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 

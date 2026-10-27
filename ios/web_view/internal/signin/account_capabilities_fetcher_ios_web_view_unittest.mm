@@ -7,15 +7,12 @@
 #import <optional>
 
 #import "base/functional/callback.h"
-#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {

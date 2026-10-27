@@ -8,7 +8,6 @@
 
 #import "base/feature_list.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/core/browser/account_preview_data_service_impl.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"

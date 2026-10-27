@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 #import "testing/gmock/include/gmock/gmock.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {

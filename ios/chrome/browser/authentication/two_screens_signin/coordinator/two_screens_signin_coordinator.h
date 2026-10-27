@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 
 namespace signin_metrics {
 enum class AccessPoint : int;

@@ -4,7 +4,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 
 namespace ios::provider {

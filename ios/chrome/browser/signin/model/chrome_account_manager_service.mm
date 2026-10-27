@@ -15,10 +15,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
-#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 namespace {
 

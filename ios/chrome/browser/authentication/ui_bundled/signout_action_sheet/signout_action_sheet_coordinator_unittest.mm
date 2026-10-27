@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/mock_callback.h"
@@ -15,9 +14,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/mock_sync_service.h"
-#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -25,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -49,7 +45,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/strings/grit/ui_strings.h"
 
 class SignoutActionSheetCoordinatorTest : public PlatformTest {
  public:

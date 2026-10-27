@@ -11,7 +11,6 @@ source_set("avatar") {
     ":avatar_internal",
     "//base",
     "//ios/chrome/browser/signin/model:constants",
-    "//ios/chrome/browser/signin/model:system_identity",
   ]
 }
 
@@ -40,6 +39,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:signin_util",

@@ -5,7 +5,6 @@
 #import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
 #import "base/check.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 #import "ios/web_view/public/cwv_identity.h"

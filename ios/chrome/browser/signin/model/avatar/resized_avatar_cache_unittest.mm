@@ -6,12 +6,11 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
-#import "base/values.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 

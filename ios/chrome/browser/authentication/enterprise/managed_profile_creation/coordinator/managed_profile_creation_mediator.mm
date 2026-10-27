@@ -5,14 +5,11 @@
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator/managed_profile_creation_mediator.h"
 
 #import "components/signin/public/base/consent_level.h"
-#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/managed_profile_creation_consumer.h"
 #import "ios/chrome/browser/authentication/enterprise/public/managed_profile_creation_constants.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 @interface ManagedProfileCreationMediator () <IdentityManagerObserving> {

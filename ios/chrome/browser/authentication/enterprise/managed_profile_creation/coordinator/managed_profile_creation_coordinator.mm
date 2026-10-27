@@ -4,17 +4,14 @@
 
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator/managed_profile_creation_coordinator.h"
 
-#import "base/apple/foundation_util.h"
-#import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/signin/public/base/signin_metrics.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator/managed_profile_creation_mediator.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator/managed_profile_learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/browsing_data_migration_view_controller.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/managed_profile_creation_view_controller.h"
 #import "ios/chrome/browser/authentication/enterprise/public/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"

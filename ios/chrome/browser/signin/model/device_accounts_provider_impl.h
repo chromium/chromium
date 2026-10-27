@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 

@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/ios/block_types.h"
-#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/browsing_data_migration_view_controller.h"
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/managed_profile_creation_view_controller.h"
 

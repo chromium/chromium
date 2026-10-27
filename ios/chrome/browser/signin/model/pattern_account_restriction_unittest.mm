@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 
 #import "base/values.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {

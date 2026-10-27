@@ -15,7 +15,6 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 

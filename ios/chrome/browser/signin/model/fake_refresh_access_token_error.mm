@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/fake_refresh_access_token_error.h"
 
-#import "base/apple/foundation_util.h"
-
 @implementation FakeRefreshAccessTokenError
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity
