@@ -79,9 +79,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests logic in the SelectFileDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
-})
 @EnableFeatures({UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE})
 public class SelectFileDialogTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -1465,103 +1462,80 @@ public class SelectFileDialogTest {
         SelectFileDialog selectFileDialog = new SelectFileDialog(null);
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg"));
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg", "image/png"));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/*", "image/jpeg"));
-        // Note: image/jpeg is part of image/* so this counts as a single type.
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/*", "video/mp4"));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg", "video/mp4"));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("video/mp4"));
-
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("video/mp4", "video/*"));
-        // Note: video/mp4 is part of video/* so this counts as a single type.
-
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("audio/wave", "audio/mpeg", "audio/*"));
-        // Note: both audio/wave and audio/mpeg are part of audio/* so this counts as a single type.
-
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("audio/wave", "audio/mpeg"));
-
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("*/*"));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Collections.emptyList());
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
         // Only the first one is considered valid MIME type.
         selectFileDialog.setFileTypesForTests(Arrays.asList("image//png", "image/", "image"));
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         // Both are invalid MIME types
         selectFileDialog.setFileTypesForTests(Arrays.asList("/image", "/"));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
         // Same, both are invalid MIME types
         selectFileDialog.setFileTypesForTests(Arrays.asList("/", ""));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
         // Invalid extension
         selectFileDialog.setFileTypesForTests(Arrays.asList(".this_is_not_a_real_extension"));
-
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
@@ -1569,28 +1543,22 @@ public class SelectFileDialogTest {
         // Both are converted to the same MIME type
         selectFileDialog.setFileTypesForTests(
                 Arrays.asList("application/octet-stream", ".this_is_not_a_real_extension"));
-
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(
                 Arrays.asList(".pdf", ".this_is_not_a_real_extension"));
-
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList(".gif", "image/gif"));
-        assertTrue(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
         selectFileDialog.setFileTypesForTests(Arrays.asList(".gif", ".jpg"));
-        assertFalse(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());

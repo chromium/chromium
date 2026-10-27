@@ -6160,11 +6160,6 @@ inline constexpr char kDefaultBrowserPromoFreName[] = "DefaultBrowserPromoFre";
 inline constexpr char kDefaultBrowserPromoFreDescription[] =
     "Enables the Default Browser Promo during the First Run Experience (FRE).";
 
-inline constexpr char kDeprecatedExternalPickerFunctionName[] =
-    "Use deprecated External Picker method";
-inline constexpr char kDeprecatedExternalPickerFunctionDescription[] =
-    "Use the old-style opening of an External Picker when uploading files";
-
 inline constexpr char kDesktopAndroidLinkCapturingName[] =
     "Desktop Android Link Capturing";
 inline constexpr char kDesktopAndroidLinkCapturingDescription[] =

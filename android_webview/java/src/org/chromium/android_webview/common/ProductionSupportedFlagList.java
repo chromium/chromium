@@ -550,9 +550,6 @@ public final class ProductionSupportedFlagList {
                 UiAndroidFeatures.AVOID_PER_CONTEXT_COLOR_PROVIDERS,
                 "Avoids per-context ColorProviders for contexts without dynamic color support."),
         Flag.baseFeature(
-                UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
-                "Deprecates old external file picker function."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_RENDER_DOCUMENT,
                 "If enabled, same-site navigations will change RenderFrameHosts"),
         Flag.baseFeature(

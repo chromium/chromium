@@ -5913,22 +5913,6 @@
             ]
         }
     ],
-    "DeprecatedExternalPickerFunction": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "DeprecatedExternalPickerFunction"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopCaptureAndroidFrameBufferReuse": [
         {
             "platforms": [

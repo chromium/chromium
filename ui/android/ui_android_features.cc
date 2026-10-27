@@ -45,9 +45,6 @@ BASE_FEATURE(kClipboardOversizedPayloadProvider,
 BASE_FEATURE(kConnectedDisplayDensityDebugLogs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeprecatedExternalPickerFunction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

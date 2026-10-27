@@ -9947,13 +9947,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(network::features::kCompressionDictionaryTTL)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"deprecated-external-picker-function",
-     flag_descriptions::kDeprecatedExternalPickerFunctionName,
-     flag_descriptions::kDeprecatedExternalPickerFunctionDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(ui::kDeprecatedExternalPickerFunction)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"android-progress-bar-visual-update",
      flag_descriptions::kAndroidProgressBarVisualUpdateName,
      flag_descriptions::kAndroidProgressBarVisualUpdateDescription, kOsAndroid,

@@ -18,7 +18,6 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
@@ -672,10 +671,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             onFileNotSelected();
             return;
         }
-        if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION)) {
-            showExternalPickerDeprecated(camera, camcorder, soundRecorder);
-            return;
-        }
 
         Intent getContentIntent = new Intent(mIntentAction);
 
@@ -714,81 +709,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         // Only accept openable files, as coercing virtual files may yield to a MIME type different
         // than expected.
         getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-        if (!extraIntents.isEmpty()) {
-            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents.toArray(new Intent[] {}));
-        }
-        chooser.putExtra(Intent.EXTRA_INTENT, getContentIntent);
-
-        if (!mWindowAndroid.showIntent(chooser, this, R.string.low_memory_error)) {
-            onFileNotSelected();
-        }
-    }
-
-    /**
-     * The deprecated way of launching a chooser intent to get files from an external source (use
-     * showExternalPicker instead). If launching the Intent is not successful, the onFileNotSelected
-     * is called to end file upload.
-     *
-     * @param camera A camera capture intent to supply as extra Intent data.
-     * @param camcorder A camcorder intent to supply as extra Intent data.
-     * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
-     */
-    private void showExternalPickerDeprecated(
-            @Nullable Intent camera, @Nullable Intent camcorder, @Nullable Intent soundRecorder) {
-        Intent getContentIntent = new Intent(mIntentAction);
-
-        if (mAllowMultiple) {
-            getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        }
-
-        // Set to all types, but potentially restricted further by MIME-type below.
-        getContentIntent.setType(ALL_TYPES);
-
-        ArrayList<Intent> extraIntents = new ArrayList<>();
-        if (acceptsSingleType()) {
-            // Attention: We should change the variable below to `mMimeTypes`. Using of `mFileTypes`
-            // is discouraged because it may include both file and MIME types. We keep the current
-            // variable just in case something goes wrong with the newly introduced `mMimeTypes` so
-            // that we can switch back to the old implementation. Remove this method once the new
-            // implementation is proven to work properly.
-            List<String> types = new ArrayList<>(mFileTypes);
-            // Calls to ACTION_GET_CONTENT can result in the MediaPicker hijacking the call and
-            // showing itself instead of the Files app, when only images or videos are provided.
-            // This flow is not only confusing for the user (a MediaPicker on top of a MediaPicker?)
-            // but also breaks our cloud media integration, which is currently provided via the
-            // Files app. We therefore add a non-existant MIME-type to the mix, which the Files app
-            // will ignore, but ensures the MediaPicker wont hijack the call.
-            String noOpMimeType = "type/nonexistent";
-
-            // If one and only one category of accept type was specified (image, video, etc..),
-            // then update the intent to specifically target that request.
-            if (shouldShowImageTypes()) {
-                if (camera != null) extraIntents.add(camera);
-                types.add(noOpMimeType);
-                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
-            } else if (shouldShowVideoTypes()) {
-                if (camcorder != null) extraIntents.add(camcorder);
-                types.add(noOpMimeType);
-                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
-            } else if (shouldShowAudioTypes()) {
-                if (soundRecorder != null) extraIntents.add(soundRecorder);
-                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
-            }
-
-            // If any types are specified, then only accept openable files, as coercing
-            // virtual files may yield to a MIME type different than expected.
-            getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        }
-
-        Bundle extras = getContentIntent.getExtras();
-        if (extras == null || extras.get(Intent.EXTRA_MIME_TYPES) == null) {
-            // We couldn't resolve a single accept type, so fallback to a generic chooser.
-            if (camera != null) extraIntents.add(camera);
-            if (camcorder != null) extraIntents.add(camcorder);
-            if (soundRecorder != null) extraIntents.add(soundRecorder);
-        }
 
         Intent chooser = new Intent(Intent.ACTION_CHOOSER);
         if (!extraIntents.isEmpty()) {
@@ -1282,41 +1202,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      */
     private boolean acceptsOnlyType(String superType) {
         return countAcceptTypesFor(superType) == mMimeTypes.size();
-    }
-
-    /**
-     * Checks whether the list of accepted types effectively describes only a single type, which
-     * might be wildcard. For example:
-     *
-     * <p>[image/jpeg] -> true: Only one type is specified. [image/jpeg, image/gif] -> false:
-     * Contains two distinct types. [image/*, image/gif] -> true: image/gif already part of image/*.
-     */
-    @VisibleForTesting
-    boolean acceptsSingleType() {
-        // We use a single Intent to decide the type of the file chooser we display to the user,
-        // which means we can only give it a single type. If there are multiple accept types
-        // specified, we will fallback to a generic chooser (unless a capture parameter has been
-        // specified, in which case we'll try to satisfy that first.
-        if (mMimeTypes.size() == 1) return !mMimeTypes.contains(ALL_TYPES);
-        // Also return true when a generic subtype "type/*" and one or more specific subtypes
-        // "type/subtype" are listed but all still have the same supertype.
-        // Ie. treat ["image/png", "image/*"] as if it said just ["image/*"].
-        String superTypeFound = null;
-        boolean foundGenericSubtype = false;
-        for (String fileType : mMimeTypes) {
-            int slash = fileType.indexOf('/');
-            if (slash == -1) return false;
-            String superType = fileType.substring(0, slash);
-            boolean genericSubtype = fileType.substring(slash + 1).equals("*");
-            if (superTypeFound == null) {
-                superTypeFound = superType;
-            } else if (!superTypeFound.equals(superType)) {
-                // More than one type.
-                return false;
-            }
-            if (genericSubtype) foundGenericSubtype = true;
-        }
-        return foundGenericSubtype;
     }
 
     @VisibleForTesting
