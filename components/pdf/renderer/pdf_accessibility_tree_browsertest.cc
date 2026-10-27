@@ -602,11 +602,14 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
       const std::vector<std::string>& words,
       const std::vector<gfx::RectF>& bounds,
       const std::vector<chrome_pdf::AccessibilityTextDirection>& directions =
-          {}) {
+          {},
+      const std::vector<chrome_pdf::AccessibilityTextStyleInfo>& styles = {}) {
     const std::vector<float> font_sizes(words.size(), 12.0f);
-    const std::vector<chrome_pdf::AccessibilityTextStyleInfo> styles(
-        words.size(), CreateNormalStyle());
-    SetUpHeuristicAccessibilityTreeDetailed(font_sizes, styles,
+    const std::vector<chrome_pdf::AccessibilityTextStyleInfo> actual_styles =
+        styles.empty() ? std::vector<chrome_pdf::AccessibilityTextStyleInfo>(
+                             words.size(), CreateNormalStyle())
+                       : styles;
+    SetUpHeuristicAccessibilityTreeDetailed(font_sizes, actual_styles,
                                             MakeCharVector(words), bounds,
                                             /*char_counts=*/{}, directions);
     const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
@@ -5614,6 +5617,110 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedOnlyMarkerBeyondNestingRange) {
   CheckParagraph(page->GetChildAtIndex(1u), "–Dash text");
 }
 
+// Word's level-2 bullet, a standalone Courier 'o', is named "◦ ".
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListWordCourierMarker) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo courier_style = CreateNormalStyle();
+  courier_style.font_name = "Courier New";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Level 1", "o", "Courier level 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(75.0f, 53.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {normal_style, normal_style, courier_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  const ui::AXNode* nested_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Level 1");
+  CheckUnorderedList(nested_list, {"Courier level 2"}, "◦ ");
+}
+
+// Word's level-3 bullets, standalone Wingdings characters, are named "▪ ".
+TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListWordWingdingsMarker) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "Wingdings";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Level 1", "ú", "Wingdings level 3"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 57.0f, 4.0f, 4.0f),
+          gfx::RectF(75.0f, 53.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {normal_style, normal_style, wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  const ui::AXNode* nested_list =
+      CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Level 1");
+  CheckUnorderedList(nested_list, {"Wingdings level 3"}, "▪ ");
+}
+
+// Font-specific markers are ignored at the top level, when combined with text,
+// in non-matching fonts, or when consisting of Unicode whitespace.
+TEST_F(PdfAccessibilityTreeTest, HeuristicFontMarkersIgnoredWhenInvalid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo courier_style = CreateNormalStyle();
+  courier_style.font_name = "Courier New";
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "Wingdings";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"o", "Top-level Courier", "•", "Item 1", "o", "Normal font o",
+       "o Combined Courier", "\u00A0", "Wingdings nbsp"},
+      {
+          gfx::RectF(30.0f, 27.0f, 4.0f, 12.0f),
+          gfx::RectF(45.0f, 27.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 53.0f, 4.0f, 12.0f),
+          gfx::RectF(75.0f, 53.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 66.0f, 80.0f, 12.0f),
+          gfx::RectF(60.0f, 79.0f, 4.0f, 12.0f),
+          gfx::RectF(75.0f, 79.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {courier_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style, courier_style, wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "oTop-level Courier");
+  CheckUnorderedList(
+      page->GetChildAtIndex(1u),
+      {"Item 1oNormal font oo Combined Courier\u00A0Wingdings nbsp"}, "• ");
+}
+
+// Like `HeuristicNestedUnorderedListSmallMarkerFont`, but for a nested-only
+// marker, whose nesting range is checked during classification.
 // A wrapped line that starts with "– " lines up with the item's text, so it
 // stays in the item. A nested-only marker further right still nests.
 TEST_F(PdfAccessibilityTreeTest, HeuristicWrappedLineStartingWithEnDash) {

@@ -183,6 +183,10 @@ constexpr auto kNestedOnlyListMarkers = std::to_array<std::string_view>({
     "\xC2\xB7",      // · U+00B7 (middle dot)
 });
 
+// Lowercase font name substrings for Word's nested-only list markers.
+constexpr std::string_view kCourierFontSubstring = "courier";
+constexpr std::string_view kWingdingsFontSubstring = "wingdings";
+
 // Code points used only as bullets, covering the defaults of common authoring
 // tools. Characters with other common uses, such as '-', '*', 'o', or dashes,
 // are excluded to avoid false positives (e.g. "-" for an empty table cell or
@@ -200,6 +204,9 @@ constexpr auto kUnorderedListMarkers = std::to_array<std::string_view>({
     "\xEF\x82\xA7",  // U+F0A7 (Wingdings square bullet)
 });
 
+// ▪ U+25AA, the standard bullet for Wingdings markers.
+constexpr uint32_t kSquareBulletCodePoint = 0x25AA;
+
 // Maps private-use bullets that PDFium produces for common authoring fonts in
 // `kUnorderedListMarkers` to their standard Unicode equivalents so screen
 // readers announce them properly. All other markers in `kUnorderedListMarkers`
@@ -207,7 +214,7 @@ constexpr auto kUnorderedListMarkers = std::to_array<std::string_view>({
 constexpr auto kPrivateUseBulletMap =
     base::MakeFixedFlatMap<uint32_t, uint32_t>({
         // Wingdings square bullet -> ▪ U+25AA
-        {0xF0A7, 0x25AA},
+        {0xF0A7, kSquareBulletCodePoint},
         // Symbol font bullet -> • U+2022
         {0xF0B7, 0x2022},
     });
@@ -1537,6 +1544,25 @@ ListMarkerKind ClassifyUnorderedMarker(
   return ListMarkerKind::kNone;
 }
 
+// Returns the standard Unicode bullet code point for a font-specific nested
+// list marker, or `std::nullopt` if `code_point` in `font_name` is not one.
+// Word's level-2 bullet is a Courier 'o' (◦) and its level-3 bullets are
+// Wingdings characters (▪).
+std::optional<uint32_t> GetFontBulletCodePoint(uint32_t code_point,
+                                               std::string_view font_name) {
+  const std::string lower_font_name = base::ToLowerASCII(font_name);
+  // Wingdings glyphs are all pictographs and their extracted code points vary
+  // by encoding, so any character counts.
+  if (lower_font_name.contains(kWingdingsFontSubstring)) {
+    return kSquareBulletCodePoint;
+  }
+  // Courier is a text font, so only 'o' counts as a possible bullet point.
+  if (code_point == 'o' && lower_font_name.contains(kCourierFontSubstring)) {
+    return 0x25E6;  // ◦
+  }
+  return std::nullopt;
+}
+
 // Returns the parent list level for a marker at `run_x`, or nullptr if there is
 // no shallower list level.
 //
@@ -1567,6 +1593,38 @@ float GetListItemFontSize(const TextRunContext& run_context,
     return run_context.next_run->style.font_size;
   }
   return run_context.run->style.font_size;
+}
+
+// Classifies `text` as a marker used only for nested list levels, without
+// checking its indentation.
+ListMarkerKind ClassifyNestedOnlyMarker(std::string_view text,
+                                        const TextRunContext& run_context) {
+  if (text.empty()) {
+    return ListMarkerKind::kNone;
+  }
+
+  // LaTeX nested markers (itemize levels 2–4: en dash, asterisk, middle dot).
+  const ListMarkerKind nested_marker_kind =
+      ClassifyUnorderedMarker(text, kNestedOnlyListMarkers, run_context);
+  if (nested_marker_kind != ListMarkerKind::kNone) {
+    return nested_marker_kind;
+  }
+
+  // Word's remaining nested markers are standalone single non-whitespace
+  // characters. Combined "o text" is never accepted because 'o' is also a word.
+  size_t i = 0;
+  base_icu::UChar32 code_point;
+  const bool is_standalone_char =
+      base::ReadUnicodeCharacter(text, &i, &code_point) &&
+      i + 1 == text.size() && !base::IsUnicodeWhitespace(code_point);
+  const bool is_standalone_bullet =
+      is_standalone_char &&
+      GetFontBulletCodePoint(code_point, run_context.run->style.font_name)
+          .has_value();
+  if (is_standalone_bullet && IsStandaloneMarkerFollowedByText(run_context)) {
+    return ListMarkerKind::kStandaloneUnordered;
+  }
+  return ListMarkerKind::kNone;
 }
 
 // Returns how a list marker at `x` should be placed relative to `levels`.
@@ -1616,7 +1674,7 @@ ListMarkerKind ClassifyListMarker(const TextRunContext& run_context,
   const ListLevel* parent = GetParentListLevel(list_levels, run_x);
   if (parent && run_x > parent->item_text_x + kListIndentThreshold) {
     const ListMarkerKind nested_kind =
-        ClassifyUnorderedMarker(text, kNestedOnlyListMarkers, run_context);
+        ClassifyNestedOnlyMarker(text, run_context);
     if (nested_kind != ListMarkerKind::kNone) {
       const float max_nest = kMaxListNestingIndentEm *
                              GetListItemFontSize(run_context, nested_kind);
@@ -1668,19 +1726,22 @@ ListMarkerPrefix GetListMarkerPrefix(
 }
 
 // Returns the accessible name for the unordered list marker that starts
-// `chars`: the marker character followed by a space, matching Blink's list
-// markers (e.g. "• "). Symbol and Wingdings private-use bullets are mapped to
-// their Unicode equivalents so they are spoken and rendered correctly.
-std::string GetUnorderedListMarkerName(
-    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+// `run_context`: the marker character followed by a space, matching Blink's
+// list markers (e.g. "• "). Symbol and Wingdings private-use bullets, Word's
+// Courier 'o', and other Wingdings-font markers are mapped to standard Unicode
+// bullets so they are spoken and rendered correctly.
+std::string GetUnorderedListMarkerName(const TextRunContext& run_context) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
-  for (const auto& char_info : chars) {
+  for (const auto& char_info : run_context.chars) {
     if (base::IsUnicodeWhitespace(char_info.unicode_character)) {
       continue;
     }
     uint32_t code_point = char_info.unicode_character;
-    if (const auto it = kPrivateUseBulletMap.find(code_point);
-        it != kPrivateUseBulletMap.end()) {
+    if (const auto font_bullet = GetFontBulletCodePoint(
+            code_point, run_context.run->style.font_name)) {
+      code_point = *font_bullet;
+    } else if (const auto it = kPrivateUseBulletMap.find(code_point);
+               it != kPrivateUseBulletMap.end()) {
       code_point = it->second;
     }
     std::string name;
@@ -2148,7 +2209,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       }
       list_levels_.back().item_text_x = item_text_x;
 
-      AddListMarkerToNode(GetUnorderedListMarkerName(run_context.chars),
+      AddListMarkerToNode(GetUnorderedListMarkerName(run_context),
                           marker_bounds, block_node);
       // Standalone runs consist solely of the marker, so proceed to the next
       // run. Combined runs fall through to process the remaining item text.
