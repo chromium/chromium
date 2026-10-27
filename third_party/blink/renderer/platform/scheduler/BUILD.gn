@@ -116,7 +116,6 @@ blink_platform_sources("scheduler") {
     "main_thread/widget_scheduler_impl.cc",
     "main_thread/widget_scheduler_impl.h",
     "public/agent_group_scheduler.h",
-    "public/aggregated_metric_reporter.h",
     "public/compositor_thread_scheduler.h",
     "public/dummy_schedulers.h",
     "public/event_loop.h",
